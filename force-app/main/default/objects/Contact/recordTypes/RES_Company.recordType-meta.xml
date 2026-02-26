@@ -2,6 +2,7 @@
 <RecordType xmlns="http://soap.sforce.com/2006/04/metadata">
     <fullName>RES_Company</fullName>
     <active>true</active>
+    <compactLayoutAssignment>Contact_Compact_Layout</compactLayoutAssignment>
     <label>RES Company</label>
     <picklistValues>
         <picklist>BuyerAttributes</picklist>
@@ -48,14 +49,6 @@
             <fullName>Male</fullName>
             <default>false</default>
         </values>
-        <values>
-            <fullName>Nonbinary</fullName>
-            <default>false</default>
-        </values>
-        <values>
-            <fullName>Not Listed</fullName>
-            <default>false</default>
-        </values>
     </picklistValues>
     <picklistValues>
         <picklist>LeadSource</picklist>
@@ -64,7 +57,7 @@
             <default>false</default>
         </values>
         <values>
-            <fullName>Employee_Referral</fullName>
+            <fullName>Employee Referral</fullName>
             <default>false</default>
         </values>
     </picklistValues>
