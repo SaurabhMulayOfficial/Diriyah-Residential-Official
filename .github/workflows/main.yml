@@ -1,0 +1,142 @@
+name: Salesforce CI CD
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, closed]
+    branches:
+      - develop
+      - 'feature/QADIR/*'
+      - main
+
+jobs:
+
+  pmd:
+    name: Apex PMD (Non-blocking)
+    runs-on: ubuntu-latest
+  
+    if: github.event.action != 'closed' || github.event.pull_request.merged == true
+  
+    steps:
+      - uses: actions/checkout@v4
+  
+      - name: Install PMD
+        run: npm install -g pmd-bin
+  
+      - name: Run PMD (report only)
+        run: |
+          pmd check \
+            --dir force-app \
+            --rulesets rulesets/apex/ForceApexChecks.xml \
+            --minimum-priority 3 || true
+          
+  validate:
+    if: github.event.action != 'closed' || github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+    environment: env
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Salesforce CLI
+        run: npm install -g @salesforce/cli
+
+      - name: Set environment variables
+        run: |
+          if [[ "${{ github.base_ref }}" == "develop" ]]; then
+            echo "SF_CLIENT_ID=${{ secrets.SF_CLIENT_ID_UAT }}" >> $GITHUB_ENV
+            echo "SF_USERNAME=${{ secrets.SF_USERNAME_UAT }}" >> $GITHUB_ENV
+            echo "SF_INSTANCE_URL=https://login.salesforce.com" >> $GITHUB_ENV
+            echo "TEST_LEVEL=RunLocalTests" >> $GITHUB_ENV
+            echo "${{ secrets.SF_JWT_KEY_UAT }}" > server.key
+            echo "ALIAS=UAT" >> $GITHUB_ENV
+
+          elif [[ "${{ github.base_ref }}" == feature/QADIR/* ]]; then
+            echo "SF_CLIENT_ID=${{ secrets.SF_CLIENT_ID_QA }}" >> $GITHUB_ENV
+            echo "SF_USERNAME=${{ secrets.SF_USERNAME_QA }}" >> $GITHUB_ENV
+            echo "SF_INSTANCE_URL=https://login.salesforce.com" >> $GITHUB_ENV
+            echo "TEST_LEVEL=RunLocalTests" >> $GITHUB_ENV
+            echo "${{ secrets.SF_JWT_KEY_QA }}" > server.key
+            echo "ALIAS=QA" >> $GITHUB_ENV
+          
+          elif [[ "${{ github.base_ref }}" == "main" ]]; then
+            echo "SF_CLIENT_ID=${{ secrets.SF_CLIENT_ID_PROD }}" >> $GITHUB_ENV
+            echo "SF_USERNAME=${{ secrets.SF_USERNAME_PROD }}" >> $GITHUB_ENV
+            echo "SF_INSTANCE_URL=https://login.salesforce.com" >> $GITHUB_ENV
+            echo "TEST_LEVEL=RunLocalTests" >> $GITHUB_ENV
+            echo "${{ secrets.SF_JWT_KEY_PROD }}" > server.key
+            echo "ALIAS=PROD" >> $GITHUB_ENV
+          fi
+
+      - name: Authenticate Salesforce
+        run: |
+          sf org login jwt \
+            --client-id "$SF_CLIENT_ID" \
+            --jwt-key-file server.key \
+            --username "$SF_USERNAME" \
+            --instance-url "$SF_INSTANCE_URL" \
+            --alias "$ALIAS" \
+            --set-default  
+            
+
+      - name: Validate Deployment in Target Environment
+        run: |
+          sf project deploy validate \
+            --source-dir force-app \
+            --test-level "$TEST_LEVEL" \
+            --wait 30
+
+  deploy:
+    if: github.event.action == 'closed' && github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+    environment: env
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Salesforce CLI
+        run: npm install -g @salesforce/cli
+
+      - name: Set environment variables
+        run: |
+          if [[ "${{ github.base_ref }}" == "develop" ]]; then
+            echo "SF_CLIENT_ID=${{ secrets.SF_CLIENT_ID_UAT }}" >> $GITHUB_ENV
+            echo "SF_USERNAME=${{ secrets.SF_USERNAME_UAT }}" >> $GITHUB_ENV
+            echo "SF_INSTANCE_URL=https://login.salesforce.com" >> $GITHUB_ENV
+            echo "TEST_LEVEL=RunLocalTests" >> $GITHUB_ENV
+            echo "${{ secrets.SF_JWT_KEY_UAT }}" > server.key
+            echo "ALIAS=UAT" >> $GITHUB_ENV
+
+          elif [[ "${{ github.base_ref }}" == feature/QADIR/* ]]; then
+            echo "SF_CLIENT_ID=${{ secrets.SF_CLIENT_ID_QA }}" >> $GITHUB_ENV
+            echo "SF_USERNAME=${{ secrets.SF_USERNAME_QA }}" >> $GITHUB_ENV
+            echo "SF_INSTANCE_URL=https://login.salesforce.com" >> $GITHUB_ENV
+            echo "TEST_LEVEL=RunLocalTests" >> $GITHUB_ENV
+            echo "${{ secrets.SF_JWT_KEY_QA }}" > server.key
+            echo "ALIAS=QA" >> $GITHUB_ENV
+
+          elif [[ "${{ github.base_ref }}" == "main" ]]; then
+            echo "SF_CLIENT_ID=${{ secrets.SF_CLIENT_ID_PROD }}" >> $GITHUB_ENV
+            echo "SF_USERNAME=${{ secrets.SF_USERNAME_PROD }}" >> $GITHUB_ENV
+            echo "SF_INSTANCE_URL=https://login.salesforce.com" >> $GITHUB_ENV
+            echo "TEST_LEVEL=RunLocalTests" >> $GITHUB_ENV
+            echo "${{ secrets.SF_JWT_KEY_PROD }}" > server.key
+            echo "ALIAS=PROD" >> $GITHUB_ENV
+          fi
+
+      - name: Authenticate Salesforce
+        run: |
+          sf org login jwt \
+            --client-id "$SF_CLIENT_ID" \
+            --jwt-key-file server.key \
+            --username "$SF_USERNAME" \
+            --instance-url "$SF_INSTANCE_URL" \
+            --alias "$ALIAS" \
+            --set-default
+            
+
+      - name: Deploy to Salesforce Target Environment
+        run: |
+          sf project deploy start \
+            --source-dir force-app \
+            --test-level "$TEST_LEVEL" \
+            --wait 30
