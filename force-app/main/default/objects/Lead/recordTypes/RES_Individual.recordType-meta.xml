@@ -14,14 +14,6 @@
             <fullName>Male</fullName>
             <default>false</default>
         </values>
-        <values>
-            <fullName>Nonbinary</fullName>
-            <default>false</default>
-        </values>
-        <values>
-            <fullName>Not Listed</fullName>
-            <default>false</default>
-        </values>
     </picklistValues>
     <picklistValues>
         <picklist>Industry</picklist>
@@ -161,7 +153,7 @@
             <default>false</default>
         </values>
         <values>
-            <fullName>Contact_Centre</fullName>
+            <fullName>Contact Centre</fullName>
             <default>false</default>
         </values>
         <values>
@@ -169,15 +161,15 @@
             <default>true</default>
         </values>
         <values>
-            <fullName>Diriyah_Living</fullName>
+            <fullName>Diriyah Living</fullName>
             <default>false</default>
         </values>
         <values>
-            <fullName>Employee_Referral</fullName>
+            <fullName>Employee Referral</fullName>
             <default>false</default>
         </values>
         <values>
-            <fullName>SAP_Marketing_Cloud</fullName>
+            <fullName>SAP Marketing Cloud</fullName>
             <default>false</default>
         </values>
     </picklistValues>
@@ -711,13 +703,21 @@
         </values>
     </picklistValues>
     <picklistValues>
-        <picklist>RES_Gender_Type__c</picklist>
+        <picklist>RES_Group_Code__c</picklist>
         <values>
-            <fullName>Female</fullName>
+            <fullName>0023</fullName>
             <default>false</default>
         </values>
         <values>
-            <fullName>Male</fullName>
+            <fullName>0024</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>0025</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>0026</fullName>
             <default>false</default>
         </values>
     </picklistValues>
@@ -743,59 +743,59 @@
             <default>false</default>
         </values>
         <values>
-            <fullName>Budget_Differs</fullName>
+            <fullName>Budget Differs</fullName>
             <default>false</default>
         </values>
         <values>
-            <fullName>Called_No_Reply</fullName>
+            <fullName>Called No Reply</fullName>
             <default>false</default>
         </values>
         <values>
-            <fullName>Follow_Up</fullName>
+            <fullName>Follow Up</fullName>
             <default>false</default>
         </values>
         <values>
-            <fullName>In_Progress</fullName>
+            <fullName>In Progress</fullName>
             <default>false</default>
         </values>
         <values>
-            <fullName>Incorrect_Contact_Details</fullName>
+            <fullName>Incorrect Contact Details</fullName>
             <default>false</default>
         </values>
         <values>
-            <fullName>Interested_in_Future_Projects</fullName>
+            <fullName>Interested in Future Projects</fullName>
             <default>false</default>
         </values>
         <values>
-            <fullName>Interested_in_Non_Branded</fullName>
+            <fullName>Interested in Non Branded</fullName>
             <default>false</default>
         </values>
         <values>
-            <fullName>Interested_in_Office_Leasing</fullName>
+            <fullName>Interested in Office Leasing</fullName>
             <default>false</default>
         </values>
         <values>
-            <fullName>Interested_in_Retail_Leasing</fullName>
+            <fullName>Interested in Retail Leasing</fullName>
             <default>false</default>
         </values>
         <values>
-            <fullName>Meeting_Arranged</fullName>
+            <fullName>Meeting Arranged</fullName>
             <default>false</default>
         </values>
         <values>
-            <fullName>Meeting_Attended</fullName>
+            <fullName>Meeting Attended</fullName>
             <default>false</default>
         </values>
         <values>
-            <fullName>Needs_Time</fullName>
+            <fullName>Needs Time</fullName>
             <default>false</default>
         </values>
         <values>
-            <fullName>Not_Interested</fullName>
+            <fullName>Not Interested</fullName>
             <default>false</default>
         </values>
         <values>
-            <fullName>Number_Not_Reachable</fullName>
+            <fullName>Number Not Reachable</fullName>
             <default>false</default>
         </values>
     </picklistValues>
@@ -1814,6 +1814,40 @@
         </values>
         <values>
             <fullName>Åland Islander</fullName>
+            <default>false</default>
+        </values>
+    </picklistValues>
+    <picklistValues>
+        <picklist>RES_Priority__c</picklist>
+        <values>
+            <fullName>1</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>2</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>3</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>7</fullName>
+            <default>false</default>
+        </values>
+    </picklistValues>
+    <picklistValues>
+        <picklist>RES_Qualification_Level__c</picklist>
+        <values>
+            <fullName>01</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>02</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>03</fullName>
             <default>false</default>
         </values>
     </picklistValues>
