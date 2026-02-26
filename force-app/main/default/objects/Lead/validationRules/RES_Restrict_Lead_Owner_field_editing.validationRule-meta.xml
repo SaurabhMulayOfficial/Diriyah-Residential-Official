@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>RES_Restrict_Lead_Owner_field_editing</fullName>
+    <active>true</active>
+    <errorConditionFormula>AND(
+NOT($Setup.RES_Config_Switch__c.RES_Validation_Rules_Off__c),
+OR(
+$RecordType.DeveloperName = &quot;RES_Company&quot;,
+$RecordType.DeveloperName = &quot;RES_Individual&quot;
+),
+OR(
+   $UserRole.DeveloperName= &quot;RES_Contract_Amendments_Operations_Specialist&quot;,
+   $UserRole.DeveloperName= &quot;RES_External_Sales_Operations_Operations_Specialist&quot;,
+			$UserRole.DeveloperName= &quot;RES_Internal_Sales_Operations_Operations_Specialist&quot;,
+			$UserRole.DeveloperName= &quot;RES_Operational_Excellence_Operations_Specialist&quot;,
+			$UserRole.DeveloperName= &quot;RES_Sales_DI_Specialist&quot;,
+			$UserRole.DeveloperName= &quot;RES_Sales_DII_Specialist&quot;,
+			$UserRole.DeveloperName= &quot;RES_Sales_External_Specialist&quot;,
+			$UserRole.DeveloperName= &quot;RES_Sales_Implementation_Excellence_Specialist&quot;,
+			$UserRole.DeveloperName= &quot;RES_Sales_Planning_Specialist&quot;,
+			$UserRole.DeveloperName= &quot;RES_Sales_Wadi_Safar_Specialist_I&quot;,
+				$UserRole.DeveloperName= &quot;RES_Sales_Wadi_Safar_Specialist_II&quot;
+),
+ISCHANGED(OwnerId) 
+)</errorConditionFormula>
+    <errorDisplayField>OwnerId</errorDisplayField>
+    <errorMessage>You do not have the required permissions to change the lead Owner</errorMessage>
+</ValidationRule>

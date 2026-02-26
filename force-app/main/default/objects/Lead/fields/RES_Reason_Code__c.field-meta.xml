@@ -1,0 +1,200 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>RES_Reason_Code__c</fullName>
+    <label>Reason Code</label>
+    <required>false</required>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackHistory>false</trackHistory>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>Lost to competitor</fullName>
+                <default>false</default>
+                <label>Lost to competitor</label>
+            </value>
+            <value>
+                <fullName>Lost due to product</fullName>
+                <default>false</default>
+                <label>Lost due to product</label>
+            </value>
+            <value>
+                <fullName>Lost due to price</fullName>
+                <default>false</default>
+                <label>Lost due to price</label>
+            </value>
+            <value>
+                <fullName>Lost due to service</fullName>
+                <default>false</default>
+                <label>Lost due to service</label>
+            </value>
+            <value>
+                <fullName>Won due to product</fullName>
+                <default>false</default>
+                <label>Won due to product</label>
+            </value>
+            <value>
+                <fullName>Won due to price</fullName>
+                <default>false</default>
+                <label>Won due to price</label>
+            </value>
+            <value>
+                <fullName>Won due to service</fullName>
+                <default>false</default>
+                <label>Won due to service</label>
+            </value>
+            <value>
+                <fullName>Accepted Because of High Revenue Potential</fullName>
+                <default>false</default>
+                <label>Accepted Because of High Revenue Potential</label>
+            </value>
+            <value>
+                <fullName>Accepted Because of High Chance of Success</fullName>
+                <default>false</default>
+                <label>Accepted Because of High Chance of Success</label>
+            </value>
+            <value>
+                <fullName>Accepted for Strategic Reasons</fullName>
+                <default>false</default>
+                <label>Accepted for Strategic Reasons</label>
+            </value>
+            <value>
+                <fullName>Rejected Because of Low Revenue Potential</fullName>
+                <default>false</default>
+                <label>Rejected Because of Low Revenue Potential</label>
+            </value>
+            <value>
+                <fullName>Rejected Because of Low Chance of Success</fullName>
+                <default>false</default>
+                <label>Rejected Because of Low Chance of Success</label>
+            </value>
+            <value>
+                <fullName>Rejected Because of Wrong Target Segment</fullName>
+                <default>false</default>
+                <label>Rejected Because of Wrong Target Segment</label>
+            </value>
+            <value>
+                <fullName>Won Against Competitor</fullName>
+                <default>false</default>
+                <label>Won Against Competitor</label>
+            </value>
+            <value>
+                <fullName>Currently No Interest in Buying</fullName>
+                <default>false</default>
+                <label>Currently No Interest in Buying</label>
+            </value>
+            <value>
+                <fullName>Registration closed</fullName>
+                <default>false</default>
+                <label>Registration closed</label>
+            </value>
+            <value>
+                <fullName>Customer account not eligible</fullName>
+                <default>false</default>
+                <label>Customer account not eligible</label>
+            </value>
+            <value>
+                <fullName>Device not eligible</fullName>
+                <default>false</default>
+                <label>Device not eligible</label>
+            </value>
+            <value>
+                <fullName>Project cancelled</fullName>
+                <default>false</default>
+                <label>Project cancelled</label>
+            </value>
+            <value>
+                <fullName>Competing registration present</fullName>
+                <default>false</default>
+                <label>Competing registration present</label>
+            </value>
+            <value>
+                <fullName>Value too low</fullName>
+                <default>false</default>
+                <label>Value too low</label>
+            </value>
+            <value>
+                <fullName>Duplicate registration request</fullName>
+                <default>false</default>
+                <label>Duplicate registration request</label>
+            </value>
+            <value>
+                <fullName>New proto/prod dates needed</fullName>
+                <default>false</default>
+                <label>New proto/prod dates needed</label>
+            </value>
+            <value>
+                <fullName>Incorrect device</fullName>
+                <default>false</default>
+                <label>Incorrect device</label>
+            </value>
+            <value>
+                <fullName>Project won by competition</fullName>
+                <default>false</default>
+                <label>Project won by competition</label>
+            </value>
+            <value>
+                <fullName>Insufficient support levels</fullName>
+                <default>false</default>
+                <label>Insufficient support levels</label>
+            </value>
+            <value>
+                <fullName>Missing / Insufficient Data</fullName>
+                <default>false</default>
+                <label>Missing / Insufficient Data</label>
+            </value>
+            <value>
+                <fullName>No contact from distributor</fullName>
+                <default>false</default>
+                <label>No contact from distributor</label>
+            </value>
+            <value>
+                <fullName>Incomplete device number</fullName>
+                <default>false</default>
+                <label>Incomplete device number</label>
+            </value>
+            <value>
+                <fullName>Value too high</fullName>
+                <default>false</default>
+                <label>Value too high</label>
+            </value>
+            <value>
+                <fullName>Quantity too low</fullName>
+                <default>false</default>
+                <label>Quantity too low</label>
+            </value>
+            <value>
+                <fullName>Quantity too high</fullName>
+                <default>false</default>
+                <label>Quantity too high</label>
+            </value>
+            <value>
+                <fullName>Distributor supporting competition</fullName>
+                <default>false</default>
+                <label>Distributor supporting competition</label>
+            </value>
+            <value>
+                <fullName>Partner not authorized</fullName>
+                <default>false</default>
+                <label>Partner not authorized</label>
+            </value>
+            <value>
+                <fullName>Duplicate Opportunity</fullName>
+                <default>false</default>
+                <label>Duplicate Opportunity</label>
+            </value>
+            <value>
+                <fullName>Insufficient data quality</fullName>
+                <default>false</default>
+                <label>Insufficient data quality</label>
+            </value>
+            <value>
+                <fullName>Qualification questions not fulfilled</fullName>
+                <default>false</default>
+                <label>Qualification questions not fulfilled</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

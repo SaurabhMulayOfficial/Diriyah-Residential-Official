@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<PathAssistant xmlns="http://soap.sforce.com/2006/04/metadata">
+    <active>false</active>
+    <entityName>Lead</entityName>
+    <fieldName>Status</fieldName>
+    <masterLabel>Default</masterLabel>
+    <pathAssistantSteps>
+        <info>&lt;p&gt;&lt;strong&gt;Goal&lt;/strong&gt;: Discovery and qualification of business needs.&lt;/p&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Guidance&lt;/strong&gt;:&lt;/p&gt;&lt;ul&gt;&lt;li&gt;Schedule a discovery call to identify pain points and budget.&lt;/li&gt;&lt;li&gt;Document key requirements and potential project timelines in the Lead notes.&lt;/li&gt;&lt;li&gt;Ensure the lead matches the &lt;strong&gt;Residential&lt;/strong&gt; criteria for the assigned Record Type.&lt;/li&gt;&lt;/ul&gt;</info>
+        <picklistValueName>Active</picklistValueName>
+    </pathAssistantSteps>
+    <pathAssistantSteps>
+        <info>&lt;p&gt;&lt;strong&gt;Goal&lt;/strong&gt;: Initial outreach and lead validation.&lt;/p&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Guidance&lt;/strong&gt;:&lt;/p&gt;&lt;ul&gt;&lt;li&gt;Review incoming lead details for data completeness.&lt;/li&gt;&lt;li&gt;Initiate the first contact attempt within 1 hour of lead creation.&lt;/li&gt;&lt;li&gt;Research the company or individual via LinkedIn to personalize your opening.&lt;/li&gt;&lt;/ul&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;</info>
+        <picklistValueName>New</picklistValueName>
+    </pathAssistantSteps>
+    <pathAssistantSteps>
+        <info>&lt;p&gt;&lt;strong&gt;Goal&lt;/strong&gt;: Successful conversion to an Account and Contact.&lt;/p&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Guidance&lt;/strong&gt;:&lt;/p&gt;&lt;ul&gt;&lt;li&gt;Confirm all mandatory fields are populated before clicking &lt;strong&gt;Mark Status as Complete&lt;/strong&gt;.&lt;/li&gt;&lt;li&gt;Verify that a valid opportunity exists before proceeding with conversion.&lt;/li&gt;&lt;li&gt;Ensure the &lt;strong&gt;Converted&lt;/strong&gt; checkbox is correctly triggered upon save.&lt;/li&gt;&lt;/ul&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;</info>
+        <picklistValueName>Qualified</picklistValueName>
+    </pathAssistantSteps>
+    <pathAssistantSteps>
+        <info>&lt;p&gt;&lt;strong&gt;Goal&lt;/strong&gt;: Finalize disqualification for future reporting.&lt;/p&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Guidance&lt;/strong&gt;:&lt;/p&gt;&lt;ul&gt;&lt;li&gt;Clearly document the &amp;quot;Disqualification Reason&amp;quot; (e.g., No Budget, Out of Scope).&lt;/li&gt;&lt;li&gt;Set a follow-up task if the lead should be re-evaluated in 6–12 months.&lt;/li&gt;&lt;li&gt;Ensure this stage is only selected if the lead is truly a lost prospect.&lt;/li&gt;&lt;/ul&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;</info>
+        <picklistValueName>Retired</picklistValueName>
+    </pathAssistantSteps>
+    <recordTypeName>__MASTER__</recordTypeName>
+</PathAssistant>
