@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>RES_Restrict_Lead_Source_Editing</fullName>
+    <active>true</active>
+    <errorConditionFormula>AND(
+		NOT($Setup.RES_Config_Switch__c.RES_Validation_Rules_Off__c),
+  OR(
+    $RecordType.DeveloperName = &quot;RES_Company&quot;,
+    $RecordType.DeveloperName = &quot;RES_Individual&quot;
+  ),
+  $Profile.Name &lt;&gt; &quot;System Administrator&quot;,
+  ISCHANGED(LeadSource)
+)</errorConditionFormula>
+    <errorDisplayField>LeadSource</errorDisplayField>
+    <errorMessage>Only System Administrators are permitted to edit the Lead Source for Residential records</errorMessage>
+</ValidationRule>

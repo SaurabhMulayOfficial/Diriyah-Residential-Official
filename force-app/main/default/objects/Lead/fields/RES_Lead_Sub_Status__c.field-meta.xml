@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>RES_Lead_Sub_Status__c</fullName>
+    <label>Lead Sub Status</label>
+    <required>false</required>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackHistory>false</trackHistory>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>Broker</fullName>
+                <default>false</default>
+                <label>Broker</label>
+            </value>
+            <value>
+                <fullName>Budget_Differs</fullName>
+                <default>false</default>
+                <label>Budget Differs</label>
+            </value>
+            <value>
+                <fullName>Called_No_Reply</fullName>
+                <default>false</default>
+                <label>Called No Reply</label>
+            </value>
+            <value>
+                <fullName>Follow_Up</fullName>
+                <default>false</default>
+                <label>Follow Up</label>
+            </value>
+            <value>
+                <fullName>Incorrect_Contact_Details</fullName>
+                <default>false</default>
+                <label>Incorrect Contact Details</label>
+            </value>
+            <value>
+                <fullName>In_Progress</fullName>
+                <default>false</default>
+                <label>In Progress</label>
+            </value>
+            <value>
+                <fullName>Interested_in_Future_Projects</fullName>
+                <default>false</default>
+                <label>Interested in Future Projects</label>
+            </value>
+            <value>
+                <fullName>Interested_in_Non_Branded</fullName>
+                <default>false</default>
+                <label>Interested in Non Branded</label>
+            </value>
+            <value>
+                <fullName>Interested_in_Office_Leasing</fullName>
+                <default>false</default>
+                <label>Interested in Office Leasing</label>
+            </value>
+            <value>
+                <fullName>Interested_in_Retail_Leasing</fullName>
+                <default>false</default>
+                <label>Interested in Retail Leasing</label>
+            </value>
+            <value>
+                <fullName>Meeting_Arranged</fullName>
+                <default>false</default>
+                <label>Meeting Arranged</label>
+            </value>
+            <value>
+                <fullName>Meeting_Attended</fullName>
+                <default>false</default>
+                <label>Meeting Attended</label>
+            </value>
+            <value>
+                <fullName>Needs_Time</fullName>
+                <default>false</default>
+                <label>Needs Time</label>
+            </value>
+            <value>
+                <fullName>Not_Interested</fullName>
+                <default>false</default>
+                <label>Not Interested</label>
+            </value>
+            <value>
+                <fullName>Number_Not_Reachable</fullName>
+                <default>false</default>
+                <label>Number Not Reachable</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>
