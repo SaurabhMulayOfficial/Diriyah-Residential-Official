@@ -77,14 +77,14 @@
                 <visibilityRule>
                     <booleanFilter>1 AND 2</booleanFilter>
                     <criteria>
-                        <leftValue>{!Record.RES_Joint_Type__c}</leftValue>
-                        <operator>EQUAL</operator>
-                        <rightValue>true</rightValue>
-                    </criteria>
-                    <criteria>
                         <leftValue>{!Record.RES_Joint_Account_Check__c}</leftValue>
                         <operator>EQUAL</operator>
                         <rightValue>false</rightValue>
+                    </criteria>
+                    <criteria>
+                        <leftValue>{!Record.RecordType.DeveloperName}</leftValue>
+                        <operator>EQUAL</operator>
+                        <rightValue>RES_Residential_Single_Buyer</rightValue>
                     </criteria>
                 </visibilityRule>
             </componentInstance>
@@ -137,7 +137,7 @@
             <fieldInstance>
                 <fieldInstanceProperties>
                     <name>uiBehavior</name>
-                    <value>none</value>
+                    <value>required</value>
                 </fieldInstanceProperties>
                 <fieldItem>Record.RES_Reason_for_Lost__c</fieldItem>
                 <identifier>RecordRES_Reason_for_Lost_cField</identifier>
@@ -192,23 +192,6 @@
                 </fieldInstanceProperties>
                 <fieldItem>Record.CloseDate</fieldItem>
                 <identifier>RecordCloseDateField</identifier>
-            </fieldInstance>
-        </itemInstances>
-        <itemInstances>
-            <fieldInstance>
-                <fieldInstanceProperties>
-                    <name>uiBehavior</name>
-                    <value>none</value>
-                </fieldInstanceProperties>
-                <fieldItem>Record.RES_Joint_Type__c</fieldItem>
-                <identifier>RecordRES_Joint_Type__cField</identifier>
-                <visibilityRule>
-                    <criteria>
-                        <leftValue>{!Record.RecordType.DeveloperName}</leftValue>
-                        <operator>EQUAL</operator>
-                        <rightValue>RES_Residential_Multi_Buyer</rightValue>
-                    </criteria>
-                </visibilityRule>
             </fieldInstance>
         </itemInstances>
         <name>Facet-f31cfb4a-cff9-4183-ab78-8e77ec6894f0</name>
@@ -881,9 +864,9 @@
                 <identifier>lst_dynamicRelatedList2</identifier>
                 <visibilityRule>
                     <criteria>
-                        <leftValue>{!Record.RES_Joint_Type__c}</leftValue>
+                        <leftValue>{!Record.RecordType.DeveloperName}</leftValue>
                         <operator>EQUAL</operator>
-                        <rightValue>true</rightValue>
+                        <rightValue>RES_Residential_Single_Buyer</rightValue>
                     </criteria>
                 </visibilityRule>
             </componentInstance>
