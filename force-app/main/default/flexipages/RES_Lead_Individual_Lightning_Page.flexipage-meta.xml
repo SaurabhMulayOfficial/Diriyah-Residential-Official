@@ -50,10 +50,6 @@
                     <name>hideChatterActions</name>
                     <value>false</value>
                 </componentInstanceProperties>
-                <componentInstanceProperties>
-                    <name>numVisibleActions</name>
-                    <value>4</value>
-                </componentInstanceProperties>
                 <componentName>force:highlightsPanel</componentName>
                 <identifier>force_highlightsPanel2</identifier>
             </componentInstance>
@@ -203,8 +199,8 @@
                     <name>uiBehavior</name>
                     <value>required</value>
                 </fieldInstanceProperties>
-                <fieldItem>Record.RES_Gender_Type__c</fieldItem>
-                <identifier>RecordRES_Gender_Type__cField</identifier>
+                <fieldItem>Record.GenderIdentity</fieldItem>
+                <identifier>RecordGenderIdentityField</identifier>
             </fieldInstance>
         </itemInstances>
         <itemInstances>
@@ -391,16 +387,6 @@
         <type>Facet</type>
     </flexiPageRegions>
     <flexiPageRegions>
-        <itemInstances>
-            <fieldInstance>
-                <fieldInstanceProperties>
-                    <name>uiBehavior</name>
-                    <value>none</value>
-                </fieldInstanceProperties>
-                <fieldItem>Record.RES_Nationality__c</fieldItem>
-                <identifier>RecordRES_Nationality__cField</identifier>
-            </fieldInstance>
-        </itemInstances>
         <itemInstances>
             <fieldInstance>
                 <fieldInstanceProperties>
