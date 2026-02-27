@@ -54,7 +54,7 @@ public with sharing class RES_LeadDAOLayer extends RES_BaseDAOLayer {
     public List<Lead> getLeadsById(Set<Id> leadIds) {
         Map<String,Object> bindVars = new Map<String, Object> ();
         bindVars.put('leadIds', leadIds);
-        String soql = 'SELECT Id,Name, OwnerId FROM Lead WHERE Id IN :leadIds AND (RecordType.DeveloperName = \'RES_Company\' OR RecordType.DeveloperName = \'RES_Individual\')';
+        String soql = 'SELECT Id,Name, OwnerId, RES_SLA_Cycle_Count__c, RES_SLA_Breach_Time__c, RES_Previous_Lead_Owner__c FROM Lead WHERE Id IN :leadIds AND (RecordType.DeveloperName = \'RES_Company\' OR RecordType.DeveloperName = \'RES_Individual\')';
         return (List<Lead>) executeQuery(soql, '', false, bindVars, AccessLevel.USER_MODE);
     }
 
