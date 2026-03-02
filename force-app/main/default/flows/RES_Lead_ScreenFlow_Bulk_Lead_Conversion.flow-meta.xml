@@ -174,7 +174,7 @@
         <defaultConnectorLabel>No</defaultConnectorLabel>
         <rules>
             <name>Present</name>
-            <conditionLogic>and</conditionLogic>
+            <conditionLogic>(1 AND 2) OR (3 AND 1)</conditionLogic>
             <conditions>
                 <leftValueReference>$Setup.RES_Config_Switch__c.RES_Flows_Off__c</leftValueReference>
                 <operator>EqualTo</operator>
@@ -187,6 +187,13 @@
                 <operator>EqualTo</operator>
                 <rightValue>
                     <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Profile.Name</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>System Administrator</stringValue>
                 </rightValue>
             </conditions>
             <connector>
