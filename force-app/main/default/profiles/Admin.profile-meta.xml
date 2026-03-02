@@ -727,7 +727,7 @@
         <viewAllFields>false</viewAllFields>
         <viewAllRecords>false</viewAllRecords>
     </objectPermissions>
-        <recordTypeVisibilities>
+    <recordTypeVisibilities>
         <recordType>Account.RES_Company</recordType>
         <visible>true</visible>
     </recordTypeVisibilities>
@@ -754,6 +754,7 @@
     <recordTypeVisibilities>
         <recordType>PersonAccount.PersonAccount</recordType>
         <visible>true</visible>
+         <default>true</default>
     </recordTypeVisibilities>
     <userPermissions>
         <enabled>true</enabled>
