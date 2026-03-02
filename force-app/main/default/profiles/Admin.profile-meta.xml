@@ -734,6 +734,7 @@
     <recordTypeVisibilities>
         <recordType>Contact.RES_Company</recordType>
         <visible>true</visible>
+        <default>true</default>
     </recordTypeVisibilities>
     <recordTypeVisibilities>
         <recordType>Lead.RES_Company</recordType>
@@ -742,6 +743,7 @@
     <recordTypeVisibilities>
         <recordType>Lead.RES_Individual</recordType>
         <visible>true</visible>
+        <default>true</default>
     </recordTypeVisibilities>
     <recordTypeVisibilities>
         <recordType>Opportunity.RES_Residential_Multi_Buyer</recordType>
@@ -750,11 +752,12 @@
     <recordTypeVisibilities>
         <recordType>Opportunity.RES_Residential_Single_Buyer</recordType>
         <visible>true</visible>
+        <default>true</default>
     </recordTypeVisibilities>
     <recordTypeVisibilities>
         <recordType>PersonAccount.PersonAccount</recordType>
         <visible>true</visible>
-         <default>true</default>
+        <default>true</default>
     </recordTypeVisibilities>
     <userPermissions>
         <enabled>true</enabled>
