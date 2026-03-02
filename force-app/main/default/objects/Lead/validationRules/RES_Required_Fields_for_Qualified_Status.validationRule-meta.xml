@@ -11,9 +11,7 @@
     OR(
         ISBLANK(LastName),
         ISBLANK(TEXT(LeadSource)),
-        ISBLANK(Email),
-        ISBLANK(Address),
-        ISBLANK(RES_Identification_Number__c)
+        ISBLANK(Email)
     ),
 
     /* Company required ONLY for Company record type */
@@ -22,5 +20,5 @@
         NOT(ISBLANK(Company))
     )
 )</errorConditionFormula>
-    <errorMessage>To mark a Lead as Qualified, complete all required fields, including Address and Identification Number.</errorMessage>
+    <errorMessage>To mark a Lead as Qualified, complete all required fields.</errorMessage>
 </ValidationRule>
