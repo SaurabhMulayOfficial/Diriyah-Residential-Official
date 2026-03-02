@@ -139,4 +139,5 @@ jobs:
           sf project deploy start \
             --source-dir force-app \
             --test-level "$TEST_LEVEL" \
+            --ignore-conflicts \
             --wait 30
