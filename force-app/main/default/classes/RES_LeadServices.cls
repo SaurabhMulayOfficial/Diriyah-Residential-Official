@@ -11,7 +11,6 @@ public with sharing class RES_LeadServices {
 
         Integer slaInHours = Integer.valueOf(SYSTEM.Label.RES_Lead_SLA_In_hours);
         BusinessHours bh = (BusinessHours) new RES_BusinessHoursDAOLayer().getDefaultBusinessHours()[0];
-       
         Set<Id> queueIds = new Set<Id>();
         set<Id> activeUsers = new Set<Id>();
 
@@ -69,6 +68,12 @@ public with sharing class RES_LeadServices {
                         l.OwnerId = userIdToAssign;
                         startSla(L, bh, slaInHours);
                     }
+                }
+                else if(l.OwnerId != oldmap.get(l.Id).OwnerId && String.valueOf(l.ownerId).startsWith('005') && String.valueOf(oldmap.get(l.Id).OwnerId).startsWith('00G')){
+                    if(l.RES_SLA_Status__c != 'Met'){
+                        startSla(L, bh, slaInHours);
+                    }
+                    
                 }
             }
 
