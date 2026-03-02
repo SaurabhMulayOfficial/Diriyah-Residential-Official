@@ -5,20 +5,16 @@
     <fieldName>Status</fieldName>
     <masterLabel>RES Individual Lead Path</masterLabel>
     <pathAssistantSteps>
-        <info>&lt;p&gt;Conduct a discovery call to identify core business needs and confirm project eligibility.&lt;/p&gt;</info>
-        <picklistValueName>Active</picklistValueName>
-    </pathAssistantSteps>
-    <pathAssistantSteps>
         <info>&lt;p&gt;Validate lead data completeness and initiate personalised outreach within one hour of creation.&lt;/p&gt;</info>
-        <picklistValueName>New</picklistValueName>
+        <picklistValueName>01</picklistValueName>
     </pathAssistantSteps>
     <pathAssistantSteps>
-        <info>&lt;p&gt;Verify all mandatory data and opportunity details are finalised prior to account conversion.&lt;/p&gt;</info>
-        <picklistValueName>Qualified</picklistValueName>
+        <info>&lt;p&gt;Conduct a discovery call to identify core business needs and confirm project eligibility.&lt;/p&gt;</info>
+        <picklistValueName>02</picklistValueName>
     </pathAssistantSteps>
     <pathAssistantSteps>
         <info>&lt;p&gt;Document the specific disqualification reason and schedule a future re-evaluation task if applicable.&lt;/p&gt;</info>
-        <picklistValueName>Retired</picklistValueName>
+        <picklistValueName>05</picklistValueName>
     </pathAssistantSteps>
     <recordTypeName>RES_Individual</recordTypeName>
 </PathAssistant>
