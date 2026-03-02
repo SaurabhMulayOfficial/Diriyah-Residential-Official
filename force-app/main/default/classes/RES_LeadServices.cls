@@ -37,7 +37,7 @@ public with sharing class RES_LeadServices {
     
         if(oldMap == null){
             for(Lead l: leadList){
-                if(l.status == 'New' && String.valueOf(l.ownerId).startsWith('005')){
+                if(l.status == '01' && String.valueOf(l.ownerId).startsWith('005')){
                     startSla(L, bh, slaInHours);
                 }
             }
