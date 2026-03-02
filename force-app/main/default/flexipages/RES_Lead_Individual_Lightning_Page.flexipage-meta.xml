@@ -149,6 +149,26 @@
                 <identifier>RecordRES_Reason_Code__cField</identifier>
             </fieldInstance>
         </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.RES_Priority__c</fieldItem>
+                <identifier>RecordRES_Priority__cField</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.RES_Nationality__c</fieldItem>
+                <identifier>RecordRES_Nationality__cField</identifier>
+            </fieldInstance>
+        </itemInstances>
         <name>Facet-4431116c-4774-4eed-8920-047381454cbc</name>
         <type>Facet</type>
     </flexiPageRegions>
@@ -211,6 +231,26 @@
                 </fieldInstanceProperties>
                 <fieldItem>Record.RES_Lead_Validation_Bypass__c</fieldItem>
                 <identifier>RecordRES_Lead_Validation_Bypass__cField</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.RES_CAPTCHA_TCs__c</fieldItem>
+                <identifier>RecordRES_CAPTCHA_TCs__cField</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.RES_Qualification_Level__c</fieldItem>
+                <identifier>RecordRES_Qualification_Level__cField</identifier>
             </fieldInstance>
         </itemInstances>
         <name>Facet-54710fc6-57d2-4ec3-bd70-ff54262aac6c</name>
@@ -637,6 +677,8 @@
                 <identifier>flexipage_column6</identifier>
             </componentInstance>
         </itemInstances>
+        <name>Facet-3bc756df-7041-42db-ab4c-2551838955bd</name>
+        <type>Facet</type>
     </flexiPageRegions>
     <flexiPageRegions>
         <itemInstances>
@@ -759,6 +801,24 @@
                 </componentInstanceProperties>
                 <componentName>flexipage:fieldSection</componentName>
                 <identifier>flexipage_fieldSection2</identifier>
+            </componentInstance>
+        </itemInstances>
+        <itemInstances>
+            <componentInstance>
+                <componentInstanceProperties>
+                    <name>columns</name>
+                    <value>Facet-3bc756df-7041-42db-ab4c-2551838955bd</value>
+                </componentInstanceProperties>
+                <componentInstanceProperties>
+                    <name>horizontalAlignment</name>
+                    <value>false</value>
+                </componentInstanceProperties>
+                <componentInstanceProperties>
+                    <name>label</name>
+                    <value>SLA Information</value>
+                </componentInstanceProperties>
+                <componentName>flexipage:fieldSection</componentName>
+                <identifier>flexipage_fieldSection3</identifier>
             </componentInstance>
         </itemInstances>
         <itemInstances>
