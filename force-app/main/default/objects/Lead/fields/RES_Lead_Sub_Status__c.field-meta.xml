@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>RES_Lead_Sub_Status__c</fullName>
+    <label>Lead Sub Status</label>
+    <required>false</required>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackHistory>false</trackHistory>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>201</fullName>
+                <default>false</default>
+                <label>Successful</label>
+            </value>
+            <value>
+                <fullName>211</fullName>
+                <default>false</default>
+                <label>Meeting Done</label>
+            </value>
+            <value>
+                <fullName>221</fullName>
+                <default>false</default>
+                <label>Duplicate</label>
+            </value>
+            <value>
+                <fullName>261</fullName>
+                <default>false</default>
+                <label>Broker</label>
+            </value>
+            <value>
+                <fullName>161</fullName>
+                <default>false</default>
+                <label>Budget Differs</label>
+            </value>
+            <value>
+                <fullName>121</fullName>
+                <default>false</default>
+                <label>Called No Reply</label>
+            </value>
+            <value>
+                <fullName>131</fullName>
+                <default>false</default>
+                <label>Follow Up</label>
+            </value>
+            <value>
+                <fullName>191</fullName>
+                <default>false</default>
+                <label>Incorrect Contact Details</label>
+            </value>
+            <value>
+                <fullName>101</fullName>
+                <default>false</default>
+                <label>In Progress</label>
+            </value>
+            <value>
+                <fullName>251</fullName>
+                <default>false</default>
+                <label>Interested in Future Projects</label>
+            </value>
+            <value>
+                <fullName>241</fullName>
+                <default>false</default>
+                <label>Interested in Non Branded</label>
+            </value>
+            <value>
+                <fullName>271</fullName>
+                <default>false</default>
+                <label>Interested in Office Leasing</label>
+            </value>
+            <value>
+                <fullName>281</fullName>
+                <default>false</default>
+                <label>Interested in Retail Leasing</label>
+            </value>
+            <value>
+                <fullName>141</fullName>
+                <default>false</default>
+                <label>Meeting Arranged</label>
+            </value>
+            <value>
+                <fullName>291</fullName>
+                <default>false</default>
+                <label>Meeting Attended</label>
+            </value>
+            <value>
+                <fullName>171</fullName>
+                <default>false</default>
+                <label>Needs Time</label>
+            </value>
+            <value>
+                <fullName>151</fullName>
+                <default>false</default>
+                <label>Not Interested</label>
+            </value>
+            <value>
+                <fullName>181</fullName>
+                <default>false</default>
+                <label>Number Not Reachable</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>
