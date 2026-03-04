@@ -137,15 +137,26 @@
     <picklistValues>
         <picklist>RES_Reason_for_Lost__c</picklist>
         <values>
-            <fullName>Budget</fullName>
-            <default>false</default>
-        </values>
-        <values>
             <fullName>Competition</fullName>
             <default>false</default>
         </values>
         <values>
+            <fullName>Customer Budget</fullName>
+            <default>false</default>
+        </values>
+        <values>
             <fullName>Unresponsive Customer</fullName>
+            <default>false</default>
+        </values>
+    </picklistValues>
+    <picklistValues>
+        <picklist>RES_Sub_Stage__c</picklist>
+        <values>
+            <fullName>Enquiry Sent</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Proposal Sent</fullName>
             <default>false</default>
         </values>
     </picklistValues>
