@@ -1,8 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
     <fullName>RES_Current_Area__c</fullName>
-    <defaultValue>false</defaultValue>
+    <defaultValue>0</defaultValue>
+    <externalId>false</externalId>
     <label>Current Area</label>
+    <precision>18</precision>
+    <required>false</required>
+    <scale>2</scale>
     <trackFeedHistory>false</trackFeedHistory>
-    <type>Checkbox</type>
+    <type>Number</type>
+    <unique>false</unique>
 </CustomField>

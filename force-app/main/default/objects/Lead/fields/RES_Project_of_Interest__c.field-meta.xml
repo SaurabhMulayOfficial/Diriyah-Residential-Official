@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>RES_Project_of_Interest__c</fullName>
+    <label>Project of Interest</label>
+    <required>false</required>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackHistory>false</trackHistory>
+    <type>Picklist</type>
+    <valueSet>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>5_BEDROOM</fullName>
+                <default>false</default>
+                <label>5 Bedroom Residence</label>
+            </value>
+            <value>
+                <fullName>6_BEDROOM</fullName>
+                <default>false</default>
+                <label>6 Bedroom Residence</label>
+            </value>
+            <value>
+                <fullName>7_BEDROOM</fullName>
+                <default>false</default>
+                <label>7 Bedroom Farmhouse</label>
+            </value>
+            <value>
+                <fullName>Diriyah</fullName>
+                <default>false</default>
+                <label>Diriyah</label>
+            </value>
+            <value>
+                <fullName>DiriyahSquare</fullName>
+                <default>false</default>
+                <label>Diriyah Square</label>
+            </value>
+            <value>
+                <fullName>Project</fullName>
+                <default>false</default>
+                <label>Project</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

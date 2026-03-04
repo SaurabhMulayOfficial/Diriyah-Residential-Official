@@ -8,28 +8,6 @@
     <type>Picklist</type>
     <valueSet>
         <restricted>true</restricted>
-        <valueSetDefinition>
-            <sorted>false</sorted>
-            <value>
-                <fullName>National ID</fullName>
-                <default>false</default>
-                <label>National ID</label>
-            </value>
-            <value>
-                <fullName>Iqama No.</fullName>
-                <default>false</default>
-                <label>Iqama No.</label>
-            </value>
-            <value>
-                <fullName>Passport No.</fullName>
-                <default>false</default>
-                <label>Passport No.</label>
-            </value>
-            <value>
-                <fullName>Commercial Registration No.</fullName>
-                <default>false</default>
-                <label>Commercial Registration No.</label>
-            </value>
-        </valueSetDefinition>
+        <valueSetName>RES_Identification_Type</valueSetName>
     </valueSet>
 </CustomField>
