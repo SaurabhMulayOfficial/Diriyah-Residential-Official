@@ -19,7 +19,7 @@
  *                 getConvertedStatus()       Fetches first IsConverted LeadStatus
  * Author        : Rohan Jambhule
  * Company       : Globant Inc
- * Created Date  : Feb 26, 2026s
+ * Created Date  : Mar 2, 2026s
  * Version       : 1.0
  * ==============================================================================
  */
@@ -141,14 +141,11 @@ public class RES_TestDataFactory {
             RecordTypeId                  = rt.Id,
             // ── Custom Fields ─────────────────────────────────────────
             RES_Nationality__c            = 'Indian',
-            RES_BP_Role__c                = 'Tenant',
-            RES_Customer_Interest__c      = 'Branded Villas',
+            RES_BP_Role__c                = 'ZTR601',
+            RES_Customer_Interest__c      = '101',
             RES_Identification_Number__c  = hashStr,          // unique — hash-derived
-            RES_Identification_Type__c    = 'National ID',
-            RES_Lead_Type__c              = 'Sales',
-            RES_Lead_Sub_Status__c        = 'Follow Up',
-            RES_Marketing_Permission__c   = false,
-            RES_Terms_and_Conditions__c   = false
+            RES_Identification_Type__c    = 'ZIT01',
+            RES_Lead_Type__c              = 'LT02'
         );
         insert l;
         return l;
