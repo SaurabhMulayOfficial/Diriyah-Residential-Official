@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>RES_Villa_of_Interest__c</fullName>
+    <label>Villa of Interest</label>
+    <required>false</required>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackHistory>false</trackHistory>
+    <type>Picklist</type>
+    <valueSet>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>3-BEDROOMS VILLA</fullName>
+                <default>false</default>
+                <label>3-Bedrooms Villa</label>
+            </value>
+            <value>
+                <fullName>4-BEDROOMS VILLA</fullName>
+                <default>false</default>
+                <label>4-Bedrooms Villa</label>
+            </value>
+            <value>
+                <fullName>5-BEDROOMS VILLA</fullName>
+                <default>false</default>
+                <label>5-Bedrooms Villa</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

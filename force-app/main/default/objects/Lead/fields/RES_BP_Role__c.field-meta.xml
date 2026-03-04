@@ -8,33 +8,6 @@
     <type>Picklist</type>
     <valueSet>
         <restricted>true</restricted>
-        <valueSetDefinition>
-            <sorted>false</sorted>
-            <value>
-                <fullName>Tenant</fullName>
-                <default>false</default>
-                <label>Tenant</label>
-            </value>
-            <value>
-                <fullName>Owner</fullName>
-                <default>false</default>
-                <label>Owner</label>
-            </value>
-            <value>
-                <fullName>Applicant</fullName>
-                <default>false</default>
-                <label>Applicant</label>
-            </value>
-            <value>
-                <fullName>Broker</fullName>
-                <default>false</default>
-                <label>Broker</label>
-            </value>
-            <value>
-                <fullName>Partner</fullName>
-                <default>false</default>
-                <label>Partner</label>
-            </value>
-        </valueSetDefinition>
+        <valueSetName>RES_BP_Role</valueSetName>
     </valueSet>
 </CustomField>

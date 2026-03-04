@@ -1,0 +1,414 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>RES_Interest_Type__c</fullName>
+    <label>Interest Type</label>
+    <required>false</required>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackHistory>false</trackHistory>
+    <type>Picklist</type>
+    <valueSet>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>Al_Ruwait</fullName>
+                <default>false</default>
+                <label>Al Ruwait</label>
+            </value>
+            <value>
+                <fullName>Armani_Appointment</fullName>
+                <default>false</default>
+                <label>Armani Appointment</label>
+            </value>
+            <value>
+                <fullName>Armani_Brochure</fullName>
+                <default>false</default>
+                <label>Armani Brochure</label>
+            </value>
+            <value>
+                <fullName>Outdoor_Adventure</fullName>
+                <default>false</default>
+                <label>Outdoor Adventure</label>
+            </value>
+            <value>
+                <fullName>Appointment</fullName>
+                <default>false</default>
+                <label>Appointment</label>
+            </value>
+            <value>
+                <fullName>Art</fullName>
+                <default>false</default>
+                <label>Art</label>
+            </value>
+            <value>
+                <fullName>At_Turaif</fullName>
+                <default>false</default>
+                <label>At-Turaif</label>
+            </value>
+            <value>
+                <fullName>Auto_Cycle</fullName>
+                <default>false</default>
+                <label>Auto and Cycle</label>
+            </value>
+            <value>
+                <fullName>B2B_Retail_Leasing</fullName>
+                <default>false</default>
+                <label>B2B Retail Leasing</label>
+            </value>
+            <value>
+                <fullName>Bait_Alardah</fullName>
+                <default>false</default>
+                <label>Bait-Alardah</label>
+            </value>
+            <value>
+                <fullName>BR_BACCARAT_APPOINT</fullName>
+                <default>false</default>
+                <label>Baccarat Residences Appointment</label>
+            </value>
+            <value>
+                <fullName>BR_BACCARAT_BROCHURE</fullName>
+                <default>false</default>
+                <label>Baccarat Residences Brochure</label>
+            </value>
+            <value>
+                <fullName>BR_CORINTHIA_APPOINT</fullName>
+                <default>false</default>
+                <label>Corinthia Residences Appointment</label>
+            </value>
+            <value>
+                <fullName>BR_CORINTHIA_BROCHUR</fullName>
+                <default>false</default>
+                <label>Corinthia Residences Brochure</label>
+            </value>
+            <value>
+                <fullName>BRANDED_RESIDENTIAL</fullName>
+                <default>false</default>
+                <label>Branded Residential Interest</label>
+            </value>
+            <value>
+                <fullName>BUJAIRI_TERRACE</fullName>
+                <default>false</default>
+                <label>Bujairi Terrace</label>
+            </value>
+            <value>
+                <fullName>Business</fullName>
+                <default>false</default>
+                <label>Business</label>
+            </value>
+            <value>
+                <fullName>CHEDIAPP</fullName>
+                <default>false</default>
+                <label>Chedi Book an Appointment</label>
+            </value>
+            <value>
+                <fullName>CHEDIDOWN</fullName>
+                <default>false</default>
+                <label>Chedi Download Floorplans</label>
+            </value>
+            <value>
+                <fullName>Contact_Us</fullName>
+                <default>false</default>
+                <label>Contact Us</label>
+            </value>
+            <value>
+                <fullName>Commercial</fullName>
+                <default>false</default>
+                <label>Commercial</label>
+            </value>
+            <value>
+                <fullName>ContactUSWADISAFAR</fullName>
+                <default>false</default>
+                <label>Contact Us Wadi Safar</label>
+            </value>
+            <value>
+                <fullName>Culture</fullName>
+                <default>false</default>
+                <label>Culture</label>
+            </value>
+            <value>
+                <fullName>DCO_CITYSCAPE</fullName>
+                <default>false</default>
+                <label>DCO Cityscape</label>
+            </value>
+            <value>
+                <fullName>DGCL_Tkt</fullName>
+                <default>false</default>
+                <label>DGCL Ticketing</label>
+            </value>
+            <value>
+                <fullName>DGDA_ALMASAR</fullName>
+                <default>false</default>
+                <label>DGDA Almasar</label>
+            </value>
+            <value>
+                <fullName>DGDA_EVENT_ALMEDAD_TALK</fullName>
+                <default>false</default>
+                <label>DGDA EVENT ALMEDAD TALK</label>
+            </value>
+            <value>
+                <fullName>DGDA_WATERDC</fullName>
+                <default>false</default>
+                <label>Water Dispenser</label>
+            </value>
+            <value>
+                <fullName>DIRIYAHSQ_APPOINT</fullName>
+                <default>false</default>
+                <label>Diriyah Square Appointment</label>
+            </value>
+            <value>
+                <fullName>DIRIYAHSQ_BROCHURE</fullName>
+                <default>false</default>
+                <label>Diriyah Square Brochure</label>
+            </value>
+            <value>
+                <fullName>DIRIYAH_LIVING</fullName>
+                <default>false</default>
+                <label>Diriyah Living</label>
+            </value>
+            <value>
+                <fullName>DIRIYAH_SEASON_FEEDBACK</fullName>
+                <default>false</default>
+                <label>Diriyah Season Feedback</label>
+            </value>
+            <value>
+                <fullName>DOWNLOAD_BROCHURE</fullName>
+                <default>false</default>
+                <label>Ritz Brochure</label>
+            </value>
+            <value>
+                <fullName>DOWNLOAD_BROCH_SIG</fullName>
+                <default>false</default>
+                <label>Download Brochure Signature</label>
+            </value>
+            <value>
+                <fullName>DINE_RESTURANTS_CAFE</fullName>
+                <default>false</default>
+                <label>Dining</label>
+            </value>
+            <value>
+                <fullName>Diriyah_Season_Tkt</fullName>
+                <default>false</default>
+                <label>Diriyah Season Ticketing</label>
+            </value>
+            <value>
+                <fullName>Download_Brochure_1</fullName>
+                <default>false</default>
+                <label>Download Brochure</label>
+            </value>
+            <value>
+                <fullName>Entertainment</fullName>
+                <default>false</default>
+                <label>Entertainment</label>
+            </value>
+            <value>
+                <fullName>FAENABOOKAPP</fullName>
+                <default>false</default>
+                <label>Faena Book an Appointment</label>
+            </value>
+            <value>
+                <fullName>FAENAFLOORPLAN</fullName>
+                <default>false</default>
+                <label>Faena Floorplans</label>
+            </value>
+            <value>
+                <fullName>FASHION_LIFESTYLE_SHOPPING</fullName>
+                <default>false</default>
+                <label>Fashion, Lifestyle and Shopping</label>
+            </value>
+            <value>
+                <fullName>Food</fullName>
+                <default>false</default>
+                <label>Food</label>
+            </value>
+            <value>
+                <fullName>FOOD-AND-BEVERAGES</fullName>
+                <default>false</default>
+                <label>Food and Beverage</label>
+            </value>
+            <value>
+                <fullName>HEALTH_FITNESS</fullName>
+                <default>false</default>
+                <label>Health and Fitness</label>
+            </value>
+            <value>
+                <fullName>HERITAGE</fullName>
+                <default>false</default>
+                <label>Heritage</label>
+            </value>
+            <value>
+                <fullName>INVESTMENT</fullName>
+                <default>false</default>
+                <label>Investment</label>
+            </value>
+            <value>
+                <fullName>KSSDOWNBROCH</fullName>
+                <default>false</default>
+                <label>KSS Download Brochure</label>
+            </value>
+            <value>
+                <fullName>KSSREGISTERINT</fullName>
+                <default>false</default>
+                <label>KSS Register Your Interest</label>
+            </value>
+            <value>
+                <fullName>LEISURE</fullName>
+                <default>false</default>
+                <label>Leisure</label>
+            </value>
+            <value>
+                <fullName>Local_Culture</fullName>
+                <default>false</default>
+                <label>Local Culture</label>
+            </value>
+            <value>
+                <fullName>LiveResidential</fullName>
+                <default>false</default>
+                <label>Live Residential</label>
+            </value>
+            <value>
+                <fullName>MEDIA_PERMIT</fullName>
+                <default>false</default>
+                <label>Media Permit</label>
+            </value>
+            <value>
+                <fullName>Media</fullName>
+                <default>false</default>
+                <label>Media</label>
+            </value>
+            <value>
+                <fullName>NEWSLETTER</fullName>
+                <default>false</default>
+                <label>Newsletter</label>
+            </value>
+            <value>
+                <fullName>OBEROIHOTEL</fullName>
+                <default>false</default>
+                <label>Oberoi Hotel</label>
+            </value>
+            <value>
+                <fullName>OFFICEDOWNLOADBROCH</fullName>
+                <default>false</default>
+                <label>Office Download Brochure</label>
+            </value>
+            <value>
+                <fullName>OFFICE_LEASING</fullName>
+                <default>false</default>
+                <label>Office Leasing</label>
+            </value>
+            <value>
+                <fullName>OFFICE_SPACE</fullName>
+                <default>false</default>
+                <label>Office Space</label>
+            </value>
+            <value>
+                <fullName>OUTDOOR</fullName>
+                <default>false</default>
+                <label>Outdoor</label>
+            </value>
+            <value>
+                <fullName>PARTNER_REGISTRATION</fullName>
+                <default>false</default>
+                <label>Partner Registration</label>
+            </value>
+            <value>
+                <fullName>PARTNER_WITH_US</fullName>
+                <default>false</default>
+                <label>Partner with Us</label>
+            </value>
+            <value>
+                <fullName>PUBLIC_SPACE</fullName>
+                <default>false</default>
+                <label>Public Space</label>
+            </value>
+            <value>
+                <fullName>RAFFLES_APPOINTMENT</fullName>
+                <default>false</default>
+                <label>Raffles Appointment</label>
+            </value>
+            <value>
+                <fullName>RETAIL_DL_BROCHURE</fullName>
+                <default>false</default>
+                <label>Retail Download Brochure Form</label>
+            </value>
+            <value>
+                <fullName>Retail Leasing</fullName>
+                <default>false</default>
+                <label>Retail Leasing</label>
+            </value>
+            <value>
+                <fullName>RITZ_APPOINTMENT</fullName>
+                <default>false</default>
+                <label>Ritz Appointment</label>
+            </value>
+            <value>
+                <fullName>RITZ_APPOINTMENT_SIG</fullName>
+                <default>false</default>
+                <label>Ritz Appointment Signature</label>
+            </value>
+            <value>
+                <fullName>DOWNLOAD_BROCHqURE</fullName>
+                <default>false</default>
+                <label>Ritz AppointmentDis</label>
+            </value>
+            <value>
+                <fullName>Ritz BrochureDis</fullName>
+                <default>false</default>
+                <label>Ritz BrochureDis</label>
+            </value>
+            <value>
+                <fullName>RESIDENTIAL</fullName>
+                <default>false</default>
+                <label>Residential</label>
+            </value>
+            <value>
+                <fullName>SOCIAL_MEDIA</fullName>
+                <default>false</default>
+                <label>Social Media</label>
+            </value>
+            <value>
+                <fullName>SPORTS_AND_RECREATION</fullName>
+                <default>false</default>
+                <label>Sports and Recreation</label>
+            </value>
+            <value>
+                <fullName>WADI_SAFAR_VIP</fullName>
+                <default>false</default>
+                <label>Wadi Safar</label>
+            </value>
+            <value>
+                <fullName>Viva Ticket</fullName>
+                <default>false</default>
+                <label>Viva Ticket</label>
+            </value>
+            <value>
+                <fullName>Violation</fullName>
+                <default>false</default>
+                <label>Violation</label>
+            </value>
+            <value>
+                <fullName>WADISAFARAMANAPP</fullName>
+                <default>false</default>
+                <label>Wadi Safar Aman Appointment</label>
+            </value>
+            <value>
+                <fullName>WADISAFAROBEROIAPP</fullName>
+                <default>false</default>
+                <label>Wadi Safar Oberoi Book an Appointment</label>
+            </value>
+            <value>
+                <fullName>WADI_SAFAR_CONTCT_US</fullName>
+                <default>false</default>
+                <label>Wadi Safar Contact Us</label>
+            </value>
+            <value>
+                <fullName>WADI_SAFAR_CU</fullName>
+                <default>false</default>
+                <label>Wadi Safar CU</label>
+            </value>
+            <value>
+                <fullName>ZALLALREGISINTEREST</fullName>
+                <default>false</default>
+                <label>Zallal Register Interest</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>
