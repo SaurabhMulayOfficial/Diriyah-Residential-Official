@@ -7,6 +7,11 @@
     <description>Permission Set for Residential Sales Relationship Manager (Diriyah)</description>
     <fieldPermissions>
         <editable>true</editable>
+        <field>Account.RES_Primary_Account__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
         <field>Account.RES_BP_Role__c</field>
         <readable>true</readable>
     </fieldPermissions>
@@ -878,6 +883,16 @@
     <fieldPermissions>
         <editable>true</editable>
         <field>Opportunity.RES_Area_Of_Interest__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>RES_Opportunity_Account_Link__c.RES_Communication_Preference__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>RES_Opportunity_Account_Link__c.RES_Relationship_between_buyers__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>

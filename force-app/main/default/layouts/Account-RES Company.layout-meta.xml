@@ -138,7 +138,7 @@
             </layoutItems>
             <layoutItems>
                 <behavior>Edit</behavior>
-                <field>Certificate_of_Saudization_Expiry_Date__c</field>
+                <field>RES_Certificateof_Saudization_ExpiryDate__c</field>
             </layoutItems>
             <layoutItems>
                 <behavior>Edit</behavior>
@@ -146,7 +146,7 @@
             </layoutItems>
             <layoutItems>
                 <behavior>Edit</behavior>
-                <field>Onboarding_Completed__c</field>
+                <field>RES_Onboarding_Completed__c</field>
             </layoutItems>
             <layoutItems>
                 <behavior>Edit</behavior>
@@ -171,6 +171,10 @@
             <layoutItems>
                 <behavior>Edit</behavior>
                 <field>RES_Identification_Number__c</field>
+            </layoutItems>
+            <layoutItems>
+                <behavior>Edit</behavior>
+                <field>RES_Primary_Account__c</field>
             </layoutItems>
         </layoutColumns>
         <layoutColumns>
@@ -440,6 +444,10 @@
         <fields>CORE.USERS.FULL_NAME</fields>
         <fields>TASK.WHAT_NAME</fields>
         <relatedList>RelatedHistoryList</relatedList>
+    </relatedLists>
+    <relatedLists>
+        <fields>NAME</fields>
+        <relatedList>RES_Opportunity_Account_Link__c.RES_Account__c</relatedList>
     </relatedLists>
     <relatedObjects>ParentId</relatedObjects>
     <showEmailCheckbox>false</showEmailCheckbox>
