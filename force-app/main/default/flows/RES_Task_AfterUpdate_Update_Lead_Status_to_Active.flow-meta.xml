@@ -11,7 +11,7 @@
             <assignToReference>RES_Get_the_Parent_Lead_Record.Status</assignToReference>
             <operator>Assign</operator>
             <value>
-                <stringValue>Active</stringValue>
+                <stringValue>02</stringValue>
             </value>
         </assignmentItems>
         <connector>
@@ -67,7 +67,7 @@
                 <leftValueReference>RES_Get_the_Parent_Lead_Record.Status</leftValueReference>
                 <operator>EqualTo</operator>
                 <rightValue>
-                    <stringValue>New</stringValue>
+                    <stringValue>01</stringValue>
                 </rightValue>
             </conditions>
             <connector>
