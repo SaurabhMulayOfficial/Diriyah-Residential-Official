@@ -109,31 +109,31 @@ public class RES_TestDataFactory {
         Id rtId = [
             SELECT Id FROM RecordType
             WHERE SObjectType = 'Lead'
-            AND DeveloperName = 'RES_Company'   // ✅ Must match DAO filter
+            AND DeveloperName = 'RES_Company'
             LIMIT 1
         ].Id;
-
+    
         String prefix  = email.substringBefore('@').left(8);
         String hashStr = String.valueOf(Math.abs(email.hashCode()));
-
+    
         Lead l = new Lead(
             FirstName                    = prefix,
             LastName                     = 'TestLead',
-            Status                       = 'Qualified',         // ✅ MasterLabel stored in DB
+            Status                       = 'Qualified',
             Email                        = email,
             Phone                        = '+9198' + hashStr.left(7).rightPad(7, '0'),
             MobilePhone                  = '+9191' + hashStr.left(7).rightPad(7, '0'),
-            Company                      = prefix + ' Corp ' + hashStr.left(4), // ✅ Unique per lead
+            Company                      = prefix + ' Corp ' + hashStr.left(4),
             State                        = 'Abu Dhabi',
             LeadSource                   = 'Employee_Referral',
             Salutation                   = 'Mr.',
             GenderIdentity               = 'GTM',
             RecordTypeId                 = rtId,
-            // ── Custom Required Fields ────────────────────────────────────
+            OwnerId                      = UserInfo.getUserId(), // ✅ Explicitly set running user
             RES_Nationality__c           = 'Indian',
             RES_BP_Role__c               = 'ZTR601',
             RES_Customer_Interest__c     = '101',
-            RES_Identification_Number__c = hashStr.left(10),   // ✅ Unique per lead
+            RES_Identification_Number__c = hashStr.left(10),
             RES_Identification_Type__c   = 'ZIT01',
             RES_Lead_Type__c             = 'LT02'
         );
