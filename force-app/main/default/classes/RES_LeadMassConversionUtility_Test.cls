@@ -256,9 +256,10 @@ static void testSuccessfulLeadConversion() {
             }
         );
         Test.stopTest();
+        Boolean convertedStatus = [SELECT IsConverted FROM Lead WHERE Id = :l.Id].IsConverted;
 
         System.assertEquals(true,
-            [SELECT IsConverted FROM Lead WHERE Id = :l.Id].IsConverted,
+            convertedStatus,
             'Lead MUST be converted successfully.');
     }
 }
