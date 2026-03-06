@@ -21,6 +21,13 @@
                         </valueListItems>
                         <valueListItems>
                             <value>Convert</value>
+                            <visibilityRule>
+                                <criteria>
+                                    <leftValue>{!Record.Status}</leftValue>
+                                    <operator>EQUAL</operator>
+                                    <rightValue>04</rightValue>
+                                </criteria>
+                            </visibilityRule>
                         </valueListItems>
                         <valueListItems>
                             <value>EmailHighlightAction</value>
