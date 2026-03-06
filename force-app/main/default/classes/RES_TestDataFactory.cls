@@ -100,73 +100,56 @@ public class RES_TestDataFactory {
         );
     }
 
-    // ═════════════════════════════════════════════════════════════════
-    // LEAD FACTORY METHODS
-    // ═════════════════════════════════════════════════════════════════
-    /**
-     * Creates and inserts a single Lead.
-     *
-     * Uniqueness strategy — every duplicate-sensitive field is derived
-     * from the email so no two test leads share identical values:
-     *   • FirstName / Company               → email prefix (left 10 chars)
-     *   • MobilePhone / Phone               → '+9198' + 7-digit hash
-     *   • RES_Identification_Number__c      → full hash (unique field)
-     * RES_Lead_Validation_Bypass__c = true bypasses the org duplicate
-     * rule so leads insert cleanly in test context.
-     *
-     * @param  email  Unique email — drives all unique field values
-     * @return        Inserted Lead record
-     */
+    // =========================================================================
+    // Creates a valid Lead for conversion testing.
+    // RecordType must match DAO filter (RES_Company or RES_Individual).
+    // All required fields for conversion populated.
+    // =========================================================================
     public static Lead createLead(String email) {
-        RecordType rt = [
+        Id rtId = [
             SELECT Id FROM RecordType
-            WHERE SObjectType = 'Lead' AND Name = :LEAD_RECORD_TYPE
+            WHERE SObjectType = 'Lead'
+            AND DeveloperName = 'RES_Company'   // ✅ Must match DAO filter
             LIMIT 1
-        ];
-        String prefix      = email.substringBefore('@').left(10);
-        String hashStr     = String.valueOf(Math.abs(email.hashCode()));
-        String uniquePhone = '+9198' + hashStr.left(7).rightPad(7, '0');
+        ].Id;
+
+        String prefix  = email.substringBefore('@').left(8);
+        String hashStr = String.valueOf(Math.abs(email.hashCode()));
 
         Lead l = new Lead(
-            // ── Standard Fields ───────────────────────────────────────
-            FirstName                     = prefix,           // unique — email prefix
-            LastName                      = 'TestLead',
-            Status                        = 'Qualified',    
-            Email                         = email,
-            MobilePhone                   = uniquePhone,      // unique — hash-derived
-            Phone                         = uniquePhone,      // unique — hash-derived
-            LeadSource                    = 'Employee_Referral',
-            Company                       = prefix + ' Co',  // unique — avoids company dupe rule
-            State                         = 'Abu Dhabi',
-            RecordTypeId                  = rt.Id,
-            // ── Custom Fields ─────────────────────────────────────────
-            RES_Nationality__c            = 'Indian',
-            RES_BP_Role__c                = 'ZTR601',
-            RES_Customer_Interest__c      = '101',
-            RES_Identification_Number__c  = hashStr,          // unique — hash-derived
-            RES_Identification_Type__c    = 'ZIT01',
-            RES_Lead_Type__c              = 'LT02'
+            FirstName                    = prefix,
+            LastName                     = 'TestLead',
+            Status                       = 'Qualified',         // ✅ MasterLabel stored in DB
+            Email                        = email,
+            Phone                        = '+9198' + hashStr.left(7).rightPad(7, '0'),
+            MobilePhone                  = '+9191' + hashStr.left(7).rightPad(7, '0'),
+            Company                      = prefix + ' Corp ' + hashStr.left(4), // ✅ Unique per lead
+            State                        = 'Abu Dhabi',
+            LeadSource                   = 'Employee_Referral',
+            Salutation                   = 'Mr.',
+            GenderIdentity               = 'GTM',
+            RecordTypeId                 = rtId,
+            // ── Custom Required Fields ────────────────────────────────────
+            RES_Nationality__c           = 'Indian',
+            RES_BP_Role__c               = 'ZTR601',
+            RES_Customer_Interest__c     = '101',
+            RES_Identification_Number__c = hashStr.left(10),   // ✅ Unique per lead
+            RES_Identification_Type__c   = 'ZIT01',
+            RES_Lead_Type__c             = 'LT02'
         );
         insert l;
         return l;
     }
 
-    // ═════════════════════════════════════════════════════════════════
-    // CONVERT REQUEST HELPERS
-    // ═════════════════════════════════════════════════════════════════
-
-    /**
-     * Builds a ConvertRequest wrapper for the invocable method.
-     *
-     * @param  leads          List of Lead records to include
-     * @param  statusLabel    MasterLabel of the target LeadStatus
-     * @param  doNotCreateOpp true = skip Opportunity creation
-     * @return                Populated ConvertRequest
-     */
+     // =========================================================================
+    // Builds a ConvertRequest wrapper for use in test methods.
+    // statusLabel should be MasterLabel (e.g. 'Qualified') —
+    // DAO will convert it to ApiName ('04') internally.
+    // =========================================================================
     public static RES_LeadMassConversionUtility.ConvertRequest buildRequest(
-        List<Lead>  leads,
-        String      statusLabel,
-        Boolean     doNotCreateOpp
+        List<Lead> leads,
+        String statusLabel,
+        Boolean doNotCreateOpp
     ) {
         RES_LeadMassConversionUtility.ConvertRequest req =
             new RES_LeadMassConversionUtility.ConvertRequest();
@@ -176,17 +159,19 @@ public class RES_TestDataFactory {
         return req;
     }
 
-    /**
-     * Fetches the MasterLabel of the first converted LeadStatus in org.
-     *
-     * @return MasterLabel string of a converted LeadStatus
-     */
+    // =========================================================================
+    // Returns the MasterLabel of the converted LeadStatus.
+    // Passes MasterLabel to buildRequest — DAO will return ApiName ('04').
+    // =========================================================================
     public static String getConvertedStatus() {
-        return [
-            SELECT MasterLabel FROM LeadStatus
+        LeadStatus ls = [
+            SELECT MasterLabel, ApiName
+            FROM LeadStatus
             WHERE IsConverted = true
+            AND MasterLabel = 'Qualified'   // ✅ Matches leads created in createLead()
             LIMIT 1
-        ].MasterLabel;
+        ];
+        return ls.MasterLabel;             // ✅ Returns 'Qualified' → DAO converts to '04'
     }
 
 

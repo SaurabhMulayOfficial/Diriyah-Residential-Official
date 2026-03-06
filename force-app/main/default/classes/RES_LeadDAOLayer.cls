@@ -58,7 +58,7 @@ public with sharing class RES_LeadDAOLayer extends RES_BaseDAOLayer {
         return (List<Lead>) executeQuery(soql, '', false, bindVars, AccessLevel.USER_MODE);
     }
 
-    public String getConvertedStatusLabel(String statusLabel) {
+    /* public String getConvertedStatusLabel(String statusLabel) {
         Map<String,Object> bindVars = new Map<String,Object>();
         bindVars.put('statusLabel', statusLabel);
         String soql ='SELECT MasterLabel FROM LeadStatus WHERE MasterLabel = \'Qualified\' AND IsConverted = true LIMIT 1';
@@ -68,6 +68,19 @@ public with sharing class RES_LeadDAOLayer extends RES_BaseDAOLayer {
         }
         String masterLabel = ((LeadStatus)results[0]).MasterLabel;
         return masterLabel;
-    }
+    } */
+        public String getConvertedStatusLabel(String statusLabel) {
+            Map<String,Object> bindVars = new Map<String,Object>();
+            bindVars.put('statusLabel', statusLabel);
+            // ✅ After — uses :statusLabel bind variable dynamically
+            String soql = 'SELECT MasterLabel, ApiName FROM LeadStatus WHERE MasterLabel = :statusLabel AND IsConverted = true LIMIT 1';
+            List<SObject> results = executeQuery(soql, '', false, bindVars, AccessLevel.USER_MODE);
+            if (results == null || results.isEmpty()) {
+                return null;
+            }
+            // ✅ Return ApiName — required by Database.convertLead() in your org
+            LeadStatus ls = (LeadStatus) results[0];
+            return ls.ApiName;
+        }
     
 }
