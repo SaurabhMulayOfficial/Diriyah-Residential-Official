@@ -45,7 +45,7 @@ jobs:
           if [[ "${{ github.base_ref }}" == "develop" ]]; then
             echo "SF_CLIENT_ID=${{ secrets.SF_CLIENT_ID_UAT }}" >> $GITHUB_ENV
             echo "SF_USERNAME=${{ secrets.SF_USERNAME_UAT }}" >> $GITHUB_ENV
-            echo "SF_INSTANCE_URL=https://login.salesforce.com" >> $GITHUB_ENV
+            echo "SF_INSTANCE_URL=https://test.salesforce.com" >> $GITHUB_ENV
             echo "TEST_LEVEL=RunLocalTests" >> $GITHUB_ENV
             echo "${{ secrets.SF_JWT_KEY_UAT }}" > server.key
             echo "ALIAS=UAT" >> $GITHUB_ENV
@@ -53,7 +53,7 @@ jobs:
           elif [[ "${{ github.base_ref }}" == feature/QADIR/* ]]; then
             echo "SF_CLIENT_ID=${{ secrets.SF_CLIENT_ID_QA }}" >> $GITHUB_ENV
             echo "SF_USERNAME=${{ secrets.SF_USERNAME_QA }}" >> $GITHUB_ENV
-            echo "SF_INSTANCE_URL=https://login.salesforce.com" >> $GITHUB_ENV
+            echo "SF_INSTANCE_URL=https://test.salesforce.com" >> $GITHUB_ENV
             echo "TEST_LEVEL=RunLocalTests" >> $GITHUB_ENV
             echo "${{ secrets.SF_JWT_KEY_QA }}" > server.key
             echo "ALIAS=QA" >> $GITHUB_ENV
@@ -101,7 +101,7 @@ jobs:
           if [[ "${{ github.base_ref }}" == "develop" ]]; then
             echo "SF_CLIENT_ID=${{ secrets.SF_CLIENT_ID_UAT }}" >> $GITHUB_ENV
             echo "SF_USERNAME=${{ secrets.SF_USERNAME_UAT }}" >> $GITHUB_ENV
-            echo "SF_INSTANCE_URL=https://login.salesforce.com" >> $GITHUB_ENV
+            echo "SF_INSTANCE_URL=https://test.salesforce.com" >> $GITHUB_ENV
             echo "TEST_LEVEL=RunLocalTests" >> $GITHUB_ENV
             echo "${{ secrets.SF_JWT_KEY_UAT }}" > server.key
             echo "ALIAS=UAT" >> $GITHUB_ENV
@@ -109,7 +109,7 @@ jobs:
           elif [[ "${{ github.base_ref }}" == feature/QADIR/* ]]; then
             echo "SF_CLIENT_ID=${{ secrets.SF_CLIENT_ID_QA }}" >> $GITHUB_ENV
             echo "SF_USERNAME=${{ secrets.SF_USERNAME_QA }}" >> $GITHUB_ENV
-            echo "SF_INSTANCE_URL=https://login.salesforce.com" >> $GITHUB_ENV
+            echo "SF_INSTANCE_URL=https://test.salesforce.com" >> $GITHUB_ENV
             echo "TEST_LEVEL=RunLocalTests" >> $GITHUB_ENV
             echo "${{ secrets.SF_JWT_KEY_QA }}" > server.key
             echo "ALIAS=QA" >> $GITHUB_ENV
@@ -139,4 +139,5 @@ jobs:
           sf project deploy start \
             --source-dir force-app \
             --test-level "$TEST_LEVEL" \
+            --ignore-conflicts \
             --wait 30

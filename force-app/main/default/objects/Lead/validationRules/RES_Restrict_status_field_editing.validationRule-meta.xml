@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>RES_Restrict_status_field_editing</fullName>
+    <active>true</active>
+    <errorConditionFormula>AND(
+NOT($Setup.RES_Config_Switch__c.RES_Validation_Rules_Off__c),
+OR(
+$RecordType.DeveloperName = &quot;RES_Company&quot;,
+$RecordType.DeveloperName = &quot;RES_Individual&quot;
+),
+$Profile.Name &lt;&gt; &quot;System Administrator&quot;,
+$Profile.Name &lt;&gt; &quot;Diriyah Residential Sales Standard Profile&quot;,
+ISCHANGED(Status)  
+)</errorConditionFormula>
+    <errorDisplayField>Status</errorDisplayField>
+    <errorMessage>You do not have the required permissions to update the Lead Status.</errorMessage>
+</ValidationRule>

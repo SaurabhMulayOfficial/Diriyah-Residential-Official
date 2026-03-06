@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>RES_Meeting_Preference__c</fullName>
+    <label>Meeting Preference</label>
+    <required>false</required>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackHistory>false</trackHistory>
+    <type>Picklist</type>
+    <valueSet>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>Virtual Meeting</fullName>
+                <default>false</default>
+                <label>Virtual Meeting</label>
+            </value>
+            <value>
+                <fullName>In Person Meeting</fullName>
+                <default>false</default>
+                <label>In Person Meeting</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>
