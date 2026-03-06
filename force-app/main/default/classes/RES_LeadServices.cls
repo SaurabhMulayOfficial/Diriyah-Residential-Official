@@ -37,7 +37,7 @@ public with sharing class RES_LeadServices {
     
         if(oldMap == null){
             for(Lead l: leadList){
-                if(l.LeadSource == 'Z11'){
+                if(l.LeadSource == 'Z09'){
                     continue;
                 }
                 if(l.status == '01' && String.valueOf(l.ownerId).startsWith('005')){
@@ -47,7 +47,7 @@ public with sharing class RES_LeadServices {
         }
         else{
             for(Lead l: leadList){
-                if(l.LeadSource == 'Z11'){
+                if(l.LeadSource == 'Z09'){
                     continue;
                 }
                 if(l.Status != oldMap.get(l.Id).Status && l.OwnerId == Userinfo.getUserId()){
