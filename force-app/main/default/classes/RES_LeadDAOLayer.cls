@@ -63,13 +63,13 @@ public without sharing class RES_LeadDAOLayer extends RES_BaseDAOLayer {
     public String getConvertedStatusLabel(String statusLabel) {
         Map<String,Object> bindVars = new Map<String,Object>();
         bindVars.put('statusLabel', statusLabel);
-        String soql ='SELECT MasterLabel FROM LeadStatus WHERE MasterLabel = \'Qualified\' AND IsConverted = true LIMIT 1';
-        List<SObject> results = executeQuery(soql,'convertedStatus',false,bindVars,AccessLevel.USER_MODE);
+        String soql = 'SELECT MasterLabel, ApiName FROM LeadStatus WHERE MasterLabel = :statusLabel AND IsConverted = true LIMIT 1';
+        List<SObject> results = executeQuery(soql, '', false, bindVars, AccessLevel.USER_MODE);
         if (results == null || results.isEmpty()) {
             return null;
         }
-        String masterLabel = ((LeadStatus)results[0]).MasterLabel;
-        return masterLabel;
+        LeadStatus ls = (LeadStatus) results[0];
+        return ls.ApiName;
     }
 
     public Map<Id, Lead> getLeadByIds(Set<Id> leadIds, Boolean useMap){
