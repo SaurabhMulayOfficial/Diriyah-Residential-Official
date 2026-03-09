@@ -22,6 +22,8 @@
  *                   Boolean useCache,
  *                   Map<String, Object> bindVars,
  *                   AccessLevel accessLevel)
+ *    To get Map<id, Sobject> use executeQueryToMap(<Same Params as above>).
+ * 
  *    Usage Guidelines:
  *      - Enable caching ONLY for static queries where data does not change frequently.
  *      - For dynamic queries:
@@ -36,7 +38,7 @@
  * =============================================================================
  */
 
-public with sharing class RES_LeadDAOLayer extends RES_BaseDAOLayer {
+public without sharing class RES_LeadDAOLayer extends RES_BaseDAOLayer {
     protected override String getSObjectName() {
         return 'Lead';
     }
@@ -69,5 +71,16 @@ public with sharing class RES_LeadDAOLayer extends RES_BaseDAOLayer {
         String masterLabel = ((LeadStatus)results[0]).MasterLabel;
         return masterLabel;
     }
-    
+
+    public Map<Id, Lead> getLeadByIds(Set<Id> leadIds, Boolean useMap){
+        Map<String, Object> bindVars = new Map<String, Object> ();
+        bindVars.put('leadIds', leadIds);
+        String soql = 'SELECT Id, Name FROM Lead WHERE Id IN: leadIds';
+
+        Map<Id, Lead> leadMap = (Map<Id,Lead>) executeQueryToMap(soql, '', false, bindVars, AccessLevel.SYSTEM_MODE);
+
+        return leadMap;
+    }
+
+
 }

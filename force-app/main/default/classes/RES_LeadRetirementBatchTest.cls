@@ -13,7 +13,7 @@ private class RES_LeadRetirementBatchTest {
     static void setup() {
         // 1. Setup Custom Setting threshold (6 months)
         DIR_Lead_Retirement_Configuration__c config = new DIR_Lead_Retirement_Configuration__c(
-            DIR_Retirement_Day_Threshold__c = 180
+            DIR_Retirement_Day_Threshold__c = 30
         );
         insert config;
         
@@ -27,7 +27,7 @@ private class RES_LeadRetirementBatchTest {
             leadsToInsert.add(new Lead(
                 LastName = 'TestLead' + i,
                 Company = 'TestCompany' + i,
-                Status = 'New',
+                Status = '01',
                 RecordTypeId = (Math.mod(i, 2) == 0) ? companyRtId : individualRtId
             ));
         }
@@ -36,7 +36,7 @@ private class RES_LeadRetirementBatchTest {
         // 4. Backdate 5 records to be > 6 months old (approx 210 days)
         // We use Test.setCreatedDate because LastModifiedDate is system-managed
         for(Integer i = 0; i < 5; i++) {
-            Test.setCreatedDate(leadsToInsert[i].Id, DateTime.now().addDays(-210));
+            Test.setCreatedDate(leadsToInsert[i].Id, DateTime.now().addDays(-60));
         }
     }
     
@@ -49,11 +49,11 @@ private class RES_LeadRetirementBatchTest {
         Test.stopTest(); // Forces asynchronous batch to complete
         
         // Assertions: Validate that the 5 backdated records were retired
-        Integer retiredCount = [SELECT count() FROM Lead WHERE Status = 'Retired'];
+        Integer retiredCount = [SELECT count() FROM Lead WHERE Status = '05'];
         System.assertEquals(5, retiredCount, 'Exactly 5 Leads should have been moved to Retired status.');
         
         // Validate that the other 5 records remained 'New'
-        Integer newCount = [SELECT count() FROM Lead WHERE Status = 'New'];
+        Integer newCount = [SELECT count() FROM Lead WHERE Status = '01'];
         System.assertEquals(5, newCount, '5 recent Leads should remain in New status.');
     }
     
