@@ -221,34 +221,6 @@
                 </fieldInstanceProperties>
                 <fieldItem>Record.GenderIdentity</fieldItem>
                 <identifier>RecordGenderIdentityField</identifier>
-                <visibilityRule>
-                    <booleanFilter>1 OR 2 OR 3 OR 4 OR 5</booleanFilter>
-                    <criteria>
-                        <leftValue>{!Record.Salutation}</leftValue>
-                        <operator>EQUAL</operator>
-                        <rightValue>HRH</rightValue>
-                    </criteria>
-                    <criteria>
-                        <leftValue>{!Record.Salutation}</leftValue>
-                        <operator>EQUAL</operator>
-                        <rightValue>Prof.</rightValue>
-                    </criteria>
-                    <criteria>
-                        <leftValue>{!Record.Salutation}</leftValue>
-                        <operator>EQUAL</operator>
-                        <rightValue>H.H</rightValue>
-                    </criteria>
-                    <criteria>
-                        <leftValue>{!Record.Salutation}</leftValue>
-                        <operator>EQUAL</operator>
-                        <rightValue>H.E</rightValue>
-                    </criteria>
-                    <criteria>
-                        <leftValue>{!Record.Salutation}</leftValue>
-                        <operator>EQUAL</operator>
-                        <rightValue>Dr.</rightValue>
-                    </criteria>
-                </visibilityRule>
             </fieldInstance>
         </itemInstances>
         <itemInstances>
