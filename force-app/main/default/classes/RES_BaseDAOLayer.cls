@@ -1,11 +1,9 @@
-/*
-Abstract base class for DAO layers, providing common caching logic and query execution.
-Note: Subclasses should implement the getSObjectName method to specify the SObject they are working with.
-
-Author: Saurabh Mulay
-Date: 2026-02
-
-*/
+/**
+ * @class name         : RES_BaseDAOLayer
+ * @description        : Abstract base class for DAO layers, providing common caching logic and query execution.
+                         Note: Subclasses should implement the getSObjectName method to specify the SObject they are working with.
+ * @author             : Saurabh
+ */
 
 public abstract class RES_BaseDAOLayer {
 

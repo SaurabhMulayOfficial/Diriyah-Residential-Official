@@ -8,10 +8,6 @@
         <label>Information</label>
         <layoutColumns>
             <layoutItems>
-                <behavior>Readonly</behavior>
-                <field>Name</field>
-            </layoutItems>
-            <layoutItems>
                 <behavior>Required</behavior>
                 <field>RES_Account__c</field>
             </layoutItems>
@@ -19,12 +15,12 @@
                 <behavior>Readonly</behavior>
                 <field>RES_Opportunity__c</field>
             </layoutItems>
-        </layoutColumns>
-        <layoutColumns>
             <layoutItems>
                 <behavior>Edit</behavior>
                 <field>OwnerId</field>
             </layoutItems>
+        </layoutColumns>
+        <layoutColumns>
             <layoutItems>
                 <behavior>Edit</behavior>
                 <field>RES_Communication_Preference__c</field>
@@ -32,10 +28,6 @@
             <layoutItems>
                 <behavior>Edit</behavior>
                 <field>RES_Relationship_between_buyers__c</field>
-            </layoutItems>
-            <layoutItems>
-                <behavior>Edit</behavior>
-                <field>CurrencyIsoCode</field>
             </layoutItems>
         </layoutColumns>
         <style>TwoColumnsTopToBottom</style>
