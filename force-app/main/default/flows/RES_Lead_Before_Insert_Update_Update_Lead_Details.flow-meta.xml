@@ -15,6 +15,52 @@
             </value>
         </assignmentItems>
     </assignments>
+    <assignments>
+        <name>RES_Female_Gender_Assignment</name>
+        <label>Female Gender Assignment</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignmentItems>
+            <assignToReference>$Record.GenderIdentity</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <stringValue>GTF</stringValue>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>If_Owner_Changed_from_Queue_To_User</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
+        <name>RES_Male_Gender_Assignment</name>
+        <label>Male Gender Assignment</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignmentItems>
+            <assignToReference>$Record.GenderIdentity</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <stringValue>GTM</stringValue>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>If_Owner_Changed_from_Queue_To_User</targetReference>
+        </connector>
+    </assignments>
+    <customErrors>
+        <name>RES_No_Pre_Selection_Values</name>
+        <label>No Pre-Selection Values</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>If_Owner_Changed_from_Queue_To_User</targetReference>
+        </connector>
+        <customErrorMessages>
+            <errorMessage>Kindly select the appropriate Salutation and Gender</errorMessage>
+            <fieldSelection>GenderIdentity</fieldSelection>
+            <isFieldError>true</isFieldError>
+        </customErrorMessages>
+    </customErrors>
     <decisions>
         <name>If_Owner_Changed_from_Queue_To_User</name>
         <label>If Owner Changed from Queue To User</label>
@@ -51,6 +97,129 @@
             <label>Yes</label>
         </rules>
     </decisions>
+    <decisions>
+        <name>Is_Gender_Type_Blank</name>
+        <label>Is Gender Type Blank?</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnector>
+            <targetReference>If_Owner_Changed_from_Queue_To_User</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>No</defaultConnectorLabel>
+        <rules>
+            <name>Yes1</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.GenderIdentity</leftValueReference>
+                <operator>IsBlank</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Salutation</leftValueReference>
+                <operator>IsBlank</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>RES_No_Pre_Selection_Values</targetReference>
+            </connector>
+            <doesRequireRecordChangedToMeetCriteria>true</doesRequireRecordChangedToMeetCriteria>
+            <label>Yes</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>RES_Check_Flow_Switch_and_RES_Lead_Record_Types</name>
+        <label>Check Flow Switch and RES Lead Record Types</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnectorLabel>No</defaultConnectorLabel>
+        <rules>
+            <name>Present</name>
+            <conditionLogic>(1 OR 2) AND 3</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.RecordType.DeveloperName</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>RES_Individual</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.RecordType.DeveloperName</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>RES_Company</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Setup.RES_Config_Switch__c.RES_Flows_Off__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>RES_To_Check_Salutation</targetReference>
+            </connector>
+            <label>Present</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>RES_To_Check_Salutation</name>
+        <label>To Check Salutation</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnector>
+            <targetReference>Is_Gender_Type_Blank</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>No Pre-Selection</defaultConnectorLabel>
+        <rules>
+            <name>Male</name>
+            <conditionLogic>or</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.Salutation</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Mr.</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Salutation</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Prince</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>RES_Male_Gender_Assignment</targetReference>
+            </connector>
+            <label>Male?</label>
+        </rules>
+        <rules>
+            <name>Female</name>
+            <conditionLogic>or</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.Salutation</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Ms.</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Salutation</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Princess</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>RES_Female_Gender_Assignment</targetReference>
+            </connector>
+            <label>Female?</label>
+        </rules>
+    </decisions>
     <environments>Default</environments>
     <interviewLabel>Lead - Before Insert Update - Update Lead Details {!$Flow.CurrentDateTime}</interviewLabel>
     <label>Lead - Before Insert Update - Update Lead Details</label>
@@ -77,7 +246,7 @@
         <locationX>0</locationX>
         <locationY>0</locationY>
         <connector>
-            <targetReference>If_Owner_Changed_from_Queue_To_User</targetReference>
+            <targetReference>RES_Check_Flow_Switch_and_RES_Lead_Record_Types</targetReference>
         </connector>
         <object>Lead</object>
         <recordTriggerType>CreateAndUpdate</recordTriggerType>
