@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Layout xmlns="http://soap.sforce.com/2006/04/metadata">
-    <excludeButtons>OpenSlackRecordChannel</excludeButtons>
     <feedLayout>
         <autocollapsePublisher>true</autocollapsePublisher>
         <compactFeed>true</compactFeed>
@@ -105,6 +104,18 @@
             <layoutItems>
                 <behavior>Edit</behavior>
                 <field>RES_WADI_Safar_Added__c</field>
+            </layoutItems>
+            <layoutItems>
+                <behavior>Edit</behavior>
+                <field>RES_Joint_Account_Check__c</field>
+            </layoutItems>
+            <layoutItems>
+                <behavior>Edit</behavior>
+                <field>RES_Reason_for_Lost__c</field>
+            </layoutItems>
+            <layoutItems>
+                <behavior>Edit</behavior>
+                <field>RES_Sub_Stage__c</field>
             </layoutItems>
         </layoutColumns>
         <layoutColumns>
@@ -279,6 +290,14 @@
             <quickActionName>SendEmail</quickActionName>
         </quickActionListItems>
     </quickActionList>
+    <relatedLists>
+        <fields>NAME</fields>
+        <fields>RES_Account__c</fields>
+        <fields>RES_Primary_Account__c</fields>
+        <fields>RES_Communication_Preference__c</fields>
+        <fields>RES_Relationship_between_buyers__c</fields>
+        <relatedList>RES_Opportunity_Account_Link__c.RES_Opportunity__c</relatedList>
+    </relatedLists>
     <relatedLists>
         <fields>ContactName</fields>
         <fields>Role</fields>
