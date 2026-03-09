@@ -19,11 +19,6 @@ public with sharing class RES_LeadRetirementScheduler implements Schedulable {
         Integer batchSize = String.isNotBlank(labelValue) && labelValue.isNumeric() 
                             ? Integer.valueOf(labelValue) 
                             : 200;
-
-        // Ensure size does not exceed the maximum allowed limit of 2,000
-        if (batchSize > 2000) {
-            batchSize = 2000;
-        }
         
         // Execute the batch with a standard size of 200
         Database.executeBatch(batchJob, batchSize);

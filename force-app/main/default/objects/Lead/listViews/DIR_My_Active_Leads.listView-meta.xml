@@ -8,11 +8,12 @@
     <columns>RES_Identification_Number__c</columns>
     <columns>LEAD.STATUS</columns>
     <columns>RES_Lead_Type__c</columns>
+    <columns>LEAD.GENDER_IDENTITY</columns>
     <filterScope>Mine</filterScope>
     <filters>
         <field>LEAD.STATUS</field>
         <operation>equals</operation>
-        <value>Active</value>
+        <value>02,Active</value>
     </filters>
     <label>My Active Leads</label>
     <sharedTo>

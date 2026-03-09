@@ -8,11 +8,12 @@
     <columns>LEAD.STATUS</columns>
     <columns>CORE.USERS.FIRST_NAME</columns>
     <columns>LEAD.CREATED_DATE</columns>
+    <columns>LEAD.GENDER_IDENTITY</columns>
     <filterScope>Everything</filterScope>
     <filters>
         <field>LEAD.STATUS</field>
         <operation>notEqual</operation>
-        <value>Qualified</value>
+        <value>04,5,Qualified</value>
     </filters>
     <label>All Open Leads</label>
 </ListView>

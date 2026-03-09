@@ -44,7 +44,7 @@ public with sharing class RES_LeadRetirementBatch implements Database.Batchable<
                Datetime dateToCheck = Test.isRunningTest() ? l.CreatedDate : l.LastModifiedDate;
             // Calculate business time elapsed since the last record modification
             if (BusinessHours.diff(this.defaultBusinessHoursId, dateToCheck, now) >= this.retirementThresholdMs) {
-                l.Status = 'Retired';
+                l.Status = '05';
                 leadsToUpdate.add(l);
             }
         }
