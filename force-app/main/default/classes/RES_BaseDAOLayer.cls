@@ -52,6 +52,15 @@ public abstract class RES_BaseDAOLayer {
         return records;
     }
 
+    protected Map<Id, SObject> executeQueryToMap(String soql, String cacheSuffix, Boolean useCache, Map<String,Object> bindVars, AccessLevel AccessLevel) {
+        List<SObject> records = executeQuery(soql, cacheSuffix, useCache, bindVars, AccessLevel);
+        Map<Id, SObject> recordMap = new Map<Id, SObject>();
+        for (SObject record : records) {
+            recordMap.put(record.Id, record);
+        }
+        return recordMap;
+    }
+
     protected Database.QueryLocator executeBatchQuery(String soql,  Map<String,Object> bindVars, AccessLevel AccessLevel){
         try{
             if(bindVars != null && !bindVars.isEmpty()){

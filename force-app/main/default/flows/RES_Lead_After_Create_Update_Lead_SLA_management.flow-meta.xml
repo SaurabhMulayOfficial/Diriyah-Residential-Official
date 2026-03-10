@@ -99,7 +99,7 @@
                 </rightValue>
             </conditions>
             <connector>
-                <targetReference>Auto_Create_Task_on_Lead_Conversion</targetReference>
+                <targetReference>RES_Update_Opportunity_Address_Fields</targetReference>
             </connector>
             <label>Converted Lead</label>
         </rules>
@@ -121,6 +121,42 @@
                 <operator>EqualTo</operator>
             </conditions>
             <label>Yes</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>RES_Check_Flow_Switch_and_RES_Lead_Record_Types</name>
+        <label>Check Flow Switch and RES Lead Record Types</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Present</name>
+            <conditionLogic>(1 OR 2) AND 3</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.RecordType.DeveloperName</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>RES_Individual</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.RecordType.DeveloperName</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>RES_Company</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Setup.RES_Config_Switch__c.RES_Flows_Off__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Check_if_Lead_is_Converted</targetReference>
+            </connector>
+            <label>Present?</label>
         </rules>
     </decisions>
     <description>Lead SLA management, Task Creation after lead Convert</description>
@@ -157,6 +193,54 @@
     </processMetadataValues>
     <processType>AutoLaunchedFlow</processType>
     <recordUpdates>
+        <name>RES_Update_Opportunity_Address_Fields</name>
+        <label>Update Opportunity Address Fields</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Auto_Create_Task_on_Lead_Conversion</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Id</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>$Record.ConvertedOpportunityId</elementReference>
+            </value>
+        </filters>
+        <inputAssignments>
+            <field>RES_City__c</field>
+            <value>
+                <elementReference>$Record.City</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>RES_Country__c</field>
+            <value>
+                <elementReference>$Record.Country</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>RES_State_Province__c</field>
+            <value>
+                <elementReference>$Record.State</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>RES_Street__c</field>
+            <value>
+                <elementReference>$Record.Street</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>RES_Zip_Postal_Code__c</field>
+            <value>
+                <elementReference>$Record.PostalCode</elementReference>
+            </value>
+        </inputAssignments>
+        <object>Opportunity</object>
+    </recordUpdates>
+    <recordUpdates>
         <name>SLA_breached</name>
         <label>SLA breached</label>
         <locationX>0</locationX>
@@ -167,7 +251,7 @@
         <locationX>0</locationX>
         <locationY>0</locationY>
         <connector>
-            <targetReference>Check_if_Lead_is_Converted</targetReference>
+            <targetReference>RES_Check_Flow_Switch_and_RES_Lead_Record_Types</targetReference>
         </connector>
         <object>Lead</object>
         <recordTriggerType>CreateAndUpdate</recordTriggerType>

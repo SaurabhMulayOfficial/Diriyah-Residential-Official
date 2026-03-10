@@ -4,6 +4,10 @@
         <enabled>true</enabled>
         <name>RES_Mass_Convert_Leads</name>
     </customPermissions>
+    <customPermissions>
+        <enabled>true</enabled>
+        <name>RES_Sub_Stage_Visibility</name>
+    </customPermissions>
     <description>Permission Set for Residential Sales Manager (Diriyah)</description>
     <fieldPermissions>
         <editable>true</editable>
@@ -807,6 +811,11 @@
     </fieldPermissions>
     <fieldPermissions>
         <editable>true</editable>
+        <field>RES_Opportunity_Account_Link__c.RES_Primary_Account__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
         <field>RES_Opportunity_Account_Link__c.RES_Communication_Preference__c</field>
         <readable>true</readable>
     </fieldPermissions>
@@ -886,6 +895,16 @@
         <allowRead>true</allowRead>
         <modifyAllRecords>false</modifyAllRecords>
         <object>Lead</object>
+        <viewAllFields>false</viewAllFields>
+        <viewAllRecords>false</viewAllRecords>
+    </objectPermissions>
+    <objectPermissions>
+        <allowCreate>true</allowCreate>
+        <allowDelete>false</allowDelete>
+        <allowEdit>true</allowEdit>
+        <allowRead>true</allowRead>
+        <modifyAllRecords>false</modifyAllRecords>
+        <object>Opportunity</object>
         <viewAllFields>false</viewAllFields>
         <viewAllRecords>false</viewAllRecords>
     </objectPermissions>

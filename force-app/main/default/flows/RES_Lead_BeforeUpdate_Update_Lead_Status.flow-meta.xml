@@ -4,7 +4,7 @@
     <areMetricsLoggedToDataCloud>false</areMetricsLoggedToDataCloud>
     <assignments>
         <name>Assigned_Lead_Status_as_Active</name>
-        <label>Assigned Lead Status as &quot;Active&quot;</label>
+        <label>Assigned Lead Status as Active</label>
         <locationX>0</locationX>
         <locationY>0</locationY>
         <assignmentItems>
@@ -17,20 +17,7 @@
     </assignments>
     <assignments>
         <name>Assigned_Lead_Status_as_Qualified</name>
-        <label>Assigned Lead Status as &quot;Qualified&quot;</label>
-        <locationX>0</locationX>
-        <locationY>0</locationY>
-        <assignmentItems>
-            <assignToReference>$Record.Status</assignToReference>
-            <operator>Assign</operator>
-            <value>
-                <stringValue>Qualified</stringValue>
-            </value>
-        </assignmentItems>
-    </assignments>
-    <assignments>
-        <name>RES_Assign_Target_Lead_Sub_Status</name>
-        <label>Assign Target Lead Sub Status</label>
+        <label>Assigned Lead Status as Qualified</label>
         <locationX>0</locationX>
         <locationY>0</locationY>
         <assignmentItems>
@@ -42,43 +29,18 @@
         </assignmentItems>
     </assignments>
     <assignments>
-        <name>RES_Update_Lead_Status_as_Qualified</name>
-        <label>Update Lead Status as &quot;Qualified&quot;</label>
+        <name>RES_Assigned_Lead_Status_as_Retired</name>
+        <label>Assigned Lead Status as Retired</label>
         <locationX>0</locationX>
         <locationY>0</locationY>
         <assignmentItems>
             <assignToReference>$Record.Status</assignToReference>
             <operator>Assign</operator>
             <value>
-                <stringValue>Qualified</stringValue>
+                <elementReference>RES_Get_Lead_Status_Mapping.RES_Target_Lead_Status__c</elementReference>
             </value>
         </assignmentItems>
     </assignments>
-    <decisions>
-        <name>Check_for_Active_and_Retired_Status_Mapping</name>
-        <label>Check for Active and Retired Status Mapping</label>
-        <locationX>0</locationX>
-        <locationY>0</locationY>
-        <defaultConnector>
-            <targetReference>RES_Assign_Target_Lead_Sub_Status</targetReference>
-        </defaultConnector>
-        <defaultConnectorLabel>Retired Status Mapping</defaultConnectorLabel>
-        <rules>
-            <name>Active_Status_Mapping</name>
-            <conditionLogic>and</conditionLogic>
-            <conditions>
-                <leftValueReference>RES_Get_Lead_Status_Mapping.RES_Target_Lead_Status__c</leftValueReference>
-                <operator>EqualTo</operator>
-                <rightValue>
-                    <stringValue>Active</stringValue>
-                </rightValue>
-            </conditions>
-            <connector>
-                <targetReference>RES_Check_If_Postal_Code_and_Identification_Number_is_Present</targetReference>
-            </connector>
-            <label>Active Status Mapping</label>
-        </rules>
-    </decisions>
     <decisions>
         <name>RES_Check_Flow_Switch_and_RES_Record_Types</name>
         <label>Check Flow Switch and RES Record Types</label>
@@ -116,35 +78,55 @@
         </rules>
     </decisions>
     <decisions>
-        <name>RES_Check_If_Postal_Code_and_Identification_Number_is_Present</name>
-        <label>Check If Postal Code and Identification Number is Present</label>
+        <name>RES_Check_for_Active_Retired_and_Qualified_Status_Mapping</name>
+        <label>Check for Active Retired and Qualified Status Mapping</label>
         <locationX>0</locationX>
         <locationY>0</locationY>
-        <defaultConnector>
-            <targetReference>Assigned_Lead_Status_as_Active</targetReference>
-        </defaultConnector>
-        <defaultConnectorLabel>Fields Are Empty</defaultConnectorLabel>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
         <rules>
-            <name>Yes_Available</name>
+            <name>Active_Status_Mapping</name>
             <conditionLogic>and</conditionLogic>
             <conditions>
-                <leftValueReference>$Record.PostalCode</leftValueReference>
-                <operator>IsNull</operator>
+                <leftValueReference>RES_Get_Lead_Status_Mapping.RES_Target_Lead_Status__c</leftValueReference>
+                <operator>EqualTo</operator>
                 <rightValue>
-                    <booleanValue>false</booleanValue>
+                    <stringValue>02</stringValue>
                 </rightValue>
             </conditions>
+            <connector>
+                <targetReference>Assigned_Lead_Status_as_Active</targetReference>
+            </connector>
+            <label>Active Status Mapping</label>
+        </rules>
+        <rules>
+            <name>Retired_Status_Mapping</name>
+            <conditionLogic>and</conditionLogic>
             <conditions>
-                <leftValueReference>$Record.RES_Identification_Number__c</leftValueReference>
-                <operator>IsNull</operator>
+                <leftValueReference>RES_Get_Lead_Status_Mapping.RES_Target_Lead_Status__c</leftValueReference>
+                <operator>EqualTo</operator>
                 <rightValue>
-                    <booleanValue>false</booleanValue>
+                    <stringValue>05</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>RES_Assigned_Lead_Status_as_Retired</targetReference>
+            </connector>
+            <label>Retired Status Mapping</label>
+        </rules>
+        <rules>
+            <name>Qualified_Status_Mapping</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>RES_Get_Lead_Status_Mapping.RES_Target_Lead_Status__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>04</stringValue>
                 </rightValue>
             </conditions>
             <connector>
                 <targetReference>Assigned_Lead_Status_as_Qualified</targetReference>
             </connector>
-            <label>Yes, Available</label>
+            <label>Qualified Status Mapping</label>
         </rules>
     </decisions>
     <decisions>
@@ -168,42 +150,6 @@
             </connector>
             <label>Lead Sub Status Changed</label>
         </rules>
-        <rules>
-            <name>Address_and_Identification_Number_Changes</name>
-            <conditionLogic>(1 OR 2) AND 3 AND 4</conditionLogic>
-            <conditions>
-                <leftValueReference>$Record.RES_Identification_Number__c</leftValueReference>
-                <operator>IsChanged</operator>
-                <rightValue>
-                    <booleanValue>true</booleanValue>
-                </rightValue>
-            </conditions>
-            <conditions>
-                <leftValueReference>$Record.PostalCode</leftValueReference>
-                <operator>IsChanged</operator>
-                <rightValue>
-                    <booleanValue>true</booleanValue>
-                </rightValue>
-            </conditions>
-            <conditions>
-                <leftValueReference>$Record.RES_Identification_Number__c</leftValueReference>
-                <operator>IsNull</operator>
-                <rightValue>
-                    <booleanValue>false</booleanValue>
-                </rightValue>
-            </conditions>
-            <conditions>
-                <leftValueReference>$Record.PostalCode</leftValueReference>
-                <operator>IsNull</operator>
-                <rightValue>
-                    <booleanValue>false</booleanValue>
-                </rightValue>
-            </conditions>
-            <connector>
-                <targetReference>RES_Update_Lead_Status_as_Qualified</targetReference>
-            </connector>
-            <label>Address and Identification Number Changes</label>
-        </rules>
     </decisions>
     <decisions>
         <name>RES_Mapping_Found</name>
@@ -222,7 +168,7 @@
                 </rightValue>
             </conditions>
             <connector>
-                <targetReference>Check_for_Active_and_Retired_Status_Mapping</targetReference>
+                <targetReference>RES_Check_for_Active_Retired_and_Qualified_Status_Mapping</targetReference>
             </connector>
             <label>Yes, Match Found</label>
         </rules>
@@ -281,7 +227,7 @@
             <field>Status</field>
             <operator>NotEqualTo</operator>
             <value>
-                <stringValue>Qualified</stringValue>
+                <stringValue>04</stringValue>
             </value>
         </filters>
         <filters>
