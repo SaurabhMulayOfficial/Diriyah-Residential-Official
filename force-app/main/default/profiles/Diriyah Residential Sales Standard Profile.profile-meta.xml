@@ -1,6 +1,34 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Profile xmlns="http://soap.sforce.com/2006/04/metadata">
     <custom>true</custom>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>Task.Subject</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>Task.Status</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>Event.Subject</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>Event.ActivityDate</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <userPermissions>
+        <enabled>true</enabled>
+        <name>EmailSingle</name>
+    </userPermissions>
+    <userPermissions>
+        <enabled>true</enabled>
+        <name>SendExternalEmailAvailable</name>
+    </userPermissions>
     <layoutAssignments>
         <layout>Account-RES Company</layout>
         <recordType>Account.RES_Company</recordType>
@@ -112,4 +140,39 @@
         <enabled>true</enabled>
         <name>ViewPublicCapstoneFolders</name>
     </userPermissions>
+    <userPermissions>
+        <enabled>true</enabled>
+        <name>ActivitiesAccess</name>
+    </userPermissions>
+    
+    <userPermissions>
+        <enabled>true</enabled>
+        <name>ViewAllActivities</name>
+    </userPermissions>
+    <objectPermissions>
+        <allowCreate>true</allowCreate>
+        <allowDelete>true</allowDelete>
+        <allowEdit>true</allowEdit>
+        <allowRead>true</allowRead>
+        <modifyAllRecords>true</modifyAllRecords>
+        <object>Task</object>
+        <viewAllRecords>true</viewAllRecords>
+    </objectPermissions>
+    <objectPermissions>
+        <allowCreate>true</allowCreate>
+        <allowDelete>true</allowDelete>
+        <allowEdit>true</allowEdit>
+        <allowRead>true</allowRead>
+        <modifyAllRecords>true</modifyAllRecords>
+        <object>Event</object>
+        <viewAllRecords>true</viewAllRecords>
+    </objectPermissions><objectPermissions>
+        <allowCreate>true</allowCreate>
+        <allowDelete>true</allowDelete>
+        <allowEdit>true</allowEdit>
+        <allowRead>true</allowRead>
+        <modifyAllRecords>true</modifyAllRecords>
+        <object>Activity</object>
+        <viewAllRecords>true</viewAllRecords>
+    </objectPermissions>
 </Profile>
