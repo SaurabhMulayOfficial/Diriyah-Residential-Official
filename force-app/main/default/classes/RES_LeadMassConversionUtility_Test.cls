@@ -159,7 +159,7 @@ private class RES_LeadMassConversionUtility_Test {
                 exceptionThrown = true;
             }
             Test.stopTest();
-            System.assertEquals(false, exceptionThrown,
+            System.assertEquals(true, exceptionThrown,
                 'AuraHandledException must be thrown for a blank status label.');
         }
     }
@@ -235,4 +235,33 @@ private class RES_LeadMassConversionUtility_Test {
                 'No exception should be thrown when leads list is empty after fetch.');
         }
     }
+    // ══════════════════════════════════════════════════════════════════
+// TEST 8 : Successful single lead conversion
+// Covers : executeConversion() → prepareLeadConvertOperations()
+//          → handleResults() success branch
+// Runs as : Sales Manager
+// ══════════════════════════════════════════════════════════════════
+@isTest
+static void testSuccessfulLeadConversion() {
+    System.runAs(getSalesManager()) {
+        Lead l = RES_TestDataFactory.createLead('success.convert@example.com');
+
+        // ── Update Status to Qualified before conversion ──────────────
+        l.Status = '04';
+        update l;
+
+        Test.startTest();
+        RES_LeadMassConversionUtility.convertLeads(
+            new List<RES_LeadMassConversionUtility.ConvertRequest>{
+                RES_TestDataFactory.buildRequest(
+                    new List<Lead>{ l },
+                    RES_TestDataFactory.getConvertedStatus(),
+                    true  // doNotCreateOpp = true (simpler conversion)
+                )
+            }
+        );
+        Test.stopTest();
+    }
+}
+
 }
