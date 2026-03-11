@@ -25,7 +25,7 @@
                                 <criteria>
                                     <leftValue>{!Record.Status}</leftValue>
                                     <operator>EQUAL</operator>
-                                    <rightValue>04</rightValue>
+                                    <rightValue>Qualified</rightValue>
                                 </criteria>
                             </visibilityRule>
                         </valueListItems>
@@ -1128,6 +1128,9 @@
         <properties>
             <name>actionNames</name>
             <valueList>
+                <valueListItems>
+                    <value>Convert</value>
+                </valueListItems>
                 <valueListItems>
                     <value>FeedItem.TextPost</value>
                 </valueListItems>

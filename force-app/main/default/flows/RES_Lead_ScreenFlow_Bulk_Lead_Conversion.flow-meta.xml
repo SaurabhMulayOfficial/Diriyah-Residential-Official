@@ -62,11 +62,18 @@
             <assignToReference>SkippedLeadNames</assignToReference>
             <operator>Add</operator>
             <value>
-                <elementReference>Loop_on_Selected_Leads.Name</elementReference>
+                <stringValue>{!Loop_on_Non_convertible_leads.Name}</stringValue>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>HasSkippedLeads</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <booleanValue>true</booleanValue>
             </value>
         </assignmentItems>
         <connector>
-            <targetReference>Loop_on_Selected_Leads</targetReference>
+            <targetReference>Loop_on_Non_convertible_leads</targetReference>
         </connector>
     </assignments>
     <collectionProcessors>
@@ -78,19 +85,12 @@
         <assignNextValueToReference>currentItem_Leads_not_convertible</assignNextValueToReference>
         <collectionProcessorType>FilterCollectionProcessor</collectionProcessorType>
         <collectionReference>Get_Selected_Leads</collectionReference>
-        <conditionLogic>( (1 AND 2) OR 3 )</conditionLogic>
+        <conditionLogic>or</conditionLogic>
         <conditions>
             <leftValueReference>currentItem_Leads_not_convertible.Status</leftValueReference>
             <operator>NotEqualTo</operator>
             <rightValue>
-                <stringValue>Qualified</stringValue>
-            </rightValue>
-        </conditions>
-        <conditions>
-            <leftValueReference>currentItem_Leads_not_convertible.Status</leftValueReference>
-            <operator>NotEqualTo</operator>
-            <rightValue>
-                <stringValue>Converted</stringValue>
+                <stringValue>04</stringValue>
             </rightValue>
         </conditions>
         <conditions>
@@ -125,7 +125,7 @@
             <leftValueReference>currentItem_Leads_to_be_convertable.Status</leftValueReference>
             <operator>EqualTo</operator>
             <rightValue>
-                <stringValue>Qualified</stringValue>
+                <stringValue>04</stringValue>
             </rightValue>
         </conditions>
         <connector>
@@ -243,14 +243,13 @@ $Flow.FaultMessage,
         <expression>IF(
     AND(
         NOT({!ConvertableleadNull}),
-        ISBLANK({!SkippedLeadNames})
+        NOT({!HasSkippedLeads})
     ),
     &quot;1&quot;,
-    
     IF(
         AND(
             NOT({!ConvertableleadNull}),
-            NOT(ISBLANK({!SkippedLeadNames}))
+            {!HasSkippedLeads}
         ),
         &quot;2&quot;,
         &quot;3&quot;
@@ -260,8 +259,8 @@ $Flow.FaultMessage,
     <interviewLabel>RES Lead - ScreenFlow - Bulk Lead Conversion {!$Flow.CurrentDateTime}</interviewLabel>
     <label>RES Lead - ScreenFlow - Bulk Lead Conversion</label>
     <loops>
-        <name>Loop_on_Selected_Leads</name>
-        <label>Loop on Selected Leads</label>
+        <name>Loop_on_Non_convertible_leads</name>
+        <label>Loop on Non convertible leads</label>
         <locationX>0</locationX>
         <locationY>0</locationY>
         <collectionReference>Leads_not_convertible</collectionReference>
@@ -299,7 +298,7 @@ $Flow.FaultMessage,
         <locationY>0</locationY>
         <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
         <connector>
-            <targetReference>Loop_on_Selected_Leads</targetReference>
+            <targetReference>Loop_on_Non_convertible_leads</targetReference>
         </connector>
         <filterLogic>or</filterLogic>
         <filters>
@@ -335,6 +334,13 @@ $Flow.FaultMessage,
             <operator>In</operator>
             <value>
                 <elementReference>ids</elementReference>
+            </value>
+        </filters>
+        <filters>
+            <field>IsConverted</field>
+            <operator>EqualTo</operator>
+            <value>
+                <booleanValue>false</booleanValue>
             </value>
         </filters>
         <getFirstRecordOnly>false</getFirstRecordOnly>
@@ -401,7 +407,7 @@ $Flow.FaultMessage,
         <allowPause>false</allowPause>
         <fields>
             <name>ValidSuccessScreen</name>
-            <fieldText>&lt;p style=&quot;text-align: center;&quot;&gt;&lt;strong style=&quot;background-color: rgb(255, 255, 255); color: rgb(75, 202, 129);&quot;&gt;{!$Label.RES_Lead_Conversion_Partial_SuccessMessage}&lt;/strong&gt;&lt;/p&gt;</fieldText>
+            <fieldText>&lt;p style=&quot;text-align: center;&quot;&gt;&lt;strong style=&quot;background-color: rgb(255, 255, 255); color: rgb(75, 202, 129);&quot;&gt;{!$Label.RES_Lead_Conversion_SuccessMessage}&lt;/strong&gt;&lt;/p&gt;</fieldText>
             <fieldType>DisplayText</fieldType>
             <styleProperties>
                 <verticalAlignment>
@@ -530,6 +536,16 @@ $Flow.FaultMessage,
         <isInput>false</isInput>
         <isOutput>false</isOutput>
         <objectType>Lead</objectType>
+    </variables>
+    <variables>
+        <name>HasSkippedLeads</name>
+        <dataType>Boolean</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <value>
+            <booleanValue>false</booleanValue>
+        </value>
     </variables>
     <variables>
         <name>ids</name>
