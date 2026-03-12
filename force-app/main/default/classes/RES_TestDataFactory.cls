@@ -223,8 +223,9 @@ public class RES_TestDataFactory {
         return [
             SELECT MasterLabel FROM LeadStatus
             WHERE IsConverted = true
+            AND   MasterLabel = 'Qualified'
             LIMIT 1
-        ].MasterLabel;
+        ].MasterLabel; // ✅ 'Qualified' → DAO returns 'Qualified' → Database.convertLead() accepts it
     }
 
     /**
