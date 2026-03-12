@@ -32,6 +32,8 @@
     <layoutAssignments>
             <layout>RES_Opportunity_Account_Link__c-Opportunity Account Link Layout</layout>
     </layoutAssignments>
+    <personAccountDefaultRecordType>Account.PersonAccount</personAccountDefaultRecordType>
+    <businessAccountDefaultRecordType>Account.RES_Company</businessAccountDefaultRecordType>
     <recordTypeVisibilities>
         <default>false</default>
         <recordType>Account.RES_Company</recordType>
