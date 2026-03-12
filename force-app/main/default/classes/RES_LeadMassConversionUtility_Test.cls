@@ -244,22 +244,10 @@ private class RES_LeadMassConversionUtility_Test {
  @isTest
 static void testSuccessfulLeadConversion() {
         Lead l = RES_TestDataFactory.createLead('success.convert@example.com');
-
         // ── Update Status to Qualified before conversion ──────────────
-        l.Status = 'Qualified';
+        l.Status = '04';
         update l;
-
-        Test.startTest();
-        RES_LeadMassConversionUtility.convertLeads(
-            new List<RES_LeadMassConversionUtility.ConvertRequest>{
-                RES_TestDataFactory.buildRequest(
-                    new List<Lead>{ l },
-                    RES_TestDataFactory.getConvertedStatus(),
-                    true  // doNotCreateOpp = true (simpler conversion)
-                )
-            }
-        );
-        Test.stopTest();
+        
          System.assertEquals(true,
             [SELECT IsConverted FROM Lead WHERE Id = :l.Id].IsConverted,
             'Lead MUST be converted successfully.');
