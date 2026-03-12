@@ -19,8 +19,8 @@
  *                 getConvertedStatus()       Fetches first IsConverted LeadStatus
  * Author        : Rohan Jambhule
  * Company       : Globant Inc
- * Created Date  : Mar 2, 2026s
- * Version       : 1.0
+ * Created Date  : Mar 2, 2026
+ * Version       : 2.0
  * ==============================================================================
  */
 @isTest
@@ -36,7 +36,7 @@ public class RES_TestDataFactory {
     private static final String ROLE_EXEC_DIRECTOR  = 'RES_Sales_Operations_Executive_Director';
     private static final String PS_REL_MANAGER      = 'RES_Diriyah_Sales_Relationship_Manager_Permission_Set';
     private static final String PS_DIRECTOR         = 'RES_Diriyah_Sales_Director_Permission_Set';
-    private static final String PS_MANAGER          = 'RES_Diriyah_Sales_Manager_Permission_Set';
+    private static final String PS_MANAGER          = 'Diriyah_Sales_Manager_Permission_Set';
     private static final String LEAD_RECORD_TYPE    = 'Residential Company';
 
     // ═════════════════════════════════════════════════════════════════
@@ -60,31 +60,60 @@ public class RES_TestDataFactory {
      */
     public static User createSalesRepUser() {
         UserConfig config = new UserConfig();
-        config.email = 'res.salesrep.test@example.com';
-        config.username = 'res.salesrep.test@example.com.sandbox';
-        config.firstName = 'Sales';
-        config.lastName = 'Rep';
-        config.alias = 'srep';
-        config.profileName = PROFILE_STANDARD;
+        config.email             = 'res.salesrep.test@example.com';
+        config.username          = 'res.salesrep.test@example.com.sandbox';
+        config.firstName         = 'Sales';
+        config.lastName          = 'Rep';
+        config.alias             = 'srep';
+        config.profileName       = PROFILE_STANDARD;
         config.roleDeveloperName = ROLE_SPECIALIST;
         User u = buildUser(config);
         insert u;
         assignPermissionSet(u.Id, PS_REL_MANAGER);
         return u;
     }
+
+    public static User createSalesDirectorUser() {
+        UserConfig config = new UserConfig();
+        config.email             = 'res.salesdirector.test@example.com';
+        config.username          = 'res.salesdirector.test@example.com.sandbox';
+        config.firstName         = 'Sales';
+        config.lastName          = 'Director';
+        config.alias             = 'sdir';
+        config.profileName       = PROFILE_STANDARD;
+        config.roleDeveloperName = ROLE_SR_DIRECTOR;
+        User u = buildUser(config);
+        insert u;
+        assignPermissionSet(u.Id, PS_DIRECTOR);
+        return u;
+    }
+
+    public static User createSalesManagerUser() {
+        UserConfig config = new UserConfig();
+        config.email             = 'res.salesmanager.test@example.com';
+        config.username          = 'res.salesmanager.test@example.com.sandbox';
+        config.firstName         = 'Sales';
+        config.lastName          = 'Manager';
+        config.alias             = 'smgr';
+        config.profileName       = PROFILE_SYSADMIN;
+        config.roleDeveloperName = ROLE_EXEC_DIRECTOR;
+        User u = buildUser(config);
+        insert u;
+        assignPermissionSet(u.Id, PS_MANAGER);
+        return u;
+    }
+
     private static User buildUser(UserConfig config) {
         Profile prof = [
             SELECT Id FROM Profile
             WHERE Name = :config.profileName
             LIMIT 1
         ];
-    
         UserRole role = [
             SELECT Id FROM UserRole
             WHERE DeveloperName = :config.roleDeveloperName
             LIMIT 1
         ];
-    
         return new User(
             Alias             = config.alias,
             Email             = config.email,
@@ -101,18 +130,17 @@ public class RES_TestDataFactory {
     }
 
     // ═════════════════════════════════════════════════════════════════
-    // LEAD FACTORY METHODS
+    // LEAD FACTORY METHOD
     // ═════════════════════════════════════════════════════════════════
     /**
-     * Creates and inserts a single Lead.
+     * Creates and inserts a single Lead using DMLOptions to bypass
+     * duplicate rules — mirrors the verified Anonymous Apex pattern.
      *
      * Uniqueness strategy — every duplicate-sensitive field is derived
      * from the email so no two test leads share identical values:
      *   • FirstName / Company               → email prefix (left 10 chars)
      *   • MobilePhone / Phone               → '+9198' + 7-digit hash
      *   • RES_Identification_Number__c      → full hash (unique field)
-     * RES_Lead_Validation_Bypass__c = true bypasses the org duplicate
-     * rule so leads insert cleanly in test context.
      *
      * @param  email  Unique email — drives all unique field values
      * @return        Inserted Lead record
@@ -120,34 +148,44 @@ public class RES_TestDataFactory {
     public static Lead createLead(String email) {
         RecordType rt = [
             SELECT Id FROM RecordType
-            WHERE SObjectType = 'Lead' AND Name = :LEAD_RECORD_TYPE
+            WHERE SObjectType = 'Lead'
+            AND   Name        = :LEAD_RECORD_TYPE
             LIMIT 1
         ];
+
         String prefix      = email.substringBefore('@').left(10);
         String hashStr     = String.valueOf(Math.abs(email.hashCode()));
         String uniquePhone = '+9198' + hashStr.left(7).rightPad(7, '0');
 
         Lead l = new Lead(
             // ── Standard Fields ───────────────────────────────────────
-            FirstName                     = prefix,           // unique — email prefix
-            LastName                      = 'TestLead',
-            Status                        = 'Qualified',    
-            Email                         = email,
-            MobilePhone                   = uniquePhone,      // unique — hash-derived
-            Phone                         = uniquePhone,      // unique — hash-derived
-            LeadSource                    = 'Employee_Referral',
-            Company                       = prefix + ' Co',  // unique — avoids company dupe rule
-            State                         = 'Abu Dhabi',
+            OwnerId                       = UserInfo.getUserId(),
             RecordTypeId                  = rt.Id,
+            Salutation                    = 'Mr.',
+            FirstName                     = prefix,
+            LastName                      = 'TestLead',
+            Status                        = 'New',            
+            Email                         = email,
+            Phone                         = uniquePhone,
+            MobilePhone                   = uniquePhone,
+            Company                       = prefix + ' Co',
+            State                         = 'Abu Dhabi',
+            LeadSource                    = 'Employee_Referral',
+            GenderIdentity                = 'GTM',               
             // ── Custom Fields ─────────────────────────────────────────
             RES_Nationality__c            = 'Indian',
             RES_BP_Role__c                = 'ZTR601',
             RES_Customer_Interest__c      = '101',
-            RES_Identification_Number__c  = hashStr,          // unique — hash-derived
+            RES_Identification_Number__c  = hashStr,
             RES_Identification_Type__c    = 'ZIT01',
             RES_Lead_Type__c              = 'LT02'
         );
-        insert l;
+
+        // ✅ allowSave = true bypasses org duplicate rules in test context
+        Database.DMLOptions dml = new Database.DMLOptions();
+        dml.duplicateRuleHeader.allowSave = true;
+        Database.insert(l, dml);
+
         return l;
     }
 
@@ -185,51 +223,23 @@ public class RES_TestDataFactory {
         return [
             SELECT MasterLabel FROM LeadStatus
             WHERE IsConverted = true
+            AND   MasterLabel = 'Qualified'
             LIMIT 1
-        ].MasterLabel;
+        ].MasterLabel; // ✅ 'Qualified' → DAO returns 'Qualified' → Database.convertLead() accepts it
     }
-
 
     /**
      * Assigns a named PermissionSet to a User.
      */
     private static void assignPermissionSet(Id userId, String psName) {
-        PermissionSet ps = [SELECT Id FROM PermissionSet WHERE Name = :psName LIMIT 1];
+        PermissionSet ps = [
+            SELECT Id FROM PermissionSet
+            WHERE Name = :psName
+            LIMIT 1
+        ];
         insert new PermissionSetAssignment(
             AssigneeId      = userId,
             PermissionSetId = ps.Id
         );
-    }
-
-    public static User createSalesDirectorUser() {
-        UserConfig config = new UserConfig();
-        config.email = 'res.salesdirector.test@example.com';
-        config.username = 'res.salesdirector.test@example.com.sandbox';
-        config.firstName = 'Sales';
-        config.lastName = 'Director';
-        config.alias = 'sdir';
-        config.profileName = PROFILE_STANDARD;
-        config.roleDeveloperName = ROLE_SR_DIRECTOR;
-    
-        User u = buildUser(config);
-        insert u;
-        assignPermissionSet(u.Id, PS_DIRECTOR);
-        return u;
-    }
-
-    public static User createSalesManagerUser() {
-        UserConfig config = new UserConfig();
-        config.email = 'res.salesmanager.test@example.com';
-        config.username = 'res.salesmanager.test@example.com.sandbox';
-        config.firstName = 'Sales';
-        config.lastName = 'Manager';
-        config.alias = 'smgr';
-        config.profileName = PROFILE_SYSADMIN;
-        config.roleDeveloperName = ROLE_EXEC_DIRECTOR;
-    
-        User u = buildUser(config);
-        insert u;
-        assignPermissionSet(u.Id, PS_MANAGER);
-        return u;
     }
 }
