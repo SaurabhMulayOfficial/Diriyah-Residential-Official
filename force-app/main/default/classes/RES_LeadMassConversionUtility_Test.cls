@@ -243,7 +243,6 @@ private class RES_LeadMassConversionUtility_Test {
 // ══════════════════════════════════════════════════════════════════
  @isTest
 static void testSuccessfulLeadConversion() {
-    System.runAs(getSalesManager()) {
         Lead l = RES_TestDataFactory.createLead('success.convert@example.com');
 
         // ── Update Status to Qualified before conversion ──────────────
@@ -264,6 +263,5 @@ static void testSuccessfulLeadConversion() {
          System.assertEquals(true,
             [SELECT IsConverted FROM Lead WHERE Id = :l.Id].IsConverted,
             'Lead MUST be converted successfully.');
- }
-} 
+    } 
 }
