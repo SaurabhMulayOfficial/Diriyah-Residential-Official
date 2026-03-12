@@ -7,43 +7,7 @@
     <trackHistory>false</trackHistory>
     <type>Picklist</type>
     <valueSet>
-        <valueSetDefinition>
-            <sorted>false</sorted>
-            <value>
-                <fullName>ZT01</fullName>
-                <default>false</default>
-                <label>Pending - Application under Review</label>
-            </value>
-            <value>
-                <fullName>ZT02</fullName>
-                <default>false</default>
-                <label>Preregistration Rejected</label>
-            </value>
-            <value>
-                <fullName>ZT03</fullName>
-                <default>false</default>
-                <label>Preregistration Approved</label>
-            </value>
-            <value>
-                <fullName>ZT04</fullName>
-                <default>false</default>
-                <label>Onboarding In Progress</label>
-            </value>
-            <value>
-                <fullName>ZT05</fullName>
-                <default>false</default>
-                <label>Onboarding Completed - Application under Review</label>
-            </value>
-            <value>
-                <fullName>ZT06</fullName>
-                <default>false</default>
-                <label>Onboarding Rejected</label>
-            </value>
-            <value>
-                <fullName>ZT07</fullName>
-                <default>false</default>
-                <label>Onboarding Approved</label>
-            </value>
-        </valueSetDefinition>
+        <restricted>true</restricted>
+        <valueSetName>RES_Registration_Status</valueSetName>
     </valueSet>
 </CustomField>

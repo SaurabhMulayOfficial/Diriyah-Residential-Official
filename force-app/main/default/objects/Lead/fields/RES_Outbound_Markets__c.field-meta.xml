@@ -7,33 +7,7 @@
     <trackHistory>false</trackHistory>
     <type>Picklist</type>
     <valueSet>
-        <valueSetDefinition>
-            <sorted>false</sorted>
-            <value>
-                <fullName>ZT01</fullName>
-                <default>false</default>
-                <label>APAC</label>
-            </value>
-            <value>
-                <fullName>ZT02</fullName>
-                <default>false</default>
-                <label>EUROPE</label>
-            </value>
-            <value>
-                <fullName>ZT03</fullName>
-                <default>false</default>
-                <label>LATAM (Latin America)</label>
-            </value>
-            <value>
-                <fullName>ZT04</fullName>
-                <default>false</default>
-                <label>MENA (Middle East North Africa)</label>
-            </value>
-            <value>
-                <fullName>ZT05</fullName>
-                <default>false</default>
-                <label>NA (North America)</label>
-            </value>
-        </valueSetDefinition>
+        <restricted>true</restricted>
+        <valueSetName>RES_Outbound_Markets</valueSetName>
     </valueSet>
 </CustomField>

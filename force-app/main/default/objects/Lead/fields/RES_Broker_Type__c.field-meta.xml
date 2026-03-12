@@ -7,18 +7,7 @@
     <trackHistory>false</trackHistory>
     <type>Picklist</type>
     <valueSet>
-        <valueSetDefinition>
-            <sorted>false</sorted>
-            <value>
-                <fullName>ZT01</fullName>
-                <default>false</default>
-                <label>Commercial</label>
-            </value>
-            <value>
-                <fullName>ZT02</fullName>
-                <default>false</default>
-                <label>Residential</label>
-            </value>
-        </valueSetDefinition>
+        <restricted>true</restricted>
+        <valueSetName>RES_Broker_Type</valueSetName>
     </valueSet>
 </CustomField>
