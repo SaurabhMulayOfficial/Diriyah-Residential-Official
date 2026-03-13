@@ -40,7 +40,7 @@ public with sharing class RES_LeadServices {
                 if(l.LeadSource == 'Z09'){
                     continue;
                 }
-                if(l.status == '01' && String.valueOf(l.ownerId).startsWith('005')){
+                if(l.status == '01' && (l.OwnerId != null && String.valueOf(l.ownerId).startsWith('005'))){
                     startSla(L, bh, slaInHours);
                 }
             }
@@ -75,7 +75,7 @@ public with sharing class RES_LeadServices {
                         startSla(L, bh, slaInHours);
                     }
                 }
-                else if(l.OwnerId != oldmap.get(l.Id).OwnerId && String.valueOf(l.ownerId).startsWith('005') && String.valueOf(oldmap.get(l.Id).OwnerId).startsWith('00G')){
+                else if((oldmap.get(l.Id).OwnerId == null && String.valueOf(l.ownerId).startsWith('005')) || (l.OwnerId != oldmap.get(l.Id).OwnerId && String.valueOf(l.ownerId).startsWith('005') && String.valueOf(oldmap.get(l.Id).OwnerId).startsWith('00G'))){
                     if(l.RES_SLA_Status__c != 'Met'){
                         startSla(L, bh, slaInHours);
                     }
