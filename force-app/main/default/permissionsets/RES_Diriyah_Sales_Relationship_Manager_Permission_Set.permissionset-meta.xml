@@ -2,10 +2,6 @@
 <PermissionSet xmlns="http://soap.sforce.com/2006/04/metadata">
     <customPermissions>
         <enabled>true</enabled>
-        <name>RES_Mass_Convert_Leads</name>
-    </customPermissions>
-    <customPermissions>
-        <enabled>true</enabled>
         <name>RES_Sub_Stage_Visibility</name>
     </customPermissions>
     <description>Permission Set for Residential Sales Relationship Manager (Diriyah)</description>
@@ -1045,14 +1041,6 @@
         <tab>standard-Task</tab>
         <visibility>Visible</visibility>
     </tabSettings>
-    <userPermissions>
-        <enabled>true</enabled>
-        <name>ManageLeads</name>
-    </userPermissions>
-    <userPermissions>
-        <enabled>true</enabled>
-        <name>TransferAnyLead</name>
-    </userPermissions>
     <userPermissions>
         <enabled>true</enabled>
         <name>ConvertLeads</name>
