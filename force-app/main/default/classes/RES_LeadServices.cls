@@ -95,10 +95,6 @@ public with sharing class RES_LeadServices {
         l.RES_SLA_Due_Time__c = BusinessHours.add(bh.Id,SYSTEM.now(), slaInHours * 60 * 60 * 1000);
     }
 
-    public static void applyDeduplicationRules(List<lead> leadList){
-        RES_LeadDeduplicationHandler.apply(leadList);
-    }
-
     public static void selectLeadRecordType(List<Lead> newLeadList){
 
         // 1. Fetch Record Type IDs for the Lead Object
