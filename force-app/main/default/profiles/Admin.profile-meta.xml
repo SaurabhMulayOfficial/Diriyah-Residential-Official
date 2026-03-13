@@ -1051,14 +1051,34 @@
         <recordType>Account.RES_Company</recordType>
     </layoutAssignments>
     <layoutAssignments>
-        <layout>Opportunity-RES Residential Multi Buyer</layout>
-        <recordType>Opportunity.RES_Residential_Multi_Buyer</recordType>
+        <layout>PersonAccount-Person Account Layout</layout>
+        <recordType>PersonAccount.PersonAccount</recordType>
     </layoutAssignments>
     <layoutAssignments>
-        <layout>RES_Opportunity_Account_Link__c-Opportunity Account Link Layout</layout>
+            <layout>Lead-RES Company</layout>
+            <recordType>Lead.RES_Company</recordType>
+    </layoutAssignments>
+    <layoutAssignments>
+            <layout>Lead-RES Individual</layout>
+            <recordType>Lead.RES_Individual</recordType>
+    </layoutAssignments>
+    <layoutAssignments>
+            <layout>Contact-RES Company</layout>
+            <recordType>Contact.RES_Company</recordType>
+    </layoutAssignments>
+    <layoutAssignments>
+            <layout>Opportunity-RES Residential Single Buyer</layout>
+            <recordType>Opportunity.RES_Residential_Single_Buyer</recordType>
+    </layoutAssignments>
+    <layoutAssignments>
+            <layout>Opportunity-RES Residential Multi Buyer</layout>
+            <recordType>Opportunity.RES_Residential_Multi_Buyer</recordType>
+    </layoutAssignments>
+    <layoutAssignments>
+            <layout>RES_Opportunity_Account_Link__c-Opportunity Account Link Layout</layout>
     </layoutAssignments>
     <recordTypeVisibilities>
-        <default>false</default>
+        <default>true</default>
         <recordType>Account.RES_Company</recordType>
         <visible>true</visible>
     </recordTypeVisibilities>
@@ -1080,6 +1100,16 @@
     <recordTypeVisibilities>
         <default>true</default>
         <recordType>PersonAccount.PersonAccount</recordType>
+        <visible>true</visible>
+    </recordTypeVisibilities>
+    <recordTypeVisibilities>
+        <default>true</default>
+        <recordType>Lead.RES_Individual</recordType>
+        <visible>true</visible>
+    </recordTypeVisibilities>
+    <recordTypeVisibilities>
+        <default>false</default>
+        <recordType>Lead.RES_Company</recordType>
         <visible>true</visible>
     </recordTypeVisibilities>
     <userLicense>Salesforce</userLicense>

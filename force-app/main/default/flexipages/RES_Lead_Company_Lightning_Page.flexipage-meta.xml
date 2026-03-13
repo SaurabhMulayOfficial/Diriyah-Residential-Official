@@ -279,7 +279,7 @@
             <fieldInstance>
                 <fieldInstanceProperties>
                     <name>uiBehavior</name>
-                    <value>required</value>
+                    <value>none</value>
                 </fieldInstanceProperties>
                 <fieldItem>Record.Email</fieldItem>
                 <identifier>RecordEmailField</identifier>
@@ -289,7 +289,7 @@
             <fieldInstance>
                 <fieldInstanceProperties>
                     <name>uiBehavior</name>
-                    <value>none</value>
+                    <value>required</value>
                 </fieldInstanceProperties>
                 <fieldItem>Record.MobilePhone</fieldItem>
                 <identifier>RecordMobilePhoneField</identifier>
@@ -325,8 +325,8 @@
                     <name>uiBehavior</name>
                     <value>none</value>
                 </fieldInstanceProperties>
-                <fieldItem>Record.RES_Communication_Language__c</fieldItem>
-                <identifier>RecordRES_Communication_Language__cField</identifier>
+                <fieldItem>Record.RES_Language__c</fieldItem>
+                <identifier>RecordRES_Language_cField</identifier>
             </fieldInstance>
         </itemInstances>
         <name>Facet-ca3548e6-98a0-4884-bac2-29b750d9f3d4</name>
@@ -903,6 +903,13 @@
                 </componentInstanceProperties>
                 <componentName>flexipage:fieldSection</componentName>
                 <identifier>flexipage_fieldSection3</identifier>
+                <visibilityRule>
+                    <criteria>
+                        <leftValue>{!Record.LeadSource}</leftValue>
+                        <operator>NE</operator>
+                        <rightValue>Z09</rightValue>
+                    </criteria>
+                </visibilityRule>
             </componentInstance>
         </itemInstances>
         <itemInstances>
@@ -1209,6 +1216,9 @@
         <properties>
             <name>actionNames</name>
             <valueList>
+                <valueListItems>
+                    <value>Convert</value>
+                </valueListItems>
                 <valueListItems>
                     <value>FeedItem.TextPost</value>
                 </valueListItems>

@@ -40,7 +40,7 @@ public with sharing class RES_LeadServices {
                 if(l.LeadSource == 'Z09'){
                     continue;
                 }
-                if(l.status == '01' && String.valueOf(l.ownerId).startsWith('005')){
+                if(l.status == '01' && (l.OwnerId != null && String.valueOf(l.ownerId).startsWith('005'))){
                     startSla(L, bh, slaInHours);
                 }
             }
@@ -75,7 +75,7 @@ public with sharing class RES_LeadServices {
                         startSla(L, bh, slaInHours);
                     }
                 }
-                else if(l.OwnerId != oldmap.get(l.Id).OwnerId && String.valueOf(l.ownerId).startsWith('005') && String.valueOf(oldmap.get(l.Id).OwnerId).startsWith('00G')){
+                else if((oldmap.get(l.Id).OwnerId == null && String.valueOf(l.ownerId).startsWith('005')) || (l.OwnerId != oldmap.get(l.Id).OwnerId && String.valueOf(l.ownerId).startsWith('005') && String.valueOf(oldmap.get(l.Id).OwnerId).startsWith('00G'))){
                     if(l.RES_SLA_Status__c != 'Met'){
                         startSla(L, bh, slaInHours);
                     }
@@ -88,10 +88,28 @@ public with sharing class RES_LeadServices {
     }
 
     private static void startSla(Lead L, BusinessHours bh, Integer slaInHours){
+        if(l.RES_SLA_Cycle_Count__c == null)l.RES_SLA_Cycle_Count__c=0;
         l.RES_SLA_Cycle_Count__c += 1;
         l.RES_SLA_Start_Time__c = SYSTEM.now();
         l.RES_SLA_Status__c = 'Running';
         l.RES_SLA_Due_Time__c = BusinessHours.add(bh.Id,SYSTEM.now(), slaInHours * 60 * 60 * 1000);
+    }
+
+    public static void selectLeadRecordType(List<Lead> newLeadList){
+
+        // 1. Fetch Record Type IDs for the Lead Object
+        Id individualRecordTypeId = Schema.SObjectType.Lead.getRecordTypeInfosByDeveloperName()
+                                    .get('RES_Individual').getRecordTypeId();
+        Id companyRecordTypeId = Schema.SObjectType.Lead.getRecordTypeInfosByDeveloperName()
+                                 .get('RES_Company').getRecordTypeId();
+
+        for (Lead l : newLeadList) {
+            if (String.isBlank(l.Company)) {
+                l.RecordTypeId = individualRecordTypeId;
+            } else {
+                l.RecordTypeId = companyRecordTypeId;
+            }
+        }
     }
 
 }
