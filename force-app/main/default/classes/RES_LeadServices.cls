@@ -88,10 +88,32 @@ public with sharing class RES_LeadServices {
     }
 
     private static void startSla(Lead L, BusinessHours bh, Integer slaInHours){
+        if(l.RES_SLA_Cycle_Count__c == null)l.RES_SLA_Cycle_Count__c=0;
         l.RES_SLA_Cycle_Count__c += 1;
         l.RES_SLA_Start_Time__c = SYSTEM.now();
         l.RES_SLA_Status__c = 'Running';
         l.RES_SLA_Due_Time__c = BusinessHours.add(bh.Id,SYSTEM.now(), slaInHours * 60 * 60 * 1000);
+    }
+
+    public static void applyDeduplicationRules(List<lead> leadList){
+        RES_LeadDeduplicationHandler.apply(leadList);
+    }
+
+    public static void selectLeadRecordType(List<Lead> newLeadList){
+
+        // 1. Fetch Record Type IDs for the Lead Object
+        Id individualRecordTypeId = Schema.SObjectType.Lead.getRecordTypeInfosByDeveloperName()
+                                    .get('RES_Individual').getRecordTypeId();
+        Id companyRecordTypeId = Schema.SObjectType.Lead.getRecordTypeInfosByDeveloperName()
+                                 .get('RES_Company').getRecordTypeId();
+
+        for (Lead l : newLeadList) {
+            if (String.isBlank(l.Company)) {
+                l.RecordTypeId = individualRecordTypeId;
+            } else {
+                l.RecordTypeId = companyRecordTypeId;
+            }
+        }
     }
 
 }
