@@ -1,6 +1,30 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Profile xmlns="http://soap.sforce.com/2006/04/metadata">
     <custom>true</custom>
+    <userPermissions>
+        <enabled>true</enabled>
+        <name>ActivitiesAccess</name>
+</userPermissions>
+<userPermissions>
+        <enabled>true</enabled>
+        <name>EditEvent</name>
+</userPermissions>
+<userPermissions>
+        <enabled>true</enabled>
+        <name>EditTask</name>
+</userPermissions>
+<userPermissions>
+        <enabled>true</enabled>
+        <name>EmailMass</name>
+</userPermissions>
+<userPermissions>
+        <enabled>true</enabled>
+        <name>EmailSingle</name>
+</userPermissions>
+<userPermissions>
+        <enabled>true</enabled>
+        <name>EnableNotifications</name>
+</userPermissions>
     <layoutAssignments>
         <layout>Account-RES Company</layout>
         <recordType>Account.RES_Company</recordType>
@@ -74,15 +98,7 @@
     </userPermissions>
     <userPermissions>
         <enabled>true</enabled>
-        <name>ActivitiesAccess</name>
-    </userPermissions>
-    <userPermissions>
-        <enabled>true</enabled>
         <name>ConvertLeads</name>
-    </userPermissions>
-    <userPermissions>
-        <enabled>true</enabled>
-        <name>EmailSingle</name>
     </userPermissions>
     <userPermissions>
         <enabled>true</enabled>
@@ -102,14 +118,6 @@
     </userPermissions>
     <userPermissions>
         <enabled>true</enabled>
-        <name>EditEvent</name>
-    </userPermissions>
-    <userPermissions>
-        <enabled>true</enabled>
-        <name>EditTask</name>
-    </userPermissions>
-    <userPermissions>
-        <enabled>true</enabled>
         <name>LightningConsoleAllowedForUser</name>
     </userPermissions>
     <userPermissions>
@@ -124,13 +132,4 @@
         <enabled>true</enabled>
         <name>ViewPublicCapstoneFolders</name>
     </userPermissions>
-    <objectPermissions>
-        <allowCreate>true</allowCreate>
-        <allowDelete>false</allowDelete>
-        <allowEdit>true</allowEdit>
-        <allowRead>true</allowRead>
-        <modifyAllRecords>false</modifyAllRecords>
-        <object>Task</object>
-        <viewAllRecords>false</viewAllRecords>
-    </objectPermissions>
 </Profile>
