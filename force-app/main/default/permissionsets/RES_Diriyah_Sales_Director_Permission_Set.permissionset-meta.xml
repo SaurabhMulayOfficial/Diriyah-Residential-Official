@@ -1,9 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <PermissionSet xmlns="http://soap.sforce.com/2006/04/metadata">
-    <customPermissions>
-        <enabled>true</enabled>
-        <name>RES_Mass_Convert_Leads</name>
-    </customPermissions>
     <description>Permission Set for Residential Sales Director (Diriyah)</description>
     <fieldPermissions>
         <editable>true</editable>
@@ -896,18 +892,22 @@
     </userPermissions>
     <userPermissions>
         <enabled>true</enabled>
-        <name>EditTask</name>
+        <name>ConvertLeads</name>
     </userPermissions>
     <userPermissions>
-        <enabled>true</enabled>
-        <name>EmailSingle</name>
+            <enabled>true</enabled>
+            <name>EditEvent</name>
     </userPermissions>
     <userPermissions>
-        <enabled>true</enabled>
-        <name>ManageLeads</name>
+            <enabled>true</enabled>
+            <name>EditTask</name>
     </userPermissions>
     <userPermissions>
-        <enabled>true</enabled>
-        <name>TransferAnyLead</name>
+            <enabled>true</enabled>
+            <name>EmailMass</name>
+    </userPermissions>
+    <userPermissions>
+            <enabled>true</enabled>
+            <name>EmailSingle</name>
     </userPermissions>
 </PermissionSet>
