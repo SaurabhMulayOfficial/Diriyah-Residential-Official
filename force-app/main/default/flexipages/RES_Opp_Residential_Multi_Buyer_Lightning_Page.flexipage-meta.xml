@@ -92,6 +92,32 @@
                 </visibilityRule>
             </componentInstance>
         </itemInstances>
+        <itemInstances>
+            <componentInstance>
+                <componentInstanceProperties>
+                    <name>decorate</name>
+                    <value>true</value>
+                </componentInstanceProperties>
+                <componentInstanceProperties>
+                    <name>richTextValue</name>
+                    <value>&lt;p&gt;&lt;strong style=&quot;font-family: Arial, Helvetica, sans-serif; color: rgb(24, 23, 23); font-size: 16px;&quot;&gt;⚠️ &lt;/strong&gt;&lt;strong style=&quot;font-size: 16px; color: rgb(24, 23, 23);&quot;&gt;It looks like the Opportunity email is blank. Please enter an email address.&lt;/strong&gt;&lt;/p&gt;</value>
+                </componentInstanceProperties>
+                <componentName>flexipage:richText</componentName>
+                <identifier>flexipage_richText2</identifier>
+                <visibilityRule>
+                    <booleanFilter>1 AND 2</booleanFilter>
+                    <criteria>
+                        <leftValue>{!Record.RecordType.DeveloperName}</leftValue>
+                        <operator>EQUAL</operator>
+                        <rightValue>RES_Residential_Multi_Buyer</rightValue>
+                    </criteria>
+                    <criteria>
+                        <leftValue>{!Record.RES_Opportunity_Email__c}</leftValue>
+                        <operator>EQUAL</operator>
+                    </criteria>
+                </visibilityRule>
+            </componentInstance>
+        </itemInstances>
         <name>header</name>
         <type>Region</type>
     </flexiPageRegions>
@@ -162,7 +188,7 @@
                 <fieldItem>Record.RES_Sub_Stage__c</fieldItem>
                 <identifier>RecordRES_Sub_Stage__cField</identifier>
                 <visibilityRule>
-                    <booleanFilter>1 AND 2</booleanFilter>
+                    <booleanFilter>(1 AND 2) OR( 1 AND 3)</booleanFilter>
                     <criteria>
                         <leftValue>{!Record.StageName}</leftValue>
                         <operator>EQUAL</operator>
@@ -173,7 +199,22 @@
                         <operator>EQUAL</operator>
                         <rightValue>true</rightValue>
                     </criteria>
+                    <criteria>
+                        <leftValue>{!$User.Profile.Name}</leftValue>
+                        <operator>EQUAL</operator>
+                        <rightValue>System Administrator</rightValue>
+                    </criteria>
                 </visibilityRule>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.RES_Opportunity_Email__c</fieldItem>
+                <identifier>RecordRES_Opportunity_Email__cField</identifier>
             </fieldInstance>
         </itemInstances>
         <name>Facet-bda0868e-f60d-43d1-bc15-da4b2cf8d682</name>
@@ -867,6 +908,9 @@
                         </valueListItems>
                         <valueListItems>
                             <value>RES_Account__c</value>
+                        </valueListItems>
+                        <valueListItems>
+                            <value>RES_Primary_Account__c</value>
                         </valueListItems>
                         <valueListItems>
                             <value>RES_Communication_Preference__c</value>

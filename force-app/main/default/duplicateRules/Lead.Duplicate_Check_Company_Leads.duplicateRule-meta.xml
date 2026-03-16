@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<DuplicateRule xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <actionOnInsert>Allow</actionOnInsert>
+    <actionOnUpdate>Allow</actionOnUpdate>
+    <alertText>Use one of these records?</alertText>
+    <description xsi:nil="true"/>
+    <duplicateRuleFilter>
+        <booleanFilter xsi:nil="true"/>
+        <duplicateRuleFilterItems>
+            <field>Company</field>
+            <operation>notEqual</operation>
+            <value></value>
+            <sortOrder>1</sortOrder>
+            <table>Lead</table>
+        </duplicateRuleFilterItems>
+    </duplicateRuleFilter>
+    <duplicateRuleMatchRules>
+        <matchRuleSObjectType>Account</matchRuleSObjectType>
+        <matchingRule>RES_Account_Match_for_Company_Leads</matchingRule>
+        <objectMapping>
+            <inputObject>Lead</inputObject>
+            <mappingFields>
+                <inputField>Company</inputField>
+                <outputField>Name</outputField>
+            </mappingFields>
+            <mappingFields>
+                <inputField>Website</inputField>
+                <outputField>Website</outputField>
+            </mappingFields>
+            <outputObject>Account</outputObject>
+        </objectMapping>
+    </duplicateRuleMatchRules>
+    <isActive>true</isActive>
+    <masterLabel>Duplicate_Check_Company_Leads</masterLabel>
+    <operationsOnInsert>Alert</operationsOnInsert>
+    <operationsOnUpdate>Alert</operationsOnUpdate>
+    <securityOption>BypassSharingRules</securityOption>
+    <sortOrder>5</sortOrder>
+</DuplicateRule>
