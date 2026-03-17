@@ -124,6 +124,28 @@
         </rules>
     </decisions>
     <decisions>
+        <name>If_Manager_Exist</name>
+        <label>If Manager Exist</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Yes_Exist</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>Get_Owners_Manager</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Notify_User_s_Manager</targetReference>
+            </connector>
+            <label>Yes</label>
+        </rules>
+    </decisions>
+    <decisions>
         <name>RES_Check_Flow_Switch_and_RES_Lead_Record_Types</name>
         <label>Check Flow Switch and RES Lead Record Types</label>
         <locationX>0</locationX>
@@ -192,6 +214,27 @@
         </value>
     </processMetadataValues>
     <processType>AutoLaunchedFlow</processType>
+    <recordLookups>
+        <name>Get_Owners_Manager</name>
+        <label>Get Owners Manager</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>If_Manager_Exist</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Id</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>$Record.Owner:User.ManagerId</elementReference>
+            </value>
+        </filters>
+        <getFirstRecordOnly>true</getFirstRecordOnly>
+        <object>User</object>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
     <recordUpdates>
         <name>RES_Update_Opportunity_Address_Fields</name>
         <label>Update Opportunity Address Fields</label>
@@ -221,6 +264,18 @@
             </value>
         </inputAssignments>
         <inputAssignments>
+            <field>RES_Opportunity_Email__c</field>
+            <value>
+                <elementReference>$Record.Email</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>RES_Opportunity_Mobile__c</field>
+            <value>
+                <elementReference>$Record.MobilePhone</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
             <field>RES_State_Province__c</field>
             <value>
                 <elementReference>$Record.State</elementReference>
@@ -245,6 +300,9 @@
         <label>SLA breached</label>
         <locationX>0</locationX>
         <locationY>0</locationY>
+        <connector>
+            <targetReference>Get_Owners_Manager</targetReference>
+        </connector>
         <inputReference>leadInstance</inputReference>
     </recordUpdates>
     <start>
@@ -269,6 +327,31 @@
         <triggerType>RecordAfterSave</triggerType>
     </start>
     <status>Active</status>
+    <subflows>
+        <name>Notify_User_s_Manager</name>
+        <label>Notify User&apos;s Manager</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <flowName>RES_AutoLaunchFlow_Notify_User_s_Manager</flowName>
+        <inputAssignments>
+            <name>LeadRecord</name>
+            <value>
+                <elementReference>$Record</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <name>NotificationType</name>
+            <value>
+                <stringValue>SLABreachNotification</stringValue>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <name>User</name>
+            <value>
+                <elementReference>Get_Owners_Manager</elementReference>
+            </value>
+        </inputAssignments>
+    </subflows>
     <variables>
         <name>leadInstance</name>
         <dataType>SObject</dataType>
