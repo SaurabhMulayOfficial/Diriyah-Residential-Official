@@ -4,10 +4,12 @@
  */
 public with sharing class RES_LeadServices {
 
-    public static void setUpdateSLATimeOnLead(List<Lead> leadList, Map<id, Lead> oldMap){
+    public static void setUpdateSLATimeOnLead(List<Lead> leadList, Map<id, Lead> oldMap, Boolean psr, Map<Id,Id> previousOwner){
         if(leadList == null || leadList.isEmpty()){
             return;
         }
+
+        List<Lead> toUpdate = new List<lead>();
 
         Integer slaInHours = Integer.valueOf(SYSTEM.Label.RES_Lead_SLA_In_hours);
         BusinessHours bh = (BusinessHours) new RES_BusinessHoursDAOLayer().getDefaultBusinessHours()[0];
@@ -42,6 +44,12 @@ public with sharing class RES_LeadServices {
                 }
                 if(l.status == '01' && (l.OwnerId != null && String.valueOf(l.ownerId).startsWith('005'))){
                     startSla(L, bh, slaInHours);
+                    if(psr == true){
+                        if(previousOwner.containsKey(l.Id)){
+                            l.RES_Previous_Lead_Owner__c = previousOwner.get(l.Id);
+                        }
+                        toUpdate.add(l);
+                    }
                 }
             }
         }
@@ -83,6 +91,10 @@ public with sharing class RES_LeadServices {
                 }
             }
 
+        }
+
+        if(psr == true && !toUpdate.isEmpty()){
+            Database.upsert(toUpdate, true, AccessLevel.USER_MODE);
         }
     
     }

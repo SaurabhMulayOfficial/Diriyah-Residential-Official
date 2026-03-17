@@ -5,13 +5,14 @@
 public with sharing class RES_LeadTriggerHandler extends RES_BaseTriggerHandler {
 
     protected override void beforeInsert() {
-        System.debug('Before Insert Logic here');
-        RES_LeadServices.setUpdateSLATimeOnLead((list<lead>)Trigger.new, null);
+        RES_LeadServices.setUpdateSLATimeOnLead((list<lead>)Trigger.new, null, false, null);
+        //RES_LeadServices.applyDeduplicationRules((List<Lead>) Trigger.new);
+        RES_LeadServices.selectLeadRecordType((list<lead>) Trigger.new);
     }
 
     protected override void beforeUpdate() {
         System.debug('Before Update Logic here');
-        RES_LeadServices.setUpdateSLATimeOnLead((list<lead>)Trigger.new, (Map<id, lead>)Trigger.oldMap);
+        RES_LeadServices.setUpdateSLATimeOnLead((list<lead>)Trigger.new, (Map<id, lead>)Trigger.oldMap,false, null);
     }
     
 
@@ -21,6 +22,7 @@ public with sharing class RES_LeadTriggerHandler extends RES_BaseTriggerHandler 
 
     protected override void afterInsert() {
         System.debug('After Insert Logic here');
+       
     }
 
     protected override void afterUpdate() {

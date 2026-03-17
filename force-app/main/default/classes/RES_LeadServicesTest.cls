@@ -38,6 +38,8 @@ private class RES_LeadServicesTest {
             Test.startTest();
             RES_LeadServices.setUpdateSLATimeOnLead(
                 new List<Lead>{l},
+                null,
+                false,
                 null
             );
             Test.stopTest();
@@ -68,7 +70,9 @@ private class RES_LeadServicesTest {
             Test.startTest();
             RES_LeadServices.setUpdateSLATimeOnLead(
                 new List<Lead>{l},
-                new Map<Id, Lead>{l.Id => oldLead}
+                new Map<Id, Lead>{l.Id => oldLead},
+                false,
+                null
             );
             Test.stopTest();
         }
@@ -107,7 +111,9 @@ private class RES_LeadServicesTest {
             Test.startTest();
             RES_LeadServices.setUpdateSLATimeOnLead(
                 new List<Lead>{l},
-                new Map<Id, Lead>{l.Id => oldLead}
+                new Map<Id, Lead>{l.Id => oldLead},
+                false,
+                null
             );
             Test.stopTest();
             System.assertNotEquals(u1.Id, l.OwnerId, 'Owner should change after breach');
