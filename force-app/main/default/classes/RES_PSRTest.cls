@@ -12,7 +12,6 @@ public with sharing class RES_PSRTest {
         PendingServiceRouting psr = new PendingServiceRouting();
         psr.WorkItemId = l.Id;
 
-        insert psr;
         Test.startTest();
         RES_PendingServiceRoutingService.startSLA(
             new List<PendingServiceRouting>{psr}
