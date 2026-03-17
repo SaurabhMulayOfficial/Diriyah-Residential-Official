@@ -229,7 +229,7 @@
     <formulas>
         <name>oppWonNotificationBody</name>
         <dataType>String</dataType>
-        <expression>&quot;opportunityRecord.Owner.Name&quot;  &amp; &quot;has closed&quot; &amp; &quot;opportunityRecord.Name&quot; &amp; &quot;worth&quot; &amp; &quot;opportunityRecord.Amount.&quot; &amp; &quot;Please review.&quot;</expression>
+        <expression>{!ownerName} &amp; &quot; has Closed Won &quot; &amp; {!opportunityRecord.Name} &amp; &quot; worth Amount &quot; &amp; TEXT({!opportunityRecord.Amount}) &amp; &quot;. Please review.&quot;</expression>
     </formulas>
     <interviewLabel>RES AutoLaunchFlow - Notify User&apos;s Manager {!$Flow.CurrentDateTime}</interviewLabel>
     <label>RES AutoLaunchFlow - Notify User&apos;s Manager</label>
@@ -288,20 +288,19 @@
     </textTemplates>
     <textTemplates>
         <name>oppEmailBody</name>
-        <isViewedAsPlainText>true</isViewedAsPlainText>
+        <isViewedAsPlainText>false</isViewedAsPlainText>
         <text>Hello {!User.Name},
 
 Congratulations! The following Opportunity has been marked as Closed Won.
-Opportunity Details:
-- Opportunity Name : {!opportunityRecord.Name}
-- Owner       : {!opportunityRecord.Owner.Name}
-- Amount      : {!opportunityRecord.Amount}
-- Close Date    : {!opportunityRecord.CloseDate}
-- Account Name   : {!opportunityRecord.Account.Name}
-- Stage       : {!opportunityRecord.StageName}
-- Opportunity Link : {!oppLink}
-
+Opportunity Details: -
+Opportunity Name : {!opportunityRecord.Name}
+Owner : {!ownerName}
+Amount : {!opportunityRecord.Amount}
+Close Date : {!opportunityRecord.CloseDate}
+Stage : {!opportunityRecord.StageName}
+Opportunity Link : {!oppLink}
 Please log in to Salesforce to review and take any necessary follow-up actions.
+
 Thanks,
 Sales Operations</text>
     </textTemplates>
@@ -312,7 +311,7 @@ Sales Operations</text>
 
 Lead &quot;{!LeadRecord.Name}&quot; has exceeded the SLA response time of 24 hours.
 Lead Details:
-- Owner: {!LeadRecord.Owner:User.Name}
+- Owner: {!ownerName}
 - Created On: {!LeadRecord.CreatedDate}
 - SLA Target: {!LeadRecord.RES_SLA_Due_Time__c}
 - Lead:  {!LeadLink}
@@ -350,6 +349,20 @@ Sales Operations</text>
         <isInput>true</isInput>
         <isOutput>false</isOutput>
         <objectType>Opportunity</objectType>
+    </variables>
+    <variables>
+        <name>oppsAccountName</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>true</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <name>ownerName</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>true</isInput>
+        <isOutput>false</isOutput>
     </variables>
     <variables>
         <name>User</name>
