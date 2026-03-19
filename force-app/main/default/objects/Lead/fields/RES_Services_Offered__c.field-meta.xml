@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
-    <fullName>RES_Communication_Language__c</fullName>
-    <label>Communication Language</label>
+    <fullName>RES_Services_Offered__c</fullName>
+    <label>Services Offered</label>
     <required>false</required>
     <trackFeedHistory>false</trackFeedHistory>
+    <trackHistory>false</trackHistory>
     <type>Picklist</type>
     <valueSet>
         <restricted>true</restricted>
-        <valueSetName>RES_Language</valueSetName>
+        <valueSetName>RES_Services_Offered</valueSetName>
     </valueSet>
 </CustomField>
