@@ -1,94 +1,96 @@
-# Contribution Guide
+# How to Contribute
 
-Thank you for contributing! Please follow the branching and deployment strategy outlined below.
+This document describes the automated CI/CD pipeline implemented in GitHub Actions for Salesforce metadata deployment. It is triggered by specific branch patterns and events, ensuring that changes are validated and deployed to the appropriate Salesforce orgs (QA, UAT, PreProd, Production) in a controlled manner.
 
----
+## Overview
+The pipeline uses Salesforce CLI to validate and deploy metadata. It supports four environments:
 
-## 🌳 Branching Strategy
+1. QA (Development / Integration)
+2. UAT (User Acceptance Testing)
+3. PreProd (Pre-production staging)
+4. Production
 
-We maintain two primary branches:
+Depending on the branch and event type, the pipeline either performs a validation (check-only deploy) or an actual deployment to the target org.
 
-- **`main`** – Production branch  
-- **`develop`** – Integration branch (UAT-ready code)
+<hr>
 
----
+## Branch Naming Conventions
 
-## 🚀 Development Workflow
+To map a branch to the correct environment, you must follow these naming patterns:
 
-### 1️⃣ Create QA Feature Branch
+| Environment | Branch Pattern        | Example                       |
+|------------|----------------------|---------------------------------|
+| QA         | feature/QADIR/*      | feature/QADIR/new-page          |
+| QA         | develop              | develop                         |
+| UAT        | release/uat/*        | release/uat/v1.2.0              |
+| PreProd    | release/preprod/*    | release/preprod/v1.2.0          |
+| Production | release/prod/*       | release/prod/v1.2.0             |
 
-- Create all **`feature/QADIR/**`** branches from **`develop`**.
-- These branches are used for QA-level development and testing.
 
-```bash
-git checkout develop
-git pull origin develop
-git checkout -b feature/QADIR/your-feature-name
-```
+Any branch that does not match these patterns will be rejected by the pipeline.
 
----
+<hr>
 
-### 2️⃣ Create Sub-Feature Branch (Optional)
+## Triggers
 
-If required, you may create additional **`feature/**`** branches from an existing **`feature/QADIR/**`** branch.
+The workflow runs on the following GitHub events:
 
-```bash
-git checkout feature/QADIR/your-feature-name
-git checkout -b feature/your-sub-task
-```
+1. Create – when a new branch or tag is created (used for release branches).
+2. Push – to branches matching feature/QADIR/*.
+3. Pull Request – opened, synchronized, reopened, or closed against develop or feature/QADIR/* branches.
 
-- Merge sub-feature branches back into the parent **`feature/QADIR/**`** branch.
-- ✅ Once merged, changes are automatically deployed to the **QA environment**.
+⚠️ Note: Deployment to an environment happens only on specific events – see the Deployment Jobs section for details.
 
----
+<hr>
 
-### 3️⃣ Promote to UAT
+## Workflow Jobs
 
-- When a **`feature/QADIR/**`** branch is merged into **`develop`**:
-  - 🚀 Deployment is automatically triggered to the **UAT environment**.
+**Setup Job:** Determines target environment (QA/UAT/PreProd/Prod) and test level based on branch name.
 
----
+**Validation Jobs:** For each environment, perform a check-only deployment (sf project deploy validate) on pushes, PRs, or branch creation.
 
-### 4️⃣ Production Release
+**Deployment Jobs:** If validation succeeds, run actual deployment (sf project deploy start) triggered by specific events (e.g., branch creation, PR merge).
 
-- The **`main`** branch represents Production.
-- Code is promoted to `main` as part of the official release process.
+**Authentication:** All jobs use JWT bearer flow with secrets (client ID, username, private key) for each environment.
 
----
+**Salesforce CLI Commands:** Validate or deploy metadata using source (force-app/) or manifest files, with defined test levels and wait times.
 
-## 🔁 Deployment Flow
+> **PreProd** uses a manifest file (`manifest/packageDIR.xml`) to select specific components.
 
-```
-develop
-   ↓
-feature/QADIR/*
-   ↓
-feature/* (optional)
-   ↓ (merge back)
-feature/QADIR/* → Auto Deploy to QA
-   ↓ (merge to develop)
-develop → Auto Deploy to UAT
-   ↓
-main → Production
-```
+> **Production** uses a manifest (`manifest/package.xml`) to deploy a controlled set of metadata.
 
----
+<hr>
 
-## 📌 Important Rules
+## How to Contribute
 
-- Always branch from the correct base branch.
-- Keep pull requests small and focused.
-- Ensure all checks pass before requesting a merge.
-- Do not commit directly to `main` or `develop`.
-- Follow naming conventions strictly.
+### Feature Development (QA)
 
----
+Create a feature branch from develop following the pattern:
 
-## ✅ Branch Naming Convention
+> feature/QADIR/short-description
 
-| Branch Type | Format |
-|-------------|--------|
-| QA Feature  | `feature/QADIR/feature-name` |
-| Sub-Feature | `feature/feature-name` |
+1. Push your changes to this branch.
+2. This will trigger a validation against the QA org. Check the GitHub Actions run to see if your changes are valid.
+3. Open a Pull Request against the develop branch.
+4. The PR will again trigger a validation against QA. The pipeline will not deploy until the PR is merged.
+5. Merge the PR into develop.
+6. After a successful merge, the pipeline will deploy your changes to the QA org automatically.
+7. ✅ The QA environment is updated only after code is merged to develop. Feature branches themselves are not deployed – only validated.
 
----
+<hr>
+
+### Release to Higher Environments (Authority to only Authorized entity)
+
+To promote code to UAT, PreProd, or Production, you must create the appropriate release branch:
+
+1. Ensure all desired changes are already merged into develop (or the previous environment's branch).
+2. Create a new branch from the commit you want to release, following the pattern:
+    
+      `release/uat/<version> for UAT`
+   
+      `release/preprod/<version> for PreProd`
+
+      `release/prod/<version> for Production`
+
+4. Push the branch.
+5. The pipeline will validate and then deploy automatically (validation must succeed before deployment).
