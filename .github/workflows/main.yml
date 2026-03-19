@@ -32,27 +32,39 @@ jobs:
     steps:
       - id: setenv
         run: |
-          if [[ "${GITHUB_REF}" == refs/heads/feature/QADIR/* ]]; then
+          # Determine correct branch
+          if [[ "${GITHUB_EVENT_NAME}" == "pull_request" ]]; then
+            BRANCH="${{ github.base_ref }}"
+          else
+            BRANCH="${GITHUB_REF#refs/heads/}"
+          fi
+
+          echo "Branch detected: $BRANCH"
+
+          if [[ "$BRANCH" == feature/QADIR/* ]]; then
             echo "env_name=QA" >> $GITHUB_OUTPUT
             echo "test_level=RunLocalTests" >> $GITHUB_OUTPUT
 
-          elif [[ "${GITHUB_REF}" == refs/heads/feature/* ]]; then
+          elif [[ "$BRANCH" == feature/* ]]; then
             echo "env_name=QA" >> $GITHUB_OUTPUT
             echo "test_level=RunLocalTests" >> $GITHUB_OUTPUT
 
-          elif [[ "${GITHUB_REF}" == refs/heads/release/preprod/* ]]; then
+          elif [[ "$BRANCH" == release/preprod/* ]]; then
             echo "env_name=PREPROD" >> $GITHUB_OUTPUT
             echo "test_level=RunLocalTests" >> $GITHUB_OUTPUT
 
-          elif [[ "${GITHUB_REF}" == refs/heads/release/prod/* ]]; then
+          elif [[ "$BRANCH" == release/prod/* ]]; then
             echo "env_name=PROD" >> $GITHUB_OUTPUT
             echo "test_level=RunAllTestsInOrg" >> $GITHUB_OUTPUT
 
-          elif [[ "${GITHUB_REF}" == refs/heads/release/* ]]; then
+          elif [[ "$BRANCH" == release/* ]]; then
             echo "env_name=UAT" >> $GITHUB_OUTPUT
             echo "test_level=RunLocalTests" >> $GITHUB_OUTPUT
-          fi
 
+          else
+            echo "Unsupported branch: $BRANCH"
+            exit 1
+          fi
   # =========================
   # 🔁 COMMON STEPS TEMPLATE (INLINE)
   # =========================
