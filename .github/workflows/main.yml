@@ -51,7 +51,7 @@ jobs:
             echo "env_name=PROD" >> $GITHUB_OUTPUT
             echo "test_level=RunAllTestsInOrg" >> $GITHUB_OUTPUT
 
-          elif [[ "$BRANCH" == release/* ]]; then
+          elif [[ "$BRANCH" == release/uat/* ]]; then
             echo "env_name=UAT" >> $GITHUB_OUTPUT
             echo "test_level=RunLocalTests" >> $GITHUB_OUTPUT
 
@@ -198,7 +198,8 @@ jobs:
     needs: setup
     environment: env
     if: github.event.pull_request.merged == true &&
-        startsWith(github.base_ref, 'release/uat')
+        startsWith(github.head_ref, 'release/uat') &&
+        startsWith(github.base_ref, 'develop')
 
     steps:
       - uses: actions/checkout@v4
