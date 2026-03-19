@@ -608,6 +608,16 @@
     </fieldPermissions>
     <fieldPermissions>
         <editable>true</editable>
+        <field>Opportunity.RES_Opportunity_Email__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>Opportunity.RES_Opportunity_Mobile__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
         <field>Opportunity.AccountId</field>
         <readable>true</readable>
     </fieldPermissions>
@@ -887,10 +897,22 @@
     </userPermissions>
     <userPermissions>
         <enabled>true</enabled>
-        <name>EditTask</name>
+        <name>ConvertLeads</name>
     </userPermissions>
     <userPermissions>
-        <enabled>true</enabled>
-        <name>EmailSingle</name>
+            <enabled>true</enabled>
+            <name>EditEvent</name>
+    </userPermissions>
+    <userPermissions>
+            <enabled>true</enabled>
+            <name>EditTask</name>
+    </userPermissions>
+    <userPermissions>
+            <enabled>true</enabled>
+            <name>EmailMass</name>
+    </userPermissions>
+    <userPermissions>
+            <enabled>true</enabled>
+            <name>EmailSingle</name>
     </userPermissions>
 </PermissionSet>

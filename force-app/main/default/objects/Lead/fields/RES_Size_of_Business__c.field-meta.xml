@@ -7,48 +7,7 @@
     <trackHistory>false</trackHistory>
     <type>Picklist</type>
     <valueSet>
-        <valueSetDefinition>
-            <sorted>false</sorted>
-            <value>
-                <fullName>1 - 10 employees</fullName>
-                <default>false</default>
-                <label>1 - 10 employees</label>
-            </value>
-            <value>
-                <fullName>11 - 50 employees</fullName>
-                <default>false</default>
-                <label>11 - 50 employees</label>
-            </value>
-            <value>
-                <fullName>51 - 200 employees</fullName>
-                <default>false</default>
-                <label>51 - 200 employees</label>
-            </value>
-            <value>
-                <fullName>201 - 500 employees</fullName>
-                <default>false</default>
-                <label>201 - 500 employees</label>
-            </value>
-            <value>
-                <fullName>501 - 1,000 employees</fullName>
-                <default>false</default>
-                <label>501 - 1,000 employees</label>
-            </value>
-            <value>
-                <fullName>1,001 - 5,000 employees</fullName>
-                <default>false</default>
-                <label>1,001 - 5,000 employees</label>
-            </value>
-            <value>
-                <fullName>5,001 - 10,000 employees</fullName>
-                <default>false</default>
-                <label>5,001 - 10,000 employees</label>
-            </value>
-            <value>
-                <fullName>10,001 + employees</fullName>
-                <default>false</default>
-                <label>10,001 + employees</label>
-            </value>
-        </valueSetDefinition>
+        <restricted>true</restricted>
+        <valueSetName>RES_Size_of_Business</valueSetName>
     </valueSet>
 </CustomField>

@@ -4,10 +4,12 @@
  */
 public with sharing class RES_LeadServices {
 
-    public static void setUpdateSLATimeOnLead(List<Lead> leadList, Map<id, Lead> oldMap){
+    public static void setUpdateSLATimeOnLead(List<Lead> leadList, Map<id, Lead> oldMap, Boolean psr, Map<Id,Id> previousOwner){
         if(leadList == null || leadList.isEmpty()){
             return;
         }
+
+        List<Lead> toUpdate = new List<lead>();
 
         Integer slaInHours = Integer.valueOf(SYSTEM.Label.RES_Lead_SLA_In_hours);
         BusinessHours bh = (BusinessHours) new RES_BusinessHoursDAOLayer().getDefaultBusinessHours()[0];
@@ -40,8 +42,14 @@ public with sharing class RES_LeadServices {
                 if(l.LeadSource == 'Z09'){
                     continue;
                 }
-                if(l.status == '01' && String.valueOf(l.ownerId).startsWith('005')){
+                if(l.status == '01' && (l.OwnerId != null && String.valueOf(l.ownerId).startsWith('005'))){
                     startSla(L, bh, slaInHours);
+                    if(psr == true){
+                        if(previousOwner.containsKey(l.Id)){
+                            l.RES_Previous_Lead_Owner__c = previousOwner.get(l.Id);
+                        }
+                        toUpdate.add(l);
+                    }
                 }
             }
         }
@@ -75,7 +83,7 @@ public with sharing class RES_LeadServices {
                         startSla(L, bh, slaInHours);
                     }
                 }
-                else if(l.OwnerId != oldmap.get(l.Id).OwnerId && String.valueOf(l.ownerId).startsWith('005') && String.valueOf(oldmap.get(l.Id).OwnerId).startsWith('00G')){
+                else if((oldmap.get(l.Id).OwnerId == null && String.valueOf(l.ownerId).startsWith('005')) || (l.OwnerId != oldmap.get(l.Id).OwnerId && String.valueOf(l.ownerId).startsWith('005') && String.valueOf(oldmap.get(l.Id).OwnerId).startsWith('00G'))){
                     if(l.RES_SLA_Status__c != 'Met'){
                         startSla(L, bh, slaInHours);
                     }
@@ -84,14 +92,36 @@ public with sharing class RES_LeadServices {
             }
 
         }
+
+        if(psr == true && !toUpdate.isEmpty()){
+            Database.upsert(toUpdate, true, AccessLevel.USER_MODE);
+        }
     
     }
 
     private static void startSla(Lead L, BusinessHours bh, Integer slaInHours){
+        if(l.RES_SLA_Cycle_Count__c == null)l.RES_SLA_Cycle_Count__c=0;
         l.RES_SLA_Cycle_Count__c += 1;
         l.RES_SLA_Start_Time__c = SYSTEM.now();
         l.RES_SLA_Status__c = 'Running';
         l.RES_SLA_Due_Time__c = BusinessHours.add(bh.Id,SYSTEM.now(), slaInHours * 60 * 60 * 1000);
+    }
+
+    public static void selectLeadRecordType(List<Lead> newLeadList){
+
+        // 1. Fetch Record Type IDs for the Lead Object
+        Id individualRecordTypeId = Schema.SObjectType.Lead.getRecordTypeInfosByDeveloperName()
+                                    .get('RES_Individual').getRecordTypeId();
+        Id companyRecordTypeId = Schema.SObjectType.Lead.getRecordTypeInfosByDeveloperName()
+                                 .get('RES_Company').getRecordTypeId();
+
+        for (Lead l : newLeadList) {
+            if (String.isBlank(l.Company)) {
+                l.RecordTypeId = individualRecordTypeId;
+            } else {
+                l.RecordTypeId = companyRecordTypeId;
+            }
+        }
     }
 
 }

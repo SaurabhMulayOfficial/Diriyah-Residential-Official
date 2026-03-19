@@ -56,30 +56,52 @@ public without sharing class RES_LeadDAOLayer extends RES_BaseDAOLayer {
     public List<Lead> getLeadsById(Set<Id> leadIds) {
         Map<String,Object> bindVars = new Map<String, Object> ();
         bindVars.put('leadIds', leadIds);
-        String soql = 'SELECT Id,Name, OwnerId, RES_SLA_Cycle_Count__c, RES_SLA_Breach_Time__c, RES_Previous_Lead_Owner__c FROM Lead WHERE Id IN :leadIds AND (RecordType.DeveloperName = \'RES_Company\' OR RecordType.DeveloperName = \'RES_Individual\')';
+        String soql = 'SELECT Id,Name, Email, Phone, LeadSource, Status, Company, RecordType.DeveloperName, OwnerId, RES_SLA_Cycle_Count__c, RES_SLA_Breach_Time__c, RES_Previous_Lead_Owner__c FROM Lead WHERE Id IN :leadIds AND (RecordType.DeveloperName = \'RES_Company\' OR RecordType.DeveloperName = \'RES_Individual\')';
         return (List<Lead>) executeQuery(soql, '', false, bindVars, AccessLevel.USER_MODE);
     }
 
     public String getConvertedStatusLabel(String statusLabel) {
+        if (String.isBlank(statusLabel)) {
+            return null;
+        }
         Map<String,Object> bindVars = new Map<String,Object>();
         bindVars.put('statusLabel', statusLabel);
-        String soql ='SELECT MasterLabel FROM LeadStatus WHERE MasterLabel = \'Qualified\' AND IsConverted = true LIMIT 1';
-        List<SObject> results = executeQuery(soql,'convertedStatus',false,bindVars,AccessLevel.USER_MODE);
+        String soql = 'SELECT MasterLabel, ApiName FROM LeadStatus WHERE MasterLabel = :statusLabel AND IsConverted = true ORDER BY MasterLabel ASC LIMIT 1';
+        List<SObject> results = executeQuery(soql, '', false, bindVars, AccessLevel.USER_MODE);
         if (results == null || results.isEmpty()) {
             return null;
         }
-        String masterLabel = ((LeadStatus)results[0]).MasterLabel;
-        return masterLabel;
+        LeadStatus ls = (LeadStatus) results[0];
+        return ls.ApiName;
     }
 
     public Map<Id, Lead> getLeadByIds(Set<Id> leadIds, Boolean useMap){
         Map<String, Object> bindVars = new Map<String, Object> ();
         bindVars.put('leadIds', leadIds);
-        String soql = 'SELECT Id, Name FROM Lead WHERE Id IN: leadIds';
+        String soql = 'SELECT Id, Name, CreatedDate FROM Lead WHERE Id IN: leadIds';
+        Map<Id, sObject> leadMap = executeQueryToMap(soql, '', false, bindVars, AccessLevel.SYSTEM_MODE);
+        Map<Id, Lead> typeCastedLeadMap = typeCast(leadMap);
+        return typeCastedLeadMap;
+    }
 
-        Map<Id, Lead> leadMap = (Map<Id,Lead>) executeQueryToMap(soql, '', false, bindVars, AccessLevel.SYSTEM_MODE);
+    public List<Lead> getLeadByEmailAndMobile(Set<String> Email, Set<String> Phone){
+        String soql = 'SELECT Id, Email, MobilePhone, RES_Project__c, LeadSource FROM Lead WHERE Email IN:Email AND Phone IN:Phone ORDER BY CreatedDate DESC';
+        Map<String,Object> bindVars = new Map<String, Object>();
+        bindVars.put('Email', Email);
+        bindVars.put('Phone', Phone);
+        List<Lead> leads = (List<Lead>) executeQuery(soql, '', false, bindVars, AccessLevel.SYSTEM_MODE);
+        return leads;
+    }
 
-        return leadMap;
+
+    private Map<Id, Lead> typeCast(Map<Id, sObject> leadMap){
+        Map<Id, Lead> newMap = new Map<Id, Lead>();
+        for(Id key: leadMap.keySet()){
+            Lead l = (Lead) leadMap.get(key);
+            newMap.put(key, l);
+        }
+
+        return newMap;
     }
 
 
