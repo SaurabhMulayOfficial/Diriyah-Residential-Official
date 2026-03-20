@@ -45,8 +45,14 @@
         <inputParameters>
             <name>emailBody</name>
             <value>
-                <elementReference>SLABreachTemplate</elementReference>
-                <inputConfiguratorMode>Resource</inputConfiguratorMode>
+                <inputConfiguratorMode>Custom</inputConfiguratorMode>
+                <stringValue>&lt;p&gt;Hello {!User.Name},&lt;/p&gt;&lt;p&gt;The following Lead had exceeded the SLA response time of 24 hours.&lt;/p&gt;&lt;strong&gt;Lead Name:&lt;/strong&gt; &lt;a href=&quot;{!OrgBaseUrl}lightning/r/Lead/{!LeadRecord.Id}/view&quot;&gt;{!LeadRecord.Name}&lt;/a&gt;&lt;br&gt;&lt;strong&gt;Lead Owner:&lt;/strong&gt; {!ownerName}&lt;/br&gt;&lt;br&gt;&lt;strong&gt;Created On:&lt;/strong&gt; {!LeadRecord.CreatedDate}&lt;/br&gt;&lt;br&gt;&lt;strong&gt;SLA Target:&lt;/strong&gt; {!LeadRecord.RES_SLA_Due_Time__c}&lt;/br&gt;&lt;p&gt;Please take immediate action to follow up.&lt;/p&gt;</stringValue>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>sendRichBody</name>
+            <value>
+                <booleanValue>true</booleanValue>
             </value>
         </inputParameters>
         <inputParameters>
@@ -145,13 +151,122 @@
         <inputParameters>
             <name>emailBody</name>
             <value>
-                <elementReference>oppEmailBody</elementReference>
-                <inputConfiguratorMode>Resource</inputConfiguratorMode>
+                <inputConfiguratorMode>Custom</inputConfiguratorMode>
+                <stringValue>&lt;p&gt;Hello {!User.Name},&lt;/p&gt;&lt;p&gt;Congratulations! The following Opportunity has been marked as Closed Won.&lt;/p&gt;&lt;strong&gt;Opportunity Name:&lt;/strong&gt;  &lt;a href=&quot;{!OrgBaseUrl}lightning/r/Opportunity/{!opportunityRecord.Id}/view&quot;&gt;{!opportunityRecord.Name}&lt;/a&gt;&lt;br&gt;&lt;strong&gt;Opportunity Owner:&lt;/strong&gt; {!ownerName}&lt;/br&gt;&lt;br&gt;&lt;strong&gt;Amount:&lt;/strong&gt; {!opportunityRecord.Amount}&lt;/br&gt;&lt;br&gt;&lt;strong&gt;Close Date:&lt;/strong&gt; {!opportunityRecord.CloseDate}&lt;/br&gt;&lt;br&gt;&lt;strong&gt;Stage:&lt;/strong&gt; {!opportunityRecord.StageName}&lt;/br&gt;&lt;p&gt;Please log in to Salesforce to review and take any necessary follow-up actions.&lt;/p&gt;</stringValue>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>sendRichBody</name>
+            <value>
+                <booleanValue>true</booleanValue>
             </value>
         </inputParameters>
         <nameSegment>emailSimple</nameSegment>
         <offset>0</offset>
         <versionString>2.0.1</versionString>
+    </actionCalls>
+    <actionCalls>
+        <name>Send_OverDue_Task_Email_to_Manager</name>
+        <label>Send OverDue Task Email to Manager</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <actionName>emailSimple</actionName>
+        <actionType>emailSimple</actionType>
+        <flowTransactionModel>CurrentTransaction</flowTransactionModel>
+        <inputParameters>
+            <name>recipientAddresses</name>
+            <value>
+                <collectionElements>
+                    <elementReference>Emails</elementReference>
+                </collectionElements>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>senderType</name>
+            <value>
+                <inputConfiguratorMode>Custom</inputConfiguratorMode>
+                <stringValue>OrgWideEmailAddress</stringValue>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>senderAddress</name>
+            <value>
+                <inputConfiguratorMode>Custom</inputConfiguratorMode>
+                <stringValue>syed.ashraf@globant.com</stringValue>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>composeEmailContent</name>
+            <value>
+                <stringValue>True</stringValue>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>emailSubject</name>
+            <value>
+                <stringValue>Overdue Task Reminder: {!TaskRecord.Subject}</stringValue>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>emailBody</name>
+            <value>
+                <inputConfiguratorMode>Custom</inputConfiguratorMode>
+                <stringValue>&lt;p&gt;Hello {!User.Name},&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Reminder:&lt;/strong&gt; An overdue Task needs attention.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Subject:&lt;/strong&gt;  &lt;a href=&quot;{!OrgBaseUrl}lightning/r/Task/{!TaskRecord.Id}/view&quot;&gt;{!TaskRecord.Subject}&lt;/a&gt;&lt;br&gt;&lt;strong&gt;Due Date:&lt;/strong&gt; {!TaskRecord.ActivityDate}&lt;/br&gt;&lt;br&gt;&lt;strong&gt;Task Owner:&lt;/strong&gt; {!ownerName}&lt;/br&gt;&lt;p&gt;Please review the task in Salesforce.&lt;/p&gt;</stringValue>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>sendRichBody</name>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </inputParameters>
+        <nameSegment>emailSimple</nameSegment>
+        <offset>0</offset>
+        <versionString>2.0.1</versionString>
+    </actionCalls>
+    <actionCalls>
+        <name>Send_OverDue_Task_Notification</name>
+        <label>Send OverDue Task Notification</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <actionName>customNotificationAction</actionName>
+        <actionType>customNotificationAction</actionType>
+        <connector>
+            <targetReference>Send_OverDue_Task_Email_to_Manager</targetReference>
+        </connector>
+        <flowTransactionModel>CurrentTransaction</flowTransactionModel>
+        <inputParameters>
+            <name>customNotifTypeId</name>
+            <value>
+                <elementReference>Get_Overdue_Task_Notification.Id</elementReference>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>recipientIds</name>
+            <value>
+                <elementReference>userId</elementReference>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>title</name>
+            <value>
+                <stringValue>Overdue Task Reminder</stringValue>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>body</name>
+            <value>
+                <stringValue>Task &apos;{!TaskRecord.Subject}&apos; is overdue. Due Date: {!TaskRecord.ActivityDate}. Task Owner: {!ownerName}</stringValue>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>targetId</name>
+            <value>
+                <elementReference>TaskRecord.Id</elementReference>
+            </value>
+        </inputParameters>
+        <nameSegment>customNotificationAction</nameSegment>
+        <offset>0</offset>
     </actionCalls>
     <apiVersion>66.0</apiVersion>
     <areMetricsLoggedToDataCloud>false</areMetricsLoggedToDataCloud>
@@ -214,6 +329,21 @@
             </connector>
             <label>Opportunity Closed Won</label>
         </rules>
+        <rules>
+            <name>OverDue_Task</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>NotificationType</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>OverDueTaskNotification</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Get_Overdue_Task_Notification</targetReference>
+            </connector>
+            <label>OverDue Task</label>
+        </rules>
     </decisions>
     <environments>Default</environments>
     <formulas>
@@ -230,6 +360,11 @@
         <name>oppWonNotificationBody</name>
         <dataType>String</dataType>
         <expression>{!ownerName} &amp; &quot; has Closed Won &quot; &amp; {!opportunityRecord.Name} &amp; &quot; worth Amount &quot; &amp; TEXT({!opportunityRecord.Amount}) &amp; &quot;. Please review.&quot;</expression>
+    </formulas>
+    <formulas>
+        <name>OrgBaseUrl</name>
+        <dataType>String</dataType>
+        <expression>LEFT({!$Api.Partner_Server_URL_370}, FIND(&quot;/services&quot;, {!$Api.Partner_Server_URL_370}))</expression>
     </formulas>
     <interviewLabel>RES AutoLaunchFlow - Notify User&apos;s Manager {!$Flow.CurrentDateTime}</interviewLabel>
     <label>RES AutoLaunchFlow - Notify User&apos;s Manager</label>
@@ -273,6 +408,27 @@
         <object>CustomNotificationType</object>
         <storeOutputAutomatically>true</storeOutputAutomatically>
     </recordLookups>
+    <recordLookups>
+        <name>Get_Overdue_Task_Notification</name>
+        <label>Get Overdue Task Notification</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Send_OverDue_Task_Notification</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>DeveloperName</field>
+            <operator>EqualTo</operator>
+            <value>
+                <stringValue>DIR_Overdue_Task_Escalation</stringValue>
+            </value>
+        </filters>
+        <getFirstRecordOnly>true</getFirstRecordOnly>
+        <object>CustomNotificationType</object>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
     <start>
         <locationX>0</locationX>
         <locationY>0</locationY>
@@ -281,45 +437,6 @@
         </connector>
     </start>
     <status>Active</status>
-    <textTemplates>
-        <name>closedWonOppBody</name>
-        <isViewedAsPlainText>false</isViewedAsPlainText>
-        <text>&lt;p&gt;Hello {!User.Name},&lt;/p&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;Lead &quot;{!opportunityRecord.Name}&quot; has exceeded the SLA response time of 24 hours.&lt;/p&gt;&lt;p&gt;Lead Details:&lt;/p&gt;&lt;p&gt;- Owner: {!&lt;span style=&quot;background-color: rgb(255, 255, 255);&quot;&gt;opportunityRecord&lt;/span&gt;.Owner:User.Name}&lt;/p&gt;&lt;p&gt;- Created On: {!&lt;span style=&quot;background-color: rgb(255, 255, 255);&quot;&gt;opportunityRecord&lt;/span&gt;.CreatedDate}&lt;/p&gt;&lt;p&gt;- Lead:&amp;nbsp;{!LeadLink}&lt;/p&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;Please take immediate action to follow up.&lt;/p&gt;&lt;p&gt;Thanks,&lt;/p&gt;&lt;p&gt;Sales Operations&lt;/p&gt;</text>
-    </textTemplates>
-    <textTemplates>
-        <name>oppEmailBody</name>
-        <isViewedAsPlainText>false</isViewedAsPlainText>
-        <text>Hello {!User.Name},
-
-Congratulations! The following Opportunity has been marked as Closed Won.
-Opportunity Details: -
-Opportunity Name : {!opportunityRecord.Name}
-Owner : {!ownerName}
-Amount : {!opportunityRecord.Amount}
-Close Date : {!opportunityRecord.CloseDate}
-Stage : {!opportunityRecord.StageName}
-Opportunity Link : {!oppLink}
-Please log in to Salesforce to review and take any necessary follow-up actions.
-
-Thanks,
-Sales Operations</text>
-    </textTemplates>
-    <textTemplates>
-        <name>SLABreachTemplate</name>
-        <isViewedAsPlainText>true</isViewedAsPlainText>
-        <text>Hello {!User.Name},
-
-Lead &quot;{!LeadRecord.Name}&quot; has exceeded the SLA response time of 24 hours.
-Lead Details:
-- Owner: {!ownerName}
-- Created On: {!LeadRecord.CreatedDate}
-- SLA Target: {!LeadRecord.RES_SLA_Due_Time__c}
-- Lead:  {!LeadLink}
-
-Please take immediate action to follow up.
-Thanks,
-Sales Operations</text>
-    </textTemplates>
     <variables>
         <name>Emails</name>
         <dataType>String</dataType>
@@ -363,6 +480,14 @@ Sales Operations</text>
         <isCollection>false</isCollection>
         <isInput>true</isInput>
         <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <name>TaskRecord</name>
+        <dataType>SObject</dataType>
+        <isCollection>false</isCollection>
+        <isInput>true</isInput>
+        <isOutput>false</isOutput>
+        <objectType>Task</objectType>
     </variables>
     <variables>
         <name>User</name>

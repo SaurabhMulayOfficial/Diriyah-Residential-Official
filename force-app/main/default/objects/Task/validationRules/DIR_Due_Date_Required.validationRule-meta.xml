@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>DIR_Due_Date_Required</fullName>
+    <active>true</active>
+    <errorConditionFormula>AND(
+    DIR_Due_Date_Required__c = TRUE,
+    ISBLANK(ActivityDate)
+)</errorConditionFormula>
+    <errorDisplayField>ActivityDate</errorDisplayField>
+    <errorMessage>Due Date is required when Due Date Required is checked.</errorMessage>
+</ValidationRule>
