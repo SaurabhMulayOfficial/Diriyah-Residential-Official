@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
-    <fullName>RES_Company_Organization__c</fullName>
-    <externalId>false</externalId>
-    <label>Company Organization</label>
-    <length>120</length>
+    <fullName>RES_Cityspace_Year__c</fullName>
+    <label>Cityspace Year</label>
     <required>false</required>
     <trackFeedHistory>false</trackFeedHistory>
     <trackHistory>false</trackHistory>
-    <type>Text</type>
-    <unique>false</unique>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetName>RES_Cityspace_Year</valueSetName>
+    </valueSet>
 </CustomField>
