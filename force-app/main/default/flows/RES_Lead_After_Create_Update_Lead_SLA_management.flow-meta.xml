@@ -193,6 +193,11 @@
         <dataType>DateTime</dataType>
         <expression>NOW()</expression>
     </formulas>
+    <formulas>
+        <name>OwnerName</name>
+        <dataType>String</dataType>
+        <expression>{!$Record.Owner:User.FirstName}  &amp; &apos; &apos; &amp; {!$Record.Owner:User.LastName}</expression>
+    </formulas>
     <interviewLabel>Lead After Create Update - Lead SLA management {!$Flow.CurrentDateTime}</interviewLabel>
     <label>Lead After Create Update - Lead SLA management</label>
     <processMetadataValues>
@@ -233,6 +238,10 @@
         </filters>
         <getFirstRecordOnly>true</getFirstRecordOnly>
         <object>User</object>
+        <queriedFields>Id</queriedFields>
+        <queriedFields>Email</queriedFields>
+        <queriedFields>Name</queriedFields>
+        <queriedFields>Username</queriedFields>
         <storeOutputAutomatically>true</storeOutputAutomatically>
     </recordLookups>
     <recordUpdates>
@@ -343,6 +352,12 @@
             <name>NotificationType</name>
             <value>
                 <stringValue>SLABreachNotification</stringValue>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <name>ownerName</name>
+            <value>
+                <elementReference>OwnerName</elementReference>
             </value>
         </inputAssignments>
         <inputAssignments>
