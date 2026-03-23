@@ -46,7 +46,7 @@
             <name>emailBody</name>
             <value>
                 <inputConfiguratorMode>Custom</inputConfiguratorMode>
-                <stringValue>&lt;p&gt;Hello {!User.Name},&lt;/p&gt;&lt;p&gt;The following Lead had exceeded the SLA response time of 24 hours.&lt;/p&gt;&lt;strong&gt;Lead Name:&lt;/strong&gt; &lt;a href=&quot;{!OrgBaseUrl}lightning/r/Lead/{!LeadRecord.Id}/view&quot;&gt;{!LeadRecord.Name}&lt;/a&gt;&lt;br&gt;&lt;strong&gt;Lead Owner:&lt;/strong&gt; {!ownerName}&lt;/br&gt;&lt;br&gt;&lt;strong&gt;Created On:&lt;/strong&gt; {!LeadRecord.CreatedDate}&lt;/br&gt;&lt;br&gt;&lt;strong&gt;SLA Target:&lt;/strong&gt; {!LeadRecord.RES_SLA_Due_Time__c}&lt;/br&gt;&lt;p&gt;Please take immediate action to follow up.&lt;/p&gt;</stringValue>
+                <stringValue>&lt;p&gt;Hello {!User.Name},&lt;/p&gt;&lt;p&gt;The following Lead had exceeded the SLA response time of 24 hours.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Lead Name:&lt;/strong&gt; &lt;a href=&quot;{!OrgBaseUrl}lightning/r/Lead/{!LeadId}/view&quot; rel=&quot;noopener noreferrer&quot; target=&quot;_blank&quot;&gt;{!LeadName}&lt;/a&gt;&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Lead Owner:&lt;/strong&gt; {!ownerName}&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Created On:&lt;/strong&gt; {!LeadRecord.CreatedDate}&lt;/p&gt;&lt;p&gt;&lt;strong&gt;SLA Target:&lt;/strong&gt; {!LeadRecord.RES_SLA_Due_Time__c}&lt;/p&gt;&lt;p&gt;Please take immediate action to follow up.&lt;/p&gt;</stringValue>
             </value>
         </inputParameters>
         <inputParameters>
@@ -442,6 +442,20 @@
         <dataType>String</dataType>
         <isCollection>true</isCollection>
         <isInput>false</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <name>LeadId</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>true</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <name>LeadName</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>true</isInput>
         <isOutput>false</isOutput>
     </variables>
     <variables>
