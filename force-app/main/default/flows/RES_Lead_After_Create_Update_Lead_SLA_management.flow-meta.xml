@@ -343,6 +343,18 @@
         <locationY>0</locationY>
         <flowName>RES_AutoLaunchFlow_Notify_User_s_Manager</flowName>
         <inputAssignments>
+            <name>LeadId</name>
+            <value>
+                <elementReference>LeadId</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <name>LeadName</name>
+            <value>
+                <elementReference>LeadName</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
             <name>LeadRecord</name>
             <value>
                 <elementReference>$Record</elementReference>
@@ -368,11 +380,31 @@
         </inputAssignments>
     </subflows>
     <variables>
+        <name>LeadId</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <value>
+            <elementReference>$Record.Id</elementReference>
+        </value>
+    </variables>
+    <variables>
         <name>leadInstance</name>
         <dataType>SObject</dataType>
         <isCollection>false</isCollection>
         <isInput>false</isInput>
         <isOutput>false</isOutput>
         <objectType>Lead</objectType>
+    </variables>
+    <variables>
+        <name>LeadName</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <value>
+            <elementReference>$Record.LastName</elementReference>
+        </value>
     </variables>
 </Flow>
