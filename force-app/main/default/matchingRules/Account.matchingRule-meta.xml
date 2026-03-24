@@ -6,8 +6,8 @@
         <label>Account Match for Company Leads</label>
         <matchingRuleItems>
             <blankValueBehavior>NullNotAllowed</blankValueBehavior>
-            <fieldName>Name</fieldName>
-            <matchingMethod>CompanyName</matchingMethod>
+            <fieldName>Phone</fieldName>
+            <matchingMethod>Exact</matchingMethod>
         </matchingRuleItems>
         <matchingRuleItems>
             <blankValueBehavior>NullNotAllowed</blankValueBehavior>

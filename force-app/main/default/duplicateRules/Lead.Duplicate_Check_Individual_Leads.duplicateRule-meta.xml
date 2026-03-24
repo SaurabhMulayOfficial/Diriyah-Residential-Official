@@ -7,9 +7,9 @@
     <duplicateRuleFilter>
         <booleanFilter xsi:nil="true"/>
         <duplicateRuleFilterItems>
-            <field>Company</field>
+            <field>RecordType</field>
             <operation>equals</operation>
-            <value></value>
+            <value>Residential Individual</value>
             <sortOrder>1</sortOrder>
             <table>Lead</table>
         </duplicateRuleFilterItems>
@@ -25,7 +25,7 @@
             </mappingFields>
             <mappingFields>
                 <inputField>MobilePhone</inputField>
-                <outputField>Phone</outputField>
+                <outputField>PersonMobilePhone</outputField>
             </mappingFields>
             <outputObject>PersonAccount</outputObject>
         </objectMapping>
@@ -33,7 +33,6 @@
     <isActive>true</isActive>
     <masterLabel>Duplicate_Check_Individual_Leads</masterLabel>
     <operationsOnInsert>Alert</operationsOnInsert>
-    <operationsOnUpdate>Alert</operationsOnUpdate>
     <securityOption>BypassSharingRules</securityOption>
     <sortOrder>1</sortOrder>
 </DuplicateRule>
