@@ -170,4 +170,66 @@ private class RES_LeadServicesTest {
             System.assertNotEquals(null, updatedLead.Id);
         }
     }
+
+    /**
+     * @description Validates Lead Record Type assignment based on RES_Marketing_Area__c.
+     * BRANDED_RESIDENTIAL -> RES_Individual
+     * All others/Blank -> RES_Company
+     */
+    @IsTest
+    static void testSelectLeadRecordTypeByMarketingArea() {
+        User u = createUser();
+        
+        // Fetch Record Type IDs dynamically to verify logic
+        Id individualRTId = Schema.SObjectType.Lead.getRecordTypeInfosByDeveloperName()
+                            .get('RES_Individual').getRecordTypeId();
+        Id companyRTId = Schema.SObjectType.Lead.getRecordTypeInfosByDeveloperName()
+                         .get('RES_Company').getRecordTypeId();
+
+        System.runAs(u) {
+            List<Lead> leadsToTest = new List<Lead>();
+
+            // 1. Scenario: Marketing Area is BRANDED_RESIDENTIAL (Individual)
+            for(Integer i=0; i<5; i++) {
+                leadsToTest.add(new Lead(
+                    LastName = 'IndividualTest' + i,
+                    Company = 'Irrelevant Company Name', // Even if company exists
+                    RES_Marketing_Area__c = 'BRANDED_RESIDENTIAL',
+                    Status = '01'
+                ));
+            }
+
+            // 2. Scenario: Marketing Area is something else (Company)
+            for(Integer i=0; i<5; i++) {
+                leadsToTest.add(new Lead(
+                    LastName = 'CompanyTest' + i,
+                    RES_Marketing_Area__c = 'B2B_RETAIL_LEASING',
+                    Status = '01'
+                ));
+            }
+
+            // 3. Scenario: Marketing Area is Blank (Defaults to Company per 'else' logic)
+            leadsToTest.add(new Lead(
+                LastName = 'BlankAreaTest',
+                RES_Marketing_Area__c = null,
+                Status = '01'
+            ));
+
+            Test.startTest();
+            // Calling the service method directly to test logic in isolation
+            RES_LeadServices.selectLeadRecordType(leadsToTest);
+            Test.stopTest();
+
+            // 4. Verification (Assertions)
+            for (Lead l : leadsToTest) {
+                if (l.RES_Marketing_Area__c == 'BRANDED_RESIDENTIAL') {
+                    System.assertEquals(individualRTId, l.RecordTypeId, 
+                        'Branded Residential area should result in Individual Record Type');
+                } else {
+                    System.assertEquals(companyRTId, l.RecordTypeId, 
+                        'Non-Branded or Blank area should result in Company Record Type');
+                }
+            }
+        }
+    }
 }
