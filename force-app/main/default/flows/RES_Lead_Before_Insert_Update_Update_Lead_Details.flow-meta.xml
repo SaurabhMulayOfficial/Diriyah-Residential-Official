@@ -48,6 +48,20 @@
         </connector>
     </assignments>
     <customErrors>
+        <name>RES_Check_Salutation_Error</name>
+        <label>Check Salutation Error</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>If_Owner_Changed_from_Queue_To_User</targetReference>
+        </connector>
+        <customErrorMessages>
+            <errorMessage>Kindly select the appropriate salutation based on gender.</errorMessage>
+            <fieldSelection>Salutation</fieldSelection>
+            <isFieldError>true</isFieldError>
+        </customErrorMessages>
+    </customErrors>
+    <customErrors>
         <name>RES_No_Pre_Selection_Values</name>
         <label>No Pre-Selection Values</label>
         <locationX>0</locationX>
@@ -105,7 +119,7 @@
         <defaultConnector>
             <targetReference>If_Owner_Changed_from_Queue_To_User</targetReference>
         </defaultConnector>
-        <defaultConnectorLabel>No</defaultConnectorLabel>
+        <defaultConnectorLabel>Default</defaultConnectorLabel>
         <rules>
             <name>Yes1</name>
             <conditionLogic>and</conditionLogic>
@@ -128,6 +142,28 @@
             </connector>
             <doesRequireRecordChangedToMeetCriteria>true</doesRequireRecordChangedToMeetCriteria>
             <label>Yes</label>
+        </rules>
+        <rules>
+            <name>No</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.GenderIdentity</leftValueReference>
+                <operator>IsBlank</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Salutation</leftValueReference>
+                <operator>IsBlank</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>RES_Check_Salutation_Error</targetReference>
+            </connector>
+            <label>No</label>
         </rules>
     </decisions>
     <decisions>

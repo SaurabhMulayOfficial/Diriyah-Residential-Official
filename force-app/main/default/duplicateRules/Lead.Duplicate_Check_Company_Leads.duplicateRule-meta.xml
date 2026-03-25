@@ -2,14 +2,14 @@
 <DuplicateRule xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
     <actionOnInsert>Allow</actionOnInsert>
     <actionOnUpdate>Allow</actionOnUpdate>
-    <alertText>Use one of these records?</alertText>
+    <alertText>A duplicate company account already exists for this lead.</alertText>
     <description xsi:nil="true"/>
     <duplicateRuleFilter>
         <booleanFilter xsi:nil="true"/>
         <duplicateRuleFilterItems>
-            <field>Company</field>
-            <operation>notEqual</operation>
-            <value></value>
+            <field>RecordType</field>
+            <operation>equals</operation>
+            <value>Residential Company</value>
             <sortOrder>1</sortOrder>
             <table>Lead</table>
         </duplicateRuleFilterItems>
@@ -20,8 +20,8 @@
         <objectMapping>
             <inputObject>Lead</inputObject>
             <mappingFields>
-                <inputField>Company</inputField>
-                <outputField>Name</outputField>
+                <inputField>MobilePhone</inputField>
+                <outputField>Phone</outputField>
             </mappingFields>
             <mappingFields>
                 <inputField>Website</inputField>
@@ -33,7 +33,6 @@
     <isActive>true</isActive>
     <masterLabel>Duplicate_Check_Company_Leads</masterLabel>
     <operationsOnInsert>Alert</operationsOnInsert>
-    <operationsOnUpdate>Alert</operationsOnUpdate>
     <securityOption>BypassSharingRules</securityOption>
     <sortOrder>2</sortOrder>
 </DuplicateRule>
