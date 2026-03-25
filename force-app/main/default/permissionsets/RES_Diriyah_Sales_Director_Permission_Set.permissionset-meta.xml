@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <PermissionSet xmlns="http://soap.sforce.com/2006/04/metadata">
     <description>Permission Set for Residential Sales Director (Diriyah)</description>
+    <customPermissions>
+        <enabled>true</enabled>
+        <name>RES_Manager_Dashboard_Visibility</name>
+    </customPermissions>
     <fieldPermissions>
         <editable>true</editable>
         <field>Account.RES_Primary_Account__c</field>
@@ -607,16 +611,16 @@
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
-        <editable>true</editable>
-        <field>Opportunity.RES_Opportunity_Email__c</field>
-        <readable>true</readable>
+        <editable>true</editable>
+        <field>Opportunity.RES_Opportunity_Email__c</field>
+        <readable>true</readable>
     </fieldPermissions>
-<fieldPermissions>
-        <editable>true</editable>
-        <field>Opportunity.RES_Opportunity_Mobile__c</field>
-        <readable>true</readable>
+    <fieldPermissions>
+         <editable>true</editable>
+         <field>Opportunity.RES_Opportunity_Mobile__c</field>
+         <readable>true</readable>
     </fieldPermissions>
-     <fieldPermissions>
+    <fieldPermissions>
         <editable>true</editable>
         <field>Opportunity.RES_Reason_for_Lost__c</field>
         <readable>true</readable>
@@ -681,7 +685,7 @@
         <field>Opportunity.Type</field>
         <readable>true</readable>
     </fieldPermissions>
-      <fieldPermissions>
+    <fieldPermissions>
         <editable>true</editable>
         <field>Opportunity.RES_Customer_Interest__c</field>
         <readable>true</readable>
@@ -902,22 +906,10 @@
     </userPermissions>
     <userPermissions>
         <enabled>true</enabled>
-        <name>ConvertLeads</name>
+        <name>EditTask</name>
     </userPermissions>
     <userPermissions>
-            <enabled>true</enabled>
-            <name>EditEvent</name>
-    </userPermissions>
-    <userPermissions>
-            <enabled>true</enabled>
-            <name>EditTask</name>
-    </userPermissions>
-    <userPermissions>
-            <enabled>true</enabled>
-            <name>EmailMass</name>
-    </userPermissions>
-    <userPermissions>
-            <enabled>true</enabled>
-            <name>EmailSingle</name>
-    </userPermissions>
+        <enabled>true</enabled>
+        <name>EmailSingle</name>
+    </userPermissions>s
 </PermissionSet>

@@ -4,6 +4,10 @@
         <enabled>true</enabled>
         <name>RES_Sub_Stage_Visibility</name>
     </customPermissions>
+    <customPermissions>
+        <enabled>true</enabled>
+        <name>RES_Manager_Dashboard_Visibility</name>
+    </customPermissions>
     <description>Permission Set for Residential Sales Relationship Manager (Diriyah)</description>
     <fieldPermissions>
         <editable>true</editable>
@@ -1040,6 +1044,10 @@
         <visibility>Visible</visibility>
     </tabSettings>
     <tabSettings>
+        <tab>standard-Event</tab>
+        <visibility>Visible</visibility>
+    </tabSettings>
+    <tabSettings>
         <tab>standard-Lead</tab>
         <visibility>Visible</visibility>
     </tabSettings>
@@ -1053,22 +1061,14 @@
     </tabSettings>
     <userPermissions>
         <enabled>true</enabled>
-        <name>ConvertLeads</name>
+        <name>ApiEnabled</name>
     </userPermissions>
     <userPermissions>
-            <enabled>true</enabled>
-            <name>EditEvent</name>
+        <enabled>true</enabled>
+        <name>EditTask</name>
     </userPermissions>
     <userPermissions>
-            <enabled>true</enabled>
-            <name>EditTask</name>
-    </userPermissions>
-    <userPermissions>
-            <enabled>true</enabled>
-            <name>EmailMass</name>
-    </userPermissions>
-    <userPermissions>
-            <enabled>true</enabled>
-            <name>EmailSingle</name>
+        <enabled>true</enabled>
+        <name>EmailSingle</name>
     </userPermissions>
 </PermissionSet>
