@@ -1,6 +1,35 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Flow xmlns="http://soap.sforce.com/2006/04/metadata">
     <actionCalls>
+        <name>Assign_Next_Owner_and_Update_Lead</name>
+        <label>Assign Next Owner and Update Lead</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <actionName>RES_LeadServices</actionName>
+        <actionType>apex</actionType>
+        <flowTransactionModel>Automatic</flowTransactionModel>
+        <inputParameters>
+            <name>currentOwnerId</name>
+            <value>
+                <elementReference>OwnerId</elementReference>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>leadId</name>
+            <value>
+                <elementReference>LeadId</elementReference>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>previousOwnerId</name>
+            <value>
+                <elementReference>previousOwnerId</elementReference>
+            </value>
+        </inputParameters>
+        <nameSegment>RES_LeadServices</nameSegment>
+        <offset>0</offset>
+    </actionCalls>
+    <actionCalls>
         <name>Auto_Create_Task_on_Lead_Conversion</name>
         <label>Auto-Create Task on Lead Conversion</label>
         <locationX>0</locationX>
@@ -105,6 +134,28 @@
         </rules>
     </decisions>
     <decisions>
+        <name>Check_required_Conditions</name>
+        <label>Check required Conditions</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Check_Previous_Owner</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.RES_Previous_Lead_Owner__c</leftValueReference>
+                <operator>StartsWith</operator>
+                <rightValue>
+                    <stringValue>00G</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Assign_Next_Owner_and_Update_Lead</targetReference>
+            </connector>
+            <label>Check Previous Owner</label>
+        </rules>
+    </decisions>
+    <decisions>
         <name>if_Due</name>
         <label>if DUE Date Is Null</label>
         <locationX>0</locationX>
@@ -143,6 +194,28 @@
                 <targetReference>Notify_User_s_Manager</targetReference>
             </connector>
             <label>Yes</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>If_Next_Reassignment_Date_is_Not_Null</name>
+        <label>If Next Reassignment Date is Not Null</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Not_Null</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.RES_Next_Assignment_Date__c</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Check_required_Conditions</targetReference>
+            </connector>
+            <label>Not Null</label>
         </rules>
     </decisions>
     <decisions>
@@ -333,6 +406,17 @@
             <recordField>RES_SLA_Due_Time__c</recordField>
             <timeSource>RecordField</timeSource>
         </scheduledPaths>
+        <scheduledPaths>
+            <name>If_next_Reassigned_Date_is_Not_Null</name>
+            <connector>
+                <targetReference>If_Next_Reassignment_Date_is_Not_Null</targetReference>
+            </connector>
+            <label>If next Reassigned Date is Not Null</label>
+            <offsetNumber>0</offsetNumber>
+            <offsetUnit>Minutes</offsetUnit>
+            <recordField>RES_Next_Assignment_Date__c</recordField>
+            <timeSource>RecordField</timeSource>
+        </scheduledPaths>
         <triggerType>RecordAfterSave</triggerType>
     </start>
     <status>Active</status>
@@ -405,6 +489,26 @@
         <isOutput>false</isOutput>
         <value>
             <elementReference>$Record.LastName</elementReference>
+        </value>
+    </variables>
+    <variables>
+        <name>OwnerId</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <value>
+            <elementReference>$Record.OwnerId</elementReference>
+        </value>
+    </variables>
+    <variables>
+        <name>previousOwnerId</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <value>
+            <elementReference>$Record.RES_Previous_Lead_Owner__c</elementReference>
         </value>
     </variables>
 </Flow>
