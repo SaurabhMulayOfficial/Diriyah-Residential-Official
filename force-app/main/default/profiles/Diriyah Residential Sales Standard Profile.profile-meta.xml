@@ -48,6 +48,10 @@
             <field>Activity.RES_Is_Overdue_Task__c</field>
             <readable>true</readable>
     </fieldPermissions>
+    <fieldPermissions>
+        <field>Opportunity.RES_Is_Overdue_Flag__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
     <recordTypeVisibilities>
         <default>true</default>
         <personAccountDefault>true</personAccountDefault>
