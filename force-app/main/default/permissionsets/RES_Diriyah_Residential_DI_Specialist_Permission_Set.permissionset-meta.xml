@@ -3,6 +3,10 @@
     <description>Permission Set for 
 Sales – DI – Specialist
 Sales – DI – Relationship Manager</description>
+    <customPermissions>
+        <enabled>true</enabled>
+        <name>RES_Manager_Dashboard_Visibility</name>
+    </customPermissions>    
     <fieldPermissions>
         <editable>false</editable>
         <field>Account.AccountNumber</field>
@@ -1299,26 +1303,6 @@ Sales – DI – Relationship Manager</description>
     <objectPermissions>
         <allowCreate>true</allowCreate>
         <allowDelete>false</allowDelete>
-        <allowEdit>false</allowEdit>
-        <allowRead>true</allowRead>
-        <modifyAllRecords>false</modifyAllRecords>
-        <object>Pricebook2</object>
-        <viewAllFields>false</viewAllFields>
-        <viewAllRecords>false</viewAllRecords>
-    </objectPermissions>
-    <objectPermissions>
-        <allowCreate>true</allowCreate>
-        <allowDelete>false</allowDelete>
-        <allowEdit>false</allowEdit>
-        <allowRead>true</allowRead>
-        <modifyAllRecords>false</modifyAllRecords>
-        <object>Product2</object>
-        <viewAllFields>false</viewAllFields>
-        <viewAllRecords>false</viewAllRecords>
-    </objectPermissions>
-    <objectPermissions>
-        <allowCreate>true</allowCreate>
-        <allowDelete>false</allowDelete>
         <allowEdit>true</allowEdit>
         <allowRead>true</allowRead>
         <modifyAllRecords>false</modifyAllRecords>
@@ -1363,6 +1347,10 @@ Sales – DI – Relationship Manager</description>
         <visibility>Visible</visibility>
     </tabSettings>
     <tabSettings>
+        <tab>standard-Event</tab>
+        <visibility>Visible</visibility>
+    </tabSettings>
+    <tabSettings>
         <tab>standard-Lead</tab>
         <visibility>Visible</visibility>
     </tabSettings>
@@ -1370,4 +1358,20 @@ Sales – DI – Relationship Manager</description>
         <tab>standard-Opportunity</tab>
         <visibility>Visible</visibility>
     </tabSettings>
+    <tabSettings>
+        <tab>standard-Task</tab>
+        <visibility>Visible</visibility>
+    </tabSettings>
+    <userPermissions>
+        <enabled>true</enabled>
+        <name>ApiEnabled</name>
+    </userPermissions>
+    <userPermissions>
+        <enabled>true</enabled>
+        <name>EditTask</name>
+    </userPermissions>
+    <userPermissions>
+        <enabled>true</enabled>
+        <name>EmailSingle</name>
+    </userPermissions>
 </PermissionSet>
