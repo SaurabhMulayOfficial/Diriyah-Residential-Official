@@ -50,6 +50,12 @@
             </value>
         </inputParameters>
         <inputParameters>
+            <name>DIR_Due_Date_Required__c</name>
+            <value>
+                <booleanValue>false</booleanValue>
+            </value>
+        </inputParameters>
+        <inputParameters>
             <name>OwnerId</name>
             <value>
                 <elementReference>$Record.OwnerId</elementReference>
