@@ -194,14 +194,16 @@ public with sharing class RES_LeadServices {
                                     .get('RES_Company').getRecordTypeId();
 
         for (Lead l : newLeadList) {
-        // Proposed Logic: Marketing Area 'BRANDED_RESIDENTIAL' is B2C (Individual)
-        // Otherwise, it is B2B (Company)
-        if (l.RES_Marketing_Area__c == 'BRANDED_RESIDENTIAL') {
-            l.RecordTypeId = individualRecordTypeId;
-        } else {
-            l.RecordTypeId = companyRecordTypeId;
+            if (l.RES_Marketing_Area__c == 'BRANDED_RESIDENTIAL') {
+                l.RecordTypeId = individualRecordTypeId;
+            } else {
+                l.RecordTypeId = companyRecordTypeId;
+            }
         }
     }
+
+    public static void applyDeduplicationRules(List<Lead> leadList){
+        RES_LeadDeduplicationHandler.apply(leadList);
     }
 
 }
