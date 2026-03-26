@@ -4,16 +4,7 @@
     <actionOnUpdate>Allow</actionOnUpdate>
     <alertText>A duplicate company account already exists for this lead.</alertText>
     <description xsi:nil="true"/>
-    <duplicateRuleFilter>
-        <booleanFilter xsi:nil="true"/>
-        <duplicateRuleFilterItems>
-            <field>RecordType</field>
-            <operation>equals</operation>
-            <value>Residential Company</value>
-            <sortOrder>1</sortOrder>
-            <table>Lead</table>
-        </duplicateRuleFilterItems>
-    </duplicateRuleFilter>
+    <duplicateRuleFilter xsi:nil="true"/>
     <duplicateRuleMatchRules>
         <matchRuleSObjectType>Account</matchRuleSObjectType>
         <matchingRule>RES_Account_Match_for_Company_Leads</matchingRule>
@@ -34,5 +25,5 @@
     <masterLabel>Duplicate_Check_Company_Leads</masterLabel>
     <operationsOnInsert>Alert</operationsOnInsert>
     <securityOption>BypassSharingRules</securityOption>
-    <sortOrder>2</sortOrder>
+    <sortOrder>1</sortOrder>
 </DuplicateRule>
