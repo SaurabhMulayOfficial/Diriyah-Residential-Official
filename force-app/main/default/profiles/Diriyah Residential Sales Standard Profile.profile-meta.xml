@@ -32,6 +32,22 @@
     <layoutAssignments>
             <layout>RES_Opportunity_Account_Link__c-Opportunity Account Link Layout</layout>
     </layoutAssignments>
+    <fieldPermissions>
+            <field>Activity.RES_Is_Call_Flag__c</field>
+            <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+            <field>Activity.RES_Is_Email_Flag__c</field>
+            <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+            <field>Activity.RES_Is_Meeting_Flag__c</field>
+            <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+            <field>Activity.RES_Is_Overdue_Task__c</field>
+            <readable>true</readable>
+    </fieldPermissions>
     <recordTypeVisibilities>
         <default>true</default>
         <personAccountDefault>true</personAccountDefault>
