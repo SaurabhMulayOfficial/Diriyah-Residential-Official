@@ -194,7 +194,7 @@ public with sharing class RES_LeadServices {
                                     .get('RES_Company').getRecordTypeId();
 
         for (Lead l : newLeadList) {
-            if (l.RES_Marketing_Area__c == 'BRANDED_RESIDENTIAL') {
+            if (l.RES_Marketing_Area__c == 'BRANDED_RESIDENTIAL' || l.RecordTypeId == individualRecordTypeId) {
                 l.RecordTypeId = individualRecordTypeId;
             } else {
                 l.RecordTypeId = companyRecordTypeId;
