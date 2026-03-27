@@ -78,7 +78,7 @@ public without sharing class RES_LeadDAOLayer extends RES_BaseDAOLayer {
     public Map<Id, Lead> getLeadByIds(Set<Id> leadIds, Boolean useMap){
         Map<String, Object> bindVars = new Map<String, Object> ();
         bindVars.put('leadIds', leadIds);
-        String soql = 'SELECT Id, Name, CreatedDate, leadSource, OwnerId, Status FROM Lead WHERE Id IN: leadIds';
+        String soql = 'SELECT Id, Name, CreatedDate, leadSource, OwnerId, Status, RES_Project__c FROM Lead WHERE Id IN: leadIds';
         Map<Id, sObject> leadMap = executeQueryToMap(soql, '', false, bindVars, AccessLevel.SYSTEM_MODE);
         Map<Id, Lead> typeCastedLeadMap = typeCast(leadMap);
         return typeCastedLeadMap;

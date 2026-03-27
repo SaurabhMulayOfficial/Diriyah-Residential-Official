@@ -71,10 +71,13 @@ public without sharing class RES_LeadDeduplicationHandler {
                     }
 
                     for (Datacloud.MatchRecord matchRecord : matchResult.getMatchRecords()) {
-                        Lead dupLead = (Lead) matchRecord.getRecord();
-                        
-                        wrapper.duplicateLeadIds.add(dupLead.Id);
+                        SObject record = matchRecord.getRecord();
 
+                        if(record.getSObjectType() == Lead.SObjectType) {
+                            Lead dupLead = (Lead) record;
+                            wrapper.duplicateLeadIds.add(dupLead.Id);
+
+                        }
                     }
                 }
             }
