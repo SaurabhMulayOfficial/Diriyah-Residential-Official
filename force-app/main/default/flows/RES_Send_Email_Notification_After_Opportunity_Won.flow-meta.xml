@@ -145,6 +145,7 @@
         <connector>
             <targetReference>Get_Record_Type_Name</targetReference>
         </connector>
+        <doesRequireRecordChangedToMeetCriteria>true</doesRequireRecordChangedToMeetCriteria>
         <filterLogic>and</filterLogic>
         <filters>
             <field>StageName</field>
