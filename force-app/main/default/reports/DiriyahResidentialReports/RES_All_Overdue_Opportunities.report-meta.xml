@@ -40,13 +40,7 @@
         <field>CREATED_DATE</field>
     </columns>
     <columns>
-        <field>NEXT_STEP</field>
-    </columns>
-    <columns>
         <field>LEAD_SOURCE</field>
-    </columns>
-    <columns>
-        <field>TYPE</field>
     </columns>
     <currency>SAR</currency>
     <filter>
@@ -85,6 +79,6 @@
     <showSubTotals>true</showSubTotals>
     <timeFrameFilter>
         <dateColumn>CLOSE_DATE</dateColumn>
-        <interval>INTERVAL_CURRENT</interval>
+        <interval>INTERVAL_LAST120</interval>
     </timeFrameFilter>
 </Report>
