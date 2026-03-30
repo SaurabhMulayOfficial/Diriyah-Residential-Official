@@ -16,6 +16,22 @@
         </assignmentItems>
     </assignments>
     <assignments>
+        <name>Next_Reassignment_Date_NOW_30_days</name>
+        <label>Next Reassignment Date: NOW + 30 days</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignmentItems>
+            <assignToReference>$Record.RES_Next_Assignment_Date__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>RetiredDateTime</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>RES_To_Check_Salutation</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
         <name>RES_Female_Gender_Assignment</name>
         <label>Female Gender Assignment</label>
         <locationX>0</locationX>
@@ -75,6 +91,31 @@
             <isFieldError>true</isFieldError>
         </customErrorMessages>
     </customErrors>
+    <decisions>
+        <name>If_Lead_Status_Changed_To_Retired</name>
+        <label>If Lead Status Changed To Retired</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnector>
+            <targetReference>RES_To_Check_Salutation</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Yes_Retired</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.Status</leftValueReference>
+                <operator>IsChanged</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Next_Reassignment_Date_NOW_30_days</targetReference>
+            </connector>
+            <label>Yes</label>
+        </rules>
+    </decisions>
     <decisions>
         <name>If_Owner_Changed_from_Queue_To_User</name>
         <label>If Owner Changed from Queue To User</label>
@@ -197,7 +238,7 @@
                 </rightValue>
             </conditions>
             <connector>
-                <targetReference>RES_To_Check_Salutation</targetReference>
+                <targetReference>If_Lead_Status_Changed_To_Retired</targetReference>
             </connector>
             <label>Present</label>
         </rules>
@@ -257,6 +298,19 @@
         </rules>
     </decisions>
     <environments>Default</environments>
+    <formulas>
+        <name>RetiredDateTime</name>
+        <dataType>DateTime</dataType>
+        <expression>IF(
+  ISCHANGED({!$Record.Status}),
+  IF(
+    ISPICKVAL({!$Record.Status},&apos;05&apos;),
+    NOW() + 30,
+    NULL
+  ),
+{!$Record.RES_Next_Assignment_Date__c}
+)</expression>
+    </formulas>
     <interviewLabel>Lead - Before Insert Update - Update Lead Details {!$Flow.CurrentDateTime}</interviewLabel>
     <label>Lead - Before Insert Update - Update Lead Details</label>
     <processMetadataValues>
