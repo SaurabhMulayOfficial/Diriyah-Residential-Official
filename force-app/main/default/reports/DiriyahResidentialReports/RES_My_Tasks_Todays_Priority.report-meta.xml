@@ -78,7 +78,7 @@
     </params>
     <params>
         <name>type</name>
-        <value>t</value>
+        <value>te</value>
     </params>
     <params>
         <name>co</name>
@@ -92,7 +92,7 @@
     <sortColumn>DUE_DATE</sortColumn>
     <sortOrder>Asc</sortOrder>
     <timeFrameFilter>
-        <dateColumn>COMPLETED_DATE_TIME</dateColumn>
+        <dateColumn>DUE_DATE</dateColumn>
         <interval>INTERVAL_LAST7</interval>
     </timeFrameFilter>
 </Report>
