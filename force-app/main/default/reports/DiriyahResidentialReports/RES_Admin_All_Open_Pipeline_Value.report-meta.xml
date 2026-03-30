@@ -19,10 +19,6 @@
         <field>AMOUNT</field>
     </columns>
     <columns>
-        <aggregateTypes>Sum</aggregateTypes>
-        <field>PROBABILITY</field>
-    </columns>
-    <columns>
         <field>CREATED_DATE</field>
     </columns>
     <columns>
@@ -64,7 +60,7 @@
     <showGrandTotal>true</showGrandTotal>
     <showSubTotals>true</showSubTotals>
     <timeFrameFilter>
-        <dateColumn>CLOSE_DATE</dateColumn>
-        <interval>INTERVAL_CURNEXT1</interval>
+        <dateColumn>CREATED_DATE</dateColumn>
+        <interval>INTERVAL_CUSTOM</interval>
     </timeFrameFilter>
 </Report>
