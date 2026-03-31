@@ -38,18 +38,20 @@
             <dashboardComponent>
                 <autoselectColumnsFromReport>false</autoselectColumnsFromReport>
                 <chartSummary>
-                    <column>FORMULA1</column>
+                    <aggregate>Sum</aggregate>
+                    <column>AMOUNT</column>
                 </chartSummary>
                 <componentType>Metric</componentType>
                 <decimalPrecision>-1</decimalPrecision>
                 <displayUnits>Auto</displayUnits>
                 <groupingSortProperties/>
-                <header>All Open Opportunities Value</header>
+                <header>Total Open Opportunities</header>
                 <indicatorBreakpoint1>33.0</indicatorBreakpoint1>
                 <indicatorBreakpoint2>67.0</indicatorBreakpoint2>
                 <indicatorHighColor>#00716B</indicatorHighColor>
                 <indicatorLowColor>#C23934</indicatorLowColor>
                 <indicatorMiddleColor>#CA8501</indicatorMiddleColor>
+                <metricLabel>Total value of all open deals</metricLabel>
                 <report>DiriyahResidentialReports/RES_Admin_All_Open_Pipeline_Value</report>
                 <showRange>false</showRange>
             </dashboardComponent>
@@ -291,7 +293,7 @@
                         <sortOrder>a</sortOrder>
                     </groupingSorts>
                 </groupingSortProperties>
-                <header>Pipeline by Stage — Amount &amp; Count</header>
+                <header>Opportunities by Stage — Amount &amp; Count</header>
                 <legendPosition>Bottom</legendPosition>
                 <report>DiriyahResidentialReports/RES_Pipeline_by_Stage</report>
                 <showPercentage>false</showPercentage>

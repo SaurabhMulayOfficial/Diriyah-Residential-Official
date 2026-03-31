@@ -71,7 +71,7 @@
         <field>ASSIGNED</field>
         <sortOrder>Asc</sortOrder>
     </groupingsDown>
-    <name>My Tasks — Today&apos;s Priority</name>
+    <name>My Overdue Tasks All Time</name>
     <params>
         <name>closed</name>
         <value>open</value>
@@ -93,6 +93,6 @@
     <sortOrder>Asc</sortOrder>
     <timeFrameFilter>
         <dateColumn>DUE_DATE</dateColumn>
-        <interval>INTERVAL_TODAY</interval>
+        <interval>INTERVAL_CUSTOM</interval>
     </timeFrameFilter>
 </Report>

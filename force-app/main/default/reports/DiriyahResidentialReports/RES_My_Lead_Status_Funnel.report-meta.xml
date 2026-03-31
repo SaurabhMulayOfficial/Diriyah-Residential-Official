@@ -56,6 +56,13 @@
             <operator>equals</operator>
             <value>0</value>
         </criteriaItems>
+        <criteriaItems>
+            <column>STATUS</column>
+            <columnToColumn>false</columnToColumn>
+            <isUnlocked>false</isUnlocked>
+            <operator>equals</operator>
+            <value>01,New,02,Active,04,Qualified,Z1,Uncontacted,Archive</value>
+        </criteriaItems>
         <language>en_US</language>
     </filter>
     <format>Summary</format>
