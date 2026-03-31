@@ -9,11 +9,28 @@
         <masterLabel>Win Rate</masterLabel>
         <scale>2</scale>
     </aggregates>
+    <aggregates>
+        <calculatedFormula>IF(CLOSED:SUM &gt; 0, (CLOSED:SUM - WON:SUM) / CLOSED:SUM, 0)</calculatedFormula>
+        <datatype>percent</datatype>
+        <developerName>FORMULA2</developerName>
+        <isActive>true</isActive>
+        <isCrossBlock>false</isCrossBlock>
+        <masterLabel>Loss Rate</masterLabel>
+        <scale>2</scale>
+    </aggregates>
     <colorRanges>
         <columnName>FORMULA1</columnName>
         <highBreakpoint>0.4</highBreakpoint>
         <highColor>#006714</highColor>
         <lowBreakpoint>0.25</lowBreakpoint>
+        <lowColor>#B50E03</lowColor>
+        <midColor>#B56200</midColor>
+    </colorRanges>
+    <colorRanges>
+        <columnName>FORMULA2</columnName>
+        <highBreakpoint>50.0</highBreakpoint>
+        <highColor>#006714</highColor>
+        <lowBreakpoint>0.0</lowBreakpoint>
         <lowColor>#B50E03</lowColor>
         <midColor>#B56200</midColor>
     </colorRanges>
@@ -45,6 +62,16 @@
         <field>CREATED_DATE</field>
     </columns>
     <currency>SAR</currency>
+    <filter>
+        <criteriaItems>
+            <column>CLOSED</column>
+            <columnToColumn>false</columnToColumn>
+            <isUnlocked>false</isUnlocked>
+            <operator>equals</operator>
+            <value>1</value>
+        </criteriaItems>
+        <language>en_US</language>
+    </filter>
     <format>Summary</format>
     <formattingRules>
         <columnName>FORMULA1</columnName>
@@ -60,14 +87,23 @@
             <backgroundColor>#006714</backgroundColor>
         </values>
     </formattingRules>
+    <formattingRules>
+        <columnName>FORMULA2</columnName>
+        <values>
+            <backgroundColor>#B50E03</backgroundColor>
+            <rangeUpperBound>0.0</rangeUpperBound>
+        </values>
+        <values>
+            <backgroundColor>#B56200</backgroundColor>
+            <rangeUpperBound>50.0</rangeUpperBound>
+        </values>
+        <values>
+            <backgroundColor>#006714</backgroundColor>
+        </values>
+    </formattingRules>
     <groupingsDown>
         <dateGranularity>Day</dateGranularity>
         <field>FULL_NAME</field>
-        <sortOrder>Asc</sortOrder>
-    </groupingsDown>
-    <groupingsDown>
-        <dateGranularity>Day</dateGranularity>
-        <field>WON</field>
         <sortOrder>Asc</sortOrder>
     </groupingsDown>
     <name>Win Loss Analysis</name>
