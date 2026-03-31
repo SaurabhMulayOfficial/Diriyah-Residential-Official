@@ -34,13 +34,13 @@
         <field>AGE</field>
     </columns>
     <columns>
-        <field>CLOSE_DATE</field>
-    </columns>
-    <columns>
         <field>CREATED_DATE</field>
     </columns>
     <columns>
         <field>LEAD_SOURCE</field>
+    </columns>
+    <columns>
+        <field>CLOSE_DATE</field>
     </columns>
     <currency>SAR</currency>
     <filter>
@@ -55,8 +55,8 @@
             <column>CLOSE_DATE</column>
             <columnToColumn>false</columnToColumn>
             <isUnlocked>false</isUnlocked>
-            <operator>lessOrEqual</operator>
-            <value>TODAY</value>
+            <operator>equals</operator>
+            <value>THIS_MONTH</value>
         </criteriaItems>
         <language>en_US</language>
     </filter>

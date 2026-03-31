@@ -26,6 +26,7 @@
                 <indicatorHighColor>#00716B</indicatorHighColor>
                 <indicatorLowColor>#C23934</indicatorLowColor>
                 <indicatorMiddleColor>#CA8501</indicatorMiddleColor>
+                <metricLabel>Active Leads</metricLabel>
                 <report>DiriyahResidentialReports/RES_ALL_Total_Active_Leads</report>
                 <showRange>false</showRange>
             </dashboardComponent>
@@ -75,6 +76,7 @@
                 <indicatorHighColor>#00716B</indicatorHighColor>
                 <indicatorLowColor>#C23934</indicatorLowColor>
                 <indicatorMiddleColor>#CA8501</indicatorMiddleColor>
+                <metricLabel>Overdue Opportunities</metricLabel>
                 <report>DiriyahResidentialReports/RES_All_Overdue_Opportunities</report>
                 <showRange>false</showRange>
             </dashboardComponent>
@@ -99,6 +101,7 @@
                 <indicatorHighColor>#00716B</indicatorHighColor>
                 <indicatorLowColor>#C23934</indicatorLowColor>
                 <indicatorMiddleColor>#CA8501</indicatorMiddleColor>
+                <metricLabel>Activities This Month</metricLabel>
                 <report>DiriyahResidentialReports/RES_All_Active_Activities_This_Month</report>
                 <showRange>false</showRange>
             </dashboardComponent>
@@ -123,6 +126,7 @@
                 <indicatorHighColor>#00716B</indicatorHighColor>
                 <indicatorLowColor>#C23934</indicatorLowColor>
                 <indicatorMiddleColor>#CA8501</indicatorMiddleColor>
+                <metricLabel>Completed Activities This Month</metricLabel>
                 <report>DiriyahResidentialReports/RES_All_Completed_Activities_This_Month</report>
                 <showRange>false</showRange>
             </dashboardComponent>
@@ -148,6 +152,7 @@
                 <indicatorHighColor>#00716B</indicatorHighColor>
                 <indicatorLowColor>#C23934</indicatorLowColor>
                 <indicatorMiddleColor>#CA8501</indicatorMiddleColor>
+                <metricLabel>Org Win Rate</metricLabel>
                 <report>DiriyahResidentialReports/RES_Org_Win_Rate</report>
                 <showRange>false</showRange>
             </dashboardComponent>
@@ -171,7 +176,6 @@
                 <drillToDetailEnabled>false</drillToDetailEnabled>
                 <enableHover>false</enableHover>
                 <expandOthers>false</expandOthers>
-                <footer>Active leads by pipeline stage — all time</footer>
                 <groupingColumn>STATUS</groupingColumn>
                 <groupingSortProperties>
                     <groupingSorts>
@@ -186,6 +190,7 @@
                 <showValues>true</showValues>
                 <sortBy>RowLabelAscending</sortBy>
                 <sortLegendValues>true</sortLegendValues>
+                <title>Active leads by pipeline stage -all time</title>
                 <useReportChart>false</useReportChart>
             </dashboardComponent>
             <rowIndex>5</rowIndex>
@@ -208,7 +213,6 @@
                 <drillToDetailEnabled>false</drillToDetailEnabled>
                 <enableHover>false</enableHover>
                 <expandOthers>false</expandOthers>
-                <footer>% of leads converted per channel — last 12 months</footer>
                 <groupingColumn>LEAD_SOURCE</groupingColumn>
                 <groupingSortProperties>
                     <groupingSorts>
@@ -224,6 +228,7 @@
                 <showValues>true</showValues>
                 <sortBy>RowLabelAscending</sortBy>
                 <sortLegendValues>true</sortLegendValues>
+                <title>Conversion Rate by Source</title>
                 <useReportChart>false</useReportChart>
             </dashboardComponent>
             <rowIndex>5</rowIndex>
@@ -261,6 +266,7 @@
                 <showValues>true</showValues>
                 <sortBy>RowLabelAscending</sortBy>
                 <sortLegendValues>true</sortLegendValues>
+                <title>Assignment &amp; Owner Distribution</title>
                 <useReportChart>false</useReportChart>
             </dashboardComponent>
             <rowIndex>5</rowIndex>
@@ -283,7 +289,6 @@
                 <drillToDetailEnabled>false</drillToDetailEnabled>
                 <enableHover>false</enableHover>
                 <expandOthers>false</expandOthers>
-                <footer>Open deals value + weighted forecast</footer>
                 <groupingColumn>STAGE_NAME</groupingColumn>
                 <groupingSortProperties>
                     <groupingSorts>
@@ -291,7 +296,7 @@
                         <sortOrder>a</sortOrder>
                     </groupingSorts>
                 </groupingSortProperties>
-                <header>Opportunities by Stage — Amount &amp; Count</header>
+                <header>Opportunities by Stage - Amount &amp; Count</header>
                 <legendPosition>Bottom</legendPosition>
                 <report>DiriyahResidentialReports/RES_Pipeline_by_Stage</report>
                 <showPercentage>false</showPercentage>
@@ -299,6 +304,7 @@
                 <showValues>true</showValues>
                 <sortBy>RowLabelAscending</sortBy>
                 <sortLegendValues>true</sortLegendValues>
+                <title>Deals by Stage - Amount &amp; Count</title>
                 <useReportChart>false</useReportChart>
             </dashboardComponent>
             <rowIndex>13</rowIndex>
@@ -336,6 +342,7 @@
                 <showValues>true</showValues>
                 <sortBy>RowLabelAscending</sortBy>
                 <sortLegendValues>true</sortLegendValues>
+                <title>Win/Loss Analysis</title>
                 <useReportChart>false</useReportChart>
             </dashboardComponent>
             <rowIndex>13</rowIndex>
@@ -380,10 +387,10 @@
                     <hideChatterPhotos>true</hideChatterPhotos>
                     <useReportTableSetting>false</useReportTableSetting>
                 </flexComponentProperties>
-                <footer>Overdue vs due today vs upcoming - per rep</footer>
                 <groupingSortProperties/>
                 <header>Open Tasks by Age &amp; Owner</header>
                 <report>DiriyahResidentialReports/RES_Open_Tasks_by_Age_and_Owner</report>
+                <title>Tasks by Age &amp; Owner</title>
             </dashboardComponent>
             <rowIndex>13</rowIndex>
             <rowSpan>8</rowSpan>
@@ -405,7 +412,6 @@
                 <drillToDetailEnabled>false</drillToDetailEnabled>
                 <enableHover>false</enableHover>
                 <expandOthers>false</expandOthers>
-                <footer>Open deals past close date</footer>
                 <groupingColumn>Opportunity.RES_Overdue_Severity__c</groupingColumn>
                 <groupingSortProperties>
                     <groupingSorts>
@@ -421,6 +427,7 @@
                 <showValues>true</showValues>
                 <sortBy>RowLabelAscending</sortBy>
                 <sortLegendValues>true</sortLegendValues>
+                <title>Open deals past close date</title>
                 <useReportChart>false</useReportChart>
             </dashboardComponent>
             <rowIndex>21</rowIndex>
@@ -443,7 +450,6 @@
                 <drillToDetailEnabled>false</drillToDetailEnabled>
                 <enableHover>false</enableHover>
                 <expandOthers>false</expandOthers>
-                <footer>Completed activities this month - stacked by type</footer>
                 <groupingColumn>ASSIGNED</groupingColumn>
                 <groupingColumn>TASK_SUBTYPE</groupingColumn>
                 <groupingSortProperties>
@@ -463,6 +469,7 @@
                 <showValues>false</showValues>
                 <sortBy>RowLabelAscending</sortBy>
                 <sortLegendValues>true</sortLegendValues>
+                <title>Activities this month By Rep</title>
                 <useReportChart>false</useReportChart>
             </dashboardComponent>
             <rowIndex>21</rowIndex>
