@@ -6,14 +6,14 @@
  *  Z02 = Management Leads (Employee)
  *  Z05 = Broker
  *  Z06 = Leads by Marketing
- *  Z11 = Manual
+ *  Z09 = Manual
  *
  * @ author             : Test Author
  */
 @isTest
 private class RES_LeadDuplicateHandlerTest {
 
-    private static final String SRC_MANUAL    = 'Z11';
+    private static final String SRC_MANUAL    = 'Z09';
     private static final String SRC_EMPLOYEE  = 'Z02';
     private static final String SRC_MARKETING = 'Z06';
     private static final String SRC_BROKER    = 'Z05';
@@ -127,7 +127,7 @@ private class RES_LeadDuplicateHandlerTest {
 
     // =========================================================================
     // GROUP A — Days Threshold (45 days), BLOCK
-    // Representative rule: Manual(Z11) → Manual(Z11)
+    // Representative rule: Manual(Z09) → Manual(Z09)
     // =========================================================================
 
     @isTest
@@ -140,7 +140,7 @@ private class RES_LeadDuplicateHandlerTest {
         Test.stopTest();
 
         System.assertEquals(true, shouldBlock,
-            'Manual(Z11) → Manual(Z11) created same day must be within 45-day threshold → block');
+            'Manual(Z09) → Manual(Z09) created same day must be within 45-day threshold → block');
     }
 
     @isTest
@@ -213,7 +213,7 @@ private class RES_LeadDuplicateHandlerTest {
 
     // =========================================================================
     // GROUP C — Archive + Same RM
-    // Representative rule: Broker(Z05) → Manual(Z11)
+    // Representative rule: Broker(Z05) → Manual(Z09)
     // =========================================================================
 
     @isTest
@@ -240,9 +240,9 @@ private class RES_LeadDuplicateHandlerTest {
         Test.stopTest();
 
         System.assertEquals(STATUS_ARCHIVE, inputLd.Status,
-            'Broker(Z05) → Manual(Z11): input lead status must be set to Archive');
+            'Broker(Z05) → Manual(Z09): input lead status must be set to Archive');
         System.assertEquals(String.valueOf(runningUserId), String.valueOf(inputLd.OwnerId),
-            'Broker(Z05) → Manual(Z11): input lead must be assigned to the same RM');
+            'Broker(Z05) → Manual(Z09): input lead must be assigned to the same RM');
     }
 
     // =========================================================================
@@ -281,7 +281,7 @@ private class RES_LeadDuplicateHandlerTest {
 
     // =========================================================================
     // GROUP E — Pure Block (isOnlyBlockRule = true)
-    // Representative rule: Manual(Z11) → Marketing(Z06)
+    // Representative rule: Manual(Z09) → Marketing(Z06)
     // =========================================================================
 
     @isTest
@@ -293,7 +293,7 @@ private class RES_LeadDuplicateHandlerTest {
         Boolean result = RES_LeadDeduplicationHandler.isOnlyBlockRule(rule);
         Test.stopTest();
         System.assertEquals(true, result,
-            'Manual(Z11) → Marketing(Z06) must be identified as a pure block rule');
+            'Manual(Z09) → Marketing(Z06) must be identified as a pure block rule');
     }
 
     // =========================================================================
