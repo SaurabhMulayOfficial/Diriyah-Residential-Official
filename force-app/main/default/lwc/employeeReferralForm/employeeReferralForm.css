@@ -1,0 +1,88 @@
+:host {
+    --primary-earth: #a66a4c; 
+    --sand-bg: #e1c7a8; 
+    --text-main: #333;
+
+    /* BACKGROUND IMAGE LOGIC */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    min-height: 100vh; /* Ensures it fills the screen */
+    
+    /* Use your Static Resource name here */
+    background-image: url('/sfsites/c/resource/SiteBackground'); 
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+}
+
+.res-form-container {
+    max-width: 600px;
+    width: 90%;
+    margin: 40px auto;
+    background: #fff;
+    border-radius: 8px;
+    /* Added a stronger shadow to help the form "pop" against the background */
+    box-shadow: 0 15px 35px rgba(0,0,0,0.35); 
+    overflow: hidden;
+}
+
+.res-header {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    padding: 20px 40px;
+    background-color: var(--sand-bg);
+}
+
+.res-logo-container img {
+    max-height: 60px; 
+    width: auto;
+}
+
+.res-form-title-text {
+    font-size: 24px;
+    font-weight: 600;
+    color: var(--primary-earth);
+    margin: 0;
+}
+
+.form-body {
+    padding: 30px 40px 40px 40px;
+}
+
+/* Button & Input Styling */
+.res-submit-btn {
+    background-color: var(--primary-earth);
+    color: white;
+    padding: 10px 30px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background 0.3s ease;
+}
+
+.res-submit-btn:hover {
+    background-color: #8c563a;
+}
+
+.res-back-btn {
+    background-color: #f2f2f2;
+    color: #333;
+    border: 1px solid #ddd;
+}
+
+.btn-container {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    width: 100%;
+}
+
+lightning-input-field {
+    --sds-c-input-color-border-focus: var(--primary-earth);
+    --sds-c-input-shadow-focus: 0 0 3px var(--primary-earth);
+}
