@@ -182,7 +182,6 @@ public without sharing class RES_LeadDeduplicationHandler {
             rule.Action__c.toUpperCase() == 'BLOCK' &&
             rule.Lead_Age_Threshold_Days__c == null &&
             String.isBlank(rule.Check_Field_Equality__c) &&
-            String.isBlank(rule.Assigned_To__c) &&
             String.isBlank(rule.Lead_Status__c);
     }
 
