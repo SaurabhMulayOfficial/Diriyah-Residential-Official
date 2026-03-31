@@ -187,11 +187,8 @@ public without sharing class RES_LeadDeduplicationHandler {
 
     public static Map<String, String> getLeadSourceMap() {
         Map<String, String> leadSourceMap = new Map<String, String>();
-        if(leadSourceMap == null) {
-            leadSourceMap = new Map<String, String>();
-            for (Schema.PicklistEntry entry : Lead.LeadSource.getDescribe().getPicklistValues()) {
-                leadSourceMap.put(entry.getValue(), entry.getLabel());
-            }
+        for (Schema.PicklistEntry entry : Lead.LeadSource.getDescribe().getPicklistValues()) {
+            leadSourceMap.put(entry.getValue(), entry.getLabel());
         }
         return leadSourceMap;
     }
