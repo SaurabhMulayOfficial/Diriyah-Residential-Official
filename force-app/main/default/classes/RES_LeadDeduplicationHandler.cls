@@ -186,10 +186,22 @@ public without sharing class RES_LeadDeduplicationHandler {
             String.isBlank(rule.Lead_Status__c);
     }
 
+    public static Map<String, String> getLeadSourceMap() {
+        Map<String, String> leadSourceMap = new Map<String, String>();
+        if(leadSourceMap == null) {
+            leadSourceMap = new Map<String, String>();
+            for (Schema.PicklistEntry entry : Lead.LeadSource.getDescribe().getPicklistValues()) {
+                leadSourceMap.put(entry.getValue(), entry.getLabel());
+            }
+        }
+        return leadSourceMap;
+    }
 
 
     public static void runRuleEngine(List<LeadDuplicateWrapper> input){
         List<Lead_Deduplication_Rule__mdt> rules = new RES_LeadDeduplicationDAOLayer().getAllRules();
+
+        Map<String, String> leadSourceMap = getLeadSourceMap();
 
         for(LeadDuplicateWrapper wrapper : input){
             if(wrapper.hasDuplicates == false)continue;
@@ -224,13 +236,26 @@ public without sharing class RES_LeadDeduplicationHandler {
                 if(leadBySource != null && leadBySource.containsKey(existingSource)){
                     System.debug('Rule Statisfied '  + ' '+ rule.Source__c + ' ' + rule.Lead_Age_Threshold_Days__c);
                     List<Lead> existingLeadsByExistingSource = leadBySource.get(existingSource);
-                    String shouldArchieve = rule.Lead_Status__c;
+                    String shouldArchive = rule.Lead_Status__c;
 
+                    String displayIncomingSource = leadSourceMap.containsKey(incomingSource) ? leadSourceMap.get(incomingSource) : incomingSource;
+                    String displayExistingSource = leadSourceMap.containsKey(existingSource) ? leadSourceMap.get(existingSource) : existingSource;
+                    
                     //Anyway Block
                     if(isOnlyBlockRule(rule)){
                         System.debug('Simply Blocking by rule');
-                        inputLead.addError('Please review duplicates, The incoming Lead has '+ inputLead.LeadSource +' as Source and the existing duplicate Lead has ' + existingSource + ' as a Source.');
-                        break;
+                        if(assignedTo == 'DIFFERENT'){
+                            for(Lead l : existingLeadsByExistingSource){
+                                if(l.OwnerId != null && String.valueOf(l.OwnerId).startsWith('005') && l.OwnerId != inputLead.OwnerId){
+                                    inputLead.addError('Please review duplicates, The incoming Lead has '+ displayIncomingSource +' as Source and the existing duplicate Lead has ' + displayExistingSource + ' as a Source and the lead has been owned by a different RM.');
+                                    break;
+                                }
+                            }
+                        }
+                        else{
+                            inputLead.addError('Please review duplicates, The incoming Lead has '+ displayIncomingSource +' as Source and the existing duplicate Lead has ' + displayExistingSource + ' as a Source.');
+                            break;
+                        }
                     }
 
                     //Checking days Threshold
@@ -278,7 +303,7 @@ public without sharing class RES_LeadDeduplicationHandler {
                     //Same RM assignment + archive the lead
                     String getSameRMId = getRmId(existingLeadsByExistingSource);
 
-                    if(shouldArchieve != null && shouldArchieve != ''){
+                    if(shouldArchive != null && shouldArchive != ''){
                         inputLead.Status = 'Archive';
                         if(getSameRMId != '' && assignedTo == 'SAME'){
                             inputLead.OwnerId = getSameRMId;

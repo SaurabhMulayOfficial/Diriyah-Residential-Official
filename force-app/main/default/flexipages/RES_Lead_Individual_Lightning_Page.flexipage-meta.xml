@@ -454,6 +454,16 @@
                 <identifier>RecordRES_BP_Role__cField</identifier>
             </fieldInstance>
         </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.RES_Project__c</fieldItem>
+                <identifier>RecordRES_Project_cField</identifier>
+            </fieldInstance>
+        </itemInstances>
         <name>Facet-fff8fb78-d742-49ea-8175-67558817b880</name>
         <type>Facet</type>
     </flexiPageRegions>
@@ -660,16 +670,6 @@
                 <identifier>RecordRES_SLA_Cycle_Count_cField</identifier>
             </fieldInstance>
         </itemInstances>
-        <itemInstances>
-            <fieldInstance>
-                <fieldInstanceProperties>
-                    <name>uiBehavior</name>
-                    <value>readonly</value>
-                </fieldInstanceProperties>
-                <fieldItem>Record.RES_Previous_Lead_Owner__c</fieldItem>
-                <identifier>RecordRES_Previous_Lead_Owners_cField</identifier>
-            </fieldInstance>
-        </itemInstances>
         <name>Facet-f8acbe72-bddf-404e-8872-4178a717e66a</name>
         <type>Facet</type>
     </flexiPageRegions>
@@ -758,6 +758,16 @@
                 </fieldInstanceProperties>
                 <fieldItem>Record.CreatedById</fieldItem>
                 <identifier>RecordCreatedByIdField</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>readonly</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.RES_Next_Assignment_Date__c</fieldItem>
+                <identifier>RecordRES_Next_Assignment_Date_cField</identifier>
             </fieldInstance>
         </itemInstances>
         <name>Facet-dfdc2d9a-a60a-43fd-8e49-0da7825a46ad</name>
