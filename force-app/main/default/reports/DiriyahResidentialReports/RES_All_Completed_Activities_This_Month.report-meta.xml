@@ -27,6 +27,9 @@
     <columns>
         <field>TASK</field>
     </columns>
+    <columns>
+        <field>COMPLETED_DATE_TIME</field>
+    </columns>
     <currency>SAR</currency>
     <filter>
         <criteriaItems>
@@ -35,6 +38,13 @@
             <isUnlocked>false</isUnlocked>
             <operator>equals</operator>
             <value>Completed</value>
+        </criteriaItems>
+        <criteriaItems>
+            <column>DUE_DATE</column>
+            <columnToColumn>false</columnToColumn>
+            <isUnlocked>false</isUnlocked>
+            <operator>equals</operator>
+            <value>THIS_MONTH</value>
         </criteriaItems>
         <language>en_US</language>
     </filter>
@@ -65,7 +75,7 @@
     <sortColumn>DUE_DATE</sortColumn>
     <sortOrder>Asc</sortOrder>
     <timeFrameFilter>
-        <dateColumn>DUE_DATE</dateColumn>
+        <dateColumn>CREATED_DATE</dateColumn>
         <interval>INTERVAL_CUSTOM</interval>
     </timeFrameFilter>
 </Report>

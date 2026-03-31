@@ -9,6 +9,15 @@
         <masterLabel>Win Rate</masterLabel>
         <scale>2</scale>
     </aggregates>
+    <aggregates>
+        <calculatedFormula>IF(CLOSED:SUM &gt; 0, (CLOSED:SUM - WON:SUM) / CLOSED:SUM, 0)</calculatedFormula>
+        <datatype>percent</datatype>
+        <developerName>FORMULA2</developerName>
+        <isActive>true</isActive>
+        <isCrossBlock>false</isCrossBlock>
+        <masterLabel>Loss Rate</masterLabel>
+        <scale>2</scale>
+    </aggregates>
     <colorRanges>
         <columnName>FORMULA1</columnName>
         <highBreakpoint>0.4</highBreakpoint>
@@ -45,6 +54,16 @@
         <field>CREATED_DATE</field>
     </columns>
     <currency>SAR</currency>
+    <filter>
+        <criteriaItems>
+            <column>CLOSED</column>
+            <columnToColumn>false</columnToColumn>
+            <isUnlocked>false</isUnlocked>
+            <operator>equals</operator>
+            <value>1</value>
+        </criteriaItems>
+        <language>en_US</language>
+    </filter>
     <format>Summary</format>
     <formattingRules>
         <columnName>FORMULA1</columnName>
@@ -73,7 +92,7 @@
     <name>My Win/Loss Rate</name>
     <params>
         <name>open</name>
-        <value>closedwon</value>
+        <value>all</value>
     </params>
     <params>
         <name>probability</name>
@@ -89,7 +108,7 @@
     <showGrandTotal>true</showGrandTotal>
     <showSubTotals>true</showSubTotals>
     <timeFrameFilter>
-        <dateColumn>CREATED_DATE</dateColumn>
+        <dateColumn>CLOSE_DATE</dateColumn>
         <interval>INTERVAL_CUSTOM</interval>
     </timeFrameFilter>
 </Report>
