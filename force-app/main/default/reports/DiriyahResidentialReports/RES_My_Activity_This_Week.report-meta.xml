@@ -118,7 +118,7 @@
         <value>0</value>
     </params>
     <reportType>Activity</reportType>
-    <scope>user</scope>
+    <scope>team</scope>
     <showDetails>true</showDetails>
     <showGrandTotal>true</showGrandTotal>
     <showSubTotals>true</showSubTotals>
@@ -126,6 +126,6 @@
     <sortOrder>Asc</sortOrder>
     <timeFrameFilter>
         <dateColumn>DUE_DATE</dateColumn>
-        <interval>INTERVAL_THISWEEK</interval>
+        <interval>INTERVAL_CUSTOM</interval>
     </timeFrameFilter>
 </Report>

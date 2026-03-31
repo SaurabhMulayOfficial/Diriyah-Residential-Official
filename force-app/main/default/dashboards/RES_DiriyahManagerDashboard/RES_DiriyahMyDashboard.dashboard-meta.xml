@@ -14,19 +14,20 @@
             <dashboardComponent>
                 <autoselectColumnsFromReport>false</autoselectColumnsFromReport>
                 <chartSummary>
-                    <column>FORMULA1</column>
+                    <aggregate>Sum</aggregate>
+                    <column>AMOUNT</column>
                 </chartSummary>
                 <componentType>Metric</componentType>
                 <decimalPrecision>-1</decimalPrecision>
                 <displayUnits>Auto</displayUnits>
                 <groupingSortProperties/>
-                <header>Open Opportunities Value</header>
+                <header>My Open Opportunities Amount</header>
                 <indicatorBreakpoint1>33.0</indicatorBreakpoint1>
                 <indicatorBreakpoint2>67.0</indicatorBreakpoint2>
                 <indicatorHighColor>#00716B</indicatorHighColor>
                 <indicatorLowColor>#C23934</indicatorLowColor>
                 <indicatorMiddleColor>#CA8501</indicatorMiddleColor>
-                <metricLabel>My active deals — all stages</metricLabel>
+                <metricLabel>Total value of My open deals</metricLabel>
                 <report>DiriyahResidentialReports/RES_My_Opportunities_by_Stage</report>
                 <showRange>false</showRange>
             </dashboardComponent>
@@ -52,7 +53,7 @@
                 <indicatorLowColor>#C23934</indicatorLowColor>
                 <indicatorMiddleColor>#CA8501</indicatorMiddleColor>
                 <metricLabel>Revenue booked so far</metricLabel>
-                <report>DiriyahResidentialReports/RES_My_Quota_Progress</report>
+                <report>DiriyahResidentialReports/RES_My_Open_Opportunities</report>
                 <showRange>false</showRange>
             </dashboardComponent>
             <rowIndex>0</rowIndex>
@@ -95,14 +96,14 @@
                 <decimalPrecision>-1</decimalPrecision>
                 <displayUnits>Auto</displayUnits>
                 <groupingSortProperties/>
-                <header>Overdue Tasks</header>
+                <header>My Overdue Tasks All Time</header>
                 <indicatorBreakpoint1>33.0</indicatorBreakpoint1>
                 <indicatorBreakpoint2>67.0</indicatorBreakpoint2>
                 <indicatorHighColor>#00716B</indicatorHighColor>
                 <indicatorLowColor>#C23934</indicatorLowColor>
                 <indicatorMiddleColor>#CA8501</indicatorMiddleColor>
-                <metricLabel>Tasks past due date</metricLabel>
-                <report>DiriyahResidentialReports/RES_My_Tasks_Todays_Priority</report>
+                <metricLabel>My Tasks</metricLabel>
+                <report>DiriyahResidentialReports/RES_My_Overdue_Tasks_All_Time</report>
                 <showRange>false</showRange>
             </dashboardComponent>
             <rowIndex>0</rowIndex>
@@ -120,14 +121,13 @@
                 <decimalPrecision>-1</decimalPrecision>
                 <displayUnits>Auto</displayUnits>
                 <groupingSortProperties/>
-                <header>Activities This Week</header>
+                <header>My Open Tasks</header>
                 <indicatorBreakpoint1>33.0</indicatorBreakpoint1>
                 <indicatorBreakpoint2>67.0</indicatorBreakpoint2>
                 <indicatorHighColor>#00716B</indicatorHighColor>
                 <indicatorLowColor>#C23934</indicatorLowColor>
                 <indicatorMiddleColor>#CA8501</indicatorMiddleColor>
-                <metricLabel>Completed outreach - this week</metricLabel>
-                <report>DiriyahResidentialReports/RES_My_Activity_This_Week</report>
+                <report>DiriyahResidentialReports/RES_My_Open_Tasks</report>
                 <showRange>false</showRange>
             </dashboardComponent>
             <rowIndex>0</rowIndex>
@@ -141,7 +141,7 @@
                 <chartAxisRange>Auto</chartAxisRange>
                 <chartSummary>
                     <axisBinding>y</axisBinding>
-                    <column>FORMULA1</column>
+                    <column>RowCount</column>
                 </chartSummary>
                 <componentType>Bar</componentType>
                 <decimalPrecision>-1</decimalPrecision>
@@ -165,6 +165,7 @@
                 <showValues>true</showValues>
                 <sortBy>RowLabelAscending</sortBy>
                 <sortLegendValues>true</sortLegendValues>
+                <title>My Deals by Stage</title>
                 <useReportChart>false</useReportChart>
             </dashboardComponent>
             <rowIndex>4</rowIndex>
@@ -249,27 +250,38 @@
             <columnIndex>0</columnIndex>
             <dashboardComponent>
                 <autoselectColumnsFromReport>false</autoselectColumnsFromReport>
+                <chartAxisRange>Auto</chartAxisRange>
                 <chartSummary>
                     <axisBinding>y</axisBinding>
                     <column>FORMULA1</column>
                 </chartSummary>
-                <componentType>Gauge</componentType>
+                <componentType>BarGrouped</componentType>
                 <decimalPrecision>-1</decimalPrecision>
                 <displayUnits>Auto</displayUnits>
-                <gaugeMax>100.0</gaugeMax>
-                <gaugeMin>0.0</gaugeMin>
-                <groupingSortProperties/>
-                <header>My Win Rate</header>
-                <indicatorBreakpoint1>33.0</indicatorBreakpoint1>
-                <indicatorBreakpoint2>67.0</indicatorBreakpoint2>
-                <indicatorHighColor>#00716B</indicatorHighColor>
-                <indicatorLowColor>#C23934</indicatorLowColor>
-                <indicatorMiddleColor>#CA8501</indicatorMiddleColor>
-                <report>DiriyahResidentialReports/RES_My_Win_Rate</report>
+                <drillEnabled>false</drillEnabled>
+                <drillToDetailEnabled>false</drillToDetailEnabled>
+                <enableHover>false</enableHover>
+                <expandOthers>false</expandOthers>
+                <groupingColumn>FULL_NAME</groupingColumn>
+                <groupingColumn>WON</groupingColumn>
+                <groupingSortProperties>
+                    <groupingSorts>
+                        <groupingLevel>g1</groupingLevel>
+                        <sortOrder>a</sortOrder>
+                    </groupingSorts>
+                    <groupingSorts>
+                        <groupingLevel>g2</groupingLevel>
+                        <sortOrder>a</sortOrder>
+                    </groupingSorts>
+                </groupingSortProperties>
+                <header>My Win/Loss Rate</header>
+                <legendPosition>Right</legendPosition>
+                <report>DiriyahResidentialReports/RES_My_Win_Loss_Rate</report>
                 <showPercentage>false</showPercentage>
-                <showRange>false</showRange>
-                <showTotal>false</showTotal>
-                <showValues>false</showValues>
+                <showValues>true</showValues>
+                <sortBy>RowLabelAscending</sortBy>
+                <sortLegendValues>true</sortLegendValues>
+                <useReportChart>false</useReportChart>
             </dashboardComponent>
             <rowIndex>12</rowIndex>
             <rowSpan>8</rowSpan>
@@ -299,9 +311,9 @@
                         <sortOrder>a</sortOrder>
                     </groupingSorts>
                 </groupingSortProperties>
-                <header>My Conversion Rate by Source</header>
+                <header>My Lead Conversion Rate by Source</header>
                 <legendPosition>Bottom</legendPosition>
-                <report>DiriyahResidentialReports/RES_Lead_Conversion_Rate_by_Source</report>
+                <report>DiriyahResidentialReports/My_Lead_Conversion_Rate_by_Source</report>
                 <showPercentage>false</showPercentage>
                 <showPicturesOnCharts>false</showPicturesOnCharts>
                 <showValues>true</showValues>

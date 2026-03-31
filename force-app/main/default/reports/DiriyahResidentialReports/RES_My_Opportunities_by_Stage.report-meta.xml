@@ -4,7 +4,7 @@
         <calculatedFormula>AMOUNT:SUM * (PROBABILITY:AVG / 100)</calculatedFormula>
         <datatype>currency</datatype>
         <developerName>FORMULA1</developerName>
-        <isActive>true</isActive>
+        <isActive>false</isActive>
         <isCrossBlock>false</isCrossBlock>
         <masterLabel>Weighted Amount</masterLabel>
         <scale>0</scale>
@@ -19,9 +19,6 @@
         <field>OPPORTUNITY_NAME</field>
     </columns>
     <columns>
-        <field>AMOUNT</field>
-    </columns>
-    <columns>
         <field>PROBABILITY</field>
     </columns>
     <columns>
@@ -29,6 +26,10 @@
     </columns>
     <columns>
         <field>CREATED_DATE</field>
+    </columns>
+    <columns>
+        <aggregateTypes>Sum</aggregateTypes>
+        <field>AMOUNT</field>
     </columns>
     <currency>SAR</currency>
     <filter>

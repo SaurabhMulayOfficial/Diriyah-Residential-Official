@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Report xmlns="http://soap.sforce.com/2006/04/metadata">
     <aggregates>
-        <calculatedFormula>WON:SUM / CLOSED:SUM</calculatedFormula>
+        <calculatedFormula>IF(CLOSED:SUM &gt; 0, WON:SUM / CLOSED:SUM, 0)</calculatedFormula>
         <datatype>percent</datatype>
         <developerName>FORMULA1</developerName>
         <isActive>true</isActive>
