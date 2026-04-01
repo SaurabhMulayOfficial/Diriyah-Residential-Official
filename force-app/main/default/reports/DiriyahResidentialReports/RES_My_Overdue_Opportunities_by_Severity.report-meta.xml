@@ -106,7 +106,7 @@
         <field>Opportunity.RES_Overdue_Severity__c</field>
         <sortOrder>Asc</sortOrder>
     </groupingsDown>
-    <name>Overdue Opportunities by Severity</name>
+    <name>My Overdue Opportunities by Severity</name>
     <params>
         <name>open</name>
         <value>open</value>
@@ -120,7 +120,7 @@
         <value>1</value>
     </params>
     <reportType>Opportunity</reportType>
-    <scope>organization</scope>
+    <scope>team</scope>
     <showDetails>true</showDetails>
     <showGrandTotal>true</showGrandTotal>
     <showSubTotals>true</showSubTotals>
