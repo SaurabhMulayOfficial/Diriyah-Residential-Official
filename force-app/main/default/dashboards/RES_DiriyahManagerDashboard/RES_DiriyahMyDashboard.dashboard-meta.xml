@@ -20,6 +20,31 @@
                 <decimalPrecision>-1</decimalPrecision>
                 <displayUnits>Auto</displayUnits>
                 <groupingSortProperties/>
+                <header>My Active Leads</header>
+                <indicatorBreakpoint1>33.0</indicatorBreakpoint1>
+                <indicatorBreakpoint2>67.0</indicatorBreakpoint2>
+                <indicatorHighColor>#00716B</indicatorHighColor>
+                <indicatorLowColor>#C23934</indicatorLowColor>
+                <indicatorMiddleColor>#CA8501</indicatorMiddleColor>
+                <metricLabel>Unconverted leads assigned to me</metricLabel>
+                <report>DiriyahResidentialReports/RES_My_Lead_Status_Funnel</report>
+                <showRange>false</showRange>
+            </dashboardComponent>
+            <rowIndex>0</rowIndex>
+            <rowSpan>4</rowSpan>
+        </dashboardGridComponents>
+        <dashboardGridComponents>
+            <colSpan>2</colSpan>
+            <columnIndex>2</columnIndex>
+            <dashboardComponent>
+                <autoselectColumnsFromReport>false</autoselectColumnsFromReport>
+                <chartSummary>
+                    <column>RowCount</column>
+                </chartSummary>
+                <componentType>Metric</componentType>
+                <decimalPrecision>-1</decimalPrecision>
+                <displayUnits>Auto</displayUnits>
+                <groupingSortProperties/>
                 <header>My Open Opportunities</header>
                 <indicatorBreakpoint1>33.0</indicatorBreakpoint1>
                 <indicatorBreakpoint2>67.0</indicatorBreakpoint2>
@@ -35,7 +60,7 @@
         </dashboardGridComponents>
         <dashboardGridComponents>
             <colSpan>2</colSpan>
-            <columnIndex>2</columnIndex>
+            <columnIndex>4</columnIndex>
             <dashboardComponent>
                 <autoselectColumnsFromReport>false</autoselectColumnsFromReport>
                 <chartSummary>
@@ -61,7 +86,7 @@
         </dashboardGridComponents>
         <dashboardGridComponents>
             <colSpan>2</colSpan>
-            <columnIndex>4</columnIndex>
+            <columnIndex>6</columnIndex>
             <dashboardComponent>
                 <autoselectColumnsFromReport>false</autoselectColumnsFromReport>
                 <chartSummary>
@@ -86,31 +111,6 @@
         </dashboardGridComponents>
         <dashboardGridComponents>
             <colSpan>2</colSpan>
-            <columnIndex>6</columnIndex>
-            <dashboardComponent>
-                <autoselectColumnsFromReport>false</autoselectColumnsFromReport>
-                <chartSummary>
-                    <column>RowCount</column>
-                </chartSummary>
-                <componentType>Metric</componentType>
-                <decimalPrecision>-1</decimalPrecision>
-                <displayUnits>Auto</displayUnits>
-                <groupingSortProperties/>
-                <header>My Active Leads</header>
-                <indicatorBreakpoint1>33.0</indicatorBreakpoint1>
-                <indicatorBreakpoint2>67.0</indicatorBreakpoint2>
-                <indicatorHighColor>#00716B</indicatorHighColor>
-                <indicatorLowColor>#C23934</indicatorLowColor>
-                <indicatorMiddleColor>#CA8501</indicatorMiddleColor>
-                <metricLabel>Unconverted leads assigned to me</metricLabel>
-                <report>DiriyahResidentialReports/RES_My_Lead_Status_Funnel</report>
-                <showRange>false</showRange>
-            </dashboardComponent>
-            <rowIndex>0</rowIndex>
-            <rowSpan>4</rowSpan>
-        </dashboardGridComponents>
-        <dashboardGridComponents>
-            <colSpan>2</colSpan>
             <columnIndex>8</columnIndex>
             <dashboardComponent>
                 <autoselectColumnsFromReport>false</autoselectColumnsFromReport>
@@ -127,7 +127,7 @@
                 <indicatorHighColor>#00716B</indicatorHighColor>
                 <indicatorLowColor>#C23934</indicatorLowColor>
                 <indicatorMiddleColor>#CA8501</indicatorMiddleColor>
-                <metricLabel>My Tasks</metricLabel>
+                <metricLabel>My Overdue Tasks</metricLabel>
                 <report>DiriyahResidentialReports/RES_My_Overdue_Tasks_All_Time</report>
                 <showRange>false</showRange>
             </dashboardComponent>
@@ -152,6 +152,7 @@
                 <indicatorHighColor>#00716B</indicatorHighColor>
                 <indicatorLowColor>#C23934</indicatorLowColor>
                 <indicatorMiddleColor>#CA8501</indicatorMiddleColor>
+                <metricLabel>Open Tasks</metricLabel>
                 <report>DiriyahResidentialReports/RES_My_Open_Tasks</report>
                 <showRange>false</showRange>
             </dashboardComponent>
@@ -227,6 +228,7 @@
                 <showValues>true</showValues>
                 <sortBy>RowLabelAscending</sortBy>
                 <sortLegendValues>true</sortLegendValues>
+                <title>Lead Status Funnel</title>
                 <useReportChart>false</useReportChart>
             </dashboardComponent>
             <rowIndex>4</rowIndex>
@@ -264,6 +266,7 @@
                 <showValues>true</showValues>
                 <sortBy>RowLabelAscending</sortBy>
                 <sortLegendValues>true</sortLegendValues>
+                <title>Overdue Opportunities</title>
                 <useReportChart>false</useReportChart>
             </dashboardComponent>
             <rowIndex>4</rowIndex>
@@ -279,7 +282,7 @@
                     <axisBinding>y</axisBinding>
                     <column>FORMULA1</column>
                 </chartSummary>
-                <componentType>BarGrouped</componentType>
+                <componentType>Donut</componentType>
                 <decimalPrecision>-1</decimalPrecision>
                 <displayUnits>Auto</displayUnits>
                 <drillEnabled>false</drillEnabled>
@@ -287,24 +290,21 @@
                 <enableHover>false</enableHover>
                 <expandOthers>false</expandOthers>
                 <groupingColumn>FULL_NAME</groupingColumn>
-                <groupingColumn>WON</groupingColumn>
                 <groupingSortProperties>
                     <groupingSorts>
                         <groupingLevel>g1</groupingLevel>
                         <sortOrder>a</sortOrder>
                     </groupingSorts>
-                    <groupingSorts>
-                        <groupingLevel>g2</groupingLevel>
-                        <sortOrder>a</sortOrder>
-                    </groupingSorts>
                 </groupingSortProperties>
-                <header>My Win/Loss Rate</header>
+                <header>My Win/Loss Analysis</header>
                 <legendPosition>Right</legendPosition>
                 <report>DiriyahResidentialReports/RES_My_Win_Loss_Rate</report>
-                <showPercentage>false</showPercentage>
+                <showPercentage>true</showPercentage>
+                <showTotal>true</showTotal>
                 <showValues>true</showValues>
                 <sortBy>RowLabelAscending</sortBy>
                 <sortLegendValues>true</sortLegendValues>
+                <title>Win/Loss Analysis</title>
                 <useReportChart>false</useReportChart>
             </dashboardComponent>
             <rowIndex>12</rowIndex>
@@ -343,6 +343,7 @@
                 <showValues>true</showValues>
                 <sortBy>RowLabelAscending</sortBy>
                 <sortLegendValues>true</sortLegendValues>
+                <title>Conversion Rate by Source</title>
                 <useReportChart>false</useReportChart>
             </dashboardComponent>
             <rowIndex>12</rowIndex>
@@ -384,6 +385,7 @@
                 <showValues>true</showValues>
                 <sortBy>RowLabelAscending</sortBy>
                 <sortLegendValues>true</sortLegendValues>
+                <title>Activities This Week</title>
                 <useReportChart>false</useReportChart>
             </dashboardComponent>
             <rowIndex>12</rowIndex>
@@ -421,6 +423,7 @@
                 <showValues>true</showValues>
                 <sortBy>RowLabelAscending</sortBy>
                 <sortLegendValues>true</sortLegendValues>
+                <title>Priority Tasks</title>
                 <useReportChart>false</useReportChart>
             </dashboardComponent>
             <rowIndex>20</rowIndex>
