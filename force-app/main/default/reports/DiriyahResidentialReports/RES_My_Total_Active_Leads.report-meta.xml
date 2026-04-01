@@ -8,11 +8,10 @@
             <axisBinding>y</axisBinding>
             <column>RowCount</column>
         </chartSummaries>
-        <chartType>Funnel</chartType>
+        <chartType>HorizontalBar</chartType>
         <enableHoverLabels>false</enableHoverLabels>
-        <expandOthers>false</expandOthers>
+        <expandOthers>true</expandOthers>
         <groupingColumn>STATUS</groupingColumn>
-        <legendPosition>Right</legendPosition>
         <location>CHART_BOTTOM</location>
         <showAxisLabels>false</showAxisLabels>
         <showPercentage>false</showPercentage>
@@ -35,33 +34,29 @@
         <field>COMPANY</field>
     </columns>
     <columns>
-        <field>LEAD_SOURCE</field>
+        <field>EMAIL</field>
     </columns>
     <columns>
-        <field>RATING</field>
+        <field>LEAD_SOURCE</field>
     </columns>
     <columns>
         <field>OWNER</field>
     </columns>
-    <columns>
-        <field>CREATED_DATE</field>
-    </columns>
     <currency>SAR</currency>
-    <description>Total lead volume grouped by status — all time</description>
     <filter>
+        <criteriaItems>
+            <column>STATUS</column>
+            <columnToColumn>false</columnToColumn>
+            <isUnlocked>true</isUnlocked>
+            <operator>notEqual</operator>
+            <value>,Converted,05</value>
+        </criteriaItems>
         <criteriaItems>
             <column>CONVERTED</column>
             <columnToColumn>false</columnToColumn>
             <isUnlocked>false</isUnlocked>
             <operator>equals</operator>
             <value>0</value>
-        </criteriaItems>
-        <criteriaItems>
-            <column>STATUS</column>
-            <columnToColumn>false</columnToColumn>
-            <isUnlocked>false</isUnlocked>
-            <operator>equals</operator>
-            <value>01,New,02,Active,05,04,Qualified,Archive</value>
         </criteriaItems>
         <language>en_US</language>
     </filter>
@@ -71,7 +66,7 @@
         <field>STATUS</field>
         <sortOrder>Asc</sortOrder>
     </groupingsDown>
-    <name>My Lead Status Funnel</name>
+    <name>My Total Active Leads</name>
     <params>
         <name>co</name>
         <value>1</value>
