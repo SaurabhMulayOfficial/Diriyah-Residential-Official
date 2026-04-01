@@ -55,8 +55,8 @@
             <column>CLOSE_DATE</column>
             <columnToColumn>false</columnToColumn>
             <isUnlocked>false</isUnlocked>
-            <operator>equals</operator>
-            <value>THIS_MONTH</value>
+            <operator>lessThan</operator>
+            <value>TODAY</value>
         </criteriaItems>
         <language>en_US</language>
     </filter>
