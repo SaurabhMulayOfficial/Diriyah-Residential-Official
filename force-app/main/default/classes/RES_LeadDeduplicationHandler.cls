@@ -193,6 +193,19 @@ public without sharing class RES_LeadDeduplicationHandler {
         return leadSourceMap;
     }
 
+    public static String extractCleanFieldName(String apiName) {
+        if (String.isBlank(apiName)) return null;
+        String result = apiName;
+        if (result.startsWith('RES_')) {
+            result = result.substring(4);
+        }
+        if (result.endsWith('__c')) {
+            result = result.substring(0, result.length() - 3);
+        }
+        result = result.replace('_', ' ');
+        return result.trim();
+    }
+
 
     public static void runRuleEngine(List<LeadDuplicateWrapper> input){
         List<Lead_Deduplication_Rule__mdt> rules = new RES_LeadDeduplicationDAOLayer().getAllRules();
@@ -285,8 +298,9 @@ public without sharing class RES_LeadDeduplicationHandler {
 
                         if(checkFieldEquality == 'SAME FOUND'){
                             if(action == 'BLOCK'){
+                                String displayFieldForEquality = extractCleanFieldName(fieldForEquality);
                                 System.debug('Blocking because the field value is same ' + checkFieldEquality);
-                                inputLead.addError('Please review duplicates, The existing Lead has the same value for field ' + fieldForEquality);
+                                inputLead.addError('Please review duplicates, The existing Lead has the same value for field ' + displayFieldForEquality + ' as the incoming Lead.');
                                 break;
                             }
                         }
