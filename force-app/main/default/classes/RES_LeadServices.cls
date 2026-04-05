@@ -105,7 +105,7 @@ public with sharing class RES_LeadServices {
                     continue;
                 }
                 if(l.status == '01' && (l.OwnerId != null && String.valueOf(l.ownerId).startsWith('005'))){
-                    startSla(l, bh, slaInHours);
+                    startSla(l, bh, slaInHours, false);
                     if(psr == true){
                         if(previousOwner != null && previousOwner.containsKey(l.Id)){
                             l.RES_Previous_Lead_Owner__c = previousOwner.get(l.Id);
@@ -134,12 +134,12 @@ public with sharing class RES_LeadServices {
                     
                     if(userIdToAssign != null){
                         l.OwnerId = userIdToAssign;
-                        startSla(l, bh, slaInHours);
+                        startSla(l, bh, slaInHours, true);
                     }
                 }
                 else if((oldmap.get(l.Id).OwnerId == null && String.valueOf(l.ownerId).startsWith('005')) || (l.OwnerId != oldmap.get(l.Id).OwnerId && String.valueOf(l.ownerId).startsWith('005') && String.valueOf(oldmap.get(l.Id).OwnerId).startsWith('00G'))){
                     if(l.RES_SLA_Status__c != 'Met'){
-                        startSla(l, bh, slaInHours);
+                        startSla(l, bh, slaInHours, false);
                     }
                     
                 }
@@ -153,9 +153,11 @@ public with sharing class RES_LeadServices {
     
     }
 
-    private static void startSla(Lead l, BusinessHours bh, Integer slaInHours){
+    private static void startSla(Lead l, BusinessHours bh, Integer slaInHours, Boolean shouldCycleCount){
         if(l.RES_SLA_Cycle_Count__c == null)l.RES_SLA_Cycle_Count__c=0;
-        l.RES_SLA_Cycle_Count__c += 1;
+        if(shouldCycleCount == true){
+            l.RES_SLA_Cycle_Count__c += 1;
+        }
         l.RES_SLA_Start_Time__c = SYSTEM.now();
         l.RES_SLA_Status__c = 'Running';
         l.RES_SLA_Due_Time__c = BusinessHours.add(bh.Id,SYSTEM.now(), slaInHours * 60 * 60 * 1000);
@@ -172,7 +174,6 @@ public with sharing class RES_LeadServices {
         }
 
         Set<Id> users = groupToUserMapping.get(previousQueueId);
-
         Id fallbackUser;
 
         for(Id u : users){
@@ -180,10 +181,17 @@ public with sharing class RES_LeadServices {
             if(activeUsers.contains(u)){
                 return u;
             }
-            if(fallbackUser == null){
-                fallbackUser = u;
-            }
         }
+
+        if(users.contains(currentOwnerId)){
+            users.remove(currentOwnerId);
+        }
+
+        list<Id> userList = new List<Id>(users);
+        Integer N = userList.size();
+        if(N <= 0) return fallbackUser;
+        Integer randomIndex = (Integer) Math.mod(Math.abs(Crypto.getRandomInteger()), N);
+        fallbackUser = userList[randomIndex];
         return fallbackUser;
     }
 
