@@ -177,8 +177,7 @@ public class RES_TestDataFactory {
             RES_BP_Role__c                = 'ZTR601',
             RES_Customer_Interest__c      = '101',
             RES_Identification_Number__c  = hashStr,
-            RES_Identification_Type__c    = 'ZIT01',
-            RES_Lead_Type__c              = 'LT02'
+            RES_Identification_Type__c    = 'ZIT01'
         );
 
         // ✅ allowSave = true bypasses org duplicate rules in test context
