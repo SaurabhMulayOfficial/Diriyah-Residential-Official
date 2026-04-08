@@ -1,0 +1,130 @@
+name: Scratch Test Deployment 🧪
+
+on:
+  workflow_dispatch:
+    inputs:
+      branch:
+        description: "Branch to deploy"
+        required: true
+        default: "develop"
+
+      environment:
+        description: "Select Environment"
+        required: true
+        type: choice
+        options:
+          - QA
+          - UAT
+          - PREPROD
+          - PROD
+
+      deployment_type:
+        description: "Deployment Type"
+        required: true
+        type: choice
+        options:
+          - forceapp
+          - package
+
+      package_file:
+        description: "Package file (only if package selected)"
+        required: false
+        default: manifest/package.xml
+
+jobs:
+  scratch-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.inputs.branch }}
+
+      - name: Debug Info
+        run: |
+          echo "Branch: ${{ github.event.inputs.branch }}"
+          echo "Environment: ${{ github.event.inputs.environment }}"
+          echo "Deployment Type: ${{ github.event.inputs.deployment_type }}"
+
+
+      - name: Install Salesforce CLI
+        run: npm install -g @salesforce/cli
+
+
+      - name: Authenticate DevHub
+        run: |
+          ENV="${{ github.event.inputs.environment }}"
+
+          if [ "$ENV" == "QA" ]; then
+            echo "${{ secrets.SF_JWT_KEY_QA }}" > server.key
+            CLIENT_ID="${{ secrets.SF_CLIENT_ID_QA }}"
+            USERNAME="${{ secrets.SF_USERNAME_QA }}"
+            INSTANCE="https://login.salesforce.com"
+
+          elif [ "$ENV" == "UAT" ]; then
+            echo "${{ secrets.SF_JWT_KEY_UAT }}" > server.key
+            CLIENT_ID="${{ secrets.SF_CLIENT_ID_UAT }}"
+            USERNAME="${{ secrets.SF_USERNAME_UAT }}"
+            INSTANCE="https://test.salesforce.com"
+
+          elif [ "$ENV" == "PREPROD" ]; then
+            echo "${{ secrets.SF_JWT_KEY_PREPROD }}" > server.key
+            CLIENT_ID="${{ secrets.SF_CLIENT_ID_PREPROD }}"
+            USERNAME="${{ secrets.SF_USERNAME_PREPROD }}"
+            INSTANCE="https://login.salesforce.com"
+
+          elif [ "$ENV" == "PROD" ]; then
+            echo "${{ secrets.SF_JWT_KEY_PROD }}" > server.key
+            CLIENT_ID="${{ secrets.SF_CLIENT_ID_PROD }}"
+            USERNAME="${{ secrets.SF_USERNAME_PROD }}"
+            INSTANCE="https://login.salesforce.com"
+          fi
+
+          sf org login jwt \
+            --client-id "$CLIENT_ID" \
+            --jwt-key-file server.key \
+            --username "$USERNAME" \
+            --instance-url "$INSTANCE" \
+            --set-default-dev-hub
+
+      - name: Create Scratch Org
+        run: |
+          sf org create scratch \
+            --definition-file config/project-scratch-def.json \
+            --alias scratch-${{ github.run_id }} \
+            --duration-days 1 \
+            --set-default
+
+
+      - name: Validate Input
+        run: |
+          if [ "${{ github.event.inputs.deployment_type }}" == "package" ] && [ -z "${{ github.event.inputs.package_file }}" ]; then
+            echo "❌ Package file is required!"
+            exit 1
+          fi
+
+      - name: Deploy Force App
+        if: ${{ github.event.inputs.deployment_type == 'forceapp' }}
+        run: |
+          sf project deploy start \
+            --source-dir force-app \
+            --test-level RunLocalTests \
+            --wait 30
+
+
+      - name: Deploy Package
+        if: ${{ github.event.inputs.deployment_type == 'package' }}
+        run: |
+          sf project deploy start \
+            --manifest ${{ github.event.inputs.package_file }} \
+            --test-level RunLocalTests \
+            --wait 30
+
+
+      - name: Delete Scratch Org
+        if: always()
+        run: |
+          sf org delete scratch \
+            --target-org scratch-${{ github.run_id }} \
+            --no-prompt
