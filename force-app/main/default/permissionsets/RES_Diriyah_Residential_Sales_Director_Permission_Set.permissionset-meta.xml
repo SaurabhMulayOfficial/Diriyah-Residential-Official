@@ -274,13 +274,7 @@
         <editable>false</editable>
         <field>Contact.RES_Active__c</field>
         <readable>true</readable>
-    </fieldPermissions>
-     <fieldPermissions>
-        <editable>true</editable>
-        <field>Contact.RES_Communication_Language__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
- 
+    </fieldPermissions> 
     <fieldPermissions>
         <editable>true</editable>
         <field>Contact.ReportsToId</field>
@@ -428,11 +422,6 @@
     </fieldPermissions>
     <fieldPermissions>
         <editable>true</editable>
-        <field>Lead.RES_Communication_Language__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>true</editable>
         <field>Lead.RES_Contact_Email__c</field>
         <readable>true</readable>
     </fieldPermissions>
@@ -451,7 +440,6 @@
         <field>Lead.RES_Customer_Interest__c</field>
         <readable>true</readable>
     </fieldPermissions>
-
     <fieldPermissions>
         <editable>true</editable>
         <field>Lead.RES_Expected_Revenue_Amount_Currency__c</field>
