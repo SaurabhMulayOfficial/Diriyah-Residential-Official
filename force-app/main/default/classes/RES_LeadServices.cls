@@ -148,7 +148,7 @@ public with sharing class RES_LeadServices {
         }
 
         if(psr == true && !toUpdate.isEmpty()){
-            Database.upsert(toUpdate, true, AccessLevel.USER_MODE);
+            Database.upsert(toUpdate, true, AccessLevel.SYSTEM_MODE);
         }
     
     }
