@@ -34,9 +34,9 @@ public class RES_TestDataFactory {
     private static final String ROLE_SPECIALIST     = 'RES_Sales_DI_Specialist';
     private static final String ROLE_SR_DIRECTOR    = 'RES_Sales_DI_DII_Senior_Director';
     private static final String ROLE_EXEC_DIRECTOR  = 'RES_Sales_Operations_Executive_Director';
-    private static final String PS_REL_MANAGER      = 'RES_Diriyah_Sales_Relationship_Manager_Permission_Set';
-    private static final String PS_DIRECTOR         = 'RES_Diriyah_Sales_Director_Permission_Set';
-    private static final String PS_MANAGER          = 'RES_Diriyah_Sales_Manager_Permission_Set';
+    private static final String PS_REL_MANAGER      = 'RES_Diriyah_Residential_DI_Specialist_Permission_Set';
+    private static final String PS_DIRECTOR         = 'RES_Diriyah_Residential_Wadi_Safar_Senior_Director_Permission_Set';
+    private static final String PS_MANAGER          = 'RES_Diriyah_Residential_Wadi_Safar_Senior_Manager_Permission_Set';
     private static final String LEAD_RECORD_TYPE    = 'Residential Company';
 
     // ═════════════════════════════════════════════════════════════════
