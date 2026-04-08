@@ -13,10 +13,7 @@ on:
         required: true
         type: choice
         options:
-          - QA
-          - UAT
-          - PREPROD
-          - PROD
+          - PROD-DEVHUB
 
       deployment_type:
         description: "Deployment Type"
@@ -57,29 +54,12 @@ jobs:
         run: |
           ENV="${{ github.event.inputs.environment }}"
 
-          if [ "$ENV" == "QA" ]; then
-            echo "${{ secrets.SF_JWT_KEY_QA }}" > server.key
-            CLIENT_ID="${{ secrets.SF_CLIENT_ID_QA }}"
-            USERNAME="${{ secrets.SF_USERNAME_QA }}"
+          if [ "$ENV" == "PROD-DEVHUB" ]; then
+            echo "${{ secrets.SF_JWT_KEY_DEVHUB }}" > server.key
+            CLIENT_ID="${{ secrets.SF_CLIENT_ID_DEVHUB }}"
+            USERNAME="${{ secrets.SF_USERNAME_DEVHUB }}"
             INSTANCE="https://login.salesforce.com"
 
-          elif [ "$ENV" == "UAT" ]; then
-            echo "${{ secrets.SF_JWT_KEY_UAT }}" > server.key
-            CLIENT_ID="${{ secrets.SF_CLIENT_ID_UAT }}"
-            USERNAME="${{ secrets.SF_USERNAME_UAT }}"
-            INSTANCE="https://test.salesforce.com"
-
-          elif [ "$ENV" == "PREPROD" ]; then
-            echo "${{ secrets.SF_JWT_KEY_PREPROD }}" > server.key
-            CLIENT_ID="${{ secrets.SF_CLIENT_ID_PREPROD }}"
-            USERNAME="${{ secrets.SF_USERNAME_PREPROD }}"
-            INSTANCE="https://login.salesforce.com"
-
-          elif [ "$ENV" == "PROD" ]; then
-            echo "${{ secrets.SF_JWT_KEY_PROD }}" > server.key
-            CLIENT_ID="${{ secrets.SF_CLIENT_ID_PROD }}"
-            USERNAME="${{ secrets.SF_USERNAME_PROD }}"
-            INSTANCE="https://login.salesforce.com"
           fi
 
           sf org login jwt \
