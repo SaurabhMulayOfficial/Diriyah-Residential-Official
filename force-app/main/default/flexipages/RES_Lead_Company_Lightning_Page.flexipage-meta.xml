@@ -276,7 +276,7 @@
             <fieldInstance>
                 <fieldInstanceProperties>
                     <name>uiBehavior</name>
-                    <value>required</value>
+                    <value>none</value>
                 </fieldInstanceProperties>
                 <fieldItem>Record.MobilePhone</fieldItem>
                 <identifier>RecordMobilePhoneField</identifier>
@@ -1225,6 +1225,13 @@
             <valueList>
                 <valueListItems>
                     <value>Convert</value>
+                    <visibilityRule>
+                        <criteria>
+                            <leftValue>{!Record.Status}</leftValue>
+                            <operator>EQUAL</operator>
+                            <rightValue>04</rightValue>
+                        </criteria>
+                    </visibilityRule>
                 </valueListItems>
                 <valueListItems>
                     <value>FeedItem.TextPost</value>

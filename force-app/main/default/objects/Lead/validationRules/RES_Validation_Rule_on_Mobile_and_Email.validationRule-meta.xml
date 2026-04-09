@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>RES_Validation_Rule_on_Mobile_and_Email</fullName>
+    <active>true</active>
+    <errorConditionFormula>AND(
+    NOT($Setup.RES_Config_Switch__c.RES_Validation_Rules_Off__c),
+
+    /* Apply only for required Record Types */
+    OR(
+        $RecordType.DeveloperName = &quot;RES_Company&quot;,
+        $RecordType.DeveloperName = &quot;RES_Individual&quot;
+    ),
+
+    OR(
+
+        /* 🔴 Case 1: Wadi Safar RYI → Email Mandatory */
+        AND(
+            ISPICKVAL(RES_Project__c , &quot;Wadi Safar RYI&quot;),
+            ISBLANK(Email)
+        ),
+
+        /* 🔴 Case 2: Other Projects → Mobile Mandatory */
+        AND(
+            NOT(ISPICKVAL(RES_Project__c , &quot;Wadi Safar RYI&quot;)),
+            ISBLANK(MobilePhone)
+        )
+    )
+)</errorConditionFormula>
+    <errorMessage>For Wadi Safar RYI project, Email is mandatory.
+For other projects, Mobile number is mandatory.</errorMessage>
+</ValidationRule>
