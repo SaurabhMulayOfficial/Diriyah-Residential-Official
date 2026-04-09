@@ -1,0 +1,82 @@
+<template>
+    <div class="res-form-container">
+        <div class="res-header">
+            <div class="res-logo-container">
+                <img src={logoUrl} alt="Diriyah Logo">
+            </div>
+            <h2 class="res-form-title-text">Employee Referral Form</h2>
+        </div>
+
+        <div class="form-body">
+            <template if:true={isSuccess}>
+                <div class="slds-text-align_center slds-p-vertical_xx-large">
+                    <h2 class="res-form-title" style="color: var(--primary-earth);">Submission Successful!</h2>
+                    <p style="font-size: 18px; color: #666;">Thank you for the referral.</p>
+                    <div class="btn-container slds-p-top_medium" style="justify-content: center;">
+                        <button class="res-submit-btn" onclick={handleReset}>Submit Another Referral</button>
+                    </div>
+                </div>
+            </template>
+
+            <template if:false={isSuccess}>
+                <template if:false={showForm}>
+                    <div class="res-input-group">
+                        <lightning-combobox
+                            name="leadType"
+                            label="Select Lead Type"
+                            value={leadType}
+                            placeholder="-- None --"
+                            options={typeOptions}
+                            onchange={handleTypeChange}>
+                        </lightning-combobox>
+                    </div>
+                    <div class="btn-container slds-m-top_medium">
+                        <button class="res-submit-btn" onclick={handleNext} disabled={isNextDisabled}>Next</button>
+                    </div>
+                </template>
+
+                <template if:true={showForm}>
+                    <lightning-record-edit-form 
+                        object-api-name="Lead" 
+                        record-type-id={selectedRecordTypeId}
+                        onsuccess={handleSuccess} 
+                        onerror={handleError}>
+                        
+                        <lightning-messages></lightning-messages>
+
+                        <div class="res-form-row">
+                            <lightning-input-field class="res-input-group" field-name="FirstName" variant="label-stacked"></lightning-input-field>
+                            <lightning-input-field class="res-input-group" field-name="LastName" variant="label-stacked" required></lightning-input-field>
+                        </div>
+
+                        <template if:true={isIndividual}>
+                            <lightning-input-field class="res-input-group" field-name="Email" variant="label-stacked"></lightning-input-field>
+                            <lightning-input-field class="res-input-group" field-name="MobilePhone" variant="label-stacked" required></lightning-input-field>
+                            <lightning-input-field class="res-input-group" field-name="RES_Customer_Interest__c" variant="label-stacked" required></lightning-input-field>
+                            <lightning-input-field class="res-input-group" field-name="RES_Project__c" variant="label-stacked"></lightning-input-field>
+                            <lightning-input-field class="res-input-group" field-name="RES_Employee_ID__c" variant="label-stacked"></lightning-input-field>
+                        </template>
+
+                        <template if:true={isCompany}>
+                            <lightning-input-field class="res-input-group" field-name="Email" variant="label-stacked"></lightning-input-field>
+                            <lightning-input-field class="res-input-group" field-name="MobilePhone" variant="label-stacked" required></lightning-input-field>
+                            <lightning-input-field class="res-input-group" field-name="Website" variant="label-stacked"></lightning-input-field>
+                            <lightning-input-field class="res-input-group" field-name="Company" variant="label-stacked" required></lightning-input-field>
+                            <lightning-input-field class="res-input-group" field-name="NumberOfEmployees" variant="label-stacked"></lightning-input-field>
+                            <lightning-input-field class="res-input-group" field-name="RES_Customer_Interest__c" variant="label-stacked" required></lightning-input-field>
+                            <lightning-input-field class="res-input-group" field-name="RES_Project__c" variant="label-stacked"></lightning-input-field>
+                            <lightning-input-field class="res-input-group" field-name="RES_Employee_ID__c" variant="label-stacked"></lightning-input-field>
+                        </template>
+
+                        <lightning-input-field field-name="LeadSource" value="Z04" class="slds-hide"></lightning-input-field>
+
+                        <div class="btn-container slds-m-top_large">
+                            <button type="button" class="res-submit-btn res-back-btn" onclick={handleBack}>Back</button>
+                            <button type="submit" class="res-submit-btn">Submit Referral</button>
+                        </div>
+                    </lightning-record-edit-form>
+                </template>
+            </template>
+        </div>
+    </div>
+</template>

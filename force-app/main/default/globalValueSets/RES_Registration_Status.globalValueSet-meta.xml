@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<GlobalValueSet xmlns="http://soap.sforce.com/2006/04/metadata">
+    <customValue>
+        <fullName>ZT01</fullName>
+        <default>false</default>
+        <label>Pending - Application under Review</label>
+    </customValue>
+    <customValue>
+        <fullName>ZT02</fullName>
+        <default>false</default>
+        <label>Preregistration Rejected</label>
+    </customValue>
+    <customValue>
+        <fullName>ZT03</fullName>
+        <default>false</default>
+        <label>Preregistration Approved</label>
+    </customValue>
+    <customValue>
+        <fullName>ZT04</fullName>
+        <default>false</default>
+        <label>Onboarding In Progress</label>
+    </customValue>
+    <customValue>
+        <fullName>ZT05</fullName>
+        <default>false</default>
+        <label>Onboarding Completed - Application under Review</label>
+    </customValue>
+    <customValue>
+        <fullName>ZT06</fullName>
+        <default>false</default>
+        <label>Onboarding Rejected</label>
+    </customValue>
+    <customValue>
+        <fullName>ZT07</fullName>
+        <default>false</default>
+        <label>Onboarding Approved</label>
+    </customValue>
+    <description>Picklist Options used on Lead, Account</description>
+    <masterLabel>Registration Status</masterLabel>
+    <sorted>false</sorted>
+</GlobalValueSet>

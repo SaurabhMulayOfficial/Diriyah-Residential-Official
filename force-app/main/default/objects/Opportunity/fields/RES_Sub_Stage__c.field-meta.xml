@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>RES_Sub_Stage__c</fullName>
+    <label>Sub Stage</label>
+    <required>false</required>
+    <trackFeedHistory>false</trackFeedHistory>
+    <type>Picklist</type>
+    <valueSet>
+        <controllingField>StageName</controllingField>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>Enquiry Sent</fullName>
+                <default>false</default>
+                <label>Enquiry Sent</label>
+            </value>
+            <value>
+                <fullName>Proposal Sent</fullName>
+                <default>false</default>
+                <label>Proposal Sent</label>
+            </value>
+        </valueSetDefinition>
+        <valueSettings>
+            <controllingFieldValue>Work in Progress</controllingFieldValue>
+            <valueName>Enquiry Sent</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Work in Progress</controllingFieldValue>
+            <valueName>Proposal Sent</valueName>
+        </valueSettings>
+    </valueSet>
+</CustomField>

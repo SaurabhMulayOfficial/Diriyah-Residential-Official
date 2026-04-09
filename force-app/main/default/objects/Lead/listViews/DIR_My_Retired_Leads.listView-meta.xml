@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ListView xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>DIR_My_Retired_Leads</fullName>
+    <columns>FULL_NAME</columns>
+    <columns>LEAD.PHONE</columns>
+    <columns>LEAD.EMAIL</columns>
+    <columns>RES_Contact_Phone__c</columns>
+    <columns>RES_Identification_Number__c</columns>
+    <columns>LEAD.STATUS</columns>
+
+    <filterScope>Mine</filterScope>
+    <filters>
+        <field>LEAD.STATUS</field>
+        <operation>equals</operation>
+        <value>Retired</value>
+    </filters>
+    <label>My Retired Leads</label>
+    <sharedTo>
+        <group>RES_Sales_Specialist_List_View_Group</group>
+    </sharedTo>
+</ListView>
