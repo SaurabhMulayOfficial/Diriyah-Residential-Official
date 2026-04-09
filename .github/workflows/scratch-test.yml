@@ -1,0 +1,111 @@
+name: Scratch Test Deployment 🧪
+
+on:
+  workflow_dispatch:
+    inputs:
+      branch:
+        description: "Branch to deploy"
+        required: true
+        default: "develop"
+
+      environment:
+        description: "Select Environment"
+        required: true
+        type: choice
+        options:
+          - PROD-DEVHUB
+
+      deployment_type:
+        description: "Deployment Type"
+        required: true
+        type: choice
+        options:
+          - forceapp
+          - package
+
+      package_file:
+        description: "Package file (only if package selected)"
+        required: false
+        default: manifest/package.xml
+
+jobs:
+  scratch-test:
+    runs-on: ubuntu-latest
+    environment: env
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.inputs.branch }}
+
+      - name: Debug Info
+        run: |
+          echo "Branch: ${{ github.event.inputs.branch }}"
+          echo "Environment: ${{ github.event.inputs.environment }}"
+          echo "Deployment Type: ${{ github.event.inputs.deployment_type }}"
+
+
+      - name: Install Salesforce CLI
+        run: npm install -g @salesforce/cli
+
+
+      - name: Authenticate DevHub
+        run: |
+          ENV="${{ github.event.inputs.environment }}"
+
+          if [ "$ENV" == "PROD-DEVHUB" ]; then
+            echo "${{ secrets.SF_JWT_KEY_DEVHUB }}" > server.key
+            CLIENT_ID="${{ secrets.SF_CLIENT_ID_DEVHUB }}"
+            USERNAME="${{ secrets.SF_USERNAME_DEVHUB }}"
+            INSTANCE="https://login.salesforce.com"
+
+          fi
+
+          sf org login jwt \
+            --client-id "$CLIENT_ID" \
+            --jwt-key-file server.key \
+            --username "$USERNAME" \
+            --instance-url "$INSTANCE" \
+            --set-default-dev-hub
+
+      - name: Create Scratch Org
+        run: |
+          sf org create scratch \
+            --definition-file config/project-scratch-def.json \
+            --alias scratch-${{ github.run_id }} \
+            --duration-days 1 \
+            --set-default
+
+
+      - name: Validate Input
+        run: |
+          if [ "${{ github.event.inputs.deployment_type }}" == "package" ] && [ -z "${{ github.event.inputs.package_file }}" ]; then
+            echo "❌ Package file is required!"
+            exit 1
+          fi
+
+      - name: Deploy Force App
+        if: ${{ github.event.inputs.deployment_type == 'forceapp' }}
+        run: |
+          sf project deploy start \
+            --source-dir force-app \
+            --test-level RunLocalTests \
+            --wait 30
+
+
+      - name: Deploy Package
+        if: ${{ github.event.inputs.deployment_type == 'package' }}
+        run: |
+          sf project deploy start \
+            --manifest ${{ github.event.inputs.package_file }} \
+            --test-level RunLocalTests \
+            --wait 30
+
+
+      - name: Delete Scratch Org
+        if: always()
+        run: |
+          sf org delete scratch \
+            --target-org scratch-${{ github.run_id }} \
+            --no-prompt
