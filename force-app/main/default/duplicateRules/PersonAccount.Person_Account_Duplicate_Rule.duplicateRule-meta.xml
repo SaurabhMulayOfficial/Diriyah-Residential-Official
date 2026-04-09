@@ -4,6 +4,7 @@
     <actionOnUpdate>Block</actionOnUpdate>
     <alertText>Duplicate Account Already exists, please check Account Email and Mobile</alertText>
     <description xsi:nil="true"/>
+    <duplicateRuleFilter xsi:nil="true"/>
     <duplicateRuleMatchRules>
         <matchRuleSObjectType>PersonAccount</matchRuleSObjectType>
         <matchingRule>RES_Person_Account_Matching_Rule</matchingRule>

@@ -4,6 +4,7 @@
     <actionOnUpdate>Block</actionOnUpdate>
     <alertText>Duplicate account already exists. Please verify the account Phone, website, and CR number.</alertText>
     <description xsi:nil="true"/>
+    <duplicateRuleFilter xsi:nil="true"/>
     <duplicateRuleMatchRules>
         <matchRuleSObjectType>Account</matchRuleSObjectType>
         <matchingRule>RES_Company_Account_Matching_Rule</matchingRule>
