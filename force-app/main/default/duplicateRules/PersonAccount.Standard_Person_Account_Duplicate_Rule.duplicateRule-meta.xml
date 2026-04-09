@@ -4,7 +4,6 @@
     <actionOnUpdate>Allow</actionOnUpdate>
     <alertText>Use one of these records?</alertText>
     <description>Identify person accounts that duplicate other person accounts.</description>
-    <duplicateRuleFilter xsi:nil="true"/>
     <duplicateRuleMatchRules>
         <matchRuleSObjectType>PersonAccount</matchRuleSObjectType>
         <matchingRule>Standard_PersonAccount_Match_Rule_v1_0</matchingRule>

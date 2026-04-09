@@ -4,7 +4,6 @@
     <actionOnUpdate>Allow</actionOnUpdate>
     <alertText>You&apos;re creating a duplicate record. We recommend you use an existing record instead.</alertText>
     <description>Duplicate Rule for Leads using the Standard Lead Matching Rule</description>
-    <duplicateRuleFilter xsi:nil="true"/>
     <duplicateRuleMatchRules>
         <matchRuleSObjectType>Lead</matchRuleSObjectType>
         <matchingRule>Standard_Lead_Match_Rule_v1_0</matchingRule>

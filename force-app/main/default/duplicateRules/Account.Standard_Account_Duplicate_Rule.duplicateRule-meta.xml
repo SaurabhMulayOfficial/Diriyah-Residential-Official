@@ -4,13 +4,12 @@
     <actionOnUpdate>Allow</actionOnUpdate>
     <alertText>You are creating a duplicate record. We recommend you use an existing record instead.</alertText>
     <description>Duplicate Rule for Accounts using the Standard Account Matching Rule</description>
-    <duplicateRuleFilter xsi:nil="true"/>
     <duplicateRuleMatchRules>
         <matchRuleSObjectType>Account</matchRuleSObjectType>
         <matchingRule>Standard_Account_Match_Rule_v1_0</matchingRule>
         <objectMapping xsi:nil="true"/>
     </duplicateRuleMatchRules>
-    <isActive>true</isActive>
+    <isActive>false</isActive>
     <masterLabel>Standard Account Duplicate Rule</masterLabel>
     <operationsOnInsert>Alert</operationsOnInsert>
     <operationsOnInsert>Report</operationsOnInsert>
