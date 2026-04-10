@@ -2,16 +2,16 @@
 <DuplicateRule xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
     <actionOnInsert>Block</actionOnInsert>
     <actionOnUpdate>Block</actionOnUpdate>
-    <alertText>Duplicate Account Already exists, please check Account Email and Mobile</alertText>
+    <alertText>Duplicate account already exists. Please verify the account Phone, website, and CR number.</alertText>
     <description xsi:nil="true"/>
     <duplicateRuleFilter xsi:nil="true"/>
     <duplicateRuleMatchRules>
-        <matchRuleSObjectType>PersonAccount</matchRuleSObjectType>
-        <matchingRule>RES_Person_Account_Matching_Rule</matchingRule>
+        <matchRuleSObjectType>Account</matchRuleSObjectType>
+        <matchingRule>RES_Company_Account_Matching_Rule</matchingRule>
         <objectMapping xsi:nil="true"/>
     </duplicateRuleMatchRules>
     <isActive>true</isActive>
-    <masterLabel>Person Account Duplicate Rule</masterLabel>
+    <masterLabel>Company Account Duplicate Rule</masterLabel>
     <securityOption>BypassSharingRules</securityOption>
     <sortOrder>2</sortOrder>
 </DuplicateRule>

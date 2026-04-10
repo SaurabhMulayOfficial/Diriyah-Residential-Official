@@ -1,13 +1,33 @@
 {
-  "orgName": "saurabh.mulay company",
-  "edition": "Developer",
-  "features": ["EnableSetPasswordInApi"],
+  "orgName": "DIRIYAH-RESIDENTIAL",
+  "edition": "Enterprise",
+  "language": "en_US",
+  "country": "US",
+  "features": [
+    "Communities",
+    "PersonAccounts",
+    "MultiCurrency",
+    "ContactsToMultipleAccounts"
+  ],
   "settings": {
+    "omniChannelSettings": {
+      "enableOmniChannel": true
+    },
+    "communitiesSettings": {
+      "enableNetworksEnabled": true
+    },
     "lightningExperienceSettings": {
-      "enableS1DesktopEnabled": true
+      "enableLightningPreviewPref": true
     },
     "mobileSettings": {
       "enableS1EncryptedStoragePref2": false
+    },
+    "quoteSettings": {
+      "enableQuote": true,
+      "enableQuotesWithoutOppEnabled": true
+    },
+    "currencySettings": {
+      "enableMultiCurrency": true
     }
   }
 }
