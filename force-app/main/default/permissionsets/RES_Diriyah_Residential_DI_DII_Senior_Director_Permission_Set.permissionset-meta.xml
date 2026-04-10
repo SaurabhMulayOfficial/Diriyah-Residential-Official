@@ -1258,10 +1258,6 @@
         <name>ApiEnabled</name>
     </userPermissions>
     <userPermissions>
-        <enabled>false</enabled>
-        <name>EmailSingle</name>
-    </userPermissions>
-    <userPermissions>
         <enabled>true</enabled>
         <name>ViewPublicReports</name>
     </userPermissions>
@@ -1282,7 +1278,11 @@
         <name>ViewPublicDashboards</name>
     </userPermissions>
      <userPermissions>
-        <enabled>false</enabled>
+        <enabled>true</enabled>
         <name>EditTask</name>
+    </userPermissions>   
+     <userPermissions>
+        <enabled>true</enabled>
+        <name>EmailSingle</name>
     </userPermissions>
 </PermissionSet>
