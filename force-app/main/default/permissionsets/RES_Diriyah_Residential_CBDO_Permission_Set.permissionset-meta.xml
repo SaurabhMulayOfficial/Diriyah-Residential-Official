@@ -606,13 +606,6 @@
         <field>Lead.RES_BP_Role__c</field>
         <readable>true</readable>
     </fieldPermissions>
-
-    <fieldPermissions>
-        <editable>false</editable>
-        <field>Lead.RES_Brand__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-
     <fieldPermissions>
         <editable>false</editable>
         <field>Lead.RES_Broker__c</field>
@@ -647,27 +640,6 @@
     <fieldPermissions>
         <editable>false</editable>
         <field>Lead.RES_Commercial_Registration_Number__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-
-    <fieldPermissions>
-        <editable>false</editable>
-        <field>Lead.RES_Company_Type__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>false</editable>
-        <field>Lead.RES_Contact_Email__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>false</editable>
-        <field>Lead.RES_Contact_Mobile__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>false</editable>
-        <field>Lead.RES_Contact_Phone__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
@@ -1187,7 +1159,7 @@
         <modifyAllRecords>false</modifyAllRecords>
         <object>Lead</object>
         <viewAllFields>false</viewAllFields>
-        <viewAllRecords>false</viewAllRecords>
+        <viewAllRecords>true</viewAllRecords>
     </objectPermissions>
     <objectPermissions>
         <allowCreate>false</allowCreate>
@@ -1197,7 +1169,7 @@
         <modifyAllRecords>false</modifyAllRecords>
         <object>Account</object>
         <viewAllFields>false</viewAllFields>
-        <viewAllRecords>false</viewAllRecords>
+        <viewAllRecords>true</viewAllRecords>
     </objectPermissions>
     <objectPermissions>
         <allowCreate>false</allowCreate>
@@ -1217,7 +1189,7 @@
         <modifyAllRecords>false</modifyAllRecords>
         <object>Opportunity</object>
         <viewAllFields>false</viewAllFields>
-        <viewAllRecords>false</viewAllRecords>
+        <viewAllRecords>true</viewAllRecords>
     </objectPermissions>
     <objectPermissions>
         <allowCreate>true</allowCreate>
@@ -1266,10 +1238,6 @@
         <visibility>Visible</visibility>
     </tabSettings>
     <tabSettings>
-        <tab>standard-Event</tab>
-        <visibility>Visible</visibility>
-    </tabSettings>
-    <tabSettings>
         <tab>standard-Lead</tab>
         <visibility>Visible</visibility>
     </tabSettings>
@@ -1277,20 +1245,12 @@
         <tab>standard-Opportunity</tab>
         <visibility>Visible</visibility>
     </tabSettings>
-    <tabSettings>
-        <tab>standard-Task</tab>
-        <visibility>Visible</visibility>
-    </tabSettings>
     <userPermissions>
         <enabled>true</enabled>
         <name>ApiEnabled</name>
     </userPermissions>
     <userPermissions>
-        <enabled>true</enabled>
-        <name>EditTask</name>
-    </userPermissions>
-    <userPermissions>
-        <enabled>true</enabled>
+        <enabled>false</enabled>
         <name>EmailSingle</name>
     </userPermissions>
     <userPermissions>
@@ -1303,10 +1263,14 @@
     </userPermissions>
     <userPermissions>
         <enabled>true</enabled>
-        <name>ViewPublicDashboards</name>
+        <name>ViewMyTeamsDashboards</name>
     </userPermissions>
     <userPermissions>
-        <enabled>true</enabled>
-        <name>ViewMyTeamsDashboards</name>
+        <enabled>false</enabled>
+        <name>ViewPublicDashboards</name>
+    </userPermissions>
+     <userPermissions>
+        <enabled>false</enabled>
+        <name>EditTask</name>
     </userPermissions>
 </PermissionSet>
