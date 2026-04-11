@@ -29,6 +29,7 @@ private class RES_LeadServicesTest {
                 LastName = 'Test Lead',
                 Company = 'Test Company',
                 Status = 'New',
+                MobilePhone ='+1424124214',
                 OwnerId = u.Id,
                 RES_SLA_Cycle_Count__c = 0
             );
@@ -56,6 +57,7 @@ private class RES_LeadServicesTest {
                 Company = 'Test Company',
                 Status = 'New',
                 OwnerId = u.Id,
+                MobilePhone ='+1424124215',
                 RES_SLA_Status__c = 'Running',
                 RES_SLA_Cycle_Count__c = 1,
                 RES_SLA_Due_Time__c = System.now().addHours(5)
@@ -98,6 +100,7 @@ private class RES_LeadServicesTest {
                 Company = 'Test Company',
                 Status = 'New',
                 OwnerId = u1.Id,
+                MobilePhone ='+1424124216',
                 RES_SLA_Status__c = 'Running',
                 RES_SLA_Cycle_Count__c = 1,
                 RES_Previous_Lead_Owner__c = q.Id
@@ -150,7 +153,8 @@ private class RES_LeadServicesTest {
                 LastName = 'Retired Lead',
                 Company = 'Test Company',
                 Status = 'New',
-                OwnerId = q.Id
+                OwnerId = q.Id,
+                MobilePhone ='+1424124217'
             );
             insert l;
 
@@ -195,6 +199,7 @@ private class RES_LeadServicesTest {
                     LastName = 'IndividualTest' + i,
                     Company = 'Irrelevant Company Name', // Even if company exists
                     RES_Marketing_Area__c = 'BRANDED_RESIDENTIAL',
+                    MobilePhone = '+1424124214',
                     Status = '01'
                 ));
             }
@@ -204,6 +209,7 @@ private class RES_LeadServicesTest {
                 leadsToTest.add(new Lead(
                     LastName = 'CompanyTest' + i,
                     RES_Marketing_Area__c = 'B2B_RETAIL_LEASING',
+                    MobilePhone = '+1424124214',
                     Status = '01'
                 ));
             }
@@ -212,6 +218,7 @@ private class RES_LeadServicesTest {
             leadsToTest.add(new Lead(
                 LastName = 'BlankAreaTest',
                 RES_Marketing_Area__c = null,
+                MobilePhone = '+1424124214',
                 Status = '01'
             ));
 

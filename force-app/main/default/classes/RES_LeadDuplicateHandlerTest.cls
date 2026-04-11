@@ -8,7 +8,7 @@
  *  Z06 = Leads by Marketing
  *  Z09 = Manual
  *
- * @ author             : Test Author
+ *
  */
 @isTest
 private class RES_LeadDuplicateHandlerTest {
@@ -30,7 +30,8 @@ private class RES_LeadDuplicateHandlerTest {
             LastName   = lastName,
             Company    = 'Test Co',
             LeadSource = leadSource,
-            Status     = status
+            Status     = status,
+            mobilePhone = '+1234567890'
         );
         if (ownerId != null) l.OwnerId = ownerId;
         insert l;
@@ -83,7 +84,7 @@ private class RES_LeadDuplicateHandlerTest {
     @isTest
     static void testApply_EmptyList_NoError() {
         Test.startTest();
-        RES_LeadDeduplicationHandler.apply(new List<Lead>());
+        RES_LeadDeduplicationHandler.apply(new List<Lead>(), new List<RES_LeadDeduplicationHandler.LeadDuplicateWrapper>());
         Test.stopTest();
         System.assert(true, 'apply() with empty list must not throw');
     }
@@ -171,7 +172,7 @@ private class RES_LeadDuplicateHandlerTest {
         String fakeProject = 'ARMANI_APPOINT'; // stand-in for RES_Project__c Id
 
         Lead existing = new Lead(LastName = 'BrkEx', Company = 'Co',
-                                 LeadSource = SRC_BROKER, Status = STATUS_ACTIVE_1,
+                                 LeadSource = SRC_BROKER, Status = STATUS_ACTIVE_1, mobilePhone = '+1234567890',
                                  RES_Project__c = fakeProject,OwnerId = UserInfo.getUserId());
         insert existing;
 
@@ -193,7 +194,7 @@ private class RES_LeadDuplicateHandlerTest {
         Id runningUserId = UserInfo.getUserId();
 
         // Existing has no project (null); input has one → different → no SAME FOUND
-        Lead existing = new Lead(LastName = 'DiffEx', Company = 'Co',
+        Lead existing = new Lead(LastName = 'DiffEx', Company = 'Co', mobilePhone = '+1234567890',
                                  LeadSource = SRC_BROKER, Status = STATUS_ACTIVE_1);
         existing.OwnerId = runningUserId;
         insert existing;
@@ -309,7 +310,8 @@ private class RES_LeadDuplicateHandlerTest {
 
         Test.startTest();
         RES_LeadDeduplicationHandler.runRuleEngine(
-            new List<RES_LeadDeduplicationHandler.LeadDuplicateWrapper>{ w }
+            new List<RES_LeadDeduplicationHandler.LeadDuplicateWrapper>{ w },
+            new List<RES_LeadDeduplicationHandler.LeadDuplicateWrapper>()
         );
         Test.stopTest();
 
@@ -328,7 +330,8 @@ private class RES_LeadDuplicateHandlerTest {
 
         Test.startTest();
         RES_LeadDeduplicationHandler.runRuleEngine(
-            new List<RES_LeadDeduplicationHandler.LeadDuplicateWrapper>{ w }
+            new List<RES_LeadDeduplicationHandler.LeadDuplicateWrapper>{ w },
+            new List<RES_LeadDeduplicationHandler.LeadDuplicateWrapper>()
         );
         Test.stopTest();
 
@@ -365,7 +368,8 @@ private class RES_LeadDuplicateHandlerTest {
 
         Test.startTest();
         RES_LeadDeduplicationHandler.runRuleEngine(
-            new List<RES_LeadDeduplicationHandler.LeadDuplicateWrapper>{ w }
+            new List<RES_LeadDeduplicationHandler.LeadDuplicateWrapper>{ w },
+            new List<RES_LeadDeduplicationHandler.LeadDuplicateWrapper>()
         );
         Test.stopTest();
 
