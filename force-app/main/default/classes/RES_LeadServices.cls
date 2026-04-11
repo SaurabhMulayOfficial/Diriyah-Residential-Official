@@ -4,6 +4,9 @@
  */
 public with sharing class RES_LeadServices {
 
+    public static List<RES_LeadDeduplicationHandler.LeadDuplicateWrapper> leadDuplicateWrapper = 
+    new List<RES_LeadDeduplicationHandler.LeadDuplicateWrapper>();
+    
     public class InputWrapper {
         @InvocableVariable(required=true)
         public Id leadId;
@@ -211,7 +214,11 @@ public with sharing class RES_LeadServices {
     }
 
     public static void applyDeduplicationRules(List<Lead> leadList){
-        RES_LeadDeduplicationHandler.apply(leadList);
+        RES_LeadDeduplicationHandler.apply(leadList,leadDuplicateWrapper);
+    }
+
+    public static void processDeduplicationResults(){
+        RES_LeadDeduplicationHandler.processResults(leadDuplicateWrapper);
     }
 
 }

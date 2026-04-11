@@ -15,12 +15,15 @@ public without sharing class RES_LeadDeduplicationHandler {
         public Set<Id> duplicateLeadIds = new Set<Id>();
         public Map<String,List<Lead>> leadBySource = new Map<String,List<Lead>>();
 
+        public Boolean isOwnerChange = false;
+        public String newOwnerId = '';
+
         public LeadDuplicateWrapper(Lead inputLead) {
             this.inputLead = inputLead;
         }   
     }
     
-    public static void apply(List<lead> leadList){
+    public static void apply(List<lead> leadList, List<LeadDuplicateWrapper> leadDuplicateWrappers){
 
         if(leadList.isEmpty())return;
         List<LeadDuplicateWrapper> duplicateLeadsWrapper = getDuplicateLeads(leadList);
@@ -28,7 +31,7 @@ public without sharing class RES_LeadDeduplicationHandler {
         duplicateLeadsWrapper = hydrateDuplicateWrapper(duplicateLeadsWrapper);
 
         System.debug(' Hydrated Duplicate Lead Wrapper ' + duplicateLeadsWrapper);
-        runRuleEngine(duplicateLeadsWrapper);
+        runRuleEngine(duplicateLeadsWrapper, leadDuplicateWrappers);
     }
 
     public static List<LeadDuplicateWrapper> getDuplicateLeads(List<Lead> inputLeads) {
@@ -38,8 +41,13 @@ public without sharing class RES_LeadDeduplicationHandler {
         if (inputLeads == null || inputLeads.isEmpty()) {
             return response;
         }
-
+        Id rtId_company = Schema.SObjectType.Lead.getRecordTypeInfosByDeveloperName().get('RES_Company').getRecordTypeId();
+        Id rtId_individual = Schema.SObjectType.Lead.getRecordTypeInfosByDeveloperName().get('RES_Individual').getRecordTypeId();
+        
         for (Lead l : inputLeads) {
+            if(l.RecordTypeId != rtId_company && l.RecordTypeId != rtId_individual){
+                continue;
+            }
             response.add(new LeadDuplicateWrapper(l));
         }
 
@@ -206,8 +214,31 @@ public without sharing class RES_LeadDeduplicationHandler {
         return result.trim();
     }
 
+    public static void publishReassignmentEvent(String leadId, String ownerId){
+        RES_Ownership_Reassignment_Event__e event = new RES_Ownership_Reassignment_Event__e();
+        event.RES_LeadId__c = leadId;
+        event.RES_OwnerId__c = ownerId;
+        Database.SaveResult result = EventBus.publish(event);
 
-    public static void runRuleEngine(List<LeadDuplicateWrapper> input){
+        if (result.isSuccess()) {
+            System.debug('Event published successfully' + ' ' + leadId + '  ' + ownerId);   
+        } else {
+            System.debug('Failed to publish event' + leadId + '  ' + ownerId);
+        }
+    }
+
+    public static void hydrateWrapper(Boolean isOwnerChange,
+                                    String newOwnerId,
+                                    LeadDuplicateWrapper wrapper, 
+                                    List<LeadDuplicateWrapper> leadDuplicateWrappers){
+
+            wrapper.isOwnerChange = isOwnerChange;
+            wrapper.newOwnerId = newOwnerId;
+            leadDuplicateWrappers.add(wrapper);
+    }
+
+
+    public static void runRuleEngine(List<LeadDuplicateWrapper> input, List<LeadDuplicateWrapper> leadDuplicateWrappers){
         List<Lead_Deduplication_Rule__mdt> rules = new RES_LeadDeduplicationDAOLayer().getAllRules();
 
         Map<String, String> leadSourceMap = getLeadSourceMap();
@@ -255,7 +286,7 @@ public without sharing class RES_LeadDeduplicationHandler {
                         System.debug('Simply Blocking by rule');
                         if(assignedTo == 'DIFFERENT'){
                             for(Lead l : existingLeadsByExistingSource){
-                                if(l.OwnerId != null && String.valueOf(l.OwnerId).startsWith('005') && l.OwnerId != inputLead.OwnerId){
+                                if(l.OwnerId != null && String.valueOf(l.OwnerId).startsWith('005') && l.OwnerId != inputLead.OwnerId){                            
                                     inputLead.addError('Please review duplicates, The incoming Lead has '+ displayIncomingSource +' as Source and the existing duplicate Lead has ' + displayExistingSource + ' as a Source and the lead has been owned by a different RM.');
                                     break;
                                 }
@@ -305,7 +336,8 @@ public without sharing class RES_LeadDeduplicationHandler {
                             }
                         }
                         else if(checkFieldEquality.startsWith('005') && assignedTo == 'SAME'){
-                            inputLead.OwnerId = checkFieldEquality;
+                            hydrateWrapper(true, checkFieldEquality, wrapper, leadDuplicateWrappers);
+                            inputLead.RES_Bypass_Assignment_Rules__c = true;
                             break;
                         }
                     }
@@ -314,18 +346,37 @@ public without sharing class RES_LeadDeduplicationHandler {
                     String getSameRMId = getRmId(existingLeadsByExistingSource);
 
                     if(shouldArchive != null && shouldArchive != ''){
-                        inputLead.Status = 'Archive';
+                        inputLead.status = 'Archive';
                         if(getSameRMId != '' && assignedTo == 'SAME'){
-                            inputLead.OwnerId = getSameRMId;
+                            inputLead.RES_Bypass_Assignment_Rules__c = true;
+                            hydrateWrapper(true, getSameRMId, wrapper, leadDuplicateWrappers);
                         }
                         break;
                     }
                     else if(assignedTo == 'SAME' && getSameRMId != ''){
-                        inputLead.OwnerId = getSameRMId;
+                        inputLead.RES_Bypass_Assignment_Rules__c = true;
+                        hydrateWrapper(true, getSameRMId, wrapper, leadDuplicateWrappers);
                         break;
                     }
                 }
             }
         }
     }
+
+    public static void processResults(List<LeadDuplicateWrapper> leadDuplicateWrappers){
+
+        for(LeadDuplicateWrapper wrapper: leadDuplicateWrappers){
+            System.debug('Processing Wrapper: '+ wrapper.isOwnerChange + ' ' + wrapper.newOwnerId + ' '+ wrapper.inputLead.Id);
+            if(wrapper.isOwnerChange == true && wrapper.newOwnerId != ''){
+                try{
+                    Lead l = new Lead(Id = wrapper.inputLead.Id, OwnerId = wrapper.newOwnerId);
+                    publishReassignmentEvent(wrapper.inputLead.Id, wrapper.newOwnerId);
+                }
+                catch(Exception e){
+                    System.debug('Failed to change Owner of Lead '+ e.getMessage());
+                }
+            }
+        }
+    }
+
 }

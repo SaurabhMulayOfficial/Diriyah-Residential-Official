@@ -26,9 +26,6 @@
 @isTest
 public class RES_TestDataFactory {
 
-    // ─────────────────────────────────────────────────────────────────
-    // Constants — single place to update if org config changes
-    // ─────────────────────────────────────────────────────────────────
     private static final String PROFILE_STANDARD    = 'Diriyah Residential Sales Standard Profile';
     private static final String PROFILE_SYSADMIN    = 'System Administrator';
     private static final String ROLE_SPECIALIST     = 'RES_Sales_DI_Specialist';
@@ -39,9 +36,6 @@ public class RES_TestDataFactory {
     private static final String PS_MANAGER          = 'RES_Diriyah_Residential_Wadi_Safar_Senior_Manager_Permission_Set';
     private static final String LEAD_RECORD_TYPE    = 'Residential Company';
 
-    // ═════════════════════════════════════════════════════════════════
-    // USER FACTORY METHODS
-    // ═════════════════════════════════════════════════════════════════
     private class UserConfig {
         String email;
         String username;
@@ -52,12 +46,6 @@ public class RES_TestDataFactory {
         String roleDeveloperName;
     }
 
-    /**
-     * Creates and inserts a Sales Rep user.
-     * Profile  : Diriyah Residential Sales Standard Profile
-     * Role     : RES_Sales_DI_Specialist
-     * Perm Set : RES_Diriyah_Sales_Relationship_Manager_Permission_Set
-     */
     public static User createSalesRepUser() {
         UserConfig config = new UserConfig();
         config.email             = 'res.salesrep.test@example.com';
@@ -129,22 +117,6 @@ public class RES_TestDataFactory {
         );
     }
 
-    // ═════════════════════════════════════════════════════════════════
-    // LEAD FACTORY METHOD
-    // ═════════════════════════════════════════════════════════════════
-    /**
-     * Creates and inserts a single Lead using DMLOptions to bypass
-     * duplicate rules — mirrors the verified Anonymous Apex pattern.
-     *
-     * Uniqueness strategy — every duplicate-sensitive field is derived
-     * from the email so no two test leads share identical values:
-     *   • FirstName / Company               → email prefix (left 10 chars)
-     *   • MobilePhone / Phone               → '+9198' + 7-digit hash
-     *   • RES_Identification_Number__c      → full hash (unique field)
-     *
-     * @param  email  Unique email — drives all unique field values
-     * @return        Inserted Lead record
-     */
     public static Lead createLead(String email) {
         RecordType rt = [
             SELECT Id FROM RecordType
@@ -158,7 +130,6 @@ public class RES_TestDataFactory {
         String uniquePhone = '+9198' + hashStr.left(7).rightPad(7, '0');
 
         Lead l = new Lead(
-            // ── Standard Fields ───────────────────────────────────────
             OwnerId                       = UserInfo.getUserId(),
             RecordTypeId                  = rt.Id,
             Salutation                    = 'Mr.',
@@ -172,7 +143,6 @@ public class RES_TestDataFactory {
             State                         = 'Abu Dhabi',
             LeadSource                    = 'Employee_Referral',
             GenderIdentity                = 'GTM',               
-            // ── Custom Fields ─────────────────────────────────────────
             RES_Nationality__c            = 'Indian',
             RES_BP_Role__c                = 'ZTR601',
             RES_Customer_Interest__c      = '101',
@@ -180,7 +150,6 @@ public class RES_TestDataFactory {
             RES_Identification_Type__c    = 'ZIT01'
         );
 
-        // ✅ allowSave = true bypasses org duplicate rules in test context
         Database.DMLOptions dml = new Database.DMLOptions();
         dml.duplicateRuleHeader.allowSave = true;
         Database.insert(l, dml);
@@ -188,18 +157,6 @@ public class RES_TestDataFactory {
         return l;
     }
 
-    // ═════════════════════════════════════════════════════════════════
-    // CONVERT REQUEST HELPERS
-    // ═════════════════════════════════════════════════════════════════
-
-    /**
-     * Builds a ConvertRequest wrapper for the invocable method.
-     *
-     * @param  leads          List of Lead records to include
-     * @param  statusLabel    MasterLabel of the target LeadStatus
-     * @param  doNotCreateOpp true = skip Opportunity creation
-     * @return                Populated ConvertRequest
-     */
     public static RES_LeadMassConversionUtility.ConvertRequest buildRequest(
         List<Lead>  leads,
         String      statusLabel,
@@ -213,23 +170,15 @@ public class RES_TestDataFactory {
         return req;
     }
 
-    /**
-     * Fetches the MasterLabel of the first converted LeadStatus in org.
-     *
-     * @return MasterLabel string of a converted LeadStatus
-     */
     public static String getConvertedStatus() {
         return [
             SELECT MasterLabel FROM LeadStatus
             WHERE IsConverted = true
             AND   MasterLabel = 'Qualified'
             LIMIT 1
-        ].MasterLabel; // ✅ 'Qualified' → DAO returns 'Qualified' → Database.convertLead() accepts it
+        ].MasterLabel;
     }
 
-    /**
-     * Assigns a named PermissionSet to a User.
-     */
     private static void assignPermissionSet(Id userId, String psName) {
         PermissionSet ps = [
             SELECT Id FROM PermissionSet
