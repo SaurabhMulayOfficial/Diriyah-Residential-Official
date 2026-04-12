@@ -28,6 +28,7 @@ private class RES_LeadRetirementBatchTest {
                 LastName = 'TestLead' + i,
                 Company = 'TestCompany' + i,
                 Status = '01',
+                MobilePhone = '+142412421' + i,
                 RecordTypeId = (Math.mod(i, 2) == 0) ? companyRtId : individualRtId
             ));
         }

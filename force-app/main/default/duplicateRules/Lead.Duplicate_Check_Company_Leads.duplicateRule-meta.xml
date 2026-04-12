@@ -11,6 +11,10 @@
         <objectMapping>
             <inputObject>Lead</inputObject>
             <mappingFields>
+                <inputField>RES_CR_Number__c</inputField>
+                <outputField>RES_CR_number__c</outputField>
+            </mappingFields>
+            <mappingFields>
                 <inputField>MobilePhone</inputField>
                 <outputField>Phone</outputField>
             </mappingFields>

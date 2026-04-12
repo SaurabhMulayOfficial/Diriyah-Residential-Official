@@ -14,7 +14,8 @@ public class RES_PSRTest {
         Lead testLead = new Lead(
             LastName = 'Test PSR Lead',
             Company  = 'Test Corp',
-            Status   = '01'
+            Status   = '01',
+            mobilePhone = '+1234567890'
         );
 
         insert testLead;
