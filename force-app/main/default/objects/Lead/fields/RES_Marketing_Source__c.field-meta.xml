@@ -1,12 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
     <fullName>RES_Marketing_Source__c</fullName>
-    <externalId>false</externalId>
     <label>Marketing Source</label>
-    <length>255</length>
     <required>false</required>
     <trackFeedHistory>false</trackFeedHistory>
     <trackHistory>false</trackHistory>
-    <type>Text</type>
-    <unique>false</unique>
+    <type>Picklist</type>
+    <valueSet>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>Diriyah Living</fullName>
+                <default>false</default>
+                <label>Diriyah Living</label>
+            </value>
+            <value>
+                <fullName>Diriyah House</fullName>
+                <default>false</default>
+                <label>Diriyah House</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
 </CustomField>
