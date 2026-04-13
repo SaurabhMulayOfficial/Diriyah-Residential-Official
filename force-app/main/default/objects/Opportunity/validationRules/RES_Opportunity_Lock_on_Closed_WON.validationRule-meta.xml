@@ -11,7 +11,12 @@
     ),
 
     NOT(ISNEW()),
-    ISPICKVAL(PRIORVALUE(StageName), &quot;Closed Won&quot;),
+
+    OR(
+        ISPICKVAL(PRIORVALUE(StageName), &quot;Closed Won&quot;),
+        ISPICKVAL(PRIORVALUE(StageName), &quot;Closed Lost&quot;)
+    ),
+
     $Profile.Name &lt;&gt; &quot;System Administrator&quot;
 )</errorConditionFormula>
     <errorMessage>This Opportunity is Closed Won and cannot be edited.</errorMessage>
