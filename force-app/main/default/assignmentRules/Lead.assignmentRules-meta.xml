@@ -1,15 +1,136 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <AssignmentRules xmlns="http://soap.sforce.com/2006/04/metadata">
     <assignmentRule>
-        <fullName>Marketing Lead Assignment Rule</fullName>
+        <fullName>RES Lead Assignment Rule</fullName>
         <active>true</active>
         <ruleEntry>
             <assignedTo>RES_DG_Team</assignedTo>
             <assignedToType>Queue</assignedToType>
+            <booleanFilter>(1 OR 2 OR 3 OR 4 OR 5 OR 6) AND (7 OR 8) AND 9</booleanFilter>
+            <criteriaItems>
+                <field>Lead.LeadSource</field>
+                <operation>equals</operation>
+                <value>Z19</value>
+            </criteriaItems>
+            <criteriaItems>
+                <field>Lead.LeadSource</field>
+                <operation>equals</operation>
+                <value>Z15</value>
+            </criteriaItems>
+            <criteriaItems>
+                <field>Lead.LeadSource</field>
+                <operation>equals</operation>
+                <value>Cityscape</value>
+            </criteriaItems>
+            <criteriaItems>
+                <field>Lead.LeadSource</field>
+                <operation>equals</operation>
+                <value>Z21</value>
+            </criteriaItems>
+            <criteriaItems>
+                <field>Lead.LeadSource</field>
+                <operation>equals</operation>
+                <value>Z20</value>
+            </criteriaItems>
+            <criteriaItems>
+                <field>Lead.LeadSource</field>
+                <operation>equals</operation>
+                <value>Z03</value>
+            </criteriaItems>
+            <criteriaItems>
+                <field>Lead.RecordTypeId</field>
+                <operation>equals</operation>
+                <value>Residential Individual</value>
+            </criteriaItems>
+            <criteriaItems>
+                <field>Lead.RecordTypeId</field>
+                <operation>equals</operation>
+                <value>Residential Company</value>
+            </criteriaItems>
+            <criteriaItems>
+                <field>Lead.RES_Bypass_Assignment_Rules__c</field>
+                <operation>equals</operation>
+                <value>False</value>
+            </criteriaItems>
+        </ruleEntry>
+        <ruleEntry>
+            <assignedTo>RES_DG_Team</assignedTo>
+            <assignedToType>Queue</assignedToType>
+            <booleanFilter>1 AND (2 OR 3 OR 4 OR 5 OR 6 OR 7 OR 8 OR 9 OR 10 OR 11 OR 12)  AND (13 OR 14) AND 15</booleanFilter>
             <criteriaItems>
                 <field>Lead.LeadSource</field>
                 <operation>equals</operation>
                 <value>Z06</value>
+            </criteriaItems>
+            <criteriaItems>
+                <field>Lead.RES_Project__c</field>
+                <operation>equals</operation>
+                <value>ARMANI_APPOINT</value>
+            </criteriaItems>
+            <criteriaItems>
+                <field>Lead.RES_Project__c</field>
+                <operation>equals</operation>
+                <value>BR_BACCARAT_APPOINT</value>
+            </criteriaItems>
+            <criteriaItems>
+                <field>Lead.RES_Project__c</field>
+                <operation>equals</operation>
+                <value>BRANDED_RESIDENTIAL</value>
+            </criteriaItems>
+            <criteriaItems>
+                <field>Lead.RES_Project__c</field>
+                <operation>equals</operation>
+                <value>BR_CORINTHIA_APPOINT</value>
+            </criteriaItems>
+            <criteriaItems>
+                <field>Lead.RES_Project__c</field>
+                <operation>equals</operation>
+                <value>DIRIYAHSQ_APPOINT</value>
+            </criteriaItems>
+            <criteriaItems>
+                <field>Lead.RES_Project__c</field>
+                <operation>equals</operation>
+                <value>FAENABOOKAPP</value>
+            </criteriaItems>
+            <criteriaItems>
+                <field>Lead.RES_Project__c</field>
+                <operation>equals</operation>
+                <value>MAHBA</value>
+            </criteriaItems>
+            <criteriaItems>
+                <field>Lead.RES_Project__c</field>
+                <operation>equals</operation>
+                <value>OFFICE_LEASING</value>
+            </criteriaItems>
+            <criteriaItems>
+                <field>Lead.RES_Project__c</field>
+                <operation>equals</operation>
+                <value>RITZ_APPOINTMENT</value>
+            </criteriaItems>
+            <criteriaItems>
+                <field>Lead.RES_Project__c</field>
+                <operation>equals</operation>
+                <value>DOWNLOAD_BROCHURE</value>
+            </criteriaItems>
+            <criteriaItems>
+                <field>Lead.RES_Project__c</field>
+                <operation>equals</operation>
+                <value>WADISAFARAMANAPP</value>
+            </criteriaItems>
+            <criteriaItems>
+                <field>Lead.RecordTypeId</field>
+                <operation>equals</operation>
+                <value>Residential Company</value>
+            </criteriaItems>
+            <criteriaItems>
+                <field>Lead.RecordTypeId</field>
+                <operation>equals</operation>
+                <value>Residential Individual</value>
+            </criteriaItems>
+            <criteriaItems>
+                <field>Lead.RES_Bypass_Assignment_Rules__c</field>
+                <operation>equals</operation>
+                <value>False</value>
             </criteriaItems>
         </ruleEntry>
     </assignmentRule>
