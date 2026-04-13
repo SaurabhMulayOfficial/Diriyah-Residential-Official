@@ -4,7 +4,16 @@
     <actionOnUpdate>Block</actionOnUpdate>
     <alertText>Duplicate account already exists. Please verify the account Phone, website, and CR number.</alertText>
     <description xsi:nil="true"/>
-    <duplicateRuleFilter xsi:nil="true"/>
+    <duplicateRuleFilter>
+        <booleanFilter xsi:nil="true"/>
+        <duplicateRuleFilterItems>
+            <field>RecordType</field>
+            <operation>equals</operation>
+            <value>RES Company</value>
+            <sortOrder>1</sortOrder>
+            <table>Account</table>
+        </duplicateRuleFilterItems>
+    </duplicateRuleFilter>
     <duplicateRuleMatchRules>
         <matchRuleSObjectType>Account</matchRuleSObjectType>
         <matchingRule>RES_Company_Account_Matching_Rule</matchingRule>

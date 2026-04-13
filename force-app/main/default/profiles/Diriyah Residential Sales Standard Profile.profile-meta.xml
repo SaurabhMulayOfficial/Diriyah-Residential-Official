@@ -1,6 +1,89 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Profile xmlns="http://soap.sforce.com/2006/04/metadata">
     <custom>true</custom>
+    <!-- ONLY Residential Sales should be visible and default -->
+<applicationVisibilities>
+    <application>standard__LightningSales</application>
+    <default>true</default>
+    <visible>true</visible>
+</applicationVisibilities>
+<!-- Disable ALL other apps -->
+<applicationVisibilities>
+    <application>standard__AllTabSet</application>
+    <visible>false</visible>
+</applicationVisibilities>
+<applicationVisibilities>
+    <application>standard__Approvals</application>
+    <visible>false</visible>
+</applicationVisibilities>
+<applicationVisibilities>
+    <application>standard__FlowsApp</application>
+    <visible>false</visible>
+</applicationVisibilities>
+<applicationVisibilities>
+    <application>standard__LightningBolt</application>
+    <visible>false</visible>
+</applicationVisibilities>
+<applicationVisibilities>
+    <application>standard__ExpressionSetConsole</application>
+    <visible>false</visible>
+</applicationVisibilities>
+<applicationVisibilities>
+    <application>standard__SalesforceCMS</application>
+    <visible>false</visible>
+</applicationVisibilities>
+<applicationVisibilities>
+    <application>standard__DigitalWallet</application>
+    <visible>false</visible>
+</applicationVisibilities>
+<applicationVisibilities>
+    <application>standard__Marketing</application>
+    <visible>false</visible>
+</applicationVisibilities>
+<applicationVisibilities>
+    <application>standard__MSJApp</application>
+    <visible>false</visible>
+</applicationVisibilities>
+<applicationVisibilities>
+    <application>standard__Sales</application>
+    <visible>false</visible>
+</applicationVisibilities>
+<applicationVisibilities>
+    <application>standard__SalesCloudMobile</application>
+    <visible>false</visible>
+</applicationVisibilities>
+<applicationVisibilities>
+    <application>standard__LightningSalesConsole</application>
+    <visible>false</visible>
+</applicationVisibilities>
+<applicationVisibilities>
+    <application>standard__HVSConsole</application>
+    <visible>false</visible>
+</applicationVisibilities>
+<applicationVisibilities>
+    <application>standard__Chatter</application>
+    <visible>false</visible>
+</applicationVisibilities>
+<applicationVisibilities>
+    <application>standard__Service</application>
+    <visible>false</visible>
+</applicationVisibilities>
+<applicationVisibilities>
+    <application>standard__LightningService</application>
+    <visible>false</visible>
+</applicationVisibilities>
+<applicationVisibilities>
+    <application>standard__Shield</application>
+    <visible>false</visible>
+</applicationVisibilities>
+<applicationVisibilities>
+    <application>standard__AgentforceStudio</application>
+    <visible>false</visible>
+</applicationVisibilities>
+<applicationVisibilities>
+    <application>standard__AppLauncher</application>
+    <visible>false</visible>
+</applicationVisibilities>
     <layoutAssignments>
         <layout>Account-RES Company</layout>
         <recordType>Account.RES_Company</recordType>
@@ -47,6 +130,11 @@
     <fieldPermissions>
             <field>Activity.RES_Is_Overdue_Task__c</field>
             <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>Activity.ActivityDate</field>
+        <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
         <editable>true</editable>
@@ -99,6 +187,11 @@
         <recordType>Lead.RES_Company</recordType>
         <visible>true</visible>
     </recordTypeVisibilities>
+    <objectPermissions>
+        <allowCreate>true</allowCreate>
+        <allowRead>true</allowRead>
+        <object>RES_Ownership_Reassignment_Event__e</object> 
+    </objectPermissions>
     <userLicense>Salesforce</userLicense>
     <userPermissions>
         <enabled>true</enabled>
