@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
-    <fullName>RES_Opportunity_Lock_on_Closed_WON</fullName>
+    <fullName>RES_Opportunity_Lock_on_Closed_WON_LOST</fullName>
     <active>true</active>
     <errorConditionFormula>AND(
     NOT($Setup.RES_Config_Switch__c.RES_Validation_Rules_Off__c),
@@ -19,5 +19,5 @@
 
     $Profile.Name &lt;&gt; &quot;System Administrator&quot;
 )</errorConditionFormula>
-    <errorMessage>This Opportunity is Closed Won and cannot be edited.</errorMessage>
+    <errorMessage>This Opportunity is Closed Won/Lost, so cannot be edited.</errorMessage>
 </ValidationRule>
