@@ -7,7 +7,12 @@
     "Communities",
     "PersonAccounts",
     "MultiCurrency",
-    "ContactsToMultipleAccounts"
+    "ContactsToMultipleAccounts",
+    "SalesCloud",
+    "ServiceCloud",
+    "OmniChannel",
+    "LiveAgent",
+    "Sites"
   ],
   "settings": {
     "omniChannelSettings": {
@@ -18,7 +23,8 @@
     },
     "lightningExperienceSettings": {
       "enableLightningPreviewPref": true,
-      "enableDynamicActionsSharedCustom": true
+      "enableDynamicActionsSharedCustom": true,
+      "enableS1DesktopEnabled": true
     },
     "mobileSettings": {
       "enableS1EncryptedStoragePref2": false
@@ -29,6 +35,12 @@
     },
     "currencySettings": {
       "enableMultiCurrency": true
+    },
+    "chatterSettings": {
+      "enableChatter": true
+    },
+    "liveAgentSettings": {
+      "enableLiveAgent": true
     }
   }
 }
