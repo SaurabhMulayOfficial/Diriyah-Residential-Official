@@ -7,7 +7,9 @@
     "Communities",
     "PersonAccounts",
     "MultiCurrency",
-    "ContactsToMultipleAccounts"
+    "ContactsToMultipleAccounts",
+    "OmniChannel",
+    "DynamicActions"
   ],
   "settings": {
     "omniChannelSettings": {
@@ -17,7 +19,8 @@
       "enableNetworksEnabled": true
     },
     "lightningExperienceSettings": {
-      "enableLightningPreviewPref": true
+      "enableLightningPreviewPref": true,
+      "enableDynamicActionsSharedCustom": true
     },
     "mobileSettings": {
       "enableS1EncryptedStoragePref2": false
