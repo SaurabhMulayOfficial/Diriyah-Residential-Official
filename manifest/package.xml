@@ -1,15 +1,12 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <Package xmlns="http://soap.sforce.com/2006/04/metadata">
 	<types>
-		<members>RES_ContentNoteSecurityHandler</members>
-		<members>RES_ContentNoteServices</members>
-		<members>RES_ProfileDAOLayer</members>
-		<members>RES_PreventContentNoteDeleteTest</members>
-		<name>ApexClass</name>
+		<members>RES_Note_Delete_Restriction.RES_Diriyah_Note_Delete_Restriction</members>
+		<name>CustomMetadata</name>
 	</types>
 	<types>
-		<members>RES_PreventContentNoteDelete</members>
-		<name>ApexTrigger</name>
+		<members>RES_Note_Delete_Restriction__mdt</members>
+		<name>CustomObject</name>
 	</types>
 	<version>66.0</version>
 </Package>
