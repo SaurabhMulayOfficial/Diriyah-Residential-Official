@@ -15,17 +15,17 @@
 
         /* 🔴 Case 1: Wadi Safar RYI → Email Mandatory */
         AND(
-            ISPICKVAL(RES_Project__c , &quot;Wadi Safar RYI&quot;),
+            ISPICKVAL(RES_Interest_Type__c , &quot;WADISAFARRYI&quot;),
             ISBLANK(Email)
         ),
 
-        /* 🔴 Case 2: Other Projects → Mobile Mandatory */
+        /* 🔴 Case 2: Other Interest → Mobile Mandatory */
         AND(
-            NOT(ISPICKVAL(RES_Project__c , &quot;Wadi Safar RYI&quot;)),
+            NOT(ISPICKVAL(RES_Interest_Type__c , &quot;WADISAFARRYI&quot;)),
             ISBLANK(MobilePhone)
         )
     )
 )</errorConditionFormula>
-    <errorMessage>For Wadi Safar RYI project, Email is mandatory.
-For other projects/no project selected, Mobile number is mandatory.</errorMessage>
+    <errorMessage>For Interest Type = &quot;Wadi Safar RYI&quot;, email is mandatory.
+For all other interest types or when no selection is made, the mobile number is mandatory.</errorMessage>
 </ValidationRule>
