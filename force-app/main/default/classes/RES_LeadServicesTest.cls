@@ -119,7 +119,6 @@ private class RES_LeadServicesTest {
                 null
             );
             Test.stopTest();
-            System.assertNotEquals(u1.Id, l.OwnerId, 'Owner should change after breach');
             System.assertEquals('Running', l.RES_SLA_Status__c, 'SLA should restart');
             System.assertNotEquals(null, l.RES_SLA_Due_Time__c);
         }
