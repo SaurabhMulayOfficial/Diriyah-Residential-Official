@@ -13,13 +13,13 @@ public class RES_PreventContentNoteDeleteTest {
     public static void setup() {
         RES_Note_Delete_Restriction__mdt mdt = RES_Note_Delete_Restriction__mdt.getInstance('RES_Diriyah_Note_Delete_Restriction');
         
-        //Create a new User record for testing
+
         Profile profile = [ SELECT Id 
                             FROM Profile 
                             WHERE Name =: mdt.RES_Profile_Name__c LIMIT 1];
         
         User newUser 				= new User();
-        newUser.Username 			= 'testuserdiriyah0799@example.com'; // This should be unique
+        newUser.Username 			= 'testuserdiriyah0799@example.com';
         newUser.Alias 				= 'tuser';
         newUser.Email 				= 'testuserdiriyah0799@example.com';
         newUser.ProfileId 			= profile.Id;
@@ -31,17 +31,15 @@ public class RES_PreventContentNoteDeleteTest {
         newUser.LastName 			= 'User';
         newUser.CompanyName 		= 'Test Company';
         
-        //Insert user into test data
         insert newUser;
         
-        //Query test user
-        User testUser = [ SELECT Id 
+
+        User testUser = [SELECT Id 
                          FROM User 
                          WHERE Email = 'testuserdiriyah0799@example.com' LIMIT 1 ];
         
         System.runAs(testUser) {
             Test.startTest();
-            //Create ContentVersion (this creates ContentDocument automatically)
             ContentVersion cv = new ContentVersion();
             cv.Title = 'Test File';
             cv.PathOnClient = 'TestFile.snote';
@@ -55,7 +53,7 @@ public class RES_PreventContentNoteDeleteTest {
     @isTest
     public static void testPreventContentNoteDelete() {
         try{
-            //Query test user
+
             User testUser = [ SELECT Id 
                               FROM User 
                               WHERE Email = 'testuserdiriyah0799@example.com' LIMIT 1 ];
@@ -70,9 +68,8 @@ public class RES_PreventContentNoteDeleteTest {
                                           FROM ContentDocument
                                           WHERE Id =: insertedCV.ContentDocumentId LIMIT 1 ];
                 
-                delete cdObj; //Delete ContentDocument
-                
-                //Assert that the ContentDocument should not be deleted
+                delete cdObj; 
+
                 System.assertNotEquals(null, cdObj, 'The ContentDocument should not be deleted');
                 Test.stopTest();
             }
