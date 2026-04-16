@@ -1,0 +1,63 @@
+name: Bulk Update Permission Sets
+
+on:
+  workflow_dispatch:
+    inputs:
+      fields:
+        description: 'JSON array of fields'
+        required: true
+      permsets:
+        description: 'Comma separated Permission Set API names'
+        required: true
+      branch:
+        description: 'Target branch'
+        required: true
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Validate branch
+        run: |
+          if [[ "${{ github.event.inputs.branch }}" == "main" || \
+                "${{ github.event.inputs.branch }}" == "develop" || \
+                "${{ github.event.inputs.branch }}" == release/* ]]; then
+            echo "❌ Restricted branch"
+            exit 1
+          fi
+
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Create branch
+        run: |
+          git checkout -b ${{ github.event.inputs.branch }}
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+
+      - name: Install deps
+        run: npm install xml2js
+
+      - name: Run script
+        run: node scripts/updatePermissionSets.js
+        env:
+          FIELDS: ${{ github.event.inputs.fields }}
+          PERMSETS: ${{ github.event.inputs.permsets }}
+      
+      - name: Commit & Push
+        run: |
+          git config user.name "github-actions"
+          git config user.email "actions@github.com"
+      
+          git add force-app/main/default/permissionsets
+      
+          if git diff --cached --quiet; then
+            echo "✅ No changes to commit"
+          else
+            git commit -m "Auto updated permission sets"
+            git push origin ${{ github.event.inputs.branch }}
+          fi
