@@ -1,19 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <DuplicateRule xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
     <actionOnInsert>Block</actionOnInsert>
-    <actionOnUpdate>Allow</actionOnUpdate>
-    <alertText>Use one of these records?</alertText>
+    <actionOnUpdate>Block</actionOnUpdate>
+    <alertText>Duplicate Account Already exists, please check Account Email and Mobile</alertText>
     <description xsi:nil="true"/>
-    <duplicateRuleFilter xsi:nil="true"/>
+    <duplicateRuleFilter>
+        <booleanFilter xsi:nil="true"/>
+        <duplicateRuleFilterItems>
+            <field>RecordType</field>
+            <operation>equals</operation>
+            <value>Person Account</value>
+            <sortOrder>1</sortOrder>
+            <table>PersonAccount</table>
+        </duplicateRuleFilterItems>
+    </duplicateRuleFilter>
     <duplicateRuleMatchRules>
         <matchRuleSObjectType>PersonAccount</matchRuleSObjectType>
         <matchingRule>RES_Person_Account_Matching_Rule</matchingRule>
         <objectMapping xsi:nil="true"/>
     </duplicateRuleMatchRules>
-    <isActive>false</isActive>
+    <isActive>true</isActive>
     <masterLabel>Person Account Duplicate Rule</masterLabel>
-    <operationsOnUpdate>Alert</operationsOnUpdate>
-    <operationsOnUpdate>Report</operationsOnUpdate>
-    <securityOption>EnforceSharingRules</securityOption>
+    <securityOption>BypassSharingRules</securityOption>
     <sortOrder>2</sortOrder>
 </DuplicateRule>

@@ -3,9 +3,20 @@
     <fullName>RES_Require_Reason_for_Lost</fullName>
     <active>true</active>
     <errorConditionFormula>AND(
+    NOT($Setup.RES_Config_Switch__c.RES_Validation_Rules_Off__c),
+
+    /* Apply only for specific Record Types */
+    OR(
+        $RecordType.DeveloperName = &quot;RES_Residential_Single_Buyer&quot;,
+        $RecordType.DeveloperName = &quot;RES_Residential_Multi_Buyer&quot;
+    ),
+
+    /* Stage = Closed Lost */
     ISPICKVAL(StageName, &quot;Closed Lost&quot;),
+
+    /* Reason for Lost is blank */
     ISPICKVAL(RES_Reason_for_Lost__c, &quot;&quot;)
 )</errorConditionFormula>
     <errorDisplayField>RES_Reason_for_Lost__c</errorDisplayField>
-    <errorMessage>Reason for lost is required when Stage is Closed Lost.</errorMessage>
+    <errorMessage>Please select a Reason for Lost before marking the Opportunity as Closed Lost.</errorMessage>
 </ValidationRule>

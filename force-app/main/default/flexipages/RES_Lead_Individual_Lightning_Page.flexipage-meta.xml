@@ -292,7 +292,7 @@
             <fieldInstance>
                 <fieldInstanceProperties>
                     <name>uiBehavior</name>
-                    <value>required</value>
+                    <value>none</value>
                 </fieldInstanceProperties>
                 <fieldItem>Record.MobilePhone</fieldItem>
                 <identifier>RecordMobilePhoneField</identifier>
@@ -408,6 +408,16 @@
                 </fieldInstanceProperties>
                 <fieldItem>Record.RES_Customer_Interest__c</fieldItem>
                 <identifier>RecordRES_Customer_Interest__cField</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.RES_Interest_Type__c</fieldItem>
+                <identifier>RecordRES_Interest_Type_cField</identifier>
             </fieldInstance>
         </itemInstances>
         <itemInstances>
@@ -1137,6 +1147,13 @@
             <valueList>
                 <valueListItems>
                     <value>Convert</value>
+                    <visibilityRule>
+                        <criteria>
+                            <leftValue>{!Record.Status}</leftValue>
+                            <operator>EQUAL</operator>
+                            <rightValue>04</rightValue>
+                        </criteria>
+                    </visibilityRule>
                 </valueListItems>
                 <valueListItems>
                     <value>FeedItem.TextPost</value>

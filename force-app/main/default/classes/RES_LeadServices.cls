@@ -4,6 +4,9 @@
  */
 public with sharing class RES_LeadServices {
 
+    public static List<RES_LeadDeduplicationHandler.LeadDuplicateWrapper> leadDuplicateWrapper = 
+    new List<RES_LeadDeduplicationHandler.LeadDuplicateWrapper>();
+    
     public class InputWrapper {
         @InvocableVariable(required=true)
         public Id leadId;
@@ -17,8 +20,6 @@ public with sharing class RES_LeadServices {
     
     @InvocableMethod(label='Handle Lead Owner Change')
     public static void getNewOwnerForRetiredLeads(List<InputWrapper> inputs){
-        List<Lead> leadsToUpdate = new List<Lead>();
-
         Set<Id> queueIds = new Set<Id>();
         Set<Id> activeUsers = new Set<Id>();
 
@@ -44,27 +45,50 @@ public with sharing class RES_LeadServices {
             groupToUserMapping = new RES_GroupMemberDAOLayer().getGroupMembersByIds(queueIds);
         }
 
+        List<RES_Ownership_Reassignment_Event__e> eventsToPublish = new List<RES_Ownership_Reassignment_Event__e>();
+
+        Integer slaInHours = Integer.valueOf(SYSTEM.Label.RES_Lead_SLA_In_hours);
+        BusinessHours bh = (BusinessHours) new RES_BusinessHoursDAOLayer().getDefaultBusinessHours()[0];
+        List<Lead> leadToUpdate = new List<Lead>();
         for(InputWrapper input: inputs){
             if(input.leadId == null)continue;
             if(!String.valueOf(input.currentOwnerId).startsWith('005'))continue; 
             Id nextOwner = getNextOwner(input.previousOwnerId, input.currentOwnerId, groupToUserMapping, activeUsers);
             if(nextOwner != null){
-                Lead l = new Lead();
-                l.Id = input.leadId;
-                l.OwnerId = nextOwner;
-                leadsToUpdate.add(l);
+                eventsToPublish.add(new RES_Ownership_Reassignment_Event__e(
+                    RES_LeadId__c = input.leadId,
+                    RES_OwnerId__c = nextOwner
+                ));
+                Lead l = new Lead(Id = input.leadId);
+                startSla(l, bh, slaInHours, true);
+                l.RES_SLA_Cycle_Count__c = 0;
+                l.RES_SLA_Breach_Time__c = null;
+                l.status = '01';
+                l.RES_Lead_Sub_Status__c =  null;
+                leadToUpdate.add(l);
             }
         }
 
-        if(leadsToUpdate.isEmpty()){
-            return;
-        }
-        
+        if(eventsToPublish.isEmpty())return;
+
         try{
-            Database.upsert(leadsToUpdate, true, AccessLevel.SYSTEM_MODE);
+            publishReassignmentEventInBulk(eventsToPublish);
+            if(!leadToUpdate.isEmpty()){
+                Database.update(leadToUpdate, true, AccessLevel.SYSTEM_MODE);
+            }
         }
         catch(Exception e){
             System.debug('LeadServices.getNewOwnerForRetiredLeads: Failed to change Owner of Lead '+ e.getMessage());
+        }
+    }
+
+    public static void publishReassignmentEventInBulk(List<RES_Ownership_Reassignment_Event__e> events){
+        try{
+            List<Database.SaveResult> results  = EventBus.publish(events);
+            System.debug('Events published for lead ownership reassignment with results: ' + results);
+
+        }catch(Exception e){
+            System.debug('Failed to publish event for lead ownership reassignment: ' + e.getMessage());
         }
     }
 
@@ -133,7 +157,7 @@ public with sharing class RES_LeadServices {
                     }
                     
                     if(userIdToAssign != null){
-                        l.OwnerId = userIdToAssign;
+                        RES_LeadDeduplicationHandler.publishReassignmentEvent(l.Id, userIdToAssign);
                         startSla(l, bh, slaInHours, true);
                     }
                 }
@@ -211,7 +235,11 @@ public with sharing class RES_LeadServices {
     }
 
     public static void applyDeduplicationRules(List<Lead> leadList){
-        RES_LeadDeduplicationHandler.apply(leadList);
+        RES_LeadDeduplicationHandler.apply(leadList,leadDuplicateWrapper);
+    }
+
+    public static void processDeduplicationResults(){
+        RES_LeadDeduplicationHandler.processResults(leadDuplicateWrapper);
     }
 
 }

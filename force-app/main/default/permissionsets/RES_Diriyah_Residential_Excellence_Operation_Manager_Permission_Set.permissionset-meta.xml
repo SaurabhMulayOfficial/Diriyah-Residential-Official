@@ -292,11 +292,6 @@
     </fieldPermissions>
     <fieldPermissions>
         <editable>false</editable>
-        <field>Account.RES_Year_Of_Establishment__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>false</editable>
         <field>Account.RES_Z_CurrentAreaSqmUnitCode_KUT__c</field>
         <readable>true</readable>
     </fieldPermissions>
@@ -542,7 +537,7 @@
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
-        <editable>false</editable>
+        <editable>true</editable>
         <field>Lead.GenderIdentity</field>
         <readable>true</readable>
     </fieldPermissions>
@@ -572,7 +567,7 @@
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
-        <editable>false</editable>
+        <editable>true</editable>
         <field>Lead.LeadSource</field>
         <readable>true</readable>
     </fieldPermissions>
@@ -582,7 +577,7 @@
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
-        <editable>false</editable>
+        <editable>true</editable>
         <field>Lead.NumberOfEmployees</field>
         <readable>true</readable>
     </fieldPermissions>
@@ -597,22 +592,15 @@
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
-        <editable>false</editable>
+        <editable>true</editable>
         <field>Lead.RES_Area_Of_Interest__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
-        <editable>true</editable>
+        <editable>false</editable>
         <field>Lead.RES_BP_Role__c</field>
         <readable>true</readable>
     </fieldPermissions>
-
-    <fieldPermissions>
-        <editable>false</editable>
-        <field>Lead.RES_Brand__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-
     <fieldPermissions>
         <editable>false</editable>
         <field>Lead.RES_Broker__c</field>
@@ -635,7 +623,7 @@
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
-        <editable>false</editable>
+        <editable>true</editable>
         <field>Lead.RES_Cityspace_Year__c</field>
         <readable>true</readable>
     </fieldPermissions>
@@ -647,27 +635,6 @@
     <fieldPermissions>
         <editable>true</editable>
         <field>Lead.RES_Commercial_Registration_Number__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>Lead.RES_Company_Type__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>false</editable>
-        <field>Lead.RES_Contact_Email__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>false</editable>
-        <field>Lead.RES_Contact_Mobile__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>false</editable>
-        <field>Lead.RES_Contact_Phone__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
@@ -687,7 +654,7 @@
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
-        <editable>false</editable>
+        <editable>true</editable>
         <field>Lead.RES_Customer_Interest__c</field>
         <readable>true</readable>
     </fieldPermissions>
@@ -713,7 +680,7 @@
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
-        <editable>false</editable>
+        <editable>true</editable>
         <field>Lead.RES_Group_Code__c</field>
         <readable>true</readable>
     </fieldPermissions>
@@ -758,7 +725,7 @@
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
-        <editable>false</editable>
+        <editable>true</editable>
         <field>Lead.RES_Lead_Sub_Status__c</field>
         <readable>true</readable>
     </fieldPermissions>
@@ -782,7 +749,7 @@
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
-        <editable>false</editable>
+        <editable>true</editable>
         <field>Lead.RES_Marketing_Permission__c</field>
         <readable>true</readable>
     </fieldPermissions>
@@ -855,7 +822,7 @@
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
-        <editable>false</editable>
+        <editable>true</editable>
         <field>Lead.RES_Qualification_Level__c</field>
         <readable>true</readable>
     </fieldPermissions>
@@ -896,9 +863,6 @@
         <field>Lead.RES_SLA_Status__c</field>
         <readable>true</readable>
     </fieldPermissions>
-
-
-
     <fieldPermissions>
         <editable>false</editable>
         <field>Lead.RES_Services_Offered__c</field>
@@ -920,7 +884,7 @@
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
-        <editable>false</editable>
+        <editable>true</editable>
         <field>Lead.RES_Terms_and_Conditions__c</field>
         <readable>true</readable>
     </fieldPermissions>
@@ -943,9 +907,8 @@
         <editable>false</editable>
         <field>Lead.RES_Villa_of_Interest__c</field>
         <readable>true</readable>
-    </fieldPermissions>
-
-    <fieldPermissions>
+    </fieldPermissions> 
+     <fieldPermissions>
         <editable>false</editable>
         <field>Lead.RES_Z_CurrentRentcurrencyCode_KUT__c</field>
         <readable>true</readable>
@@ -956,7 +919,7 @@
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
-        <editable>false</editable>
+        <editable>true</editable>
         <field>Lead.Rating</field>
         <readable>true</readable>
     </fieldPermissions>
@@ -966,7 +929,7 @@
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
-        <editable>false</editable>
+        <editable>true</editable>
         <field>Lead.Website</field>
         <readable>true</readable>
     </fieldPermissions>
@@ -1112,7 +1075,7 @@
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
-        <editable>false</editable>
+        <editable>true</editable>
         <field>Opportunity.RES_Reason_for_Lost__c</field>
         <readable>true</readable>
     </fieldPermissions>
@@ -1187,7 +1150,7 @@
         <modifyAllRecords>false</modifyAllRecords>
         <object>Lead</object>
         <viewAllFields>false</viewAllFields>
-        <viewAllRecords>false</viewAllRecords>
+        <viewAllRecords>true</viewAllRecords>
     </objectPermissions>
     <objectPermissions>
         <allowCreate>true</allowCreate>
@@ -1197,7 +1160,7 @@
         <modifyAllRecords>false</modifyAllRecords>
         <object>Account</object>
         <viewAllFields>false</viewAllFields>
-        <viewAllRecords>false</viewAllRecords>
+        <viewAllRecords>true</viewAllRecords>
     </objectPermissions>
     <objectPermissions>
         <allowCreate>true</allowCreate>
@@ -1212,12 +1175,12 @@
     <objectPermissions>
         <allowCreate>false</allowCreate>
         <allowDelete>false</allowDelete>
-        <allowEdit>false</allowEdit>
+        <allowEdit>true</allowEdit>
         <allowRead>true</allowRead>
         <modifyAllRecords>false</modifyAllRecords>
         <object>Opportunity</object>
         <viewAllFields>false</viewAllFields>
-        <viewAllRecords>false</viewAllRecords>
+        <viewAllRecords>true</viewAllRecords>
     </objectPermissions>
     <objectPermissions>
         <allowCreate>true</allowCreate>
@@ -1278,6 +1241,18 @@
         <visibility>Visible</visibility>
     </tabSettings>
     <tabSettings>
+        <tab>standard-OmniSupervisor</tab>
+        <visibility>Visible</visibility>
+    </tabSettings>
+    <tabSettings>
+        <tab>standard-report</tab>
+        <visibility>Visible</visibility>
+    </tabSettings>
+    <tabSettings>
+        <tab>standard-Dashboard</tab>
+        <visibility>Visible</visibility>
+    </tabSettings>
+    <tabSettings>
         <tab>standard-Task</tab>
         <visibility>Visible</visibility>
     </tabSettings>
@@ -1302,11 +1277,23 @@
         <name>RunReports</name>
     </userPermissions>
     <userPermissions>
-        <enabled>true</enabled>
+        <enabled>false</enabled>
         <name>ViewPublicDashboards</name>
     </userPermissions>
     <userPermissions>
         <enabled>true</enabled>
         <name>ViewMyTeamsDashboards</name>
+    </userPermissions>
+    <userPermissions>
+        <enabled>true</enabled>
+        <name>ConvertLeads</name>
+    </userPermissions>
+     <userPermissions>
+    <enabled>true</enabled>
+    <name>AssignPermissionSets</name>
+    </userPermissions>
+     <userPermissions>
+        <enabled>true</enabled>
+        <name>TransferAnyLead</name>
     </userPermissions>
 </PermissionSet>

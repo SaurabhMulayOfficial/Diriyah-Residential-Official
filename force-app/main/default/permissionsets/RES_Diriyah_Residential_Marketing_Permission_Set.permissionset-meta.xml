@@ -466,13 +466,6 @@
         <field>Lead.RES_BP_Role__c</field>
         <readable>true</readable>
     </fieldPermissions>
-
-    <fieldPermissions>
-        <editable>false</editable>
-        <field>Lead.RES_Brand__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-
     <fieldPermissions>
         <editable>false</editable>
         <field>Lead.RES_Broker__c</field>
@@ -507,27 +500,6 @@
     <fieldPermissions>
         <editable>false</editable>
         <field>Lead.RES_Commercial_Registration_Number__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-
-    <fieldPermissions>
-        <editable>false</editable>
-        <field>Lead.RES_Company_Type__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>false</editable>
-        <field>Lead.RES_Contact_Email__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>false</editable>
-        <field>Lead.RES_Contact_Mobile__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>false</editable>
-        <field>Lead.RES_Contact_Phone__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
@@ -972,7 +944,7 @@
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
-        <editable>false</editable>
+        <editable>true</editable>
         <field>Opportunity.RES_Reason_for_Lost__c</field>
         <readable>true</readable>
     </fieldPermissions>
@@ -1080,14 +1052,14 @@
         <viewAllRecords>false</viewAllRecords>
     </objectPermissions>
     <objectPermissions>
-        <allowCreate>true</allowCreate>
+        <allowCreate>false</allowCreate>
         <allowDelete>false</allowDelete>
-        <allowEdit>true</allowEdit>
+        <allowEdit>false</allowEdit>
         <allowRead>true</allowRead>
         <modifyAllRecords>false</modifyAllRecords>
         <object>RES_Opportunity_Account_Link__c</object>
         <viewAllFields>false</viewAllFields>
-        <viewAllRecords>true</viewAllRecords>
+        <viewAllRecords>false</viewAllRecords>
     </objectPermissions>
     <recordTypeVisibilities>
         <recordType>Account.RES_Company</recordType>
@@ -1154,10 +1126,6 @@
         <visibility>Visible</visibility>
     </tabSettings>
     <tabSettings>
-        <tab>standard-Event</tab>
-        <visibility>Visible</visibility>
-    </tabSettings>
-    <tabSettings>
         <tab>standard-Lead</tab>
         <visibility>Visible</visibility>
     </tabSettings>
@@ -1166,7 +1134,15 @@
         <visibility>Visible</visibility>
     </tabSettings>
     <tabSettings>
-        <tab>standard-Task</tab>
+        <tab>standard-OmniSupervisor</tab>
+        <visibility>Visible</visibility>
+    </tabSettings>
+    <tabSettings>
+        <tab>standard-report</tab>
+        <visibility>Visible</visibility>
+    </tabSettings>
+    <tabSettings>
+        <tab>standard-Dashboard</tab>
         <visibility>Visible</visibility>
     </tabSettings>
     <userPermissions>
@@ -1174,11 +1150,11 @@
         <name>ApiEnabled</name>
     </userPermissions>
     <userPermissions>
-        <enabled>true</enabled>
+        <enabled>false</enabled>
         <name>EditTask</name>
     </userPermissions>
     <userPermissions>
-        <enabled>true</enabled>
+        <enabled>false</enabled>
         <name>EmailSingle</name>
     </userPermissions>
     <userPermissions>
@@ -1190,7 +1166,7 @@
         <name>RunReports</name>
     </userPermissions>
     <userPermissions>
-        <enabled>true</enabled>
+        <enabled>false</enabled>
         <name>ViewPublicDashboards</name>
     </userPermissions>
     <userPermissions>
