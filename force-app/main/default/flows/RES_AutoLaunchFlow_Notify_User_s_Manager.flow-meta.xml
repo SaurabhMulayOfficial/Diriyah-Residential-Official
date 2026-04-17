@@ -209,109 +209,6 @@
         <offset>0</offset>
         <versionString>2.0.1</versionString>
     </actionCalls>
-    <actionCalls>
-        <name>Send_OverDue_Task_Email_to_Manager</name>
-        <label>Send OverDue Task Email to Manager</label>
-        <locationX>0</locationX>
-        <locationY>0</locationY>
-        <actionName>emailSimple</actionName>
-        <actionType>emailSimple</actionType>
-        <flowTransactionModel>CurrentTransaction</flowTransactionModel>
-        <inputParameters>
-            <name>recipientAddresses</name>
-            <value>
-                <collectionElements>
-                    <elementReference>Emails</elementReference>
-                </collectionElements>
-            </value>
-        </inputParameters>
-        <inputParameters>
-            <name>senderType</name>
-            <value>
-                <inputConfiguratorMode>Custom</inputConfiguratorMode>
-                <stringValue>OrgWideEmailAddress</stringValue>
-            </value>
-        </inputParameters>
-        <inputParameters>
-            <name>senderAddress</name>
-            <value>
-                <inputConfiguratorMode>Custom</inputConfiguratorMode>
-                <stringValue>syed.ashraf@globant.com</stringValue>
-            </value>
-        </inputParameters>
-        <inputParameters>
-            <name>composeEmailContent</name>
-            <value>
-                <stringValue>True</stringValue>
-            </value>
-        </inputParameters>
-        <inputParameters>
-            <name>emailSubject</name>
-            <value>
-                <stringValue>Overdue Task Reminder: {!TaskRecord.Subject}</stringValue>
-            </value>
-        </inputParameters>
-        <inputParameters>
-            <name>emailBody</name>
-            <value>
-                <inputConfiguratorMode>Custom</inputConfiguratorMode>
-                <stringValue>&lt;p&gt;Hello {!User.Name},&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Reminder:&lt;/strong&gt; An overdue Task needs attention.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Subject:&lt;/strong&gt;  &lt;a href=&quot;{!OrgBaseUrl}lightning/r/Task/{!TaskRecord.Id}/view&quot;&gt;{!TaskRecord.Subject}&lt;/a&gt;&lt;br&gt;&lt;strong&gt;Due Date:&lt;/strong&gt; {!TaskRecord.ActivityDate}&lt;/br&gt;&lt;br&gt;&lt;strong&gt;Task Owner:&lt;/strong&gt; {!ownerName}&lt;/br&gt;&lt;p&gt;Please review the task in Salesforce.&lt;/p&gt;</stringValue>
-            </value>
-        </inputParameters>
-        <inputParameters>
-            <name>sendRichBody</name>
-            <value>
-                <booleanValue>true</booleanValue>
-            </value>
-        </inputParameters>
-        <nameSegment>emailSimple</nameSegment>
-        <offset>0</offset>
-        <versionString>2.0.1</versionString>
-    </actionCalls>
-    <actionCalls>
-        <name>Send_OverDue_Task_Notification</name>
-        <label>Send OverDue Task Notification</label>
-        <locationX>0</locationX>
-        <locationY>0</locationY>
-        <actionName>customNotificationAction</actionName>
-        <actionType>customNotificationAction</actionType>
-        <connector>
-            <targetReference>Send_OverDue_Task_Email_to_Manager</targetReference>
-        </connector>
-        <flowTransactionModel>CurrentTransaction</flowTransactionModel>
-        <inputParameters>
-            <name>customNotifTypeId</name>
-            <value>
-                <elementReference>Get_Overdue_Task_Notification.Id</elementReference>
-            </value>
-        </inputParameters>
-        <inputParameters>
-            <name>recipientIds</name>
-            <value>
-                <elementReference>userId</elementReference>
-            </value>
-        </inputParameters>
-        <inputParameters>
-            <name>title</name>
-            <value>
-                <stringValue>Overdue Task Reminder</stringValue>
-            </value>
-        </inputParameters>
-        <inputParameters>
-            <name>body</name>
-            <value>
-                <stringValue>Task &apos;{!TaskRecord.Subject}&apos; is overdue. Due Date: {!TaskRecord.ActivityDate}. Task Owner: {!ownerName}</stringValue>
-            </value>
-        </inputParameters>
-        <inputParameters>
-            <name>targetId</name>
-            <value>
-                <elementReference>TaskRecord.Id</elementReference>
-            </value>
-        </inputParameters>
-        <nameSegment>customNotificationAction</nameSegment>
-        <offset>0</offset>
-    </actionCalls>
     <apiVersion>66.0</apiVersion>
     <areMetricsLoggedToDataCloud>false</areMetricsLoggedToDataCloud>
     <assignments>
@@ -383,9 +280,6 @@
                     <stringValue>OverDueTaskNotification</stringValue>
                 </rightValue>
             </conditions>
-            <connector>
-                <targetReference>Get_Overdue_Task_Notification</targetReference>
-            </connector>
             <label>OverDue Task</label>
         </rules>
     </decisions>
@@ -467,27 +361,6 @@
             <operator>EqualTo</operator>
             <value>
                 <stringValue>RES_Lead_Breach_Notification</stringValue>
-            </value>
-        </filters>
-        <getFirstRecordOnly>true</getFirstRecordOnly>
-        <object>CustomNotificationType</object>
-        <storeOutputAutomatically>true</storeOutputAutomatically>
-    </recordLookups>
-    <recordLookups>
-        <name>Get_Overdue_Task_Notification</name>
-        <label>Get Overdue Task Notification</label>
-        <locationX>0</locationX>
-        <locationY>0</locationY>
-        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
-        <connector>
-            <targetReference>Send_OverDue_Task_Notification</targetReference>
-        </connector>
-        <filterLogic>and</filterLogic>
-        <filters>
-            <field>DeveloperName</field>
-            <operator>EqualTo</operator>
-            <value>
-                <stringValue>DIR_Overdue_Task_Escalation</stringValue>
             </value>
         </filters>
         <getFirstRecordOnly>true</getFirstRecordOnly>
