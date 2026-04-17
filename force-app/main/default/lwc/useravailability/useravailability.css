@@ -1,0 +1,119 @@
+/* Wrapper */
+:host {
+    display: block;
+    font-family: Salesforce Sans, Arial, sans-serif;
+}
+
+/* Card spacing */
+.slds-card {
+    border-radius: 8px;
+}
+
+/* Button Base */
+.btn {
+    border-radius: 20px;
+    padding: 8px 16px;
+    font-weight: 600;
+    transition: all 0.2s ease-in-out;
+}
+
+/* Available Button */
+.available {
+    background-color: #2e844a;
+    color: white;
+    border: none;
+}
+
+.available:hover {
+    background-color: #256a3a;
+}
+
+/* Offline Button */
+.offline {
+    background-color: red;
+}
+
+.offline:hover {
+    background-color: red;
+}
+
+/* Active State */
+.active {
+    border: 2px solid #1b96ff;
+    background-color: #f4f6f9;
+}
+.available.active {
+    color: white;
+}
+
+.offline.active {
+    color: white;
+}
+
+/* Disabled */
+button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/* Spinner Center */
+lightning-spinner {
+    display: block;
+    margin-top: 10px;
+}
+
+/* Toast Message */
+.toast {
+    margin-top: 10px;
+    padding: 10px;
+    border-radius: 6px;
+    font-size: 14px;
+}
+
+/* Success Toast */
+.toast.success {
+    background-color: #e3fcef;
+    color: #067d3b;
+    border: 1px solid #067d3b;
+}
+
+/* Error Toast */
+.toast.error {
+    background-color: #fdecea;
+    color: #ba0517;
+    border: 1px solid #ba0517;
+}
+
+/* Utility Bar Compact View */
+:host([data-utility]) .slds-card {
+    padding: 6px;
+}
+
+.status-row {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.status-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    margin-right: 6px;
+}
+
+.status-available {
+    background-color: #2e844a;
+}
+
+.status-offline {
+    background-color: red;
+}
+
+/* Responsive (small screens) */
+@media (max-width: 480px) {
+    .btn {
+        width: 100%;
+        margin-bottom: 8px;
+    }
+}

@@ -1,0 +1,41 @@
+<template>
+    <lightning-card title="User Availability">
+
+        <div class="slds-p-around_medium">
+            <!-- Status Indicator -->
+            <div class="status-row">
+                <span class={statusDotClass}></span>
+                <span class="status-text">{currentStatus}</span>
+            </div>
+            <!-- Buttons -->
+            <div class="slds-grid slds-gutters">
+                <lightning-button
+                    label="Available"
+                    variant="success"
+                    onclick={handleAvailable}
+                    class={computedAvailableClass}
+                    disabled={isLoading}>
+                </lightning-button>
+                <lightning-button
+                    label="Offline"
+                    variant="destructive"
+                    onclick={handleOffline}
+                    class={computedOfflineClass}
+                    disabled={isLoading}>
+                </lightning-button>
+            </div>
+        </div>
+        <!-- Spinner -->
+        <template if:true={isLoading}>
+            <div class="slds-p-around_small">
+                <lightning-spinner alternative-text="Updating"></lightning-spinner>
+            </div>
+        </template>
+        <!-- Toast -->
+        <template if:true={showToast}>
+            <div class={computedToastClass}>
+                <span>{toastMessage}</span>
+            </div>
+        </template>
+    </lightning-card>
+</template>
