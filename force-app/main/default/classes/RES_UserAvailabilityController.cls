@@ -6,61 +6,29 @@ public with sharing class RES_UserAvailabilityController {
 
     @AuraEnabled
     public static String updateUserStatus(String newStatus) {
-
         Id userId = UserInfo.getUserId();
-
-        // Validate input
         if (String.isBlank(newStatus) || !ALLOWED_STATUSES.contains(newStatus)) {
             throw new AuraHandledException('Invalid status value.');
         }
-
-        // Query record
-        List<RES_Assignment_Rule__c> records = [
-            SELECT Id, RES_User_Availability_Status__c
-            FROM RES_Assignment_Rule__c
-            WHERE RES_User__c = :userId
-            LIMIT 1
-        ];
-
+        List<RES_Assignment_Rule__c> records = new RES_AssignmentRuleDAO().getRecordByUserId(userId);
         if (records.isEmpty()) {
             throw new AuraHandledException('No Assignment record found for user.');
         }
-
-        RES_Assignment_Rule__c rec = records[0];
-
-        // FLS Check
-        if (!Schema.sObjectType.RES_Assignment_Rule__c.fields
-            .RES_User_Availability_Status__c.isUpdateable()) {
-            throw new AuraHandledException('No permission to update status.');
+        for(RES_Assignment_Rule__c r:records){
+            r.RES_User_Availability_Status__c = newStatus;
         }
-
-        rec.RES_User_Availability_Status__c = newStatus;
-
-        update rec;
-
-        // OPTIONAL: Call your reassignment logic (Only if needed when user becomes available)
-        if (newStatus == 'Available') {
-           // RES_ReassignmentLogicHandler.handleUserAvailable(userId);
-        }
-
+        Database.update(records,true,AccessLevel.SYSTEM_MODE);
         return newStatus;
     }
 
-    @AuraEnabled(cacheable=true)
-    public static String getUserStatus() {
+    @AuraEnabled
+    public static string getUserStatus(){
         Id userId = UserInfo.getUserId();
-
-        List<RES_Assignment_Rule__c> records = [
-            SELECT RES_User_Availability_Status__c
-            FROM RES_Assignment_Rule__c
-            WHERE RES_User__c = :userId
-            LIMIT 1
-        ];
-
+        List<RES_Assignment_Rule__c> records = new RES_AssignmentRuleDAO().getRecordByUserId(userId);
         if (records.isEmpty()) {
-            return 'Offline';
+            throw new AuraHandledException('No Assignment record found for user.');
         }
-
-        return records[0].RES_User_Availability_Status__c;
+        string existingStatus = records[0].RES_User_Availability_Status__c;
+        return existingStatus;
     }
 }

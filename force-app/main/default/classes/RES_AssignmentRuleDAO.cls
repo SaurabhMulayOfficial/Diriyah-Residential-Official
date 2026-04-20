@@ -38,7 +38,7 @@
  * =============================================================================
  */
 
-public with sharing class RES_AssignmentRuleDAO extends RES_BaseDAOLayer {
+public without sharing class RES_AssignmentRuleDAO extends RES_BaseDAOLayer {
     protected override String getSObjectName(){
         return 'RES_Assignment_Rule__c';
     }
@@ -64,6 +64,14 @@ public with sharing class RES_AssignmentRuleDAO extends RES_BaseDAOLayer {
             ruleMap.get(rule.RES_Assignment_Config__c).add(rule);
         }
         return ruleMap;
+    }
+
+    public List<RES_Assignment_Rule__c> getRecordByUserId(Id userId){
+        Map<String, Object> bindVars = new Map<String, Object>();
+        bindVars.put('userId', userId);
+        String soql ='SELECT Id, RES_User_Availability_Status__c FROM RES_Assignment_Rule__c WHERE RES_User__c = :userId';
+        return (List<RES_Assignment_Rule__c>) executeQuery(soql, 'assignmentRulesByConfig', true, bindVars, AccessLevel.SYSTEM_MODE);
+    
     }
 
 

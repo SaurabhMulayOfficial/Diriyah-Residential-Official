@@ -1,7 +1,7 @@
 import { LightningElement, track } from 'lwc';
-import getUserStatus from '@salesforce/apex/RES_UserAvailabilityController.getUserStatus';
 import updateUserStatus from '@salesforce/apex/RES_UserAvailabilityController.updateUserStatus';
-
+import getUserStatus from '@salesforce/apex/RES_UserAvailabilityController.getUserStatus';
+import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 export default class UserAvailability extends LightningElement {
 
     @track currentStatus = 'Available';
@@ -17,6 +17,7 @@ export default class UserAvailability extends LightningElement {
     loadStatus() {
         getUserStatus()
             .then(result => {
+                console.log('result==>',result);
                 this.currentStatus = result;
             })
             .catch(error => {
@@ -38,7 +39,7 @@ export default class UserAvailability extends LightningElement {
         updateUserStatus({ newStatus: status })
             .then(result => {
                 this.currentStatus = result;
-                this.showSuccess('Status updated to ' + result);
+                this.showSuccess('Your Status updated to ' + result);
             })
             .catch(error => {
                 this.showError(error);
@@ -65,16 +66,23 @@ export default class UserAvailability extends LightningElement {
         return this.isOffline ? 'btn active offline' : 'btn';
     }
 
-    // Toast handling
     showSuccess(msg) {
-        this.isSuccess = true;
-        this.toastMessage = msg;
-        this.showToast = true;
+        this.dispatchEvent(
+            new ShowToastEvent({
+                title: 'Success',
+                message: msg,
+                variant: 'success'
+            })
+        );
     }
 
     showError(error) {
-        this.isSuccess = false;
-        this.toastMessage = error.body?.message || 'Error occurred';
-        this.showToast = true;
+        this.dispatchEvent(
+            new ShowToastEvent({
+                title: 'Error',
+                message: error.body?.message || 'Error occurred',
+                variant: 'error'
+            })
+        );
     }
 }
