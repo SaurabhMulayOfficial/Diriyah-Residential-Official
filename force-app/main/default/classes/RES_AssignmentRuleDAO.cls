@@ -46,8 +46,14 @@ public with sharing class RES_AssignmentRuleDAO extends RES_BaseDAOLayer {
     public Map<Id, List<RES_Assignment_Rule__c>> getAssignmentRuleByConfig(Set<Id> configIds){
         Map<String, Object> bindVars = new Map<String, Object>();
         bindVars.put('configIds', configIds);
-        String soql = 'SELECT Id, Name, RES_User__c, RES_Lead_Count__c, RES_Assignment_Config__c, RES_Capacity__c, RES_Last_Assigned__c, RES_Order__c, RES_User_Availability_Status__c FROM RES_Assignment_Rule__c WHERE RES_Assignment_Config__c IN :configIds AND RES_User_Availability_Status__c = Available ORDER BY RES_Order__c ASC';
-
+        String soql = 'SELECT Id, Name, RES_User__c, RES_Lead_Count__c, ' +
+              'RES_Assignment_Config__c, RES_Capacity__c, RES_Last_Assigned__c, ' +
+              'RES_Order__c, RES_User_Availability_Status__c ' +
+              'FROM RES_Assignment_Rule__c ' +
+              'WHERE RES_Assignment_Config__c IN :configIds ' +
+              'AND RES_User_Availability_Status__c = \'Available\' ' +
+              'ORDER BY RES_Order__c ASC';
+              
         List<RES_Assignment_Rule__c> rules = (List<RES_Assignment_Rule__c>) executeQuery(soql, 'assignmentRulesByConfig', true, bindVars, AccessLevel.SYSTEM_MODE);
         Map<Id, List<RES_Assignment_Rule__c>> ruleMap = new Map<Id, List<RES_Assignment_Rule__c>>();
         for(RES_Assignment_Rule__c rule : rules){

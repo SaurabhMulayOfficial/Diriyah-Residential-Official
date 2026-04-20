@@ -16,6 +16,9 @@ public with sharing class RES_ReassignmentLogicHandler {
 
     public static void runLeadReassignment(List<Lead> leadList){
         Map<Id, List<RES_Assignment_Rule__c>> assignmentRulesByConfig = preprocessLeadsForReassignment(leadList);
+        if(recordTypeToConfigMapping.isEmpty()){
+            return;
+        }
         List<ReassignmentNode> reassignmentNodeList = hydrateReassignmentNodes(leadList,assignmentRulesByConfig);
         runReassignment(reassignmentNodeList, assignmentRulesByConfig);
         clearStaticVariables();
@@ -34,10 +37,11 @@ public with sharing class RES_ReassignmentLogicHandler {
         Set<String> recordTypeNames = new Set<String>();
 
         for(RecordType rt : recordTypes.values()){
-            recordTypeNames.add(rt.Name);
+            recordTypeNames.add(rt.developerName);
         }
 
         List<RES_Assignment_Config__c> configs = new RES_AssignmentConfigDAO().getActiveAssignmentConfigs(recordTypeNames);
+        System.debug('Configs fetched for reassignment'+ configs);
         Set<Id> configIds = new Set<Id>();
         for(RES_Assignment_Config__c config : configs){
             configIds.add(config.Id);
@@ -52,15 +56,17 @@ public with sharing class RES_ReassignmentLogicHandler {
 
         Map<Id, List<RES_Assignment_Rule__c>> assignmentRulesByConfig = new RES_AssignmentRuleDAO().getAssignmentRuleByConfig(configIds);
         queueNameToIdMapping = new RES_GroupDAOLayer().getQueueMappingbyIds(fallbackQueues);
-
+        System.debug('Queue Name to Id Mapping'+ queueNameToIdMapping);
         for(RES_Assignment_Config__c c: configs){
-            List<String> recordTypes = c.RES_Record_Types__c.split(';');
-            for(String rt: recordTypes){
-                if(!recordTypeToConfigMapping.containsKey(rt)){
-                    recordTypeToConfigMapping.put(rt, c.Id);
-                }
+            String recordType = c.RES_Record_Types__c;
+            String channel = c.RES_Channel__c;
+            String key = recordType + '-' + channel;
+            if(!recordTypeToConfigMapping.containsKey(key)){
+                recordTypeToConfigMapping.put(key, c.Id);
             }
         }
+
+        System.debug('Record Type to Config Mapping'+ recordTypeToConfigMapping);
 
         return assignmentRulesByConfig;
     }
@@ -72,20 +78,26 @@ public with sharing class RES_ReassignmentLogicHandler {
             Id rtId = l.RecordTypeId;
             String rtName = '';
             if(recordTypes.containsKey(rtId)){
-                rtName = recordTypes.get(rtId).Name;
+                rtName = recordTypes.get(rtId).developerName;
             }
-            System.debug('Record Type Name '+ rtName);
-            if(rtName == '')continue;
 
-            if(!nodeMapping.containsKey(rtName)){
-                String configId = '';
-                if(recordTypeToConfigMapping.containsKey(rtName)){
-                    configId = recordTypeToConfigMapping.get(rtName);
+            String channel = l.LeadSource;
+            String key = rtName + '-' + channel;
+            System.debug('Record Type Name '+ rtName);
+            if(key == '')continue;
+
+            if(!nodeMapping.containsKey(key)){
+                Id configId = null;
+                if(recordTypeToConfigMapping.containsKey(key)){
+                    configId = recordTypeToConfigMapping.get(key);
                 }
                 System.debug('Config Id for Lead'+ configId);
+                
+                if(configId == null){
+                    continue;
+                }
 
-                nodeMapping.put(rtName, new ReassignmentNode(configId));
-
+                nodeMapping.put(key, new ReassignmentNode(configId));
                 RES_Assignment_Config__c config = configMap.get(configId);
             
                 if(config == null){
@@ -93,16 +105,16 @@ public with sharing class RES_ReassignmentLogicHandler {
                 }
                 
                 String queueName = config.RES_Queue__c;
-                String queueId = '';
+                Id queueId = null;
                 
                 if(queueNameToIdMapping.containsKey(queueName)){
                     queueId = queueNameToIdMapping.get(queueName);
                 }
                 System.debug('Queue Id for Lead '+ queueId);
-                nodeMapping.get(rtName).queueId = queueId;
+                nodeMapping.get(key).queueId = queueId;
             }
 
-            ReassignmentNode node = nodeMapping.get(rtName);
+            ReassignmentNode node = nodeMapping.get(key);
             node.leadToReassign.add(l);
         }
 
@@ -144,7 +156,7 @@ public with sharing class RES_ReassignmentLogicHandler {
             
             for(Integer i = 0; i<N; i++){
                 if(assignmentRule[i].RES_Last_Assigned__c == true){
-                    currentIndex = i;
+                    currentIndex = Math.mod(i+1, N);
                     break;
                 }
             }

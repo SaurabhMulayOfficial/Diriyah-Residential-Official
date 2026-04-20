@@ -48,9 +48,14 @@ public with sharing class RES_RecordTypeDAO extends RES_BaseDAOLayer {
         bindVars.put('recordTypeId', recordTypeId);
         bindVars.put('sObjectName', sObjectName);
         
-        String soql = 'SELECT Id, Name FROM RecordType WHERE Id IN :recordTypeId AND SObjectType = :sObjectName';
-        Map<Id, RecordType> recordTypeMap = (Map<Id, RecordType>)executeQueryToMap(soql, 'recordTypes'+sObjectName, true, bindVars, AccessLevel.SYSTEM_MODE);
+        String soql = 'SELECT Id, developerName FROM RecordType WHERE Id IN :recordTypeId AND SObjectType = :sObjectName';
+        Map<Id, SObject> rawMap = executeQueryToMap(soql, 'recordTypes'+sObjectName, true, bindVars, AccessLevel.SYSTEM_MODE);
+
+        Map<Id, RecordType> recordTypeMap = new Map<Id, RecordType>();
+
+        for (Id key : rawMap.keySet()) {
+            recordTypeMap.put(key, (RecordType) rawMap.get(key));
+        }
         return recordTypeMap;
     }
-
 }

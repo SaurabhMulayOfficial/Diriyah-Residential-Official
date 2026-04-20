@@ -96,6 +96,22 @@
             <targetReference>SLA_breached</targetReference>
         </connector>
     </assignments>
+    <assignments>
+        <name>Reduce_User_s_count</name>
+        <label>Reduce User&apos;s count</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignmentItems>
+            <assignToReference>Query_User_Service_Record.RES_Lead_Count__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>LeadCount</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Update_Records_3</targetReference>
+        </connector>
+    </assignments>
     <decisions>
         <name>Check_if_Lead_is_Converted</name>
         <label>Check if Lead is Converted</label>
@@ -162,6 +178,31 @@
         </rules>
     </decisions>
     <decisions>
+        <name>If_Assignment_Config_is_Not_null</name>
+        <label>If Assignment Config is Not null</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnector>
+            <targetReference>Check_if_Lead_is_Converted</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Not_Null_Config</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>Get_Assignment_Config_record</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Query_User_Service_Record</targetReference>
+            </connector>
+            <label>Not Null</label>
+        </rules>
+    </decisions>
+    <decisions>
         <name>if_Due</name>
         <label>if DUE Date Is Null</label>
         <locationX>0</locationX>
@@ -178,6 +219,59 @@
                 <operator>EqualTo</operator>
             </conditions>
             <label>Yes</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>If_Lead_Has_marked_as_Retired_Qualify</name>
+        <label>If Lead Has marked as Retired || Qualify</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnector>
+            <targetReference>Check_if_Lead_is_Converted</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Yes_Retired_Qualify</name>
+            <conditionLogic>5 AND ( 1 OR 2 OR 3 OR 4)</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.Status</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>05</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Status</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>04</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Status</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Z1</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Status</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Archive</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Status</leftValueReference>
+                <operator>IsChanged</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Get_Assignment_Config_record</targetReference>
+            </connector>
+            <label>Yes, Retired || Qualify</label>
         </rules>
     </decisions>
     <decisions>
@@ -225,6 +319,31 @@
         </rules>
     </decisions>
     <decisions>
+        <name>Is_user_service_available</name>
+        <label>Is user service available</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnector>
+            <targetReference>Check_if_Lead_is_Converted</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Yes_Available</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>Query_User_Service_Record</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Reduce_User_s_count</targetReference>
+            </connector>
+            <label>Yes, Available</label>
+        </rules>
+    </decisions>
+    <decisions>
         <name>RES_Check_Flow_Switch_and_RES_Lead_Record_Types</name>
         <label>Check Flow Switch and RES Lead Record Types</label>
         <locationX>0</locationX>
@@ -255,7 +374,7 @@
                 </rightValue>
             </conditions>
             <connector>
-                <targetReference>Check_if_Lead_is_Converted</targetReference>
+                <targetReference>If_Lead_Has_marked_as_Retired_Qualify</targetReference>
             </connector>
             <label>Present?</label>
         </rules>
@@ -266,6 +385,12 @@
         <name>isNew</name>
         <dataType>Boolean</dataType>
         <expression>ISNEW()</expression>
+    </formulas>
+    <formulas>
+        <name>LeadCount</name>
+        <dataType>Number</dataType>
+        <expression>IF({!Query_User_Service_Record.RES_Lead_Count__c} == 0, 0, {!Query_User_Service_Record.RES_Lead_Count__c} - 1)</expression>
+        <scale>0</scale>
     </formulas>
     <formulas>
         <name>NOW</name>
@@ -299,6 +424,34 @@
     </processMetadataValues>
     <processType>AutoLaunchedFlow</processType>
     <recordLookups>
+        <name>Get_Assignment_Config_record</name>
+        <label>Get Assignment Config record</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>If_Assignment_Config_is_Not_null</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>RES_Channel__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>$Record.LeadSource</elementReference>
+            </value>
+        </filters>
+        <filters>
+            <field>RES_Record_Types__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>$Record.RecordType.DeveloperName</elementReference>
+            </value>
+        </filters>
+        <getFirstRecordOnly>true</getFirstRecordOnly>
+        <object>RES_Assignment_Config__c</object>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
+    <recordLookups>
         <name>Get_Owners_Manager</name>
         <label>Get Owners Manager</label>
         <locationX>0</locationX>
@@ -321,6 +474,34 @@
         <queriedFields>Email</queriedFields>
         <queriedFields>Name</queriedFields>
         <queriedFields>Username</queriedFields>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
+    <recordLookups>
+        <name>Query_User_Service_Record</name>
+        <label>Query User Service Record</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Is_user_service_available</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>RES_User__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>$Record.OwnerId</elementReference>
+            </value>
+        </filters>
+        <filters>
+            <field>RES_Assignment_Config__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>Get_Assignment_Config_record.Id</elementReference>
+            </value>
+        </filters>
+        <getFirstRecordOnly>true</getFirstRecordOnly>
+        <object>RES_Assignment_Rule__c</object>
         <storeOutputAutomatically>true</storeOutputAutomatically>
     </recordLookups>
     <recordUpdates>
@@ -392,6 +573,16 @@
             <targetReference>Get_Owners_Manager</targetReference>
         </connector>
         <inputReference>leadInstance</inputReference>
+    </recordUpdates>
+    <recordUpdates>
+        <name>Update_Records_3</name>
+        <label>Update Records 3</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Check_if_Lead_is_Converted</targetReference>
+        </connector>
+        <inputReference>Query_User_Service_Record</inputReference>
     </recordUpdates>
     <start>
         <locationX>0</locationX>

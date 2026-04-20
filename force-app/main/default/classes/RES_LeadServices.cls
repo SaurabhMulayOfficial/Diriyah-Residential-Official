@@ -234,6 +234,10 @@ public with sharing class RES_LeadServices {
         }
     }
 
+    public static void runReassignmentRule(List<Lead> leadList){
+        RES_ReassignmentLogicHandler.runLeadReassignment(leadList);
+    }
+
     public static void applyDeduplicationRules(List<Lead> leadList){
         RES_LeadDeduplicationHandler.apply(leadList,leadDuplicateWrapper);
     }

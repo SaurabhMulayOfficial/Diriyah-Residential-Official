@@ -7,6 +7,7 @@ public with sharing class RES_LeadTriggerHandler extends RES_BaseTriggerHandler 
     protected override void beforeInsert() {
         RES_LeadServices.setUpdateSLATimeOnLead((list<lead>)Trigger.new, null, false, null);
         RES_LeadServices.selectLeadRecordType((list<lead>) Trigger.new);
+        RES_LeadServices.runReassignmentRule((list<lead>) Trigger.new);
         RES_LeadServices.applyDeduplicationRules((list<lead>) Trigger.new);
     }
 

@@ -51,7 +51,7 @@ public with sharing class RES_AssignmentConfigDAO extends RES_BaseDAOLayer {
             conditions.add('RES_Record_Types__c INCLUDES (\'' + String.escapeSingleQuotes(rt) + '\')');
         }
         
-        String soql = 'SELECT Id, Name, RES_Record_Types__c, RES_Queue__c ' +
+        String soql = 'SELECT Id, Name, RES_Record_Types__c, RES_Channel__c, RES_Queue__c ' +
                     'FROM RES_Assignment_Config__c ' +
                     'WHERE ' + String.join(conditions, ' OR ');
         
