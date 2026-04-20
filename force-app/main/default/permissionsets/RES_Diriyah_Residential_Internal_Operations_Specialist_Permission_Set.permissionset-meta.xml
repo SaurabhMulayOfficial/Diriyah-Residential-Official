@@ -646,7 +646,7 @@
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
-        <editable>false</editable>
+        <editable>true</editable>
         <field>Lead.RES_BP_Role__c</field>
         <readable>true</readable>
     </fieldPermissions>
@@ -754,7 +754,7 @@
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
-        <editable>false</editable>
+        <editable>true</editable>
         <field>Lead.RES_Interest_Type__c</field>
         <readable>true</readable>
     </fieldPermissions>
@@ -1201,6 +1201,11 @@
     <fieldPermissions>
         <editable>true</editable>
         <field>RES_Opportunity_Account_Link__c.RES_Relationship_between_buyers__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>Event.Location</field>
         <readable>true</readable>
     </fieldPermissions>
     <hasActivationRequired>false</hasActivationRequired>
