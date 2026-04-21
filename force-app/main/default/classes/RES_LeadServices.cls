@@ -6,6 +6,8 @@ public with sharing class RES_LeadServices {
 
     public static List<RES_LeadDeduplicationHandler.LeadDuplicateWrapper> leadDuplicateWrapper = 
     new List<RES_LeadDeduplicationHandler.LeadDuplicateWrapper>();
+
+    public static List<RES_ReassignmentLogicHandler.leadRoutingWrapper> routingUpdates = new List<RES_ReassignmentLogicHandler.leadRoutingWrapper>();
     
     public class InputWrapper {
         @InvocableVariable(required=true)
@@ -234,12 +236,24 @@ public with sharing class RES_LeadServices {
         }
     }
 
+    public static void runReassignmentRule(List<Lead> leadList){
+        RES_ReassignmentLogicHandler.runLeadReassignment(leadList, routingUpdates);
+    }
+
     public static void applyDeduplicationRules(List<Lead> leadList){
         RES_LeadDeduplicationHandler.apply(leadList,leadDuplicateWrapper);
     }
 
     public static void processDeduplicationResults(){
         RES_LeadDeduplicationHandler.processResults(leadDuplicateWrapper);
+    }
+
+    public static void updateRoutingRecordResults(){
+        if(routingUpdates.isEmpty()){
+            System.debug('No routing updates to process');
+            return;
+        }
+        RES_ReassignmentLogicHandler.updateRoutingRecords(routingUpdates);
     }
 
 }

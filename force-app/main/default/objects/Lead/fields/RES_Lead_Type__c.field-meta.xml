@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>RES_Lead_Type__c</fullName>
+    <label>Lead Type</label>
+    <required>false</required>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackHistory>false</trackHistory>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>LT01</fullName>
+                <default>false</default>
+                <label>Leasing</label>
+            </value>
+            <value>
+                <fullName>LT02</fullName>
+                <default>false</default>
+                <label>Sales</label>
+            </value>
+            <value>
+                <fullName>LT03</fullName>
+                <default>false</default>
+                <label>Retail Leasing</label>
+            </value>
+            <value>
+                <fullName>LT04</fullName>
+                <default>false</default>
+                <label>Specialty Leasing</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

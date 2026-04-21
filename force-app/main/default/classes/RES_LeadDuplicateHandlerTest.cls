@@ -169,7 +169,7 @@ private class RES_LeadDuplicateHandlerTest {
 
     @isTest
     static void testGroupB_BrokerBroker_SameProject_ShouldBlock() {
-        String fakeProject = 'ARMANI_APPOINT'; // stand-in for RES_Project__c Id
+        String fakeProject = 'Amansamar Residences Wadi Safar'; // stand-in for RES_Project__c Id
 
         Lead existing = new Lead(LastName = 'BrkEx', Company = 'Co',
                                  LeadSource = SRC_BROKER, Status = STATUS_ACTIVE_1, mobilePhone = '+1234567890',
