@@ -46,12 +46,17 @@ public with sharing class RES_AssignmentConfigDAO extends RES_BaseDAOLayer {
 
     public List<RES_Assignment_Config__c> getActiveAssignmentConfigs(Set<String> recordTypeNames){
         List<String> conditions = new List<String>();
-        Map<String, Object> bindVars = new Map<String, Object>();
-        bindVars.put('recordTypeNames', recordTypeNames);
+        
+        for(String rt : recordTypeNames){
+            conditions.add('RES_Record_Types__c INCLUDES (\'' + String.escapeSingleQuotes(rt) + '\')');
+        }
+        
         String soql = 'SELECT Id, Name, RES_Record_Types__c, RES_Channel__c, RES_Queue__c ' +
                     'FROM RES_Assignment_Config__c ' +
-                    'WHERE RES_Record_Types__c IN :recordTypeNames';
+                    'WHERE ' + String.join(conditions, ' OR ');
         
-        return (List<RES_Assignment_Config__c>) executeQuery(soql, 'activeAssignmentConfigs', true, bindVars, AccessLevel.SYSTEM_MODE);
+        return (List<RES_Assignment_Config__c>) executeQuery(soql, 'activeAssignmentConfigs', true, null, AccessLevel.SYSTEM_MODE);
     }
+
+
 }

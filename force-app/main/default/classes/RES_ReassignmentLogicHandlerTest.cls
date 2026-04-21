@@ -70,7 +70,7 @@ public class RES_ReassignmentLogicHandlerTest {
 
 
         Test.startTest();
-        RES_ReassignmentLogicHandler.runLeadReassignment(leads);
+        RES_ReassignmentLogicHandler.runLeadReassignment(leads, new List<RES_ReassignmentLogicHandler.leadRoutingWrapper>());
         Test.stopTest();
 
         List<Lead> updatedLeads = [SELECT Id, OwnerId FROM Lead WHERE Id IN :leads];

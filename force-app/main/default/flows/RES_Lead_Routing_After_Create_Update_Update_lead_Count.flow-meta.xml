@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>66.0</apiVersion>
+    <areMetricsLoggedToDataCloud>false</areMetricsLoggedToDataCloud>
+    <decisions>
+        <name>If_Record_Is_New</name>
+        <label>If Record Is New</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnector>
+            <targetReference>Is_Rule_Changed</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>No, Record has Updates</defaultConnectorLabel>
+        <rules>
+            <name>Yes_New</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>ISNEW</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Update_Lead_Count</targetReference>
+            </connector>
+            <label>Yes,New</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>Is_Rule_Changed</name>
+        <label>Is Rule Changed</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>yes_Changed</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.RES_Assignment_Rule__c</leftValueReference>
+                <operator>IsChanged</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Increment_Count_of_new_rule_Record</targetReference>
+            </connector>
+            <label>yes, Changed</label>
+        </rules>
+    </decisions>
+    <environments>Default</environments>
+    <formulas>
+        <name>decrementPriorCount</name>
+        <dataType>Number</dataType>
+        <expression>{!$Record__Prior.RES_Assignment_Rule__r.RES_Lead_Count__c} - 1</expression>
+        <scale>0</scale>
+    </formulas>
+    <formulas>
+        <name>IncrementedLeadCount</name>
+        <dataType>Number</dataType>
+        <expression>{!$Record.RES_Assignment_Rule__r.RES_Lead_Count__c} + 1</expression>
+        <scale>0</scale>
+    </formulas>
+    <formulas>
+        <name>ISNEW</name>
+        <dataType>Boolean</dataType>
+        <expression>ISNEW()</expression>
+    </formulas>
+    <interviewLabel>RES Lead Routing - After Create Update - Update lead Count {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>RES Lead Routing - After Create Update - Update lead Count</label>
+    <processMetadataValues>
+        <name>BuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>CanvasMode</name>
+        <value>
+            <stringValue>AUTO_LAYOUT_CANVAS</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>OriginBuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processType>AutoLaunchedFlow</processType>
+    <recordUpdates>
+        <name>Increment_Count_of_new_rule_Record</name>
+        <label>Increment Count of new rule Record</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Update_Prior_Record_Count_by_1</targetReference>
+        </connector>
+        <inputAssignments>
+            <field>RES_Lead_Count__c</field>
+            <value>
+                <elementReference>IncrementedLeadCount</elementReference>
+            </value>
+        </inputAssignments>
+        <inputReference>$Record.RES_Assignment_Rule__r</inputReference>
+    </recordUpdates>
+    <recordUpdates>
+        <name>Update_Lead_Count</name>
+        <label>Update Lead Count</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <inputAssignments>
+            <field>RES_Lead_Count__c</field>
+            <value>
+                <elementReference>IncrementedLeadCount</elementReference>
+            </value>
+        </inputAssignments>
+        <inputReference>$Record.RES_Assignment_Rule__r</inputReference>
+    </recordUpdates>
+    <recordUpdates>
+        <name>Update_Prior_Record_Count_by_1</name>
+        <label>Update Prior Record Count by -1</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Id</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>$Record__Prior.RES_Assignment_Rule__r.Id</elementReference>
+            </value>
+        </filters>
+        <inputAssignments>
+            <field>RES_Lead_Count__c</field>
+            <value>
+                <elementReference>decrementPriorCount</elementReference>
+            </value>
+        </inputAssignments>
+        <object>RES_Assignment_Rule__c</object>
+    </recordUpdates>
+    <start>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>If_Record_Is_New</targetReference>
+        </connector>
+        <object>RES_Lead_Routing__c</object>
+        <recordTriggerType>CreateAndUpdate</recordTriggerType>
+        <triggerType>RecordAfterSave</triggerType>
+    </start>
+    <status>Active</status>
+</Flow>

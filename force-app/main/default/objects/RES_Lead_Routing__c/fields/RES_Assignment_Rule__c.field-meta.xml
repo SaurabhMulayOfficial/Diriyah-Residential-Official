@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>RES_Assignment_Rule__c</fullName>
+    <label>Assignment Rule</label>
+    <referenceTo>RES_Assignment_Rule__c</referenceTo>
+    <relationshipLabel>Lead Routing</relationshipLabel>
+    <relationshipName>Lead_Routing</relationshipName>
+    <relationshipOrder>0</relationshipOrder>
+    <reparentableMasterDetail>false</reparentableMasterDetail>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>MasterDetail</type>
+    <writeRequiresMasterRead>false</writeRequiresMasterRead>
+</CustomField>
