@@ -1,9 +1,18 @@
 public with sharing class RES_ReassignmentLogicHandler {
     public static Map<Id, RecordType> recordTypes = new Map<Id, RecordType>();
-    public static Map<String,Id> recordTypeToConfigMapping = new Map<String,Id>();
     public static Map<Id, RES_Assignment_Config__c> configMap = new Map<Id, RES_Assignment_Config__c>();
     public static Map<String, Id> queueNameToIdMapping = new Map<String, Id>();
 
+
+    public class leadRoutingWrapper{
+        public  Lead leadRecord;
+        public  RES_Assignment_Rule__c rule;
+
+        public leadRoutingWrapper(Lead leadRecord, RES_Assignment_Rule__c rule){
+            this.leadRecord = leadRecord;
+            this.rule = rule;
+        }
+    }
     public class ReassignmentNode{
         public Id ConfigId;
         public Id queueId;
@@ -14,13 +23,10 @@ public with sharing class RES_ReassignmentLogicHandler {
         }
     }
 
-    public static void runLeadReassignment(List<Lead> leadList){
+    public static void runLeadReassignment(List<Lead> leadList, List<leadRoutingWrapper> routingUpdates){
         Map<Id, List<RES_Assignment_Rule__c>> assignmentRulesByConfig = preprocessLeadsForReassignment(leadList);
-        if(recordTypeToConfigMapping.isEmpty()){
-            return;
-        }
         List<ReassignmentNode> reassignmentNodeList = hydrateReassignmentNodes(leadList,assignmentRulesByConfig);
-        runReassignment(reassignmentNodeList, assignmentRulesByConfig);
+        runReassignment(reassignmentNodeList, assignmentRulesByConfig, routingUpdates);
         clearStaticVariables();
     }   
 
@@ -57,47 +63,41 @@ public with sharing class RES_ReassignmentLogicHandler {
         Map<Id, List<RES_Assignment_Rule__c>> assignmentRulesByConfig = new RES_AssignmentRuleDAO().getAssignmentRuleByConfig(configIds);
         queueNameToIdMapping = new RES_GroupDAOLayer().getQueueMappingbyIds(fallbackQueues);
         System.debug('Queue Name to Id Mapping'+ queueNameToIdMapping);
-        for(RES_Assignment_Config__c c: configs){
-            String recordType = c.RES_Record_Types__c;
-            String channel = c.RES_Channel__c;
-            String key = recordType + '-' + channel;
-            if(!recordTypeToConfigMapping.containsKey(key)){
-                recordTypeToConfigMapping.put(key, c.Id);
-            }
+        return assignmentRulesByConfig;
+    }
+
+
+    public static Id evaluateLeadForReassignment(Lead l){
+        String rtName = '';
+        if(recordTypes.containsKey(l.RecordTypeId)){
+            rtName = recordTypes.get(l.RecordTypeId).developerName;
         }
 
-        System.debug('Record Type to Config Mapping'+ recordTypeToConfigMapping);
+        for(RES_Assignment_Config__c config: configMap.values()){
+            Set<String> channels = new Set<String>(config.RES_Channel__c.split(';'));
+            Set<String> recordTypeSet = new Set<String>(config.RES_Record_Types__c.split(';'));
 
-        return assignmentRulesByConfig;
+            if(channels.contains(l.LeadSource) && recordTypeSet.contains(rtName)){
+                System.debug('Matching config found for lead with Record Type '+ rtName + ' and Lead Source '+ l.LeadSource + ' Config Id '+ config.Id);
+                return config.Id;
+            }
+        }
+        system.debug('No matching config found for lead with Record Type '+ rtName + ' and Lead Source '+ l.LeadSource);
+
+        return null;
     }
     
     public static List<ReassignmentNode> hydrateReassignmentNodes(List<Lead> leadList, Map<Id, List<RES_Assignment_Rule__c>> assignmentRulesByConfig){
         Map<String,ReassignmentNode> nodeMapping = new Map<String, ReassignmentNode>();
 
         for(Lead l: leadList){
-            Id rtId = l.RecordTypeId;
-            String rtName = '';
-            if(recordTypes.containsKey(rtId)){
-                rtName = recordTypes.get(rtId).developerName;
-            }
+            Id configId = evaluateLeadForReassignment(l);
+            System.debug('Record Type Name '+ configId);
 
-            String channel = l.LeadSource;
-            String key = rtName + '-' + channel;
-            System.debug('Record Type Name '+ rtName);
-            if(key == '')continue;
+            if(configId == null)continue;
 
-            if(!nodeMapping.containsKey(key)){
-                Id configId = null;
-                if(recordTypeToConfigMapping.containsKey(key)){
-                    configId = recordTypeToConfigMapping.get(key);
-                }
-                System.debug('Config Id for Lead'+ configId);
-                
-                if(configId == null){
-                    continue;
-                }
-
-                nodeMapping.put(key, new ReassignmentNode(configId));
+            if(!nodeMapping.containsKey(configId)){
+                nodeMapping.put(configId, new ReassignmentNode(configId));
                 RES_Assignment_Config__c config = configMap.get(configId);
             
                 if(config == null){
@@ -111,10 +111,10 @@ public with sharing class RES_ReassignmentLogicHandler {
                     queueId = queueNameToIdMapping.get(queueName);
                 }
                 System.debug('Queue Id for Lead '+ queueId);
-                nodeMapping.get(key).queueId = queueId;
+                nodeMapping.get(configId).queueId = queueId;
             }
 
-            ReassignmentNode node = nodeMapping.get(key);
+            ReassignmentNode node = nodeMapping.get(configId);
             node.leadToReassign.add(l);
         }
 
@@ -126,8 +126,8 @@ public with sharing class RES_ReassignmentLogicHandler {
     }
 
 
-    public static void runReassignment(List<ReassignmentNode> reassignmentNodes, Map<Id, List<RES_Assignment_Rule__c>> assignmentRulesByConfig){
-
+    public static void runReassignment(List<ReassignmentNode> reassignmentNodes, Map<Id, List<RES_Assignment_Rule__c>> assignmentRulesByConfig, List<leadRoutingWrapper> routingUpdates){
+        system.debug('Running Reassignment Logic'+ reassignmentNodes + 'Assignment Rules by Config'+ assignmentRulesByConfig);
         for(ReassignmentNode node: reassignmentNodes){
 
             Id configId = node.ConfigId;
@@ -180,8 +180,8 @@ public with sharing class RES_ReassignmentLogicHandler {
                 Integer capacity = (Integer) currentRule.RES_Capacity__c;
 
                 if(leadCount < capacity){
-                    currentRule.RES_Lead_Count__c = leadCount + 1;
                     currentLead.OwnerId = currentRule.RES_User__c;
+                    routingUpdates.add(new leadRoutingWrapper(currentLead, currentRule));
                     currentIndex = Math.mod( currentIndex + 1, N );
                     i+=1;
                 }
@@ -215,9 +215,27 @@ public with sharing class RES_ReassignmentLogicHandler {
         }
     }
 
+
+    public static void updateRoutingRecords(List<leadRoutingWrapper> routingUpdates){
+        List<RES_Lead_Routing__c> routingRecords = new List<RES_Lead_Routing__c>();
+        for(leadRoutingWrapper wrapper: routingUpdates){
+            Id leadId = wrapper.leadRecord.Id;
+            Id ruleId = wrapper.rule.Id;
+            routingRecords.add(new RES_Lead_Routing__c(
+                RES_Lead__c = leadId,
+                RES_Assignment_Rule__c = ruleId
+            ));
+
+        }
+        try{
+            Database.insert(routingRecords, true, AccessLevel.SYSTEM_MODE);
+        }catch(Exception e){
+            System.debug('Exception while inserting routing records' + e.getMessage());
+        }
+    }
+
     public static void clearStaticVariables(){
         recordTypes.clear();
-        recordTypeToConfigMapping.clear();
         configMap.clear();
         queueNameToIdMapping.clear();
     }
