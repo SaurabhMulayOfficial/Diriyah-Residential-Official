@@ -4,7 +4,7 @@ import getUserStatus from '@salesforce/apex/RES_UserAvailabilityController.getUs
 import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 export default class UserAvailability extends LightningElement {
 
-    @track currentStatus = 'Available';
+    @track currentStatus = '';
     @track isLoading = false;
     @track showToast = false;
     @track toastMessage = '';
