@@ -325,8 +325,8 @@
                     <name>uiBehavior</name>
                     <value>required</value>
                 </fieldInstanceProperties>
-                <fieldItem>Record.RES_Identification_Number__c</fieldItem>
-                <identifier>RecordRES_Identification_Number_cField</identifier>
+                <fieldItem>Record.RES_Identification_Type__c</fieldItem>
+                <identifier>RecordRES_Identification_Type_cField</identifier>
             </fieldInstance>
         </itemInstances>
         <name>Facet-47d98915-8b2b-43fc-bb19-171da11cbfbb</name>
@@ -339,8 +339,8 @@
                     <name>uiBehavior</name>
                     <value>required</value>
                 </fieldInstanceProperties>
-                <fieldItem>Record.RES_Identification_Type__c</fieldItem>
-                <identifier>RecordRES_Identification_Type_cField</identifier>
+                <fieldItem>Record.RES_Identification_Number__c</fieldItem>
+                <identifier>RecordRES_Identification_Number_cField</identifier>
             </fieldInstance>
         </itemInstances>
         <name>Facet-e9e0f685-55dd-4bd7-aa30-df72c4432e0c</name>
@@ -531,6 +531,16 @@
                 <identifier>RecordRES_Customer_Interest_cField</identifier>
             </fieldInstance>
         </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.Description</fieldItem>
+                <identifier>RecordDescriptionField</identifier>
+            </fieldInstance>
+        </itemInstances>
         <name>Facet-d8638ba5-fcd4-4fc6-aa83-c76bfd00f33c</name>
         <type>Facet</type>
     </flexiPageRegions>
@@ -585,7 +595,7 @@
                 </componentInstanceProperties>
                 <componentInstanceProperties>
                     <name>label</name>
-                    <value>Section</value>
+                    <value>Interest Information</value>
                 </componentInstanceProperties>
                 <componentName>flexipage:fieldSection</componentName>
                 <identifier>flexipage_fieldSection</identifier>
@@ -659,7 +669,7 @@
                 </componentInstanceProperties>
                 <componentInstanceProperties>
                     <name>label</name>
-                    <value>Section</value>
+                    <value>Pricing Information</value>
                 </componentInstanceProperties>
                 <componentName>flexipage:fieldSection</componentName>
                 <identifier>flexipage_fieldSection2</identifier>
@@ -785,7 +795,7 @@
                 </componentInstanceProperties>
                 <componentInstanceProperties>
                     <name>label</name>
-                    <value>Section</value>
+                    <value>Additional Information</value>
                 </componentInstanceProperties>
                 <componentName>flexipage:fieldSection</componentName>
                 <identifier>flexipage_fieldSection4</identifier>
