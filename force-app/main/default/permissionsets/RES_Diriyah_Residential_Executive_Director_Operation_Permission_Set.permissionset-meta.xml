@@ -343,12 +343,12 @@
      <fieldPermissions>
         <editable>false</editable>
         <field>Contact.RES_Full_Arabic_Name__c</field>
-       <readable>true</readable>
+        <readable>true</readable>
     </fieldPermissions>
       <fieldPermissions>
         <editable>false</editable>
         <field>Contact.RES_Nationality__c</field>
-       <readable>true</readable>
+        <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
         <editable>false</editable>
@@ -512,7 +512,7 @@
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
-        <editable>false</editable>
+        <editable>true</editable>
         <field>Lead.RES_Date_of_Birth__c</field>
         <readable>true</readable>
     </fieldPermissions>
@@ -766,7 +766,7 @@
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
-        <editable>false</editable>
+        <editable>true</editable>
         <field>Lead.RES_Lead_Medium__c</field>
         <readable>true</readable>
     </fieldPermissions>
@@ -775,10 +775,6 @@
         <field>Lead.RES_Lead_Sub_Status__c</field>
         <readable>true</readable>
     </fieldPermissions>
-
-
-
-
     <fieldPermissions>
         <editable>false</editable>
         <field>Lead.RES_Marketing_Area__c</field>
