@@ -96,6 +96,16 @@
             <targetReference>SLA_breached</targetReference>
         </connector>
     </assignments>
+    <customErrors>
+        <name>Unable_to_delete_record</name>
+        <label>Unable to delete record</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <customErrorMessages>
+            <errorMessage>{!$Flow.FaultMessage}</errorMessage>
+            <isFieldError>false</isFieldError>
+        </customErrorMessages>
+    </customErrors>
     <decisions>
         <name>Check_if_Lead_is_Converted</name>
         <label>Check if Lead is Converted</label>
@@ -225,6 +235,52 @@
         </rules>
     </decisions>
     <decisions>
+        <name>If_Status_has_Changed</name>
+        <label>If Status has Changed</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnector>
+            <targetReference>RES_Check_Flow_Switch_and_RES_Lead_Record_Types</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Status_Has_Changed_to_Qualified_Retired_Archive</name>
+            <conditionLogic>1 AND ( 2 OR 3 OR 4 )</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.Status</leftValueReference>
+                <operator>IsChanged</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Status</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>05</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Status</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Archive</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Status</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Converted</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Delete_Lead_Routing_record</targetReference>
+            </connector>
+            <label>Status Has Changed to ( Qualified, Retired, Archive)</label>
+        </rules>
+    </decisions>
+    <decisions>
         <name>RES_Check_Flow_Switch_and_RES_Lead_Record_Types</name>
         <label>Check Flow Switch and RES Lead Record Types</label>
         <locationX>0</locationX>
@@ -298,6 +354,27 @@
         </value>
     </processMetadataValues>
     <processType>AutoLaunchedFlow</processType>
+    <recordDeletes>
+        <name>Delete_Lead_Routing_record</name>
+        <label>Delete Lead Routing record</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>RES_Check_Flow_Switch_and_RES_Lead_Record_Types</targetReference>
+        </connector>
+        <faultConnector>
+            <targetReference>Unable_to_delete_record</targetReference>
+        </faultConnector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>RES_Lead__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>$Record.Id</elementReference>
+            </value>
+        </filters>
+        <object>RES_Lead_Routing__c</object>
+    </recordDeletes>
     <recordLookups>
         <name>Get_Owners_Manager</name>
         <label>Get Owners Manager</label>
@@ -397,7 +474,7 @@
         <locationX>0</locationX>
         <locationY>0</locationY>
         <connector>
-            <targetReference>RES_Check_Flow_Switch_and_RES_Lead_Record_Types</targetReference>
+            <targetReference>If_Status_has_Changed</targetReference>
         </connector>
         <object>Lead</object>
         <recordTriggerType>CreateAndUpdate</recordTriggerType>
