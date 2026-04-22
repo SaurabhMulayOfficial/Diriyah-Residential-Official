@@ -1427,7 +1427,11 @@
         <field>RES_Assignment_Config__c.RES_Queue__c</field>
         <readable>true</readable>
     </fieldPermissions>
-
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>RES_Assignment_Config__c.RES_Channel__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
     <fieldPermissions>
         <editable>true</editable>
         <field>RES_Assignment_Rule__c.RES_Last_Assigned__c</field>
