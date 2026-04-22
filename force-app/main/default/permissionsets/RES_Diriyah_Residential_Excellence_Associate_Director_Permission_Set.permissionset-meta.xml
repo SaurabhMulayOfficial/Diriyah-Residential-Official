@@ -77,6 +77,11 @@
     </fieldPermissions>
     <fieldPermissions>
         <editable>false</editable>
+        <field>Account.PersonBirthdate</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
         <field>Account.Phone</field>
         <readable>true</readable>
     </fieldPermissions>
@@ -774,10 +779,6 @@
         <field>Lead.RES_Lead_Sub_Status__c</field>
         <readable>true</readable>
     </fieldPermissions>
-
-
-
-
     <fieldPermissions>
         <editable>false</editable>
         <field>Lead.RES_Marketing_Area__c</field>
