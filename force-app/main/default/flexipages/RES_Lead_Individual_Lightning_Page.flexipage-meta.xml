@@ -159,6 +159,26 @@
                 <identifier>RecordRES_SHA_cField</identifier>
             </fieldInstance>
         </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.RES_Autonumber__c</fieldItem>
+                <identifier>RecordRES_Autonumber__cField</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.DIR_Lead_Id__c</fieldItem>
+                <identifier>RecordDIR_Lead_Id__cField</identifier>
+            </fieldInstance>
+        </itemInstances>
         <name>Facet-4431116c-4774-4eed-8920-047381454cbc</name>
         <type>Facet</type>
     </flexiPageRegions>
@@ -191,6 +211,16 @@
                 </fieldInstanceProperties>
                 <fieldItem>Record.LeadSource</fieldItem>
                 <identifier>RecordLeadSourceField</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.RES_Marketing_Source__c</fieldItem>
+                <identifier>RecordRES_Marketing_Source_cField</identifier>
             </fieldInstance>
         </itemInstances>
         <itemInstances>
