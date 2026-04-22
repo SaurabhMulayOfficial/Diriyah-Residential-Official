@@ -1,35 +1,36 @@
 <template>
-    <lightning-card title="User Availability">
+    <lightning-card title="User Status" icon-name="utility:user">
 
-        <div class="slds-p-around_medium">
-            <!-- Status Indicator -->
-            <div class="status-row">
-                <span class={statusDotClass}></span>
-                <span class="status-text">{currentStatus}</span>
+        <div class="main-box">
+
+            <div class="section-title">
+                User Current Status
             </div>
-            <!-- Buttons -->
-            <div class="slds-grid slds-gutters">
-                <lightning-button
-                    label="Available"
-                    variant="success"
-                    onclick={handleAvailable}
-                    class={computedAvailableClass}
-                    disabled={isLoading}>
-                </lightning-button>
-                <lightning-button
-                    label="Offline"
-                    variant="destructive"
-                    onclick={handleOffline}
-                    class={computedOfflineClass}
-                    disabled={isLoading}>
-                </lightning-button>
+
+            <div class="status-box">
+
+                <div class="status-text">
+                    {currentStatus}
+                </div>
+
+                <div class="dropdown-box">
+                    <lightning-combobox
+                        value={currentStatus}
+                        options={statusOptions}
+                        onchange={handleStatusChange}
+                        variant="label-hidden"
+                        disabled={isLoading}>
+                    </lightning-combobox>
+                </div>
             </div>
         </div>
-        <!-- Spinner -->
+
         <template if:true={isLoading}>
-            <div class="slds-p-around_small">
-                <lightning-spinner alternative-text="Updating"></lightning-spinner>
-            </div>
+            <lightning-spinner
+                size="small"
+                alternative-text="Loading">
+            </lightning-spinner>
         </template>
+
     </lightning-card>
 </template>
