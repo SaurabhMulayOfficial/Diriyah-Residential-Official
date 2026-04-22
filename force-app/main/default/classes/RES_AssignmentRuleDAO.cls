@@ -46,7 +46,7 @@ public without sharing class RES_AssignmentRuleDAO extends RES_BaseDAOLayer {
     public Map<Id, List<RES_Assignment_Rule__c>> getAssignmentRuleByConfig(Set<Id> configIds){
         Map<String, Object> bindVars = new Map<String, Object>();
         bindVars.put('configIds', configIds);
-        String soql = 'SELECT Id, Name, RES_User__c, RES_Lead_Count__c, ' +
+        String soql = 'SELECT Id, Name, RES_User__c, RES_Active_Lead_Count__c, ' +
               'RES_Assignment_Config__c, RES_Capacity__c, RES_Last_Assigned__c, ' +
               'RES_Order__c, RES_User_Availability_Status__c ' +
               'FROM RES_Assignment_Rule__c ' +

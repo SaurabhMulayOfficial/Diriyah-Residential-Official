@@ -176,7 +176,7 @@ public with sharing class RES_ReassignmentLogicHandler {
 
                 RES_Assignment_Rule__c currentRule = assignmentRule[currentIndex];
                 currentRule.RES_Last_Assigned__c = true;
-                Integer leadCount = currentRule.RES_Lead_Count__c == null ? 0 : Integer.valueOf(currentRule.RES_Lead_Count__c);
+                Integer leadCount = (Integer)currentRule.RES_Active_Lead_Count__c;
                 Integer capacity = (Integer) currentRule.RES_Capacity__c;
 
                 if(leadCount < capacity){
