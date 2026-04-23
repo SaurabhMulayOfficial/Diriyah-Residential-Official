@@ -698,6 +698,21 @@
         <field>Event.RES_Is_Overdue_Task__c</field>
         <readable>true</readable>
     </fieldPermissions>
+   <fieldPermissions>
+        <editable>false</editable>
+        <field>Lead.RES_Residency_Type__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+     <fieldPermissions>
+        <editable>false</editable>
+        <field>Lead.RES_Financial_Readiness__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+     <fieldPermissions>
+        <editable>false</editable>
+        <field>Lead.RES_Purchase_Timeline__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
     <fieldPermissions>
         <editable>true</editable>
         <field>Lead.Address</field>
