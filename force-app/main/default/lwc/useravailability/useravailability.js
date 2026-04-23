@@ -52,8 +52,8 @@ export default class UserAvailability extends LightningElement {
                 this.currentStatus = result;
 
                 this.showToast(
-                    'Success',
-                    'My Status updated to ' + result,
+                    '',
+                    'User Status updated to ' + result,
                     'success'
                 );
             })
