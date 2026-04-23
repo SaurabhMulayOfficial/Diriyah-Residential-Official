@@ -181,6 +181,31 @@
         </rules>
     </decisions>
     <decisions>
+        <name>If_Lead_Routing_Records_Avaialable</name>
+        <label>If Lead Routing Records Avaialable</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnector>
+            <targetReference>RES_Check_Flow_Switch_and_RES_Lead_Record_Types</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Yes_available</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>Get_Lead_Routing_Records</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Delete_Lead_Routing_record</targetReference>
+            </connector>
+            <label>Yes available</label>
+        </rules>
+    </decisions>
+    <decisions>
         <name>If_Manager_Exist</name>
         <label>If Manager Exist</label>
         <locationX>0</locationX>
@@ -222,6 +247,52 @@
                 <targetReference>Check_required_Conditions</targetReference>
             </connector>
             <label>Not Null</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>If_Status_has_Changed</name>
+        <label>If Status has Changed</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnector>
+            <targetReference>RES_Check_Flow_Switch_and_RES_Lead_Record_Types</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Status_Has_Changed_to_Qualified_Retired_Archive</name>
+            <conditionLogic>1 AND ( 2 OR 3 OR 4 )</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.Status</leftValueReference>
+                <operator>IsChanged</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Status</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>05</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Status</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Archive</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Status</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Converted</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Get_Lead_Routing_Records</targetReference>
+            </connector>
+            <label>Status Has Changed to ( Qualified, Retired, Archive)</label>
         </rules>
     </decisions>
     <decisions>
@@ -298,6 +369,45 @@
         </value>
     </processMetadataValues>
     <processType>AutoLaunchedFlow</processType>
+    <recordDeletes>
+        <name>Delete_Lead_Routing_record</name>
+        <label>Delete Lead Routing record</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>RES_Check_Flow_Switch_and_RES_Lead_Record_Types</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>RES_Lead__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>$Record.Id</elementReference>
+            </value>
+        </filters>
+        <object>RES_Lead_Routing__c</object>
+    </recordDeletes>
+    <recordLookups>
+        <name>Get_Lead_Routing_Records</name>
+        <label>Get Lead Routing Records</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>If_Lead_Routing_Records_Avaialable</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>RES_Lead__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>$Record.Id</elementReference>
+            </value>
+        </filters>
+        <getFirstRecordOnly>false</getFirstRecordOnly>
+        <object>RES_Lead_Routing__c</object>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
     <recordLookups>
         <name>Get_Owners_Manager</name>
         <label>Get Owners Manager</label>
@@ -397,7 +507,7 @@
         <locationX>0</locationX>
         <locationY>0</locationY>
         <connector>
-            <targetReference>RES_Check_Flow_Switch_and_RES_Lead_Record_Types</targetReference>
+            <targetReference>If_Status_has_Changed</targetReference>
         </connector>
         <object>Lead</object>
         <recordTriggerType>CreateAndUpdate</recordTriggerType>

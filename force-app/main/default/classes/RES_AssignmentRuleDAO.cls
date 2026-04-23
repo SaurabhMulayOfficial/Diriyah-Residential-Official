@@ -51,7 +51,6 @@ public without sharing class RES_AssignmentRuleDAO extends RES_BaseDAOLayer {
               'RES_Order__c, RES_User_Availability_Status__c ' +
               'FROM RES_Assignment_Rule__c ' +
               'WHERE RES_Assignment_Config__c IN :configIds ' +
-              'AND RES_User_Availability_Status__c = \'Available\' ' +
               'ORDER BY RES_Order__c ASC';
               
         List<RES_Assignment_Rule__c> rules = (List<RES_Assignment_Rule__c>) executeQuery(soql, 'assignmentRulesByConfig', true, bindVars, AccessLevel.SYSTEM_MODE);
@@ -60,7 +59,9 @@ public without sharing class RES_AssignmentRuleDAO extends RES_BaseDAOLayer {
             if(!ruleMap.containsKey(rule.RES_Assignment_Config__c)){
                 ruleMap.put(rule.RES_Assignment_Config__c, new List<RES_Assignment_Rule__c>());
             }
-
+            if(rule.RES_User_Availability_Status__c != 'Available'){
+                continue;
+            }
             ruleMap.get(rule.RES_Assignment_Config__c).add(rule);
         }
         return ruleMap;
@@ -72,6 +73,13 @@ public without sharing class RES_AssignmentRuleDAO extends RES_BaseDAOLayer {
         String soql ='SELECT Id, RES_User_Availability_Status__c FROM RES_Assignment_Rule__c WHERE RES_User__c = :userId';
         return (List<RES_Assignment_Rule__c>) executeQuery(soql, 'assignmentRulesByConfig', true, bindVars, AccessLevel.SYSTEM_MODE);
     
+    }
+
+    public List<RES_Assignment_Rule__c> getRulesByIds(Set<Id> ruleIds){
+        Map<String, Object> bindVars = new Map<String, Object>();
+        bindVars.put('ruleIds', ruleIds);
+        String soql ='SELECT Id, RES_Assignment_Config__r.RES_Queue__c FROM RES_Assignment_Rule__c WHERE Id IN:ruleIds';
+        return (List<RES_Assignment_Rule__c>) executeQuery(soql, 'assignmentRulesByIds', true, bindVars, AccessLevel.SYSTEM_MODE);
     }
 
 
