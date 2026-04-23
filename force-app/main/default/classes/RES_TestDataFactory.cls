@@ -119,41 +119,38 @@ public class RES_TestDataFactory {
 
     public static Lead createLead(String email) {
         RecordType rt = [
-            SELECT Id FROM RecordType
+            SELECT Id
+            FROM RecordType
             WHERE SObjectType = 'Lead'
-            AND   Name        = :LEAD_RECORD_TYPE
+            AND Name = :LEAD_RECORD_TYPE
             LIMIT 1
         ];
-
+    
         String prefix      = email.substringBefore('@').left(10);
         String hashStr     = String.valueOf(Math.abs(email.hashCode()));
         String uniquePhone = '+9198' + hashStr.left(7).rightPad(7, '0');
-
+    
         Lead l = new Lead(
-            OwnerId                       = UserInfo.getUserId(),
-            RecordTypeId                  = rt.Id,
-            Salutation                    = 'Mr.',
-            FirstName                     = prefix,
-            LastName                      = 'TestLead',
-            Status                        = 'New',            
-            Email                         = email,
-            Phone                         = uniquePhone,
-            MobilePhone                   = uniquePhone,
-            Company                       = prefix + ' Co',
-            State                         = 'Abu Dhabi',
-            LeadSource                    = 'Employee_Referral',
-            GenderIdentity                = 'GTM',               
-            RES_Nationality__c            = 'Indian',
-            RES_BP_Role__c                = 'ZTR601',
-            RES_Customer_Interest__c      = '101',
-            RES_Identification_Number__c  = hashStr,
-            RES_Identification_Type__c    = 'ZIT01'
+            OwnerId = UserInfo.getUserId(),
+            RecordTypeId = rt.Id,
+            FirstName = prefix,
+            LastName = 'TestLead',
+            Company = prefix + ' Co',
+            Status = 'New',
+            Email = email,
+            Phone = uniquePhone,
+            MobilePhone = uniquePhone
         );
-
+    
         Database.DMLOptions dml = new Database.DMLOptions();
         dml.duplicateRuleHeader.allowSave = true;
-        Database.insert(l, dml);
-
+    
+        Database.SaveResult sr = Database.insert(l, dml);
+    
+        if(sr.isSuccess()){
+            l.Id = sr.getId();
+        }
+    
         return l;
     }
 
