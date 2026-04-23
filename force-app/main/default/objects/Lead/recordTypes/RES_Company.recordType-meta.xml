@@ -309,6 +309,14 @@
             <fullName>RETAIL_LEASING</fullName>
             <default>false</default>
         </values>
+         <values>
+            <fullName>HOSPITALITY</fullName>
+            <default>false</default>
+        </values>
+         <values>
+            <fullName>OFFICE</fullName>
+            <default>false</default>
+        </values>
     </picklistValues>
     <picklistValues>
         <picklist>RES_BP_Role__c</picklist>
@@ -357,7 +365,7 @@
         </values>
     </picklistValues>
     <picklistValues>
-        <picklist>RES_Cityspace_Year__c</picklist>
+        <picklist>RES_Cityscape_Year__c</picklist>
         <values>
             <fullName>2024</fullName>
             <default>false</default>
@@ -453,6 +461,70 @@
         </values>
         <values>
             <fullName>0026</fullName>
+            <default>false</default>
+        </values>
+    </picklistValues>
+    <picklistValues>
+        <picklist>RES_Unit_of_Interest__c</picklist>
+        <values>
+            <fullName>3 Bedroom</fullName>
+            <default>false</default>
+        </values>
+    </picklistValues>
+     <picklistValues>
+        <picklist>RES_Customer_Budget__c</picklist>
+        <values>
+            <fullName>Budget from 1M to 4M</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Budget from 4M to 6M</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Budget from 10M and above</fullName>
+            <default>false</default>
+        </values>
+    </picklistValues>
+     <picklistValues>
+        <picklist>RES_Customer_Unit_Preference__c</picklist>
+          <values>
+            <fullName>Studio</fullName>
+            <default>false</default>
+        </values>
+         <values>
+            <fullName>1 bedrooms</fullName>
+            <default>false</default>
+        </values>
+         <values>
+            <fullName>2 bedrooms</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>3 bedrooms</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>4 bedrooms and more</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Plots</fullName>
+            <default>false</default>
+        </values>
+    </picklistValues>
+         <picklistValues>
+        <picklist>RES_Broker_Registration__c</picklist>
+        <values>
+            <fullName>Approved</fullName>
+            <default>false</default>
+        </values>
+          <values>
+            <fullName>Rejected</fullName>
+            <default>false</default>
+        </values>
+          <values>
+            <fullName>In Process</fullName>
             <default>false</default>
         </values>
     </picklistValues>
