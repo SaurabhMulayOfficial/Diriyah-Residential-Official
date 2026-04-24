@@ -1,36 +1,40 @@
 <template>
     <lightning-card title="User Status" icon-name="utility:user">
 
-        <div class="main-box">
-
-            <div class="section-title">
-                User Current Status
-            </div>
-
-            <div class="status-box">
-
-                <div class="status-text">
-                    {currentStatus}
+        <!-- If Record Exists -->
+        <template if:true={hasData}>
+            <div class="main-box">
+                <div class="section-title">
+                    User Current Status
                 </div>
-
-                <div class="dropdown-box">
-                    <lightning-combobox
-                        value={currentStatus}
-                        options={statusOptions}
-                        onchange={handleStatusChange}
-                        variant="label-hidden"
-                        disabled={isLoading}>
-                    </lightning-combobox>
+                <div class="status-box">
+                    <div class="status-text">
+                        {currentStatus}
+                    </div>
+                    <div class="dropdown-box">
+                        <lightning-combobox
+                            value={currentStatus}
+                            options={statusOptions}
+                            onchange={handleStatusChange}
+                            variant="label-hidden"
+                            disabled={isLoading}>
+                        </lightning-combobox>
+                    </div>
                 </div>
             </div>
-        </div>
-
+        </template>
+        <!-- If No Record -->
+        <template if:false={hasData}>
+            <div class="slds-p-around_medium slds-text-color_error slds-text-heading_small">
+                {errorMessage}
+            </div>
+        </template>
+        <!-- Spinner -->
         <template if:true={isLoading}>
             <lightning-spinner
                 size="small"
                 alternative-text="Loading">
             </lightning-spinner>
         </template>
-
     </lightning-card>
 </template>
