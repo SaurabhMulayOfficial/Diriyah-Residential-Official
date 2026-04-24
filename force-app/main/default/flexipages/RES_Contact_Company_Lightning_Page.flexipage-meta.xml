@@ -71,8 +71,8 @@
                     <name>uiBehavior</name>
                     <value>none</value>
                 </fieldInstanceProperties>
-                <fieldItem>Record.AccountId</fieldItem>
-                <identifier>RecordAccountIdField</identifier>
+                <fieldItem>Record.RES_Full_Arabic_Name__c</fieldItem>
+                <identifier>RecordRES_Full_Arabic_Name__cField</identifier>
             </fieldInstance>
         </itemInstances>
         <itemInstances>
@@ -83,16 +83,6 @@
                 </fieldInstanceProperties>
                 <fieldItem>Record.RES_Active__c</fieldItem>
                 <identifier>RecordRES_Active__cField</identifier>
-            </fieldInstance>
-        </itemInstances>
-        <itemInstances>
-            <fieldInstance>
-                <fieldInstanceProperties>
-                    <name>uiBehavior</name>
-                    <value>none</value>
-                </fieldInstanceProperties>
-                <fieldItem>Record.RES_Nationality__c</fieldItem>
-                <identifier>RecordRES_Nationality_cField</identifier>
             </fieldInstance>
         </itemInstances>
         <itemInstances>
@@ -115,8 +105,8 @@
                     <name>uiBehavior</name>
                     <value>none</value>
                 </fieldInstanceProperties>
-                <fieldItem>Record.RES_Full_Arabic_Name__c</fieldItem>
-                <identifier>RecordRES_Full_Arabic_Name__cField</identifier>
+                <fieldItem>Record.AccountId</fieldItem>
+                <identifier>RecordAccountIdField</identifier>
             </fieldInstance>
         </itemInstances>
         <itemInstances>
@@ -135,7 +125,7 @@
                     <name>uiBehavior</name>
                     <value>none</value>
                 </fieldInstanceProperties>
-                <fieldItem>Record.RES_Cityspace_Year__c</fieldItem>
+                <fieldItem>Record.RES_Cityscape_Year__c</fieldItem>
                 <identifier>RecordRES_Cityspace_Year_cField</identifier>
                 <visibilityRule>
                     <criteria>
@@ -144,16 +134,6 @@
                         <rightValue>Cityscape</rightValue>
                     </criteria>
                 </visibilityRule>
-            </fieldInstance>
-        </itemInstances>
-        <itemInstances>
-            <fieldInstance>
-                <fieldInstanceProperties>
-                    <name>uiBehavior</name>
-                    <value>none</value>
-                </fieldInstanceProperties>
-                <fieldItem>Record.GenderIdentity</fieldItem>
-                <identifier>RecordGenderIdentityField</identifier>
             </fieldInstance>
         </itemInstances>
         <itemInstances>
@@ -194,16 +174,6 @@
         <type>Facet</type>
     </flexiPageRegions>
     <flexiPageRegions>
-        <itemInstances>
-            <fieldInstance>
-                <fieldInstanceProperties>
-                    <name>uiBehavior</name>
-                    <value>none</value>
-                </fieldInstanceProperties>
-                <fieldItem>Record.RES_House_Number__c</fieldItem>
-                <identifier>RecordRES_House_Number_cField</identifier>
-            </fieldInstance>
-        </itemInstances>
         <itemInstances>
             <fieldInstance>
                 <fieldInstanceProperties>
@@ -308,10 +278,30 @@
                 <identifier>RecordPhoneField</identifier>
             </fieldInstance>
         </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.RES_Nationality__c</fieldItem>
+                <identifier>RecordRES_Nationality_cField</identifier>
+            </fieldInstance>
+        </itemInstances>
         <name>Facet-aa81b07c-afba-4349-8955-59d3113c3d11</name>
         <type>Facet</type>
     </flexiPageRegions>
     <flexiPageRegions>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.GenderIdentity</fieldItem>
+                <identifier>RecordGenderIdentityField</identifier>
+            </fieldInstance>
+        </itemInstances>
         <itemInstances>
             <fieldInstance>
                 <fieldInstanceProperties>
@@ -328,18 +318,8 @@
                     <name>uiBehavior</name>
                     <value>none</value>
                 </fieldInstanceProperties>
-                <fieldItem>Record.Department</fieldItem>
-                <identifier>RecordDepartmentField</identifier>
-            </fieldInstance>
-        </itemInstances>
-        <itemInstances>
-            <fieldInstance>
-                <fieldInstanceProperties>
-                    <name>uiBehavior</name>
-                    <value>none</value>
-                </fieldInstanceProperties>
-                <fieldItem>Record.Description</fieldItem>
-                <identifier>RecordDescriptionField</identifier>
+                <fieldItem>Record.RES_Language__c</fieldItem>
+                <identifier>RecordRES_Language_cField</identifier>
             </fieldInstance>
         </itemInstances>
         <name>Facet-deda6862-34d5-444e-89c1-6985f0a223a0</name>
@@ -392,6 +372,13 @@
                 </fieldInstanceProperties>
                 <fieldItem>Record.LastModifiedById</fieldItem>
                 <identifier>RecordLastModifiedByIdField</identifier>
+                <visibilityRule>
+                    <criteria>
+                        <leftValue>{!$User.Profile.Name}</leftValue>
+                        <operator>EQUAL</operator>
+                        <rightValue>System Administrator</rightValue>
+                    </criteria>
+                </visibilityRule>
             </fieldInstance>
         </itemInstances>
         <name>Facet-456a0553-860a-4afc-98d0-b9fd24022908</name>
@@ -456,13 +443,6 @@
                 </componentInstanceProperties>
                 <componentName>flexipage:fieldSection</componentName>
                 <identifier>flexipage_fieldSection3</identifier>
-                <visibilityRule>
-                    <criteria>
-                        <leftValue>{!$User.Profile.Name}</leftValue>
-                        <operator>EQUAL</operator>
-                        <rightValue>System Administrator</rightValue>
-                    </criteria>
-                </visibilityRule>
             </componentInstance>
         </itemInstances>
         <name>Facet-c69b32b3-de0b-4161-a70b-64d7717c9d17</name>

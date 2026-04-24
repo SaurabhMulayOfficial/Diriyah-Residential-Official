@@ -113,7 +113,7 @@
     </fieldPermissions>
     <fieldPermissions>
         <editable>false</editable>
-        <field>Account.RES_Cityspace_Year__c</field>
+        <field>Account.RES_Cityscape_Year__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
@@ -124,6 +124,11 @@
     <fieldPermissions>
         <editable>true</editable>
         <field>Account.RES_Commercial_Registration_Number__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+     <fieldPermissions>
+        <editable>true</editable>
+        <field>Account.RES_CR_Number__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
@@ -302,7 +307,7 @@
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
-        <editable>false</editable>
+        <editable>true</editable>
         <field>Account.Rating</field>
         <readable>true</readable>
     </fieldPermissions>
@@ -473,7 +478,7 @@
     </fieldPermissions>
     <fieldPermissions>
         <editable>true</editable>
-        <field>Contact.RES_Cityspace_Year__c</field>
+        <field>Contact.RES_Cityscape_Year__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
@@ -540,6 +545,11 @@
      <fieldPermissions>
         <editable>false</editable>
         <field>Lead.RES_Purchase_Timeline__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>Lead.RES_Lead_Status__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
@@ -700,7 +710,7 @@
     </fieldPermissions>
     <fieldPermissions>
         <editable>true</editable>
-        <field>Lead.RES_Cityspace_Year__c</field>
+        <field>Lead.RES_Cityscape_Year__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
@@ -711,6 +721,11 @@
     <fieldPermissions>
         <editable>true</editable>
         <field>Lead.RES_Commercial_Registration_Number__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+     <fieldPermissions>
+        <editable>true</editable>
+        <field>Lead.RES_CR_Number__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
@@ -828,7 +843,7 @@
     <fieldPermissions>
         <editable>false</editable>
         <field>Lead.RES_Marketing_Source__c</field>
-        <readable>false</readable>
+        <readable>true</readable>
     </fieldPermissions>
 
 
@@ -1101,7 +1116,7 @@
     </fieldPermissions>
     <fieldPermissions>
         <editable>false</editable>
-        <field>Opportunity.RES_Cityspace_Year__c</field>
+        <field>Opportunity.RES_Cityscape_Year__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>

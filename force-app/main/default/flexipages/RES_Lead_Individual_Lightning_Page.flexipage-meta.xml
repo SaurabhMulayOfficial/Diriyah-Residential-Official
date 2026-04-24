@@ -217,7 +217,7 @@
             <fieldInstance>
                 <fieldInstanceProperties>
                     <name>uiBehavior</name>
-                    <value>readonly</value>
+                    <value>required</value>
                 </fieldInstanceProperties>
                 <fieldItem>Record.RES_Cityscape_Year__c</fieldItem>
                 <identifier>RecordRES_Cityscape_Year_cField</identifier>
@@ -735,16 +735,6 @@
                     <name>uiBehavior</name>
                     <value>none</value>
                 </fieldInstanceProperties>
-                <fieldItem>Record.RES_Commercial_Registration_Number__c</fieldItem>
-                <identifier>RecordRES_Commercial_Registration_Number_cField</identifier>
-            </fieldInstance>
-        </itemInstances>
-        <itemInstances>
-            <fieldInstance>
-                <fieldInstanceProperties>
-                    <name>uiBehavior</name>
-                    <value>none</value>
-                </fieldInstanceProperties>
                 <fieldItem>Record.RES_LeadId__c</fieldItem>
                 <identifier>RecordRES_LeadId_cField</identifier>
             </fieldInstance>
@@ -1110,6 +1100,13 @@
                 </fieldInstanceProperties>
                 <fieldItem>Record.LastModifiedById</fieldItem>
                 <identifier>RecordLastModifiedByIdField</identifier>
+                <visibilityRule>
+                    <criteria>
+                        <leftValue>{!$User.Profile.Name}</leftValue>
+                        <operator>EQUAL</operator>
+                        <rightValue>System Administrator</rightValue>
+                    </criteria>
+                </visibilityRule>
             </fieldInstance>
         </itemInstances>
         <name>Facet-104a969b-4686-4282-8a67-9ca30f325f53</name>
@@ -1242,13 +1239,6 @@
                 </componentInstanceProperties>
                 <componentName>flexipage:fieldSection</componentName>
                 <identifier>flexipage_fieldSection4</identifier>
-                <visibilityRule>
-                    <criteria>
-                        <leftValue>{!$User.Profile.Name}</leftValue>
-                        <operator>EQUAL</operator>
-                        <rightValue>System Administrator</rightValue>
-                    </criteria>
-                </visibilityRule>
             </componentInstance>
         </itemInstances>
         <name>Facet-18062bc4-9a0e-4371-a1ab-db91f65ae9ad</name>
