@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>RES_Customer_Unit_Preference__c</fullName>
+    <label>Customer Unit Preference</label>
+    <required>false</required>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackHistory>false</trackHistory>
+    <type>Picklist</type>
+    <valueSet>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>Studio</fullName>
+                <default>false</default>
+                <label>Studio</label>
+            </value>
+            <value>
+                <fullName>1 bedroom</fullName>
+                <default>false</default>
+                <label>1 bedroom</label>
+            </value>
+            <value>
+                <fullName>2 bedrooms</fullName>
+                <default>false</default>
+                <label>2 bedrooms</label>
+            </value>
+            <value>
+                <fullName>3 bedrooms</fullName>
+                <default>false</default>
+                <label>3 bedrooms</label>
+            </value>
+            <value>
+                <fullName>4 bedrooms and more</fullName>
+                <default>false</default>
+                <label>4 bedrooms and more</label>
+            </value>
+            <value>
+                <fullName>Plots</fullName>
+                <default>false</default>
+                <label>Plots</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>
