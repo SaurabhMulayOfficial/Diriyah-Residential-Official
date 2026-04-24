@@ -150,10 +150,103 @@
             <fieldInstance>
                 <fieldInstanceProperties>
                     <name>uiBehavior</name>
-                    <value>readonly</value>
+                    <value>required</value>
                 </fieldInstanceProperties>
-                <fieldItem>Record.Description</fieldItem>
-                <identifier>RecordDescriptionField2</identifier>
+                <fieldItem>Record.RES_Broker_Registration__c</fieldItem>
+                <identifier>RecordRES_Broker_Registration_cField</identifier>
+                <visibilityRule>
+                    <criteria>
+                        <leftValue>{!Record.RES_Lead_Sub_Status__c}</leftValue>
+                        <operator>EQUAL</operator>
+                        <rightValue>261</rightValue>
+                    </criteria>
+                </visibilityRule>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>required</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.RES_Customer_Budget__c</fieldItem>
+                <identifier>RecordRES_Customer_Budget_cField</identifier>
+                <visibilityRule>
+                    <booleanFilter>1 OR 2 OR 3 OR 4 OR 5 OR 6</booleanFilter>
+                    <criteria>
+                        <leftValue>{!Record.RES_Lead_Sub_Status__c}</leftValue>
+                        <operator>EQUAL</operator>
+                        <rightValue>101</rightValue>
+                    </criteria>
+                    <criteria>
+                        <leftValue>{!Record.RES_Lead_Sub_Status__c}</leftValue>
+                        <operator>EQUAL</operator>
+                        <rightValue>131</rightValue>
+                    </criteria>
+                    <criteria>
+                        <leftValue>{!Record.RES_Lead_Sub_Status__c}</leftValue>
+                        <operator>EQUAL</operator>
+                        <rightValue>171</rightValue>
+                    </criteria>
+                    <criteria>
+                        <leftValue>{!Record.RES_Lead_Sub_Status__c}</leftValue>
+                        <operator>EQUAL</operator>
+                        <rightValue>141</rightValue>
+                    </criteria>
+                    <criteria>
+                        <leftValue>{!Record.RES_Lead_Sub_Status__c}</leftValue>
+                        <operator>EQUAL</operator>
+                        <rightValue>291</rightValue>
+                    </criteria>
+                    <criteria>
+                        <leftValue>{!Record.RES_Lead_Sub_Status__c}</leftValue>
+                        <operator>EQUAL</operator>
+                        <rightValue>161</rightValue>
+                    </criteria>
+                </visibilityRule>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>required</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.RES_Customer_Unit_Preference__c</fieldItem>
+                <identifier>RecordRES_Customer_Unit_Preference_cField</identifier>
+                <visibilityRule>
+                    <booleanFilter>1 OR 2 OR 3 OR 4 OR 5 OR 6</booleanFilter>
+                    <criteria>
+                        <leftValue>{!Record.RES_Lead_Sub_Status__c}</leftValue>
+                        <operator>EQUAL</operator>
+                        <rightValue>101</rightValue>
+                    </criteria>
+                    <criteria>
+                        <leftValue>{!Record.RES_Lead_Sub_Status__c}</leftValue>
+                        <operator>EQUAL</operator>
+                        <rightValue>131</rightValue>
+                    </criteria>
+                    <criteria>
+                        <leftValue>{!Record.RES_Lead_Sub_Status__c}</leftValue>
+                        <operator>EQUAL</operator>
+                        <rightValue>171</rightValue>
+                    </criteria>
+                    <criteria>
+                        <leftValue>{!Record.RES_Lead_Sub_Status__c}</leftValue>
+                        <operator>EQUAL</operator>
+                        <rightValue>141</rightValue>
+                    </criteria>
+                    <criteria>
+                        <leftValue>{!Record.RES_Lead_Sub_Status__c}</leftValue>
+                        <operator>EQUAL</operator>
+                        <rightValue>291</rightValue>
+                    </criteria>
+                    <criteria>
+                        <leftValue>{!Record.RES_Lead_Sub_Status__c}</leftValue>
+                        <operator>EQUAL</operator>
+                        <rightValue>161</rightValue>
+                    </criteria>
+                </visibilityRule>
             </fieldInstance>
         </itemInstances>
         <itemInstances>
@@ -183,6 +276,16 @@
         <type>Facet</type>
     </flexiPageRegions>
     <flexiPageRegions>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>readonly</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.RES_Lead_Medium__c</fieldItem>
+                <identifier>RecordRES_Lead_Medium_cField2</identifier>
+            </fieldInstance>
+        </itemInstances>
         <itemInstances>
             <fieldInstance>
                 <fieldInstanceProperties>
@@ -217,7 +320,7 @@
             <fieldInstance>
                 <fieldInstanceProperties>
                     <name>uiBehavior</name>
-                    <value>readonly</value>
+                    <value>required</value>
                 </fieldInstanceProperties>
                 <fieldItem>Record.RES_Cityscape_Year__c</fieldItem>
                 <identifier>RecordRES_Cityscape_Year_cField</identifier>
@@ -713,30 +816,10 @@
             <fieldInstance>
                 <fieldInstanceProperties>
                     <name>uiBehavior</name>
-                    <value>readonly</value>
-                </fieldInstanceProperties>
-                <fieldItem>Record.RES_Requested_Timing__c</fieldItem>
-                <identifier>RecordRES_Requested_Timing_cField</identifier>
-            </fieldInstance>
-        </itemInstances>
-        <itemInstances>
-            <fieldInstance>
-                <fieldInstanceProperties>
-                    <name>uiBehavior</name>
-                    <value>readonly</value>
-                </fieldInstanceProperties>
-                <fieldItem>Record.RES_Budget_Range__c</fieldItem>
-                <identifier>RecordRES_Budget_Range_cField</identifier>
-            </fieldInstance>
-        </itemInstances>
-        <itemInstances>
-            <fieldInstance>
-                <fieldInstanceProperties>
-                    <name>uiBehavior</name>
                     <value>none</value>
                 </fieldInstanceProperties>
-                <fieldItem>Record.RES_Commercial_Registration_Number__c</fieldItem>
-                <identifier>RecordRES_Commercial_Registration_Number_cField</identifier>
+                <fieldItem>Record.Rating</fieldItem>
+                <identifier>RecordRatingField</identifier>
             </fieldInstance>
         </itemInstances>
         <itemInstances>
@@ -753,12 +836,26 @@
             <fieldInstance>
                 <fieldInstanceProperties>
                     <name>uiBehavior</name>
-                    <value>none</value>
+                    <value>readonly</value>
                 </fieldInstanceProperties>
-                <fieldItem>Record.Rating</fieldItem>
-                <identifier>RecordRatingField</identifier>
+                <fieldItem>Record.RES_Requested_Timing__c</fieldItem>
+                <identifier>RecordRES_Requested_Timing_cField</identifier>
             </fieldInstance>
         </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>readonly</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.RES_Budget_Range__c</fieldItem>
+                <identifier>RecordRES_Budget_Range_cField</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <name>Facet-6701a734-6d51-42d6-b455-1e559335caf4</name>
+        <type>Facet</type>
+    </flexiPageRegions>
+    <flexiPageRegions>
         <itemInstances>
             <fieldInstance>
                 <fieldInstanceProperties>
@@ -769,10 +866,6 @@
                 <identifier>RecordRES_Financial_Readiness_cField</identifier>
             </fieldInstance>
         </itemInstances>
-        <name>Facet-6701a734-6d51-42d6-b455-1e559335caf4</name>
-        <type>Facet</type>
-    </flexiPageRegions>
-    <flexiPageRegions>
         <itemInstances>
             <fieldInstance>
                 <fieldInstanceProperties>
@@ -797,103 +890,10 @@
             <fieldInstance>
                 <fieldInstanceProperties>
                     <name>uiBehavior</name>
-                    <value>required</value>
+                    <value>readonly</value>
                 </fieldInstanceProperties>
-                <fieldItem>Record.RES_Broker_Registration__c</fieldItem>
-                <identifier>RecordRES_Broker_Registration_cField</identifier>
-                <visibilityRule>
-                    <criteria>
-                        <leftValue>{!Record.RES_Lead_Sub_Status__c}</leftValue>
-                        <operator>EQUAL</operator>
-                        <rightValue>261</rightValue>
-                    </criteria>
-                </visibilityRule>
-            </fieldInstance>
-        </itemInstances>
-        <itemInstances>
-            <fieldInstance>
-                <fieldInstanceProperties>
-                    <name>uiBehavior</name>
-                    <value>required</value>
-                </fieldInstanceProperties>
-                <fieldItem>Record.RES_Customer_Budget__c</fieldItem>
-                <identifier>RecordRES_Customer_Budget_cField</identifier>
-                <visibilityRule>
-                    <booleanFilter>1 OR 2 OR 3 OR 4 OR 5 OR 6</booleanFilter>
-                    <criteria>
-                        <leftValue>{!Record.RES_Lead_Sub_Status__c}</leftValue>
-                        <operator>EQUAL</operator>
-                        <rightValue>101</rightValue>
-                    </criteria>
-                    <criteria>
-                        <leftValue>{!Record.RES_Lead_Sub_Status__c}</leftValue>
-                        <operator>EQUAL</operator>
-                        <rightValue>131</rightValue>
-                    </criteria>
-                    <criteria>
-                        <leftValue>{!Record.RES_Lead_Sub_Status__c}</leftValue>
-                        <operator>EQUAL</operator>
-                        <rightValue>171</rightValue>
-                    </criteria>
-                    <criteria>
-                        <leftValue>{!Record.RES_Lead_Sub_Status__c}</leftValue>
-                        <operator>EQUAL</operator>
-                        <rightValue>141</rightValue>
-                    </criteria>
-                    <criteria>
-                        <leftValue>{!Record.RES_Lead_Sub_Status__c}</leftValue>
-                        <operator>EQUAL</operator>
-                        <rightValue>291</rightValue>
-                    </criteria>
-                    <criteria>
-                        <leftValue>{!Record.RES_Lead_Sub_Status__c}</leftValue>
-                        <operator>EQUAL</operator>
-                        <rightValue>161</rightValue>
-                    </criteria>
-                </visibilityRule>
-            </fieldInstance>
-        </itemInstances>
-        <itemInstances>
-            <fieldInstance>
-                <fieldInstanceProperties>
-                    <name>uiBehavior</name>
-                    <value>required</value>
-                </fieldInstanceProperties>
-                <fieldItem>Record.RES_Customer_Unit_Preference__c</fieldItem>
-                <identifier>RecordRES_Customer_Unit_Preference_cField</identifier>
-                <visibilityRule>
-                    <booleanFilter>1 OR 2 OR 3 OR 4 OR 5 OR 6</booleanFilter>
-                    <criteria>
-                        <leftValue>{!Record.RES_Lead_Sub_Status__c}</leftValue>
-                        <operator>EQUAL</operator>
-                        <rightValue>101</rightValue>
-                    </criteria>
-                    <criteria>
-                        <leftValue>{!Record.RES_Lead_Sub_Status__c}</leftValue>
-                        <operator>EQUAL</operator>
-                        <rightValue>131</rightValue>
-                    </criteria>
-                    <criteria>
-                        <leftValue>{!Record.RES_Lead_Sub_Status__c}</leftValue>
-                        <operator>EQUAL</operator>
-                        <rightValue>171</rightValue>
-                    </criteria>
-                    <criteria>
-                        <leftValue>{!Record.RES_Lead_Sub_Status__c}</leftValue>
-                        <operator>EQUAL</operator>
-                        <rightValue>141</rightValue>
-                    </criteria>
-                    <criteria>
-                        <leftValue>{!Record.RES_Lead_Sub_Status__c}</leftValue>
-                        <operator>EQUAL</operator>
-                        <rightValue>291</rightValue>
-                    </criteria>
-                    <criteria>
-                        <leftValue>{!Record.RES_Lead_Sub_Status__c}</leftValue>
-                        <operator>EQUAL</operator>
-                        <rightValue>161</rightValue>
-                    </criteria>
-                </visibilityRule>
+                <fieldItem>Record.Description</fieldItem>
+                <identifier>RecordDescriptionField2</identifier>
             </fieldInstance>
         </itemInstances>
         <name>Facet-0c0a074d-789c-44ef-8a40-a39f6d4b506a</name>
@@ -1110,6 +1110,13 @@
                 </fieldInstanceProperties>
                 <fieldItem>Record.LastModifiedById</fieldItem>
                 <identifier>RecordLastModifiedByIdField</identifier>
+                <visibilityRule>
+                    <criteria>
+                        <leftValue>{!$User.Profile.Name}</leftValue>
+                        <operator>EQUAL</operator>
+                        <rightValue>System Administrator</rightValue>
+                    </criteria>
+                </visibilityRule>
             </fieldInstance>
         </itemInstances>
         <name>Facet-104a969b-4686-4282-8a67-9ca30f325f53</name>
@@ -1242,13 +1249,6 @@
                 </componentInstanceProperties>
                 <componentName>flexipage:fieldSection</componentName>
                 <identifier>flexipage_fieldSection4</identifier>
-                <visibilityRule>
-                    <criteria>
-                        <leftValue>{!$User.Profile.Name}</leftValue>
-                        <operator>EQUAL</operator>
-                        <rightValue>System Administrator</rightValue>
-                    </criteria>
-                </visibilityRule>
             </componentInstance>
         </itemInstances>
         <name>Facet-18062bc4-9a0e-4371-a1ab-db91f65ae9ad</name>
