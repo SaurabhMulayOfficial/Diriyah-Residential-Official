@@ -816,20 +816,10 @@
             <fieldInstance>
                 <fieldInstanceProperties>
                     <name>uiBehavior</name>
-                    <value>readonly</value>
+                    <value>none</value>
                 </fieldInstanceProperties>
-                <fieldItem>Record.RES_Requested_Timing__c</fieldItem>
-                <identifier>RecordRES_Requested_Timing_cField</identifier>
-            </fieldInstance>
-        </itemInstances>
-        <itemInstances>
-            <fieldInstance>
-                <fieldInstanceProperties>
-                    <name>uiBehavior</name>
-                    <value>readonly</value>
-                </fieldInstanceProperties>
-                <fieldItem>Record.RES_Budget_Range__c</fieldItem>
-                <identifier>RecordRES_Budget_Range_cField</identifier>
+                <fieldItem>Record.Rating</fieldItem>
+                <identifier>RecordRatingField</identifier>
             </fieldInstance>
         </itemInstances>
         <itemInstances>
@@ -846,12 +836,26 @@
             <fieldInstance>
                 <fieldInstanceProperties>
                     <name>uiBehavior</name>
-                    <value>none</value>
+                    <value>readonly</value>
                 </fieldInstanceProperties>
-                <fieldItem>Record.Rating</fieldItem>
-                <identifier>RecordRatingField</identifier>
+                <fieldItem>Record.RES_Requested_Timing__c</fieldItem>
+                <identifier>RecordRES_Requested_Timing_cField</identifier>
             </fieldInstance>
         </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>readonly</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.RES_Budget_Range__c</fieldItem>
+                <identifier>RecordRES_Budget_Range_cField</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <name>Facet-6701a734-6d51-42d6-b455-1e559335caf4</name>
+        <type>Facet</type>
+    </flexiPageRegions>
+    <flexiPageRegions>
         <itemInstances>
             <fieldInstance>
                 <fieldInstanceProperties>
@@ -862,10 +866,6 @@
                 <identifier>RecordRES_Financial_Readiness_cField</identifier>
             </fieldInstance>
         </itemInstances>
-        <name>Facet-6701a734-6d51-42d6-b455-1e559335caf4</name>
-        <type>Facet</type>
-    </flexiPageRegions>
-    <flexiPageRegions>
         <itemInstances>
             <fieldInstance>
                 <fieldInstanceProperties>
