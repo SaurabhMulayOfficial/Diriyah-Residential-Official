@@ -17,7 +17,7 @@
         <inputParameters>
             <name>recipientIds</name>
             <value>
-                <elementReference>userId</elementReference>
+                <elementReference>userIds</elementReference>
             </value>
         </inputParameters>
         <inputParameters>
@@ -126,7 +126,7 @@
         <inputParameters>
             <name>recipientIds</name>
             <value>
-                <elementReference>userId</elementReference>
+                <elementReference>userIds</elementReference>
             </value>
         </inputParameters>
         <inputParameters>
@@ -212,26 +212,26 @@
     <apiVersion>66.0</apiVersion>
     <areMetricsLoggedToDataCloud>false</areMetricsLoggedToDataCloud>
     <assignments>
-        <name>Add_User_Email_In_Collection</name>
-        <label>Add User Email In Collection</label>
+        <name>Collecting_User_Id_s_and_Email</name>
+        <label>Collecting User Id&apos;s and Email</label>
         <locationX>0</locationX>
         <locationY>0</locationY>
         <assignmentItems>
             <assignToReference>Emails</assignToReference>
             <operator>Add</operator>
             <value>
-                <elementReference>User.Email</elementReference>
+                <elementReference>Loop_Through_Users.Email</elementReference>
             </value>
         </assignmentItems>
         <assignmentItems>
-            <assignToReference>userId</assignToReference>
+            <assignToReference>userIds</assignToReference>
             <operator>Add</operator>
             <value>
-                <elementReference>User.Id</elementReference>
+                <elementReference>Loop_Through_Users.Id</elementReference>
             </value>
         </assignmentItems>
         <connector>
-            <targetReference>Check_Notification_Type</targetReference>
+            <targetReference>Loop_Through_Users</targetReference>
         </connector>
     </assignments>
     <decisions>
@@ -306,6 +306,20 @@
     </formulas>
     <interviewLabel>RES AutoLaunchFlow - Notify User&apos;s Manager {!$Flow.CurrentDateTime}</interviewLabel>
     <label>RES AutoLaunchFlow - Notify User&apos;s Manager</label>
+    <loops>
+        <name>Loop_Through_Users</name>
+        <label>Loop Through Users</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <collectionReference>userRecords</collectionReference>
+        <iterationOrder>Asc</iterationOrder>
+        <nextValueConnector>
+            <targetReference>Collecting_User_Id_s_and_Email</targetReference>
+        </nextValueConnector>
+        <noMoreValuesConnector>
+            <targetReference>Check_Notification_Type</targetReference>
+        </noMoreValuesConnector>
+    </loops>
     <processMetadataValues>
         <name>BuilderType</name>
         <value>
@@ -371,7 +385,7 @@
         <locationX>0</locationX>
         <locationY>0</locationY>
         <connector>
-            <targetReference>Add_User_Email_In_Collection</targetReference>
+            <targetReference>Loop_Through_Users</targetReference>
         </connector>
     </start>
     <status>Active</status>
@@ -450,10 +464,18 @@
         <objectType>User</objectType>
     </variables>
     <variables>
-        <name>userId</name>
+        <name>userIds</name>
         <dataType>String</dataType>
         <isCollection>true</isCollection>
         <isInput>false</isInput>
         <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <name>userRecords</name>
+        <dataType>SObject</dataType>
+        <isCollection>true</isCollection>
+        <isInput>true</isInput>
+        <isOutput>false</isOutput>
+        <objectType>User</objectType>
     </variables>
 </Flow>

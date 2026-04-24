@@ -2,6 +2,66 @@
 <Flow xmlns="http://soap.sforce.com/2006/04/metadata">
     <apiVersion>66.0</apiVersion>
     <areMetricsLoggedToDataCloud>false</areMetricsLoggedToDataCloud>
+    <assignments>
+        <name>Assign_Role_ID_to_Collection</name>
+        <label>Assign Role ID to Collection</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignmentItems>
+            <assignToReference>colRoleIDs</assignToReference>
+            <operator>Add</operator>
+            <value>
+                <elementReference>Loop_Roles.Id</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Loop_Roles</targetReference>
+        </connector>
+    </assignments>
+    <decisions>
+        <name>Are_Recipients_Found</name>
+        <label>Are Recipients Found?</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnectorLabel>No</defaultConnectorLabel>
+        <rules>
+            <name>Yes</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>Get_All_Recipients</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Notify_User_s_Manager</targetReference>
+            </connector>
+            <label>Yes</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>Are_Roles_Found</name>
+        <label>Are Roles Found?</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Yes_Roles_Found</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>colRoleIDs</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Get_All_Recipients</targetReference>
+            </connector>
+            <label>Yes, Roles Found</label>
+        </rules>
+    </decisions>
     <decisions>
         <name>Flow_Config_Flag_Record_Type_Check</name>
         <label>Flow Config Flag &amp; Record Type Check</label>
@@ -33,31 +93,9 @@
                 </rightValue>
             </conditions>
             <connector>
-                <targetReference>Get_Manager</targetReference>
+                <targetReference>Get_Operations_Roles</targetReference>
             </connector>
             <label>Flow Off Unchecked</label>
-        </rules>
-    </decisions>
-    <decisions>
-        <name>IF_Owner_Has_Manager</name>
-        <label>IF Owner Has Manager</label>
-        <locationX>0</locationX>
-        <locationY>0</locationY>
-        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
-        <rules>
-            <name>Manager_Assign</name>
-            <conditionLogic>and</conditionLogic>
-            <conditions>
-                <leftValueReference>Get_Manager</leftValueReference>
-                <operator>IsNull</operator>
-                <rightValue>
-                    <booleanValue>false</booleanValue>
-                </rightValue>
-            </conditions>
-            <connector>
-                <targetReference>Notify_User_s_Manager</targetReference>
-            </connector>
-            <label>Manager Assign</label>
         </rules>
     </decisions>
     <environments>Default</environments>
@@ -68,6 +106,20 @@
     </formulas>
     <interviewLabel>RES Send Email/Notification After Opportunity Won {!$Flow.CurrentDateTime}</interviewLabel>
     <label>RES Send Email/Notification After Opportunity Won</label>
+    <loops>
+        <name>Loop_Roles</name>
+        <label>Loop Roles</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <collectionReference>Get_Operations_Roles</collectionReference>
+        <iterationOrder>Asc</iterationOrder>
+        <nextValueConnector>
+            <targetReference>Assign_Role_ID_to_Collection</targetReference>
+        </nextValueConnector>
+        <noMoreValuesConnector>
+            <targetReference>Are_Roles_Found</targetReference>
+        </noMoreValuesConnector>
+    </loops>
     <processMetadataValues>
         <name>BuilderType</name>
         <value>
@@ -88,15 +140,15 @@
     </processMetadataValues>
     <processType>AutoLaunchedFlow</processType>
     <recordLookups>
-        <name>Get_Manager</name>
-        <label>Get Manager</label>
+        <name>Get_All_Recipients</name>
+        <label>Get All Recipients</label>
         <locationX>0</locationX>
         <locationY>0</locationY>
         <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
         <connector>
-            <targetReference>IF_Owner_Has_Manager</targetReference>
+            <targetReference>Are_Recipients_Found</targetReference>
         </connector>
-        <filterLogic>and</filterLogic>
+        <filterLogic>or</filterLogic>
         <filters>
             <field>Id</field>
             <operator>EqualTo</operator>
@@ -104,11 +156,94 @@
                 <elementReference>$Record.Owner.ManagerId</elementReference>
             </value>
         </filters>
-        <getFirstRecordOnly>true</getFirstRecordOnly>
+        <filters>
+            <field>UserRoleId</field>
+            <operator>In</operator>
+            <value>
+                <elementReference>colRoleIDs</elementReference>
+            </value>
+        </filters>
+        <getFirstRecordOnly>false</getFirstRecordOnly>
         <object>User</object>
         <queriedFields>Id</queriedFields>
         <queriedFields>Email</queriedFields>
-        <queriedFields>Name</queriedFields>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
+    <recordLookups>
+        <name>Get_Operations_Roles</name>
+        <label>Get Operations Roles</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Loop_Roles</targetReference>
+        </connector>
+        <filterLogic>or</filterLogic>
+        <filters>
+            <field>DeveloperName</field>
+            <operator>EqualTo</operator>
+            <value>
+                <stringValue>RES_Sales_Operations_Executive_Director</stringValue>
+            </value>
+        </filters>
+        <filters>
+            <field>DeveloperName</field>
+            <operator>EqualTo</operator>
+            <value>
+                <stringValue>RES_Contract_Amendments_Operations_Specialist</stringValue>
+            </value>
+        </filters>
+        <filters>
+            <field>DeveloperName</field>
+            <operator>EqualTo</operator>
+            <value>
+                <stringValue>RES_External_Sales_Operations_Operations_Senior_Manager</stringValue>
+            </value>
+        </filters>
+        <filters>
+            <field>DeveloperName</field>
+            <operator>EqualTo</operator>
+            <value>
+                <stringValue>RES_External_Sales_Operations_Operations_Specialist</stringValue>
+            </value>
+        </filters>
+        <filters>
+            <field>DeveloperName</field>
+            <operator>EqualTo</operator>
+            <value>
+                <stringValue>RES_Internal_Sales_Contracts_Operations_Senior_Manager</stringValue>
+            </value>
+        </filters>
+        <filters>
+            <field>DeveloperName</field>
+            <operator>EqualTo</operator>
+            <value>
+                <stringValue>RES_Internal_Sales_Operations_Operations_Manager</stringValue>
+            </value>
+        </filters>
+        <filters>
+            <field>DeveloperName</field>
+            <operator>EqualTo</operator>
+            <value>
+                <stringValue>RES_Internal_Sales_Operations_Operations_Specialist</stringValue>
+            </value>
+        </filters>
+        <filters>
+            <field>DeveloperName</field>
+            <operator>EqualTo</operator>
+            <value>
+                <stringValue>RES_Operational_Excellence_Operations_Manager</stringValue>
+            </value>
+        </filters>
+        <filters>
+            <field>DeveloperName</field>
+            <operator>EqualTo</operator>
+            <value>
+                <stringValue>RES_Operational_Excellence_Operations_Specialist</stringValue>
+            </value>
+        </filters>
+        <getFirstRecordOnly>false</getFirstRecordOnly>
+        <object>UserRole</object>
         <storeOutputAutomatically>true</storeOutputAutomatically>
     </recordLookups>
     <recordLookups>
@@ -184,12 +319,26 @@
             </value>
         </inputAssignments>
         <inputAssignments>
-            <name>User</name>
+            <name>userRecords</name>
             <value>
-                <elementReference>Get_Manager</elementReference>
+                <elementReference>Get_All_Recipients</elementReference>
             </value>
         </inputAssignments>
     </subflows>
+    <variables>
+        <name>colRoleIDs</name>
+        <dataType>String</dataType>
+        <isCollection>true</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <name>colUserIDs</name>
+        <dataType>String</dataType>
+        <isCollection>true</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+    </variables>
     <variables>
         <name>managerID</name>
         <dataType>String</dataType>
