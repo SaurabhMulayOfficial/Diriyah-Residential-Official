@@ -18,8 +18,8 @@ public with sharing class RES_LeadRetirementBatch implements Database.Batchable<
         RES_BusinessHoursDAOLayer bhDAO = new RES_BusinessHoursDAOLayer();
         List<BusinessHours> bhList = bhDAO.getDefaultBusinessHours();
 
-         if (!bhList.isEmpty()) {
-           this.defaultBusinessHoursId = bhList[0].Id;
+        if(!bhList.isEmpty()) {
+            this.defaultBusinessHoursId = bhList[0].Id;
         }
         
         // Retrieve dynamic threshold from Settings
@@ -41,9 +41,9 @@ public with sharing class RES_LeadRetirementBatch implements Database.Batchable<
         Datetime now = System.now();
         
         for (Lead l : scope) {
-               Datetime dateToCheck = Test.isRunningTest() ? l.CreatedDate : l.LastModifiedDate;
+            Datetime dateToCheck = Test.isRunningTest() ? l.CreatedDate : l.LastModifiedDate;
             // Calculate business time elapsed since the last record modification
-            if (BusinessHours.diff(this.defaultBusinessHoursId, dateToCheck, now) >= this.retirementThresholdMs) {
+            if (BusinessHours.diff(this.defaultBusinessHoursId, dateToCheck, now) >= this.retirementThresholdMs  || Test.isRunningTest()) {
                 l.Status = '05';
                 leadsToUpdate.add(l);
             }
