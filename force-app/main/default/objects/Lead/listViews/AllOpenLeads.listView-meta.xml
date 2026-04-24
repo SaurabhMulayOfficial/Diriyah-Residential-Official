@@ -12,8 +12,8 @@
     <filterScope>Everything</filterScope>
     <filters>
         <field>LEAD.STATUS</field>
-        <operation>notEqual</operation>
-        <value>04,5,Qualified</value>
+        <operation>equals</operation>
+        <value>01,New,02,Active</value>
     </filters>
     <label>All Open Leads</label>
 </ListView>
