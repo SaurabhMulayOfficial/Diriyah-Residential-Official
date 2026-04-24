@@ -6,12 +6,13 @@
     <columns>LEAD.EMAIL</columns>
     <columns>RES_Identification_Number__c</columns>
     <columns>LEAD.STATUS</columns>
-
+    <columns>LEAD.RECORDTYPE</columns>
+    <columns>RES_Lead_Type__c</columns>
     <filterScope>Mine</filterScope>
     <filters>
         <field>LEAD.STATUS</field>
         <operation>equals</operation>
-        <value>04,5,Qualified</value>
+        <value>04,Qualified</value>
     </filters>
     <label>My Qualified Leads</label>
     <sharedTo>
