@@ -491,56 +491,16 @@
                 <componentName>flexipage:fieldSection</componentName>
                 <identifier>flexipage_fieldSection4</identifier>
                  <visibilityRule>
-                    <booleanFilter>(1 OR 4 OR 5 OR 6 OR 7 OR 8 OR 9 OR 10) And NOT (2 OR 3)</booleanFilter>
+                    <booleanFilter>1 OR 2</booleanFilter>
                     <criteria>
                         <leftValue>{!$User.Profile.Name}</leftValue>
                         <operator>EQUAL</operator>
                         <rightValue>System Administrator</rightValue>
                     </criteria>
                     <criteria>
-                        <leftValue>{!$User.UserRole.DeveloperName}</leftValue>
-                        <operator>CONTAINS</operator>
-                        <rightValue>Specialist</rightValue>
-                    </criteria>
-                    <criteria>
-                        <leftValue>{!$User.UserRole.DeveloperName}</leftValue>
-                        <operator>CONTAINS</operator>
-                        <rightValue>Relationship_Manager</rightValue>
-                    </criteria>
-                      <criteria>
-                        <leftValue>{!$User.UserRole.DeveloperName}</leftValue>
-                        <operator>CONTAINS</operator>
-                        <rightValue>Corporate</rightValue>
-                    </criteria>
-                      <criteria>
-                        <leftValue>{!$User.UserRole.DeveloperName}</leftValue>
-                        <operator>CONTAINS</operator>
-                        <rightValue>Director</rightValue>
-                    </criteria>
-                     <criteria>
-                        <leftValue>{!$User.UserRole.DeveloperName}</leftValue>
-                        <operator>CONTAINS</operator>
-                        <rightValue>Head</rightValue>
-                    </criteria>
-                     <criteria>
-                        <leftValue>{!$User.UserRole.DeveloperName}</leftValue>
-                        <operator>CONTAINS</operator>
-                        <rightValue>Manager</rightValue>
-                    </criteria>
-                     <criteria>
-                        <leftValue>{!$User.UserRole.DeveloperName}</leftValue>
+                        <leftValue>{!$Permission.CustomPermission.RES_System_Information_Visibility}</leftValue>
                         <operator>EQUAL</operator>
-                        <rightValue>RES_Sales_Enterprise_Senior_Executive_Assistant</rightValue>
-                    </criteria>
-                    <criteria>
-                        <leftValue>{!$User.UserRole.DeveloperName}</leftValue>
-                        <operator>EQUAL</operator>
-                        <rightValue>RES_Sales_Enterprise_Chief_Sales_Officer</rightValue>
-                    </criteria>
-                    <criteria>
-                        <leftValue>{!$User.UserRole.DeveloperName}</leftValue>
-                        <operator>EQUAL</operator>
-                        <rightValue>RES_Finance_Approver_Accounts_Receivable</rightValue>
+                        <rightValue>true</rightValue>
                     </criteria>
                 </visibilityRule>
             </componentInstance>
