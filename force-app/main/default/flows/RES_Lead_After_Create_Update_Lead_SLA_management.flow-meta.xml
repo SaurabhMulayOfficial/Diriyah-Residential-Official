@@ -425,7 +425,7 @@
                 <elementReference>$Record.Owner:User.ManagerId</elementReference>
             </value>
         </filters>
-        <getFirstRecordOnly>true</getFirstRecordOnly>
+        <getFirstRecordOnly>false</getFirstRecordOnly>
         <object>User</object>
         <queriedFields>Id</queriedFields>
         <queriedFields>Email</queriedFields>
@@ -573,7 +573,7 @@
             </value>
         </inputAssignments>
         <inputAssignments>
-            <name>User</name>
+            <name>userRecords</name>
             <value>
                 <elementReference>Get_Owners_Manager</elementReference>
             </value>
