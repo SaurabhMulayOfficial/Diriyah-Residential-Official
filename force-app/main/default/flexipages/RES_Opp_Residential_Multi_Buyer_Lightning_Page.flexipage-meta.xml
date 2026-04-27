@@ -161,7 +161,7 @@
                 <fieldItem>Record.RES_Sub_Stage__c</fieldItem>
                 <identifier>RecordRES_Sub_Stage__cField</identifier>
                 <visibilityRule>
-                    <booleanFilter>(1 AND 2) OR( 1 AND 3)</booleanFilter>
+                    <booleanFilter>(1 AND 2) OR( 1 AND (3 OR 4))</booleanFilter>
                     <criteria>
                         <leftValue>{!Record.StageName}</leftValue>
                         <operator>EQUAL</operator>
@@ -176,6 +176,11 @@
                         <leftValue>{!$User.Profile.Name}</leftValue>
                         <operator>EQUAL</operator>
                         <rightValue>System Administrator</rightValue>
+                    </criteria>
+                    <criteria>
+                        <leftValue>{!$User.Profile.Name}</leftValue>
+                        <operator>EQUAL</operator>
+                        <rightValue>Diriyah Residential Sales Standard Profile</rightValue>
                     </criteria>
                 </visibilityRule>
             </fieldInstance>
