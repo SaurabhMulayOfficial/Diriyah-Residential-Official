@@ -8,7 +8,7 @@
         <actionName>customNotificationAction</actionName>
         <actionType>customNotificationAction</actionType>
         <connector>
-            <targetReference>RES_Check_If_Old_Owner_is_a_User</targetReference>
+            <targetReference>RES_Check_if_Flow_is_only_runs_on_Lead_Update</targetReference>
         </connector>
         <flowTransactionModel>CurrentTransaction</flowTransactionModel>
         <inputParameters>
@@ -93,7 +93,7 @@
         <actionName>Lead.RES_New_Lead_Assignment_Email_Alert</actionName>
         <actionType>emailAlert</actionType>
         <connector>
-            <targetReference>RES_Check_if_Flow_is_only_runs_on_Lead_Update</targetReference>
+            <targetReference>RES_Get_Custom_Notification_Type</targetReference>
         </connector>
         <flowTransactionModel>CurrentTransaction</flowTransactionModel>
         <inputParameters>
@@ -219,7 +219,7 @@
                 </rightValue>
             </conditions>
             <connector>
-                <targetReference>RES_Get_Custom_Notification_Type</targetReference>
+                <targetReference>RES_Check_If_Old_Owner_is_a_User</targetReference>
             </connector>
             <label>Is Update</label>
         </rules>
