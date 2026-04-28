@@ -1,0 +1,326 @@
+<template>
+    <template if:true={showButton}>
+        <lightning-button label="New" variant="brand" onclick={handleNewClick}></lightning-button>
+    </template>
+
+    <template if:true={showLeadFormModal}>
+        <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-02" aria-modal="true"
+            class="slds-modal slds-fade-in-open">
+            <div class="slds-modal__container modal-large">
+                <header class="slds-modal__header">
+                    <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse"
+                        title="Close" onclick={handleClose}>
+                        <lightning-icon icon-name="utility:close" alternative-text="Close" size="small"></lightning-icon>
+                        <span class="slds-assistive-text">Close</span>
+                    </button>
+
+                    <h2 id="modal-heading-02" class="slds-modal__title slds-hyphenate">{formTitle}</h2>
+                </header>
+
+                <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-2">
+                    <div class="slds-grid slds-gutters slds-wrap">
+
+                        <!-- LEFT COLUMN -->
+                        <div class="slds-col slds-size_1-of-2">
+
+                            <!-- Name block -->
+                            <div class="slds-form-element slds-m-bottom_small">
+                                <label class="slds-form-element__label">
+                                    <abbr class="slds-required" title="required">*</abbr>Name
+                                </label>
+
+                                <div class="slds-form-element__control">
+
+                                    <div class="slds-form-element slds-m-bottom_xx-small">
+                                        <label class="slds-form-element__label sub-label" for="salutation">Salutation</label>
+                                        <div class="slds-select_container">
+                                            <select class="slds-select" id="salutation"
+                                                data-field="Salutation"
+                                                value={salutationValue}
+                                                onchange={handleFieldChange}>
+                                                <option value="">--None--</option>
+                                                <template for:each={salutationOptions} for:item="opt">
+                                                    <option key={opt.value} value={opt.value}>{opt.label}</option>
+                                                </template>
+                                            </select>
+                                        </div>
+                                        <template if:true={errors.Salutation}>
+                                            <p class="form-error">{errors.Salutation}</p>
+                                        </template>
+                                    </div>
+
+                                    <div class="slds-form-element slds-m-bottom_xx-small">
+                                        <label class="slds-form-element__label sub-label" for="firstName">
+                                            <abbr class="slds-required" title="required">*</abbr>First Name
+                                        </label>
+                                        <input type="text" id="firstName" class="slds-input"
+                                            placeholder="First Name" data-field="FirstName"
+                                            value={firstNameValue}
+                                            onchange={handleFieldChange} />
+                                        <template if:true={errors.FirstName}>
+                                            <p class="form-error">{errors.FirstName}</p>
+                                        </template>
+                                    </div>
+
+                                    <div class="slds-form-element slds-m-bottom_xx-small">
+                                        <label class="slds-form-element__label sub-label" for="middleName">Middle Name</label>
+                                        <input type="text" id="middleName" class="slds-input"
+                                            placeholder="Middle Name" data-field="MiddleName"
+                                            value={middleNameValue}
+                                            onchange={handleFieldChange} />
+                                    </div>
+
+                                    <div class="slds-form-element slds-m-bottom_xx-small">
+                                        <label class="slds-form-element__label sub-label" for="lastName">
+                                            <abbr class="slds-required" title="required">*</abbr>Last Name
+                                        </label>
+                                        <input type="text" id="lastName" class="slds-input"
+                                            placeholder="Last Name" data-field="LastName"
+                                            value={lastNameValue}
+                                            onchange={handleFieldChange} />
+                                        <template if:true={errors.LastName}>
+                                            <p class="form-error">{errors.LastName}</p>
+                                        </template>
+                                    </div>
+
+                                </div>
+                            </div>
+
+                            <!-- Mobile -->
+                            <div class="slds-form-element slds-m-bottom_small">
+                                <label class="slds-form-element__label" for="mobile">
+                                    <abbr class="slds-required" title="required">*</abbr>Mobile
+                                </label>
+                                <div class="slds-form-element__control">
+                                    <input type="text" id="mobile" class="slds-input"
+                                        placeholder="Mobile" data-field="MobilePhone"
+                                        value={mobileValue}
+                                        onchange={handleFieldChange} />
+                                </div>
+                                <template if:true={errors.MobilePhone}>
+                                    <p class="form-error">{errors.MobilePhone}</p>
+                                </template>
+                            </div>
+
+                            <!-- Email -->
+                            <div class="slds-form-element slds-m-bottom_small">
+                                <label class="slds-form-element__label" for="email">Email</label>
+                                <div class="slds-form-element__control">
+                                    <input type="email" id="email" class="slds-input"
+                                        placeholder="Email" data-field="Email"
+                                        value={emailValue}
+                                        onchange={handleFieldChange} />
+                                </div>
+                                <template if:true={errors.Email}>
+                                    <p class="form-error">{errors.Email}</p>
+                                </template>
+                            </div>
+
+                        </div>
+
+                        <!-- RIGHT COLUMN -->
+                        <div class="slds-col slds-size_1-of-2">
+
+                            <!-- Full Arabic Name -->
+                            <div class="slds-form-element slds-m-bottom_small">
+                                <label class="slds-form-element__label" for="fullArabicName">Full Arabic Name</label>
+                                <div class="slds-form-element__control">
+                                    <input type="text" id="fullArabicName" class="slds-input"
+                                        data-field="RES_Full_Arabic_Name__c"
+                                        value={fullArabicNameValue}
+                                        onchange={handleFieldChange} />
+                                </div>
+                            </div>
+
+                            <template if:true={isResidentialCompany}>
+                                <!-- Corporate Title -->
+                                <div class="slds-form-element slds-m-bottom_small">
+                                    <label class="slds-form-element__label" for="corporateTitle">Corporate Title</label>
+                                    <div class="slds-form-element__control">
+                                        <div class="slds-select_container">
+                                            <select class="slds-select" id="corporateTitle"
+                                                data-field="RES_Corporate_Title__c"
+                                                value={corporateTitleValue}
+                                                onchange={handleFieldChange}>
+                                                <option value="">--None--</option>
+                                                <template for:each={corporateTitleOptions} for:item="opt">
+                                                    <option key={opt.value} value={opt.value}>{opt.label}</option>
+                                                </template>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </template>
+
+                            <!-- Residential Individual Right Column Fields -->
+                            <template if:true={isResidentialIndividual}>
+                                <!-- Gender Type -->
+                                <div class="slds-form-element slds-m-bottom_small">
+                                    <label class="slds-form-element__label" for="genderType">Gender Type</label>
+                                    <div class="slds-form-element__control">
+                                        <div class="slds-select_container">
+                                            <select class="slds-select" id="genderType"
+                                                data-field="GenderIdentity"
+                                                value={genderValue}
+                                                onchange={handleFieldChange}>
+                                                <option value="">--None--</option>
+                                                <template for:each={genderOptions} for:item="opt">
+                                                    <option key={opt.value} value={opt.value}>{opt.label}</option>
+                                                </template>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <template if:true={errors.GenderIdentity}>
+                                        <p class="form-error">{errors.GenderIdentity}</p>
+                                    </template>
+                                </div>
+                            </template>
+
+                            <!-- Residential Company Right Column Fields -->
+                            <template if:true={isResidentialCompany}>
+                                <!-- Company -->
+                                <div class="slds-form-element slds-m-bottom_small">
+                                    <label class="slds-form-element__label" for="company">
+                                        <abbr class="slds-required" title="required">*</abbr>Company
+                                    </label>
+                                    <div class="slds-form-element__control">
+                                        <input type="text" id="company" class="slds-input"
+                                            placeholder="Company" data-field="Company"
+                                            value={companyValue}
+                                            onchange={handleFieldChange} />
+                                    </div>
+                                    <template if:true={errors.Company}>
+                                        <p class="form-error">{errors.Company}</p>
+                                    </template>
+                                </div>
+
+                                <!-- Website -->
+                                <div class="slds-form-element slds-m-bottom_small">
+                                    <label class="slds-form-element__label" for="website">Website</label>
+                                    <div class="slds-form-element__control">
+                                        <input type="text" id="website" class="slds-input"
+                                            placeholder="Website" data-field="Website"
+                                            value={websiteValue}
+                                            onchange={handleFieldChange} />
+                                    </div>
+                                </div>
+                            </template>
+
+                            <!-- Lead Source -->
+                            <template if:true={canSeeLeadSource}>
+                                <div class="slds-form-element slds-m-bottom_small">
+                                    <label class="slds-form-element__label" for="leadSource">
+                                        <abbr class="slds-required" title="required">*</abbr>Lead Source
+                                    </label>
+                                    <div class="slds-form-element__control">
+                                        <div class="slds-select_container">
+                                            <select class="slds-select" id="leadSource"
+                                                data-field="LeadSource"
+                                                value={leadSourceValue}
+                                                onchange={handleLeadSourceChange}>
+                                                <option value="">--None--</option>
+                                                <template for:each={filteredLeadSourceOptions} for:item="opt">
+                                                    <option key={opt.value} value={opt.value}>{opt.label}</option>
+                                                </template>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <template if:true={errors.LeadSource}>
+                                        <p class="form-error">{errors.LeadSource}</p>
+                                    </template>
+                                </div>
+                            </template>
+
+                            <!-- Cityscape Year -->
+                            <template if:true={showCityscapeYear}>
+                                <div class="slds-form-element slds-m-bottom_small">
+                                    <label class="slds-form-element__label" for="cityscapeYear">
+                                        <abbr class="slds-required" title="required">*</abbr>Cityscape Year
+                                    </label>
+                                    <div class="slds-form-element__control">
+                                        <div class="slds-select_container">
+                                            <select class="slds-select" id="cityscapeYear"
+                                                data-field="RES_Cityscape_Year__c"
+                                                value={cityscapeYearValue}
+                                                onchange={handleFieldChange}>
+                                                <option value="">--None--</option>
+                                                <template for:each={cityscapeYearOptions} for:item="opt">
+                                                    <option key={opt.value} value={opt.value}>{opt.label}</option>
+                                                </template>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <template if:true={errors.RES_Cityscape_Year__c}>
+                                        <p class="form-error">{errors.RES_Cityscape_Year__c}</p>
+                                    </template>
+                                </div>
+                            </template>
+
+                            <!-- Residential Individual Fields after Lead Source -->
+                            <template if:true={isResidentialIndividual}>
+                                <!-- Identification Type -->
+                                <div class="slds-form-element slds-m-bottom_small">
+                                    <label class="slds-form-element__label" for="identificationType">Identification Type</label>
+                                    <div class="slds-form-element__control">
+                                        <div class="slds-select_container">
+                                            <select class="slds-select" id="identificationType"
+                                                data-field="RES_Identification_Type__c"
+                                                value={identificationTypeValue}
+                                                onchange={handleIdentificationTypeChange}>
+                                                <option value="">--None--</option>
+                                                <template for:each={identificationTypeOptions} for:item="opt">
+                                                    <option key={opt.value} value={opt.value}>{opt.label}</option>
+                                                </template>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Identification Number -->
+                                <template if:true={showIdentificationNumber}>
+                                    <div class="slds-form-element slds-m-bottom_small">
+                                        <label class="slds-form-element__label" for="identificationNumber">
+                                            <abbr class="slds-required" title="required">*</abbr>Identification Number
+                                        </label>
+                                        <div class="slds-form-element__control">
+                                            <input type="text" id="identificationNumber" class="slds-input"
+                                                data-field="RES_Identification_Number__c"
+                                                value={identificationNumberValue}
+                                                onchange={handleFieldChange} />
+                                        </div>
+                                        <template if:true={errors.RES_Identification_Number__c}>
+                                            <p class="form-error">{errors.RES_Identification_Number__c}</p>
+                                        </template>
+                                    </div>
+                                </template>
+                            </template>
+
+                            <!-- Residential Company Fields after Lead Source -->
+                            <template if:true={isResidentialCompany}>
+                                <!-- Commercial Registration Number -->
+                                <div class="slds-form-element slds-m-bottom_small">
+                                    <label class="slds-form-element__label" for="crNumber">Commercial Registration Number</label>
+                                    <div class="slds-form-element__control">
+                                        <input type="text" id="crNumber" class="slds-input"
+                                            data-field="RES_CR_Number__c"
+                                            value={crNumberValue}
+                                            onchange={handleFieldChange} />
+                                    </div>
+                                </div>
+                            </template>
+
+                        </div>
+                    </div>
+                </div>
+
+                <footer class="slds-modal__footer">
+                    <button class="slds-button slds-button_neutral" onclick={handleClose}>Cancel</button>
+                    <button class="slds-button slds-button_neutral" onclick={handleSaveAndNew} disabled={isSaving}>Save &amp; New</button>
+                    <button class="slds-button slds-button_brand" onclick={handleSave} disabled={isSaving}>Save</button>
+                </footer>
+            </div>
+        </section>
+
+        <div class="slds-backdrop slds-backdrop_open"></div>
+    </template>
+</template>

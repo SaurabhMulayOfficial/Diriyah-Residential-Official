@@ -1,0 +1,9 @@
+<aura:component implements="lightning:actionOverride,lightning:isUrlAddressable"
+    controller="RES_LeadCreateController"
+    access="global">
+
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+
+    <c:resLeadCreateModal aura:id="lwcModal" />
+
+</aura:component>
