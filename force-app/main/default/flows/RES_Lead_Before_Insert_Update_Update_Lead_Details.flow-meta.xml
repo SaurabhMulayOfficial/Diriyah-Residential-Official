@@ -163,7 +163,7 @@
         <defaultConnectorLabel>Default</defaultConnectorLabel>
         <rules>
             <name>Yes1</name>
-            <conditionLogic>and</conditionLogic>
+            <conditionLogic>1 AND 2 AND 3</conditionLogic>
             <conditions>
                 <leftValueReference>$Record.GenderIdentity</leftValueReference>
                 <operator>IsBlank</operator>
@@ -176,6 +176,13 @@
                 <operator>IsBlank</operator>
                 <rightValue>
                     <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.RecordType.DeveloperName</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>RES_Individual</stringValue>
                 </rightValue>
             </conditions>
             <connector>
@@ -199,6 +206,13 @@
                 <operator>IsBlank</operator>
                 <rightValue>
                     <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.RecordType.DeveloperName</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>RES_Individual</stringValue>
                 </rightValue>
             </conditions>
             <connector>
