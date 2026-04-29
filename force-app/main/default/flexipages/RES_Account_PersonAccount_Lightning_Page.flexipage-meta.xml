@@ -109,8 +109,8 @@
                     <name>uiBehavior</name>
                     <value>readonly</value>
                 </fieldInstanceProperties>
-                <fieldItem>Record.AccountNumber</fieldItem>
-                <identifier>RecordAccountNumberField</identifier>
+                <fieldItem>Record.OwnerId</fieldItem>
+                <identifier>RecordOwnerIdField2</identifier>
             </fieldInstance>
         </itemInstances>
         <itemInstances>
@@ -121,16 +121,6 @@
                 </fieldInstanceProperties>
                 <fieldItem>Record.RecordTypeId</fieldItem>
                 <identifier>RecordRecordTypeIdField</identifier>
-            </fieldInstance>
-        </itemInstances>
-        <itemInstances>
-            <fieldInstance>
-                <fieldInstanceProperties>
-                    <name>uiBehavior</name>
-                    <value>readonly</value>
-                </fieldInstanceProperties>
-                <fieldItem>Record.OwnerId</fieldItem>
-                <identifier>RecordOwnerIdField2</identifier>
             </fieldInstance>
         </itemInstances>
         <name>Facet-7694101d-91be-4643-bfaa-6b6ef83dbb25</name>
@@ -283,10 +273,6 @@
         <type>Facet</type>
     </flexiPageRegions>
     <flexiPageRegions>
-        <name>Facet-6f11c215-355b-4e57-be34-6e4c674609ff</name>
-        <type>Facet</type>
-    </flexiPageRegions>
-    <flexiPageRegions>
         <itemInstances>
             <componentInstance>
                 <componentInstanceProperties>
@@ -295,16 +281,6 @@
                 </componentInstanceProperties>
                 <componentName>flexipage:column</componentName>
                 <identifier>flexipage_column6</identifier>
-            </componentInstance>
-        </itemInstances>
-        <itemInstances>
-            <componentInstance>
-                <componentInstanceProperties>
-                    <name>body</name>
-                    <value>Facet-6f11c215-355b-4e57-be34-6e4c674609ff</value>
-                </componentInstanceProperties>
-                <componentName>flexipage:column</componentName>
-                <identifier>flexipage_column7</identifier>
             </componentInstance>
         </itemInstances>
         <name>Facet-f2702d3e-1ff4-44ea-a6a4-14faa2357ce8</name>
@@ -425,6 +401,16 @@
                 </fieldInstanceProperties>
                 <fieldItem>Record.RES_Language__pc</fieldItem>
                 <identifier>RecordRES_Language_pcField</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.RES_Position__c</fieldItem>
+                <identifier>RecordRES_Position_cField</identifier>
             </fieldInstance>
         </itemInstances>
         <name>Facet-b5114906-aff5-45ea-8b75-bb2b2ff14765</name>

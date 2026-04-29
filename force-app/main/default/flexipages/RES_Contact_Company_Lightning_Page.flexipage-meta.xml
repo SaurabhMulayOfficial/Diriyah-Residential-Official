@@ -81,8 +81,8 @@
                     <name>uiBehavior</name>
                     <value>none</value>
                 </fieldInstanceProperties>
-                <fieldItem>Record.RES_Active__c</fieldItem>
-                <identifier>RecordRES_Active__cField</identifier>
+                <fieldItem>Record.AccountId</fieldItem>
+                <identifier>RecordAccountIdField</identifier>
             </fieldInstance>
         </itemInstances>
         <itemInstances>
@@ -103,10 +103,20 @@
             <fieldInstance>
                 <fieldInstanceProperties>
                     <name>uiBehavior</name>
+                    <value>readonly</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.OwnerId</fieldItem>
+                <identifier>RecordOwnerIdField</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
                     <value>none</value>
                 </fieldInstanceProperties>
-                <fieldItem>Record.AccountId</fieldItem>
-                <identifier>RecordAccountIdField</identifier>
+                <fieldItem>Record.RES_Active__c</fieldItem>
+                <identifier>RecordRES_Active__cField</identifier>
             </fieldInstance>
         </itemInstances>
         <itemInstances>
@@ -134,16 +144,6 @@
                         <rightValue>Cityscape</rightValue>
                     </criteria>
                 </visibilityRule>
-            </fieldInstance>
-        </itemInstances>
-        <itemInstances>
-            <fieldInstance>
-                <fieldInstanceProperties>
-                    <name>uiBehavior</name>
-                    <value>readonly</value>
-                </fieldInstanceProperties>
-                <fieldItem>Record.OwnerId</fieldItem>
-                <identifier>RecordOwnerIdField</identifier>
             </fieldInstance>
         </itemInstances>
         <name>Facet-d05c5b6b-155d-4485-8c37-ebbc8adf547f</name>
@@ -252,10 +252,10 @@
             <fieldInstance>
                 <fieldInstanceProperties>
                     <name>uiBehavior</name>
-                    <value>required</value>
+                    <value>none</value>
                 </fieldInstanceProperties>
-                <fieldItem>Record.Email</fieldItem>
-                <identifier>RecordEmailField</identifier>
+                <fieldItem>Record.Phone</fieldItem>
+                <identifier>RecordPhoneField</identifier>
             </fieldInstance>
         </itemInstances>
         <itemInstances>
@@ -272,10 +272,10 @@
             <fieldInstance>
                 <fieldInstanceProperties>
                     <name>uiBehavior</name>
-                    <value>none</value>
+                    <value>required</value>
                 </fieldInstanceProperties>
-                <fieldItem>Record.Phone</fieldItem>
-                <identifier>RecordPhoneField</identifier>
+                <fieldItem>Record.Email</fieldItem>
+                <identifier>RecordEmailField</identifier>
             </fieldInstance>
         </itemInstances>
         <itemInstances>
