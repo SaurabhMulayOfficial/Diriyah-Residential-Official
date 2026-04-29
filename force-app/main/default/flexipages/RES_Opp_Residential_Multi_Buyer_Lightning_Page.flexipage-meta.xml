@@ -237,6 +237,26 @@
             <fieldInstance>
                 <fieldInstanceProperties>
                     <name>uiBehavior</name>
+                    <value>readonly</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.OwnerId</fieldItem>
+                <identifier>RecordOwnerIdField2</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>readonly</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.RecordTypeId</fieldItem>
+                <identifier>RecordRecordTypeIdField</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
                     <value>required</value>
                 </fieldInstanceProperties>
                 <fieldItem>Record.CloseDate</fieldItem>
@@ -251,26 +271,6 @@
                 </fieldInstanceProperties>
                 <fieldItem>Record.RES_Project__c</fieldItem>
                 <identifier>RecordRES_Project_cField</identifier>
-            </fieldInstance>
-        </itemInstances>
-        <itemInstances>
-            <fieldInstance>
-                <fieldInstanceProperties>
-                    <name>uiBehavior</name>
-                    <value>none</value>
-                </fieldInstanceProperties>
-                <fieldItem>Record.Budget_Confirmed__c</fieldItem>
-                <identifier>RecordBudget_Confirmed_cField</identifier>
-            </fieldInstance>
-        </itemInstances>
-        <itemInstances>
-            <fieldInstance>
-                <fieldInstanceProperties>
-                    <name>uiBehavior</name>
-                    <value>readonly</value>
-                </fieldInstanceProperties>
-                <fieldItem>Record.OwnerId</fieldItem>
-                <identifier>RecordOwnerIdField2</identifier>
             </fieldInstance>
         </itemInstances>
         <name>Facet-f31cfb4a-cff9-4183-ab78-8e77ec6894f0</name>
@@ -499,139 +499,11 @@
                     <name>uiBehavior</name>
                     <value>none</value>
                 </fieldInstanceProperties>
-                <fieldItem>Record.RES_Customer_Interest__c</fieldItem>
-                <identifier>RecordRES_Customer_Interest_cField</identifier>
-            </fieldInstance>
-        </itemInstances>
-        <name>Facet-d8638ba5-fcd4-4fc6-aa83-c76bfd00f33c</name>
-        <type>Facet</type>
-    </flexiPageRegions>
-    <flexiPageRegions>
-        <itemInstances>
-            <fieldInstance>
-                <fieldInstanceProperties>
-                    <name>uiBehavior</name>
-                    <value>none</value>
-                </fieldInstanceProperties>
-                <fieldItem>Record.RES_Area_Of_Interest__c</fieldItem>
-                <identifier>RecordRES_Area_Of_Interest_cField</identifier>
-            </fieldInstance>
-        </itemInstances>
-        <name>Facet-f83e0d76-3db1-441c-ba3c-c6ff19f3e3a8</name>
-        <type>Facet</type>
-    </flexiPageRegions>
-    <flexiPageRegions>
-        <itemInstances>
-            <componentInstance>
-                <componentInstanceProperties>
-                    <name>body</name>
-                    <value>Facet-d8638ba5-fcd4-4fc6-aa83-c76bfd00f33c</value>
-                </componentInstanceProperties>
-                <componentName>flexipage:column</componentName>
-                <identifier>flexipage_column</identifier>
-            </componentInstance>
-        </itemInstances>
-        <itemInstances>
-            <componentInstance>
-                <componentInstanceProperties>
-                    <name>body</name>
-                    <value>Facet-f83e0d76-3db1-441c-ba3c-c6ff19f3e3a8</value>
-                </componentInstanceProperties>
-                <componentName>flexipage:column</componentName>
-                <identifier>flexipage_column2</identifier>
-            </componentInstance>
-        </itemInstances>
-        <name>Facet-76edce7d-41a2-4ba1-a1fa-cbd395ba9935</name>
-        <type>Facet</type>
-    </flexiPageRegions>
-    <flexiPageRegions>
-        <itemInstances>
-            <componentInstance>
-                <componentInstanceProperties>
-                    <name>columns</name>
-                    <value>Facet-76edce7d-41a2-4ba1-a1fa-cbd395ba9935</value>
-                </componentInstanceProperties>
-                <componentInstanceProperties>
-                    <name>horizontalAlignment</name>
-                    <value>false</value>
-                </componentInstanceProperties>
-                <componentInstanceProperties>
-                    <name>label</name>
-                    <value>Interest Information</value>
-                </componentInstanceProperties>
-                <componentName>flexipage:fieldSection</componentName>
-                <identifier>flexipage_fieldSection</identifier>
-            </componentInstance>
-        </itemInstances>
-        <name>Facet-6863803d-3f64-4a7b-9fdd-013fb352fcec</name>
-        <type>Facet</type>
-    </flexiPageRegions>
-    <flexiPageRegions>
-        <itemInstances>
-            <fieldInstance>
-                <fieldInstanceProperties>
-                    <name>uiBehavior</name>
-                    <value>none</value>
-                </fieldInstanceProperties>
-                <fieldItem>Record.RES_Joint_Account_Check__c</fieldItem>
-                <identifier>RecordRES_Joint_Account_Check_cField</identifier>
-            </fieldInstance>
-        </itemInstances>
-        <itemInstances>
-            <fieldInstance>
-                <fieldInstanceProperties>
-                    <name>uiBehavior</name>
-                    <value>required</value>
-                </fieldInstanceProperties>
-                <fieldItem>Record.RES_Opportunity_Mobile__c</fieldItem>
-                <identifier>RecordRES_Opportunity_Mobile_cField</identifier>
-            </fieldInstance>
-        </itemInstances>
-        <itemInstances>
-            <fieldInstance>
-                <fieldInstanceProperties>
-                    <name>uiBehavior</name>
-                    <value>required</value>
-                </fieldInstanceProperties>
-                <fieldItem>Record.RES_Opportunity_Email__c</fieldItem>
-                <identifier>RecordRES_Opportunity_Email_cField</identifier>
-            </fieldInstance>
-        </itemInstances>
-        <name>Facet-6322df32-dc31-409a-b545-9758c897e0c4</name>
-        <type>Facet</type>
-    </flexiPageRegions>
-    <flexiPageRegions>
-        <itemInstances>
-            <fieldInstance>
-                <fieldInstanceProperties>
-                    <name>uiBehavior</name>
-                    <value>none</value>
-                </fieldInstanceProperties>
-                <fieldItem>Record.ROI_Analysis_Completed__c</fieldItem>
-                <identifier>RecordROI_Analysis_Completed_cField</identifier>
-            </fieldInstance>
-        </itemInstances>
-        <itemInstances>
-            <fieldInstance>
-                <fieldInstanceProperties>
-                    <name>uiBehavior</name>
-                    <value>none</value>
-                </fieldInstanceProperties>
                 <fieldItem>Record.Description</fieldItem>
                 <identifier>RecordDescriptionField</identifier>
             </fieldInstance>
         </itemInstances>
-        <itemInstances>
-            <fieldInstance>
-                <fieldInstanceProperties>
-                    <name>uiBehavior</name>
-                    <value>readonly</value>
-                </fieldInstanceProperties>
-                <fieldItem>Record.RecordTypeId</fieldItem>
-                <identifier>RecordRecordTypeIdField</identifier>
-            </fieldInstance>
-        </itemInstances>
-        <name>Facet-070ab1ec-d666-4534-a959-531c3156ad66</name>
+        <name>Facet-6322df32-dc31-409a-b545-9758c897e0c4</name>
         <type>Facet</type>
     </flexiPageRegions>
     <flexiPageRegions>
@@ -643,16 +515,6 @@
                 </componentInstanceProperties>
                 <componentName>flexipage:column</componentName>
                 <identifier>flexipage_column6</identifier>
-            </componentInstance>
-        </itemInstances>
-        <itemInstances>
-            <componentInstance>
-                <componentInstanceProperties>
-                    <name>body</name>
-                    <value>Facet-070ab1ec-d666-4534-a959-531c3156ad66</value>
-                </componentInstanceProperties>
-                <componentName>flexipage:column</componentName>
-                <identifier>flexipage_column7</identifier>
             </componentInstance>
         </itemInstances>
         <name>Facet-93577792-5db0-4173-934a-bf5abd74ca21</name>
@@ -783,20 +645,6 @@
                 </componentInstanceProperties>
                 <componentName>flexipage:tab</componentName>
                 <identifier>flexipage_tab2</identifier>
-            </componentInstance>
-        </itemInstances>
-        <itemInstances>
-            <componentInstance>
-                <componentInstanceProperties>
-                    <name>body</name>
-                    <value>Facet-6863803d-3f64-4a7b-9fdd-013fb352fcec</value>
-                </componentInstanceProperties>
-                <componentInstanceProperties>
-                    <name>title</name>
-                    <value>{!$Label.RES_Interest}</value>
-                </componentInstanceProperties>
-                <componentName>flexipage:tab</componentName>
-                <identifier>flexipage_tab</identifier>
             </componentInstance>
         </itemInstances>
         <itemInstances>

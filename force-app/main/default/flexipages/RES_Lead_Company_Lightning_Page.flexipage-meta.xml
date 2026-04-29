@@ -82,18 +82,8 @@
                     <name>uiBehavior</name>
                     <value>none</value>
                 </fieldInstanceProperties>
-                <fieldItem>Record.Title</fieldItem>
-                <identifier>RecordTitleField</identifier>
-            </fieldInstance>
-        </itemInstances>
-        <itemInstances>
-            <fieldInstance>
-                <fieldInstanceProperties>
-                    <name>uiBehavior</name>
-                    <value>required</value>
-                </fieldInstanceProperties>
-                <fieldItem>Record.Name</fieldItem>
-                <identifier>RecordNameField</identifier>
+                <fieldItem>Record.DIR_Lead_Id__c</fieldItem>
+                <identifier>RecordDIR_Lead_Id_cField</identifier>
             </fieldInstance>
         </itemInstances>
         <itemInstances>
@@ -104,6 +94,16 @@
                 </fieldInstanceProperties>
                 <fieldItem>Record.RES_Corporate_Title__c</fieldItem>
                 <identifier>RecordRES_Corporate_Title_cField</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>required</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.Name</fieldItem>
+                <identifier>RecordNameField</identifier>
             </fieldInstance>
         </itemInstances>
         <itemInstances>
@@ -263,29 +263,6 @@
                 </visibilityRule>
             </fieldInstance>
         </itemInstances>
-        <itemInstances>
-            <fieldInstance>
-                <fieldInstanceProperties>
-                    <name>uiBehavior</name>
-                    <value>readonly</value>
-                </fieldInstanceProperties>
-                <fieldItem>Record.RES_Marketing_Campaign_Name__c</fieldItem>
-                <identifier>RecordRES_Marketing_Campaign_Name_cField</identifier>
-                <visibilityRule>
-                    <booleanFilter>1 OR 2</booleanFilter>
-                    <criteria>
-                        <leftValue>{!$User.UserRole.DeveloperName}</leftValue>
-                        <operator>EQUAL</operator>
-                        <rightValue>RES_Marketing_Growth_Head</rightValue>
-                    </criteria>
-                    <criteria>
-                        <leftValue>{!$User.Profile.Name}</leftValue>
-                        <operator>EQUAL</operator>
-                        <rightValue>System Administrator</rightValue>
-                    </criteria>
-                </visibilityRule>
-            </fieldInstance>
-        </itemInstances>
         <name>Facet-4431116c-4774-4eed-8920-047381454cbc</name>
         <type>Facet</type>
     </flexiPageRegions>
@@ -314,7 +291,7 @@
             <fieldInstance>
                 <fieldInstanceProperties>
                     <name>uiBehavior</name>
-                    <value>none</value>
+                    <value>readonly</value>
                 </fieldInstanceProperties>
                 <fieldItem>Record.LeadSource</fieldItem>
                 <identifier>RecordLeadSourceField</identifier>
@@ -345,16 +322,6 @@
                 </fieldInstanceProperties>
                 <fieldItem>Record.RES_Project__c</fieldItem>
                 <identifier>RecordRES_Project_cField</identifier>
-            </fieldInstance>
-        </itemInstances>
-        <itemInstances>
-            <fieldInstance>
-                <fieldInstanceProperties>
-                    <name>uiBehavior</name>
-                    <value>readonly</value>
-                </fieldInstanceProperties>
-                <fieldItem>Record.RES_Lead_Medium__c</fieldItem>
-                <identifier>RecordRES_Lead_Medium_cField2</identifier>
             </fieldInstance>
         </itemInstances>
         <itemInstances>
@@ -606,7 +573,7 @@
             <fieldInstance>
                 <fieldInstanceProperties>
                     <name>uiBehavior</name>
-                    <value>none</value>
+                    <value>readonly</value>
                 </fieldInstanceProperties>
                 <fieldItem>Record.RES_Identification_Type__c</fieldItem>
                 <identifier>RecordRES_Identification_Type__cField</identifier>
@@ -720,8 +687,28 @@
                     <name>uiBehavior</name>
                     <value>readonly</value>
                 </fieldInstanceProperties>
+                <fieldItem>Record.RES_Interest_Type__c</fieldItem>
+                <identifier>RecordRES_Interest_Type_cField</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>readonly</value>
+                </fieldInstanceProperties>
                 <fieldItem>Record.RES_Project_of_Interest__c</fieldItem>
                 <identifier>RecordRES_Project_of_Interest_cField</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>readonly</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.RES_Budget_Range__c</fieldItem>
+                <identifier>RecordRES_Budget_Range_cField</identifier>
             </fieldInstance>
         </itemInstances>
         <itemInstances>
@@ -740,22 +727,18 @@
                     <name>uiBehavior</name>
                     <value>readonly</value>
                 </fieldInstanceProperties>
-                <fieldItem>Record.RES_Villa_of_Interest__c</fieldItem>
-                <identifier>RecordRES_Villa_of_Interest_cField</identifier>
+                <fieldItem>Record.RES_Residency_Type__c</fieldItem>
+                <identifier>RecordRES_Residency_Type_cField</identifier>
             </fieldInstance>
         </itemInstances>
-        <name>Facet-f8f08463-c8cb-49f3-8fdd-707638520bee</name>
-        <type>Facet</type>
-    </flexiPageRegions>
-    <flexiPageRegions>
         <itemInstances>
             <fieldInstance>
                 <fieldInstanceProperties>
                     <name>uiBehavior</name>
                     <value>readonly</value>
                 </fieldInstanceProperties>
-                <fieldItem>Record.RES_Interest_Type__c</fieldItem>
-                <identifier>RecordRES_Interest_Type_cField</identifier>
+                <fieldItem>Record.RES_Villa_of_Interest__c</fieldItem>
+                <identifier>RecordRES_Villa_of_Interest_cField</identifier>
             </fieldInstance>
         </itemInstances>
         <itemInstances>
@@ -774,10 +757,24 @@
                     <name>uiBehavior</name>
                     <value>readonly</value>
                 </fieldInstanceProperties>
-                <fieldItem>Record.RES_Meeting_Preference__c</fieldItem>
-                <identifier>RecordRES_Meeting_Preference_cField</identifier>
+                <fieldItem>Record.RES_Financial_Readiness__c</fieldItem>
+                <identifier>RecordRES_Financial_Readiness_cField</identifier>
             </fieldInstance>
         </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>readonly</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.Description</fieldItem>
+                <identifier>RecordDescriptionField2</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <name>Facet-f8f08463-c8cb-49f3-8fdd-707638520bee</name>
+        <type>Facet</type>
+    </flexiPageRegions>
+    <flexiPageRegions>
         <itemInstances>
             <fieldInstance>
                 <fieldInstanceProperties>
@@ -794,8 +791,111 @@
                     <name>uiBehavior</name>
                     <value>readonly</value>
                 </fieldInstanceProperties>
-                <fieldItem>Record.HasOptedOutOfEmail</fieldItem>
-                <identifier>RecordHasOptedOutOfEmailField</identifier>
+                <fieldItem>Record.RES_Marketing_Campaign_Name__c</fieldItem>
+                <identifier>RecordRES_Marketing_Campaign_Name_cField</identifier>
+                <visibilityRule>
+                    <booleanFilter>1 OR 2</booleanFilter>
+                    <criteria>
+                        <leftValue>{!$User.UserRole.DeveloperName}</leftValue>
+                        <operator>EQUAL</operator>
+                        <rightValue>RES_Marketing_Growth_Head</rightValue>
+                    </criteria>
+                    <criteria>
+                        <leftValue>{!$User.Profile.Name}</leftValue>
+                        <operator>EQUAL</operator>
+                        <rightValue>System Administrator</rightValue>
+                    </criteria>
+                </visibilityRule>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>readonly</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.RES_Marketing_Area__c</fieldItem>
+                <identifier>RecordRES_Marketing_Area_cField</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>readonly</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.RES_Meeting_Preference__c</fieldItem>
+                <identifier>RecordRES_Meeting_Preference_cField</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>readonly</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.RES_Marketing_Medium__c</fieldItem>
+                <identifier>RecordRES_Marketing_Medium_cField</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>readonly</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.RES_Marketing_Source__c</fieldItem>
+                <identifier>RecordRES_Marketing_Source_cField</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>readonly</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.RES_Meeting_Preference__c</fieldItem>
+                <identifier>RecordRES_Meeting_Preference_cField2</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>readonly</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.RES_Lead_Medium__c</fieldItem>
+                <identifier>RecordRES_Lead_Medium_cField</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>readonly</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.RES_Requested_Timing__c</fieldItem>
+                <identifier>RecordRES_Requested_Timing_cField</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>readonly</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.RES_Purchase_Timeline__c</fieldItem>
+                <identifier>RecordRES_Purchase_Timeline_cField</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>readonly</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.RES_SHA__c</fieldItem>
+                <identifier>RecordRES_SHA_cField</identifier>
             </fieldInstance>
         </itemInstances>
         <name>Facet-fff8fb78-d742-49ea-8175-67558817b880</name>
@@ -886,36 +986,6 @@
                 <identifier>RecordRatingField</identifier>
             </fieldInstance>
         </itemInstances>
-        <itemInstances>
-            <fieldInstance>
-                <fieldInstanceProperties>
-                    <name>uiBehavior</name>
-                    <value>none</value>
-                </fieldInstanceProperties>
-                <fieldItem>Record.DIR_Lead_Id__c</fieldItem>
-                <identifier>RecordDIR_Lead_Id_cField</identifier>
-            </fieldInstance>
-        </itemInstances>
-        <itemInstances>
-            <fieldInstance>
-                <fieldInstanceProperties>
-                    <name>uiBehavior</name>
-                    <value>readonly</value>
-                </fieldInstanceProperties>
-                <fieldItem>Record.RES_Requested_Timing__c</fieldItem>
-                <identifier>RecordRES_Requested_Timing_cField</identifier>
-            </fieldInstance>
-        </itemInstances>
-        <itemInstances>
-            <fieldInstance>
-                <fieldInstanceProperties>
-                    <name>uiBehavior</name>
-                    <value>readonly</value>
-                </fieldInstanceProperties>
-                <fieldItem>Record.RES_Budget_Range__c</fieldItem>
-                <identifier>RecordRES_Budget_Range_cField</identifier>
-            </fieldInstance>
-        </itemInstances>
         <name>Facet-171aca66-ad2a-43c9-8777-51bfa85584d4</name>
         <type>Facet</type>
     </flexiPageRegions>
@@ -926,38 +996,8 @@
                     <name>uiBehavior</name>
                     <value>readonly</value>
                 </fieldInstanceProperties>
-                <fieldItem>Record.RES_Financial_Readiness__c</fieldItem>
-                <identifier>RecordRES_Financial_Readiness_cField</identifier>
-            </fieldInstance>
-        </itemInstances>
-        <itemInstances>
-            <fieldInstance>
-                <fieldInstanceProperties>
-                    <name>uiBehavior</name>
-                    <value>readonly</value>
-                </fieldInstanceProperties>
-                <fieldItem>Record.RES_Purchase_Timeline__c</fieldItem>
-                <identifier>RecordRES_Purchase_Timeline_cField</identifier>
-            </fieldInstance>
-        </itemInstances>
-        <itemInstances>
-            <fieldInstance>
-                <fieldInstanceProperties>
-                    <name>uiBehavior</name>
-                    <value>readonly</value>
-                </fieldInstanceProperties>
-                <fieldItem>Record.RES_Residency_Type__c</fieldItem>
-                <identifier>RecordRES_Residency_Type_cField</identifier>
-            </fieldInstance>
-        </itemInstances>
-        <itemInstances>
-            <fieldInstance>
-                <fieldInstanceProperties>
-                    <name>uiBehavior</name>
-                    <value>readonly</value>
-                </fieldInstanceProperties>
-                <fieldItem>Record.Description</fieldItem>
-                <identifier>RecordDescriptionField2</identifier>
+                <fieldItem>Record.RES_Form_Submission_ID__c</fieldItem>
+                <identifier>RecordRES_Form_Submission_ID_cField</identifier>
             </fieldInstance>
         </itemInstances>
         <name>Facet-383a2226-ae6d-401d-a145-c2661ae86a4e</name>
@@ -985,98 +1025,6 @@
             </componentInstance>
         </itemInstances>
         <name>Facet-64579053-13e2-4efb-83dc-51cecc54127b</name>
-        <type>Facet</type>
-    </flexiPageRegions>
-    <flexiPageRegions>
-        <itemInstances>
-            <fieldInstance>
-                <fieldInstanceProperties>
-                    <name>uiBehavior</name>
-                    <value>readonly</value>
-                </fieldInstanceProperties>
-                <fieldItem>Record.RES_Lead_Medium__c</fieldItem>
-                <identifier>RecordRES_Lead_Medium_cField</identifier>
-            </fieldInstance>
-        </itemInstances>
-        <itemInstances>
-            <fieldInstance>
-                <fieldInstanceProperties>
-                    <name>uiBehavior</name>
-                    <value>readonly</value>
-                </fieldInstanceProperties>
-                <fieldItem>Record.RES_Form_Submission_ID__c</fieldItem>
-                <identifier>RecordRES_Form_Submission_ID_cField</identifier>
-            </fieldInstance>
-        </itemInstances>
-        <itemInstances>
-            <fieldInstance>
-                <fieldInstanceProperties>
-                    <name>uiBehavior</name>
-                    <value>none</value>
-                </fieldInstanceProperties>
-                <fieldItem>Record.RES_SHA__c</fieldItem>
-                <identifier>RecordRES_SHA_cField</identifier>
-            </fieldInstance>
-        </itemInstances>
-        <name>Facet-566f41d3-1aa3-47e2-9758-e0288b5a48f9</name>
-        <type>Facet</type>
-    </flexiPageRegions>
-    <flexiPageRegions>
-        <itemInstances>
-            <fieldInstance>
-                <fieldInstanceProperties>
-                    <name>uiBehavior</name>
-                    <value>readonly</value>
-                </fieldInstanceProperties>
-                <fieldItem>Record.RES_Marketing_Area__c</fieldItem>
-                <identifier>RecordRES_Marketing_Area_cField</identifier>
-            </fieldInstance>
-        </itemInstances>
-        <itemInstances>
-            <fieldInstance>
-                <fieldInstanceProperties>
-                    <name>uiBehavior</name>
-                    <value>readonly</value>
-                </fieldInstanceProperties>
-                <fieldItem>Record.RES_Marketing_Medium__c</fieldItem>
-                <identifier>RecordRES_Marketing_Medium_cField</identifier>
-            </fieldInstance>
-        </itemInstances>
-        <itemInstances>
-            <fieldInstance>
-                <fieldInstanceProperties>
-                    <name>uiBehavior</name>
-                    <value>readonly</value>
-                </fieldInstanceProperties>
-                <fieldItem>Record.RES_Marketing_Source__c</fieldItem>
-                <identifier>RecordRES_Marketing_Source_cField</identifier>
-            </fieldInstance>
-        </itemInstances>
-        <name>Facet-8d2f99d5-85f1-4ee6-9d80-c14fc70d8539</name>
-        <type>Facet</type>
-    </flexiPageRegions>
-    <flexiPageRegions>
-        <itemInstances>
-            <componentInstance>
-                <componentInstanceProperties>
-                    <name>body</name>
-                    <value>Facet-566f41d3-1aa3-47e2-9758-e0288b5a48f9</value>
-                </componentInstanceProperties>
-                <componentName>flexipage:column</componentName>
-                <identifier>flexipage_column16</identifier>
-            </componentInstance>
-        </itemInstances>
-        <itemInstances>
-            <componentInstance>
-                <componentInstanceProperties>
-                    <name>body</name>
-                    <value>Facet-8d2f99d5-85f1-4ee6-9d80-c14fc70d8539</value>
-                </componentInstanceProperties>
-                <componentName>flexipage:column</componentName>
-                <identifier>flexipage_column19</identifier>
-            </componentInstance>
-        </itemInstances>
-        <name>Facet-4b538a94-12ff-4e77-bd57-0c1e5a7e5179</name>
         <type>Facet</type>
     </flexiPageRegions>
     <flexiPageRegions>
@@ -1251,31 +1199,6 @@
             <componentInstance>
                 <componentInstanceProperties>
                     <name>columns</name>
-                    <value>Facet-4b538a94-12ff-4e77-bd57-0c1e5a7e5179</value>
-                </componentInstanceProperties>
-                <componentInstanceProperties>
-                    <name>horizontalAlignment</name>
-                    <value>false</value>
-                </componentInstanceProperties>
-                <componentInstanceProperties>
-                    <name>label</name>
-                    <value>Attribution &amp; Tracking Information</value>
-                </componentInstanceProperties>
-                <componentName>flexipage:fieldSection</componentName>
-                <identifier>flexipage_fieldSection9</identifier>
-                <visibilityRule>
-                    <criteria>
-                        <leftValue>{!$User.Profile.Name}</leftValue>
-                        <operator>EQUAL</operator>
-                        <rightValue>System Administrator</rightValue>
-                    </criteria>
-                </visibilityRule>
-            </componentInstance>
-        </itemInstances>
-        <itemInstances>
-            <componentInstance>
-                <componentInstanceProperties>
-                    <name>columns</name>
                     <value>Facet-b20632cf-832f-40d1-be8c-52afd66be4eb</value>
                 </componentInstanceProperties>
                 <componentInstanceProperties>
@@ -1372,6 +1295,13 @@
                 </componentInstanceProperties>
                 <componentName>flexipage:tab</componentName>
                 <identifier>flexipage_tab</identifier>
+                <visibilityRule>
+                    <criteria>
+                        <leftValue>{!Record.LeadSource}</leftValue>
+                        <operator>EQUAL</operator>
+                        <rightValue>Z06</rightValue>
+                    </criteria>
+                </visibilityRule>
             </componentInstance>
         </itemInstances>
         <itemInstances>

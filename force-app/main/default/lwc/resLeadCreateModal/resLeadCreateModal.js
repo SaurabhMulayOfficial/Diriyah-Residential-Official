@@ -66,6 +66,25 @@ export default class ResLeadCreateModal extends NavigationMixin(LightningElement
         }
     }
 
+    resetPicklistFieldsOnUi() {
+        window.setTimeout(() => {
+            const picklistFields = [
+                'Salutation',
+                'GenderIdentity',
+                'LeadSource',
+                'RES_Identification_Type__c',
+                'RES_Corporate_Title__c'
+            ];
+
+            picklistFields.forEach((fieldName) => {
+                const fieldElement = this.template.querySelector(`[data-field="${fieldName}"]`);
+                if (fieldElement) {
+                    fieldElement.value = '';
+                }
+            });
+        }, 0);
+    }
+
     @wire(CurrentPageReference)
     async pageRefHandler(pageRef) {
         if (!pageRef) {
@@ -653,6 +672,7 @@ export default class ResLeadCreateModal extends NavigationMixin(LightningElement
         this.showCityscapeYear = false;
         this.showIdentificationNumber = false;
         this.isSaving = false;
+        this.resetPicklistFieldsOnUi();
     }
 
     clearFieldError(field) {
