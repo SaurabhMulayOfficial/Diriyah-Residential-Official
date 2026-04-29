@@ -14,14 +14,8 @@ ISPICKVAL(RES_Identification_Type__c, &quot;ZIT02&quot;),
 NOT(
 REGEX(RES_Identification_Number__c, &quot;^2[0-9]{9}$&quot;)
 )
-),
-AND(
-ISPICKVAL(RES_Identification_Type__c, &quot;ZIT03&quot;),
-NOT(
-REGEX(RES_Identification_Number__c , &quot;^[a-zA-Z0-9]{1,20}$&quot;)
-)
 )
 )</errorConditionFormula>
     <errorDisplayField>RES_Identification_Number__c</errorDisplayField>
-    <errorMessage>Invalid Identification Number. National ID must start with 1 and be up to 10 digits. Iqama must start with 2 and be up to 10 digits. Passport must be alphanumeric and can contain max 20 characters.</errorMessage>
+    <errorMessage>Invalid Identification Number. National ID must start with 1 and be up to 10 digits. Iqama must start with 2 and be up to 10 digits.</errorMessage>
 </ValidationRule>

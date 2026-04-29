@@ -53,9 +53,9 @@
                         <rightValue>Diriyah Residential Sales Standard Profile</rightValue>
                     </criteria>
                     <criteria>
-                        <leftValue>{!$User.UserRole.Name}</leftValue>
+                        <leftValue>{!$Permission.CustomPermission.RES_Manager_Dashboard_Visibility}</leftValue>
                         <operator>EQUAL</operator>
-                        <rightValue>Sales – Wadi Safar – Manager</rightValue>
+                        <rightValue>true</rightValue>
                     </criteria>
                 </visibilityRule>
             </componentInstance>
