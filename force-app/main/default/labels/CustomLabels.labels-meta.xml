@@ -282,4 +282,28 @@ Please go back and select at least one lead with status = “Qualified” to pro
         <shortDescription>RES Admin Profile</shortDescription>
         <value>System Administrator</value>
     </labels>
+    <labels>
+        <fullName>Owner_Update_Error_Message</fullName>
+        <categories>RES Lead - Screen Flow - Change Record Owner</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Owner Update Error Message</shortDescription>
+        <value>The selected owner is the same as the current record owner. Please verify your selection.</value>
+    </labels>
+    <labels>
+        <fullName>Record_Is_In_Phase_Of_Approval</fullName>
+        <categories>RES Lead - Screen Flow - Change Record Owner</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Record Is In Phase Of Approval</shortDescription>
+        <value>The record is already in the approval phase.</value>
+    </labels>
+    <labels>
+        <fullName>Record_Submitted_For_Approval</fullName>
+        <categories>RES Lead - Screen Flow - Change Record Owner</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Record Submitted For Approval</shortDescription>
+        <value>An approval is required to change the record owner. Your request has been submitted successfully.</value>
+    </labels>
 </CustomLabels>
