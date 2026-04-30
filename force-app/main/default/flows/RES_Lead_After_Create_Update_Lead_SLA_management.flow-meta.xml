@@ -3,8 +3,8 @@
     <actionCalls>
         <name>Assign_Next_Owner_and_Update_Lead</name>
         <label>Assign Next Owner and Update Lead</label>
-        <locationX>1634</locationX>
-        <locationY>539</locationY>
+        <locationX>1898</locationX>
+        <locationY>540</locationY>
         <actionName>RES_LeadServices</actionName>
         <actionType>apex</actionType>
         <flowTransactionModel>Automatic</flowTransactionModel>
@@ -32,8 +32,8 @@
     <actionCalls>
         <name>Auto_Create_Task_on_Lead_Conversion</name>
         <label>Auto-Create Task on Lead Conversion</label>
-        <locationX>50</locationX>
-        <locationY>1248</locationY>
+        <locationX>182</locationX>
+        <locationY>1548</locationY>
         <actionName>NewTask</actionName>
         <actionType>quickAction</actionType>
         <flowTransactionModel>CurrentTransaction</flowTransactionModel>
@@ -69,7 +69,7 @@
     <assignments>
         <name>Assign_Instance</name>
         <label>Assign Instance</label>
-        <locationX>1238</locationX>
+        <locationX>1502</locationX>
         <locationY>432</locationY>
         <assignmentItems>
             <assignToReference>leadInstance.Id</assignToReference>
@@ -97,10 +97,10 @@
         </connector>
     </assignments>
     <decisions>
-        <name>Check_if_Lead_is_Converted</name>
-        <label>Check if Lead is Converted</label>
-        <locationX>182</locationX>
-        <locationY>1032</locationY>
+        <name>Check_if_Lead_is_Converted_and_Flow_Switch</name>
+        <label>Check if Lead is Converted and Flow Switch</label>
+        <locationX>578</locationX>
+        <locationY>924</locationY>
         <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
         <rules>
             <name>Converted_Lead</name>
@@ -120,15 +120,95 @@
                 </rightValue>
             </conditions>
             <conditions>
-                <leftValueReference>$Record.ConvertedOpportunityId</leftValueReference>
+                <leftValueReference>isNew</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Setup.RES_Config_Switch__c.RES_Flows_Off__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Check_Lead_Record_Types</targetReference>
+            </connector>
+            <label>Converted Lead</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>Check_Lead_Record_Types</name>
+        <label>Check Lead Record Types</label>
+        <locationX>314</locationX>
+        <locationY>1032</locationY>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Is_Individual_Lead</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.RecordType.DeveloperName</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>RES_Individual</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.ConvertedAccountId</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Update_Person_Account_BirthDate</targetReference>
+            </connector>
+            <label>Is Individual Lead</label>
+        </rules>
+        <rules>
+            <name>Is_Company_Lead</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.RecordType.DeveloperName</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>RES_Company</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.ConvertedAccountId</leftValueReference>
                 <operator>IsNull</operator>
                 <rightValue>
                     <booleanValue>false</booleanValue>
                 </rightValue>
             </conditions>
             <conditions>
-                <leftValueReference>isNew</leftValueReference>
-                <operator>EqualTo</operator>
+                <leftValueReference>$Record.ConvertedContactId</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Update_Contact_BirthDate</targetReference>
+            </connector>
+            <label>Is Company Lead</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>Check_Related_to_Opportunity</name>
+        <label>Check Related to Opportunity</label>
+        <locationX>314</locationX>
+        <locationY>1332</locationY>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Opportunity_Created</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.ConvertedOpportunityId</leftValueReference>
+                <operator>IsNull</operator>
                 <rightValue>
                     <booleanValue>false</booleanValue>
                 </rightValue>
@@ -136,13 +216,13 @@
             <connector>
                 <targetReference>RES_Update_Opportunity_Address_Fields</targetReference>
             </connector>
-            <label>Converted Lead</label>
+            <label>Opportunity Created</label>
         </rules>
     </decisions>
     <decisions>
         <name>Check_required_Conditions</name>
         <label>Check required Conditions</label>
-        <locationX>1766</locationX>
+        <locationX>2030</locationX>
         <locationY>432</locationY>
         <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
         <rules>
@@ -164,7 +244,7 @@
     <decisions>
         <name>if_Due</name>
         <label>if DUE Date Is Null</label>
-        <locationX>1040</locationX>
+        <locationX>1304</locationX>
         <locationY>324</locationY>
         <defaultConnector>
             <targetReference>Assign_Instance</targetReference>
@@ -183,10 +263,10 @@
     <decisions>
         <name>If_Lead_Routing_Records_Avaialable</name>
         <label>If Lead Routing Records Avaialable</label>
-        <locationX>226</locationX>
+        <locationX>424</locationX>
         <locationY>540</locationY>
         <defaultConnector>
-            <targetReference>RES_Check_Flow_Switch_and_RES_Lead_Record_Types</targetReference>
+            <targetReference>Check_if_Lead_is_Converted_and_Flow_Switch</targetReference>
         </defaultConnector>
         <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
         <rules>
@@ -208,7 +288,7 @@
     <decisions>
         <name>If_Manager_Exist</name>
         <label>If Manager Exist</label>
-        <locationX>1238</locationX>
+        <locationX>1502</locationX>
         <locationY>756</locationY>
         <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
         <rules>
@@ -230,7 +310,7 @@
     <decisions>
         <name>If_Next_Reassignment_Date_is_Not_Null</name>
         <label>If Next Reassignment Date is Not Null</label>
-        <locationX>1964</locationX>
+        <locationX>2228</locationX>
         <locationY>324</locationY>
         <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
         <rules>
@@ -252,10 +332,10 @@
     <decisions>
         <name>If_Status_has_Changed</name>
         <label>If Status has Changed</label>
-        <locationX>380</locationX>
+        <locationX>578</locationX>
         <locationY>324</locationY>
         <defaultConnector>
-            <targetReference>RES_Check_Flow_Switch_and_RES_Lead_Record_Types</targetReference>
+            <targetReference>Check_if_Lead_is_Converted_and_Flow_Switch</targetReference>
         </defaultConnector>
         <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
         <rules>
@@ -293,42 +373,6 @@
                 <targetReference>Get_Lead_Routing_Records</targetReference>
             </connector>
             <label>Status Has Changed to ( Qualified, Retired, Archive)</label>
-        </rules>
-    </decisions>
-    <decisions>
-        <name>RES_Check_Flow_Switch_and_RES_Lead_Record_Types</name>
-        <label>Check Flow Switch and RES Lead Record Types</label>
-        <locationX>380</locationX>
-        <locationY>924</locationY>
-        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
-        <rules>
-            <name>Present</name>
-            <conditionLogic>(1 OR 2) AND 3</conditionLogic>
-            <conditions>
-                <leftValueReference>$Record.RecordType.DeveloperName</leftValueReference>
-                <operator>EqualTo</operator>
-                <rightValue>
-                    <stringValue>RES_Individual</stringValue>
-                </rightValue>
-            </conditions>
-            <conditions>
-                <leftValueReference>$Record.RecordType.DeveloperName</leftValueReference>
-                <operator>EqualTo</operator>
-                <rightValue>
-                    <stringValue>RES_Company</stringValue>
-                </rightValue>
-            </conditions>
-            <conditions>
-                <leftValueReference>$Setup.RES_Config_Switch__c.RES_Flows_Off__c</leftValueReference>
-                <operator>EqualTo</operator>
-                <rightValue>
-                    <booleanValue>false</booleanValue>
-                </rightValue>
-            </conditions>
-            <connector>
-                <targetReference>Check_if_Lead_is_Converted</targetReference>
-            </connector>
-            <label>Present?</label>
         </rules>
     </decisions>
     <description>Lead SLA management, Task Creation after lead Convert</description>
@@ -372,10 +416,10 @@
     <recordDeletes>
         <name>Delete_Lead_Routing_record</name>
         <label>Delete Lead Routing record</label>
-        <locationX>94</locationX>
+        <locationX>292</locationX>
         <locationY>648</locationY>
         <connector>
-            <targetReference>RES_Check_Flow_Switch_and_RES_Lead_Record_Types</targetReference>
+            <targetReference>Check_if_Lead_is_Converted_and_Flow_Switch</targetReference>
         </connector>
         <filterLogic>and</filterLogic>
         <filters>
@@ -390,7 +434,7 @@
     <recordLookups>
         <name>Get_Lead_Routing_Records</name>
         <label>Get Lead Routing Records</label>
-        <locationX>226</locationX>
+        <locationX>424</locationX>
         <locationY>432</locationY>
         <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
         <connector>
@@ -411,7 +455,7 @@
     <recordLookups>
         <name>Get_Owners_Manager</name>
         <label>Get Owners Manager</label>
-        <locationX>1238</locationX>
+        <locationX>1502</locationX>
         <locationY>648</locationY>
         <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
         <connector>
@@ -436,8 +480,8 @@
     <recordUpdates>
         <name>RES_Update_Opportunity_Address_Fields</name>
         <label>Update Opportunity Address Fields</label>
-        <locationX>50</locationX>
-        <locationY>1140</locationY>
+        <locationX>182</locationX>
+        <locationY>1440</locationY>
         <connector>
             <targetReference>Auto_Create_Task_on_Lead_Conversion</targetReference>
         </connector>
@@ -496,15 +540,70 @@
     <recordUpdates>
         <name>SLA_breached</name>
         <label>SLA breached</label>
-        <locationX>1238</locationX>
+        <locationX>1502</locationX>
         <locationY>540</locationY>
         <connector>
             <targetReference>Get_Owners_Manager</targetReference>
         </connector>
         <inputReference>leadInstance</inputReference>
     </recordUpdates>
+    <recordUpdates>
+        <name>Update_Contact_BirthDate</name>
+        <label>Update Contact BirthDate</label>
+        <locationX>314</locationX>
+        <locationY>1140</locationY>
+        <connector>
+            <targetReference>Check_Related_to_Opportunity</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Id</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>$Record.ConvertedContactId</elementReference>
+            </value>
+        </filters>
+        <inputAssignments>
+            <field>Birthdate</field>
+            <value>
+                <elementReference>$Record.RES_Date_of_Birth__c</elementReference>
+            </value>
+        </inputAssignments>
+        <object>Contact</object>
+    </recordUpdates>
+    <recordUpdates>
+        <name>Update_Person_Account_BirthDate</name>
+        <label>Update Person Account BirthDate</label>
+        <locationX>50</locationX>
+        <locationY>1140</locationY>
+        <connector>
+            <targetReference>Check_Related_to_Opportunity</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>IsPersonAccount</field>
+            <operator>EqualTo</operator>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </filters>
+        <filters>
+            <field>Id</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>$Record.ConvertedAccountId</elementReference>
+            </value>
+        </filters>
+        <inputAssignments>
+            <field>PersonBirthdate</field>
+            <value>
+                <elementReference>$Record.RES_Date_of_Birth__c</elementReference>
+            </value>
+        </inputAssignments>
+        <object>Account</object>
+    </recordUpdates>
     <start>
-        <locationX>1046</locationX>
+        <locationX>1277</locationX>
         <locationY>48</locationY>
         <connector>
             <targetReference>If_Status_has_Changed</targetReference>
@@ -539,7 +638,7 @@
     <subflows>
         <name>Notify_User_s_Manager</name>
         <label>Notify User&apos;s Manager</label>
-        <locationX>1106</locationX>
+        <locationX>1370</locationX>
         <locationY>864</locationY>
         <flowName>RES_AutoLaunchFlow_Notify_User_s_Manager</flowName>
         <inputAssignments>
