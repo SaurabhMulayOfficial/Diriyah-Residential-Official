@@ -868,6 +868,11 @@
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
+        <editable>true</editable>
+        <field>Lead.RES_Proposed_User__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
         <editable>false</editable>
         <field>Lead.RES_CR_Number__c</field>
         <readable>true</readable>
@@ -1578,6 +1583,11 @@
     <fieldPermissions>
         <editable>true</editable>
         <field>RES_Lead_Routing__c.RES_Lead__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>ApprovalWorkItem.RES_Proposed_Record_Owner__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <layoutAssignments>
