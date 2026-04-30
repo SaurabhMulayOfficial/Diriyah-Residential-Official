@@ -7,7 +7,10 @@ Sales – External – Relationship Manager</description>
         <enabled>true</enabled>
         <name>RES_Manager_Dashboard_Visibility</name>
     </customPermissions>
-    <customPermissions>         <enabled>true</enabled>         <name>RES_Sub_Stage_Visibility</name>     </customPermissions>
+    <customPermissions>         
+        <enabled>true</enabled>         
+        <name>RES_Sub_Stage_Visibility</name>     
+    </customPermissions>
     <fieldPermissions>
         <editable>false</editable>
         <field>Account.AccountNumber</field>
@@ -860,8 +863,11 @@ Sales – External – Relationship Manager</description>
         <field>Lead.RES_Interest_Type__c</field>
         <readable>true</readable>
     </fieldPermissions>
-    <fieldPermissions>         <editable>true</editable>         <field>Lead.RES_CR_Number__c</field>         <readable>
-        true</readable>     </fieldPermissions>
+    <fieldPermissions>         
+        <editable>true</editable>         
+        <field>Lead.RES_CR_Number__c</field>         
+        <readable>true</readable>     
+    </fieldPermissions>
     <fieldPermissions>
         <editable>true</editable>
         <field>Lead.RES_Language__c</field>
