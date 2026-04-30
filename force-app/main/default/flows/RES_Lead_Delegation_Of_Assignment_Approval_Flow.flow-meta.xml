@@ -259,7 +259,54 @@
                     <elementReference>$Record</elementReference>
                 </value>
             </inputParameters>
+            <inputParameters>
+                <name>action</name>
+                <value>
+                    <stringValue>UpdateRecord</stringValue>
+                </value>
+            </inputParameters>
             <label>Record Has been Approved</label>
+            <outputConfigParams>
+                <name>FaultMessage</name>
+                <value xsi:nil="true"/>
+            </outputConfigParams>
+            <requiresAsyncProcessing>false</requiresAsyncProcessing>
+            <runAsUser>false</runAsUser>
+            <shouldLock>false</shouldLock>
+            <stepSubtype>BackgroundStep</stepSubtype>
+        </stageSteps>
+    </orchestratedStages>
+    <orchestratedStages>
+        <name>Recall_Stage</name>
+        <label>Recall Stage</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <exitConditionLogic>and</exitConditionLogic>
+        <stageSteps>
+            <name>If_Record_is_Recalled</name>
+            <actionName>RES_Autolaunched_Flow_Update_lead_Owner_to_Proposed_Owner</actionName>
+            <actionType>stepBackground</actionType>
+            <canAssigneeEdit>false</canAssigneeEdit>
+            <debugSimulateStep>false</debugSimulateStep>
+            <entryConditionLogic>and</entryConditionLogic>
+            <exitConditionLogic>and</exitConditionLogic>
+            <inputParameters>
+                <name>LeadRecord</name>
+                <value>
+                    <elementReference>$Record</elementReference>
+                </value>
+            </inputParameters>
+            <inputParameters>
+                <name>action</name>
+                <value>
+                    <stringValue>Recall</stringValue>
+                </value>
+            </inputParameters>
+            <label>If Record is Recalled</label>
+            <outputConfigParams>
+                <name>FaultMessage</name>
+                <value xsi:nil="true"/>
+            </outputConfigParams>
             <requiresAsyncProcessing>false</requiresAsyncProcessing>
             <runAsUser>false</runAsUser>
             <shouldLock>false</shouldLock>
@@ -334,7 +381,17 @@
                     <elementReference>$Record</elementReference>
                 </value>
             </inputParameters>
+            <inputParameters>
+                <name>action</name>
+                <value>
+                    <stringValue>UpdateRecord</stringValue>
+                </value>
+            </inputParameters>
             <label>Record Has been Approved</label>
+            <outputConfigParams>
+                <name>FaultMessage</name>
+                <value xsi:nil="true"/>
+            </outputConfigParams>
             <requiresAsyncProcessing>false</requiresAsyncProcessing>
             <runAsUser>false</runAsUser>
             <shouldLock>false</shouldLock>
@@ -457,7 +514,17 @@
                     <elementReference>$Record</elementReference>
                 </value>
             </inputParameters>
+            <inputParameters>
+                <name>action</name>
+                <value>
+                    <stringValue>UpdateRecord</stringValue>
+                </value>
+            </inputParameters>
             <label>Record Has been Approved</label>
+            <outputConfigParams>
+                <name>FaultMessage</name>
+                <value xsi:nil="true"/>
+            </outputConfigParams>
             <requiresAsyncProcessing>false</requiresAsyncProcessing>
             <runAsUser>false</runAsUser>
             <shouldLock>false</shouldLock>
@@ -507,6 +574,12 @@
         </filters>
         <object>Lead</object>
         <recordTriggerType>Update</recordTriggerType>
+        <scheduledPaths>
+            <connector>
+                <targetReference>Recall_Stage</targetReference>
+            </connector>
+            <pathType>ApprovalRecall</pathType>
+        </scheduledPaths>
         <triggerType>RecordAfterSave</triggerType>
     </start>
     <status>Active</status>
