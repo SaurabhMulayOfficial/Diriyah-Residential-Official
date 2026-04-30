@@ -20,12 +20,20 @@
             <outputField>RES_CR_number__c</outputField>
         </mappingFields>
         <mappingFields>
+            <inputField>RES_Company_Organization__c</inputField>
+            <outputField>RES_Company_Organization__c</outputField>
+        </mappingFields>
+        <mappingFields>
             <inputField>RES_Corporate_Title__c</inputField>
             <outputField>RES_Corporate_Title__c</outputField>
         </mappingFields>
         <mappingFields>
-            <inputField>RES_Full_Arabic_Name__c</inputField>
-            <outputField>RES_Full_Arabic_Name__c</outputField>
+            <inputField>DIR_Country__c</inputField>
+            <outputField>DIR_Country__c</outputField>
+        </mappingFields>
+        <mappingFields>
+            <inputField>RES_Form_Submission_ID__c</inputField>
+            <outputField>RES_Form_Submission_ID__c</outputField>
         </mappingFields>
         <mappingFields>
             <inputField>RES_House_Number__c</inputField>
@@ -88,6 +96,10 @@
             <outputField>RES_Cityscape_Year__c</outputField>
         </mappingFields>
         <mappingFields>
+            <inputField>DIR_Country__c</inputField>
+            <outputField>DIR_Country__c</outputField>
+        </mappingFields>
+        <mappingFields>
             <inputField>RES_Full_Arabic_Name__c</inputField>
             <outputField>RES_Full_Arabic_Name__c</outputField>
         </mappingFields>
@@ -120,6 +132,14 @@
             <outputField>RES_Cityscape_Year__c</outputField>
         </mappingFields>
         <mappingFields>
+            <inputField>RES_CR_Number__c</inputField>
+            <outputField>RES_CR_Number__c</outputField>
+        </mappingFields>
+        <mappingFields>
+            <inputField>DIR_Country__c</inputField>
+            <outputField>DIR_Country__c</outputField>
+        </mappingFields>
+        <mappingFields>
             <inputField>RES_Customer_Interest__c</inputField>
             <outputField>RES_Customer_Interest__c</outputField>
         </mappingFields>
@@ -134,6 +154,10 @@
         <mappingFields>
             <inputField>RES_Identification_Type__c</inputField>
             <outputField>RES_Identification_Type__c</outputField>
+        </mappingFields>
+        <mappingFields>
+            <inputField>RES_Project__c</inputField>
+            <outputField>RES_Project__c</outputField>
         </mappingFields>
         <outputObject>Opportunity</outputObject>
     </objectMapping>
