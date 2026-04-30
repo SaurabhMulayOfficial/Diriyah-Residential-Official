@@ -296,6 +296,46 @@
                 </fieldInstanceProperties>
                 <fieldItem>Record.RES_Identification_Number__c</fieldItem>
                 <identifier>RecordRES_Identification_Number_cField</identifier>
+                <visibilityRule>
+                    <booleanFilter>1 OR 2 OR 3 OR 4</booleanFilter>
+                    <criteria>
+                        <leftValue>{!Record.RES_Identification_Type__c}</leftValue>
+                        <operator>EQUAL</operator>
+                        <rightValue>ZIT01</rightValue>
+                    </criteria>
+                    <criteria>
+                        <leftValue>{!Record.RES_Identification_Type__c}</leftValue>
+                        <operator>EQUAL</operator>
+                        <rightValue>ZIT02</rightValue>
+                    </criteria>
+                    <criteria>
+                        <leftValue>{!Record.RES_Identification_Type__c}</leftValue>
+                        <operator>EQUAL</operator>
+                        <rightValue>ZIT03</rightValue>
+                    </criteria>
+                    <criteria>
+                        <leftValue>{!Record.RES_Identification_Type__c}</leftValue>
+                        <operator>EQUAL</operator>
+                        <rightValue>GCC ID</rightValue>
+                    </criteria>
+                </visibilityRule>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>required</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.RES_CR_Number__c</fieldItem>
+                <identifier>RecordRES_CR_Number_cField</identifier>
+                <visibilityRule>
+                    <criteria>
+                        <leftValue>{!Record.RES_Identification_Type__c}</leftValue>
+                        <operator>EQUAL</operator>
+                        <rightValue>ZIT04</rightValue>
+                    </criteria>
+                </visibilityRule>
             </fieldInstance>
         </itemInstances>
         <name>Facet-e9e0f685-55dd-4bd7-aa30-df72c4432e0c</name>
@@ -366,8 +406,8 @@
                     <name>uiBehavior</name>
                     <value>none</value>
                 </fieldInstanceProperties>
-                <fieldItem>Record.RES_Country__c</fieldItem>
-                <identifier>RecordRES_Country_cField</identifier>
+                <fieldItem>Record.DIR_Country__c</fieldItem>
+                <identifier>RecordDIR_Country_cField</identifier>
             </fieldInstance>
         </itemInstances>
         <itemInstances>

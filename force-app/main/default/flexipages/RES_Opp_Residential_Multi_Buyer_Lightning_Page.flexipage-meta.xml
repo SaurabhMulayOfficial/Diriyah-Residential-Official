@@ -323,6 +323,46 @@
                 </fieldInstanceProperties>
                 <fieldItem>Record.RES_Identification_Number__c</fieldItem>
                 <identifier>RecordRES_Identification_Number_cField</identifier>
+                <visibilityRule>
+                    <booleanFilter>1 OR 2 OR 3 OR 4</booleanFilter>
+                    <criteria>
+                        <leftValue>{!Record.RES_Identification_Type__c}</leftValue>
+                        <operator>EQUAL</operator>
+                        <rightValue>ZIT01</rightValue>
+                    </criteria>
+                    <criteria>
+                        <leftValue>{!Record.RES_Identification_Type__c}</leftValue>
+                        <operator>EQUAL</operator>
+                        <rightValue>ZIT03</rightValue>
+                    </criteria>
+                    <criteria>
+                        <leftValue>{!Record.RES_Identification_Type__c}</leftValue>
+                        <operator>EQUAL</operator>
+                        <rightValue>ZIT02</rightValue>
+                    </criteria>
+                    <criteria>
+                        <leftValue>{!Record.RES_Identification_Type__c}</leftValue>
+                        <operator>EQUAL</operator>
+                        <rightValue>GCC ID</rightValue>
+                    </criteria>
+                </visibilityRule>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>required</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.RES_CR_Number__c</fieldItem>
+                <identifier>RecordRES_CR_Number_cField</identifier>
+                <visibilityRule>
+                    <criteria>
+                        <leftValue>{!Record.RES_Identification_Type__c}</leftValue>
+                        <operator>EQUAL</operator>
+                        <rightValue>ZIT04</rightValue>
+                    </criteria>
+                </visibilityRule>
             </fieldInstance>
         </itemInstances>
         <name>Facet-31849f8d-d15c-4bd0-8789-5a0d0dae3a60</name>
@@ -357,7 +397,7 @@
             <fieldInstance>
                 <fieldInstanceProperties>
                     <name>uiBehavior</name>
-                    <value>required</value>
+                    <value>none</value>
                 </fieldInstanceProperties>
                 <fieldItem>Record.RES_Street__c</fieldItem>
                 <identifier>RecordRES_Street_cField</identifier>
@@ -367,7 +407,7 @@
             <fieldInstance>
                 <fieldInstanceProperties>
                     <name>uiBehavior</name>
-                    <value>required</value>
+                    <value>none</value>
                 </fieldInstanceProperties>
                 <fieldItem>Record.RES_City__c</fieldItem>
                 <identifier>RecordRES_City_cField</identifier>
@@ -377,7 +417,7 @@
             <fieldInstance>
                 <fieldInstanceProperties>
                     <name>uiBehavior</name>
-                    <value>required</value>
+                    <value>none</value>
                 </fieldInstanceProperties>
                 <fieldItem>Record.RES_State_Province__c</fieldItem>
                 <identifier>RecordRES_State_Province_cField</identifier>
@@ -391,17 +431,17 @@
             <fieldInstance>
                 <fieldInstanceProperties>
                     <name>uiBehavior</name>
-                    <value>required</value>
+                    <value>none</value>
                 </fieldInstanceProperties>
-                <fieldItem>Record.RES_Country__c</fieldItem>
-                <identifier>RecordRES_Country_cField</identifier>
+                <fieldItem>Record.DIR_Country__c</fieldItem>
+                <identifier>RecordDIR_Country_cField</identifier>
             </fieldInstance>
         </itemInstances>
         <itemInstances>
             <fieldInstance>
                 <fieldInstanceProperties>
                     <name>uiBehavior</name>
-                    <value>required</value>
+                    <value>none</value>
                 </fieldInstanceProperties>
                 <fieldItem>Record.RES_Zip_Postal_Code__c</fieldItem>
                 <identifier>RecordRES_Zip_Postal_Code_cField</identifier>

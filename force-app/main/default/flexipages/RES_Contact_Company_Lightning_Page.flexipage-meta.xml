@@ -184,6 +184,16 @@
                 <identifier>RecordMailingAddressField</identifier>
             </fieldInstance>
         </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.DIR_Country__c</fieldItem>
+                <identifier>RecordDIR_Country_cField</identifier>
+            </fieldInstance>
+        </itemInstances>
         <name>Facet-104aaef6-a7a4-478c-a6a5-41010610c240</name>
         <type>Facet</type>
     </flexiPageRegions>
@@ -300,6 +310,16 @@
                 </fieldInstanceProperties>
                 <fieldItem>Record.GenderIdentity</fieldItem>
                 <identifier>RecordGenderIdentityField</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.Birthdate</fieldItem>
+                <identifier>RecordBirthdateField</identifier>
             </fieldInstance>
         </itemInstances>
         <itemInstances>
