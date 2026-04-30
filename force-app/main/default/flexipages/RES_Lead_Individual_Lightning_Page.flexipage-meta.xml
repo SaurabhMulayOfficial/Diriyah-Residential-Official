@@ -249,16 +249,6 @@
                 </visibilityRule>
             </fieldInstance>
         </itemInstances>
-        <itemInstances>
-            <fieldInstance>
-                <fieldInstanceProperties>
-                    <name>uiBehavior</name>
-                    <value>none</value>
-                </fieldInstanceProperties>
-                <fieldItem>Record.DIR_Country__c</fieldItem>
-                <identifier>RecordDIR_Country__cField</identifier>
-            </fieldInstance>
-        </itemInstances>
         <name>Facet-4431116c-4774-4eed-8920-047381454cbc</name>
         <type>Facet</type>
     </flexiPageRegions>
@@ -1456,6 +1446,12 @@
                 </componentInstanceProperties>
                 <componentName>flexipage:tabset</componentName>
                 <identifier>flexipage_tabset2</identifier>
+            </componentInstance>
+        </itemInstances>
+        <itemInstances>
+            <componentInstance>
+                <componentName>runtime_approvals:approvalTrace</componentName>
+                <identifier>runtime_approvals_approvalTrace</identifier>
             </componentInstance>
         </itemInstances>
         <itemInstances>
