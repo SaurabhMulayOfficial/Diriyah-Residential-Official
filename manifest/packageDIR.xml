@@ -1,8 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Package xmlns="http://soap.sforce.com/2006/04/metadata">
     <types>
-        <members>CommunitiesLandingController</members>
-        <members>CommunitiesLandingControllerTest</members>
         <members>RES_AssignmentConfigDAO</members>
         <members>RES_AssignmentRuleDAO</members>
         <members>RES_BaseDAOLayer</members>
@@ -11,7 +9,6 @@
         <members>RES_ContentNoteSecurityHandler</members>
         <members>RES_ContentNoteServices</members>
         <members>RES_DAOException</members>
-        <members>RES_EmployeeReferralController</members>
         <members>RES_GroupDAOLayer</members>
         <members>RES_GroupMemberDAOLayer</members>
         <members>RES_LeadDAOLayer</members>
@@ -54,10 +51,6 @@
         <name>ApexTrigger</name>
     </types>
     <types>
-        <members>Lead.RES Lead Assignment Rule</members>
-        <name>AssignmentRule</name>
-    </types>
-    <types>
         <members>Lead</members>
         <name>AssignmentRules</name>
     </types>
@@ -76,6 +69,7 @@
         <members>Lead.Leads_Custom_Compact_Layout</members>
         <members>Opportunity.New_Awesome_Companct_Layout</members>
         <members>Task.DIR_Task_Compact_Layout</members>
+        <members>PersonAccount.Person_Account_Compact_Layout</members>
         <name>CompactLayout</name>
     </types>
     <types>
@@ -561,10 +555,6 @@
         <name>CustomPermission</name>
     </types>
     <types>
-        <members>Employee_Referral_Portal</members>
-        <name>CustomSite</name>
-    </types>
-    <types>
         <members>RES_Assignment_Config__c</members>
         <members>RES_Assignment_Rule__c</members>
         <members>User_Availability_Status</members>
@@ -678,6 +668,7 @@
     </types>
     <types>
         <members>Account-RES Company</members>
+        <members>PersonAccount-Person Account Layout</members>
         <members>Contact-RES Company</members>
         <members>Global-Global Layout</members>
         <members>Lead-RES Company</members>
@@ -697,7 +688,6 @@
         <name>LeadConvertSettings</name>
     </types>
     <types>
-        <members>employeeReferralForm</members>
         <members>useravailability</members>
         <name>LightningComponentBundle</name>
     </types>
@@ -773,18 +763,6 @@
         <name>MatchingRules</name>
     </types>
     <types>
-        <members>Employee Referral Portal</members>
-        <name>Network</name>
-    </types>
-    <types>
-        <members>cbEmployee_Referral_Portal</members>
-        <name>NetworkBranding</name>
-    </types>
-    <types>
-        <members>RES_Supervisor_Configuration</members>
-        <name>OmniSupervisorConfig</name>
-    </types>
-    <types>
         <members>Default</members>
         <members>Default_Opportunity</members>
         <members>RES_Company_Lead_Path</members>
@@ -835,27 +813,13 @@
         <name>PermissionSet</name>
     </types>
     <types>
-        <members>RES_Presence_Configuration</members>
-        <members>default_presence_config</members>
-        <name>PresenceUserConfig</name>
-    </types>
-    <types>
         <members>Admin</members>
         <members>Diriyah Residential Sales Standard Profile</members>
         <name>Profile</name>
     </types>
     <types>
         <members>RES_DG_Team</members>
-        <members>RES_DI_DII_Sales_Senior_Director</members>
-        <members>RES_External_Sales_Senior_Director</members>
-        <members>RES_Sales_Excellence_Senior_Director</members>
-        <members>RES_Sales_Operations_Executive_Director</members>
-        <members>RES_Wadi_Safar_Sales_Senior_Director</members>
         <name>Queue</name>
-    </types>
-    <types>
-        <members>RES_Routing_Configuration</members>
-        <name>QueueRoutingConfig</name>
     </types>
     <types>
         <members>NewEvent</members>
@@ -975,9 +939,6 @@
     </types>
     <types>
         <members>CompanyLogo</members>
-        <members>SNA_5bpy0_sf_default_cdn_Employee_Referral_Portal1</members>
-        <members>SiteBackground</members>
-        <members>SiteSamples</members>
         <name>StaticResource</name>
     </types>
     <types>
