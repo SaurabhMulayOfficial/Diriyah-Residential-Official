@@ -271,27 +271,30 @@
         <recordType>PersonAccount.PersonAccount</recordType>
     </layoutAssignments>
     <layoutAssignments>
-            <layout>Lead-RES Company</layout>
-            <recordType>Lead.RES_Company</recordType>
+        <layout>Lead-Lead Layout</layout>
     </layoutAssignments>
     <layoutAssignments>
-            <layout>Lead-RES Individual</layout>
-            <recordType>Lead.RES_Individual</recordType>
+        <layout>Lead-RES Company</layout>
+        <recordType>Lead.RES_Company</recordType>
     </layoutAssignments>
     <layoutAssignments>
-            <layout>Contact-RES Company</layout>
-            <recordType>Contact.RES_Company</recordType>
+        <layout>Lead-RES Individual</layout>
+        <recordType>Lead.RES_Individual</recordType>
     </layoutAssignments>
     <layoutAssignments>
-            <layout>Opportunity-RES Residential Single Buyer</layout>
-            <recordType>Opportunity.RES_Residential_Single_Buyer</recordType>
+        <layout>Contact-RES Company</layout>
+        <recordType>Contact.RES_Company</recordType>
     </layoutAssignments>
     <layoutAssignments>
-            <layout>Opportunity-RES Residential Multi Buyer</layout>
-            <recordType>Opportunity.RES_Residential_Multi_Buyer</recordType>
+        <layout>Opportunity-RES Residential Single Buyer</layout>
+        <recordType>Opportunity.RES_Residential_Single_Buyer</recordType>
     </layoutAssignments>
     <layoutAssignments>
-            <layout>RES_Opportunity_Account_Link__c-Opportunity Account Link Layout</layout>
+        <layout>Opportunity-RES Residential Multi Buyer</layout>
+        <recordType>Opportunity.RES_Residential_Multi_Buyer</recordType>
+    </layoutAssignments>
+    <layoutAssignments>
+        <layout>RES_Opportunity_Account_Link__c-Opportunity Account Link Layout</layout>
     </layoutAssignments>
     <layoutAssignments>
         <layout>ApprovalSubmission-Approval Submission Layout</layout>
@@ -303,20 +306,20 @@
         <layout>ApprovalWorkItem-Approval Work Item Layout</layout>
     </layoutAssignments>
     <fieldPermissions>
-            <field>Activity.RES_Is_Call_Flag__c</field>
-            <readable>true</readable>
+        <field>Activity.RES_Is_Call_Flag__c</field>
+        <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
-            <field>Activity.RES_Is_Email_Flag__c</field>
-            <readable>true</readable>
+        <field>Activity.RES_Is_Email_Flag__c</field>
+        <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
-            <field>Activity.RES_Is_Meeting_Flag__c</field>
-            <readable>true</readable>
+        <field>Activity.RES_Is_Meeting_Flag__c</field>
+        <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
-            <field>Activity.RES_Is_Overdue_Task__c</field>
-            <readable>true</readable>
+        <field>Activity.RES_Is_Overdue_Task__c</field>
+        <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
         <editable>true</editable>
@@ -486,7 +489,7 @@
     <objectPermissions>
         <allowCreate>true</allowCreate>
         <allowRead>true</allowRead>
-        <object>RES_Ownership_Reassignment_Event__e</object> 
+        <object>RES_Ownership_Reassignment_Event__e</object>
     </objectPermissions>
     <objectPermissions>
         <allowCreate>false</allowCreate>
@@ -578,5 +581,9 @@
     <userPermissions>
         <enabled>true</enabled>
         <name>ViewPublicCapstoneFolders</name>
+    </userPermissions>
+    <userPermissions>
+        <enabled>true</enabled>
+        <name>RunFlow</name>
     </userPermissions>
 </Profile>
