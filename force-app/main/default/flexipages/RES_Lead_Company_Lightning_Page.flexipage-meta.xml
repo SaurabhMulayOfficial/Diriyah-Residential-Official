@@ -827,16 +827,6 @@
                     <name>uiBehavior</name>
                     <value>readonly</value>
                 </fieldInstanceProperties>
-                <fieldItem>Record.RES_Meeting_Preference__c</fieldItem>
-                <identifier>RecordRES_Meeting_Preference_cField</identifier>
-            </fieldInstance>
-        </itemInstances>
-        <itemInstances>
-            <fieldInstance>
-                <fieldInstanceProperties>
-                    <name>uiBehavior</name>
-                    <value>readonly</value>
-                </fieldInstanceProperties>
                 <fieldItem>Record.RES_Marketing_Medium__c</fieldItem>
                 <identifier>RecordRES_Marketing_Medium_cField</identifier>
             </fieldInstance>
@@ -1367,6 +1357,16 @@
             <componentInstance>
                 <componentName>runtime_approvals:approvalTrace</componentName>
                 <identifier>runtime_approvals_approvalTrace</identifier>
+            </componentInstance>
+        </itemInstances>
+        <itemInstances>
+            <componentInstance>
+                <componentInstanceProperties>
+                    <name>displayOption</name>
+                    <value>BOTH</value>
+                </componentInstanceProperties>
+                <componentName>runtime_sales_merge:mergeCandidatesPreviewCard</componentName>
+                <identifier>runtime_sales_merge_mergeCandidatesPreviewCard</identifier>
             </componentInstance>
         </itemInstances>
         <name>sidebar</name>
