@@ -1,17 +1,17 @@
-/**
- * Controller class for Lead Creation business logic
- * Called in lwc resLeadCreateModal
- */
+/*
+This class helps create Leads and fetch related data like record types and picklist values.
+It also handles errors and shows clean messages to the user.
+
+Author: Syed Ashraf
+Date: 2026-05
+*/
 public with sharing class RES_LeadCreateController {
 
     @AuraEnabled(cacheable=true)
     public static List<Map<String, String>> getLeadRecordTypes() {
         List<Map<String, String>> recordTypes = new List<Map<String, String>>();
-
-        // 1. Initialize DAO
         RES_RecordTypeDAO dao = new RES_RecordTypeDAO();
-        
-        // 2. Fetch data through the DAO layer
+    
         List<RecordType> rtList = dao.getActiveRecordTypesBySObject('Lead');
 
         for (RecordType rt : rtList) {
@@ -33,17 +33,13 @@ public with sharing class RES_LeadCreateController {
             return result;
         }
 
-        // 1. Instantiate the DAO
         RES_RecordTypeDAO rtDao = new RES_RecordTypeDAO();
-
-        // 2. Call the new method
         RecordType rt = rtDao.getActiveRecordTypeById(recordTypeId, 'Lead');
-
-        // 3. Optional: Convert to List if your legacy code specifically expects a List
         List<RecordType> rtList = new List<RecordType>();
+
         if (rt != null) {
             rtList.add(rt);
-    }
+        }
 
         if (!rtList.isEmpty()) {
             result.put('id', rtList[0].Id);
@@ -80,10 +76,7 @@ public with sharing class RES_LeadCreateController {
     @AuraEnabled(cacheable=true)
     public static String getCurrentUserRoleName() {
 
-        // 1. Instantiate the User DAO
         RES_UserDAOLayer userDAO = new RES_UserDAOLayer();
-
-        // 2. Call the DAO method passing the current User ID
         List<User> users = userDAO.getUserRoleInfo(UserInfo.getUserId());
 
         if (users.isEmpty() || users[0].UserRole == null) {
@@ -95,24 +88,16 @@ public with sharing class RES_LeadCreateController {
 
     @AuraEnabled(cacheable=true)
     public static Boolean isSystemAdmin() {
-        // 1. Instantiate the Profile DAO
         RES_ProfileDAOLayer profileDAO = new RES_ProfileDAOLayer();
-
-        // 2. Use the existing DAO method to get the name
         String currentUserProfileName = profileDAO.getCurrentUserProfileName();
 
-        // 3. Perform the comparison against the Custom Label
         return currentUserProfileName == System.Label.RES_Admin_Profile;
     
     }
 
     @AuraEnabled(cacheable=true)
     public static Boolean hasLeadSourceAccessByRole() {
-
-        // 1. Instantiate the User DAO
         RES_UserDAOLayer userDAO = new RES_UserDAOLayer();
-
-        // 2. Call the DAO method passing the current User ID
         List<User> users = userDAO.getUserRoleInfo(UserInfo.getUserId());
 
         if (users.isEmpty() || users[0].UserRole == null) {
@@ -148,7 +133,12 @@ public with sharing class RES_LeadCreateController {
             }
         }
 
-        insert newLead;
+        try {
+            insert newLead;
+        } catch (Exception e) {
+            String cleanMsg = e.getDmlMessage(0);
+            throw new AuraHandledException(cleanMsg);
+        }
 
         return [
             SELECT Id, Name, FirstName, LastName
