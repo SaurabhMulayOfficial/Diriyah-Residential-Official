@@ -163,7 +163,7 @@ public with sharing class RES_LeadServices {
                         startSla(l, bh, slaInHours, true);
                     }
                 }
-                else if((oldmap.get(l.Id).OwnerId == null && String.valueOf(l.ownerId).startsWith('005')) || (l.OwnerId != oldmap.get(l.Id).OwnerId && String.valueOf(l.ownerId).startsWith('005') && String.valueOf(oldmap.get(l.Id).OwnerId).startsWith('00G'))){
+                else if((oldmap.get(l.Id).OwnerId == null && String.valueOf(l.ownerId).startsWith('005')) || (l.OwnerId != oldmap.get(l.Id).OwnerId && String.valueOf(l.ownerId).startsWith('005'))){
                     if(l.RES_SLA_Status__c != 'Met'){
                         startSla(l, bh, slaInHours, false);
                     }
