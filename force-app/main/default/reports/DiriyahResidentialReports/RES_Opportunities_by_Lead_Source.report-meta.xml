@@ -4,7 +4,7 @@
         <calculatedFormula>AMOUNT:SUM</calculatedFormula>
         <datatype>currency</datatype>
         <developerName>FORMULA1</developerName>
-        <isActive>true</isActive>
+        <isActive>false</isActive>
         <isCrossBlock>false</isCrossBlock>
         <masterLabel>Total Amount</masterLabel>
         <scale>0</scale>
@@ -22,7 +22,7 @@
         <calculatedFormula>AMOUNT:SUM * (PROBABILITY:AVG / 100)</calculatedFormula>
         <datatype>currency</datatype>
         <developerName>FORMULA3</developerName>
-        <isActive>true</isActive>
+        <isActive>false</isActive>
         <isCrossBlock>false</isCrossBlock>
         <masterLabel>Weighted Amount</masterLabel>
         <scale>0</scale>
@@ -51,7 +51,7 @@
         <backgroundFadeDir>Diagonal</backgroundFadeDir>
         <chartSummaries>
             <axisBinding>y</axisBinding>
-            <column>FORMULA1</column>
+            <column>FORMULA2</column>
         </chartSummaries>
         <chartType>HorizontalBar</chartType>
         <enableHoverLabels>false</enableHoverLabels>
@@ -85,14 +85,6 @@
         <lowColor>#B50E03</lowColor>
         <midColor>#B56200</midColor>
     </colorRanges>
-    <colorRanges>
-        <columnName>FORMULA3</columnName>
-        <highBreakpoint>200000.0</highBreakpoint>
-        <highColor>#006714</highColor>
-        <lowBreakpoint>50000.0</lowBreakpoint>
-        <lowColor>#B50E03</lowColor>
-        <midColor>#B56200</midColor>
-    </colorRanges>
     <columns>
         <field>ROLLUP_DESCRIPTION</field>
     </columns>
@@ -104,9 +96,6 @@
     </columns>
     <columns>
         <field>OPPORTUNITY_NAME</field>
-    </columns>
-    <columns>
-        <field>AMOUNT</field>
     </columns>
     <columns>
         <field>PROBABILITY</field>
@@ -162,20 +151,6 @@
         <values>
             <backgroundColor>#B56200</backgroundColor>
             <rangeUpperBound>100000.0</rangeUpperBound>
-        </values>
-        <values>
-            <backgroundColor>#006714</backgroundColor>
-        </values>
-    </formattingRules>
-    <formattingRules>
-        <columnName>FORMULA3</columnName>
-        <values>
-            <backgroundColor>#B50E03</backgroundColor>
-            <rangeUpperBound>50000.0</rangeUpperBound>
-        </values>
-        <values>
-            <backgroundColor>#B56200</backgroundColor>
-            <rangeUpperBound>200000.0</rangeUpperBound>
         </values>
         <values>
             <backgroundColor>#006714</backgroundColor>

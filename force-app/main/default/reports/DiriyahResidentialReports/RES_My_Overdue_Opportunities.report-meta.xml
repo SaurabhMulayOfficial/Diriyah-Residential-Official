@@ -25,9 +25,6 @@
         <field>FISCAL_QUARTER</field>
     </columns>
     <columns>
-        <field>AMOUNT</field>
-    </columns>
-    <columns>
         <field>PROBABILITY</field>
     </columns>
     <columns>
@@ -50,13 +47,6 @@
     </columns>
     <currency>SAR</currency>
     <filter>
-        <criteriaItems>
-            <column>AMOUNT</column>
-            <columnToColumn>false</columnToColumn>
-            <isUnlocked>false</isUnlocked>
-            <operator>greaterThan</operator>
-            <value>SAR 0</value>
-        </criteriaItems>
         <criteriaItems>
             <column>CLOSE_DATE</column>
             <columnToColumn>false</columnToColumn>
