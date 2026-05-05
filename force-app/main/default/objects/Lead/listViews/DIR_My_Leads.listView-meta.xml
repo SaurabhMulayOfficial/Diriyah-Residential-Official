@@ -1,15 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ListView xmlns="http://soap.sforce.com/2006/04/metadata">
     <fullName>DIR_My_Leads</fullName>
+    <columns>DIR_Lead_Id__c</columns>
     <columns>FULL_NAME</columns>
     <columns>LEAD.COMPANY</columns>
-    <columns>LEAD.LEAD_SOURCE</columns>
-    <columns>LEAD.PHONE</columns>
     <columns>LEAD.EMAIL</columns>
-    <columns>RES_Identification_Number__c</columns>
+    <columns>LEAD.MOBILE_PHONE</columns>
+    <columns>LEAD.LEAD_SOURCE</columns>
     <columns>LEAD.STATUS</columns>
     <columns>LEAD.CREATED_DATE</columns>
+    <columns>CORE.USERS.ALIAS</columns>
     <filterScope>Mine</filterScope>
+    <filters>
+        <field>LEAD.TITLE</field>
+        <operation>contains</operation>
+        <value>Deduplication</value>
+    </filters>
     <label>My Leads</label>
     <sharedTo>
         <group>RES_Manager_List_View_Group</group>

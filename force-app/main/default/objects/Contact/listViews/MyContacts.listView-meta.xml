@@ -3,12 +3,10 @@
     <fullName>MyContacts</fullName>
     <columns>FULL_NAME</columns>
     <columns>ACCOUNT.NAME</columns>
-    <columns>CONTACT.TITLE</columns>
     <columns>CONTACT.EMAIL</columns>
-    <columns>CONTACT.PHONE1</columns>
-    <columns>ACTION_CADENCE</columns>
-    <columns>ACTION_CADENCE_ASSIGNEE</columns>
-    <columns>ACTION_CADENCE_STATE</columns>
+    <columns>CONTACT.PHONE3</columns>
+    <columns>CONTACT.CREATED_DATE</columns>
+    <columns>CORE.USERS.ALIAS</columns>
     <filterScope>Mine</filterScope>
     <label>My Contacts</label>
 </ListView>

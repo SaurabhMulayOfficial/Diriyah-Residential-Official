@@ -3,11 +3,10 @@
     <fullName>AllContacts</fullName>
     <columns>FULL_NAME</columns>
     <columns>ACCOUNT.NAME</columns>
-    <columns>CONTACT.TITLE</columns>
-    <columns>CONTACT.PHONE1</columns>
     <columns>CONTACT.EMAIL</columns>
-    <columns>CORE.USERS.FIRST_NAME</columns>
-    <columns>CORE.USERS.LAST_NAME</columns>
+    <columns>CONTACT.PHONE3</columns>
+    <columns>CONTACT.CREATED_DATE</columns>
+    <columns>CORE.USERS.ALIAS</columns>
     <filterScope>Everything</filterScope>
     <label>All Contacts</label>
 </ListView>
