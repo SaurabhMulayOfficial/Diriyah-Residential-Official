@@ -13,7 +13,7 @@
         <calculatedFormula>AMOUNT:SUM</calculatedFormula>
         <datatype>currency</datatype>
         <developerName>FORMULA2</developerName>
-        <isActive>true</isActive>
+        <isActive>false</isActive>
         <isCrossBlock>false</isCrossBlock>
         <masterLabel>Overdue Amount</masterLabel>
         <scale>0</scale>
@@ -45,9 +45,6 @@
         <field>FISCAL_QUARTER</field>
     </columns>
     <columns>
-        <field>AMOUNT</field>
-    </columns>
-    <columns>
         <field>PROBABILITY</field>
     </columns>
     <columns>
@@ -70,13 +67,6 @@
     </columns>
     <currency>SAR</currency>
     <filter>
-        <criteriaItems>
-            <column>AMOUNT</column>
-            <columnToColumn>false</columnToColumn>
-            <isUnlocked>false</isUnlocked>
-            <operator>greaterThan</operator>
-            <value>SAR 0</value>
-        </criteriaItems>
         <criteriaItems>
             <column>CLOSE_DATE</column>
             <columnToColumn>false</columnToColumn>
