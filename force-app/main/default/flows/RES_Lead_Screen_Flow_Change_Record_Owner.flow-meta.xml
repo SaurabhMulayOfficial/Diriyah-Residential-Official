@@ -14,6 +14,13 @@
                 <elementReference>User.recordId</elementReference>
             </value>
         </assignmentItems>
+        <assignmentItems>
+            <assignToReference>Get_Lead_Record.RES_Approval_Request_Remarks__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>Request_Remark</elementReference>
+            </value>
+        </assignmentItems>
         <connector>
             <targetReference>Update_Lead_Record</targetReference>
         </connector>
@@ -140,7 +147,7 @@
         <allowPause>true</allowPause>
         <fields>
             <name>FaultMessage</name>
-            <fieldText>&lt;p&gt;&lt;span style=&quot;color: rgb(244, 0, 0);&quot;&gt;{!$Flow.FaultMessage}&lt;/span&gt;&lt;/p&gt;</fieldText>
+            <fieldText>&lt;p&gt;&lt;strong style=&quot;color: rgb(0, 0, 0);&quot;&gt;{!$Flow.FaultMessage}&lt;/strong&gt;&lt;/p&gt;</fieldText>
             <fieldType>DisplayText</fieldType>
             <styleProperties>
                 <verticalAlignment>
@@ -164,7 +171,7 @@
         <allowPause>true</allowPause>
         <fields>
             <name>InPhaseOfApprovalStages</name>
-            <fieldText>&lt;p&gt;&lt;span style=&quot;color: rgb(195, 19, 19);&quot;&gt;{!$Label.Record_Is_In_Phase_Of_Approval}&lt;/span&gt;&lt;/p&gt;</fieldText>
+            <fieldText>&lt;p&gt;&lt;strong style=&quot;color: rgb(0, 0, 0);&quot;&gt;{!$Label.Record_Is_In_Phase_Of_Approval}&lt;span class=&quot;ql-cursor&quot;&gt;﻿&lt;/span&gt;&lt;/strong&gt;&lt;/p&gt;</fieldText>
             <fieldType>DisplayText</fieldType>
             <styleProperties>
                 <verticalAlignment>
@@ -188,7 +195,7 @@
         <allowPause>true</allowPause>
         <fields>
             <name>Error</name>
-            <fieldText>&lt;p&gt;{!$Label.Owner_Update_Error_Message}&lt;/p&gt;</fieldText>
+            <fieldText>&lt;p&gt;&lt;strong&gt;{!$Label.Owner_Update_Error_Message}&lt;/strong&gt;&lt;/p&gt;</fieldText>
             <fieldType>DisplayText</fieldType>
             <styleProperties>
                 <verticalAlignment>
@@ -212,7 +219,7 @@
         <allowPause>true</allowPause>
         <fields>
             <name>ApprovalNeeded</name>
-            <fieldText>&lt;p&gt;&lt;span style=&quot;color: rgb(36, 141, 25);&quot;&gt;{!$Label.Record_Submitted_For_Approval}&lt;/span&gt;&lt;/p&gt;</fieldText>
+            <fieldText>&lt;p&gt;&lt;strong style=&quot;color: rgb(0, 0, 0);&quot;&gt;{!$Label.Record_Submitted_For_Approval}&lt;/strong&gt;&lt;/p&gt;</fieldText>
             <fieldType>DisplayText</fieldType>
             <styleProperties>
                 <verticalAlignment>
@@ -268,6 +275,21 @@
             <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
             <isRequired>true</isRequired>
             <storeOutputAutomatically>true</storeOutputAutomatically>
+            <styleProperties>
+                <verticalAlignment>
+                    <stringValue>top</stringValue>
+                </verticalAlignment>
+                <width>
+                    <stringValue>12</stringValue>
+                </width>
+            </styleProperties>
+        </fields>
+        <fields>
+            <name>Request_Remark</name>
+            <fieldText>Request Remark</fieldText>
+            <fieldType>LargeTextArea</fieldType>
+            <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
+            <isRequired>false</isRequired>
             <styleProperties>
                 <verticalAlignment>
                     <stringValue>top</stringValue>

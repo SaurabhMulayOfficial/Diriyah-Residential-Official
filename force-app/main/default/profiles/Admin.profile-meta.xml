@@ -1268,6 +1268,11 @@
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
+        <editable>true</editable>
+        <field>Lead.RES_Approval_Request_Remarks__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
         <editable>false</editable>
         <field>Lead_Deduplication_Rule__mdt.Action__c</field>
         <readable>true</readable>
@@ -1588,6 +1593,16 @@
     <fieldPermissions>
         <editable>true</editable>
         <field>ApprovalWorkItem.RES_Proposed_Record_Owner__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>ApprovalWorkItem.RES_Approval_Request_Remarks__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>ApprovalWorkItem.RES_Existing_User__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <layoutAssignments>

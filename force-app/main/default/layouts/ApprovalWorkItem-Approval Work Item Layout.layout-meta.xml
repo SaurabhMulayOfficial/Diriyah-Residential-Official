@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Layout xmlns="http://soap.sforce.com/2006/04/metadata">
+    <excludeButtons>OpenSlackRecordChannel</excludeButtons>
     <layoutSections>
         <customLabel>false</customLabel>
         <detailHeading>false</detailHeading>
@@ -16,6 +17,10 @@
             </layoutItems>
             <layoutItems>
                 <behavior>Readonly</behavior>
+                <field>RES_Existing_User__c</field>
+            </layoutItems>
+            <layoutItems>
+                <behavior>Readonly</behavior>
                 <field>RES_Proposed_Record_Owner__c</field>
             </layoutItems>
             <layoutItems>
@@ -28,7 +33,7 @@
             </layoutItems>
             <layoutItems>
                 <behavior>Readonly</behavior>
-                <field>Comments</field>
+                <field>RES_Approval_Request_Remarks__c</field>
             </layoutItems>
         </layoutColumns>
         <layoutColumns>
@@ -51,6 +56,10 @@
             <layoutItems>
                 <behavior>Readonly</behavior>
                 <field>ApprovalConditionName</field>
+            </layoutItems>
+            <layoutItems>
+                <behavior>Readonly</behavior>
+                <field>Comments</field>
             </layoutItems>
         </layoutColumns>
         <style>TwoColumnsLeftToRight</style>
