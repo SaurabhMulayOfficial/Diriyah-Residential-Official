@@ -34,6 +34,13 @@
                         </valueListItems>
                         <valueListItems>
                             <value>Lead.RES_Update_Owner</value>
+                            <visibilityRule>
+                                <criteria>
+                                    <leftValue>{!$Permission.CustomPermission.RES_Update_Owner_Visibility}</leftValue>
+                                    <operator>EQUAL</operator>
+                                    <rightValue>true</rightValue>
+                                </criteria>
+                            </visibilityRule>
                         </valueListItems>
                     </valueList>
                 </componentInstanceProperties>

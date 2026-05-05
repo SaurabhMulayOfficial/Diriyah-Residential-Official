@@ -14,6 +14,20 @@
                 <elementReference>Get_Lead.RES_Proposed_User__c</elementReference>
             </value>
         </assignmentItems>
+        <assignmentItems>
+            <assignToReference>$Record.RES_Approval_Request_Remarks__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>Get_Lead.RES_Approval_Request_Remarks__c</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>$Record.RES_Existing_User__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>PreviousOwnerName</elementReference>
+            </value>
+        </assignmentItems>
     </assignments>
     <decisions>
         <name>If_Related_Record_Object_Is_Lead</name>
@@ -38,6 +52,20 @@
         </rules>
     </decisions>
     <environments>Default</environments>
+    <formulas>
+        <name>PreviousOwnerName</name>
+        <dataType>String</dataType>
+        <expression>IF(
+  ISBLANK(TRIM({!UserName})),
+  {!Get_Lead.Owner:Group.Name},
+  {!UserName}
+)</expression>
+    </formulas>
+    <formulas>
+        <name>UserName</name>
+        <dataType>String</dataType>
+        <expression>{!Get_Lead.Owner:User.FirstName}  + &apos; &apos; + {!Get_Lead.Owner:User.LastName}</expression>
+    </formulas>
     <interviewLabel>Approval Work Item - Before Insert - Update Proposed Owner {!$Flow.CurrentDateTime}</interviewLabel>
     <label>Approval Work Item - Before Insert - Update Proposed Owner</label>
     <processMetadataValues>

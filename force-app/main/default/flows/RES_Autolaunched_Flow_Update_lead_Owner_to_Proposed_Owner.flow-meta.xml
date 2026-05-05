@@ -16,6 +16,23 @@
         </assignmentItems>
     </assignments>
     <assignments>
+        <name>Record_Rejected</name>
+        <label>Record Rejected</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignmentItems>
+            <assignToReference>LeadRecord.RES_Proposed_User__c</assignToReference>
+            <operator>Assign</operator>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>LeadRecord.RES_Approval_Request_Remarks__c</assignToReference>
+            <operator>Assign</operator>
+        </assignmentItems>
+        <connector>
+            <targetReference>Update_Proposed_User_Remark</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
         <name>Update_Lead_Proposed_Owner_Owner</name>
         <label>Update Lead Proposed Owner &amp; Owner</label>
         <locationX>0</locationX>
@@ -29,6 +46,10 @@
         </assignmentItems>
         <assignmentItems>
             <assignToReference>LeadRecord.RES_Proposed_User__c</assignToReference>
+            <operator>Assign</operator>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>LeadRecord.RES_Approval_Request_Remarks__c</assignToReference>
             <operator>Assign</operator>
         </assignmentItems>
         <connector>
@@ -71,6 +92,21 @@
             </connector>
             <label>If Action is Recall</label>
         </rules>
+        <rules>
+            <name>Action_reject</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>action</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Reject</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Record_Rejected</targetReference>
+            </connector>
+            <label>Action: reject</label>
+        </rules>
     </decisions>
     <environments>Default</environments>
     <interviewLabel>Autolaunched Flow - Update lead Owner to Proposed Owner {!$Flow.CurrentDateTime}</interviewLabel>
@@ -102,7 +138,7 @@
         <faultConnector>
             <targetReference>Fault</targetReference>
         </faultConnector>
-        <filterLogic>and</filterLogic>
+        <filterLogic>1 AND ( 2 OR 3 )</filterLogic>
         <filters>
             <field>Id</field>
             <operator>EqualTo</operator>
@@ -117,6 +153,13 @@
                 <booleanValue>false</booleanValue>
             </value>
         </filters>
+        <filters>
+            <field>RES_Approval_Request_Remarks__c</field>
+            <operator>NotEqualTo</operator>
+        </filters>
+        <inputAssignments>
+            <field>RES_Approval_Request_Remarks__c</field>
+        </inputAssignments>
         <inputAssignments>
             <field>RES_Proposed_User__c</field>
         </inputAssignments>
@@ -131,6 +174,13 @@
             <isGoTo>true</isGoTo>
             <targetReference>Fault</targetReference>
         </faultConnector>
+        <inputReference>LeadRecord</inputReference>
+    </recordUpdates>
+    <recordUpdates>
+        <name>Update_Proposed_User_Remark</name>
+        <label>Update Proposed User &amp; Remark</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
         <inputReference>LeadRecord</inputReference>
     </recordUpdates>
     <start>
