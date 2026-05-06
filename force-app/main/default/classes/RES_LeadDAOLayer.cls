@@ -111,6 +111,13 @@ public without sharing class RES_LeadDAOLayer extends RES_BaseDAOLayer {
 
         return newMap;
     }
+    
+     //Used in RES_LeadConversionBatch to fetch Leads for processing.
+    public Database.QueryLocator getQualifiedLeadsForBatch(){
+        // Status API name 04 Label = Qualified
+        String soql = 'SELECT Id, Name, Company, IsConverted, RecordType.developerName FROM Lead WHERE IsConverted = false AND Status = \'04\' AND (RecordType.DeveloperName = \'RES_Company\' OR RecordType.DeveloperName = \'RES_Individual\')';
+        return executeBatchQuery(soql, null, AccessLevel.USER_MODE);
+    }
 
 
 }
