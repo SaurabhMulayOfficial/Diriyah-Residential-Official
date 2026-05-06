@@ -28,16 +28,6 @@
         <field>CREATED_DATE</field>
     </columns>
     <currency>SAR</currency>
-    <filter>
-        <criteriaItems>
-            <column>AMOUNT</column>
-            <columnToColumn>false</columnToColumn>
-            <isUnlocked>false</isUnlocked>
-            <operator>greaterThan</operator>
-            <value>SAR 0</value>
-        </criteriaItems>
-        <language>en_US</language>
-    </filter>
     <format>Summary</format>
     <groupingsDown>
         <dateGranularity>Day</dateGranularity>
