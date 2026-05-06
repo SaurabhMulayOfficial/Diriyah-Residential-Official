@@ -198,6 +198,7 @@ private class RES_LeadServicesTest {
                     LastName = 'IndividualTest' + i,
                     Company = 'Irrelevant Company Name', // Even if company exists
                     RES_Marketing_Area__c = 'BRANDED_RESIDENTIAL',
+                    LeadSource = 'Z06',
                     MobilePhone = '+1424124214',
                     Status = '01'
                 ));
