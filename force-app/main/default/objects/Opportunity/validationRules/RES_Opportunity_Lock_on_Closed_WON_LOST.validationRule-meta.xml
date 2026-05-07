@@ -3,21 +3,38 @@
     <fullName>RES_Opportunity_Lock_on_Closed_WON_LOST</fullName>
     <active>true</active>
     <errorConditionFormula>AND(
+    /* 1. Global Switch Check */
     NOT($Setup.RES_Config_Switch__c.RES_Validation_Rules_Off__c),
 
+    /* 2. Target specific Record Types */
     OR(
-        $RecordType.DeveloperName = &quot;RES_Residential_Single_Buyer&quot;,
+        $RecordType.DeveloperName =&quot;RES_Residential_Single_Buyer&quot;,
         $RecordType.DeveloperName = &quot;RES_Residential_Multi_Buyer&quot;
     ),
 
+    /* 3. Do not fire on initial creation */
     NOT(ISNEW()),
 
-    OR(
-        ISPICKVAL(PRIORVALUE(StageName), &quot;Closed Won&quot;),
-        ISPICKVAL(PRIORVALUE(StageName), &quot;Closed Lost&quot;)
-    ),
+    /* 4. Only fire if the previous stage was &apos;Closed Won&apos; */
+    ISPICKVAL(PRIORVALUE(StageName), &quot;Closed Won&quot;),
 
-    $Profile.Name &lt;&gt; &quot;System Administrator&quot;
+    /* 5. Bypass System Admin Profile */
+    $Profile.Name &lt;&gt; &quot;System Administrator&quot;,
+
+    /* 6. Bypass specific Operations Roles */
+    NOT(
+        OR(
+            $UserRole.DeveloperName = &quot;RES_Sales_Operations_Executive_Director&quot;,
+            $UserRole.DeveloperName = &quot;RES_Contract_Amendments_Operations_Specialist&quot;,
+            $UserRole.DeveloperName = &quot;RES_External_Sales_Operations_Operations_Senior_Manager&quot;,
+            $UserRole.DeveloperName = &quot;RES_External_Sales_Operations_Operations_Specialist&quot;,
+            $UserRole.DeveloperName = &quot;RES_Internal_Sales_Contracts_Operations_Senior_Manager&quot;,
+            $UserRole.DeveloperName = &quot;RES_Internal_Sales_Operations_Operations_Manager&quot;,
+            $UserRole.DeveloperName = &quot;RES_Internal_Sales_Operations_Operations_Specialist&quot;,
+            $UserRole.DeveloperName = &quot;RES_Operational_Excellence_Operations_Manager&quot;,
+            $UserRole.DeveloperName = &quot;RES_Operational_Excellence_Operations_Specialist&quot;
+        )
+    )
 )</errorConditionFormula>
     <errorMessage>This Opportunity is Closed Won/Lost, so cannot be edited.</errorMessage>
 </ValidationRule>

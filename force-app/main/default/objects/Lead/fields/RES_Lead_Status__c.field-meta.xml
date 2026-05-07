@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>RES_Lead_Status__c</fullName>
+    <externalId>false</externalId>
+    <formula>CASE(Status,
+  &quot;01&quot;, &quot;New&quot;,
+  &quot;02&quot;, &quot;Active&quot;,
+  &quot;04&quot;, &quot;Qualified&quot;,
+  &quot;05&quot;, &quot;Retired&quot;,
+  &quot;Z1&quot;, &quot;Uncontacted&quot;,
+  &quot;Converted&quot;, &quot;Converted&quot;,
+  &quot;Archive&quot;, &quot;Archive&quot;,
+  TEXT(Status)
+)</formula>
+    <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+    <label>Lead Status</label>
+    <required>false</required>
+    <trackHistory>false</trackHistory>
+    <type>Text</type>
+    <unique>false</unique>
+</CustomField>

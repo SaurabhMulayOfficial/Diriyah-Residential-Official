@@ -2,95 +2,11 @@
 <Profile xmlns="http://soap.sforce.com/2006/04/metadata">
     <custom>true</custom>
     <classAccesses>
-        <apexClass>ChangePasswordController</apexClass>
+        <apexClass>RES_LeadCreateController</apexClass>
         <enabled>true</enabled>
     </classAccesses>
     <classAccesses>
         <apexClass>RES_UserAvailabilityController</apexClass>
-        <enabled>true</enabled>
-    </classAccesses>
-    <classAccesses>
-        <apexClass>ChangePasswordControllerTest</apexClass>
-        <enabled>true</enabled>
-    </classAccesses>
-    <classAccesses>
-        <apexClass>CommunitiesLandingController</apexClass>
-        <enabled>true</enabled>
-    </classAccesses>
-    <classAccesses>
-        <apexClass>CommunitiesLandingControllerTest</apexClass>
-        <enabled>true</enabled>
-    </classAccesses>
-    <classAccesses>
-        <apexClass>CommunitiesLoginController</apexClass>
-        <enabled>true</enabled>
-    </classAccesses>
-    <classAccesses>
-        <apexClass>CommunitiesLoginControllerTest</apexClass>
-        <enabled>true</enabled>
-    </classAccesses>
-    <classAccesses>
-        <apexClass>CommunitiesSelfRegConfirmController</apexClass>
-        <enabled>true</enabled>
-    </classAccesses>
-    <classAccesses>
-        <apexClass>CommunitiesSelfRegConfirmControllerTest</apexClass>
-        <enabled>true</enabled>
-    </classAccesses>
-    <classAccesses>
-        <apexClass>CommunitiesSelfRegController</apexClass>
-        <enabled>true</enabled>
-    </classAccesses>
-    <classAccesses>
-        <apexClass>CommunitiesSelfRegControllerTest</apexClass>
-        <enabled>true</enabled>
-    </classAccesses>
-    <classAccesses>
-        <apexClass>ForgotPasswordController</apexClass>
-        <enabled>true</enabled>
-    </classAccesses>
-    <classAccesses>
-        <apexClass>ForgotPasswordControllerTest</apexClass>
-        <enabled>true</enabled>
-    </classAccesses>
-    <classAccesses>
-        <apexClass>LightningForgotPasswordController</apexClass>
-        <enabled>true</enabled>
-    </classAccesses>
-    <classAccesses>
-        <apexClass>LightningForgotPasswordControllerTest</apexClass>
-        <enabled>true</enabled>
-    </classAccesses>
-    <classAccesses>
-        <apexClass>LightningLoginFormController</apexClass>
-        <enabled>true</enabled>
-    </classAccesses>
-    <classAccesses>
-        <apexClass>LightningLoginFormControllerTest</apexClass>
-        <enabled>true</enabled>
-    </classAccesses>
-    <classAccesses>
-        <apexClass>LightningSelfRegisterController</apexClass>
-        <enabled>true</enabled>
-    </classAccesses>
-    <classAccesses>
-        <apexClass>LightningSelfRegisterControllerTest</apexClass>
-        <enabled>true</enabled>
-    </classAccesses>
-    <classAccesses>
-        <apexClass>MicrobatchSelfRegController</apexClass>
-        <enabled>true</enabled>
-    </classAccesses>
-    <classAccesses>
-        <apexClass>MicrobatchSelfRegControllerTest</apexClass>
-        <enabled>true</enabled>
-    </classAccesses>
-    <classAccesses>
-        <apexClass>MyProfilePageController</apexClass>
-        <enabled>true</enabled>
-    </classAccesses>
-    <classAccesses>
-        <apexClass>MyProfilePageControllerTest</apexClass>
         <enabled>true</enabled>
     </classAccesses>
     <classAccesses>
@@ -99,10 +15,6 @@
     </classAccesses>
     <classAccesses>
         <apexClass>RES_BusinessHoursDAOLayer</apexClass>
-        <enabled>true</enabled>
-    </classAccesses>
-    <classAccesses>
-        <apexClass>RES_EmployeeReferralController</apexClass>
         <enabled>true</enabled>
     </classAccesses>
     <classAccesses>
@@ -267,43 +179,134 @@
         <recordType>PersonAccount.PersonAccount</recordType>
     </layoutAssignments>
     <layoutAssignments>
-            <layout>Lead-RES Company</layout>
-            <recordType>Lead.RES_Company</recordType>
+        <layout>Lead-Lead Layout</layout>
     </layoutAssignments>
     <layoutAssignments>
-            <layout>Lead-RES Individual</layout>
-            <recordType>Lead.RES_Individual</recordType>
+        <layout>Lead-RES Company</layout>
+        <recordType>Lead.RES_Company</recordType>
     </layoutAssignments>
     <layoutAssignments>
-            <layout>Contact-RES Company</layout>
-            <recordType>Contact.RES_Company</recordType>
+        <layout>Lead-RES Individual</layout>
+        <recordType>Lead.RES_Individual</recordType>
     </layoutAssignments>
     <layoutAssignments>
-            <layout>Opportunity-RES Residential Single Buyer</layout>
-            <recordType>Opportunity.RES_Residential_Single_Buyer</recordType>
+        <layout>Contact-RES Company</layout>
+        <recordType>Contact.RES_Company</recordType>
     </layoutAssignments>
     <layoutAssignments>
-            <layout>Opportunity-RES Residential Multi Buyer</layout>
-            <recordType>Opportunity.RES_Residential_Multi_Buyer</recordType>
+        <layout>Opportunity-RES Residential Single Buyer</layout>
+        <recordType>Opportunity.RES_Residential_Single_Buyer</recordType>
     </layoutAssignments>
     <layoutAssignments>
-            <layout>RES_Opportunity_Account_Link__c-Opportunity Account Link Layout</layout>
+        <layout>Opportunity-RES Residential Multi Buyer</layout>
+        <recordType>Opportunity.RES_Residential_Multi_Buyer</recordType>
+    </layoutAssignments>
+    <layoutAssignments>
+        <layout>RES_Opportunity_Account_Link__c-Opportunity Account Link Layout</layout>
+    </layoutAssignments>
+    <layoutAssignments>
+        <layout>ApprovalSubmission-Approval Submission Layout</layout>
+    </layoutAssignments>
+    <layoutAssignments>
+        <layout>ApprovalSubmissionDetail-Approval Submission Detail Layout</layout>
+    </layoutAssignments>
+    <layoutAssignments>
+        <layout>ApprovalWorkItem-Approval Work Item Layout</layout>
     </layoutAssignments>
     <fieldPermissions>
-            <field>Activity.RES_Is_Call_Flag__c</field>
-            <readable>true</readable>
+        <field>Activity.RES_Is_Call_Flag__c</field>
+        <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
-            <field>Activity.RES_Is_Email_Flag__c</field>
-            <readable>true</readable>
+        <field>Activity.RES_Is_Email_Flag__c</field>
+        <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
-            <field>Activity.RES_Is_Meeting_Flag__c</field>
-            <readable>true</readable>
+        <field>Activity.RES_Is_Meeting_Flag__c</field>
+        <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
-            <field>Activity.RES_Is_Overdue_Task__c</field>
-            <readable>true</readable>
+        <field>Activity.RES_Is_Overdue_Task__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>RES_Assignment_Config__c.RES_Queue__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>RES_Assignment_Config__c.RES_Channel__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>RES_Assignment_Rule__c.RES_Last_Assigned__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <field>RES_Assignment_Rule__c.RES_Active_Lead_Count__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>RES_Assignment_Rule__c.RES_User__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>RES_Assignment_Rule__c.RES_User_Availability_Status__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>Account.DIR_Country__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>Contact.DIR_Country__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>Lead.DIR_Country__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>Opportunity.DIR_Country__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>Opportunity.RES_CR_Number__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>Lead.RES_CR_Number__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>Lead.RES_Proposed_User__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>Lead.RES_Approval_Request_Remarks__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>Lead.DIR_Lead_Id__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>Lead.LeadSource</field>
+        <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
         <editable>true</editable>
@@ -380,6 +383,21 @@
     </fieldPermissions>
     <fieldPermissions>
         <editable>true</editable>
+        <field>ApprovalWorkItem.RES_Proposed_Record_Owner__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>ApprovalWorkItem.RES_Approval_Request_Remarks__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>ApprovalWorkItem.RES_Existing_User__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
         <field>RES_Lead_Routing__c.RES_Lead__c</field>
         <readable>true</readable>
     </fieldPermissions>
@@ -424,7 +442,7 @@
     <objectPermissions>
         <allowCreate>true</allowCreate>
         <allowRead>true</allowRead>
-        <object>RES_Ownership_Reassignment_Event__e</object> 
+        <object>RES_Ownership_Reassignment_Event__e</object>
     </objectPermissions>
     <objectPermissions>
         <allowCreate>false</allowCreate>
@@ -516,5 +534,9 @@
     <userPermissions>
         <enabled>true</enabled>
         <name>ViewPublicCapstoneFolders</name>
+    </userPermissions>
+    <userPermissions>
+        <enabled>true</enabled>
+        <name>RunFlow</name>
     </userPermissions>
 </Profile>

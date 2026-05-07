@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>RES_Mobile_Or_Email_Mandatory</fullName>
+    <active>true</active>
+    <errorConditionFormula>IF(AND($RecordType.DeveloperName = &quot;PersonAccount&quot;,
+    ISBLANK(PersonMobilePhone),
+    ISBLANK(PersonEmail)
+), true, false)</errorConditionFormula>
+    <errorMessage>Please enter either Email or Mobile.</errorMessage>
+</ValidationRule>

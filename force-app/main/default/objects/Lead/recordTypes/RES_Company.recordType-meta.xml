@@ -181,10 +181,6 @@
             <default>true</default>
         </values>
         <values>
-            <fullName>Z11</fullName>
-            <default>false</default>
-        </values>
-        <values>
             <fullName>Z12</fullName>
             <default>false</default>
         </values>
@@ -206,14 +202,6 @@
         </values>
         <values>
             <fullName>Z19</fullName>
-            <default>false</default>
-        </values>
-         <values>
-            <fullName>Z20</fullName>
-            <default>false</default>
-        </values>
-         <values>
-            <fullName>Z21</fullName>
             <default>false</default>
         </values>
         <values>
@@ -317,6 +305,14 @@
             <fullName>RETAIL_LEASING</fullName>
             <default>false</default>
         </values>
+         <values>
+            <fullName>HOSPITALITY</fullName>
+            <default>false</default>
+        </values>
+         <values>
+            <fullName>OFFICE</fullName>
+            <default>false</default>
+        </values>
     </picklistValues>
     <picklistValues>
         <picklist>RES_BP_Role__c</picklist>
@@ -365,7 +361,7 @@
         </values>
     </picklistValues>
     <picklistValues>
-        <picklist>RES_Cityspace_Year__c</picklist>
+        <picklist>RES_Cityscape_Year__c</picklist>
         <values>
             <fullName>2024</fullName>
             <default>false</default>
@@ -436,6 +432,14 @@
             <fullName>151</fullName>
             <default>false</default>
         </values>
+            <values>
+            <fullName>161</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>171</fullName>
+            <default>false</default>
+        </values>
     </picklistValues>
     <picklistValues>
         <picklist>RES_Group_Code__c</picklist>
@@ -457,21 +461,130 @@
         </values>
     </picklistValues>
     <picklistValues>
+        <picklist>RES_Unit_of_Interest__c</picklist>
+        <values>
+            <fullName>3 Bedroom</fullName>
+            <default>false</default>
+        </values>
+    </picklistValues>
+     <picklistValues>
+        <picklist>RES_Customer_Budget__c</picklist>
+        <values>
+            <fullName>Budget from 1M to 4M</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Budget from 4M to 6M</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Budget from 10M and above</fullName>
+            <default>false</default>
+        </values>
+    </picklistValues>
+     <picklistValues>
+        <picklist>RES_Customer_Unit_Preference__c</picklist>
+          <values>
+            <fullName>Studio</fullName>
+            <default>false</default>
+        </values>
+         <values>
+            <fullName>1 bedroom</fullName>
+            <default>false</default>
+        </values>
+         <values>
+            <fullName>2 bedrooms</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>3 bedrooms</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>4 bedrooms and more</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Plots</fullName>
+            <default>false</default>
+        </values>
+    </picklistValues>
+         <picklistValues>
+        <picklist>RES_Broker_Registration__c</picklist>
+        <values>
+            <fullName>Approved</fullName>
+            <default>false</default>
+        </values>
+          <values>
+            <fullName>Rejected</fullName>
+            <default>false</default>
+        </values>
+          <values>
+            <fullName>In Process</fullName>
+            <default>false</default>
+        </values>
+    </picklistValues>
+    <picklistValues>
         <picklist>RES_Identification_Type__c</picklist>
         <values>
-            <fullName>ZIT01</fullName>
-            <default>false</default>
-        </values>
-        <values>
-            <fullName>ZIT02</fullName>
-            <default>false</default>
-        </values>
-        <values>
-            <fullName>ZIT03</fullName>
-            <default>false</default>
-        </values>
-        <values>
             <fullName>ZIT04</fullName>
+            <default>true</default>
+        </values>
+    </picklistValues>
+     <picklistValues>
+        <picklist>RES_Residency_Type__c</picklist>
+         <values>
+            <fullName>101</fullName>
+            <default>false</default>
+        </values>
+          <values>
+            <fullName>102</fullName>
+            <default>false</default>
+        </values>
+          <values>
+            <fullName>103</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>104</fullName>
+            <default>false</default>
+        </values>
+    </picklistValues>
+     <picklistValues>
+        <picklist>RES_Financial_Readiness__c </picklist>
+          <values>
+            <fullName>101</fullName>
+            <default>false</default>
+        </values>
+          <values>
+            <fullName>102</fullName>
+            <default>false</default>
+        </values>
+          <values>
+            <fullName>103</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>104</fullName>
+            <default>false</default>
+        </values>
+    </picklistValues>
+     <picklistValues>
+        <picklist>RES_Purchase_Timeline__c</picklist>
+        <values>
+            <fullName>0</fullName>
+            <default>false</default>
+        </values>
+          <values>
+            <fullName>3</fullName>
+            <default>false</default>
+        </values>
+          <values>
+            <fullName>6</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>12</fullName>
             <default>false</default>
         </values>
     </picklistValues>
@@ -1257,6 +1370,10 @@
         </values>
         <values>
             <fullName>291</fullName>
+            <default>false</default>
+        </values>
+         <values>
+            <fullName>Residential_Leasing</fullName>
             <default>false</default>
         </values>
         <values>
@@ -2692,13 +2809,6 @@
         </values>
         <values>
             <fullName>WADI_SAFAR_CU</fullName>
-            <default>false</default>
-        </values>
-    </picklistValues>
-    <picklistValues>
-        <picklist>RES_Unit_of_Interest__c</picklist>
-        <values>
-            <fullName>3 Bedroom</fullName>
             <default>false</default>
         </values>
     </picklistValues>

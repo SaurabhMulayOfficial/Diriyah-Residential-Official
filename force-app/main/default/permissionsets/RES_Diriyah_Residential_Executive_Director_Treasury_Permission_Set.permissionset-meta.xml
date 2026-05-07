@@ -5,6 +5,14 @@
         <enabled>true</enabled>
         <name>RES_Manager_Dashboard_Visibility</name>
     </customPermissions>
+    <customPermissions>
+        <enabled>true</enabled>
+        <name>RES_Update_Owner_Visibility</name>
+    </customPermissions>
+    <customPermissions>
+        <enabled>true</enabled>
+        <name>RES_System_Information_Visibility</name>
+    </customPermissions>
     <fieldPermissions>
         <editable>false</editable>
         <field>Account.AccountNumber</field>
@@ -77,6 +85,11 @@
     </fieldPermissions>
     <fieldPermissions>
         <editable>false</editable>
+        <field>Account.PersonBirthdate</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
         <field>Account.Phone</field>
         <readable>true</readable>
     </fieldPermissions>
@@ -112,7 +125,7 @@
     </fieldPermissions>
     <fieldPermissions>
         <editable>false</editable>
-        <field>Account.RES_Cityspace_Year__c</field>
+        <field>Account.RES_Cityscape_Year__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
@@ -123,6 +136,11 @@
     <fieldPermissions>
         <editable>false</editable>
         <field>Account.RES_Commercial_Registration_Number__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+     <fieldPermissions>
+        <editable>false</editable>
+        <field>Account.RES_CR_Number__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
@@ -472,7 +490,7 @@
     </fieldPermissions>
     <fieldPermissions>
         <editable>false</editable>
-        <field>Contact.RES_Cityspace_Year__c</field>
+        <field>Contact.RES_Cityscape_Year__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
@@ -509,6 +527,41 @@
     <fieldPermissions>
         <editable>false</editable>
         <field>Contact.TitleType</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>Lead.RES_Residency_Type__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+     <fieldPermissions>
+        <editable>false</editable>
+        <field>Lead.RES_Customer_Budget__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+     <fieldPermissions>
+        <editable>false</editable>
+        <field>Lead.RES_Customer_Unit_Preference__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+     <fieldPermissions>
+        <editable>false</editable>
+        <field>Lead.RES_Broker_Registration__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+     <fieldPermissions>
+        <editable>false</editable>
+        <field>Lead.RES_Financial_Readiness__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+     <fieldPermissions>
+        <editable>false</editable>
+        <field>Lead.RES_Purchase_Timeline__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>Lead.RES_Lead_Status__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
@@ -669,7 +722,7 @@
     </fieldPermissions>
     <fieldPermissions>
         <editable>false</editable>
-        <field>Lead.RES_Cityspace_Year__c</field>
+        <field>Lead.RES_Cityscape_Year__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
@@ -680,6 +733,11 @@
     <fieldPermissions>
         <editable>false</editable>
         <field>Lead.RES_Commercial_Registration_Number__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+     <fieldPermissions>
+        <editable>false</editable>
+        <field>Lead.RES_CR_Number__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
@@ -798,8 +856,6 @@
         <field>Lead.RES_Marketing_Source__c</field>
         <readable>true</readable>
     </fieldPermissions>
-
-
     <fieldPermissions>
         <editable>false</editable>
         <field>Lead.RES_Matching_Account__c</field>
@@ -820,7 +876,6 @@
         <field>Lead.RES_Nature_of_Business__c</field>
         <readable>true</readable>
     </fieldPermissions>
-
     <fieldPermissions>
         <editable>false</editable>
         <field>Lead.RES_Position__c</field>
@@ -1074,7 +1129,7 @@
     </fieldPermissions>
     <fieldPermissions>
         <editable>false</editable>
-        <field>Opportunity.RES_Cityspace_Year__c</field>
+        <field>Opportunity.RES_Cityscape_Year__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>

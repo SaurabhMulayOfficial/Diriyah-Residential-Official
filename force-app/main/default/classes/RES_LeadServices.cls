@@ -163,7 +163,7 @@ public with sharing class RES_LeadServices {
                         startSla(l, bh, slaInHours, true);
                     }
                 }
-                else if((oldmap.get(l.Id).OwnerId == null && String.valueOf(l.ownerId).startsWith('005')) || (l.OwnerId != oldmap.get(l.Id).OwnerId && String.valueOf(l.ownerId).startsWith('005') && String.valueOf(oldmap.get(l.Id).OwnerId).startsWith('00G'))){
+                else if((oldmap.get(l.Id).OwnerId == null && String.valueOf(l.ownerId).startsWith('005')) || (l.OwnerId != oldmap.get(l.Id).OwnerId && String.valueOf(l.ownerId).startsWith('005'))){
                     if(l.RES_SLA_Status__c != 'Met'){
                         startSla(l, bh, slaInHours, false);
                     }
@@ -228,10 +228,12 @@ public with sharing class RES_LeadServices {
                                     .get('RES_Company').getRecordTypeId();
 
         for (Lead l : newLeadList) {
-            if (l.RES_Marketing_Area__c == 'BRANDED_RESIDENTIAL' || l.RecordTypeId == individualRecordTypeId) {
-                l.RecordTypeId = individualRecordTypeId;
-            } else {
-                l.RecordTypeId = companyRecordTypeId;
+            if(l.LeadSource == 'Z06'){
+                if(l.RES_Marketing_Area__c == 'BRANDED_RESIDENTIAL' || l.RES_Marketing_Area__c == 'WADI_SAFAR'){
+                    l.RecordTypeId = individualRecordTypeId;
+                } else {
+                    l.RecordTypeId = companyRecordTypeId;
+                }
             }
         }
     }

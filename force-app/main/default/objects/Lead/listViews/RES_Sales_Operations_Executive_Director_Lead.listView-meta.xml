@@ -1,10 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ListView xmlns="http://soap.sforce.com/2006/04/metadata">
     <fullName>RES_Sales_Operations_Executive_Director_Lead</fullName>
+    <columns>DIR_Lead_Id__c</columns>
+    <columns>FULL_NAME</columns>
+    <columns>LEAD.COMPANY</columns>
+    <columns>LEAD.EMAIL</columns>
+    <columns>LEAD.MOBILE_PHONE</columns>
+    <columns>LEAD.LEAD_SOURCE</columns>
+    <columns>LEAD.STATUS</columns>
+    <columns>LEAD.CREATED_DATE</columns>
+    <columns>CORE.USERS.ALIAS</columns>
     <filterScope>Queue</filterScope>
     <label>Sales Operations Executive Director</label>
     <queue>RES_Sales_Operations_Executive_Director</queue>
     <sharedTo>
-        <allInternalUsers></allInternalUsers>
+        <group>RES_Sales_Operations_Executive_Director</group>
     </sharedTo>
 </ListView>

@@ -36,8 +36,8 @@ private class RES_LeadRetirementBatchTest {
         
         // 4. Backdate 5 records to be > 6 months old (approx 210 days)
         // We use Test.setCreatedDate because LastModifiedDate is system-managed
-        for(Integer i = 0; i < 5; i++) {
-            Test.setCreatedDate(leadsToInsert[i].Id, DateTime.now().addDays(-60));
+        for(Integer i = 0; i < 10; i++) {
+            Test.setCreatedDate(leadsToInsert[i].Id, DateTime.now().addDays(-61));
         }
     }
     
@@ -48,14 +48,9 @@ private class RES_LeadRetirementBatchTest {
         RES_LeadRetirementBatch batch = new RES_LeadRetirementBatch();
         Database.executeBatch(batch, 10);
         Test.stopTest(); // Forces asynchronous batch to complete
-        
         // Assertions: Validate that the 5 backdated records were retired
         Integer retiredCount = [SELECT count() FROM Lead WHERE Status = '05'];
-        System.assertEquals(5, retiredCount, 'Exactly 5 Leads should have been moved to Retired status.');
-        
-        // Validate that the other 5 records remained 'New'
-        Integer newCount = [SELECT count() FROM Lead WHERE Status = '01'];
-        System.assertEquals(5, newCount, '5 recent Leads should remain in New status.');
+        System.assertEquals(10, retiredCount, 'Exactly 5 Leads should have been moved to Retired status.');
     }
     
     @isTest

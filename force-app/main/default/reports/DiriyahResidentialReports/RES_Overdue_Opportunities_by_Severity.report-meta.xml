@@ -13,7 +13,7 @@
         <calculatedFormula>AMOUNT:SUM</calculatedFormula>
         <datatype>currency</datatype>
         <developerName>FORMULA2</developerName>
-        <isActive>true</isActive>
+        <isActive>false</isActive>
         <isCrossBlock>false</isCrossBlock>
         <masterLabel>Overdue Amount</masterLabel>
         <scale>0</scale>
@@ -43,9 +43,6 @@
     </columns>
     <columns>
         <field>FISCAL_QUARTER</field>
-    </columns>
-    <columns>
-        <field>AMOUNT</field>
     </columns>
     <columns>
         <field>PROBABILITY</field>

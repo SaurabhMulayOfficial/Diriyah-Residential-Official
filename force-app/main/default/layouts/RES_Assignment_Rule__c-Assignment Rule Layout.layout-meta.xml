@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Layout xmlns="http://soap.sforce.com/2006/04/metadata">
-    <excludeButtons>OpenSlackRecordChannel</excludeButtons>
     <excludeButtons>Submit</excludeButtons>
     <layoutSections>
         <customLabel>false</customLabel>
@@ -35,8 +34,8 @@
                 <field>RES_Order__c</field>
             </layoutItems>
             <layoutItems>
-                <behavior>Edit</behavior>
-                <field>RES_Lead_Count__c</field>
+                <behavior>Readonly</behavior>
+                <field>RES_Active_Lead_Count__c</field>
             </layoutItems>
             <layoutItems>
                 <behavior>Required</behavior>
@@ -92,6 +91,11 @@
         <fields>CORE.USERS.FULL_NAME</fields>
         <fields>TASK.LAST_UPDATE</fields>
         <relatedList>RelatedHistoryList</relatedList>
+    </relatedLists>
+    <relatedLists>
+        <fields>NAME</fields>
+        <fields>RES_Lead__c</fields>
+        <relatedList>RES_Lead_Routing__c.RES_Assignment_Rule__c</relatedList>
     </relatedLists>
     <showEmailCheckbox>false</showEmailCheckbox>
     <showHighlightsPanel>false</showHighlightsPanel>

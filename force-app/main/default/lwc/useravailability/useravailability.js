@@ -1,36 +1,48 @@
 import { LightningElement, track } from 'lwc';
+import getUserStatusData from '@salesforce/apex/RES_UserAvailabilityController.getUserStatusData';
 import updateUserStatus from '@salesforce/apex/RES_UserAvailabilityController.updateUserStatus';
-import getUserStatus from '@salesforce/apex/RES_UserAvailabilityController.getUserStatus';
 import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 export default class UserAvailability extends LightningElement {
-
     @track currentStatus = '';
+    @track statusOptions = [];
     @track isLoading = false;
-    @track showToast = false;
-    @track toastMessage = '';
-    @track isSuccess = true;
+    @track errorMessage = '';
+    @track hasData = true;
 
     connectedCallback() {
-        this.loadStatus();
+        this.loadData();
     }
 
-    loadStatus() {
-        getUserStatus()
+    loadData() {
+        this.isLoading = true;
+
+        getUserStatusData()
             .then(result => {
-                console.log('result==>',result);
-                this.currentStatus = result;
+                this.hasData = true;
+                this.errorMessage = '';
+
+                this.currentStatus = result.currentStatus;
+
+                this.statusOptions = result.picklistValues.map(item => {
+                    return {
+                        label: item,
+                        value: item
+                    };
+                });
             })
             .catch(error => {
-                this.showError(error);
+                this.hasData = false;
+                this.errorMessage =
+                    error.body?.message || 'No Assignment record found for user.';
+            })
+            .finally(() => {
+                this.isLoading = false;
             });
     }
 
-    handleAvailable() {
-        this.updateStatus('Available');
-    }
-
-    handleOffline() {
-        this.updateStatus('Offline');
+    handleStatusChange(event) {
+        const selectedValue = event.detail.value;
+        this.updateStatus(selectedValue);
     }
 
     updateStatus(status) {
@@ -39,49 +51,31 @@ export default class UserAvailability extends LightningElement {
         updateUserStatus({ newStatus: status })
             .then(result => {
                 this.currentStatus = result;
-                this.showSuccess('Your Status updated to ' + result);
+
+                this.showToast(
+                    'Success',
+                    'User Status updated to ' + result,
+                    'success'
+                );
             })
             .catch(error => {
-                this.showError(error);
+                this.showToast(
+                    'Error',
+                    error.body?.message,
+                    'error'
+                );
             })
             .finally(() => {
                 this.isLoading = false;
             });
     }
 
-    // UI Helpers
-    get isAvailable() {
-        return this.currentStatus === 'Available';
-    }
-
-    get isOffline() {
-        return this.currentStatus === 'Offline';
-    }
-
-    get computedAvailableClass() {
-        return this.isAvailable ? 'btn active available' : 'btn';
-    }
-
-    get computedOfflineClass() {
-        return this.isOffline ? 'btn active offline' : 'btn';
-    }
-
-    showSuccess(msg) {
+    showToast(title, message, variant) {
         this.dispatchEvent(
             new ShowToastEvent({
-                title: 'Success',
-                message: msg,
-                variant: 'success'
-            })
-        );
-    }
-
-    showError(error) {
-        this.dispatchEvent(
-            new ShowToastEvent({
-                title: 'Error',
-                message: error.body?.message || 'Error occurred',
-                variant: 'error'
+                title,
+                message,
+                variant
             })
         );
     }

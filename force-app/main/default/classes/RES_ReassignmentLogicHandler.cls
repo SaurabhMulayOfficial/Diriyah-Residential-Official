@@ -145,6 +145,7 @@ public with sharing class RES_ReassignmentLogicHandler {
             if(assignmentRule == null || assignmentRule.isEmpty()){
                 for(Lead l: inputLeadList){
                     l.OwnerId = queueId;
+                    l.RES_Previous_Lead_Owner__c = queueId;
                 }
 
                 System.debug('No Assignment Rule found Assigning every lead to QUEUE');
@@ -168,6 +169,7 @@ public with sharing class RES_ReassignmentLogicHandler {
             while(i < inputLeadList.size()){
                 if(visitedFullCapacity.size() == N){
                     inputLeadList[i].OwnerId = queueId;
+                    inputLeadList[i].RES_Previous_Lead_Owner__c = queueId;
                     i+=1;
                     continue;
                 }
@@ -176,11 +178,12 @@ public with sharing class RES_ReassignmentLogicHandler {
 
                 RES_Assignment_Rule__c currentRule = assignmentRule[currentIndex];
                 currentRule.RES_Last_Assigned__c = true;
-                Integer leadCount = currentRule.RES_Lead_Count__c == null ? 0 : Integer.valueOf(currentRule.RES_Lead_Count__c);
+                Integer leadCount = (Integer)currentRule.RES_Active_Lead_Count__c;
                 Integer capacity = (Integer) currentRule.RES_Capacity__c;
 
                 if(leadCount < capacity){
                     currentLead.OwnerId = currentRule.RES_User__c;
+                    currentLead.RES_Previous_Lead_Owner__c = queueId;
                     routingUpdates.add(new leadRoutingWrapper(currentLead, currentRule));
                     currentIndex = Math.mod( currentIndex + 1, N );
                     i+=1;

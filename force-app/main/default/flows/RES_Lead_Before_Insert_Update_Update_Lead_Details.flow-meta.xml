@@ -63,22 +63,6 @@
             <targetReference>If_Owner_Changed_from_Queue_To_User</targetReference>
         </connector>
     </assignments>
-    <assignments>
-        <name>Run_lead_Assignment</name>
-        <label>Run lead Assignment</label>
-        <locationX>0</locationX>
-        <locationY>0</locationY>
-        <assignmentItems>
-            <assignToReference>$Record.OwnerId</assignToReference>
-            <operator>Assign</operator>
-            <value>
-                <elementReference>Get_Queue_Assigned.Id</elementReference>
-            </value>
-        </assignmentItems>
-        <connector>
-            <targetReference>If_Lead_Status_Changed_To_Retired</targetReference>
-        </connector>
-    </assignments>
     <customErrors>
         <name>RES_Check_Salutation_Error</name>
         <label>Check Salutation Error</label>
@@ -169,45 +153,6 @@
         </rules>
     </decisions>
     <decisions>
-        <name>If_Queue_is_Not_Null</name>
-        <label>If Queue is Not Null</label>
-        <locationX>0</locationX>
-        <locationY>0</locationY>
-        <defaultConnector>
-            <targetReference>If_Lead_Status_Changed_To_Retired</targetReference>
-        </defaultConnector>
-        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
-        <rules>
-            <name>Not_Null</name>
-            <conditionLogic>and</conditionLogic>
-            <conditions>
-                <leftValueReference>Get_Queue_Assigned</leftValueReference>
-                <operator>IsNull</operator>
-                <rightValue>
-                    <booleanValue>false</booleanValue>
-                </rightValue>
-            </conditions>
-            <conditions>
-                <leftValueReference>ISNEW</leftValueReference>
-                <operator>EqualTo</operator>
-                <rightValue>
-                    <booleanValue>true</booleanValue>
-                </rightValue>
-            </conditions>
-            <conditions>
-                <leftValueReference>$Record.RES_Bypass_Assignment_Rules__c</leftValueReference>
-                <operator>EqualTo</operator>
-                <rightValue>
-                    <booleanValue>false</booleanValue>
-                </rightValue>
-            </conditions>
-            <connector>
-                <targetReference>Run_lead_Assignment</targetReference>
-            </connector>
-            <label>Not Null</label>
-        </rules>
-    </decisions>
-    <decisions>
         <name>Is_Gender_Type_Blank</name>
         <label>Is Gender Type Blank?</label>
         <locationX>0</locationX>
@@ -218,7 +163,7 @@
         <defaultConnectorLabel>Default</defaultConnectorLabel>
         <rules>
             <name>Yes1</name>
-            <conditionLogic>and</conditionLogic>
+            <conditionLogic>1 AND 2 AND 3</conditionLogic>
             <conditions>
                 <leftValueReference>$Record.GenderIdentity</leftValueReference>
                 <operator>IsBlank</operator>
@@ -231,6 +176,13 @@
                 <operator>IsBlank</operator>
                 <rightValue>
                     <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.RecordType.DeveloperName</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>RES_Individual</stringValue>
                 </rightValue>
             </conditions>
             <connector>
@@ -254,6 +206,13 @@
                 <operator>IsBlank</operator>
                 <rightValue>
                     <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.RecordType.DeveloperName</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>RES_Individual</stringValue>
                 </rightValue>
             </conditions>
             <connector>
@@ -293,7 +252,7 @@
                 </rightValue>
             </conditions>
             <connector>
-                <targetReference>Get_Queue_Assigned</targetReference>
+                <targetReference>If_Lead_Status_Changed_To_Retired</targetReference>
             </connector>
             <label>Present</label>
         </rules>
@@ -354,14 +313,6 @@
     </decisions>
     <environments>Default</environments>
     <formulas>
-        <name>AssignmentQueue</name>
-        <dataType>String</dataType>
-        <expression>IF ( 
-ISPICKVAL({!$Record.LeadSource}, &apos;Z04&apos;),
-&apos;RES_DG_Team&apos;,
-&apos;&apos;)</expression>
-    </formulas>
-    <formulas>
         <name>ISNEW</name>
         <dataType>Boolean</dataType>
         <expression>ISNEW()</expression>
@@ -400,34 +351,6 @@ ISPICKVAL({!$Record.LeadSource}, &apos;Z04&apos;),
         </value>
     </processMetadataValues>
     <processType>AutoLaunchedFlow</processType>
-    <recordLookups>
-        <name>Get_Queue_Assigned</name>
-        <label>Get Queue - Assigned</label>
-        <locationX>0</locationX>
-        <locationY>0</locationY>
-        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
-        <connector>
-            <targetReference>If_Queue_is_Not_Null</targetReference>
-        </connector>
-        <filterLogic>and</filterLogic>
-        <filters>
-            <field>Type</field>
-            <operator>EqualTo</operator>
-            <value>
-                <stringValue>Queue</stringValue>
-            </value>
-        </filters>
-        <filters>
-            <field>DeveloperName</field>
-            <operator>EqualTo</operator>
-            <value>
-                <elementReference>AssignmentQueue</elementReference>
-            </value>
-        </filters>
-        <getFirstRecordOnly>true</getFirstRecordOnly>
-        <object>Group</object>
-        <storeOutputAutomatically>true</storeOutputAutomatically>
-    </recordLookups>
     <start>
         <locationX>0</locationX>
         <locationY>0</locationY>
