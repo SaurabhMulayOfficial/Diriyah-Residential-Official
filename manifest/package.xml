@@ -11,9 +11,12 @@
         <members>RES_ContentNoteSecurityHandler</members>
         <members>RES_ContentNoteServices</members>
         <members>RES_DAOException</members>
-        <members>RES_EmployeeReferralController</members>
         <members>RES_GroupDAOLayer</members>
         <members>RES_GroupMemberDAOLayer</members>
+        <members>RES_LeadConversionBatch</members>
+        <members>RES_LeadConversionBatch_Test</members>
+        <members>RES_LeadCreateController</members>
+        <members>RES_LeadCreateControllerTest</members>
         <members>RES_LeadDAOLayer</members>
         <members>RES_LeadDeduplicationDAOLayer</members>
         <members>RES_LeadDeduplicationHandler</members>
@@ -40,18 +43,19 @@
         <members>RES_RecordTypeDAO</members>
         <members>RES_TestDataFactory</members>
         <members>RES_UserAvailabilityController</members>
+        <members>RES_UserDAOLayer</members>
         <members>RES_UserServicePresenceDAOLayer</members>
         <name>ApexClass</name>
-    </types>
-    <types>
-        <members>CommunitiesLanding</members>
-        <name>ApexPage</name>
     </types>
     <types>
         <members>LeadTrigger</members>
         <members>RES_OwnershipReassignmentEventTrigger</members>
         <members>RES_PreventContentNoteDelete</members>
         <name>ApexTrigger</name>
+    </types>
+    <types>
+        <members>RES_LeadNewOverride</members>
+        <name>AuraDefinitionBundle</name>
     </types>
     <types>
         <members>LEXTHEMINGRES_DiriyahCorporateTheme</members>
@@ -67,6 +71,7 @@
         <members>Contact.Contact_Compact_Layout</members>
         <members>Lead.Leads_Custom_Compact_Layout</members>
         <members>Opportunity.New_Awesome_Companct_Layout</members>
+        <members>PersonAccount.Person_Account_Compact_Layout</members>
         <members>Task.DIR_Task_Compact_Layout</members>
         <name>CompactLayout</name>
     </types>
@@ -80,6 +85,7 @@
         <members>Account.AnnualRevenue</members>
         <members>Account.BillingAddress</members>
         <members>Account.CurrencyIsoCode</members>
+        <members>Account.DIR_Country__c</members>
         <members>Account.Description</members>
         <members>Account.Fax</members>
         <members>Account.Industry</members>
@@ -167,14 +173,24 @@
         <members>Account.Tier</members>
         <members>Account.Type</members>
         <members>Account.Website</members>
-        <members>ApprovalWorkItem.RES_Proposed_Record_Owner__c</members>
-        <members>ApprovalWorkItem.RES_Existing_User__c</members>
-        <members>ApprovalWorkItem.RES_Approval_Request_Remarks__c</members>
         <members>Activity.DIR_Due_Date_Required__c</members>
         <members>Activity.RES_Is_Call_Flag__c</members>
         <members>Activity.RES_Is_Email_Flag__c</members>
         <members>Activity.RES_Is_Meeting_Flag__c</members>
         <members>Activity.RES_Is_Overdue_Task__c</members>
+        <members>ApprovalWorkItem.ApprovalConditionName</members>
+        <members>ApprovalWorkItem.ApprovalSubmissionId</members>
+        <members>ApprovalWorkItem.AssignedToId</members>
+        <members>ApprovalWorkItem.Comments</members>
+        <members>ApprovalWorkItem.FlowOrchestrationWorkItemId</members>
+        <members>ApprovalWorkItem.RES_Approval_Request_Remarks__c</members>
+        <members>ApprovalWorkItem.RES_Existing_User__c</members>
+        <members>ApprovalWorkItem.RES_Proposed_Record_Owner__c</members>
+        <members>ApprovalWorkItem.RelatedRecordId</members>
+        <members>ApprovalWorkItem.RelatedRecordObjectName</members>
+        <members>ApprovalWorkItem.ReviewedById</members>
+        <members>ApprovalWorkItem.ReviewedDate</members>
+        <members>ApprovalWorkItem.Status</members>
         <members>Contact.AccountId</members>
         <members>Contact.AssistantName</members>
         <members>Contact.AssistantPhone</members>
@@ -182,6 +198,7 @@
         <members>Contact.BuyerAttributes</members>
         <members>Contact.ContactSource</members>
         <members>Contact.CurrencyIsoCode</members>
+        <members>Contact.DIR_Country__c</members>
         <members>Contact.Department</members>
         <members>Contact.DepartmentGroup</members>
         <members>Contact.Description</members>
@@ -217,11 +234,12 @@
         <members>Contact.TitleType</members>
         <members>DIR_Lead_Retirement_Configuration__c.DIR_Retirement_Day_Threshold__c</members>
         <members>Lead.Address</members>
-        <members>Lead.RES_Approval_Request_Remarks__c</members>
         <members>Lead.AnnualRevenue</members>
         <members>Lead.CampaignId</members>
         <members>Lead.Company</members>
         <members>Lead.CurrencyIsoCode</members>
+        <members>Lead.DIR_Country__c</members>
+        <members>Lead.DIR_Lead_Id__c</members>
         <members>Lead.DIR_Note__c</members>
         <members>Lead.Description</members>
         <members>Lead.DoNotCall</members>
@@ -231,6 +249,7 @@
         <members>Lead.HasOptedOutOfEmail</members>
         <members>Lead.HasOptedOutOfFax</members>
         <members>Lead.Industry</members>
+        <members>Lead.IqScore</members>
         <members>Lead.Jigsaw</members>
         <members>Lead.LastTransferDate</members>
         <members>Lead.LeadSource</members>
@@ -240,7 +259,9 @@
         <members>Lead.OwnerId</members>
         <members>Lead.Phone</members>
         <members>Lead.Pronouns</members>
+        <members>Lead.RES_Approval_Request_Remarks__c</members>
         <members>Lead.RES_Area_Of_Interest__c</members>
+        <members>Lead.RES_Autonumber__c</members>
         <members>Lead.RES_BP_Role__c</members>
         <members>Lead.RES_Broker_Registration__c</members>
         <members>Lead.RES_Broker__c</members>
@@ -297,11 +318,13 @@
         <members>Lead.RES_Project__c</members>
         <members>Lead.RES_Project_of_Interest__c</members>
         <members>Lead.RES_Property__c</members>
+        <members>Lead.RES_Proposed_User__c</members>
         <members>Lead.RES_Purchase_Timeline__c</members>
         <members>Lead.RES_Qualification_Level__c</members>
         <members>Lead.RES_Reason_Code__c</members>
         <members>Lead.RES_Requested_Timing__c</members>
         <members>Lead.RES_Residency_Type__c</members>
+        <members>Lead.RES_SAP_Lead_Id__c</members>
         <members>Lead.RES_SHA__c</members>
         <members>Lead.RES_SLA_Breach_Time__c</members>
         <members>Lead.RES_SLA_Cycle_Count__c</members>
@@ -339,6 +362,7 @@
         <members>Opportunity.CloseDate</members>
         <members>Opportunity.ContractId</members>
         <members>Opportunity.CurrencyIsoCode</members>
+        <members>Opportunity.DIR_Country__c</members>
         <members>Opportunity.Description</members>
         <members>Opportunity.Discovery_Completed__c</members>
         <members>Opportunity.ExpectedRevenue</members>
@@ -352,6 +376,7 @@
         <members>Opportunity.Pricebook2Id</members>
         <members>Opportunity.Probability</members>
         <members>Opportunity.RES_Area_Of_Interest__c</members>
+        <members>Opportunity.RES_CR_Number__c</members>
         <members>Opportunity.RES_Campaign_Name__c</members>
         <members>Opportunity.RES_City__c</members>
         <members>Opportunity.RES_Cityscape_Year__c</members>
@@ -408,6 +433,8 @@
         <members>RES_Opportunity_Account_Link__c.RES_Relationship_between_buyers__c</members>
         <members>RES_Ownership_Reassignment_Event__e.RES_LeadId__c</members>
         <members>RES_Ownership_Reassignment_Event__e.RES_OwnerId__c</members>
+        <members>RES_Role_Field_Access__mdt.Field_API__c</members>
+        <members>RES_Role_Field_Access__mdt.Role_API__c</members>
         <members>Task.ActivityDate</members>
         <members>Task.CallDisposition</members>
         <members>Task.CallDurationInSeconds</members>
@@ -434,10 +461,12 @@
     </types>
     <types>
         <members>Org_Wide_Email</members>
+        <members>Owner_Update_Error_Message</members>
         <members>RES_Account_Additional_Information_Tab</members>
         <members>RES_Account_Address_Information_Tab</members>
         <members>RES_Account_Information_Tab</members>
         <members>RES_Additional_Details</members>
+        <members>RES_Admin_Profile</members>
         <members>RES_BulkLeadIDNotFoundScreen</members>
         <members>RES_Company_Additional_Details</members>
         <members>RES_Contact_Additional_Information_Tab</members>
@@ -467,6 +496,8 @@
         <members>RES_Opportunity_Other_Information_Tab</members>
         <members>RES_Pricing_Details</members>
         <members>RES_RequirePermissionErrorMessage</members>
+        <members>Record_Is_In_Phase_Of_Approval</members>
+        <members>Record_Submitted_For_Approval</members>
         <name>CustomLabel</name>
     </types>
     <types>
@@ -512,6 +543,15 @@
         <members>RES_Lead_Status_Mapping.RES_Residential_Leasing</members>
         <members>RES_Lead_Status_Mapping.RES_Successful</members>
         <members>RES_Note_Delete_Restriction.RES_Diriyah_Note_Delete_Restriction</members>
+        <members>RES_Role_Field_Access.Contract_Amendments_Operation_Specialist</members>
+        <members>RES_Role_Field_Access.External_Sales_Operations_Operations</members>
+        <members>RES_Role_Field_Access.External_Sales_Operations_Operations_Spe</members>
+        <members>RES_Role_Field_Access.Internal_Sales_Contracts_Operations</members>
+        <members>RES_Role_Field_Access.Internal_Sales_Operations_Operations_Man</members>
+        <members>RES_Role_Field_Access.Internal_Sales_Operations_Operations_Spe</members>
+        <members>RES_Role_Field_Access.Operational_Excellence_Operations_Ma</members>
+        <members>RES_Role_Field_Access.Operational_Excellence_Operations_Sp</members>
+        <members>RES_Role_Field_Access.Sales_Operations_Executive_Director</members>
         <name>CustomMetadata</name>
     </types>
     <types>
@@ -524,6 +564,7 @@
     <types>
         <members>Account</members>
         <members>Activity</members>
+        <members>ApprovalWorkItem</members>
         <members>Contact</members>
         <members>DIR_Lead_Retirement_Configuration__c</members>
         <members>Lead</members>
@@ -537,6 +578,7 @@
         <members>RES_Note_Delete_Restriction__mdt</members>
         <members>RES_Opportunity_Account_Link__c</members>
         <members>RES_Ownership_Reassignment_Event__e</members>
+        <members>RES_Role_Field_Access__mdt</members>
         <members>Task</members>
         <name>CustomObject</name>
     </types>
@@ -548,13 +590,17 @@
         <name>CustomObjectTranslation</name>
     </types>
     <types>
-        <members>RES_Update_Owner_Visibility</members>
         <members>RES_Can_Change_Lead_Status</members>
         <members>RES_Manager_Dashboard_Visibility</members>
         <members>RES_Mass_Convert_Leads</members>
         <members>RES_Sub_Stage_Visibility</members>
         <members>RES_System_Information_Visibility</members>
+        <members>RES_Update_Owner_Visibility</members>
         <name>CustomPermission</name>
+    </types>
+    <types>
+        <members>Employee_Referral_Portal</members>
+        <name>CustomSite</name>
     </types>
     <types>
         <members>RES_Assignment_Config__c</members>
@@ -563,10 +609,10 @@
         <name>CustomTab</name>
     </types>
     <types>
-        <members>RES_DiriyahAdminDashboard</members>
-        <members>DiriyahResidentialDashboards</members>
+        <members>DiriyahResidentialDashboards/</members>
         <members>DiriyahResidentialDashboards/RES_DiriyahAdminDashboard</members>
         <members>DiriyahResidentialDashboards/zQabSqiEIfcQnuVPBtlhZvWkfTXLNo</members>
+        <members>RES_DiriyahManagerDashboard/</members>
         <members>RES_DiriyahManagerDashboard/RES_DiriyahMyDashboard</members>
         <name>Dashboard</name>
     </types>
@@ -622,13 +668,18 @@
     </types>
     <types>
         <members>DIR_Task_After_Create_Update_Email_Reminder</members>
+        <members>RES_Approval_Work_Item_Before_Insert_Update_Proposed_Owner</members>
         <members>RES_AutoLaunchFlow_Notify_User_s_Manager</members>
+        <members>RES_AutoLaunch_Flow_Send_Approval_Email_Notifications</members>
+        <members>RES_Autolaunched_Flow_Update_lead_Owner_to_Proposed_Owner</members>
         <members>RES_Event_AfterUpdate_Update_Lead_Status_to_Active</members>
         <members>RES_Lead_After_Create_Update_Lead_SLA_management</members>
         <members>RES_Lead_After_Create_Update_Owner_Assignment_Notification</members>
         <members>RES_Lead_BeforeUpdate_Update_Lead_Status</members>
         <members>RES_Lead_Before_Insert_Update_Update_Lead_Details</members>
+        <members>RES_Lead_Delegation_Of_Assignment_Approval_Flow</members>
         <members>RES_Lead_ScreenFlow_Bulk_Lead_Conversion</members>
+        <members>RES_Lead_Screen_Flow_Change_Record_Owner</members>
         <members>RES_OpportunityAccountLink_After_Insert_Update_Joint_Account_Check</members>
         <members>RES_Opportunity_After_Insert_Update_Closed_Date_after_30_Days</members>
         <members>RES_PendingServiceRouting_After_Insert_Update_Start_Lead_SLA</members>
@@ -662,15 +713,14 @@
         <name>GlobalValueSet</name>
     </types>
     <types>
-        <members>Dir_Sandbox_Users</members>
         <members>RES_DI_DII_Senior_Director</members>
         <members>RES_External_Sales_Senior_Director</members>
+        <members>RES_Manager_List_View_Group</members>
+        <members>RES_Operations_Team</members>
         <members>RES_Sales_Excellence_Senior_Director</members>
         <members>RES_Sales_Operations_Executive_Director</members>
-        <members>RES_Wadi_Safar_Sales_Senior_Director</members>
-        <members>RES_Operations_Team</members>
-        <members>RES_Manager_List_View_Group</members>
         <members>RES_Sales_Specialist_List_View_Group</members>
+        <members>RES_Wadi_Safar_Sales_Senior_Director</members>
         <name>Group</name>
     </types>
     <types>
@@ -679,12 +729,16 @@
     </types>
     <types>
         <members>Account-RES Company</members>
+        <members>ApprovalSubmission-Approval Submission Layout</members>
+        <members>ApprovalSubmissionDetail-Approval Submission Detail Layout</members>
+        <members>ApprovalWorkItem-Approval Work Item Layout</members>
         <members>Contact-RES Company</members>
         <members>Global-Global Layout</members>
         <members>Lead-RES Company</members>
         <members>Lead-RES Individual</members>
         <members>Opportunity-RES Residential Multi Buyer</members>
         <members>Opportunity-RES Residential Single Buyer</members>
+        <members>PersonAccount-Person Account Layout</members>
         <members>RES_Assignment_Config__c-Assignment Config Layout</members>
         <members>RES_Assignment_Rule__c-Assignment Rule Layout</members>
         <members>RES_Lead_Routing__c-Lead Routing Layout</members>
@@ -698,14 +752,9 @@
         <name>LeadConvertSettings</name>
     </types>
     <types>
-        <members>employeeReferralForm</members>
         <members>resLeadCreateModal</members>
         <members>useravailability</members>
         <name>LightningComponentBundle</name>
-    </types>
-    <types>
-        <members>RES_DiriyahCorporateTheme</members>
-        <name>LightningExperienceTheme</name>
     </types>
     <types>
         <members>Account.AllAccounts</members>
@@ -715,6 +764,8 @@
         <members>Activity.MyTeamsActivities</members>
         <members>Activity.TodaysTasks</members>
         <members>Activity.UpcomingEvents</members>
+        <members>ApprovalWorkItem.All_ApprovalWorkItems</members>
+        <members>ApprovalWorkItem.Assigned_ApprovalWorkItems</members>
         <members>Contact.AllContacts</members>
         <members>Contact.BulkMessageContacts</members>
         <members>Contact.MyContacts</members>
@@ -775,10 +826,6 @@
         <name>MatchingRules</name>
     </types>
     <types>
-        <members>RES_Supervisor_Configuration</members>
-        <name>OmniSupervisorConfig</name>
-    </types>
-    <types>
         <members>Default</members>
         <members>Default_Opportunity</members>
         <members>RES_Company_Lead_Path</members>
@@ -787,10 +834,6 @@
         <members>RES_Opportunity_Path_Single_Buyer</members>
         <name>PathAssistant</name>
     </types>
-    <types>
-		<members>RES_LeadNewOverride</members>
-		<name>AuraDefinitionBundle</name>
-	</types>
     <types>
         <members>Diriyah_Messaging_User</members>
         <members>RES_Diriyah_Residential_Account_Receivable_Permission_Set</members>
@@ -833,29 +876,20 @@
         <name>PermissionSet</name>
     </types>
     <types>
-        <members>RES_Presence_Configuration</members>
-        <members>default_presence_config</members>
-        <name>PresenceUserConfig</name>
-    </types>
-    <types>
         <members>Admin</members>
         <members>Diriyah Residential Sales Standard Profile</members>
         <name>Profile</name>
     </types>
     <types>
+        <members>RES_CSO</members>
         <members>RES_DG_Team</members>
-        <members>RES_DI_DII_Sales_Senior_Director</members>
-        <members>RES_External_Sales_Senior_Director</members>
-        <members>RES_Sales_Excellence_Senior_Director</members>
-        <members>RES_Sales_Operations_Executive_Director</members>
-        <members>RES_Wadi_Safar_Sales_Senior_Director</members>
+        <members>RES_Sales_Director</members>
+        <members>RES_Sales_Manager</members>
         <name>Queue</name>
     </types>
     <types>
-        <members>RES_Routing_Configuration</members>
-        <name>QueueRoutingConfig</name>
-    </types>
-    <types>
+        <members>Lead.RES_Update_Owner</members>
+        <members>LogACall</members>
         <members>NewEvent</members>
         <members>NewTask</members>
         <name>QuickAction</name>
@@ -870,7 +904,7 @@
         <name>RecordType</name>
     </types>
     <types>
-        <members>DiriyahResidentialReports</members>
+        <members>DiriyahResidentialReports/</members>
         <members>DiriyahResidentialReports/All_Open_Tasks_wH0</members>
         <members>DiriyahResidentialReports/My_Lead_Conversion_Rate_by_Source</members>
         <members>DiriyahResidentialReports/RES_ALL_Total_Active_Leads</members>
@@ -951,7 +985,12 @@
         <name>Role</name>
     </types>
     <types>
+        <members>Opportunity.RES_Share_Closed_Won_Opps_with_Operations</members>
+        <name>SharingCriteriaRule</name>
+    </types>
+    <types>
         <members>Lead</members>
+        <members>Opportunity</members>
         <name>SharingRules</name>
     </types>
     <types>
@@ -961,12 +1000,11 @@
         <members>LeadStatus</members>
         <members>OpportunityStage</members>
         <members>Salutation</members>
+        <members>TaskSubject</members>
         <name>StandardValueSet</name>
     </types>
     <types>
         <members>CompanyLogo</members>
-        <members>SNA_5bpy0_sf_default_cdn_Employee_Referral_Portal1</members>
-        <members>SiteBackground</members>
         <members>SiteSamples</members>
         <name>StaticResource</name>
     </types>
