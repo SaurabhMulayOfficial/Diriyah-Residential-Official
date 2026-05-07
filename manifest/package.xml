@@ -235,7 +235,6 @@
         <members>Lead.HasOptedOutOfEmail</members>
         <members>Lead.HasOptedOutOfFax</members>
         <members>Lead.Industry</members>
-        <members>Lead.IqScore</members>
         <members>Lead.Jigsaw</members>
         <members>Lead.LastTransferDate</members>
         <members>Lead.LeadSource</members>
@@ -561,16 +560,14 @@
         <name>CustomPermission</name>
     </types>
     <types>
-        <members>Employee_Referral_Portal</members>
-        <name>CustomSite</name>
-    </types>
-    <types>
         <members>RES_Assignment_Config__c</members>
         <members>RES_Assignment_Rule__c</members>
         <members>User_Availability_Status</members>
         <name>CustomTab</name>
     </types>
     <types>
+        <members>RES_DiriyahAdminDashboard</members>
+        <members>DiriyahResidentialDashboards</members>
         <members>DiriyahResidentialDashboards/RES_DiriyahAdminDashboard</members>
         <members>DiriyahResidentialDashboards/zQabSqiEIfcQnuVPBtlhZvWkfTXLNo</members>
         <members>RES_DiriyahManagerDashboard/RES_DiriyahMyDashboard</members>
@@ -643,6 +640,7 @@
         <name>Flow</name>
     </types>
     <types>
+        <members>DIR_Country</members>
         <members>DIR_Distribution_Channel</members>
         <members>RES_Area_Of_Interest</members>
         <members>RES_BP_Role</members>
@@ -668,6 +666,12 @@
     </types>
     <types>
         <members>Dir_Sandbox_Users</members>
+        <members>RES_DI_DII_Senior_Director</members>
+        <members>RES_External_Sales_Senior_Director</members>
+        <members>RES_Sales_Excellence_Senior_Director</members>
+        <members>RES_Sales_Operations_Executive_Director</members>
+        <members>RES_Wadi_Safar_Sales_Senior_Director</members>
+        <members>RES_Operations_Team</members>
         <members>RES_Manager_List_View_Group</members>
         <members>RES_Sales_Specialist_List_View_Group</members>
         <name>Group</name>
@@ -773,14 +777,6 @@
         <name>MatchingRules</name>
     </types>
     <types>
-        <members>Employee Referral Portal</members>
-        <name>Network</name>
-    </types>
-    <types>
-        <members>cbEmployee_Referral_Portal</members>
-        <name>NetworkBranding</name>
-    </types>
-    <types>
         <members>RES_Supervisor_Configuration</members>
         <name>OmniSupervisorConfig</name>
     </types>
@@ -872,6 +868,7 @@
         <name>RecordType</name>
     </types>
     <types>
+        <members>DiriyahResidentialReports</members>
         <members>DiriyahResidentialReports/All_Open_Tasks_wH0</members>
         <members>DiriyahResidentialReports/My_Lead_Conversion_Rate_by_Source</members>
         <members>DiriyahResidentialReports/RES_ALL_Total_Active_Leads</members>
@@ -950,15 +947,6 @@
         <members>RES_Technology_Engineering_Head</members>
         <members>RES_Treasury_Executive_Director</members>
         <name>Role</name>
-    </types>
-    <types>
-        <members>RES_Available</members>
-        <members>RES_Busy</members>
-        <name>ServicePresenceStatus</name>
-    </types>
-    <types>
-        <members>Lead.RES_Guest_User_Sharing_Rule</members>
-        <name>SharingGuestRule</name>
     </types>
     <types>
         <members>Lead</members>
