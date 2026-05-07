@@ -5,6 +5,10 @@
         <default>true</default>
         <visible>true</visible>
     </applicationVisibilities>
+    <customPermissions>
+        <enabled>true</enabled>
+        <name>RES_Update_Owner_Visibility</name>
+    </customPermissions>
     <classAccesses>
         <apexClass>RES_UserAvailabilityController</apexClass>
         <enabled>true</enabled>
