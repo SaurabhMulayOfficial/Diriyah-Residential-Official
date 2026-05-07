@@ -54,14 +54,6 @@
         <name>ApexTrigger</name>
     </types>
     <types>
-        <members>Lead.RES Lead Assignment Rule</members>
-        <name>AssignmentRule</name>
-    </types>
-    <types>
-        <members>Lead</members>
-        <name>AssignmentRules</name>
-    </types>
-    <types>
         <members>LEXTHEMINGRES_DiriyahCorporateTheme</members>
         <name>BrandingSet</name>
     </types>
@@ -175,6 +167,9 @@
         <members>Account.Tier</members>
         <members>Account.Type</members>
         <members>Account.Website</members>
+        <members>ApprovalWorkItem.RES_Proposed_Record_Owner__c</members>
+        <members>ApprovalWorkItem.RES_Existing_User__c</members>
+        <members>ApprovalWorkItem.RES_Approval_Request_Remarks__c</members>
         <members>Activity.DIR_Due_Date_Required__c</members>
         <members>Activity.RES_Is_Call_Flag__c</members>
         <members>Activity.RES_Is_Email_Flag__c</members>
@@ -222,6 +217,7 @@
         <members>Contact.TitleType</members>
         <members>DIR_Lead_Retirement_Configuration__c.DIR_Retirement_Day_Threshold__c</members>
         <members>Lead.Address</members>
+        <members>Lead.RES_Approval_Request_Remarks__c</members>
         <members>Lead.AnnualRevenue</members>
         <members>Lead.CampaignId</members>
         <members>Lead.Company</members>
@@ -703,6 +699,7 @@
     </types>
     <types>
         <members>employeeReferralForm</members>
+        <members>resLeadCreateModal</members>
         <members>useravailability</members>
         <name>LightningComponentBundle</name>
     </types>
@@ -790,6 +787,10 @@
         <members>RES_Opportunity_Path_Single_Buyer</members>
         <name>PathAssistant</name>
     </types>
+    <types>
+		<members>RES_LeadNewOverride</members>
+		<name>AuraDefinitionBundle</name>
+	</types>
     <types>
         <members>Diriyah_Messaging_User</members>
         <members>RES_Diriyah_Residential_Account_Receivable_Permission_Set</members>

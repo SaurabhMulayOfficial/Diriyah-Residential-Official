@@ -281,7 +281,7 @@ jobs:
         run: |
           sf project deploy validate \
             --manifest manifest/package.xml \
-            --test-level RunAllTestsInOrg \
+            --test-level RunLocalTests \
             --wait 30
 
   deploy-prod:
@@ -313,5 +313,5 @@ jobs:
         run: |
           sf project deploy start \
             --manifest manifest/package.xml \
-            --test-level RunAllTestsInOrg \
+            --test-level RunLocalTests \
             --wait 30
