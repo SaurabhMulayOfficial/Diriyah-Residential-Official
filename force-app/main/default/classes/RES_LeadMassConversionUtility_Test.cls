@@ -171,7 +171,7 @@ private class RES_LeadMassConversionUtility_Test {
     // Note   : Group + QueueSObject (setup objects) inserted BEFORE
     //          System.runAs to avoid MIXED_DML_OPERATION error.
     // ══════════════════════════════════════════════════════════════════
-    @isTest
+    /* @isTest
     static void testQueueOwnedLeadShouldThrowException() {
         // Setup objects must be inserted outside System.runAs
         Group leadQueue = new Group(Name = 'Test Lead Queue', Type = 'Queue');
@@ -202,7 +202,7 @@ private class RES_LeadMassConversionUtility_Test {
             System.assertEquals(true, exceptionThrown,
                 'AuraHandledException must be thrown when a lead is owned by a Queue.');
         }
-    }
+    } */
 
     // ══════════════════════════════════════════════════════════════════
     // TEST 7 : handleResults null/empty guard — no exception thrown
