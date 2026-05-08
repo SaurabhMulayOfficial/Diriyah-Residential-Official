@@ -199,6 +199,7 @@ private class RES_LeadServicesTest {
                 Company = 'Test Company', 
                 RES_Marketing_Area__c = 'BRANDED_RESIDENTIAL',
                 LeadSource = 'Z06', 
+                RES_Form_Submission_ID__c = 'bfd2a104-d237-34a2-936e-88fc215d9b44',
                 MobilePhone = '+142412421' + i,
                 Status = '01'
             ));
@@ -211,6 +212,7 @@ private class RES_LeadServicesTest {
                 Company = 'Test Company',
                 RES_Marketing_Area__c = 'B2B_RETAIL_LEASING',
                 LeadSource = 'Z06', 
+                RES_Form_Submission_ID__c = 'bfd2a104-d237-34a2-936e-88fc215d9b77',
                 MobilePhone = '+152412421' + i,
                 Status = '01'
             ));
@@ -222,6 +224,7 @@ private class RES_LeadServicesTest {
             Company = 'Test Company',
             RES_Marketing_Area__c = null,
             LeadSource = 'Z06', 
+            RES_Form_Submission_ID__c = 'bfd2a104-d237-34a2-936e-88fc215d9b88',
             MobilePhone = '+1624124214',
             Status = '01'
         ));
