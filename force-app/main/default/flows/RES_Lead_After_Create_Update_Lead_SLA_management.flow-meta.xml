@@ -3,8 +3,8 @@
     <actionCalls>
         <name>Assign_Next_Owner_and_Update_Lead</name>
         <label>Assign Next Owner and Update Lead</label>
-        <locationX>1898</locationX>
-        <locationY>540</locationY>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
         <actionName>RES_LeadServices</actionName>
         <actionType>apex</actionType>
         <flowTransactionModel>Automatic</flowTransactionModel>
@@ -32,8 +32,8 @@
     <actionCalls>
         <name>Auto_Create_Task_on_Lead_Conversion</name>
         <label>Auto-Create Task on Lead Conversion</label>
-        <locationX>182</locationX>
-        <locationY>1548</locationY>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
         <actionName>NewTask</actionName>
         <actionType>quickAction</actionType>
         <flowTransactionModel>CurrentTransaction</flowTransactionModel>
@@ -69,8 +69,8 @@
     <assignments>
         <name>Assign_Instance</name>
         <label>Assign Instance</label>
-        <locationX>1502</locationX>
-        <locationY>432</locationY>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
         <assignmentItems>
             <assignToReference>leadInstance.Id</assignToReference>
             <operator>Assign</operator>
@@ -99,8 +99,8 @@
     <decisions>
         <name>Check_if_Lead_is_Converted_and_Flow_Switch</name>
         <label>Check if Lead is Converted and Flow Switch</label>
-        <locationX>578</locationX>
-        <locationY>924</locationY>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
         <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
         <rules>
             <name>Converted_Lead</name>
@@ -142,8 +142,8 @@
     <decisions>
         <name>Check_Lead_Record_Types</name>
         <label>Check Lead Record Types</label>
-        <locationX>314</locationX>
-        <locationY>1032</locationY>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
         <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
         <rules>
             <name>Is_Individual_Lead</name>
@@ -200,8 +200,8 @@
     <decisions>
         <name>Check_Related_to_Opportunity</name>
         <label>Check Related to Opportunity</label>
-        <locationX>314</locationX>
-        <locationY>1332</locationY>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
         <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
         <rules>
             <name>Opportunity_Created</name>
@@ -222,8 +222,8 @@
     <decisions>
         <name>Check_required_Conditions</name>
         <label>Check required Conditions</label>
-        <locationX>2030</locationX>
-        <locationY>432</locationY>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
         <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
         <rules>
             <name>Check_Previous_Owner</name>
@@ -244,8 +244,8 @@
     <decisions>
         <name>if_Due</name>
         <label>if DUE Date Is Null</label>
-        <locationX>1304</locationX>
-        <locationY>324</locationY>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
         <defaultConnector>
             <targetReference>Assign_Instance</targetReference>
         </defaultConnector>
@@ -263,8 +263,8 @@
     <decisions>
         <name>If_Lead_Routing_Records_Avaialable</name>
         <label>If Lead Routing Records Avaialable</label>
-        <locationX>424</locationX>
-        <locationY>540</locationY>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
         <defaultConnector>
             <targetReference>Check_if_Lead_is_Converted_and_Flow_Switch</targetReference>
         </defaultConnector>
@@ -288,8 +288,8 @@
     <decisions>
         <name>If_Manager_Exist</name>
         <label>If Manager Exist</label>
-        <locationX>1502</locationX>
-        <locationY>756</locationY>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
         <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
         <rules>
             <name>Yes_Exist</name>
@@ -310,8 +310,8 @@
     <decisions>
         <name>If_Next_Reassignment_Date_is_Not_Null</name>
         <label>If Next Reassignment Date is Not Null</label>
-        <locationX>2228</locationX>
-        <locationY>324</locationY>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
         <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
         <rules>
             <name>Not_Null</name>
@@ -332,15 +332,15 @@
     <decisions>
         <name>If_Status_has_Changed</name>
         <label>If Status has Changed</label>
-        <locationX>578</locationX>
-        <locationY>324</locationY>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
         <defaultConnector>
             <targetReference>Check_if_Lead_is_Converted_and_Flow_Switch</targetReference>
         </defaultConnector>
         <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
         <rules>
             <name>Status_Has_Changed_to_Qualified_Retired_Archive</name>
-            <conditionLogic>1 AND ( 2 OR 3 OR 4 )</conditionLogic>
+            <conditionLogic>1 AND ( 2 OR 3 OR 4 OR 5)</conditionLogic>
             <conditions>
                 <leftValueReference>$Record.Status</leftValueReference>
                 <operator>IsChanged</operator>
@@ -367,6 +367,13 @@
                 <operator>EqualTo</operator>
                 <rightValue>
                     <stringValue>Converted</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Status</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>04</stringValue>
                 </rightValue>
             </conditions>
             <connector>
@@ -403,7 +410,7 @@
     <processMetadataValues>
         <name>CanvasMode</name>
         <value>
-            <stringValue>FREE_FORM_CANVAS</stringValue>
+            <stringValue>AUTO_LAYOUT_CANVAS</stringValue>
         </value>
     </processMetadataValues>
     <processMetadataValues>
@@ -416,8 +423,8 @@
     <recordDeletes>
         <name>Delete_Lead_Routing_record</name>
         <label>Delete Lead Routing record</label>
-        <locationX>292</locationX>
-        <locationY>648</locationY>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
         <connector>
             <targetReference>Check_if_Lead_is_Converted_and_Flow_Switch</targetReference>
         </connector>
@@ -434,8 +441,8 @@
     <recordLookups>
         <name>Get_Lead_Routing_Records</name>
         <label>Get Lead Routing Records</label>
-        <locationX>424</locationX>
-        <locationY>432</locationY>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
         <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
         <connector>
             <targetReference>If_Lead_Routing_Records_Avaialable</targetReference>
@@ -455,8 +462,8 @@
     <recordLookups>
         <name>Get_Owners_Manager</name>
         <label>Get Owners Manager</label>
-        <locationX>1502</locationX>
-        <locationY>648</locationY>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
         <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
         <connector>
             <targetReference>If_Manager_Exist</targetReference>
@@ -480,8 +487,8 @@
     <recordUpdates>
         <name>RES_Update_Opportunity_Address_Fields</name>
         <label>Update Opportunity Address Fields</label>
-        <locationX>182</locationX>
-        <locationY>1440</locationY>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
         <connector>
             <targetReference>Auto_Create_Task_on_Lead_Conversion</targetReference>
         </connector>
@@ -540,8 +547,8 @@
     <recordUpdates>
         <name>SLA_breached</name>
         <label>SLA breached</label>
-        <locationX>1502</locationX>
-        <locationY>540</locationY>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
         <connector>
             <targetReference>Get_Owners_Manager</targetReference>
         </connector>
@@ -550,8 +557,8 @@
     <recordUpdates>
         <name>Update_Contact_BirthDate</name>
         <label>Update Contact BirthDate</label>
-        <locationX>314</locationX>
-        <locationY>1140</locationY>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
         <connector>
             <targetReference>Check_Related_to_Opportunity</targetReference>
         </connector>
@@ -574,8 +581,8 @@
     <recordUpdates>
         <name>Update_Person_Account_BirthDate</name>
         <label>Update Person Account BirthDate</label>
-        <locationX>50</locationX>
-        <locationY>1140</locationY>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
         <connector>
             <targetReference>Check_Related_to_Opportunity</targetReference>
         </connector>
@@ -603,8 +610,8 @@
         <object>Account</object>
     </recordUpdates>
     <start>
-        <locationX>1277</locationX>
-        <locationY>48</locationY>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
         <connector>
             <targetReference>If_Status_has_Changed</targetReference>
         </connector>
@@ -638,8 +645,8 @@
     <subflows>
         <name>Notify_User_s_Manager</name>
         <label>Notify User&apos;s Manager</label>
-        <locationX>1370</locationX>
-        <locationY>864</locationY>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
         <flowName>RES_AutoLaunchFlow_Notify_User_s_Manager</flowName>
         <inputAssignments>
             <name>LeadId</name>
