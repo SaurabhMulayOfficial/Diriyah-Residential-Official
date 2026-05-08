@@ -228,7 +228,7 @@ public with sharing class RES_LeadServices {
                                     .get('RES_Company').getRecordTypeId();
 
         for (Lead l : newLeadList) {
-            if(l.LeadSource == 'Z06'){
+            if(l.LeadSource == 'Z06' && l.RES_Form_Submission_ID__c != null){
                 if(l.RES_Marketing_Area__c == 'BRANDED_RESIDENTIAL' || l.RES_Marketing_Area__c == 'WADI_SAFAR'){
                     l.RecordTypeId = individualRecordTypeId;
                 } else {
