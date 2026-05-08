@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <Package xmlns="http://soap.sforce.com/2006/04/metadata">
     <types>
         <members>RES_LeadServices</members>
@@ -6,13 +6,30 @@
         <name>ApexClass</name>
     </types>
     <types>
+        <members>DIR_Lead_Retirement_Configuration__c</members>
+        <members>RES_Lead_History__c</members>
+        <name>CustomObject</name>
+    </types>
+    <types>
         <members>Lead.RES_CR_Number__c</members>
         <members>Lead.RES_Identification_Number__c</members>
+        <members>RES_Lead_History__c.RES_Change_Timestamp__c</members>
+        <members>RES_Lead_History__c.RES_ChangedBy__c</members>
+        <members>RES_Lead_History__c.RES_ChangedByUuid__c</members>
+        <members>RES_Lead_History__c.RES_ChangeType__c</members>
+        <members>RES_Lead_History__c.RES_DocumentType__c</members>
+        <members>RES_Lead_History__c.RES_Lead__c</members>
+        <members>RES_Lead_History__c.RES_LeadId__c</members>
+        <members>RES_Lead_History__c.RES_ModificationType__c</members>
+        <members>RES_Lead_History__c.RES_NewValue__c</members>
+        <members>RES_Lead_History__c.RES_ObjectUUID__c</members>
+        <members>RES_Lead_History__c.RES_OldValue__c</members>
         <name>CustomField</name>
     </types>
     <types>
-        <members>DIR_Lead_Retirement_Configuration__c</members>
-        <name>CustomObject</name> 
+        <members>Admin</members>
+        <members>Diriyah Residential Sales Standard Profile</members>
+        <name>Profile</name>
     </types>
-    <version>65.0</version>
+    <version>66.0</version>
 </Package>
