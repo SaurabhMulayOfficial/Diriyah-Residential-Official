@@ -211,7 +211,7 @@
             <name>emailBody</name>
             <value>
                 <inputConfiguratorMode>Custom</inputConfiguratorMode>
-                <stringValue>&lt;p&gt;Hello {!User.Name},&lt;/p&gt;&lt;p&gt;Congratulations! The following Opportunity has been marked as Closed Won.&lt;/p&gt;&lt;strong&gt;Opportunity Name:&lt;/strong&gt;  &lt;a href=&quot;{!OrgBaseUrl}lightning/r/Opportunity/{!opportunityRecord.Id}/view&quot;&gt;{!opportunityRecord.Name}&lt;/a&gt;&lt;br&gt;&lt;strong&gt;Opportunity Owner:&lt;/strong&gt; {!ownerName}&lt;/br&gt;&lt;br&gt;&lt;strong&gt;Amount:&lt;/strong&gt; {!opportunityRecord.Amount}&lt;/br&gt;&lt;br&gt;&lt;strong&gt;Close Date:&lt;/strong&gt; {!opportunityRecord.CloseDate}&lt;/br&gt;&lt;br&gt;&lt;strong&gt;Stage:&lt;/strong&gt; {!opportunityRecord.StageName}&lt;/br&gt;&lt;p&gt;Please log in to Salesforce to review and take any necessary follow-up actions.&lt;/p&gt;</stringValue>
+                <stringValue>&lt;p&gt;Hello {!User.Name},&lt;/p&gt;&lt;p&gt;Congratulations! The following Opportunity has been marked as Closed Won.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Opportunity Name:&lt;/strong&gt;  &lt;a href=&quot;{!OrgBaseUrl}lightning/r/Opportunity/{!opportunityRecord.Id}/view&quot; rel=&quot;noopener noreferrer&quot; target=&quot;_blank&quot;&gt;{!opportunityRecord.Name}&lt;/a&gt;&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Opportunity Owner:&lt;/strong&gt; {!ownerName}&lt;/p&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Close Date:&lt;/strong&gt; {!opportunityRecord.CloseDate}&lt;/p&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Stage:&lt;/strong&gt; {!opportunityRecord.StageName}&lt;/p&gt;&lt;p&gt;Please log in to Salesforce to review and take any necessary follow-up actions.&lt;/p&gt;</stringValue>
             </value>
         </inputParameters>
         <inputParameters>
@@ -325,7 +325,7 @@
     <formulas>
         <name>oppWonNotificationBody</name>
         <dataType>String</dataType>
-        <expression>{!ownerName} &amp; &quot; has Closed Won &quot; &amp; {!opportunityRecord.Name} &amp; &quot; worth Amount &quot; &amp; TEXT({!opportunityRecord.Amount}) &amp; &quot;. Please review.&quot;</expression>
+        <expression>{!ownerName} &amp; &quot; has Closed Won &quot; &amp; {!opportunityRecord.Name} &amp; &quot;. Please review.&quot;</expression>
     </formulas>
     <formulas>
         <name>OrgBaseUrl</name>
