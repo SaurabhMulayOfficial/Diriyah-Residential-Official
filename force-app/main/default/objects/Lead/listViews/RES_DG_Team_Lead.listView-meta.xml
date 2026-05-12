@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ListView xmlns="http://soap.sforce.com/2006/04/metadata">
-    <fullName>DIR_My_Leads</fullName>
+    <fullName>RES_DG_Team_Lead</fullName>
     <columns>DIR_Lead_Id__c</columns>
     <columns>FULL_NAME</columns>
     <columns>LEAD.COMPANY</columns>
@@ -10,33 +10,32 @@
     <columns>LEAD.STATUS</columns>
     <columns>LEAD.CREATED_DATE</columns>
     <columns>CORE.USERS.ALIAS</columns>
-    <filterScope>Mine</filterScope>
-    <label>My Leads</label>
+    <filterScope>Queue</filterScope>
+    <label>DG Team</label>
+    <queue>RES_DG_Team</queue>
     <sharedTo>
-        <role>RES_Contract_Amendments_Operations_Specialist</role>
+        <role>RES_Business_Development_Corporate_CBDO</role>
+        <role>RES_Executive_Corporate_CEO</role>
         <role>RES_External_Sales_Operations_Operations_Senior_Manager</role>
-        <role>RES_External_Sales_Operations_Operations_Specialist</role>
         <role>RES_Internal_Sales_Contracts_Operations_Senior_Manager</role>
         <role>RES_Internal_Sales_Operations_Operations_Manager</role>
-        <role>RES_Internal_Sales_Operations_Operations_Specialist</role>
         <role>RES_Operational_Excellence_Operations_Manager</role>
-        <role>RES_Operational_Excellence_Operations_Specialist</role>
         <role>RES_Sales_Compliance_Manager</role>
         <role>RES_Sales_DII_Manager</role>
-        <role>RES_Sales_DII_Specialist</role>
+        <role>RES_Sales_DI_DII_Senior_Director</role>
         <role>RES_Sales_DI_Manager</role>
-        <role>RES_Sales_DI_Relationship_Manager</role>
         <role>RES_Sales_DI_Senior_Manager</role>
-        <role>RES_Sales_DI_Specialist</role>
+        <role>RES_Sales_Enterprise_Chief_Sales_Office</role>
+        <role>RES_Sales_Enterprise_Senior_Executive_Assistant</role>
+        <role>RES_Sales_Excellence_Associate_Director</role>
+        <role>RES_Sales_Excellence_Senior_Director</role>
         <role>RES_Sales_External_Manager</role>
-        <role>RES_Sales_External_Relationship_Manager</role>
-        <role>RES_Sales_External_Specialist</role>
-        <role>RES_Sales_Implementation_Excellence_Specialist</role>
+        <role>RES_Sales_External_Senior_Director</role>
+        <role>RES_Sales_Operations_Executive_Director</role>
         <role>RES_Sales_Planning_Senior_Manager</role>
-        <role>RES_Sales_Planning_Specialist</role>
         <role>RES_Sales_Wadi_Safar_Manager</role>
+        <role>RES_Sales_Wadi_Safar_Senior_Director</role>
         <role>RES_Sales_Wadi_Safar_Senior_Manager</role>
-        <role>RES_Sales_Wadi_Safar_Specialist_I</role>
-        <role>RES_Sales_Wadi_Safar_Specialist_II</role>
+        <role>RES_Treasury_Executive_Director</role>
     </sharedTo>
 </ListView>
