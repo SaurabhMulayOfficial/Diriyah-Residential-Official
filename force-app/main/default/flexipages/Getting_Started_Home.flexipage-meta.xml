@@ -53,7 +53,7 @@
                         <rightValue>Diriyah Residential Sales Standard Profile</rightValue>
                     </criteria>
                     <criteria>
-                        <leftValue>{!$Permission.CustomPermission.RES_Manager_Dashboard_Visibility}</leftValue>
+                        <leftValue>{!$Permission.CustomPermission.RES_Specalist_Dashboard_Visibility}</leftValue>
                         <operator>EQUAL</operator>
                         <rightValue>true</rightValue>
                     </criteria>
@@ -68,7 +68,7 @@
                 </componentInstanceProperties>
                 <componentInstanceProperties>
                     <name>hideOnError</name>
-                    <value>true</value>
+                    <value>false</value>
                 </componentInstanceProperties>
                 <componentName>desktopDashboards:embeddedDashboard</componentName>
                 <identifier>desktopDashboards_embeddedDashboard4</identifier>
@@ -80,7 +80,7 @@
                         <rightValue>Diriyah Residential Sales Standard Profile</rightValue>
                     </criteria>
                     <criteria>
-                        <leftValue>{!$Permission.CustomPermission.RES_Specalist_Dashboard_Visibility}</leftValue>
+                        <leftValue>{!$Permission.CustomPermission.RES_Manager_Dashboard_Visibility}</leftValue>
                         <operator>EQUAL</operator>
                         <rightValue>true</rightValue>
                     </criteria>
