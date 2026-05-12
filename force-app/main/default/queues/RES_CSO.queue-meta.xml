@@ -2,6 +2,11 @@
 <Queue xmlns="http://soap.sforce.com/2006/04/metadata">
     <doesSendEmailToMembers>false</doesSendEmailToMembers>
     <name>CSO</name>
+    <queueMembers>
+        <roles>
+            <role>RES_Sales_Enterprise_Chief_Sales_Office</role>
+        </roles>
+    </queueMembers>
     <queueSobject>
         <sobjectType>Lead</sobjectType>
     </queueSobject>
