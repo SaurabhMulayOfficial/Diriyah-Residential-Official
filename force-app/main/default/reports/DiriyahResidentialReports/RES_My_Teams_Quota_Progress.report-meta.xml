@@ -1,12 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Report xmlns="http://soap.sforce.com/2006/04/metadata">
     <aggregates>
-        <calculatedFormula>Opportunity.RES_Is_Overdue_Flag__c:SUM</calculatedFormula>
-        <datatype>number</datatype>
+        <calculatedFormula>AMOUNT:SUM * (PROBABILITY:AVG / 100)</calculatedFormula>
+        <datatype>currency</datatype>
         <developerName>FORMULA1</developerName>
         <isActive>true</isActive>
         <isCrossBlock>false</isCrossBlock>
-        <masterLabel>Overdue Count</masterLabel>
+        <masterLabel>Weighted Amount</masterLabel>
+        <scale>0</scale>
+    </aggregates>
+    <aggregates>
+        <calculatedFormula>RowCount</calculatedFormula>
+        <datatype>number</datatype>
+        <developerName>FORMULA2</developerName>
+        <isActive>true</isActive>
+        <isCrossBlock>false</isCrossBlock>
+        <masterLabel>Deal Count</masterLabel>
         <scale>0</scale>
     </aggregates>
     <columns>
@@ -23,6 +32,9 @@
     </columns>
     <columns>
         <field>FISCAL_QUARTER</field>
+    </columns>
+    <columns>
+        <field>AMOUNT</field>
     </columns>
     <columns>
         <field>PROBABILITY</field>
@@ -48,11 +60,18 @@
     <currency>SAR</currency>
     <filter>
         <criteriaItems>
-            <column>CLOSE_DATE</column>
+            <column>AMOUNT</column>
             <columnToColumn>false</columnToColumn>
             <isUnlocked>false</isUnlocked>
-            <operator>lessThan</operator>
-            <value>TODAY</value>
+            <operator>greaterThan</operator>
+            <value>SAR 0</value>
+        </criteriaItems>
+        <criteriaItems>
+            <column>FORECAST_CATEGORY</column>
+            <columnToColumn>false</columnToColumn>
+            <isUnlocked>false</isUnlocked>
+            <operator>notEqual</operator>
+            <value>Omitted</value>
         </criteriaItems>
         <language>en_US</language>
     </filter>
@@ -62,7 +81,16 @@
         <field>FULL_NAME</field>
         <sortOrder>Asc</sortOrder>
     </groupingsDown>
-    <name>My Overdue Opportunities</name>
+    <groupingsDown>
+        <dateGranularity>Day</dateGranularity>
+        <field>FORECAST_CATEGORY</field>
+        <sortOrder>Asc</sortOrder>
+    </groupingsDown>
+    <groupingsDown>
+        <field>CLOSE_MONTH</field>
+        <sortOrder>Asc</sortOrder>
+    </groupingsDown>
+    <name>My Team&apos;s Quota Progress</name>
     <params>
         <name>open</name>
         <value>open</value>
@@ -76,12 +104,12 @@
         <value>1</value>
     </params>
     <reportType>Opportunity</reportType>
-    <scope>user</scope>
+    <scope>team</scope>
     <showDetails>true</showDetails>
     <showGrandTotal>true</showGrandTotal>
     <showSubTotals>true</showSubTotals>
     <timeFrameFilter>
-        <dateColumn>CREATED_DATE</dateColumn>
-        <interval>INTERVAL_CUSTOM</interval>
+        <dateColumn>CLOSE_DATE</dateColumn>
+        <interval>INTERVAL_CURNEXT1</interval>
     </timeFrameFilter>
 </Report>
