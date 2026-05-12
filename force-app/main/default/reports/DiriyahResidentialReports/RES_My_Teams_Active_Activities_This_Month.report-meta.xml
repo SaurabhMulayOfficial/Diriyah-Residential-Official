@@ -27,37 +27,17 @@
     <columns>
         <field>TASK</field>
     </columns>
-    <columns>
-        <field>COMPLETED_DATE_TIME</field>
-    </columns>
     <currency>SAR</currency>
-    <filter>
-        <criteriaItems>
-            <column>STATUS</column>
-            <columnToColumn>false</columnToColumn>
-            <isUnlocked>false</isUnlocked>
-            <operator>equals</operator>
-            <value>Completed</value>
-        </criteriaItems>
-        <criteriaItems>
-            <column>DUE_DATE</column>
-            <columnToColumn>false</columnToColumn>
-            <isUnlocked>false</isUnlocked>
-            <operator>equals</operator>
-            <value>THIS_MONTH</value>
-        </criteriaItems>
-        <language>en_US</language>
-    </filter>
     <format>Summary</format>
     <groupingsDown>
         <dateGranularity>Day</dateGranularity>
         <field>ASSIGNED</field>
         <sortOrder>Asc</sortOrder>
     </groupingsDown>
-    <name>My Completed Activities This Month</name>
+    <name>My Team&apos;s Active Activities This Month</name>
     <params>
         <name>closed</name>
-        <value>closed</value>
+        <value>open</value>
     </params>
     <params>
         <name>type</name>
@@ -68,14 +48,14 @@
         <value>1</value>
     </params>
     <reportType>Activity</reportType>
-    <scope>user</scope>
+    <scope>team</scope>
     <showDetails>true</showDetails>
     <showGrandTotal>true</showGrandTotal>
     <showSubTotals>true</showSubTotals>
     <sortColumn>DUE_DATE</sortColumn>
     <sortOrder>Asc</sortOrder>
     <timeFrameFilter>
-        <dateColumn>CREATED_DATE</dateColumn>
-        <interval>INTERVAL_CUSTOM</interval>
+        <dateColumn>DUE_DATE</dateColumn>
+        <interval>INTERVAL_THISMONTH</interval>
     </timeFrameFilter>
 </Report>

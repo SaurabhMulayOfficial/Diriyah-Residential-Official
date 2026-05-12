@@ -1,59 +1,74 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Report xmlns="http://soap.sforce.com/2006/04/metadata">
     <aggregates>
-        <calculatedFormula>Activity.RES_Is_Overdue_Task__c:SUM</calculatedFormula>
+        <calculatedFormula>Opportunity.RES_Is_Overdue_Flag__c:SUM</calculatedFormula>
         <datatype>number</datatype>
         <developerName>FORMULA1</developerName>
         <isActive>true</isActive>
         <isCrossBlock>false</isCrossBlock>
-        <masterLabel>Overdue Tasks</masterLabel>
+        <masterLabel>Overdue Count</masterLabel>
+        <scale>0</scale>
+    </aggregates>
+    <aggregates>
+        <calculatedFormula>AMOUNT:SUM</calculatedFormula>
+        <datatype>currency</datatype>
+        <developerName>FORMULA2</developerName>
+        <isActive>false</isActive>
+        <isCrossBlock>false</isCrossBlock>
+        <masterLabel>Overdue Amount</masterLabel>
         <scale>0</scale>
     </aggregates>
     <colorRanges>
         <columnName>FORMULA1</columnName>
-        <highBreakpoint>5.0</highBreakpoint>
-        <highColor>#B50E03</highColor>
-        <lowBreakpoint>1.0</lowBreakpoint>
-        <lowColor>#006714</lowColor>
+        <highBreakpoint>10.0</highBreakpoint>
+        <highColor>#006714</highColor>
+        <lowBreakpoint>0.0</lowBreakpoint>
+        <lowColor>#B50E03</lowColor>
         <midColor>#B56200</midColor>
     </colorRanges>
     <columns>
-        <field>DUE_DATE</field>
+        <field>ROLLUP_DESCRIPTION</field>
     </columns>
     <columns>
-        <field>ACCOUNT</field>
+        <field>FULL_NAME</field>
     </columns>
     <columns>
-        <field>OPPORTUNITY</field>
+        <field>ACCOUNT_NAME</field>
     </columns>
     <columns>
-        <field>CONTACT</field>
+        <field>OPPORTUNITY_NAME</field>
     </columns>
     <columns>
-        <field>LEAD</field>
+        <field>STAGE_NAME</field>
     </columns>
     <columns>
-        <field>SUBJECT</field>
+        <field>FISCAL_QUARTER</field>
     </columns>
     <columns>
-        <field>PRIORITY</field>
+        <field>PROBABILITY</field>
     </columns>
     <columns>
-        <field>STATUS</field>
+        <field>AGE</field>
     </columns>
     <columns>
-        <field>TASK</field>
+        <field>CLOSE_DATE</field>
     </columns>
     <columns>
-        <field>DUE_TIME</field>
+        <field>CREATED_DATE</field>
     </columns>
     <columns>
-        <field>WHAT_NAME</field>
+        <field>NEXT_STEP</field>
+    </columns>
+    <columns>
+        <field>LEAD_SOURCE</field>
+    </columns>
+    <columns>
+        <field>TYPE</field>
     </columns>
     <currency>SAR</currency>
     <filter>
         <criteriaItems>
-            <column>DUE_DATE</column>
+            <column>CLOSE_DATE</column>
             <columnToColumn>false</columnToColumn>
             <isUnlocked>false</isUnlocked>
             <operator>lessThan</operator>
@@ -65,42 +80,40 @@
     <formattingRules>
         <columnName>FORMULA1</columnName>
         <values>
-            <backgroundColor>#006714</backgroundColor>
-            <rangeUpperBound>1.0</rangeUpperBound>
+            <backgroundColor>#B50E03</backgroundColor>
+            <rangeUpperBound>0.0</rangeUpperBound>
         </values>
         <values>
             <backgroundColor>#B56200</backgroundColor>
-            <rangeUpperBound>5.0</rangeUpperBound>
+            <rangeUpperBound>10.0</rangeUpperBound>
         </values>
         <values>
-            <backgroundColor>#B50E03</backgroundColor>
+            <backgroundColor>#006714</backgroundColor>
         </values>
     </formattingRules>
     <groupingsDown>
         <dateGranularity>Day</dateGranularity>
-        <field>ASSIGNED</field>
+        <field>Opportunity.RES_Overdue_Severity__c</field>
         <sortOrder>Asc</sortOrder>
     </groupingsDown>
-    <name>My Overdue Tasks All Time</name>
+    <name>My Team&apos;s Overdue Opportunities by Sever</name>
     <params>
-        <name>closed</name>
+        <name>open</name>
         <value>open</value>
     </params>
     <params>
-        <name>type</name>
-        <value>te</value>
+        <name>probability</name>
+        <value>&gt;0</value>
     </params>
     <params>
         <name>co</name>
         <value>1</value>
     </params>
-    <reportType>Activity</reportType>
-    <scope>user</scope>
+    <reportType>Opportunity</reportType>
+    <scope>team</scope>
     <showDetails>true</showDetails>
     <showGrandTotal>true</showGrandTotal>
     <showSubTotals>true</showSubTotals>
-    <sortColumn>DUE_DATE</sortColumn>
-    <sortOrder>Asc</sortOrder>
     <timeFrameFilter>
         <dateColumn>CREATED_DATE</dateColumn>
         <interval>INTERVAL_CUSTOM</interval>
