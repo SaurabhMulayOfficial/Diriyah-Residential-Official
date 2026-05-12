@@ -258,4 +258,75 @@ public with sharing class RES_LeadServices {
         RES_ReassignmentLogicHandler.updateRoutingRecords(routingUpdates);
     }
 
+
+    public static void manageLeadRoutingRecords(List<Lead> leadList, Map<Id, Lead> oldMap){
+        if(leadList == null || leadList.isEmpty()){
+            return;
+        }
+
+        Set<Id> leadIds = new Set<Id>();
+        for(Lead l: leadList){
+            if(l.OwnerId != oldMap.get(l.Id).OwnerId){
+                leadIds.add(l.Id);
+            }
+        }
+        List<RES_Lead_Routing__c> leadRoutingRecords = new RES_LeadRoutingDAO().getRoutingRecordsByLeadIds(leadIds);
+
+        
+        try{
+            deleteRoutingRecords(leadRoutingRecords);
+        }catch(Exception e){
+            System.debug('Failed to manage lead routing records: ' + e.getMessage());
+        }
+
+        Set<String> leadSources = new Set<String>();
+        for(Lead l: leadList){
+            if(l.OwnerId != oldMap.get(l.Id).OwnerId){
+                leadSources.add(l.LeadSource);
+            }
+        }
+
+        List<RES_Assignment_Rule__c> assignmentRules = new RES_AssignmentRuleDAO().getRuleByLeadChannel(leadSources);
+        System.debug('Assignment rules for lead channels: ' + assignmentRules);
+        Map<Id, Map<String, Id>> userToChannelMapping = new Map<Id, Map<String, Id>>();
+
+        for(RES_Assignment_Rule__c rule: assignmentRules){
+            List<String> channels = rule.RES_Assignment_Config__r.RES_Channel__c.split(';');
+            for(String channel: channels){
+                channel = channel.trim();
+                if(!userToChannelMapping.containsKey(rule.RES_User__c)){
+                    userToChannelMapping.put(rule.RES_User__c, new Map<String, Id>());
+                }
+                userToChannelMapping.get(rule.RES_User__c).put(channel, rule.Id);
+            }
+        }
+
+        List<RES_Lead_Routing__c> routingRecordsToInsert = new List<RES_Lead_Routing__c>();
+
+        for(Lead l: leadList){
+            if(l.OwnerId != oldMap.get(l.Id).OwnerId){
+                if(userToChannelMapping.containsKey(l.OwnerId) && userToChannelMapping.get(l.OwnerId).containsKey(l.LeadSource)){
+                    routingRecordsToInsert.add(new RES_Lead_Routing__c(
+                        RES_Lead__c = l.Id,
+                        RES_Assignment_Rule__c = userToChannelMapping.get(l.OwnerId).get(l.LeadSource)
+                    ));
+                }
+            }
+        }
+
+        try {
+            RES_ReassignmentLogicHandler.createRoutingRecords(routingRecordsToInsert);
+        } catch (Exception e) {
+            System.debug('Failed to create lead routing records: ' + e.getMessage());
+        }
+    }
+
+    public static void deleteRoutingRecords(List<RES_Lead_Routing__c> leadRoutingRecords){
+        try{
+            Database.delete(leadRoutingRecords, true, AccessLevel.SYSTEM_MODE);
+        }catch(Exception e){
+            System.debug('Failed to delete lead routing records: ' + e.getMessage());
+        }
+    }
+    
 }
