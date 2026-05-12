@@ -217,8 +217,7 @@ public with sharing class RES_ReassignmentLogicHandler {
             System.debug('Exception while updating records' + e.getMessage());
         }
     }
-
-
+    
     public static void updateRoutingRecords(List<leadRoutingWrapper> routingUpdates){
         List<RES_Lead_Routing__c> routingRecords = new List<RES_Lead_Routing__c>();
         for(leadRoutingWrapper wrapper: routingUpdates){
@@ -228,14 +227,23 @@ public with sharing class RES_ReassignmentLogicHandler {
                 RES_Lead__c = leadId,
                 RES_Assignment_Rule__c = ruleId
             ));
-
         }
+
+        try{
+            createRoutingRecords(routingRecords);
+        }catch(Exception e){
+            System.debug('Exception while inserting routing records' + e.getMessage());
+        }
+    }
+
+    public static void createRoutingRecords(List<RES_Lead_Routing__c> routingRecords){
         try{
             Database.insert(routingRecords, true, AccessLevel.SYSTEM_MODE);
         }catch(Exception e){
             System.debug('Exception while inserting routing records' + e.getMessage());
         }
     }
+
 
     public static void clearStaticVariables(){
         recordTypes.clear();
