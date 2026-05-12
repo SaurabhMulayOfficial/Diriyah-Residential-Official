@@ -51,16 +51,6 @@
         <field>WHAT_NAME</field>
     </columns>
     <currency>SAR</currency>
-    <filter>
-        <criteriaItems>
-            <column>DUE_DATE</column>
-            <columnToColumn>false</columnToColumn>
-            <isUnlocked>false</isUnlocked>
-            <operator>lessThan</operator>
-            <value>TODAY</value>
-        </criteriaItems>
-        <language>en_US</language>
-    </filter>
     <format>Summary</format>
     <formattingRules>
         <columnName>FORMULA1</columnName>
@@ -81,7 +71,7 @@
         <field>ASSIGNED</field>
         <sortOrder>Asc</sortOrder>
     </groupingsDown>
-    <name>My Overdue Tasks All Time</name>
+    <name>My Team&apos;s Tasks — Today&apos;s Priority</name>
     <params>
         <name>closed</name>
         <value>open</value>
@@ -95,14 +85,14 @@
         <value>1</value>
     </params>
     <reportType>Activity</reportType>
-    <scope>user</scope>
+    <scope>team</scope>
     <showDetails>true</showDetails>
     <showGrandTotal>true</showGrandTotal>
     <showSubTotals>true</showSubTotals>
     <sortColumn>DUE_DATE</sortColumn>
     <sortOrder>Asc</sortOrder>
     <timeFrameFilter>
-        <dateColumn>CREATED_DATE</dateColumn>
-        <interval>INTERVAL_CUSTOM</interval>
+        <dateColumn>DUE_DATE</dateColumn>
+        <interval>INTERVAL_TODAY</interval>
     </timeFrameFilter>
 </Report>

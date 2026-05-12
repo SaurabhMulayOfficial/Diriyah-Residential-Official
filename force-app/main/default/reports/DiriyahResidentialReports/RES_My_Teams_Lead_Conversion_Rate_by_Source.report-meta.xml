@@ -1,17 +1,35 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Report xmlns="http://soap.sforce.com/2006/04/metadata">
+    <aggregates>
+        <calculatedFormula>CONVERTED:SUM / RowCount</calculatedFormula>
+        <datatype>percent</datatype>
+        <developerName>FORMULA1</developerName>
+        <isActive>true</isActive>
+        <isCrossBlock>false</isCrossBlock>
+        <masterLabel>Conversion Rate (%)</masterLabel>
+        <scale>2</scale>
+    </aggregates>
+    <aggregates>
+        <calculatedFormula>ROUND(RowCount,2)</calculatedFormula>
+        <datatype>number</datatype>
+        <developerName>FORMULA2</developerName>
+        <isActive>false</isActive>
+        <isCrossBlock>false</isCrossBlock>
+        <masterLabel>Converted Leads (Count)</masterLabel>
+        <scale>0</scale>
+    </aggregates>
     <chart>
         <backgroundColor1>#FFFFFF</backgroundColor1>
         <backgroundColor2>#FFFFFF</backgroundColor2>
         <backgroundFadeDir>Diagonal</backgroundFadeDir>
         <chartSummaries>
             <axisBinding>y</axisBinding>
-            <column>RowCount</column>
+            <column>FORMULA1</column>
         </chartSummaries>
         <chartType>HorizontalBar</chartType>
         <enableHoverLabels>false</enableHoverLabels>
         <expandOthers>true</expandOthers>
-        <groupingColumn>STATUS</groupingColumn>
+        <groupingColumn>LEAD_SOURCE</groupingColumn>
         <location>CHART_BOTTOM</location>
         <showAxisLabels>false</showAxisLabels>
         <showPercentage>false</showPercentage>
@@ -24,6 +42,14 @@
         <titleColor>#000000</titleColor>
         <titleSize>18</titleSize>
     </chart>
+    <colorRanges>
+        <columnName>FORMULA1</columnName>
+        <highBreakpoint>25.0</highBreakpoint>
+        <highColor>#006714</highColor>
+        <lowBreakpoint>10.0</lowBreakpoint>
+        <lowColor>#B50E03</lowColor>
+        <midColor>#B56200</midColor>
+    </colorRanges>
     <columns>
         <field>FIRST_NAME</field>
     </columns>
@@ -31,48 +57,56 @@
         <field>LAST_NAME</field>
     </columns>
     <columns>
-        <field>COMPANY</field>
-    </columns>
-    <columns>
-        <field>EMAIL</field>
-    </columns>
-    <columns>
-        <field>LEAD_SOURCE</field>
+        <field>RATING</field>
     </columns>
     <columns>
         <field>OWNER</field>
     </columns>
+    <columns>
+        <aggregateTypes>Sum</aggregateTypes>
+        <field>CONVERTED</field>
+    </columns>
+    <columns>
+        <field>CREATED_DATE</field>
+    </columns>
     <currency>SAR</currency>
     <filter>
         <criteriaItems>
-            <column>STATUS</column>
-            <columnToColumn>false</columnToColumn>
-            <isUnlocked>true</isUnlocked>
-            <operator>notEqual</operator>
-            <value>,Converted,05</value>
-        </criteriaItems>
-        <criteriaItems>
-            <column>CONVERTED</column>
+            <column>LEAD_SOURCE</column>
             <columnToColumn>false</columnToColumn>
             <isUnlocked>false</isUnlocked>
-            <operator>equals</operator>
-            <value>0</value>
+            <operator>notEqual</operator>
+            <value></value>
         </criteriaItems>
         <language>en_US</language>
     </filter>
     <format>Summary</format>
+    <formattingRules>
+        <columnName>FORMULA1</columnName>
+        <values>
+            <backgroundColor>#B50E03</backgroundColor>
+            <rangeUpperBound>10.0</rangeUpperBound>
+        </values>
+        <values>
+            <backgroundColor>#B56200</backgroundColor>
+            <rangeUpperBound>25.0</rangeUpperBound>
+        </values>
+        <values>
+            <backgroundColor>#006714</backgroundColor>
+        </values>
+    </formattingRules>
     <groupingsDown>
         <dateGranularity>Day</dateGranularity>
-        <field>STATUS</field>
+        <field>LEAD_SOURCE</field>
         <sortOrder>Asc</sortOrder>
     </groupingsDown>
-    <name>My Total Active Leads</name>
+    <name>My Team&apos;s Lead Conversion Rate by Source</name>
     <params>
         <name>co</name>
         <value>1</value>
     </params>
     <reportType>LeadList</reportType>
-    <scope>user</scope>
+    <scope>team</scope>
     <showDetails>true</showDetails>
     <showGrandTotal>true</showGrandTotal>
     <showSubTotals>true</showSubTotals>
