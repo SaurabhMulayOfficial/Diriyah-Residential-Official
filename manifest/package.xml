@@ -24,6 +24,10 @@
         <members>RES_Lead_History__c.RES_NewValue__c</members>
         <members>RES_Lead_History__c.RES_ObjectUUID__c</members>
         <members>RES_Lead_History__c.RES_OldValue__c</members>
+		 <members>Lead.RES_Villa_of_Interest__c</members>
+        <members>Lead.RES_Area_Of_Interest__c</members>
+        <members>Lead.RES_Project_of_Interest__c</members>
+        <members>Lead.RES_Unit_of_Interest__c</members>
         <name>CustomField</name>
     </types>
     <types>
@@ -141,5 +145,10 @@
 		<members>Opportunity.RES_Validation_Rule_on_IdentificationNum</members>
 		<name>ValidationRule</name>
 	</types>
+	<types>
+    <members>Lead.RES_Company</members>
+    <members>Lead.RES_Individual</members>
+    <name>RecordType</name>
+</types>
 	<version>65.0</version>
 </Package>
