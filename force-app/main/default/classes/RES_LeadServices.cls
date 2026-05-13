@@ -12,76 +12,46 @@ public with sharing class RES_LeadServices {
     public class InputWrapper {
         @InvocableVariable(required=true)
         public Id leadId;
-
-        @InvocableVariable(required=true)
-        public Id previousOwnerId;
-
         @InvocableVariable(required=true)
         public Id currentOwnerId;
     }
     
     @InvocableMethod(label='Handle Lead Owner Change')
     public static void getNewOwnerForRetiredLeads(List<InputWrapper> inputs){
-        Set<Id> queueIds = new Set<Id>();
-        Set<Id> activeUsers = new Set<Id>();
-
-        for(InputWrapper input: inputs){
-            if(input.leadId != null && input.previousOwnerId != null){
-                queueIds.add(input.previousOwnerId);
-            }
-        }
-
-        if(queueIds.isEmpty())return;
-
-        List<UserServicePresence> userPresence = new RES_UserServicePresenceDAOLayer().getActiveUsers();
-        
-        if(!userPresence.isEmpty()){
-            for(UserServicePresence u: userPresence){
-                activeUsers.add(u.userId);
-            }
-        }
-
-        Map<Id, Set<Id>> groupToUserMapping = new Map<Id,Set<Id>>();
-
-        if(!queueIds.isEmpty()){
-            groupToUserMapping = new RES_GroupMemberDAOLayer().getGroupMembersByIds(queueIds);
-        }
-
-        List<RES_Ownership_Reassignment_Event__e> eventsToPublish = new List<RES_Ownership_Reassignment_Event__e>();
-
         Integer slaInHours = Integer.valueOf(SYSTEM.Label.RES_Lead_SLA_In_hours);
         BusinessHours bh = (BusinessHours) new RES_BusinessHoursDAOLayer().getDefaultBusinessHours()[0];
-        List<Lead> leadToUpdate = new List<Lead>();
+        Set<Id> leadIds = new Set<Id>();
+    
         for(InputWrapper input: inputs){
-            if(input.leadId == null)continue;
-            if(!String.valueOf(input.currentOwnerId).startsWith('005'))continue; 
-            Id nextOwner = getNextOwner(input.previousOwnerId, input.currentOwnerId, groupToUserMapping, activeUsers);
-            if(nextOwner != null){
-                eventsToPublish.add(new RES_Ownership_Reassignment_Event__e(
-                    RES_LeadId__c = input.leadId,
-                    RES_OwnerId__c = nextOwner
-                ));
-                Lead l = new Lead(Id = input.leadId);
+            leadIds.add(input.leadId);
+        }
+
+        List<Lead> queriedLeads = new RES_LeadDAOLayer().getLeadsById(leadIds);
+        if(!queriedLeads.isEmpty()){
+
+            RES_ReassignmentLogicHandler.runLeadReassignment(queriedLeads, routingUpdates);
+            RES_LeadServices.updateRoutingRecordResults();
+            
+            for(Lead l: queriedLeads){
+                if(!String.valueOf(l.OwnerId).startsWith('005'))continue; 
+
                 startSla(l, bh, slaInHours, true);
                 l.RES_SLA_Cycle_Count__c = 0;
                 l.RES_SLA_Breach_Time__c = null;
                 l.status = '01';
                 l.RES_Lead_Sub_Status__c =  null;
-                leadToUpdate.add(l);
             }
+            
+            try{
+                Database.update(queriedLeads, true, AccessLevel.SYSTEM_MODE);
+            }
+            catch(Exception e){
+                System.debug('LeadServices.getNewOwnerForRetiredLeads: Failed to change Owner of Lead '+ e.getMessage());
+            } 
+
         }
 
-        if(eventsToPublish.isEmpty())return;
-
-        try{
-            publishReassignmentEventInBulk(eventsToPublish);
-            if(!leadToUpdate.isEmpty()){
-                Database.update(leadToUpdate, true, AccessLevel.SYSTEM_MODE);
-            }
-        }
-        catch(Exception e){
-            System.debug('LeadServices.getNewOwnerForRetiredLeads: Failed to change Owner of Lead '+ e.getMessage());
-        }
+        clearStaticVariables();
     }
 
     public static void publishReassignmentEventInBulk(List<RES_Ownership_Reassignment_Event__e> events){
@@ -98,12 +68,14 @@ public with sharing class RES_LeadServices {
         if(leadList == null || leadList.isEmpty()){
             return;
         }
-        List<Lead> toUpdate = new List<lead>();
-
+    
         Integer slaInHours = Integer.valueOf(SYSTEM.Label.RES_Lead_SLA_In_hours);
         BusinessHours bh = (BusinessHours) new RES_BusinessHoursDAOLayer().getDefaultBusinessHours()[0];
         Set<Id> queueIds = new Set<Id>();
         set<Id> activeUsers = new Set<Id>();
+
+        List<Lead> leadForReassignment = new List<Lead>();
+
 
         if(oldmap != null){
             for(lead l: leadList){
@@ -111,18 +83,6 @@ public with sharing class RES_LeadServices {
                     queueIds.add(l.RES_Previous_Lead_Owner__c);
                 }
             }
-
-            List<UserServicePresence> userPresence = new RES_UserServicePresenceDAOLayer().getActiveUsers();
-
-            for(UserServicePresence u: userPresence){
-                activeUsers.add(u.UserId);
-            }
-        }
-
-        Map<Id, Set<Id>> groupToUserMapping = new Map<Id,Set<Id>>();
-
-        if(!queueIds.isEmpty()){
-            groupToUserMapping = new RES_GroupMemberDAOLayer().getGroupMembersByIds(queueIds);
         }
         
         if(oldMap == null){
@@ -132,12 +92,6 @@ public with sharing class RES_LeadServices {
                 }
                 if(l.status == '01' && (l.OwnerId != null && String.valueOf(l.ownerId).startsWith('005'))){
                     startSla(l, bh, slaInHours, false);
-                    if(psr == true){
-                        if(previousOwner != null && previousOwner.containsKey(l.Id)){
-                            l.RES_Previous_Lead_Owner__c = previousOwner.get(l.Id);
-                        }
-                        toUpdate.add(l);
-                    }
                 }
             }
         }
@@ -153,30 +107,29 @@ public with sharing class RES_LeadServices {
                     }    
                 }
                 else if(l.RES_SLA_Status__c != oldMap.get(l.Id).RES_SLA_Status__c && l.RES_SLA_Status__c == 'Breached'){
-                    Id userIdToAssign;
-                    if(groupToUserMapping.containsKey(l.RES_Previous_Lead_Owner__c)){
-                        userIdToAssign = getNextOwner(l.RES_Previous_Lead_Owner__c, l.OwnerId, groupToUserMapping, activeUsers);
-                    }
-                    
-                    if(userIdToAssign != null){
-                        RES_LeadDeduplicationHandler.publishReassignmentEvent(l.Id, userIdToAssign);
-                        startSla(l, bh, slaInHours, true);
-                    }
+                    startSla(l, bh, slaInHours, true);
+                    leadForReassignment.add(l);
                 }
                 else if((oldmap.get(l.Id).OwnerId == null && String.valueOf(l.ownerId).startsWith('005')) || (l.OwnerId != oldmap.get(l.Id).OwnerId && String.valueOf(l.ownerId).startsWith('005'))){
                     if(l.RES_SLA_Status__c != 'Met'){
                         startSla(l, bh, slaInHours, false);
                     }
-                    
                 }
             }
-
         }
 
-        if(psr == true && !toUpdate.isEmpty()){
-            Database.upsert(toUpdate, true, AccessLevel.SYSTEM_MODE);
+        if(!leadForReassignment.isEmpty()){
+            RES_ReassignmentLogicHandler.runLeadReassignment(leadForReassignment, routingUpdates);
+            RES_LeadServices.updateRoutingRecordResults();
+
+            try{
+                Database.update(leadForReassignment, true, AccessLevel.SYSTEM_MODE);
+            }catch(Exception e){
+                System.debug('Failed to update SLA fields on Lead after reassignment: ' + e.getMessage());
+            }
         }
-    
+
+        clearStaticVariables();    
     }
 
     private static void startSla(Lead l, BusinessHours bh, Integer slaInHours, Boolean shouldCycleCount){
@@ -189,37 +142,6 @@ public with sharing class RES_LeadServices {
         l.RES_SLA_Due_Time__c = BusinessHours.add(bh.Id,SYSTEM.now(), slaInHours * 60 * 60 * 1000);
     }
 
-    public static Id getNextOwner(
-        Id previousQueueId,
-        Id currentOwnerId,
-        Map<Id, Set<Id>> groupToUserMapping,
-        Set<Id> activeUsers
-    ) {
-        if(previousQueueId == null || !groupToUserMapping.containsKey(previousQueueId)){
-            return null;
-        }
-
-        Set<Id> users = groupToUserMapping.get(previousQueueId);
-        Id fallbackUser;
-
-        for(Id u : users){
-            if(u == currentOwnerId) continue;
-            if(activeUsers.contains(u)){
-                return u;
-            }
-        }
-
-        if(users.contains(currentOwnerId)){
-            users.remove(currentOwnerId);
-        }
-
-        list<Id> userList = new List<Id>(users);
-        Integer N = userList.size();
-        if(N <= 0) return fallbackUser;
-        Integer randomIndex = (Integer) Math.mod(Math.abs(Crypto.getRandomInteger()), N);
-        fallbackUser = userList[randomIndex];
-        return fallbackUser;
-    }
 
     public static void selectLeadRecordType(List<Lead> newLeadList){
         Id individualRecordTypeId = Schema.SObjectType.Lead.getRecordTypeInfosByDeveloperName()
@@ -329,4 +251,8 @@ public with sharing class RES_LeadServices {
         }
     }
     
+    public static void clearStaticVariables(){
+        leadDuplicateWrapper.clear();
+        routingUpdates.clear();
+    }
 }

@@ -20,12 +20,6 @@
                 <elementReference>LeadId</elementReference>
             </value>
         </inputParameters>
-        <inputParameters>
-            <name>previousOwnerId</name>
-            <value>
-                <elementReference>previousOwnerId</elementReference>
-            </value>
-        </inputParameters>
         <nameSegment>RES_LeadServices</nameSegment>
         <offset>0</offset>
     </actionCalls>
@@ -220,28 +214,6 @@
         </rules>
     </decisions>
     <decisions>
-        <name>Check_required_Conditions</name>
-        <label>Check required Conditions</label>
-        <locationX>0</locationX>
-        <locationY>0</locationY>
-        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
-        <rules>
-            <name>Check_Previous_Owner</name>
-            <conditionLogic>and</conditionLogic>
-            <conditions>
-                <leftValueReference>$Record.RES_Previous_Lead_Owner__c</leftValueReference>
-                <operator>StartsWith</operator>
-                <rightValue>
-                    <stringValue>00G</stringValue>
-                </rightValue>
-            </conditions>
-            <connector>
-                <targetReference>Assign_Next_Owner_and_Update_Lead</targetReference>
-            </connector>
-            <label>Check Previous Owner</label>
-        </rules>
-    </decisions>
-    <decisions>
         <name>if_Due</name>
         <label>if DUE Date Is Null</label>
         <locationX>0</locationX>
@@ -324,7 +296,7 @@
                 </rightValue>
             </conditions>
             <connector>
-                <targetReference>Check_required_Conditions</targetReference>
+                <targetReference>Assign_Next_Owner_and_Update_Lead</targetReference>
             </connector>
             <label>Not Null</label>
         </rules>
