@@ -209,20 +209,27 @@ public with sharing class RES_ReassignmentLogicHandler {
                 Integer capacity = (Integer) currentRule.RES_Capacity__c;
 
                 if(leadCount < capacity){
-                    if(currentLead.Id != null){
-                        events.add(new RES_Ownership_Reassignment_Event__e(
-                            RES_LeadId__c = currentLead.Id,
-                            RES_OwnerId__c = currentRule.RES_User__c
-                        ));
-                        ruleToLeadCountOverhead.put(currentRule.Id, ruleToLeadCountOverhead.get(currentRule.Id) + 1);
+                    Boolean isOwnerChanged = false;
 
+                    if(currentLead.Id != null){
+                        if(currentRule.RES_User__c != currentLead.OwnerId){
+                            events.add(new RES_Ownership_Reassignment_Event__e(
+                                    RES_LeadId__c = currentLead.Id,
+                                    RES_OwnerId__c = currentRule.RES_User__c
+                                ));
+                            ruleToLeadCountOverhead.put(currentRule.Id, ruleToLeadCountOverhead.get(currentRule.Id) + 1);
+                            isOwnerChanged = true;
+                        }
                     }else{
                         currentLead.OwnerId = currentRule.RES_User__c;
+                        isOwnerChanged = true;
                         ruleToLeadCountOverhead.put(currentRule.Id, ruleToLeadCountOverhead.get(currentRule.Id) + 1);
                     }
         
                     currentLead.RES_Previous_Lead_Owner__c = queueId;
-                    routingUpdates.add(new leadRoutingWrapper(currentLead, currentRule));
+                    if(isOwnerChanged == true){
+                        routingUpdates.add(new leadRoutingWrapper(currentLead, currentRule));
+                    }
                     currentIndex = Math.mod( currentIndex + 1, N );
                     i+=1;
                 }
@@ -269,6 +276,7 @@ public with sharing class RES_ReassignmentLogicHandler {
         for(leadRoutingWrapper wrapper: routingUpdates){
             Id leadId = wrapper.leadRecord.Id;
             Id ruleId = wrapper.rule.Id;
+
             routingRecords.add(new RES_Lead_Routing__c(
                 RES_Lead__c = leadId,
                 RES_Assignment_Rule__c = ruleId
