@@ -128,6 +128,11 @@ public with sharing class RES_ReassignmentLogicHandler {
 
     public static void runReassignment(List<ReassignmentNode> reassignmentNodes, Map<Id, List<RES_Assignment_Rule__c>> assignmentRulesByConfig, List<leadRoutingWrapper> routingUpdates){
         system.debug('Running Reassignment Logic'+ reassignmentNodes + 'Assignment Rules by Config'+ assignmentRulesByConfig);
+        List<RES_Ownership_Reassignment_Event__e> events = new List<RES_Ownership_Reassignment_Event__e> ();
+
+        Map<Id, Integer> ruleToLeadCountOverhead = new Map<Id, Integer>();
+
+
         for(ReassignmentNode node: reassignmentNodes){
 
             Id configId = node.ConfigId;
@@ -144,7 +149,15 @@ public with sharing class RES_ReassignmentLogicHandler {
 
             if(assignmentRule == null || assignmentRule.isEmpty()){
                 for(Lead l: inputLeadList){
-                    l.OwnerId = queueId;
+                    if(l.Id != null){
+                        events.add(new RES_Ownership_Reassignment_Event__e(
+                            RES_LeadId__c = l.Id,
+                            RES_OwnerId__c = queueId
+                        ));
+                    }
+                    else{
+                        l.OwnerId = queueId;
+                    }
                     l.RES_Previous_Lead_Owner__c = queueId;
                 }
 
@@ -168,7 +181,15 @@ public with sharing class RES_ReassignmentLogicHandler {
 
             while(i < inputLeadList.size()){
                 if(visitedFullCapacity.size() == N){
-                    inputLeadList[i].OwnerId = queueId;
+                    if(inputLeadList[i].Id != null){
+                        events.add(new RES_Ownership_Reassignment_Event__e(
+                            RES_LeadId__c = inputLeadList[i].Id,
+                            RES_OwnerId__c = queueId
+                        ));
+                    }else{
+                        inputLeadList[i].OwnerId = queueId;
+                    }
+
                     inputLeadList[i].RES_Previous_Lead_Owner__c = queueId;
                     i+=1;
                     continue;
@@ -177,14 +198,38 @@ public with sharing class RES_ReassignmentLogicHandler {
                 Lead currentLead = inputLeadList[i];
 
                 RES_Assignment_Rule__c currentRule = assignmentRule[currentIndex];
-                currentRule.RES_Last_Assigned__c = true;
-                Integer leadCount = (Integer)currentRule.RES_Active_Lead_Count__c;
+
+                if(!ruleToLeadCountOverhead.containsKey(currentRule.Id)){
+                    ruleToLeadCountOverhead.put(currentRule.Id, 0);
+                }
+                
+                Integer currentCount = ruleToLeadCountOverhead.get(currentRule.Id);
+
+                Integer leadCount = (Integer)currentRule.RES_Active_Lead_Count__c + currentCount;
                 Integer capacity = (Integer) currentRule.RES_Capacity__c;
 
                 if(leadCount < capacity){
-                    currentLead.OwnerId = currentRule.RES_User__c;
+                    Boolean isOwnerChanged = false;
+
+                    if(currentLead.Id != null){
+                        if(currentRule.RES_User__c != currentLead.OwnerId){
+                            events.add(new RES_Ownership_Reassignment_Event__e(
+                                    RES_LeadId__c = currentLead.Id,
+                                    RES_OwnerId__c = currentRule.RES_User__c
+                                ));
+                            ruleToLeadCountOverhead.put(currentRule.Id, ruleToLeadCountOverhead.get(currentRule.Id) + 1);
+                            isOwnerChanged = true;
+                        }
+                    }else{
+                        currentLead.OwnerId = currentRule.RES_User__c;
+                        isOwnerChanged = true;
+                        ruleToLeadCountOverhead.put(currentRule.Id, ruleToLeadCountOverhead.get(currentRule.Id) + 1);
+                    }
+        
                     currentLead.RES_Previous_Lead_Owner__c = queueId;
-                    routingUpdates.add(new leadRoutingWrapper(currentLead, currentRule));
+                    if(isOwnerChanged == true){
+                        routingUpdates.add(new leadRoutingWrapper(currentLead, currentRule));
+                    }
                     currentIndex = Math.mod( currentIndex + 1, N );
                     i+=1;
                 }
@@ -212,6 +257,14 @@ public with sharing class RES_ReassignmentLogicHandler {
         }
 
         try{
+            if(!events.isEmpty()){
+                RES_LeadServices.publishReassignmentEventInBulk(events);
+            }
+        }catch(Exception e){
+            System.debug('Exception Publishing Events ' + e.getMessage());
+        }
+
+        try{
             Database.update(rulesToUpdate, true, AccessLevel.SYSTEM_MODE);
         }catch(Exception e){
             System.debug('Exception while updating records' + e.getMessage());
@@ -223,6 +276,7 @@ public with sharing class RES_ReassignmentLogicHandler {
         for(leadRoutingWrapper wrapper: routingUpdates){
             Id leadId = wrapper.leadRecord.Id;
             Id ruleId = wrapper.rule.Id;
+
             routingRecords.add(new RES_Lead_Routing__c(
                 RES_Lead__c = leadId,
                 RES_Assignment_Rule__c = ruleId

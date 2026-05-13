@@ -159,7 +159,6 @@ private class RES_LeadServicesTest {
 
             RES_LeadServices.InputWrapper input = new RES_LeadServices.InputWrapper();
             input.leadId = l.Id;
-            input.previousOwnerId = q.Id;
             input.currentOwnerId = u1.Id; 
 
             RES_LeadServices.getNewOwnerForRetiredLeads(
