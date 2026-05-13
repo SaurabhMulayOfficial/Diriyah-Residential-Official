@@ -44,14 +44,13 @@ public with sharing class RES_LeadServices {
             
             try{
                 Database.update(queriedLeads, true, AccessLevel.SYSTEM_MODE);
+                clearStaticVariables();    
             }
             catch(Exception e){
                 System.debug('LeadServices.getNewOwnerForRetiredLeads: Failed to change Owner of Lead '+ e.getMessage());
             } 
 
         }
-
-        clearStaticVariables();
     }
 
     public static void publishReassignmentEventInBulk(List<RES_Ownership_Reassignment_Event__e> events){
@@ -121,6 +120,7 @@ public with sharing class RES_LeadServices {
         if(!leadForReassignment.isEmpty()){
             RES_ReassignmentLogicHandler.runLeadReassignment(leadForReassignment, routingUpdates);
             RES_LeadServices.updateRoutingRecordResults();
+            clearStaticVariables();    
 
             try{
                 Database.update(leadForReassignment, true, AccessLevel.SYSTEM_MODE);
@@ -128,8 +128,6 @@ public with sharing class RES_LeadServices {
                 System.debug('Failed to update SLA fields on Lead after reassignment: ' + e.getMessage());
             }
         }
-
-        clearStaticVariables();    
     }
 
     private static void startSla(Lead l, BusinessHours bh, Integer slaInHours, Boolean shouldCycleCount){

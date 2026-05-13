@@ -228,6 +228,7 @@ public with sharing class RES_ReassignmentLogicHandler {
         
                     currentLead.RES_Previous_Lead_Owner__c = queueId;
                     if(isOwnerChanged == true){
+                        System.debug('ADDING ROUTING UPDATE');
                         routingUpdates.add(new leadRoutingWrapper(currentLead, currentRule));
                     }
                     currentIndex = Math.mod( currentIndex + 1, N );
