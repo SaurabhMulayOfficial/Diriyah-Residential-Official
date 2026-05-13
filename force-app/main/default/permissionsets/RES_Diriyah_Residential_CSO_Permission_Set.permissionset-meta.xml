@@ -6,8 +6,8 @@
         <name>RES_Manager_Dashboard_Visibility</name>
     </customPermissions>
     <customPermissions>
-        <enabled>true</enabled>
-        <name>RES_Sub_Stage_Visibility</name>
+       <enabled>true</enabled>
+       <name>RES_Sub_Stage_Visibility</name>
     </customPermissions>
      <customPermissions>  
         <enabled>true</enabled>
@@ -1410,6 +1410,10 @@
     </tabSettings>
     <tabSettings>
         <tab>standard-Dashboard</tab>
+        <visibility>Visible</visibility>
+    </tabSettings>
+    <tabSettings>
+        <tab>standard-ApprovalWorkItem</tab>
         <visibility>Visible</visibility>
     </tabSettings>
     <userPermissions>
