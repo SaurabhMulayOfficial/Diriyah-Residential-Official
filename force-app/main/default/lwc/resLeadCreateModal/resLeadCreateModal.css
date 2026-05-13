@@ -1,7 +1,23 @@
 /* ── Modal width ── */
 .modal-large {
-    width: 50rem;
+    width: min(95vw, 50rem);
     max-width: 50rem;
+}
+
+.slds-modal__content {
+    max-height: 75vh;
+    overflow-y: auto;
+}
+
+@media (max-width: 48rem) {
+    .slds-modal__footer {
+        flex-wrap: wrap;
+        justify-content: stretch;
+    }
+
+    .slds-modal__footer .slds-button {
+        width: 100%;
+    }
 }
 
 /* ── Required asterisk ── */
