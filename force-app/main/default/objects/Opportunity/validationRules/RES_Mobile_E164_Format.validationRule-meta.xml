@@ -8,7 +8,7 @@ OR(
 $RecordType.DeveloperName = &quot;RES_Residential_Single_Buyer&quot;,
 $RecordType.DeveloperName = &quot;RES_Residential_Multi_Buyer&quot;),
 NOT(ISBLANK(RES_Opportunity_Mobile__c)),
-NOT(REGEX(RES_Opportunity_Mobile__c, &quot;\\+\\d{1,3}\\d{4,14}&quot;))
+NOT(REGEX(RES_Opportunity_Mobile__c, &quot;\\+\\d{1,8}\\d{9,14}&quot;))
 )</errorConditionFormula>
     <errorDisplayField>RES_Opportunity_Mobile__c</errorDisplayField>
     <errorMessage>Mobile number must be in E.164 format (e.g., +1234567890)</errorMessage>
