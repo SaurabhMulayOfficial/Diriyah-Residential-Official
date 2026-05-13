@@ -11,7 +11,12 @@
         $RecordType.DeveloperName = &quot;RES_Residential_Multi_Buyer&quot;
     ),
 
-    NOT(ISPICKVAL(StageName, &quot;Closed Lost&quot;)),
+    NOT(
+        OR(
+            ISPICKVAL(StageName, &quot;Closed Lost&quot;),
+            ISPICKVAL(StageName, &quot;Pending&quot;)
+        )
+    ),
 
     ISBLANK(TEXT(RES_Identification_Type__c))
 )</errorConditionFormula>
