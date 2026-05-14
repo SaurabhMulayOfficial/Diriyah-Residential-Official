@@ -185,6 +185,13 @@
     <actionOverrides>
         <actionName>New</actionName>
         <content>RES_LeadNewOverride</content>
+        <formFactor>Small</formFactor>
+        <skipRecordTypeSelect>false</skipRecordTypeSelect>
+        <type>LightningComponent</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>New</actionName>
+        <content>RES_LeadNewOverride</content>
         <formFactor>Large</formFactor>
         <skipRecordTypeSelect>false</skipRecordTypeSelect>
         <type>LightningComponent</type>
@@ -192,13 +199,6 @@
     <actionOverrides>
         <actionName>New</actionName>
         <type>Default</type>
-    </actionOverrides>
-     <actionOverrides>
-        <actionName>New</actionName>
-        <content>RES_LeadNewOverride</content>
-        <formFactor>Small</formFactor>
-        <skipRecordTypeSelect>false</skipRecordTypeSelect>
-        <type>LightningComponent</type>
     </actionOverrides>
     <actionOverrides>
         <actionName>SaveEdit</actionName>
@@ -285,16 +285,18 @@
         <lookupPhoneDialogsAdditionalFields>LEAD.PHONE</lookupPhoneDialogsAdditionalFields>
         <lookupPhoneDialogsAdditionalFields>LEAD.MOBILE_PHONE</lookupPhoneDialogsAdditionalFields>
         <lookupPhoneDialogsAdditionalFields>LEAD.FAX</lookupPhoneDialogsAdditionalFields>
+        <lookupPhoneDialogsAdditionalFields xsi:nil></lookupPhoneDialogsAdditionalFields>
+        <lookupPhoneDialogsAdditionalFields xsi:nil></lookupPhoneDialogsAdditionalFields>
         <searchResultsAdditionalFields>FULL_NAME</searchResultsAdditionalFields>
-        <searchResultsAdditionalFields>LEAD.EMAIL</searchResultsAdditionalFields>
+        <searchResultsAdditionalFields>DIR_Lead_Id__c</searchResultsAdditionalFields>
+        <searchResultsAdditionalFields>LEAD.RECORDTYPE</searchResultsAdditionalFields>
         <searchResultsAdditionalFields>LEAD.MOBILE_PHONE</searchResultsAdditionalFields>
-        <searchResultsAdditionalFields>LEAD.URL</searchResultsAdditionalFields>
+        <searchResultsAdditionalFields>LEAD.EMAIL</searchResultsAdditionalFields>
+        <searchResultsAdditionalFields>LEAD.LEAD_SOURCE</searchResultsAdditionalFields>
         <searchResultsAdditionalFields>LEAD.COMPANY</searchResultsAdditionalFields>
-        <searchResultsAdditionalFields>LEAD.PHONE</searchResultsAdditionalFields>
-        <searchResultsAdditionalFields>RES_CR_Number__c</searchResultsAdditionalFields>
         <searchResultsAdditionalFields>LEAD.STATUS</searchResultsAdditionalFields>
+        <searchResultsAdditionalFields>LEAD.RATING</searchResultsAdditionalFields>
         <searchResultsAdditionalFields>LEAD.CREATED_DATE</searchResultsAdditionalFields>
-        <searchResultsAdditionalFields>CORE.USERS.ALIAS</searchResultsAdditionalFields>
     </searchLayouts>
     <sharingModel>Private</sharingModel>
 </CustomObject>
