@@ -1,15 +1,40 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <Package xmlns="http://soap.sforce.com/2006/04/metadata">
+
     <types>
         <members>RES_LeadServices</members>
         <members>RES_LeadServicesTest</members>
+		<members>RES_LeadTriggerHandler</members>
+		<members>RES_ReassignmentLogicHandler</members>
+        <members>RES_ReassignmentLogicHandlerTest</members>
+		<members>RES_OwnershipReassignmentEventService</members>
+		<members>RES_LeadRoutingDAO</members>
+		<members>RES_AssignmentRuleDAO</members>
         <name>ApexClass</name>
     </types>
+
     <types>
         <members>DIR_Lead_Retirement_Configuration__c</members>
         <members>RES_Lead_History__c</members>
         <name>CustomObject</name>
     </types>
+
+	<types>
+        <members>resLeadCreateModal</members>
+        <name>LightningComponentBundle</name>
+    </types>
+	
+	<types>
+        <members>RES_AutoLaunchFlow_Notify_User_s_Manager</members>
+        <members>RES_Lead_After_Create_Update_Lead_SLA_management</members>
+        <name>Flow</name>
+    </types>
+
+	<types>
+		<members>RES_Specalist_Dashboard_Visibility</members>
+		<name>CustomPermission</name>
+	</types>
+
     <types>
         <members>Lead.RES_CR_Number__c</members>
         <members>Lead.RES_Identification_Number__c</members>
@@ -24,85 +49,14 @@
         <members>RES_Lead_History__c.RES_NewValue__c</members>
         <members>RES_Lead_History__c.RES_ObjectUUID__c</members>
         <members>RES_Lead_History__c.RES_OldValue__c</members>
-		 <members>Lead.RES_Villa_of_Interest__c</members>
+		<members>Lead.RES_Villa_of_Interest__c</members>
         <members>Lead.RES_Area_Of_Interest__c</members>
         <members>Lead.RES_Project_of_Interest__c</members>
         <members>Lead.RES_Unit_of_Interest__c</members>
+		<members>Lead.RES_SAP_Lead_Id__c</members>
         <name>CustomField</name>
     </types>
-    <types>
-        <members>Admin</members>
-        <members>Diriyah Residential Sales Standard Profile</members>
-        <name>Profile</name>
-    </types>
-        <types>
-        <members>RES_Diriyah_Residential_Contract_Operations_Specialist_Permission_Set</members>
-        <members>RES_Diriyah_Residential_DII_Manager_Permission_Set</members>
-        <members>RES_Diriyah_Residential_DII_Specialist_Permission_Set</members>
-        <members>RES_Diriyah_Residential_DI_Manager_Permission_Set</members>
-        <members>RES_Diriyah_Residential_DI_Safar_Senior_Manager_Permission_Set</members>
-        <members>RES_Diriyah_Residential_DI_Specialist_Permission_Set</members>
-        <members>RES_Diriyah_Residential_Excellence_Operation_Manager_Permission_Set</members>
-        <members>RES_Diriyah_Residential_Excellence_Operations_Specialist_Permission_Set</members>
-        <members>RES_Diriyah_Residential_External_Manager_Permission_Set</members>
-        <members>RES_Diriyah_Residential_External_Operations_Specialist_Permission_Set</members>
-        <members>RES_Diriyah_Residential_External_Senior_Operation_Manager_Permission_Set</members>
-        <members>RES_Diriyah_Residential_External_Specialist_Permission_Set</members>
-        <members>RES_Diriyah_Residential_Implementation_Excellence_Specialist_Permission_Set</members>
-        <members>RES_Diriyah_Residential_Internal_Operation_Manager_Permission_Set</members>
-        <members>RES_Diriyah_Residential_Internal_Operations_Specialist_Permission_Set</members>
-        <members>RES_Diriyah_Residential_Internal_Senior_Operation_Manager_Permission_Set</members>
-        <members>RES_Diriyah_Residential_Planning_Senior_Manager_Permission_Set</members>
-        <members>RES_Diriyah_Residential_Planning_Specialist_Permission_Set</members>
-        <members>RES_Diriyah_Residential_Wadi_Safar_Manager_Permission_Set</members>
-        <members>RES_Diriyah_Residential_Wadi_Safar_Senior_Manager_Permission_Set</members>
-        <members>RES_Diriyah_Residential_Wadi_Safar_Specialist_Permission_Set</members>
-        <name>PermissionSet</name>
-    </types>
-     <types>
-        <members>RES_Wadi_Safar_Sales_Manager</members>
-        <members>RES_Sales_Excellence_Associate_Director</members>
-        <name>Queue</name>
-    </types>
-    <types>
-     <members>RES_Wadi_Safar_Sales_Manager_Lead</members>
-     <members>RES_Sales_Excellence_Associate_Director_Lead</members>
-        <name>ListView</name>
-    </types>
-    <version>66.0</version>
-</Package>
-	<types>
-		<members>RES_Specalist_Dashboard_Visibility</members>
-		<name>CustomPermission</name>
-	</types>
-	<types>
-		<members>RES_MyTeamsDiriyahResidentialDashboard/RES_DiriyahMyDashboard1</members>
-		<name>Dashboard</name>
-	</types>
-	<types>
-		<members>Getting_Started_Home</members>
-		<members>RES_Opp_Residential_Multi_Buyer_Lightning_Page</members>
-		<members>RES_Opp_Residential_Single_Buyer_Lightning_Page</members>
-		<members>RES_Account_Company_Lightning_Page</members>
-		<members>RES_Account_PersonAccount_Lightning_Page</members>
-		<members>RES_Contact_Company_Lightning_Page</members>
-		<members>RES_Lead_Company_Lightning_Page</members>
-		<members>RES_Lead_Individual_Lightning_Page</members>
-		<name>FlexiPage</name>
-	</types>
-	<types>
-		<members>RES_Diriyah_Residential_Contract_Operations_Specialist_Permission_Set</members>
-		<members>RES_Diriyah_Residential_DII_Specialist_Permission_Set</members>
-		<members>RES_Diriyah_Residential_DI_Specialist_Permission_Set</members>
-		<members>RES_Diriyah_Residential_Excellence_Operations_Specialist_Permission_Set</members>
-		<members>RES_Diriyah_Residential_External_Operations_Specialist_Permission_Set</members>
-		<members>RES_Diriyah_Residential_External_Specialist_Permission_Set</members>
-		<members>RES_Diriyah_Residential_Implementation_Excellence_Specialist_Permission_Set</members>
-		<members>RES_Diriyah_Residential_Internal_Operations_Specialist_Permission_Set</members>
-		<members>RES_Diriyah_Residential_Planning_Specialist_Permission_Set</members>
-		<members>RES_Diriyah_Residential_Wadi_Safar_Specialist_Permission_Set</members>
-		<name>PermissionSet</name>
-	</types>
+
 	<types>
 		<members>DiriyahResidentialReports/My_Lead_Conversion_Rate_by_Source</members>
 		<members>DiriyahResidentialReports/RES_My_Active_Activities_This_Month</members>
@@ -133,24 +87,113 @@
 		<members>DiriyahResidentialReports/RES_My_Teams_Quota_Progress</members>
 		<members>DiriyahResidentialReports/RES_My_Teams_Tasks_Todays_Priority</members>
 		<members>DiriyahResidentialReports/RES_My_Teams_Total_Active_Leads</members>
-		<members>DiriyahResidentialReports/RES_My_Teams_Uncontacted_Leads</members>
 		<members>DiriyahResidentialReports/RES_My_Teams_Win_Loss_Rate</members>
 		<members>DiriyahResidentialReports/RES_My_Teams_Win_Rate</members>
 		<members>DiriyahResidentialReports/RES_My_Total_Active_Leads</members>
-		<members>DiriyahResidentialReports/RES_My_Uncontacted_Leads</members>
 		<members>DiriyahResidentialReports/RES_My_Win_Loss_Rate</members>
 		<members>DiriyahResidentialReports/RES_My_Win_Rate</members>
 		<name>Report</name>
 	</types>
+
+    <types>
+        <members>Admin</members>
+        <members>Diriyah Residential Sales Standard Profile</members>
+        <name>Profile</name>
+    </types>
+
+    <types>
+		<members>RES_Diriyah_Residential_Account_Receivable_Permission_Set</members>
+        <members>RES_Diriyah_Residential_CBDO_Permission_Set</members>
+        <members>RES_Diriyah_Residential_CEO_Permission_Set</members>
+        <members>RES_Diriyah_Residential_CFO_Permission_Set</members>
+        <members>RES_Diriyah_Residential_CSO_Permission_Set</members>
+        <members>RES_Diriyah_Residential_Compliance_Manager_Permission_Set</members>
+        <members>RES_Diriyah_Residential_Contract_Operations_Specialist_Permission_Set</members>
+        <members>RES_Diriyah_Residential_DII_Manager_Permission_Set</members>
+        <members>RES_Diriyah_Residential_DII_Specialist_Permission_Set</members>
+        <members>RES_Diriyah_Residential_DI_DII_Senior_Director_Permission_Set</members>
+        <members>RES_Diriyah_Residential_DI_Manager_Permission_Set</members>
+        <members>RES_Diriyah_Residential_DI_Safar_Senior_Manager_Permission_Set</members>
+        <members>RES_Diriyah_Residential_DI_Specialist_Permission_Set</members>
+        <members>RES_Diriyah_Residential_Excellence_Associate_Director_Permission_Set</members>
+        <members>RES_Diriyah_Residential_Excellence_Operation_Manager_Permission_Set</members>
+        <members>RES_Diriyah_Residential_Excellence_Operations_Specialist_Permission_Set</members>
+        <members>RES_Diriyah_Residential_Excellence_Senior_Director_Permission_Set</members>
+        <members>RES_Diriyah_Residential_Executive_Assistant_Senior_Permission_Set</members>
+        <members>RES_Diriyah_Residential_Executive_Director_Operation_Permission_Set</members>
+        <members>RES_Diriyah_Residential_Executive_Director_Treasury_Permission_Set</members>
+        <members>RES_Diriyah_Residential_External_Manager_Permission_Set</members>
+        <members>RES_Diriyah_Residential_External_Operations_Specialist_Permission_Set</members>
+        <members>RES_Diriyah_Residential_External_Senior_Director_Permission_Set</members>
+        <members>RES_Diriyah_Residential_External_Senior_Operation_Manager_Permission_Set</members>
+        <members>RES_Diriyah_Residential_External_Specialist_Permission_Set</members>
+        <members>RES_Diriyah_Residential_Implementation_Excellence_Specialist_Permission_Set</members>
+        <members>RES_Diriyah_Residential_Internal_Operation_Manager_Permission_Set</members>
+        <members>RES_Diriyah_Residential_Internal_Operations_Specialist_Permission_Set</members>
+        <members>RES_Diriyah_Residential_Internal_Senior_Operation_Manager_Permission_Set</members>
+        <members>RES_Diriyah_Residential_Marketing_Permission_Set</members>
+        <members>RES_Diriyah_Residential_Planning_Senior_Manager_Permission_Set</members>
+        <members>RES_Diriyah_Residential_Planning_Specialist_Permission_Set</members>
+        <members>RES_Diriyah_Residential_Technology_Permission_Set</members>
+        <members>RES_Diriyah_Residential_Wadi_Safar_Manager_Permission_Set</members>
+        <members>RES_Diriyah_Residential_Wadi_Safar_Senior_Director_Permission_Set</members>
+        <members>RES_Diriyah_Residential_Wadi_Safar_Senior_Manager_Permission_Set</members>
+        <members>RES_Diriyah_Residential_Wadi_Safar_Specialist_Permission_Set</members>
+        <name>PermissionSet</name>
+    </types>
+
+    <types>
+        <members>RES_Wadi_Safar_Sales_Manager</members>
+        <members>RES_Sales_Excellence_Associate_Director</members>
+        <name>Queue</name>
+    </types>
+
+    <types>
+		<members>RES_Wadi_Safar_Sales_Manager_Lead</members>
+		<members>RES_Sales_Excellence_Associate_Director_Lead</members>
+		<members>Task.CompletedTasks</members>
+        <members>Task.OpenTasks</members>
+        <members>Task.OverdueTasks</members>
+        <members>Task.TodaysTasks</members>
+        <members>Task.UnscheduledTasks</members>
+		<members>ApprovalWorkItem.RES_CSO_List_View</members>
+		<members>ApprovalWorkItem.RES_Sales_Director_List_View</members>
+		<members>ApprovalWorkItem.RES_Sales_Manager_List_View</members>
+        <name>ListView</name>
+    </types>
+
+	<types>
+		<members>RES_MyTeamsDiriyahResidentialDashboard/RES_DiriyahMyDashboard1</members>
+		<members>RES_MyTeamsDiriyahResidentialDashboard</members>
+		<name>Dashboard</name>
+	</types>
+
+	<types>
+		<members>Getting_Started_Home</members>
+		<members>RES_Opp_Residential_Multi_Buyer_Lightning_Page</members>
+		<members>RES_Opp_Residential_Single_Buyer_Lightning_Page</members>
+		<members>RES_Account_Company_Lightning_Page</members>
+		<members>RES_Account_PersonAccount_Lightning_Page</members>
+		<members>RES_Contact_Company_Lightning_Page</members>
+		<members>RES_Lead_Company_Lightning_Page</members>
+		<members>RES_Lead_Individual_Lightning_Page</members>
+		<name>FlexiPage</name>
+	</types>
+
 	<types>
 		<members>Opportunity.RES_Identification_Type_is_mandatory</members>
 		<members>Opportunity.RES_Validation_Rule_on_IdentificationNum</members>
+		<members>Account.RES_Mobile_E164_Format</members>
+		<members>Lead.RES_Mobile_E164_Format</members>
+		<members>Opportunity.RES_Mobile_E164_Format</members>
 		<name>ValidationRule</name>
 	</types>
+
 	<types>
-    <members>Lead.RES_Company</members>
-    <members>Lead.RES_Individual</members>
-    <name>RecordType</name>
-</types>
-	<version>65.0</version>
+        <members>Lead.RES_Company</members>
+		<members>Lead.RES_Individual</members>
+		<name>RecordType</name>
+	</types>
+
+    <version>66.0</version>
 </Package>
