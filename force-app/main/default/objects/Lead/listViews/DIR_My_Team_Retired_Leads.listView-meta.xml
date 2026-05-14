@@ -1,16 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ListView xmlns="http://soap.sforce.com/2006/04/metadata">
     <fullName>DIR_My_Team_Retired_Leads</fullName>
-    <columns>DIR_Lead_Id__c</columns>
+   <columns>DIR_Lead_Id__c</columns>
+    <columns>LEAD.RECORDTYPE</columns>
     <columns>FULL_NAME</columns>
-    <columns>LEAD.COMPANY</columns>
-    <columns>LEAD.PHONE</columns>
-    <columns>LEAD.EMAIL</columns>
     <columns>LEAD.MOBILE_PHONE</columns>
+    <columns>LEAD.EMAIL</columns>
     <columns>LEAD.LEAD_SOURCE</columns>
+    <columns>LEAD.COMPANY</columns>
     <columns>LEAD.STATUS</columns>
-    <columns>LEAD.CREATED_DATE</columns>
+    <columns>LEAD.RATING</columns>
     <columns>CORE.USERS.ALIAS</columns>
+    <columns>LEAD.CREATED_DATE</columns>
     <filterScope>Everything</filterScope>
     <filters>
         <field>LEAD.STATUS</field>
@@ -41,6 +42,5 @@
         <role>RES_Sales_Wadi_Safar_Manager</role>
         <role>RES_Sales_Wadi_Safar_Senior_Director</role>
         <role>RES_Sales_Wadi_Safar_Senior_Manager</role>
-        <role>RES_Treasury_Executive_Director</role>
     </sharedTo>
 </ListView>
