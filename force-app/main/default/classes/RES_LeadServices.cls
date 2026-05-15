@@ -3,6 +3,7 @@
  * Called from RES_LeadTriggerHandler
  */
 public with sharing class RES_LeadServices {
+    public static Set<Lead> avoidReassignment = new Set<Lead>();
 
     public static List<RES_LeadDeduplicationHandler.LeadDuplicateWrapper> leadDuplicateWrapper = 
     new List<RES_LeadDeduplicationHandler.LeadDuplicateWrapper>();
