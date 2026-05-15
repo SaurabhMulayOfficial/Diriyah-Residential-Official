@@ -473,15 +473,15 @@
             </value>
         </filters>
         <inputAssignments>
-            <field>DIR_Country__c</field>
-            <value>
-                <elementReference>$Record.DIR_Country__c</elementReference>
-            </value>
-        </inputAssignments>
-        <inputAssignments>
             <field>RES_City__c</field>
             <value>
                 <elementReference>$Record.City</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>RES_Country__c</field>
+            <value>
+                <elementReference>$Record.Country</elementReference>
             </value>
         </inputAssignments>
         <inputAssignments>
