@@ -246,6 +246,7 @@ static void testSuccessfulLeadConversion() {
         Lead l = RES_TestDataFactory.createLead('success.convert@example.com');
         // ── Update Status to Qualified before conversion ──────────────
         l.Status = '04';
+        l.RES_Project__c = 'Amansamar Residences Wadi Safar';
         update l;
 
         Test.startTest();

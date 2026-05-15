@@ -82,5 +82,24 @@ public without sharing class RES_AssignmentRuleDAO extends RES_BaseDAOLayer {
         return (List<RES_Assignment_Rule__c>) executeQuery(soql, 'assignmentRulesByIds', true, bindVars, AccessLevel.SYSTEM_MODE);
     }
 
+    public List<RES_Assignment_Rule__c> getRuleByLeadChannel(Set<String> leadChannels){
+        if(leadChannels.isEmpty()){
+            return new List<RES_Assignment_Rule__c>();
+        }
+        List<String> escapedChannels = new List<String>();
+
+        for(String channel : leadChannels){
+            escapedChannels.add('\'' + String.escapeSingleQuotes(channel) + '\'');
+        }
+
+        String soql = 
+            'SELECT Id, RES_Assignment_Config__r.RES_Channel__c, RES_User__c ' +
+            'FROM RES_Assignment_Rule__c ' +
+            'WHERE RES_Assignment_Config__r.RES_Channel__c INCLUDES (' +
+            String.join(escapedChannels, ',') +
+            ')';
+        
+        return (List<RES_Assignment_Rule__c>) executeQuery(soql, 'assignmentRulesByLeadChannel', true, null, AccessLevel.SYSTEM_MODE);
+    }
 
 } 

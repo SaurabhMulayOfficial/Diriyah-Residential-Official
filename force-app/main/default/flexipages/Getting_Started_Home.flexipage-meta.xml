@@ -14,21 +14,10 @@
                 <componentName>desktopDashboards:embeddedDashboard</componentName>
                 <identifier>desktopDashboards_embeddedDashboard</identifier>
                 <visibilityRule>
-                    <booleanFilter>1 OR 2 OR 3</booleanFilter>
-                    <criteria>
-                        <leftValue>{!$User.UserRole.DeveloperName}</leftValue>
-                        <operator>EQUAL</operator>
-                        <rightValue>RES_Executive_Corporate_CEO</rightValue>
-                    </criteria>
                     <criteria>
                         <leftValue>{!$User.Profile.Name}</leftValue>
                         <operator>EQUAL</operator>
                         <rightValue>System Administrator</rightValue>
-                    </criteria>
-                    <criteria>
-                        <leftValue>{!$User.UserRole.DeveloperName}</leftValue>
-                        <operator>EQUAL</operator>
-                        <rightValue>RES_Sales_Enterprise_Chief_Sales_Office</rightValue>
                     </criteria>
                 </visibilityRule>
             </componentInstance>
@@ -45,6 +34,33 @@
                 </componentInstanceProperties>
                 <componentName>desktopDashboards:embeddedDashboard</componentName>
                 <identifier>desktopDashboards_embeddedDashboard2</identifier>
+                <visibilityRule>
+                    <booleanFilter>1 AND 2</booleanFilter>
+                    <criteria>
+                        <leftValue>{!$User.Profile.Name}</leftValue>
+                        <operator>EQUAL</operator>
+                        <rightValue>Diriyah Residential Sales Standard Profile</rightValue>
+                    </criteria>
+                    <criteria>
+                        <leftValue>{!$Permission.CustomPermission.RES_Specalist_Dashboard_Visibility}</leftValue>
+                        <operator>EQUAL</operator>
+                        <rightValue>true</rightValue>
+                    </criteria>
+                </visibilityRule>
+            </componentInstance>
+        </itemInstances>
+        <itemInstances>
+            <componentInstance>
+                <componentInstanceProperties>
+                    <name>dashboardName</name>
+                    <value>RES_DiriyahMyDashboard1</value>
+                </componentInstanceProperties>
+                <componentInstanceProperties>
+                    <name>hideOnError</name>
+                    <value>false</value>
+                </componentInstanceProperties>
+                <componentName>desktopDashboards:embeddedDashboard</componentName>
+                <identifier>desktopDashboards_embeddedDashboard4</identifier>
                 <visibilityRule>
                     <booleanFilter>1 AND 2</booleanFilter>
                     <criteria>

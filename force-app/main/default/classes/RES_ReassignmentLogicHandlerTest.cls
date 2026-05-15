@@ -84,6 +84,10 @@ public class RES_ReassignmentLogicHandlerTest {
         System.assertEquals(2, countU1, 'User1 should get 2 leads');
         System.assertEquals(2, countU2, 'User2 should get 2 leads');
 
+        for(Lead l : updatedLeads){
+            l.OwnerId = u1.Id;
+        }
+        
         System.runAs(u1){
 
             RES_UserAvailabilityController.updateUserStatus('Offline');

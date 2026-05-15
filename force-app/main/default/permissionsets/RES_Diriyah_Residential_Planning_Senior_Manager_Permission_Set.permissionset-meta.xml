@@ -562,21 +562,6 @@ Sales – Planning – Senior Manager</description>
     </fieldPermissions>
      <fieldPermissions>
         <editable>false</editable>
-        <field>Lead.RES_Customer_Budget__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-     <fieldPermissions>
-        <editable>false</editable>
-        <field>Lead.RES_Customer_Unit_Preference__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-     <fieldPermissions>
-        <editable>false</editable>
-        <field>Lead.RES_Broker_Registration__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-     <fieldPermissions>
-        <editable>false</editable>
         <field>Lead.RES_Financial_Readiness__c</field>
         <readable>true</readable>
     </fieldPermissions>
@@ -1456,6 +1441,10 @@ Sales – Planning – Senior Manager</description>
     </tabSettings>
     <tabSettings>
         <tab>standard-Task</tab>
+        <visibility>Visible</visibility>
+    </tabSettings>
+    <tabSettings>
+        <tab>standard-ApprovalWorkItem</tab>
         <visibility>Visible</visibility>
     </tabSettings>
     <userPermissions>

@@ -21,6 +21,7 @@ private class RES_LeadConversionBatch_Test {
         
         Lead l1 = RES_TestDataFactory.createLead('test@example.in');
         l1.Status = '04';
+        l1.RES_Project__c = 'Amansamar Residences Wadi Safar';
         l1.RES_CR_Number__c = '1290123456';
         update l1;
         

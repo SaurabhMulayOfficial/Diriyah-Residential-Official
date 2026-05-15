@@ -5,7 +5,7 @@ Sales – DI – Specialist
 Sales – DI – Relationship Manager</description>
     <customPermissions>
         <enabled>true</enabled>
-        <name>RES_Manager_Dashboard_Visibility</name>
+        <name>RES_Specalist_Dashboard_Visibility</name>
     </customPermissions> 
     <customPermissions>
         <enabled>true</enabled>
@@ -554,21 +554,6 @@ Sales – DI – Relationship Manager</description>
     </fieldPermissions>
      <fieldPermissions>
         <editable>true</editable>
-        <field>Lead.RES_Broker_Registration__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-     <fieldPermissions>
-        <editable>false</editable>
-        <field>Lead.RES_Customer_Budget__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-     <fieldPermissions>
-        <editable>false</editable>
-        <field>Lead.RES_Customer_Unit_Preference__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-     <fieldPermissions>
-        <editable>false</editable>
         <field>Lead.RES_Broker_Registration__c</field>
         <readable>true</readable>
     </fieldPermissions>

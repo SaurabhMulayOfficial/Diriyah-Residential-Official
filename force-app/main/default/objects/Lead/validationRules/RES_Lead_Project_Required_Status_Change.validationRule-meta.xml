@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>RES_Lead_Project_Required_Status_Change</fullName>
+    <active>true</active>
+    <errorConditionFormula>AND(
+    /* 1. Global Switch Check */
+    NOT($Setup.RES_Config_Switch__c.RES_Validation_Rules_Off__c),
+
+    /* 2. Rule only runs on Update, not on Insert */
+    NOT(ISNEW()),
+
+    /* 3. Target specific Lead Record Types */
+    OR(
+        $RecordType.DeveloperName = &quot;RES_Company&quot;,
+        $RecordType.DeveloperName = &quot;RES_Individual&quot;
+    ),
+
+    /* 4. Trigger only if Status is CHANGED to one of the target values */
+    ISCHANGED(Status),
+    OR(
+        ISPICKVAL(Status, &quot;02&quot;),        
+        ISPICKVAL(Status, &quot;Converted&quot;),  
+        ISPICKVAL(Status, &quot;04&quot;)         
+    ),
+
+    /* 5. Condition: Project field is missing */
+    ISBLANK(TEXT(RES_Project__c))
+)</errorConditionFormula>
+    <errorDisplayField>RES_Project__c</errorDisplayField>
+    <errorMessage>Project is required when changing status to Active, Qualified or Converted</errorMessage>
+</ValidationRule>
