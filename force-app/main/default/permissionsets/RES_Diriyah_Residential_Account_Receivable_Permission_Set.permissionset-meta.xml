@@ -79,7 +79,7 @@
         <field>Account.PersonMobilePhone</field>
         <readable>true</readable>
     </fieldPermissions>
-     <fieldPermissions>
+    <fieldPermissions>
         <editable>false</editable>
         <field>Account.PersonBirthdate</field>
         <readable>true</readable>
@@ -134,7 +134,7 @@
         <field>Account.RES_Commercial_Registration_Number__c</field>
         <readable>true</readable>
     </fieldPermissions>
-     <fieldPermissions>
+    <fieldPermissions>
         <editable>false</editable>
         <field>Lead.RES_CR_Number__c</field>
         <readable>true</readable>
@@ -354,15 +354,15 @@
         <field>Account.Website</field>
         <readable>true</readable>
     </fieldPermissions>
-     <fieldPermissions>
+    <fieldPermissions>
         <editable>false</editable>
         <field>Contact.RES_Full_Arabic_Name__c</field>
         <readable>true</readable>
     </fieldPermissions>
-      <fieldPermissions>
+    <fieldPermissions>
         <editable>false</editable>
         <field>Contact.RES_Nationality__c</field>
-       <readable>true</readable>
+    <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
         <editable>false</editable>
@@ -1024,17 +1024,17 @@
         <field>Lead.Website</field>
         <readable>true</readable>
     </fieldPermissions>
-     <fieldPermissions>
+    <fieldPermissions>
         <editable>false</editable>
         <field>Opportunity.RES_Days_to_Close_Planned__c</field>
         <readable>true</readable>
     </fieldPermissions>
-     <fieldPermissions>
+    <fieldPermissions>
         <editable>false</editable>
         <field>Opportunity.RES_Deal_Age_Days__c</field>
         <readable>true</readable>
     </fieldPermissions>
-     <fieldPermissions>
+    <fieldPermissions>
         <editable>false</editable>
         <field>Opportunity.RES_Lead_Medium__c</field>
         <readable>true</readable>
@@ -1364,7 +1364,7 @@
         <name>EmailSingle</name>
     </userPermissions>
     <userPermissions>
-        <enabled>true</enabled>
+        <enabled>false</enabled>
         <name>ViewPublicReports</name>
     </userPermissions>
     <userPermissions>
@@ -1382,9 +1382,5 @@
     <userPermissions>
         <enabled>false</enabled>
         <name>EditTask</name>
-    </userPermissions>
-    <userPermissions>
-        <enabled>false</enabled>
-        <name>ViewReportsInPublicFolders</name>
     </userPermissions>
 </PermissionSet>
