@@ -25,7 +25,7 @@
         <field>Account.BillingAddress</field>
         <readable>true</readable>
     </fieldPermissions>
-     <fieldPermissions>
+    <fieldPermissions>
         <editable>true</editable>
         <field>Account.ShippingAddress</field>
         <readable>true</readable>
@@ -1449,5 +1449,9 @@
      <userPermissions>
         <enabled>true</enabled>
         <name>TransferAnyLead</name>
+    </userPermissions>
+    <userPermissions>
+        <enabled>false</enabled>
+        <name>ViewReportsInPublicFolders</name>
     </userPermissions>
 </PermissionSet>

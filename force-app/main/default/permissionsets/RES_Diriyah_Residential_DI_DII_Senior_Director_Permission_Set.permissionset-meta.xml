@@ -1417,12 +1417,16 @@
         <enabled>false</enabled>
         <name>ViewPublicDashboards</name>
     </userPermissions>
-     <userPermissions>
+    <userPermissions>
         <enabled>true</enabled>
         <name>EditTask</name>
     </userPermissions>   
-     <userPermissions>
+    <userPermissions>
         <enabled>true</enabled>
         <name>EmailSingle</name>
+    </userPermissions>
+    <userPermissions>
+        <enabled>false</enabled>
+        <name>ViewReportsInPublicFolders</name>
     </userPermissions>
 </PermissionSet>

@@ -25,7 +25,7 @@
         <field>Account.BillingAddress</field>
         <readable>true</readable>
     </fieldPermissions>
-     <fieldPermissions>
+    <fieldPermissions>
         <editable>true</editable>
         <field>Account.ShippingAddress</field>
         <readable>true</readable>
@@ -1466,12 +1466,16 @@
         <enabled>true</enabled>
         <name>ViewMyTeamsDashboards</name>
     </userPermissions>
-      <userPermissions>
+    <userPermissions>
         <enabled>true</enabled>
         <name>ConvertLeads</name>
     </userPermissions>
-     <userPermissions>
+    <userPermissions>
         <enabled>true</enabled>
         <name>TransferAnyLead</name>
+    </userPermissions>
+    <userPermissions>
+        <enabled>false</enabled>
+        <name>ViewReportsInPublicFolders</name>
     </userPermissions>
 </PermissionSet>
