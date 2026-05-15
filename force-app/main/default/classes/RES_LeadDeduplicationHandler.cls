@@ -336,6 +336,7 @@ public without sharing class RES_LeadDeduplicationHandler {
                             }
                         }
                         else if(checkFieldEquality.startsWith('005') && assignedTo == 'SAME'){
+                            RES_LeadServices.avoidReassignment.add(inputLead);
                             hydrateWrapper(true, checkFieldEquality, wrapper, leadDuplicateWrappers);
                             inputLead.RES_Bypass_Assignment_Rules__c = true;
                             break;
@@ -349,12 +350,14 @@ public without sharing class RES_LeadDeduplicationHandler {
                         inputLead.status = 'Archive';
                         if(getSameRMId != '' && assignedTo == 'SAME'){
                             inputLead.RES_Bypass_Assignment_Rules__c = true;
+                            RES_LeadServices.avoidReassignment.add(inputLead);
                             hydrateWrapper(true, getSameRMId, wrapper, leadDuplicateWrappers);
                         }
                         break;
                     }
                     else if(assignedTo == 'SAME' && getSameRMId != ''){
                         inputLead.RES_Bypass_Assignment_Rules__c = true;
+                        RES_LeadServices.avoidReassignment.add(inputLead);
                         hydrateWrapper(true, getSameRMId, wrapper, leadDuplicateWrappers);
                         break;
                     }

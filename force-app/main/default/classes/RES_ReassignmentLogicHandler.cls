@@ -91,6 +91,10 @@ public with sharing class RES_ReassignmentLogicHandler {
         Map<String,ReassignmentNode> nodeMapping = new Map<String, ReassignmentNode>();
 
         for(Lead l: leadList){
+            if(RES_LeadServices.avoidReassignment.contains(l)){
+                System.debug('Skipping reassignment for lead '+ l.Id + ' as it is present in avoidReassignment set');
+                continue;
+            }
             Id configId = evaluateLeadForReassignment(l);
             System.debug('Record Type Name '+ configId);
 
