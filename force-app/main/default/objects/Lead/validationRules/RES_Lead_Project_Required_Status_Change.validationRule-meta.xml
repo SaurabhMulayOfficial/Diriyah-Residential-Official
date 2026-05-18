@@ -27,5 +27,5 @@
     ISBLANK(TEXT(RES_Project__c))
 )</errorConditionFormula>
     <errorDisplayField>RES_Project__c</errorDisplayField>
-    <errorMessage>Project is required when changing status to Qualified or Converted</errorMessage>
+    <errorMessage>Project is required when changing status to Active, Qualified or Converted</errorMessage>
 </ValidationRule>
