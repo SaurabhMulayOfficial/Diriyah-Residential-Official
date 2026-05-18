@@ -19,6 +19,7 @@
     ISCHANGED(Status),
     OR(        
         ISPICKVAL(Status, &quot;Converted&quot;),  
+        ISPICKVAL(Status, &quot;02&quot;),  
         ISPICKVAL(Status, &quot;04&quot;)         
     ),
 
