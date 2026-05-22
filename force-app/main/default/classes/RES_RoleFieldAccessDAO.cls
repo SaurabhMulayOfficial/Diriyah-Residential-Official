@@ -38,7 +38,7 @@
  * =============================================================================
  */
 
-public with sharing class RES_RoleFieldAccessDAO extends RES_BaseDAOLayer {
+public without sharing class RES_RoleFieldAccessDAO extends RES_BaseDAOLayer {
 
     protected override String getSObjectName(){
         return 'RES_Role_Field_Access__mdt';
@@ -49,6 +49,6 @@ public with sharing class RES_RoleFieldAccessDAO extends RES_BaseDAOLayer {
         bindVars.put('userRole', userRole);
         bindVars.put('fieldApiName', fieldApiName);
         String soql = 'SELECT Id FROM RES_Role_Field_Access__mdt WHERE Role_API__c = :userRole AND Field_API__c = :fieldApiName LIMIT 1';
-        return (List<RES_Role_Field_Access__mdt>) executeQuery(soql, 'getMetadataByRole', true, bindVars, AccessLevel.USER_MODE);
+        return (List<RES_Role_Field_Access__mdt>) executeQuery(soql, 'getMetadataByRole', true, bindVars, AccessLevel.SYSTEM_MODE);
     }
 }
