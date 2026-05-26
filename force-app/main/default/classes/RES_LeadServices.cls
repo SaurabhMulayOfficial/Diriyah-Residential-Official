@@ -249,7 +249,26 @@ public with sharing class RES_LeadServices {
             System.debug('Failed to delete lead routing records: ' + e.getMessage());
         }
     }
-    
+
+    public static void convertQualifiedLeads(List<Lead> leads, Map<Id, Lead> oldMap){
+        Id rtId_company = Schema.SObjectType.Lead.getRecordTypeInfosByDeveloperName().get('RES_Company').getRecordTypeId();
+        Id rtId_individual = Schema.SObjectType.Lead.getRecordTypeInfosByDeveloperName().get('RES_Individual').getRecordTypeId();
+        List<Lead> qualifiedLeads = new List<Lead>();
+        for(Lead l : leads){
+            if(l.RecordTypeId != rtId_company && l.RecordTypeId != rtId_individual){
+                continue;
+            }
+            if(l.Status == '04' && oldMap.get(l.Id).Status != '04'){
+                qualifiedLeads.add(l);  
+            }
+        }
+        System.debug('qualifiedLeads-->'+qualifiedLeads);
+        if(qualifiedLeads.isEmpty()){
+            return;
+        }
+        RES_LeadConversionHandler.handleLeadConversion(qualifiedLeads);
+    }
+
     public static void clearStaticVariables(){
         leadDuplicateWrapper.clear();
         routingUpdates.clear();
