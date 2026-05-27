@@ -473,18 +473,6 @@
             </value>
         </filters>
         <inputAssignments>
-            <field>RES_City__c</field>
-            <value>
-                <elementReference>$Record.City</elementReference>
-            </value>
-        </inputAssignments>
-        <inputAssignments>
-            <field>RES_Country__c</field>
-            <value>
-                <elementReference>$Record.Country</elementReference>
-            </value>
-        </inputAssignments>
-        <inputAssignments>
             <field>RES_Opportunity_Email__c</field>
             <value>
                 <elementReference>$Record.Email</elementReference>
@@ -494,24 +482,6 @@
             <field>RES_Opportunity_Mobile__c</field>
             <value>
                 <elementReference>$Record.MobilePhone</elementReference>
-            </value>
-        </inputAssignments>
-        <inputAssignments>
-            <field>RES_State_Province__c</field>
-            <value>
-                <elementReference>$Record.State</elementReference>
-            </value>
-        </inputAssignments>
-        <inputAssignments>
-            <field>RES_Street__c</field>
-            <value>
-                <elementReference>$Record.Street</elementReference>
-            </value>
-        </inputAssignments>
-        <inputAssignments>
-            <field>RES_Zip_Postal_Code__c</field>
-            <value>
-                <elementReference>$Record.PostalCode</elementReference>
             </value>
         </inputAssignments>
         <object>Opportunity</object>
