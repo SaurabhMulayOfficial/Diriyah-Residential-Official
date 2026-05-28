@@ -154,6 +154,30 @@ public class RES_TestDataFactory {
         return l;
     }
 
+    public static lead createLead(String email, String source, Id OwnerId){
+        Id rtId_individual = Schema.SObjectType.Lead.getRecordTypeInfosByDeveloperName().get('RES_Individual').getRecordTypeId();
+        String prefix      = email.substringBefore('@').left(10);
+        String hashStr     = String.valueOf(Math.abs(email.hashCode()));
+        String uniquePhone = '+9198' + hashStr.left(7).rightPad(7, '0');
+        
+        Lead l = new Lead(
+            OwnerId = OwnerId,
+            RecordTypeId = rtId_individual,
+            FirstName = prefix,
+            LastName = 'TestLead',
+            Company = prefix + ' Co',
+            Status = 'New',
+            Email = email,
+            Phone = uniquePhone,
+            MobilePhone = uniquePhone,
+            leadSource = source
+        );
+
+        insert l;
+        
+        return l;
+    }
+
     public static RES_LeadMassConversionUtility.ConvertRequest buildRequest(
         List<Lead>  leads,
         String      statusLabel,
