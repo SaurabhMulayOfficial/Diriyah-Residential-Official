@@ -4,7 +4,7 @@
     <protected>false</protected>
     <values>
         <field>Action__c</field>
-        <value xsi:type="xsd:string">block</value>
+        <value xsi:nil="true"/>
     </values>
     <values>
         <field>Assigned_To__c</field>
@@ -12,7 +12,7 @@
     </values>
     <values>
         <field>Check_Field_Equality__c</field>
-        <value xsi:type="xsd:string">RES_Project__c</value>
+        <value xsi:nil="true"/>
     </values>
     <values>
         <field>Lead_Age_Threshold_Days__c</field>
@@ -20,7 +20,7 @@
     </values>
     <values>
         <field>Lead_Status__c</field>
-        <value xsi:nil="true"/>
+        <value xsi:type="xsd:string">Archive</value>
     </values>
     <values>
         <field>Scenarios__c</field>

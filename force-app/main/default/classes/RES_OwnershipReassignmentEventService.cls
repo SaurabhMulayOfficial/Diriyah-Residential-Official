@@ -27,8 +27,16 @@ public with sharing class RES_OwnershipReassignmentEventService {
                 leadToUpdate.add(l);
             }
         }
+
+        System.debug('leadToUpdate --> ' + leadToUpdate);
         
-        Database.update(leadToUpdate, true, AccessLevel.SYSTEM_MODE);
+        try{
+            if(!leadToUpdate.isEmpty()){
+                Database.update(leadToUpdate, true, AccessLevel.SYSTEM_MODE);
+            }
+        } catch(Exception ex){
+            System.debug('Exception Occurred in RES_OwnershipReassignmentEventService --> ' + ex.getMessage());
+        }
     }
 
 }

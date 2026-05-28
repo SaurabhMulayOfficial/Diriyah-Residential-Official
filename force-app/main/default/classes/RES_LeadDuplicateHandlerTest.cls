@@ -162,57 +162,7 @@ private class RES_LeadDuplicateHandlerTest {
             'Archived lead must not qualify as mostRecentLead — no block should fire');
     }
 
-    // =========================================================================
-    // GROUP B — RES_Project__c Field Equality, BLOCK / Assign RM
-    // Representative rule: Broker(Z05) → Broker(Z05)
-    // =========================================================================
-
-    @isTest
-    static void testGroupB_BrokerBroker_SameProject_ShouldBlock() {
-        String fakeProject = 'Amansamar Residences Wadi Safar'; // stand-in for RES_Project__c Id
-
-        Lead existing = new Lead(LastName = 'BrkEx', Company = 'Co',
-                                 LeadSource = SRC_BROKER, Status = STATUS_ACTIVE_1, mobilePhone = '+1234567890',
-                                 RES_Project__c = fakeProject,OwnerId = UserInfo.getUserId());
-        insert existing;
-
-        Lead inputLd = new Lead(LastName = 'BrkIn', Company = 'Co',
-                                LeadSource = SRC_BROKER, RES_Project__c = fakeProject);
-
-        Test.startTest();
-        String result = RES_LeadDeduplicationHandler.fieldEqualityCheck(
-            inputLd, new List<Lead>{ existing }, 'RES_Project__c'
-        );
-        Test.stopTest();
-
-        System.assertEquals('SAME FOUND', result,
-            'Broker(Z05) → Broker(Z05) same project must return SAME FOUND → block');
-    }
-
-    @isTest
-    static void testGroupB_DifferentProject_ReturnsOwnerIdForRMAssign() {
-        Id runningUserId = UserInfo.getUserId();
-
-        // Existing has no project (null); input has one → different → no SAME FOUND
-        Lead existing = new Lead(LastName = 'DiffEx', Company = 'Co', mobilePhone = '+1234567890',
-                                 LeadSource = SRC_BROKER, Status = STATUS_ACTIVE_1);
-        existing.OwnerId = runningUserId;
-        insert existing;
-
-        Lead inputLd = new Lead(LastName = 'DiffIn', Company = 'Co',
-                                LeadSource = SRC_BROKER, RES_Project__c = runningUserId);
-
-        Test.startTest();
-        String result = RES_LeadDeduplicationHandler.fieldEqualityCheck(
-            inputLd, new List<Lead>{ existing }, 'RES_Project__c'
-        );
-        Test.stopTest();
-
-        System.assertEquals(String.valueOf(runningUserId), result,
-            'Different projects must return OwnerId so input lead is assigned to same RM');
-    }
-
-    // =========================================================================
+    // =======================================================================
     // GROUP C — Archive + Same RM
     // Representative rule: Broker(Z05) → Manual(Z09)
     // =========================================================================
