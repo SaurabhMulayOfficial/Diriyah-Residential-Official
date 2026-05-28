@@ -58,5 +58,11 @@ public with sharing class RES_AssignmentConfigDAO extends RES_BaseDAOLayer {
         return (List<RES_Assignment_Config__c>) executeQuery(soql, 'activeAssignmentConfigs', true, null, AccessLevel.SYSTEM_MODE);
     }
 
+    public list<RES_Assignment_Config__c> getConfigById(Set<Id> Ids){
+        Map<String,Object> bindVars = new Map<String,Object>();
+        bindVars.put('Ids', Ids);
+        String soql = 'SELECT Id, Name, RES_Record_Types__c, RES_Queue__c, RES_Channel__c FROM RES_Assignment_Config__c WHERE Id IN:Ids';
+        return (List<RES_Assignment_Config__c>) executeQuery(soql, 'getConfigById', true, bindVars, AccessLevel.SYSTEM_MODE);
+    }
 
 }
