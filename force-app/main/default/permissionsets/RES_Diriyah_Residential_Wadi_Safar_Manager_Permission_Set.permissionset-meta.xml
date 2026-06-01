@@ -5,6 +5,10 @@
         <enabled>true</enabled>
         <name>RES_Manager_Dashboard_Visibility</name>
     </customPermissions> 
+     <customPermissions>
+        <enabled>true</enabled>
+        <name>RES_SLA_Breach_Manager_Director_Visibility</name>
+    </customPermissions>
     <customPermissions>
         <enabled>true</enabled>
         <name>RES_Update_Owner_Visibility</name>
@@ -556,6 +560,11 @@
     <fieldPermissions>
         <editable>false</editable>
         <field>Contact.TitleType</field>
+        <readable>true</readable>
+    </fieldPermissions>
+     <fieldPermissions>
+        <editable>false</editable>
+        <field>Lead.RES_SLA_Hours_Remaining__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
