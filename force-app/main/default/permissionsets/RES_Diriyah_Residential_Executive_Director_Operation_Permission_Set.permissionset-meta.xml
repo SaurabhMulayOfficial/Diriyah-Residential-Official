@@ -1438,8 +1438,11 @@
         <name>ViewMyTeamsDashboards</name>
     </userPermissions>
     <userPermissions>
-    <enabled>true</enabled>
-    <name>AssignPermissionSets</name>
+        <enabled>true</enabled>
+        <name>AssignPermissionSets</name>
     </userPermissions>
-    
+    <userPermissions> 
+        <enabled>false</enabled> 
+        <name>ExportReports</name> 
+    </userPermissions>
 </PermissionSet>

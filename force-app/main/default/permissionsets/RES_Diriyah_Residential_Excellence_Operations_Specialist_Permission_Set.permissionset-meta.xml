@@ -1446,9 +1446,12 @@
         <enabled>true</enabled>
         <name>ConvertLeads</name>
     </userPermissions>
-     <userPermissions>
+    <userPermissions>
         <enabled>true</enabled>
         <name>TransferAnyLead</name>
     </userPermissions>
-    
+    <userPermissions> 
+        <enabled>false</enabled> 
+        <name>ExportReports</name> 
+    </userPermissions>
 </PermissionSet>
