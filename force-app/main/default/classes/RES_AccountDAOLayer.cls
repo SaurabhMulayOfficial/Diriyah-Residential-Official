@@ -1,6 +1,6 @@
 /**
- * Class Name   : RES_ContactDAOLayer
- * Description  : Data Access Object (DAO) layer for the Lead object.
+ * Class Name   : RES_AccountDAOLayer
+ * Description  : Data Access Object (DAO) layer for the Account object.
  *                Provides standardized methods for querying and retrieving
  *                Lead records within the application.
  *
@@ -37,23 +37,15 @@
  *                        AccessLevel accessLevel)
  * =============================================================================
  */
-public without sharing class RES_ContactDAOLayer extends RES_BaseDAOLayer {
+public with sharing class RES_AccountDAOLayer extends RES_BaseDAOLayer{
     protected override String getSObjectName() {
-        return 'Contact';
+        return 'Account';
     }
-    public List<Contact> getContactByMobilePhone(Set<String> mobilePhone){
-        Map<String,Object> bindVars = new Map<String, Object>();
-        bindVars.put('mobilePhone', mobilePhone);
-        String soql = 'SELECT Id, MobilePhone FROM Contact WHERE MobilePhone IN: mobilePhone';
-        List<Contact> contactList = executeQuery(soql, 'getContactByMobilePhone', true, bindVars, AccessLevel.SYSTEM_MODE);
-        return contactList;
-    }
-
-    public Contact getContactById(Id contactId) {
+    public Account getAccountById(Id accountId) {
         Map<String, Object> bindVars = new Map<String, Object>();
-        bindVars.put('contactId', contactId);
-        String soql = 'SELECT Id, Name, Title, Phone, Email, MobilePhone FROM Contact WHERE Id = :contactId LIMIT 1';
+        bindVars.put('accountId', accountId);
+        String soql = 'SELECT Id, Name, Type, Phone, Website, Site, OwnerId, Owner.Name, IsPersonAccount FROM Account WHERE Id = :accountId LIMIT 1';
         List<SObject> results = executeQuery(soql, '', true, bindVars, AccessLevel.SYSTEM_MODE);
-        return results != null && !results.isEmpty() ? (Contact) results[0] : null;
+        return results != null && !results.isEmpty() ? (Account) results[0] : null;
     }
 }

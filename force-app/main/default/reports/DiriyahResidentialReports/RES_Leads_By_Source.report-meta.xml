@@ -7,54 +7,53 @@
         <field>LAST_NAME</field>
     </columns>
     <columns>
+        <field>TITLE</field>
+    </columns>
+    <columns>
+        <field>COMPANY</field>
+    </columns>
+    <columns>
         <field>EMAIL</field>
+    </columns>
+    <columns>
+        <field>STREET</field>
+    </columns>
+    <columns>
+        <field>RATING</field>
     </columns>
     <columns>
         <field>OWNER</field>
     </columns>
-    <columns>
-        <field>Lead.RES_SLA_Due_Time__c</field>
-    </columns>
-    <columns>
-        <aggregateTypes>Sum</aggregateTypes>
-        <field>Lead.RES_SLA_Hours_Remaining__c</field>
-    </columns>
     <currency>SAR</currency>
     <filter>
         <criteriaItems>
-            <column>STATUS</column>
+            <column>CONVERTED</column>
             <columnToColumn>false</columnToColumn>
             <isUnlocked>true</isUnlocked>
             <operator>equals</operator>
-            <value>01,New</value>
-        </criteriaItems>
-        <criteriaItems>
-            <column>Lead.RES_SLA_Hours_Remaining__c</column>
-            <columnToColumn>false</columnToColumn>
-            <isUnlocked>true</isUnlocked>
-            <operator>lessOrEqual</operator>
-            <value>4</value>
+            <value>0</value>
         </criteriaItems>
         <language>en_US</language>
     </filter>
     <format>Summary</format>
     <groupingsDown>
         <dateGranularity>Day</dateGranularity>
-        <field>Lead.RES_SLA_Status__c</field>
+        <field>LEAD_SOURCE</field>
         <sortOrder>Asc</sortOrder>
     </groupingsDown>
-    <name>SLA Breaching Leads Report</name>
+    <name>Leads By Source</name>
     <params>
         <name>co</name>
         <value>1</value>
     </params>
     <reportType>LeadList</reportType>
-    <scope>team</scope>
+    <scope>org</scope>
     <showDetails>true</showDetails>
     <showGrandTotal>true</showGrandTotal>
     <showSubTotals>true</showSubTotals>
     <timeFrameFilter>
         <dateColumn>CREATED_DATE</dateColumn>
         <interval>INTERVAL_CUSTOM</interval>
+        <startDate>2026-05-19</startDate>
     </timeFrameFilter>
 </Report>
