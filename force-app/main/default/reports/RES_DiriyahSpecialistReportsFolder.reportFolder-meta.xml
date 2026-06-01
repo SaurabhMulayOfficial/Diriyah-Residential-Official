@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<DashboardFolder xmlns="http://soap.sforce.com/2006/04/metadata">
+<ReportFolder xmlns="http://soap.sforce.com/2006/04/metadata">
     <folderShares>
         <accessLevel>View</accessLevel>
         <sharedTo>RES_Contract_Amendments_Operations_Specialist</sharedTo>
@@ -60,10 +60,5 @@
         <sharedTo>RES_Sales_Wadi_Safar_Specialist_I</sharedTo>
         <sharedToType>Role</sharedToType>
     </folderShares>
-    <folderShares>
-        <accessLevel>View</accessLevel>
-        <sharedTo>RES_Sales_Wadi_Safar_Specialist_II</sharedTo>
-        <sharedToType>Role</sharedToType>
-    </folderShares>
-    <name>Diriyah Manager Dashboard</name>
-</DashboardFolder>
+    <name>Diriyah Specialist Reports Folder</name>
+</ReportFolder>

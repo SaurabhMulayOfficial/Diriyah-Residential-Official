@@ -530,6 +530,11 @@
         <field>Contact.TitleType</field>
         <readable>true</readable>
     </fieldPermissions>
+     <fieldPermissions>
+        <editable>false</editable>
+        <field>Lead.RES_SLA_Hours_Remaining__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
     <fieldPermissions>
         <editable>false</editable>
         <field>Lead.RES_Residency_Type__c</field>
