@@ -1,0 +1,144 @@
+<template>
+    <template if:true={showPopup}>
+        <div class="overlay">
+            <div class="popup-box">
+                <div class="popup-header">
+                    <button class="close-x" onclick={closePopup}>&#x2715;</button>
+                    <h1 class="header-title">Your lead has been converted</h1>
+                    <div class="trophy-icon">
+                        <lightning-icon
+                            icon-name="standard:lead"
+                            size="large">
+                        </lightning-icon>
+                    </div>
+                </div>
+                <template if:true={isLoading}>
+                    <div class="spinner-wrapper">
+                        <lightning-spinner
+                            alternative-text="Loading"
+                            size="medium">
+                        </lightning-spinner>
+                        <p class="loading-text">Fetching converted records...</p>
+                    </div>
+                </template>
+                <template if:true={errorMessage}>
+                    <div class="error-banner">
+                        <lightning-icon
+                            icon-name="utility:error"
+                            size="x-small"
+                            variant="error">
+                        </lightning-icon>
+                        <span>{errorMessage}</span>
+                    </div>
+                </template>
+                <template if:false={isLoading}>
+                    <div class="cards-row">
+                        <div class={accountCardClass} onclick={handleAccountClick}>
+                            <div class="card-section-title">{accountTileLabel}</div>
+                            <div class="card-inner">
+                                <div class="card-record-header">
+                                    <lightning-icon
+                                        icon-name="standard:account"
+                                        size="small">
+                                    </lightning-icon>
+                                    <span class="card-record-name">{accountName}</span>
+                                </div>
+                                <div class="card-fields">
+                                    <div class="card-field-row">
+                                        <span class="field-label">Type:</span>
+                                        <span class="field-value">{accountType}</span>
+                                    </div>
+                                    <div class="card-field-row">
+                                        <span class="field-label">Phone:</span>
+                                        <span class="field-value">{accountPhone}</span>
+                                    </div>
+                                    <div class="card-field-row">
+                                        <span class="field-label">Website:</span>
+                                        <span class="field-value">{accountWebsite}</span>
+                                    </div>
+                                    <div class="card-field-row">
+                                        <span class="field-label">Account Own...:</span>
+                                        <span class="field-value owner-link">{accountOwnerName}</span>
+                                    </div>
+                                    <div class="card-field-row">
+                                        <span class="field-label">Account Site:</span>
+                                        <span class="field-value">{accountSite}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <template if:false={isPersonAccount}>
+                            <div class={contactCardClass} onclick={handleContactClick}>
+                                <div class="card-section-title">CONTACT</div>
+                                <div class="card-inner">
+                                    <div class="card-record-header">
+                                        <lightning-icon
+                                            icon-name="standard:contact"
+                                            size="small">
+                                        </lightning-icon>
+                                        <span class="card-record-name">{contactName}</span>
+                                    </div>
+                                    <div class="card-fields">
+                                        <div class="card-field-row">
+                                            <span class="field-label">Title:</span>
+                                            <span class="field-value">{contactTitle}</span>
+                                        </div>
+                                        <div class="card-field-row">
+                                            <span class="field-label">Account Name:</span>
+                                            <span class="field-value owner-link">{accountName}</span>
+                                        </div>
+                                        <div class="card-field-row">
+                                            <span class="field-label">Phone:</span>
+                                            <span class="field-value">{contactPhone}</span>
+                                        </div>
+                                        <div class="card-field-row">
+                                            <span class="field-label">Email:</span>
+                                            <span class="field-value owner-link">{contactEmail}</span>
+                                        </div>
+                                        <div class="card-field-row">
+                                            <span class="field-label">Mobile:</span>
+                                            <span class="field-value">{contactMobile}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </template>
+                        <div class={opportunityCardClass} onclick={handleOpportunityClick}>
+                            <div class="card-section-title">OPPORTUNITY</div>
+                            <div class="card-inner">
+                                <div class="card-record-header">
+                                    <lightning-icon
+                                        icon-name="standard:opportunity"
+                                        size="small">
+                                    </lightning-icon>
+                                    <span class="card-record-name">{opportunityName}</span>
+                                </div>
+                                <div class="card-fields">
+                                    <div class="card-field-row">
+                                        <span class="field-label">Account Name:</span>
+                                        <span class="field-value owner-link">{accountName}</span>
+                                    </div>
+                                    <div class="card-field-row">
+                                        <span class="field-label">Close Date:</span>
+                                        <span class="field-value">{opportunityCloseDate}</span>
+                                    </div>
+                                    <div class="card-field-row">
+                                        <span class="field-label">Amount:</span>
+                                        <span class="field-value">{opportunityAmount}</span>
+                                    </div>
+                                    <div class="card-field-row">
+                                        <span class="field-label">Opportunity O...:</span>
+                                        <span class="field-value owner-link">{opportunityOwnerName}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </template>
+                <div class="popup-footer">
+                    <button class="btn-go-to-leads"  onclick={handleGoToLeads}>Go to Leads</button>
+                </div>
+            </div>
+        </div>
+    </template>
+</template>
