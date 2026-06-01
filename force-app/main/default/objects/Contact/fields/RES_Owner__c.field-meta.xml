@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>RES_Owner__c</fullName>
+    <externalId>false</externalId>
+    <formula>TRIM(
+IF(NOT(ISBLANK(Owner.FirstName)),
+Owner.FirstName &amp; &quot; &quot;,
+&quot;&quot;
+) &amp;
+IF(NOT(ISBLANK(Owner.MiddleName)),
+Owner.MiddleName &amp; &quot; &quot;,
+&quot;&quot;
+) &amp;
+IF(NOT(ISBLANK(Owner.LastName)),
+Owner.LastName,
+&quot;&quot;
+)
+)</formula>
+    <label>Contact Owner</label>
+    <required>false</required>
+    <type>Text</type>
+    <unique>false</unique>
+</CustomField>
