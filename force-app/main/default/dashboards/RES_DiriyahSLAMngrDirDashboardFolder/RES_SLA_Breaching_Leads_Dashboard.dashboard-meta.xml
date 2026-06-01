@@ -14,8 +14,7 @@
             <dashboardComponent>
                 <autoselectColumnsFromReport>false</autoselectColumnsFromReport>
                 <chartSummary>
-                    <aggregate>Sum</aggregate>
-                    <column>Lead.RES_SLA_Hours_Remaining__c</column>
+                    <column>RowCount</column>
                 </chartSummary>
                 <componentType>Metric</componentType>
                 <decimalPrecision>-1</decimalPrecision>
@@ -31,15 +30,13 @@
                 <showRange>false</showRange>
             </dashboardComponent>
             <rowIndex>0</rowIndex>
-            <rowSpan>9</rowSpan>
+            <rowSpan>10</rowSpan>
         </dashboardGridComponents>
         <numberOfColumns>12</numberOfColumns>
         <rowHeight>36</rowHeight>
     </dashboardGridLayout>
     <dashboardType>SpecifiedUser</dashboardType>
     <isGridLayout>true</isGridLayout>
-    <owner>poonam.jain@globant.com.diriyah</owner>
-    <runningUser>poonam.jain@globant.com.diriyah</runningUser>
     <textColor>#000000</textColor>
     <title>SLA Breaching Leads</title>
     <titleColor>#000000</titleColor>
