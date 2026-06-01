@@ -82,7 +82,19 @@ public with sharing class RES_LeadConversionHandler {
         }
 
         try{
-            Database.convertLead(qualifiedLeadsToConvert, true, AccessLevel.USER_MODE);
+            List<Database.LeadConvertResult> results = Database.convertLead(qualifiedLeadsToConvert,true, AccessLevel.USER_MODE);
+
+                for(Database.LeadConvertResult res : results){
+                    System.debug('SUCCESS => ' + res.isSuccess());
+                    System.debug('ACCOUNT ID => ' + res.getAccountId());
+                    System.debug('CONTACT ID => ' + res.getContactId());
+                    System.debug('OPPORTUNITY ID => ' + res.getOpportunityId());
+                    if(!res.isSuccess()){
+                        for(Database.Error err : res.getErrors()){
+                            System.debug(err.getMessage());
+                        }
+                    }
+                }
         }
         catch(Exception ex){
             System.debug('Exception while Converting Leads '+ex.getMessage());
@@ -142,5 +154,124 @@ public with sharing class RES_LeadConversionHandler {
             }
         }
         return leadDuplicateMap;
+    }
+
+    /**
+     * @description Fetches converted record Ids after Lead conversion.
+     *              Delegates SOQL to RES_LeadDAOLayer following DAO framework.
+     *              Called from LWC after CDC LeadChangeEvent is received.
+     *
+     * @param leadId Id of the converted Lead.
+     * @return Map containing accountId, contactId, opportunityId, leadName, status.
+     */
+    @AuraEnabled(cacheable=false)
+    public static Map<String, String> getConvertedRecordIds(Id leadId) {
+    Map<String, String> result = new Map<String, String>();
+    try {
+        if (leadId == null) {
+            throw new AuraHandledException('Lead Id is required.');
+        }
+        List<Lead> rawLeads = [
+            SELECT Id, Name, Status, IsConverted,
+                    ConvertedAccountId, ConvertedContactId, ConvertedOpportunityId,
+                    RecordType.DeveloperName
+            FROM Lead
+            WHERE Id = :leadId
+            LIMIT 1
+        ];
+
+        System.debug('RAW LEAD FOUND: ' + rawLeads.size());
+        if (!rawLeads.isEmpty()) {
+            System.debug('IsConverted: '        + rawLeads[0].IsConverted);
+            System.debug('Status: '             + rawLeads[0].Status);
+            System.debug('ConvertedAccountId: ' + rawLeads[0].ConvertedAccountId);
+            System.debug('RecordType: '         + rawLeads[0].RecordType?.DeveloperName);
+        }
+
+        Lead convertedLead = new RES_LeadDAOLayer().getConvertedLeadById(leadId);
+        System.debug('DAO returned lead: ' + convertedLead);
+
+        if (convertedLead == null) {
+            System.debug('Lead is null from DAO — returning empty map');
+            return result; // LWC retry handles this
+        }
+
+        result.put('accountId',     convertedLead.ConvertedAccountId);
+        result.put('contactId',     convertedLead.ConvertedContactId);
+        result.put('opportunityId', convertedLead.ConvertedOpportunityId);
+        result.put('leadName',      convertedLead.Name);
+        result.put('status',        convertedLead.Status);
+
+        if (convertedLead.ConvertedAccountId != null) {
+            Account acc = new RES_AccountDAOLayer().getAccountById(
+                convertedLead.ConvertedAccountId
+            );
+            if (acc != null) {
+                result.put('accountName',      acc.Name);
+                result.put('accountType',      acc.Type);
+                result.put('accountPhone',     acc.Phone);
+                result.put('accountWebsite',   acc.Website);
+                result.put('accountOwnerName', acc.Owner?.Name);
+                result.put('accountSite',      acc.Site);
+                result.put('isPersonAccount',  String.valueOf(acc.IsPersonAccount));
+            }
+        }
+
+        if (convertedLead.ConvertedContactId != null) {
+            Contact con = new RES_ContactDAOLayer().getContactById(
+                convertedLead.ConvertedContactId
+            );
+            if (con != null) {
+                result.put('contactName',   con.Name);
+                result.put('contactTitle',  con.Title);
+                result.put('contactPhone',  con.Phone);
+                result.put('contactEmail',  con.Email);
+                result.put('contactMobile', con.MobilePhone);
+            }
+        }
+
+        if (convertedLead.ConvertedOpportunityId != null) {
+            Opportunity opp = new RES_OpportunityDAOLayer().getOpportunityById(
+                convertedLead.ConvertedOpportunityId
+            );
+            if (opp != null) {
+                result.put('opportunityName',      opp.Name);
+                result.put('opportunityCloseDate', opp.CloseDate != null ? opp.CloseDate.format() : '');
+                result.put('opportunityAmount',    opp.Amount != null ? String.valueOf(opp.Amount) : '');
+                result.put('opportunityOwnerName', opp.Owner?.Name);
+            }
+        }
+        } catch (AuraHandledException ex) {
+            throw ex;
+        } catch (Exception ex) {
+            System.debug('Error: ' + ex.getMessage() + ' | Line: ' + ex.getLineNumber());
+            throw new AuraHandledException('Error: ' + ex.getMessage());
+        }
+        return result;
+    }
+
+    /**
+     * @description Checks if current running user is the Lead owner.
+     *              Delegates to RES_LeadDAOLayer — no inline SOQL.
+     *              Called from LWC connectedCallback before CDC subscribe.
+     *
+     * @param leadId Id of the Lead record.
+     * @return true if current user is the owner, false otherwise.
+     */
+    @AuraEnabled(cacheable=true)
+    public static Boolean isCurrentUserLeadOwner(Id leadId) {
+        try {
+            if (leadId == null) {
+                return false;
+            }
+            Lead ld = new RES_LeadDAOLayer().getLeadOwnerById(leadId);
+            if (ld == null) {
+                return false;
+            }
+            return ld.OwnerId == UserInfo.getUserId();
+        } catch (Exception ex) {
+            System.debug('Error in isCurrentUserLeadOwner: ' + ex.getMessage());
+            return false;
+        }
     }
 }
