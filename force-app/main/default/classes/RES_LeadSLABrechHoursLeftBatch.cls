@@ -33,15 +33,16 @@ global class RES_LeadSLABrechHoursLeftBatch implements Database.Batchable<SObjec
                 
                 // Convert milliseconds to hours
                 Decimal hoursRemaining = ms / (1000.0 * 60 * 60);
-       
+             
                  //update custom field
                  ld.RES_SLA_Hours_Remaining__c = hoursRemaining;
+                
                  leadsToUpdate.add(ld);
             }
         
         //updating records
          if (!leadsToUpdate.isEmpty()) {
-            update leadsToUpdate;
+           Database.update(leadsToUpdate, false);
           }
         
       }
