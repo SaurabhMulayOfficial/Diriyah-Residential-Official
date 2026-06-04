@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>RES_Attachment_Type__c</fullName>
+    <label>Attachment Type</label>
+    <required>false</required>
+    <trackHistory>false</trackHistory>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>National Id</fullName>
+                <default>false</default>
+                <label>National Id</label>
+            </value>
+            <value>
+                <fullName>Iqama Id</fullName>
+                <default>false</default>
+                <label>Iqama Id</label>
+            </value>
+            <value>
+                <fullName>GCC Id</fullName>
+                <default>false</default>
+                <label>GCC Id</label>
+            </value>
+            <value>
+                <fullName>Passport</fullName>
+                <default>false</default>
+                <label>Passport</label>
+            </value>
+            <value>
+                <fullName>Simah Form</fullName>
+                <default>false</default>
+                <label>Simah Form</label>
+            </value>
+            <value>
+                <fullName>Company Registration Certificate</fullName>
+                <default>false</default>
+                <label>Company Registration Certificate</label>
+            </value>
+            <value>
+                <fullName>POA (Power of Attorney)</fullName>
+                <default>false</default>
+                <label>POA (Power of Attorney)</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

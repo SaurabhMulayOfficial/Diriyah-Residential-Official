@@ -9,6 +9,10 @@
         <enabled>true</enabled>
         <name>RES_Update_Owner_Visibility</name>
     </customPermissions>
+     <customPermissions>
+        <enabled>true</enabled>
+        <name>RES_Show_Document_Section</name>
+    </customPermissions>
     <classAccesses>
         <apexClass>RES_UserAvailabilityController</apexClass>
         <enabled>true</enabled>
@@ -98,6 +102,51 @@
         <enabled>true</enabled>
     </flowAccesses>
     <custom>false</custom>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>ContentVersion.RES_Attachment_Type__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+ <fieldPermissions>
+        <editable>true</editable>
+        <field>ContentVersion.RES_Document_Label__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+     <fieldPermissions>
+        <editable>true</editable>
+        <field>Account.RES_National_ID_Status__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+ <fieldPermissions>
+        <editable>true</editable>
+        <field>Account.RES_Iqama_Id_Status__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+ <fieldPermissions>
+        <editable>true</editable>
+        <field>Account.RES_GCC_Id_Status__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+ <fieldPermissions>
+        <editable>true</editable>
+        <field>Account.RES_Passport_Status__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+ <fieldPermissions>
+        <editable>true</editable>
+        <field>Account.RES_Simah_Form_Status__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+ <fieldPermissions>
+        <editable>true</editable>
+        <field>Account.RES_Company_Reg_Certificate_Status__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+ <fieldPermissions>
+        <editable>true</editable>
+        <field>Account.RES_Power_of_Attorney_Status__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
     <fieldPermissions>
         <editable>true</editable>
         <field>Account.RES_Company_Type__c</field>
