@@ -1,0 +1,303 @@
+:host {
+    display: block;
+    width: 100%;
+}
+
+.manager {
+    width: 100%;
+}
+
+.section-header {
+    display: flex;
+    align-items: center;
+    background: #f3f3f3;
+    height: 35px;
+    border-radius: 10px;
+    padding: 0 1rem;
+    margin-bottom: 24px;
+    flex-wrap: wrap; 
+}
+
+.section-header h2 {
+    margin: 0;
+    color:#300000;
+    font-size: 1.00rem;
+    font-weight: 500;
+}
+
+.collapse-icon {
+    margin-right: 8px;
+}
+
+.content {
+    width: 100%;
+    overflow: hidden;
+}
+
+.top-row {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 24px;
+    margin-left: 80px;
+    align-items: flex-end;
+    flex-wrap: wrap;
+}
+
+.search-field,
+.upload-area {
+    flex: 1 1 161px;
+    min-width: 161px;
+}
+
+.search-field label,
+.upload-area label {
+    display: block;
+    margin-bottom: 8px;
+    font-size: 0.90rem;
+    font-weight: 400;
+    color: #835038;
+}
+
+.search-field lightning-input {
+    --slds-c-input-radius-border: 10px;
+}
+
+.table-wrapper {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: auto;
+    height: 60%;
+    max-height: 400px;
+    overflow-y: auto;
+    border: 1px solid #dddddd;
+    border-radius: 14px;
+    background: #ffffff;
+}
+
+.custom-table {
+    width: 100% ;
+    table-layout: fixed;
+    border-collapse: collapse;
+    background: #ffffff;
+}
+
+.custom-table thead {
+    background: #f5f5f5;
+}
+
+.custom-table th {
+    background: #f5f5f5;
+    color: #300000;
+    font-size: 0.95rem;
+    font-weight: 400;
+    text-align: left;
+    white-space: nowrap;
+}
+
+.custom-table td {
+    vertical-align: middle;
+    color: #444444;
+    font-size: 0.95rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    border-top: 1px solid #eeeeee;
+}
+
+.custom-table th:nth-child(1),
+.custom-table td:nth-child(1) {
+    font-size: 0.95rem;
+    font-weight: 400;
+    width: 26%;
+    
+}
+
+.custom-table th:nth-child(2),
+.custom-table td:nth-child(2) {
+    font-size: 0.95rem;
+    font-weight: 400;
+    width: 20%;
+}
+
+.custom-table th:nth-child(3),
+.custom-table td:nth-child(3) {
+    font-size: 0.95rem;
+    font-weight: 400;
+    width: 18%;
+}
+
+.custom-table th:nth-child(4),
+.custom-table td:nth-child(4) {
+    font-size: 0.95rem;
+    font-weight: 400;
+    width: 16%;
+}
+
+.custom-table th:nth-child(5),
+.custom-table td:nth-child(5) {
+    font-size: 0.95rem;
+    font-weight: 400;
+    width: 12%;
+}
+
+.custom-table th:nth-child(6),
+.custom-table td:nth-child(6) {
+    font-size: 0.95rem;
+    font-weight: 400;
+    width: 10%;
+}
+
+.custom-table th:nth-child(7),
+.custom-table td:nth-child(7) {
+    font-size: 0.95rem;
+    font-weight: 400;
+    width: 12%;
+    min-width: 130px;
+    overflow: visible;
+}
+
+.document-link {
+    color: #835038;
+    font-size: 0.95rem;
+    font-weight: 400;
+    text-decoration: none;
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.document-link:hover {
+    text-decoration: underline;
+}
+
+.custom-table td:nth-child(2) lightning-input {
+    width: 100%;
+    min-width: 0;
+}
+
+.custom-table td:nth-child(5) {
+    overflow: visible;
+    text-overflow: unset;
+}
+
+.action-buttons {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    justify-content: flex-start;
+    min-width: 110px;
+}
+
+.action-buttons lightning-button-icon {
+    flex-shrink: 0;
+    --slds-c-button-radius-border: 999px;
+}
+
+.user-icon {
+    margin-right: 6px;
+}
+
+.no-data {
+    text-align: center;
+    padding: 40px;
+    color: #666666;
+    font-size: 1rem;
+}
+
+.upload-modal {
+    max-width: 40rem;
+}
+
+.modal-header h2 {
+    color: #835038;
+    font-size: 1.5rem;
+    font-weight: 400;
+}
+
+.upload-file-row {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 1rem;
+    align-items: end;
+    margin-bottom: 1rem;
+}
+
+.file-name-display label,
+.file-upload-button label {
+    display: block;
+    font-size: 1rem;
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+    color: #333333;
+}
+
+.selected-file-name {
+    min-height: 38px;
+    padding: 0.45rem 0;
+    font-size: 1rem;
+    color: #333333;
+    word-break: break-word;
+}
+
+.file-upload-button {
+    min-width: 280px;
+}
+
+.document-label-input {
+    margin-bottom: 1rem;
+}
+
+.attachment-type {
+    margin-top: 0;
+}
+
+.modal-footer {
+    background:#e9d7c3;
+    padding: 1rem;
+}
+
+lightning-input,
+lightning-combobox {
+    --slds-c-input-radius-border: 10px;
+}
+
+lightning-button {
+    --slds-c-button-brand-radius-border: 999px;
+}
+
+lightning-button-icon {
+    --slds-c-button-radius-border: 999px;
+}
+
+@media (max-width: 1200px) {
+    .top-row {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+@media (max-width: 768px) {
+    .top-row,
+    .upload-file-row {
+        grid-template-columns: 1fr;
+    }
+
+    .custom-table {
+        min-width: 1100px;
+    }
+
+    .file-upload-button {
+        min-width: 100%;
+    }
+}
+
+@media (max-width: 480px) {
+    .section-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .upload-area {
+        align-self: flex-end;
+    }
+}
