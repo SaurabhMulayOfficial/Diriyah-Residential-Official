@@ -19,6 +19,9 @@
     </classAccesses>
     <classAccesses>
         <apexClass>RES_CountryDialCodeDAOLayer</apexClass>
+        <enabled>true</enabled>
+    </classAccesses>
+      <classAccesses>
         <apexClass>RES_ContentDocumentLinkDAOLayer</apexClass>
         <enabled>true</enabled>
     </classAccesses>
@@ -166,11 +169,6 @@
  <fieldPermissions>
         <editable>true</editable>
         <field>Account.RES_Power_of_Attorney_Status__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>Account.RES_Company_Type__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
@@ -390,11 +388,6 @@
     </fieldPermissions>
     <fieldPermissions>
         <editable>true</editable>
-        <field>Account.RES_House_Number__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>true</editable>
         <field>Account.DIR_Country__c</field>
         <readable>true</readable>
     </fieldPermissions>
@@ -436,11 +429,6 @@
     <fieldPermissions>
         <editable>true</editable>
         <field>Account.RES_Outbound_Markets__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>Account.RES_Position__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
@@ -611,11 +599,6 @@
     <fieldPermissions>
         <editable>true</editable>
         <field>Contact.RES_Active__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>Contact.RES_House_Number__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
@@ -880,11 +863,6 @@
     </fieldPermissions>
     <fieldPermissions>
         <editable>true</editable>
-        <field>Lead.RES_Date_of_Expiry__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>true</editable>
         <field>Lead.RES_Employee_ID__c</field>
         <readable>true</readable>
     </fieldPermissions>
@@ -911,11 +889,6 @@
     <fieldPermissions>
         <editable>true</editable>
         <field>Lead.RES_Group_Code__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>Lead.RES_Has_License__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
@@ -1160,17 +1133,7 @@
     </fieldPermissions>
      <fieldPermissions>
         <editable>true</editable>
-        <field>Lead.RES_Services_Offered__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-     <fieldPermissions>
-        <editable>true</editable>
         <field>Lead.RES_Requested_Timing__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-     <fieldPermissions>
-        <editable>true</editable>
-        <field>Lead.RES_House_Number__c</field>
         <readable>true</readable>
     </fieldPermissions>
      <fieldPermissions>
@@ -1181,16 +1144,6 @@
      <fieldPermissions>
         <editable>true</editable>
         <field>Lead.RES_Date_of_Expiry__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-     <fieldPermissions>
-        <editable>true</editable>
-        <field>Lead.RES_Cityscape_Year__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>Lead.RES_Nationality__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
