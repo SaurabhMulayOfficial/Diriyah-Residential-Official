@@ -21,7 +21,7 @@ public with sharing class RES_LeadDestributionService {
         RES_ReassignmentLogicHandler.runLeadReassignment(leadList, routingUpdates);
 
         try{
-            Database.update(leadList, true, AccessLevel.SYSTEM_MODE);
+            Database.update(leadList, false, AccessLevel.SYSTEM_MODE);
             RES_ReassignmentLogicHandler.updateRoutingRecords(routingUpdates);
         }catch(Exception e){
             System.debug('Failed to Update Leads OR Failed to create Lead-Routing Records ' + e.getMessage());

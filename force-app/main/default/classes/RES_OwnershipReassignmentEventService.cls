@@ -32,7 +32,7 @@ public with sharing class RES_OwnershipReassignmentEventService {
         
         try{
             if(!leadToUpdate.isEmpty()){
-                Database.update(leadToUpdate, true, AccessLevel.SYSTEM_MODE);
+                Database.update(leadToUpdate, false, AccessLevel.SYSTEM_MODE);
             }
         } catch(Exception ex){
             System.debug('Exception Occurred in RES_OwnershipReassignmentEventService --> ' + ex.getMessage());
