@@ -1,0 +1,99 @@
+<template>
+    <div class="form-item phone-input-container">
+
+        <!-- Label -->
+        <div class="slds-form-element__label phone-label">
+            <template if:true={required}>
+                <abbr class="slds-required" title="required">*</abbr>
+            </template>
+            <span>Mobile</span>
+        </div>
+
+        <!-- Country + Mobile -->
+        <div class="country-phone-wrapper">
+
+            <!-- Country Selector -->
+            <button
+                type="button"
+                class="country-selector"
+                onclick={toggleDropdown}
+                aria-haspopup="listbox"
+                aria-expanded={showDropdown}
+                title="Select country code"
+            >
+                <span class="country-flag">{selectedCountry.flag}</span>
+
+                <span class="country-code">
+                    {selectedCountry.dial_code}
+                </span>
+
+                <span class={arrowClass}></span>
+            </button>
+
+            <!-- Mobile Input -->
+            <div class="phone-input-box">
+                <input
+                value={phone}
+                name="phone"
+                type="tel"
+                placeholder={placeholder}
+                onchange={handlePhoneChange}
+                onblur={handleBlur}
+                class="phone-input slds-input"
+            />
+            </div>
+
+        </div>
+
+        <!-- Dropdown -->
+        <template if:true={showDropdown}>
+            <div class="country-dropdown" onclick={stopPropagateParent}>
+
+                <div class="search-box">
+                    <lightning-input
+                        type="search"
+                        variant="label-hidden"
+                        placeholder="Search country"
+                        onchange={handleSearch}
+                    >
+                    </lightning-input>
+                </div>
+
+                <ul class="country-list" role="listbox">
+
+                    <template for:each={filteredCountries} for:item="country">
+                        <li
+                            key={country.code}
+                            class="country-item"
+                            onclick={handleCountrySelect}
+                            data-code={country.code}
+                            role="option"
+                        >
+                            <span class="country-flag">
+                                {country.flag}
+                            </span>
+
+                            <span class="country-name">
+                                {country.name}
+                            </span>
+
+                            <span class="country-code-item">
+                                ({country.dial_code})
+                            </span>
+                        </li>
+                    </template>
+
+                </ul>
+
+            </div>
+        </template>
+
+        <!-- Error -->
+        <template if:true={errorMessage}>
+            <div class="slds-form-element__help error-text">
+                {errorMessage}
+            </div>
+        </template>
+
+    </div>
+</template>

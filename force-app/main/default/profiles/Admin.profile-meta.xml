@@ -13,6 +13,14 @@
         <enabled>true</enabled>
         <name>RES_Show_Document_Section</name>
     </customPermissions>
+     <classAccesses>
+        <apexClass>RES_MobileNumberService</apexClass>
+        <enabled>true</enabled>
+    </classAccesses>
+    <classAccesses>
+        <apexClass>RES_CountryDialCodeDAOLayer</apexClass>
+        <enabled>true</enabled>
+    </classAccesses>
     <classAccesses>
         <apexClass>RES_UserAvailabilityController</apexClass>
         <enabled>true</enabled>
