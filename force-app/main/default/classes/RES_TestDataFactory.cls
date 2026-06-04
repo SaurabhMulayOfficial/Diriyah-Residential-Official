@@ -211,4 +211,41 @@ public class RES_TestDataFactory {
             PermissionSetId = ps.Id
         );
     }
+      
+    public static Account createAccount() {
+        Account acc = new Account();
+        acc.Name = 'Test Account';
+        insert acc;
+        
+        return acc;
+    }
+
+    public static ContentVersion createFile() {
+        ContentVersion cv = new ContentVersion();
+            cv.Title = 'TestFile';
+            cv.PathOnClient = 'TestFile.pdf';
+            cv.VersionData = Blob.valueOf('Test File Content');
+       
+        insert cv;
+
+        return  [SELECT Id,
+               Title,
+               ContentDocumentId,
+               RES_Document_Label__c
+        FROM ContentVersion
+        WHERE Id = :cv.Id
+    ];
+    }
+   
+    public static ContentDocumentLink createDocLink(String accId, String cdId) {
+        ContentDocumentLink cdl = new ContentDocumentLink();
+            cdl.ContentDocumentId = cdId;
+            cdl.LinkedEntityId = accId;
+            cdl.ShareType = 'V';
+            cdl.Visibility = 'AllUsers';
+        
+        insert cdl;
+      
+        return cdl;
+    }
 }

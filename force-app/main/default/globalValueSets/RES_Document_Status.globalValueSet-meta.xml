@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<GlobalValueSet xmlns="http://soap.sforce.com/2006/04/metadata">
+    <customValue>
+        <fullName>Missing</fullName>
+        <default>true</default>
+        <label>Missing</label>
+    </customValue>
+    <customValue>
+        <fullName>Pending Review</fullName>
+        <default>false</default>
+        <label>Pending Review</label>
+    </customValue>
+    <customValue>
+        <fullName>Approved</fullName>
+        <default>false</default>
+        <label>Approved</label>
+    </customValue>
+    <description>Document Checklist Status used for Attachment Types</description>
+    <masterLabel>Document Status</masterLabel>
+    <sorted>false</sorted>
+</GlobalValueSet>
