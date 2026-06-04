@@ -35,6 +35,13 @@
             <operator>lessOrEqual</operator>
             <value>4</value>
         </criteriaItems>
+        <criteriaItems>
+            <column>Lead.RES_SLA_Status__c</column>
+            <columnToColumn>false</columnToColumn>
+            <isUnlocked>true</isUnlocked>
+            <operator>equals</operator>
+            <value>Running</value>
+        </criteriaItems>
         <language>en_US</language>
     </filter>
     <format>Summary</format>
