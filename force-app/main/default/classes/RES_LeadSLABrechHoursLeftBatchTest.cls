@@ -22,6 +22,7 @@ private class  RES_LeadSLABrechHoursLeftBatchTest {
         Lead l1 = RES_TestDataFactory.createLead('test@example.in');
         l1.Status = '01';
         l1.RES_SLA_Due_Time__c = System.now().addHours(5);
+        l1.RES_SLA_Status__c = 'Running';
         update l1;
         
         List<Lead> leads = new List<Lead>();
@@ -31,7 +32,7 @@ private class  RES_LeadSLABrechHoursLeftBatchTest {
         RES_LeadSLABrechHoursLeftBatch batch = new RES_LeadSLABrechHoursLeftBatch();
         Database.executeBatch(batch, 1);
       
-      String cronExp = '0 0 * * * ?';
+        String cronExp = '0 0 * * * ?';
 
         System.schedule(
             'Test Lead SLA Scheduler',

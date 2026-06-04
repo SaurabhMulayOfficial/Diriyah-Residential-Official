@@ -1,0 +1,244 @@
+<template>
+    <div class="slds-card">
+    <lightning-card>
+        <div class="manager">
+<div class="section-header" onclick={toggleSection}>
+        <div class="collapse-icon">
+            <lightning-icon
+                icon-name={sectionIcon}
+                size="x-small">
+            </lightning-icon>
+        </div>
+        <h2>Attachments Manager  ({totalFiles})</h2>
+</div>
+
+            <template lwc:if={isOpen}>
+                <div class="content">
+                    <div class="top-row">
+                        <div class="search-field">
+                            <label>File Name</label>
+                            <lightning-input
+                                type="search"
+                                variant="label-hidden"
+                                value={searchFileName}
+                                onchange={handleFileNameSearch}>
+                            </lightning-input>
+                        </div>
+
+                        <div class="search-field">
+                            <label>Document Label</label>
+                            <lightning-input
+                                type="search"
+                                variant="label-hidden"
+                                value={searchDocumentLabel}
+                                onchange={handleDocumentLabelSearch}>
+                            </lightning-input>
+                        </div>
+
+                        <div class="search-field">
+                            <label>Attachment Type</label>
+                            <lightning-input
+                                type="search"
+                                variant="label-hidden"
+                                value={searchAttachmentType}
+                                onchange={handleAttachmentTypeSearch}>
+                            </lightning-input>
+                        </div>
+
+                       <!--- <div class="">
+                            <label>Created On</label>
+                        </div>-->
+
+                        <div class="search-field">
+                            <label>Created By</label>
+                            <lightning-input
+                                type="search"
+                                variant="label-hidden"
+                                value={searchCreatedBy}
+                                onchange={handleCreatedBySearch}>
+                            </lightning-input>
+                        </div>
+
+                          <div class="upload-area"> 
+                             <lightning-button
+                              label="Add Files"
+                              icon-name="utility:add"
+                              variant="brand"
+                              onclick={openModal}>
+                            </lightning-button>
+                          
+                         </div>
+                 </div>
+
+                    <div class="table-wrapper">
+                        <table class="slds-table custom-table">
+                            <thead>
+                                <tr>
+                                    <th>File Name</th>
+                                    <th>Doument Label</th>
+                                    <th>Attachment Type</th>
+                                    <th>Created By</th>
+                                    <th>File Size</th>
+                                    <th>File Type</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+                                <template for:each={filteredFiles} for:item="file">
+                                    <tr key={file.contentDocumentId}>
+                                        <td>
+                                            <a
+                                                href="javascript:void(0)"
+                                                class="document-link"
+                                                data-id={file.contentDocumentId}
+                                                onclick={previewFile}>
+                                                {file.fileName}
+                                            </a>
+                                        </td>
+
+                                        <td>
+                                            <lightning-input
+                                                type="text"
+                                                variant="label-hidden"
+                                                value={file.documentLabel}
+                                                data-id={file.contentVersionId}
+                                                onchange={handleDocumentLabelChange}
+                                                onblur={saveDocumentLabel}>
+                                            </lightning-input>
+                                        </td>
+
+                                        <td>{file.attachmentType}</td>
+
+                                        <td>
+                                            <lightning-icon
+                                                icon-name="standard:user"
+                                                size="x-small"
+                                                class="user-icon">
+                                            </lightning-icon>
+                                            {file.createdByName}
+                                        </td>
+
+                                        <td>{file.fileSize}</td>
+                                        <td>{file.fileType}</td>
+
+                                        <td>
+                                            <div class="action-buttons">
+                                                <lightning-button-icon
+                                                    icon-name="utility:download"
+                                                    variant="brand"
+                                                    alternative-text="Download"
+                                                    title="Download"
+                                                    data-id={file.contentDocumentId}
+                                                    onclick={downloadFile}>
+                                                </lightning-button-icon>
+
+                                                <lightning-button-icon
+                                                    icon-name="utility:delete"
+                                                    variant="border-filled"
+                                                    alternative-text="Delete"
+                                                    title="Delete"
+                                                    data-id={file.contentDocumentId}
+                                                    onclick={deleteSelectedFile}>
+                                                </lightning-button-icon>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </template>
+
+                                <template lwc:if={showNoData}>
+                                    <tr>
+                                        <td colspan="7" class="no-data">No files found</td>
+                                    </tr>
+                                </template>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </template>
+        </div>
+    </lightning-card>
+
+    <template lwc:if={showModal}>
+        <section role="dialog" tabindex="-1" class="slds-modal slds-fade-in-open">
+            <div class="slds-modal__container upload-modal">
+            <div lwc:if={showSpinner}>
+            <lightning-spinner
+                alternative-text="Loading"
+                size="large">
+            </lightning-spinner>
+              </div>
+                <header class="slds-modal__header modal-header">
+                    <button
+                        class="slds-button slds-button_icon slds-modal__close"
+                        title="Close"
+                        onclick={closeModal}>
+                        <lightning-icon icon-name="utility:close" size="small"></lightning-icon>
+                    </button>
+
+                    <h2>Add Local File</h2>
+                </header>
+
+                <div class="slds-modal__content slds-p-around_medium">
+                    <div class="upload-file-row">
+                        <div class="file-name-display">
+                            <label>
+                                <abbr class="slds-required" title="required">*</abbr>
+                                File Name
+                            </label>
+
+                            <div class="selected-file-name">
+                                {selectedFileNames}
+                            </div>
+                        </div>
+
+                        <div class="file-upload-button">
+                            <!--record-id={recordId}-->
+                            <label>Upload Files</label>
+                            <lightning-file-upload
+                                variant="label-hidden"
+                                multiple
+                                onuploadfinished={handleFileSelection} ></lightning-file-upload>
+                        </div>
+                    </div>
+
+                    <lightning-input
+                        class="document-label-input"
+                        type="text"
+                        label="Document Label"
+                        value={selectedDocumentLabel}
+                        onchange={handleSelectedDocumentLabelChange}>
+                    </lightning-input>
+
+                    <lightning-combobox
+                        class="attachment-type"
+                        label="Attachment Type"
+                        value={selectedAttachmentType}
+                        options={attachmentTypeOptions}
+                        onchange={handleAttachmentTypeChange}>
+                    </lightning-combobox>
+                </div>
+
+                <footer class="slds-modal__footer modal-footer">
+                    <lightning-button
+                        label="Cancel"
+                        variant="neutral"
+                        onclick={closeModal}>
+                    </lightning-button>
+
+                    <lightning-button
+                        label="Add"
+                        variant="brand"
+                        class="slds-m-left_small"
+                        onclick={uploadSelectedFiles}
+                        disabled={isUploading}>
+                    </lightning-button>
+                </footer>
+            </div>
+        </section>
+
+        <div class="slds-backdrop slds-backdrop_open"></div>
+    </template>
+
+    </div>
+</template>

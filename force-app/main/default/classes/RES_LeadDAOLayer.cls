@@ -120,7 +120,7 @@ public without sharing class RES_LeadDAOLayer extends RES_BaseDAOLayer {
     
     public Database.QueryLocator getNewLeadsForBatch(){
         // Status API name 01 Label = New
-        String soql = 'SELECT Id, Name, RES_SLA_Due_Time__c FROM Lead WHERE Status = \'01\' AND RES_SLA_Due_Time__c != null  AND (RecordType.DeveloperName = \'RES_Company\' OR RecordType.DeveloperName = \'RES_Individual\')';
+        String soql = 'SELECT Id, Name, RES_SLA_Due_Time__c FROM Lead WHERE Status = \'01\' AND RES_SLA_Due_Time__c != null AND RES_SLA_Status__c = \'Running\' AND (RecordType.DeveloperName = \'RES_Company\' OR RecordType.DeveloperName = \'RES_Individual\')';
         return executeBatchQuery(soql, null, AccessLevel.USER_MODE);
     }
     
