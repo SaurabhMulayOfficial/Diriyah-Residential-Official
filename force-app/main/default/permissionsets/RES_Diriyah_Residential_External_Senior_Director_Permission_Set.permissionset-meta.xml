@@ -11,15 +11,19 @@
     </customPermissions>
     <customPermissions>
         <enabled>true</enabled>
+        <name>RES_Show_Document_Section</name>
+    </customPermissions>
+    <customPermissions>
+        <enabled>true</enabled>
         <name>RES_System_Information_Visibility</name>
     </customPermissions>
     <fieldPermissions>
-        <editable>false</editable>
+        <editable>true</editable>
         <field>ContentVersion.RES_Attachment_Type__c</field>
         <readable>true</readable>
     </fieldPermissions>
  <fieldPermissions>
-        <editable>false</editable>
+        <editable>true</editable>
         <field>ContentVersion.RES_Document_Label__c</field>
         <readable>true</readable>
     </fieldPermissions>
