@@ -146,7 +146,7 @@ export default class Res_CountryMobile extends LightningElement {
     }
 
     isValidE164(phoneNumber) {
-        const e164Regex = /^\+[1-9]\d{6,14}$/;
+        const e164Regex = /^\+\d{1,8}\d{9,14}$/;
         return e164Regex.test(phoneNumber);
     }
 
