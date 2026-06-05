@@ -50,6 +50,51 @@ public with sharing class RES_UploadDocumentClass {
         @AuraEnabled public String attachmentType { get; set; }
     }
 
+  /**
+ * Determines whether the current user can edit the document label.
+ * Access is granted to:
+ * - Users with the System Administrator profile.
+ * - Users whose role DeveloperName is included in the allowed roles list.
+ *
+ * @return true if the current user can edit the document label; otherwise false.
+ */
+    @AuraEnabled(cacheable=true)
+    public static Boolean canEditDocumentLabel() {
+        
+        RES_ProfileDAOLayer profileDAO = new RES_ProfileDAOLayer();
+        String currentUserProfileName = profileDAO.getCurrentUserProfileName();
+        
+        // System Administrator can always edit
+        if (currentUserProfileName == System.Label.RES_Admin_Profile) {
+            return true;
+        }
+        
+        Set<String> allowedRoles = new Set<String>{
+            'RES_Contract_Amendments_Operations_Specialist',
+                'RES_External_Sales_Operations_Operations_Specialist',
+                'RES_Internal_Sales_Operations_Operations_Specialist',
+                'RES_Operational_Excellence_Operations_Specialist',
+                'RES_Sales_DI_Specialist',
+                'RES_Sales_DII_Specialist',
+                'RES_Sales_External_Specialist',
+                'RES_Sales_Implementation_Excellence_Specialist',
+                'RES_Sales_Planning_Specialist',
+                'RES_Sales_Wadi_Safar_Specialist_I',
+                'RES_Sales_Wadi_Safar_Specialist_II',
+                'RES_Sales_DI_Relationship_Manager',
+                'RES_Sales_External_Relationship_Manager'
+                };
+                    
+                    RES_UserDAOLayer userDAO = new RES_UserDAOLayer();
+        List<User> users = userDAO.getUserRoleInfo(UserInfo.getUserId());
+        
+        if (users.isEmpty() || users[0].UserRole == null) {
+            return false;
+        }
+        
+        return allowedRoles.contains(users[0].UserRole.DeveloperName);
+    }
+    
     /**
      * Returns files linked to the provided record Id.
      *

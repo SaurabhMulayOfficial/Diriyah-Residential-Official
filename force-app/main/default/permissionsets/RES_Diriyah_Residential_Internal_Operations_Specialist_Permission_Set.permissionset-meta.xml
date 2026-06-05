@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <PermissionSet xmlns="http://soap.sforce.com/2006/04/metadata">
-    <description>Permission Set for Internal Sales Operations – Operations – Specialist</description>
+    <description>Permission Set for Internal Operations – Operations – Specialist</description>
     <customPermissions>
         <enabled>true</enabled>
         <name>RES_Specalist_Dashboard_Visibility</name>
@@ -8,19 +8,7 @@
     <customPermissions>
         <enabled>true</enabled>
         <name>RES_Show_Document_Section</name>
-    </customPermissions> 
-    <classAccesses>
-        <apexClass>RES_ContentDocumentLinkDAOLayer</apexClass>
-        <enabled>true</enabled>
-    </classAccesses>
-    <classAccesses>
-        <apexClass>RES_ContentVersionDAOLayer</apexClass>
-        <enabled>true</enabled>
-    </classAccesses>
-    <classAccesses>
-        <apexClass>RES_UploadDocumentClass</apexClass>
-        <enabled>true</enabled>
-    </classAccesses>
+    </customPermissions>
     <fieldPermissions>
         <editable>true</editable>
         <field>ContentVersion.RES_Attachment_Type__c</field>

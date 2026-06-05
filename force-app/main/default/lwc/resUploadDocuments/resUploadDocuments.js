@@ -9,9 +9,12 @@ import uploadFile from '@salesforce/apex/RES_UploadDocumentClass.uploadFiles';
 import getFiles from '@salesforce/apex/RES_UploadDocumentClass.getFiles';
 import updateDocumentLabel from '@salesforce/apex/RES_UploadDocumentClass.updateDocumentLabel';
 import deleteFile from '@salesforce/apex/RES_UploadDocumentClass.deleteFile';
+import canEditDocumentLabel from '@salesforce/apex/RES_UploadDocumentClass.canEditDocumentLabel';
+import USER_ID from '@salesforce/user/Id';
 
 export default class ResUploadDocuments extends NavigationMixin(LightningElement) {
     @api recordId;
+    userId = USER_ID;
     @track attachmentTypeOptions = [];
     @track allAttachmentTypes = [];
     @track files = [];
@@ -31,10 +34,14 @@ export default class ResUploadDocuments extends NavigationMixin(LightningElement
     selectedDocumentLabel = '';
     selectedAttachmentType = '';
     editedLabels = {};
+    disableDocumentLabel= true;
 
     connectedCallback() {
         if(this.recordId) {
              this.loadFiles();
+        }
+         if(this.userId) {
+             this.checkForEditDocumentLabel();
         }
     }
 
@@ -181,6 +188,17 @@ filterAttachmentTypes() {
             .catch((error) => {
                 this.showToast('Error', this.getErrorMessage(error), 'error');
             });
+    }
+
+    checkForEditDocumentLabel() {
+       canEditDocumentLabel()
+        .then((result) => {
+            this.disableDocumentLabel = !result;
+        })
+        .catch((error) => {
+            console.error('Error checking document label access', error);
+            this.disableDocumentLabel = true;
+        });
     }
 
     openModal() {
@@ -351,7 +369,7 @@ console.log(' in upload files === '+ JSON.stringify(files));
                 this.showToast('Success', 'Document Label updated.', 'success');
             })
             .catch((error) => {
-                this.showToast('Error', this.getErrorMessage(error), 'error');
+                this.showToast('Error','Insufficient permissions to edit Document Label.', 'error');
             });
     }
 
@@ -383,7 +401,7 @@ console.log(' in upload files === '+ JSON.stringify(files));
                 this.loadFiles();
             })
             .catch((error) => {
-                this.showToast('Error', this.getErrorMessage(error), 'error');
+                this.showToast('Error', 'Insufficient permissions to delete file.', 'error');
             });
     }
 
