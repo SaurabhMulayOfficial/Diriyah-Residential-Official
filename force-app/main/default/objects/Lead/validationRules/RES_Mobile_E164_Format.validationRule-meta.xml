@@ -4,12 +4,22 @@
     <active>true</active>
     <description>Validation rule that checks if a phone number is in E.164 format</description>
     <errorConditionFormula>AND(
-NOT($Setup.RES_Config_Switch__c.RES_Validation_Rules_Off__c ),
-OR(
-$RecordType.DeveloperName = &quot;RES_Company&quot;,
-$RecordType.DeveloperName = &quot;RES_Individual&quot;),				
-NOT(ISBLANK(MobilePhone)),
-NOT(REGEX(MobilePhone, &quot;\\+\\d{1,8}\\d{9,14}&quot;))
+    NOT($Setup.RES_Config_Switch__c.RES_Validation_Rules_Off__c),
+    OR(
+        $RecordType.DeveloperName = &quot;RES_Company&quot;,
+        $RecordType.DeveloperName = &quot;RES_Individual&quot;
+    ),
+    NOT(ISBLANK(MobilePhone)),
+    OR(
+        AND(
+            BEGINS(MobilePhone, &quot;+&quot;),
+            NOT(REGEX(MobilePhone, &quot;\\+\\d{1,8}\\d{9,14}&quot;))
+        ),
+        AND(
+            NOT(BEGINS(MobilePhone, &quot;+&quot;)),
+            ISBLANK(Country)
+        )
+    )
 )</errorConditionFormula>
     <errorDisplayField>MobilePhone</errorDisplayField>
     <errorMessage>Mobile number must be in E.164 format (e.g., +1234567890)</errorMessage>

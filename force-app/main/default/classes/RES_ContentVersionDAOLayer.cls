@@ -57,12 +57,13 @@ public without sharing class RES_ContentVersionDAOLayer extends RES_BaseDAOLayer
             'versionIdSet' => versionIdSet
         };
 
-        String soql = 'SELECT Id, ContentDocumentId, Title, RES_Document_Label__c, ' +
-            'RES_Attachment_Type__c, ContentSize, FileType, FileExtension, ' +
-            'CreatedBy.Name, CreatedDate ' +
-            'FROM ContentVersion ' +
-            'WHERE Id IN :versionIdSet ' +
-            'ORDER BY CreatedDate DESC';
+       String soql = 'SELECT Id, ContentDocumentId, Title, RES_Document_Label__c, ' +
+                     'RES_Attachment_Type__c, ContentSize, FileType, FileExtension, ' +
+                     'CreatedBy.Name, CreatedDate ' +
+                     'FROM ContentVersion ' +
+                     'WHERE Id IN :versionIdSet ' +
+                     'AND FileType NOT IN (\'SNOTE\', \'LINK\') ' +
+                     'ORDER BY CreatedDate DESC';
 
         return (List<ContentVersion>) executeQuery(
             soql,
