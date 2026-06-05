@@ -401,7 +401,7 @@ console.log(' in upload files === '+ JSON.stringify(files));
                 this.loadFiles();
             })
             .catch((error) => {
-                this.showToast('Error', this.getErrorMessage(error), 'error');
+                this.showToast('Error', 'Insufficient permissions to delete file.', 'error');
             });
     }
 
