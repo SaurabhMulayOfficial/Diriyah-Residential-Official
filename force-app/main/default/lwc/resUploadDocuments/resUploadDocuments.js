@@ -369,7 +369,7 @@ console.log(' in upload files === '+ JSON.stringify(files));
                 this.showToast('Success', 'Document Label updated.', 'success');
             })
             .catch((error) => {
-                this.showToast('Error', this.getErrorMessage(error), 'error');
+                this.showToast('Error','Insufficient permissions to edit Document Label.', 'error');
             });
     }
 
