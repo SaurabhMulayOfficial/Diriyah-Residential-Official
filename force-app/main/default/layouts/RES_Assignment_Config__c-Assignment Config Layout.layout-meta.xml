@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Layout xmlns="http://soap.sforce.com/2006/04/metadata">
+    <excludeButtons>OpenSlackRecordChannel</excludeButtons>
     <excludeButtons>Submit</excludeButtons>
     <layoutSections>
         <customLabel>false</customLabel>
@@ -27,7 +28,7 @@
             </layoutItems>
             <layoutItems>
                 <behavior>Required</behavior>
-                <field>RES_Channel__c</field>
+                <field>RES_Condition__c</field>
             </layoutItems>
         </layoutColumns>
         <style>TwoColumnsTopToBottom</style>
@@ -83,11 +84,17 @@
     <relatedLists>
         <fields>NAME</fields>
         <fields>RES_Order__c</fields>
-        <fields>RES_Active_Lead_Count__c</fields>
-        <fields>RES_Capacity__c</fields>
-        <fields>RES_User__c</fields>
         <fields>RES_User_Availability_Status__c</fields>
+        <fields>RES_User_Workload__c</fields>
         <relatedList>RES_Assignment_Rule__c.RES_Assignment_Config__c</relatedList>
+    </relatedLists>
+    <relatedLists>
+        <fields>NAME</fields>
+        <fields>RES_Order__c</fields>
+        <fields>RES_Field_Api_Name__c</fields>
+        <fields>RES_Operator__c</fields>
+        <fields>RES_Value__c</fields>
+        <relatedList>RES_Assignment_Condition__c.RES_Assignment_Config__c</relatedList>
     </relatedLists>
     <showEmailCheckbox>false</showEmailCheckbox>
     <showHighlightsPanel>false</showHighlightsPanel>
