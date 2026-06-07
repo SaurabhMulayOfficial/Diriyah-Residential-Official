@@ -9,13 +9,18 @@ public with sharing class RES_AssignmentRuleServiceTest {
         System.runAs(u){
             RES_Assignment_Config__c config = new RES_Assignment_Config__c(
                 RES_Record_Types__c = 'RES_Individual;RES_Company',
-                RES_Channel__c = 'Z06',
-                RES_Queue__c = 'RES_DG_Teams'
+                RES_Queue__c = 'RES_DG_Teams',
+                RES_Condition__c = '1'
             );
-
             insert config;
 
-            RES_Assignment_Rule__c rule1 = new RES_Assignment_Rule__c(RES_Assignment_Config__c = config.Id,  RES_Last_Assigned__c = true, RES_Capacity__c = 3, RES_Order__c = 1, RES_User_Availability_Status__c = 'Available', RES_User__c = u.Id);
+            RES_Assignment_Condition__c c = new RES_Assignment_Condition__c(RES_Assignment_Config__c = config.Id,RES_Field_Api_Name__c='leadSource', RES_Operator__c = 'Equal To', RES_Order__c = 1, RES_Value__c = 'Z06');
+            insert c;
+
+            RES_Assignment_Workload__c workload = new RES_Assignment_Workload__c(RES_User__c = u.Id, RES_Capacity__c = 2);
+            insert workload;
+
+            RES_Assignment_Rule__c rule1 = new RES_Assignment_Rule__c(RES_Assignment_Config__c = config.Id,  RES_Last_Assigned__c = true, RES_Order__c = 1, RES_User_Availability_Status__c = 'Available', RES_User_Workload__c = workload.Id);
             insert rule1;
 
             Group q = new Group(
