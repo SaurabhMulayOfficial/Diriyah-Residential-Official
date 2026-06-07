@@ -1,8 +1,8 @@
 /**
- * Class Name   : RES_LeadRoutingDAO
- * Description  : Data Access Object (DAO) layer for the Routing object.
+ * Class Name   : RES_AssignmentWorkloadDAO
+ * Description  : Data Access Object (DAO) layer for the Assignment Workload object.
  *                Provides standardized methods for querying and retrieving
- *                Lead records within the application.
+ *                Assignment Workload records within the application.
  *
  * Framework Rule:
  *      - All DAO layers must extend RES_BaseDAOLayer.
@@ -37,26 +37,21 @@
  *                        AccessLevel accessLevel)
  * =============================================================================
  */
-
-public with sharing class RES_LeadRoutingDAO extends RES_BaseDAOLayer {
-
+public without sharing class RES_AssignmentWorkloadDAO extends RES_BaseDAOLayer {
     protected override String getSObjectName() {
-        return 'RES_Lead_Routing__c';
+        return 'RES_Assignment_Workload__c';
     }
 
-
-    public List<RES_Lead_Routing__c> getRoutingRecordsByLeadIds(Set<Id> leadIds){
-        if(leadIds.isEmpty()){
-            return new List<RES_Lead_Routing__c>();
+    public Map<Id,RES_Assignment_Workload__c> getWorkloadById(Set<Id> workloadIds){
+        Map<String, Object> bindVars = new Map<String, Object>();
+        bindVars.put('workloadIds', workloadIds);
+        String soql = 'SELECT Id, RES_Active_Lead_Count__c, RES_Capacity__c, RES_User__c FROM RES_Assignment_Workload__c WHERE Id IN :workloadIds';
+        Map<Id, sObject> result = executeQueryToMap(soql, 'getWorkloadById', true, bindVars, AccessLevel.SYSTEM_MODE);
+        Map<Id, RES_Assignment_Workload__c> workloadMap = new Map<Id, RES_Assignment_Workload__c>();
+        for(Id key: result.keySet()){
+            workloadMap.put(key, (RES_Assignment_Workload__c)result.get(key));
         }
-
-        Map<String, Object> bindVars = new Map<String, Object>{
-            'leadIds' => leadIds
-        };
-
-        String soql = 'SELECT Id, RES_Lead__c, RES_Assignment_Workload__c FROM RES_Lead_Routing__c ' +
-                        'WHERE RES_Lead__c IN :leadIds';
-        
-        return (List<RES_Lead_Routing__c>) executeQuery(soql, '', false, bindVars, AccessLevel.SYSTEM_MODE);
+        return workloadMap;
     }
+
 }

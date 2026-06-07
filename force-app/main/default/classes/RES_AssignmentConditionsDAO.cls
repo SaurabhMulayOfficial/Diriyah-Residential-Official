@@ -1,8 +1,8 @@
 /**
- * Class Name   : RES_LeadRoutingDAO
- * Description  : Data Access Object (DAO) layer for the Routing object.
+ * Class Name   : RES_AssignmentConditionsDAO
+ * Description  : Data Access Object (DAO) layer for the Assignment Condition object.
  *                Provides standardized methods for querying and retrieving
- *                Lead records within the application.
+ *                Assignment Condition records within the application.
  *
  * Framework Rule:
  *      - All DAO layers must extend RES_BaseDAOLayer.
@@ -38,25 +38,20 @@
  * =============================================================================
  */
 
-public with sharing class RES_LeadRoutingDAO extends RES_BaseDAOLayer {
-
+public without sharing class RES_AssignmentConditionsDAO extends RES_BaseDAOLayer {
     protected override String getSObjectName() {
-        return 'RES_Lead_Routing__c';
+        return 'RES_Assignment_Condition__c';
     }
 
 
-    public List<RES_Lead_Routing__c> getRoutingRecordsByLeadIds(Set<Id> leadIds){
-        if(leadIds.isEmpty()){
-            return new List<RES_Lead_Routing__c>();
-        }
-
-        Map<String, Object> bindVars = new Map<String, Object>{
-            'leadIds' => leadIds
-        };
-
-        String soql = 'SELECT Id, RES_Lead__c, RES_Assignment_Workload__c FROM RES_Lead_Routing__c ' +
-                        'WHERE RES_Lead__c IN :leadIds';
+    public List<RES_Assignment_Condition__c> getConditionsByConfigId(Set<Id> configIds){
+        String soql =   'SELECT Id, RES_Field_Api_Name__c, RES_Operator__c, RES_Value__c, RES_Order__c, RES_Assignment_Config__c ' +
+                        'FROM RES_Assignment_Condition__c ' +
+                        'WHERE RES_Assignment_Config__c IN :configIds ' +
+                        'ORDER BY RES_Order__c ASC';
         
-        return (List<RES_Lead_Routing__c>) executeQuery(soql, '', false, bindVars, AccessLevel.SYSTEM_MODE);
+        Map<String, Object> bindVars = new Map<String, Object>{'configIds' => configIds};
+        return (List<RES_Assignment_Condition__c>) executeQuery(soql, 'getConditionsByConfigId', true, bindVars, AccessLevel.SYSTEM_MODE);
     }
+
 }

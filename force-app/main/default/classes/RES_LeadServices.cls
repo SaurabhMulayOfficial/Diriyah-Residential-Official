@@ -218,7 +218,7 @@ public with sharing class RES_LeadServices {
                 if(!userToChannelMapping.containsKey(rule.RES_User__c)){
                     userToChannelMapping.put(rule.RES_User__c, new Map<String, Id>());
                 }
-                userToChannelMapping.get(rule.RES_User__c).put(channel, rule.Id);
+                userToChannelMapping.get(rule.RES_User__c).put(channel, rule.RES_User_Workload__c);
             }
         }
 
@@ -229,7 +229,7 @@ public with sharing class RES_LeadServices {
                 if(userToChannelMapping.containsKey(l.OwnerId) && userToChannelMapping.get(l.OwnerId).containsKey(l.LeadSource)){
                     routingRecordsToInsert.add(new RES_Lead_Routing__c(
                         RES_Lead__c = l.Id,
-                        RES_Assignment_Rule__c = userToChannelMapping.get(l.OwnerId).get(l.LeadSource)
+                        RES_Assignment_Workload__c = userToChannelMapping.get(l.OwnerId).get(l.LeadSource)
                     ));
                 }
             }

@@ -40,7 +40,7 @@ public with sharing class RES_AssignmentRuleService {
     }
 
     public static Boolean evaluateRule(RES_Assignment_Rule__c curr, RES_Assignment_Rule__c old){
-        if(curr.RES_Active_Lead_Count__c < old.RES_Active_Lead_Count__c ||  curr.RES_Capacity__c > old.RES_Capacity__c || (curr.RES_User_Availability_Status__c == 'Available' && old.RES_User_Availability_Status__c != 'Available')){
+        if(curr.RES_User_Availability_Status__c == 'Available' && old.RES_User_Availability_Status__c != 'Available'){
             return true;
         }
         return false;
