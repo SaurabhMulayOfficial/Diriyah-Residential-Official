@@ -54,4 +54,11 @@ public without sharing class RES_AssignmentWorkloadDAO extends RES_BaseDAOLayer 
         return workloadMap;
     }
 
+    public List<RES_Assignment_Workload__c> getWorkloadByUserIds(Set<Id> userIds){
+        Map<String, Object> bindVars = new Map<String, Object>();
+        bindVars.put('userIds', userIds);
+        String soql = 'SELECT Id, RES_Active_Lead_Count__c, RES_Capacity__c, RES_User__c FROM RES_Assignment_Workload__c WHERE RES_User__c IN :userIds';
+        return (List<RES_Assignment_Workload__c>) executeQuery(soql, 'getWorkloadByUserIds', true, bindVars, AccessLevel.SYSTEM_MODE);
+    }
+
 }
