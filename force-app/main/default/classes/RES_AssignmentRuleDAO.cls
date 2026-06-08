@@ -46,13 +46,13 @@ public without sharing class RES_AssignmentRuleDAO extends RES_BaseDAOLayer {
     public Map<Id, List<RES_Assignment_Rule__c>> getAssignmentRuleByConfig(Set<Id> configIds){
         Map<String, Object> bindVars = new Map<String, Object>();
         bindVars.put('configIds', configIds);
-        String soql = 'SELECT Id, Name, RES_User__c, RES_Active_Lead_Count__c, ' +
-              'RES_Assignment_Config__c, RES_Capacity__c, RES_Last_Assigned__c, ' +
-              'RES_Order__c, RES_User_Availability_Status__c ' +
-              'FROM RES_Assignment_Rule__c ' +
-              'WHERE RES_Assignment_Config__c IN :configIds ' +
-              'ORDER BY RES_Order__c ASC';
-              
+        String soql = 'SELECT Id, Name, RES_User_Workload__c, ' +
+                'RES_Assignment_Config__c, RES_Last_Assigned__c, ' +
+                'RES_Order__c, RES_User_Availability_Status__c ' +
+                'FROM RES_Assignment_Rule__c ' +
+                'WHERE RES_Assignment_Config__c IN :configIds ' +
+                'ORDER BY RES_Order__c ASC';
+                
         List<RES_Assignment_Rule__c> rules = (List<RES_Assignment_Rule__c>) executeQuery(soql, 'assignmentRulesByConfig', true, bindVars, AccessLevel.SYSTEM_MODE);
         Map<Id, List<RES_Assignment_Rule__c>> ruleMap = new Map<Id, List<RES_Assignment_Rule__c>>();
         for(RES_Assignment_Rule__c rule : rules){
@@ -81,25 +81,12 @@ public without sharing class RES_AssignmentRuleDAO extends RES_BaseDAOLayer {
         String soql ='SELECT Id, RES_Assignment_Config__r.RES_Queue__c FROM RES_Assignment_Rule__c WHERE Id IN:ruleIds';
         return (List<RES_Assignment_Rule__c>) executeQuery(soql, 'assignmentRulesByIds', true, bindVars, AccessLevel.SYSTEM_MODE);
     }
-
-    public List<RES_Assignment_Rule__c> getRuleByLeadChannel(Set<String> leadChannels){
-        if(leadChannels.isEmpty()){
-            return new List<RES_Assignment_Rule__c>();
-        }
-        List<String> escapedChannels = new List<String>();
-
-        for(String channel : leadChannels){
-            escapedChannels.add('\'' + String.escapeSingleQuotes(channel) + '\'');
-        }
-
-        String soql = 
-            'SELECT Id, RES_Assignment_Config__r.RES_Channel__c, RES_User__c ' +
-            'FROM RES_Assignment_Rule__c ' +
-            'WHERE RES_Assignment_Config__r.RES_Channel__c INCLUDES (' +
-            String.join(escapedChannels, ',') +
-            ')';
-        
-        return (List<RES_Assignment_Rule__c>) executeQuery(soql, 'assignmentRulesByLeadChannel', true, null, AccessLevel.SYSTEM_MODE);
+    
+    public List<RES_Assignment_Rule__c> getRuleByWorkLoadIds(Set<Id> workloads){
+        Map<String, Object> bindVars = new Map<String, Object>();
+        bindVars.put('workloads', workloads);
+        String soql ='SELECT Id, RES_Assignment_Config__r.RES_Queue__c FROM RES_Assignment_Rule__c WHERE RES_User_Workload__c IN:workloads';
+        return (List<RES_Assignment_Rule__c>) executeQuery(soql, 'assignmentRulesByWorkloadIds', true, bindVars, AccessLevel.SYSTEM_MODE);
     }
 
-} 
+}

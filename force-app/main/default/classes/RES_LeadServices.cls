@@ -185,52 +185,37 @@ public with sharing class RES_LeadServices {
             return;
         }
 
+        Set<Id> ownerIds = new Set<Id>();
         Set<Id> leadIds = new Set<Id>();
+
         for(Lead l: leadList){
             if(l.OwnerId != oldMap.get(l.Id).OwnerId){
                 leadIds.add(l.Id);
+                ownerIds.add(l.ownerId);
             }
         }
+
         List<RES_Lead_Routing__c> leadRoutingRecords = new RES_LeadRoutingDAO().getRoutingRecordsByLeadIds(leadIds);
 
-        
         try{
             deleteRoutingRecords(leadRoutingRecords);
         }catch(Exception e){
             System.debug('Failed to manage lead routing records: ' + e.getMessage());
         }
 
-        Set<String> leadSources = new Set<String>();
-        for(Lead l: leadList){
-            if(l.OwnerId != oldMap.get(l.Id).OwnerId){
-                leadSources.add(l.LeadSource);
-            }
-        }
-
-        List<RES_Assignment_Rule__c> assignmentRules = new RES_AssignmentRuleDAO().getRuleByLeadChannel(leadSources);
-        System.debug('Assignment rules for lead channels: ' + assignmentRules);
-        Map<Id, Map<String, Id>> userToChannelMapping = new Map<Id, Map<String, Id>>();
-
-        for(RES_Assignment_Rule__c rule: assignmentRules){
-            List<String> channels = rule.RES_Assignment_Config__r.RES_Channel__c.split(';');
-            for(String channel: channels){
-                channel = channel.trim();
-                if(!userToChannelMapping.containsKey(rule.RES_User__c)){
-                    userToChannelMapping.put(rule.RES_User__c, new Map<String, Id>());
-                }
-                userToChannelMapping.get(rule.RES_User__c).put(channel, rule.Id);
-            }
-        }
-
+        List<RES_Assignment_Workload__c> workloadRecords = new RES_AssignmentWorkloadDAO().getWorkloadByUserIds(ownerIds);
         List<RES_Lead_Routing__c> routingRecordsToInsert = new List<RES_Lead_Routing__c>();
 
+        Map<Id, Id> userToWorkloadMapping = new Map<Id, Id>();
+        for(RES_Assignment_Workload__c workload:workloadRecords){
+            userToWorkloadMapping.put(workload.RES_User__c, workload.Id);
+        }
+
         for(Lead l: leadList){
             if(l.OwnerId != oldMap.get(l.Id).OwnerId){
-                if(userToChannelMapping.containsKey(l.OwnerId) && userToChannelMapping.get(l.OwnerId).containsKey(l.LeadSource)){
-                    routingRecordsToInsert.add(new RES_Lead_Routing__c(
-                        RES_Lead__c = l.Id,
-                        RES_Assignment_Rule__c = userToChannelMapping.get(l.OwnerId).get(l.LeadSource)
-                    ));
+                if(userToWorkloadMapping.containsKey(l.ownerId)){
+                    Id workId = userToWorkloadMapping.get(l.ownerId);
+                    routingRecordsToInsert.add(new RES_Lead_Routing__c(RES_Assignment_Workload__c = workId,  RES_Lead__c = l.Id));
                 }
             }
         }

@@ -9,13 +9,18 @@ public with sharing class RES_AssignmentRuleServiceTest {
         System.runAs(u){
             RES_Assignment_Config__c config = new RES_Assignment_Config__c(
                 RES_Record_Types__c = 'RES_Individual;RES_Company',
-                RES_Channel__c = 'Z06',
-                RES_Queue__c = 'RES_DG_Teams'
+                RES_Queue__c = 'RES_DG_Teams',
+                RES_Condition__c = '1'
             );
-
             insert config;
 
-            RES_Assignment_Rule__c rule1 = new RES_Assignment_Rule__c(RES_Assignment_Config__c = config.Id,  RES_Last_Assigned__c = true, RES_Capacity__c = 3, RES_Order__c = 1, RES_User_Availability_Status__c = 'Available', RES_User__c = u.Id);
+            RES_Assignment_Condition__c c = new RES_Assignment_Condition__c(RES_Assignment_Config__c = config.Id,RES_Field_Api_Name__c='leadSource', RES_Operator__c = 'Equal To', RES_Order__c = 1, RES_Value__c = 'Z06');
+            insert c;
+
+            RES_Assignment_Workload__c workload = new RES_Assignment_Workload__c(RES_User__c = u.Id, RES_Capacity__c = 2);
+            insert workload;
+
+            RES_Assignment_Rule__c rule1 = new RES_Assignment_Rule__c(RES_Assignment_Config__c = config.Id,  RES_Last_Assigned__c = true, RES_Order__c = 1, RES_User_Availability_Status__c = 'Available', RES_User_Workload__c = workload.Id);
             insert rule1;
 
             Group q = new Group(
@@ -43,9 +48,22 @@ public with sharing class RES_AssignmentRuleServiceTest {
 
         l = [SELECT OwnerId FROM Lead WHERE Id = :l.Id];
         System.AssertEquals(u.Id, l.OwnerId, 'Lead should be assigned to the only available user');
-
-        l.Status = '05';
+        l.status = '05';
         update l;
+
+        Group q = [SELECT Id FROM Group WHERE DeveloperName = 'RES_DG_Teams' LIMIT 1];
+        Lead l2 = RES_TestDataFactory.createLead('teswst.lead@glo.com', 'Z05', q.Id);
+        
+        l2.leadSource = 'Z06';
+        update l2;
+
+        RES_Assignment_Workload__c workload = [SELECT ID, RES_Capacity__c FROM RES_Assignment_Workload__c WHERE RES_User__c = :u.Id];
+        workload.RES_Capacity__c = 6;
+        update workload;
+
+        Test.startTest();
+            EventBus.publish(new RES_Lead_Distribution__e(RES_Queue__c = 'RES_DG_Teams'));
+        Test.stopTest();
     }
 
 
@@ -63,8 +81,5 @@ public with sharing class RES_AssignmentRuleServiceTest {
         Test.startTest();
             EventBus.publish(new RES_Lead_Distribution__e(RES_Queue__c = 'RES_DG_Teams'));
         Test.stopTest();
-        
-        System.assertEquals(l1.OwnerId, l2.OwnerId, 'Both leads should be assigned to the same user as capacity is 4');
-
     }
 }

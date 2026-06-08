@@ -2,15 +2,16 @@ public with sharing class RES_ReassignmentLogicHandler {
     public static Map<Id, RecordType> recordTypes = new Map<Id, RecordType>();
     public static Map<Id, RES_Assignment_Config__c> configMap = new Map<Id, RES_Assignment_Config__c>();
     public static Map<String, Id> queueNameToIdMapping = new Map<String, Id>();
-
-
+    public static Map<Id, List<RES_Assignment_Condition__c>> configConditionMap = new Map<Id, List<RES_Assignment_Condition__c>>();
+    public static Map<Id, RES_Assignment_Workload__c> workloadItems = new Map<Id, RES_Assignment_Workload__c>();
+    
     public class leadRoutingWrapper{
         public  Lead leadRecord;
-        public  RES_Assignment_Rule__c rule;
+        public  RES_Assignment_Workload__c workload;
 
-        public leadRoutingWrapper(Lead leadRecord, RES_Assignment_Rule__c rule){
+        public leadRoutingWrapper(Lead leadRecord, RES_Assignment_Workload__c workload){
             this.leadRecord = leadRecord;
-            this.rule = rule;
+            this.workload = workload;
         }
     }
     public class ReassignmentNode{
@@ -60,31 +61,38 @@ public with sharing class RES_ReassignmentLogicHandler {
             fallbackQueues.add(config.RES_Queue__c);
         }
 
+        List<RES_Assignment_Condition__c> conditions = new RES_AssignmentConditionsDAO().getConditionsByConfigId(configIds);
+        Set<Id> workloadIds = new Set<Id>();
+
+        for(RES_Assignment_Condition__c condition: conditions){
+            if(!configConditionMap.containsKey(condition.RES_Assignment_Config__c)){
+                configConditionMap.put(condition.RES_Assignment_Config__c, new List<RES_Assignment_Condition__c>());
+            }
+            configConditionMap.get(condition.RES_Assignment_Config__c).add(condition);
+        }
+
+
         Map<Id, List<RES_Assignment_Rule__c>> assignmentRulesByConfig = new RES_AssignmentRuleDAO().getAssignmentRuleByConfig(configIds);
+
+        for(List<RES_Assignment_Rule__c> rules: assignmentRulesByConfig.values()){
+            for(RES_Assignment_Rule__c rule: rules){
+                workloadIds.add(rule.RES_User_Workload__c);
+            }
+        }
+
+        System.debug('Workload Items '+ workloadIds.size());
+
+        workloadItems = new RES_AssignmentWorkloadDAO().getWorkloadById(workloadIds);
         queueNameToIdMapping = new RES_GroupDAOLayer().getQueueMappingbyIds(fallbackQueues);
+
         System.debug('Queue Name to Id Mapping'+ queueNameToIdMapping);
         return assignmentRulesByConfig;
     }
 
 
     public static Id evaluateLeadForReassignment(Lead l){
-        String rtName = '';
-        if(recordTypes.containsKey(l.RecordTypeId)){
-            rtName = recordTypes.get(l.RecordTypeId).developerName;
-        }
-
-        for(RES_Assignment_Config__c config: configMap.values()){
-            Set<String> channels = new Set<String>(config.RES_Channel__c.split(';'));
-            Set<String> recordTypeSet = new Set<String>(config.RES_Record_Types__c.split(';'));
-
-            if(channels.contains(l.LeadSource) && recordTypeSet.contains(rtName)){
-                System.debug('Matching config found for lead with Record Type '+ rtName + ' and Lead Source '+ l.LeadSource + ' Config Id '+ config.Id);
-                return config.Id;
-            }
-        }
-        system.debug('No matching config found for lead with Record Type '+ rtName + ' and Lead Source '+ l.LeadSource);
-
-        return null;
+        Id configId = RES_ExpressionEvaluator.evaluatePostfix(l, configConditionMap, configMap);
+        return configId;
     }
     
     public static List<ReassignmentNode> hydrateReassignmentNodes(List<Lead> leadList, Map<Id, List<RES_Assignment_Rule__c>> assignmentRulesByConfig){
@@ -202,6 +210,7 @@ public with sharing class RES_ReassignmentLogicHandler {
                 Lead currentLead = inputLeadList[i];
 
                 RES_Assignment_Rule__c currentRule = assignmentRule[currentIndex];
+                RES_Assignment_Workload__c workload = workloadItems.get(currentRule.RES_User_Workload__c);
 
                 if(!ruleToLeadCountOverhead.containsKey(currentRule.Id)){
                     ruleToLeadCountOverhead.put(currentRule.Id, 0);
@@ -209,23 +218,23 @@ public with sharing class RES_ReassignmentLogicHandler {
                 
                 Integer currentCount = ruleToLeadCountOverhead.get(currentRule.Id);
 
-                Integer leadCount = (Integer)currentRule.RES_Active_Lead_Count__c + currentCount;
-                Integer capacity = (Integer) currentRule.RES_Capacity__c;
+                Integer leadCount = (Integer) workload.RES_Active_Lead_Count__c + currentCount;
+                Integer capacity = (Integer) workload.RES_Capacity__c;
 
                 if(leadCount < capacity){
                     Boolean isOwnerChanged = false;
 
                     if(currentLead.Id != null){
-                        if(currentRule.RES_User__c != currentLead.OwnerId){
+                        if(workload.RES_User__c != currentLead.OwnerId){
                             events.add(new RES_Ownership_Reassignment_Event__e(
                                     RES_LeadId__c = currentLead.Id,
-                                    RES_OwnerId__c = currentRule.RES_User__c
+                                    RES_OwnerId__c = workload.RES_User__c
                                 ));
                             ruleToLeadCountOverhead.put(currentRule.Id, ruleToLeadCountOverhead.get(currentRule.Id) + 1);
                             isOwnerChanged = true;
                         }
                     }else{
-                        currentLead.OwnerId = currentRule.RES_User__c;
+                        currentLead.OwnerId = workload.RES_User__c;
                         isOwnerChanged = true;
                         ruleToLeadCountOverhead.put(currentRule.Id, ruleToLeadCountOverhead.get(currentRule.Id) + 1);
                     }
@@ -233,7 +242,7 @@ public with sharing class RES_ReassignmentLogicHandler {
                     currentLead.RES_Previous_Lead_Owner__c = queueId;
                     if(isOwnerChanged == true){
                         System.debug('ADDING ROUTING UPDATE');
-                        routingUpdates.add(new leadRoutingWrapper(currentLead, currentRule));
+                        routingUpdates.add(new leadRoutingWrapper(currentLead, workload));
                     }
                     currentIndex = Math.mod( currentIndex + 1, N );
                     i+=1;
@@ -280,11 +289,11 @@ public with sharing class RES_ReassignmentLogicHandler {
         List<RES_Lead_Routing__c> routingRecords = new List<RES_Lead_Routing__c>();
         for(leadRoutingWrapper wrapper: routingUpdates){
             Id leadId = wrapper.leadRecord.Id;
-            Id ruleId = wrapper.rule.Id;
+            Id workloadId = wrapper.workload.Id;
 
             routingRecords.add(new RES_Lead_Routing__c(
                 RES_Lead__c = leadId,
-                RES_Assignment_Rule__c = ruleId
+                RES_Assignment_Workload__c = workloadId
             ));
         }
 
@@ -308,5 +317,7 @@ public with sharing class RES_ReassignmentLogicHandler {
         recordTypes.clear();
         configMap.clear();
         queueNameToIdMapping.clear();
+        configConditionMap.clear();
+        workloadItems.clear();
     }
 }
