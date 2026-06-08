@@ -132,7 +132,7 @@ export default class Res_CountryMobile extends LightningElement {
         this.errorMessage = '';
 
         if (this.required && !this.phone) {
-            this.errorMessage = 'Phone is required.';
+            this.errorMessage = 'Mobile number is required.';
             return false;
         }
 
@@ -146,7 +146,7 @@ export default class Res_CountryMobile extends LightningElement {
     }
 
     isValidE164(phoneNumber) {
-        const e164Regex = /^\+\d{1,8}\d{9,14}$/;
+        const e164Regex = /^\+\d{10,15}$/;
         return e164Regex.test(phoneNumber);
     }
 
