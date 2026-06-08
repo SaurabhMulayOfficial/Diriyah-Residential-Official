@@ -30,6 +30,13 @@
     <currency>SAR</currency>
     <filter>
         <criteriaItems>
+            <column>STATUS</column>
+            <columnToColumn>false</columnToColumn>
+            <isUnlocked>true</isUnlocked>
+            <operator>equals</operator>
+            <value>Converted</value>
+        </criteriaItems>
+        <criteriaItems>
             <column>CONVERTED</column>
             <columnToColumn>false</columnToColumn>
             <isUnlocked>true</isUnlocked>
@@ -44,7 +51,7 @@
         <field>OWNER</field>
         <sortOrder>Asc</sortOrder>
     </groupingsDown>
-    <name>Conversion of Leads</name>
+    <name>Converted Leads</name>
     <params>
         <name>co</name>
         <value>1</value>
