@@ -70,7 +70,7 @@ public without sharing class RES_AssignmentRuleDAO extends RES_BaseDAOLayer {
     public List<RES_Assignment_Rule__c> getRecordByUserId(Id userId){
         Map<String, Object> bindVars = new Map<String, Object>();
         bindVars.put('userId', userId);
-        String soql ='SELECT Id, RES_User_Availability_Status__c FROM RES_Assignment_Rule__c WHERE RES_User__c = :userId';
+        String soql ='SELECT Id, RES_User_Availability_Status__c, RES_User_Workload__r.RES_User__c FROM RES_Assignment_Rule__c WHERE RES_User_Workload__r.RES_User__c = :userId';
         return (List<RES_Assignment_Rule__c>) executeQuery(soql, 'assignmentRulesByConfig', true, bindVars, AccessLevel.SYSTEM_MODE);
     
     }
