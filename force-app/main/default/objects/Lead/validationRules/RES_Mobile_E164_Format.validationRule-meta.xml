@@ -13,7 +13,7 @@
     OR(
         AND(
             BEGINS(MobilePhone, &quot;+&quot;),
-            NOT(REGEX(MobilePhone, &quot;\\+\\d{1,8}\\d{9,14}&quot;))
+            NOT(REGEX(MobilePhone, &quot;\\+\\d{10,15}&quot;))
         ),
         AND(
             NOT(BEGINS(MobilePhone, &quot;+&quot;)),
