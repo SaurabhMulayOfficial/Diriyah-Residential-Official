@@ -2,14 +2,13 @@ import { LightningElement, api, track } from 'lwc';
 import { NavigationMixin }              from 'lightning/navigation';
 import { subscribe, unsubscribe, onError } from 'lightning/empApi';
 import getConvertedRecordIds from '@salesforce/apex/RES_LeadConversionHandler.getConvertedRecordIds';
-import isCurrentUserLeadOwner  from '@salesforce/apex/RES_LeadConversionHandler.isCurrentUserLeadOwner';
+import USER_ID from '@salesforce/user/Id';
 export default class LeadConversionPopup extends NavigationMixin(LightningElement) {
     @api recordId;
     @track showPopup      = false;
     @track isLoading      = false;
     @track errorMessage   = '';
     @track isPersonAccount = false;
-    @track isOwner         = false;
 
     @track convertedAccountId     = null;
     @track convertedContactId     = null;
@@ -38,26 +37,12 @@ export default class LeadConversionPopup extends NavigationMixin(LightningElemen
     CDC_CHANNEL     = '/data/LeadChangeEvent';
 
     async connectedCallback() {
-        await this._checkOwnershipAndSubscribe(); // ✅ Check owner first
+        this._subscribeToChannel();
         this._registerErrorHandler();
     }
 
     disconnectedCallback() {
         this._unsubscribeFromChannel();
-    }
-
-    async _checkOwnershipAndSubscribe() {
-        try {
-            this.isOwner = await isCurrentUserLeadOwner({ leadId: this.recordId });
-            console.log('Is Record Owner:', this.isOwner);
-            if (this.isOwner) {
-                this._subscribeToChannel();
-            } else {
-                console.log('Not the Lead owner — CDC subscription skipped');
-            }
-        } catch (error) {
-            console.error('Ownership check error:', error);
-        }
     }
 
     _subscribeToChannel() {
@@ -87,21 +72,15 @@ export default class LeadConversionPopup extends NavigationMixin(LightningElemen
         if (!changedFields.includes('IsConverted')) return;
         if (payload.IsConverted !== true)           return;
 
-        if (!this.isOwner) {
-            console.log('Not the Lead owner — popup suppressed');
-            return;
-        }
-
         if (this._isProcessing) {
             console.warn('Already processing — skipping duplicate CDC event');
             return;
         }
 
         this._isProcessing = true;
-        this.showPopup     = true;
         this.isLoading     = true;
 
-        await this._delay(1000);
+        await this._delay(3000);
         await this._fetchConvertedIds(0);
     }
 
@@ -109,8 +88,15 @@ export default class LeadConversionPopup extends NavigationMixin(LightningElemen
     async _fetchConvertedIds(retryCount = 0) {
         try {
             const result = await getConvertedRecordIds({ leadId: this.recordId });
-            console.log('Apex Result =>', JSON.stringify(result));
+            const convertedByUser = result?.LastModifiedById;
+            if (convertedByUser !== USER_ID) {
+                this.showPopup = false;
+                this.isLoading = false;
+                this._isProcessing = false;
 
+                return;
+            }
+                this.showPopup = true;
             const isEmpty = !result || Object.keys(result).length === 0 || !result.accountId;
 
             if (isEmpty) {
@@ -252,7 +238,6 @@ export default class LeadConversionPopup extends NavigationMixin(LightningElemen
 
     _unsubscribeFromChannel() {
         unsubscribe(this._subscription, () => {
-            console.log('Unsubscribed from CDC');
         });
     }
 

@@ -83,12 +83,7 @@ public with sharing class RES_LeadConversionHandler {
 
         try{
             List<Database.LeadConvertResult> results = Database.convertLead(qualifiedLeadsToConvert,true, AccessLevel.USER_MODE);
-
                 for(Database.LeadConvertResult res : results){
-                    System.debug('SUCCESS => ' + res.isSuccess());
-                    System.debug('ACCOUNT ID => ' + res.getAccountId());
-                    System.debug('CONTACT ID => ' + res.getContactId());
-                    System.debug('OPPORTUNITY ID => ' + res.getOpportunityId());
                     if(!res.isSuccess()){
                         for(Database.Error err : res.getErrors()){
                             System.debug(err.getMessage());
@@ -171,28 +166,8 @@ public with sharing class RES_LeadConversionHandler {
         if (leadId == null) {
             throw new AuraHandledException('Lead Id is required.');
         }
-        List<Lead> rawLeads = [
-            SELECT Id, Name, Status, IsConverted,
-                    ConvertedAccountId, ConvertedContactId, ConvertedOpportunityId,
-                    RecordType.DeveloperName
-            FROM Lead
-            WHERE Id = :leadId
-            LIMIT 1
-        ];
-
-        System.debug('RAW LEAD FOUND: ' + rawLeads.size());
-        if (!rawLeads.isEmpty()) {
-            System.debug('IsConverted: '        + rawLeads[0].IsConverted);
-            System.debug('Status: '             + rawLeads[0].Status);
-            System.debug('ConvertedAccountId: ' + rawLeads[0].ConvertedAccountId);
-            System.debug('RecordType: '         + rawLeads[0].RecordType?.DeveloperName);
-        }
-
         Lead convertedLead = new RES_LeadDAOLayer().getConvertedLeadById(leadId);
-        System.debug('DAO returned lead: ' + convertedLead);
-
         if (convertedLead == null) {
-            System.debug('Lead is null from DAO — returning empty map');
             return result; // LWC retry handles this
         }
 
@@ -201,6 +176,7 @@ public with sharing class RES_LeadConversionHandler {
         result.put('opportunityId', convertedLead.ConvertedOpportunityId);
         result.put('leadName',      convertedLead.Name);
         result.put('status',        convertedLead.Status);
+        result.put('LastModifiedById', convertedLead.LastModifiedById);
 
         if (convertedLead.ConvertedAccountId != null) {
             Account acc = new RES_AccountDAOLayer().getAccountById(
@@ -250,28 +226,4 @@ public with sharing class RES_LeadConversionHandler {
         return result;
     }
 
-    /**
-     * @description Checks if current running user is the Lead owner.
-     *              Delegates to RES_LeadDAOLayer — no inline SOQL.
-     *              Called from LWC connectedCallback before CDC subscribe.
-     *
-     * @param leadId Id of the Lead record.
-     * @return true if current user is the owner, false otherwise.
-     */
-    @AuraEnabled(cacheable=true)
-    public static Boolean isCurrentUserLeadOwner(Id leadId) {
-        try {
-            if (leadId == null) {
-                return false;
-            }
-            Lead ld = new RES_LeadDAOLayer().getLeadOwnerById(leadId);
-            if (ld == null) {
-                return false;
-            }
-            return ld.OwnerId == UserInfo.getUserId();
-        } catch (Exception ex) {
-            System.debug('Error in isCurrentUserLeadOwner: ' + ex.getMessage());
-            return false;
-        }
-    }
 }
