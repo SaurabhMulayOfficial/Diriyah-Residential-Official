@@ -277,7 +277,7 @@ export default class ResUploadDocuments extends NavigationMixin(LightningElement
         if (!this.selectedAttachmentType) {
             this.showToast(
                 'Validation Error',
-                'Attachment Type is required.',
+                'Please select Attachment Type.',
                 'error',
                 'dismissable'
             );
