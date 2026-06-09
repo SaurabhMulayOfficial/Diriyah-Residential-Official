@@ -7,6 +7,7 @@
     width: 100%;
 }
 
+/* HEADER */
 .section-header {
     display: flex;
     align-items: center;
@@ -15,13 +16,12 @@
     border-radius: 10px;
     padding: 0 1rem;
     margin-bottom: 24px;
-    flex-wrap: wrap; 
 }
 
 .section-header h2 {
     margin: 0;
-    color:#300000;
-    font-size: 1.00rem;
+    color: #300000;
+    font-size: 1rem;
     font-weight: 500;
 }
 
@@ -34,6 +34,7 @@
     overflow: hidden;
 }
 
+/* SEARCH */
 .top-row {
     display: flex;
     gap: 1rem;
@@ -53,7 +54,7 @@
 .upload-area label {
     display: block;
     margin-bottom: 8px;
-    font-size: 0.90rem;
+    font-size: .90rem;
     font-weight: 400;
     color: #835038;
 }
@@ -62,104 +63,139 @@
     --slds-c-input-radius-border: 10px;
 }
 
+/* TABLE */
 .table-wrapper {
     width: 100%;
     max-width: 100%;
+    max-height: 300px;
     overflow-x: auto;
+    overflow-y: auto;
     height: 60%;
     max-height: 400px;
-    overflow-y: auto;
-    border: 1px solid #dddddd;
-    border-radius: 14px;
+    border: 1.4px solid #b4b3b3;
+    border-radius: 16px;
+    overflow: auto;
     background: #ffffff;
+    position: relative;
 }
 
 .custom-table {
-    width: 100% ;
+    width: max-content;
+    min-width: 100%;
     table-layout: fixed;
-    border-collapse: collapse;
+    border-collapse: separate;
+    border-spacing: 0;
     background: #ffffff;
 }
 
 .custom-table thead {
+    position: sticky;
+    top: 0;
+    z-index: 5;
     background: #f5f5f5;
 }
 
+/* HEADER */
 .custom-table th {
+    position: relative;
     background: #f5f5f5;
     color: #300000;
-    font-size: 0.95rem;
+    font-size: 1.00rem;
     font-weight: 400;
     text-align: left;
     white-space: nowrap;
+    padding: .60rem 1rem;
+    height: 44px;
+    overflow: visible;
 }
 
+/* BODY */
 .custom-table td {
     vertical-align: middle;
     color: #444444;
-    font-size: 0.95rem;
+    font-size: .90rem;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    padding: .45rem 1rem;
+    height: 44px;
     border-top: 1px solid #eeeeee;
 }
 
+/* DEFAULT WIDTHS */
 .custom-table th:nth-child(1),
 .custom-table td:nth-child(1) {
-    font-size: 0.95rem;
-    font-weight: 400;
-    width: 26%;
-    
+    width: 24%;
 }
 
 .custom-table th:nth-child(2),
 .custom-table td:nth-child(2) {
-    font-size: 0.95rem;
-    font-weight: 400;
-    width: 20%;
+    width: 18%;
 }
 
 .custom-table th:nth-child(3),
 .custom-table td:nth-child(3) {
-    font-size: 0.95rem;
-    font-weight: 400;
-    width: 18%;
+    width: 16%;
 }
 
 .custom-table th:nth-child(4),
 .custom-table td:nth-child(4) {
-    font-size: 0.95rem;
-    font-weight: 400;
-    width: 16%;
+    width: 14%;
 }
 
 .custom-table th:nth-child(5),
 .custom-table td:nth-child(5) {
-    font-size: 0.95rem;
-    font-weight: 400;
-    width: 12%;
+    width: 10%;
 }
 
 .custom-table th:nth-child(6),
 .custom-table td:nth-child(6) {
-    font-size: 0.95rem;
-    font-weight: 400;
-    width: 10%;
+    width: 8%;
 }
 
 .custom-table th:nth-child(7),
 .custom-table td:nth-child(7) {
-    font-size: 0.95rem;
-    font-weight: 400;
-    width: 12%;
-    min-width: 130px;
+    width: 10%;
     overflow: visible;
 }
 
+/* HEADER ONLY RESIZE */
+.resize-handle {
+    position: absolute;
+    top: 0;
+    right: -8px;
+    width: 16px;
+    height: 100%;
+    cursor: col-resize;
+    z-index: 100;
+}
+
+.resize-handle::after {
+    content: '';
+    position: absolute;
+    right: 7px;
+    top: 18%;
+    height: 64%;
+    width: 2px;
+    background: #b4b3b3;
+    transition: .15s;
+}
+
+.resize-handle:hover::after {
+    width: 4px;
+    background: #835038;
+    box-shadow: 0 0 6px rgba(131,80,56,.3);
+}
+
+.custom-table.resizing {
+    user-select: none;
+    cursor: col-resize;
+}
+
+/* LINKS */
 .document-link {
     color: #835038;
-    font-size: 0.95rem;
-    font-weight: 400;
+    font-size: .95rem;
     text-decoration: none;
     display: block;
     overflow: hidden;
@@ -171,22 +207,18 @@
     text-decoration: underline;
 }
 
+/* INPUT */
 .custom-table td:nth-child(2) lightning-input {
     width: 100%;
-    min-width: 0;
 }
 
-.custom-table td:nth-child(5) {
-    overflow: visible;
-    text-overflow: unset;
-}
-
+/* ACTIONS */
 .action-buttons {
     display: flex;
     gap: 10px;
     align-items: center;
     justify-content: flex-start;
-    min-width: 110px;
+    min-width: 120px;
 }
 
 .action-buttons lightning-button-icon {
@@ -194,17 +226,20 @@
     --slds-c-button-radius-border: 999px;
 }
 
+/* USER */
 .user-icon {
     margin-right: 6px;
 }
 
+/* EMPTY */
 .no-data {
     text-align: center;
     padding: 40px;
-    color: #666666;
+    color: #666;
     font-size: 1rem;
 }
 
+/* MODAL */
 .upload-modal {
     max-width: 40rem;
 }
@@ -228,15 +263,12 @@
     display: block;
     font-size: 1rem;
     font-weight: 500;
-    margin-bottom: 0.5rem;
-    color: #333333;
+    margin-bottom: .5rem;
 }
 
 .selected-file-name {
     min-height: 38px;
-    padding: 0.45rem 0;
-    font-size: 1rem;
-    color: #333333;
+    padding: .45rem 0;
     word-break: break-word;
 }
 
@@ -248,15 +280,14 @@
     margin-bottom: 1rem;
 }
 
-.attachment-type {
-    margin-top: 0;
-}
-
 .modal-footer {
-    background:#e9d7c3;
+
+    background: #e9d7c3;
+
     padding: 1rem;
 }
 
+/* INPUTS */
 lightning-input,
 lightning-combobox {
     --slds-c-input-radius-border: 10px;
@@ -270,34 +301,26 @@ lightning-button-icon {
     --slds-c-button-radius-border: 999px;
 }
 
-@media (max-width: 1200px) {
-    .top-row {
-        grid-template-columns: 1fr 1fr;
-    }
+/* RESPONSIVE */
+@media (max-width:1200px){
+
+.top-row{
+margin-left:0;
+}
 }
 
-@media (max-width: 768px) {
-    .top-row,
-    .upload-file-row {
-        grid-template-columns: 1fr;
-    }
+@media (max-width:768px){
 
-    .custom-table {
-        min-width: 1100px;
-    }
-
-    .file-upload-button {
-        min-width: 100%;
-    }
+.top-row,
+.upload-file-row{
+display:block;
 }
 
-@media (max-width: 480px) {
-    .section-header {
-        flex-direction: column;
-        align-items: flex-start;
-    }
+.custom-table{
+min-width:1200px;
+}
 
-    .upload-area {
-        align-self: flex-end;
-    }
+.file-upload-button{
+min-width:100%;
+}
 }
