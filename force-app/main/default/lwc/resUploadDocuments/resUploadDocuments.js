@@ -1,6 +1,6 @@
 import { LightningElement, api, track, wire } from 'lwc';
-import {ShowToastEvent} from 'lightning/platformShowToastEvent';
-import {NavigationMixin} from 'lightning/navigation'
+import { ShowToastEvent } from 'lightning/platformShowToastEvent';
+import { NavigationMixin } from 'lightning/navigation';
 import { getObjectInfo, getPicklistValues } from 'lightning/uiObjectInfoApi';
 import CONTENT_VERSION_OBJECT from '@salesforce/schema/ContentVersion';
 import ATTACHMENT_TYPE_FIELD from '@salesforce/schema/ContentVersion.RES_Attachment_Type__c';
@@ -15,157 +15,110 @@ import USER_ID from '@salesforce/user/Id';
 export default class ResUploadDocuments extends NavigationMixin(LightningElement) {
     @api recordId;
     userId = USER_ID;
+
     @track attachmentTypeOptions = [];
     @track allAttachmentTypes = [];
     @track files = [];
     @track filteredFiles = [];
-    @track attachmentTypeOptions = [];
+
     showSpinner = false;
     cvRecordTypeId;
     isOpen = true;
     showModal = false;
-    totalFiles;
+    totalFiles = 0;
+
     searchFileName = '';
     searchDocumentLabel = '';
     searchAttachmentType = '';
     searchCreatedBy = '';
+
     selectedFiles = [];
     selectedFileNames = '';
     selectedDocumentLabel = '';
     selectedAttachmentType = '';
+
     editedLabels = {};
-    disableDocumentLabel= true;
+    disableDocumentLabel = true;
+    isPersonAccount = false;
+
+    resizeColumn;
+    startX;
+    startWidth;
 
     connectedCallback() {
-        if(this.recordId) {
-             this.loadFiles();
+        if (this.recordId) {
+            this.loadFiles();
         }
-         if(this.userId) {
-             this.checkForEditDocumentLabel();
+
+        if (this.userId) {
+            this.checkForEditDocumentLabel();
         }
     }
 
-    //Getter for Account Graphql Query
+    disconnectedCallback() {
+        document.removeEventListener('mousemove', this.handleColumnResize);
+        document.removeEventListener('mouseup', this.stopColumnResize);
+    }
+
     get graphQLVariables() {
-    return {
-        recordId: this.recordId
-    };
-}
-   //To get ContentVersion object info
+        return {
+            recordId: this.recordId
+        };
+    }
+
     @wire(getObjectInfo, { objectApiName: CONTENT_VERSION_OBJECT })
-     objectInfo({ data, error }) {
-    if (data) {
-        this.cvRecordTypeId = data.defaultRecordTypeId;
+    objectInfo({ data, error }) {
+        if (data) {
+            this.cvRecordTypeId = data.defaultRecordTypeId;
+        } else if (error) {
+            console.error(error);
+        }
     }
-}
- //To get Attachment Type Options
+
     @wire(getPicklistValues, {
-    recordTypeId: '$cvRecordTypeId',
-    fieldApiName: ATTACHMENT_TYPE_FIELD
+        recordTypeId: '$cvRecordTypeId',
+        fieldApiName: ATTACHMENT_TYPE_FIELD
     })
-     picklistValues({ data, error }) {
-    if (data) {
-        this.allAttachmentTypes = data.values;
-        this.filterAttachmentTypes();
-    } else if (error) {
-        console.error(error);
+    picklistValues({ data, error }) {
+        if (data) {
+            this.allAttachmentTypes = data.values;
+            this.filterAttachmentTypes();
+        } else if (error) {
+            console.error(error);
+        }
     }
-   }
- 
-    //Handle loader 
-    handleSpinner(){
-        this.showSpinner = !this.showSpinner;
-    }
- 
-     //Show Toast notification
-    showToast(title, message, variant, mode){
-        const evt = new ShowToastEvent({
-            title: title,
-            message:message,
-            variant: variant,
-            mode: mode
-        });
-        this.dispatchEvent(evt);
-    } 
-    
-    
-    //Graphql query for Account
+
     @wire(graphql, {
-    query: gql`
-        query getAccount($recordId: ID!) {
-            uiapi {
-                query {
-                    Account(
-                        where: { Id: { eq: $recordId } }
-                        first: 1
-                    ) {
-                        edges {
-                            node {
-                                Id
-                                IsPersonAccount {
-                                    value
+        query: gql`
+            query getAccount($recordId: ID!) {
+                uiapi {
+                    query {
+                        Account(where: { Id: { eq: $recordId } } first: 1) {
+                            edges {
+                                node {
+                                    Id
+                                    IsPersonAccount {
+                                        value
+                                    }
                                 }
                             }
                         }
                     }
                 }
             }
+        `,
+        variables: '$graphQLVariables'
+    })
+    accountResult({ data, errors }) {
+        if (data) {
+            const account = data.uiapi.query.Account.edges?.[0]?.node;
+            this.isPersonAccount = account?.IsPersonAccount?.value || false;
+            this.filterAttachmentTypes();
+        } else if (errors) {
+            console.error(errors);
         }
-    `,
-    variables: '$graphQLVariables'
-})
-
-//wire method Call automatically to get Account Details
-accountResult({ data, errors }) {
-    if (data) {
-        const account =
-            data.uiapi.query.Account.edges?.[0]?.node;
-
-        this.isPersonAccount =
-            account?.IsPersonAccount?.value || false;
-
-        this.filterAttachmentTypes();
-    }
-}
-
-//handle file type based on Account RecordType
-filterAttachmentTypes() {
-
-    if (!this.allAttachmentTypes?.length) {
-        return;
     }
 
-    if (this.isPersonAccount) {
-
-        const allowed = [
-            'National Id',
-            'Iqama Id',
-            'GCC Id',
-            'Passport',
-            'Simah Form',
-            'POA (Power of Attorney)'
-        ];
-
-        this.attachmentTypeOptions =
-            this.allAttachmentTypes.filter(
-                option => allowed.includes(option.value)
-            );
-
-    } else {
-
-      const allowed = [
-            'Company Registration Certificate',
-            'Simah Form',
-            'POA (Power of Attorney)'
-        ];
-
-        this.attachmentTypeOptions =
-            this.allAttachmentTypes.filter(
-                option => allowed.includes(option.value)
-            );
-
-    }
-}
     get sectionIcon() {
         return this.isOpen ? 'utility:chevrondown' : 'utility:chevronright';
     }
@@ -178,27 +131,56 @@ filterAttachmentTypes() {
         this.isOpen = !this.isOpen;
     }
 
+    handleSpinner() {
+        this.showSpinner = !this.showSpinner;
+    }
+
+    filterAttachmentTypes() {
+        if (!this.allAttachmentTypes?.length) {
+            return;
+        }
+
+        const allowed = this.isPersonAccount
+            ? [
+                  'National Id',
+                  'Iqama Id',
+                  'GCC Id',
+                  'Passport',
+                  'Simah Form',
+                  'POA (Power of Attorney)'
+              ]
+            : [
+                  'Company Registration Certificate',
+                  'Simah Form',
+                  'POA (Power of Attorney)'
+              ];
+
+        this.attachmentTypeOptions = this.allAttachmentTypes.filter((option) =>
+            allowed.includes(option.value)
+        );
+    }
+
     loadFiles() {
         getFiles({ recordId: this.recordId })
             .then((result) => {
                 this.files = result || [];
-                this.totalFiles = result.length;
+                this.totalFiles = this.files.length;
                 this.applyFilters();
             })
             .catch((error) => {
-                this.showToast('Error', this.getErrorMessage(error), 'error');
+                this.showToast('Error', this.getErrorMessage(error), 'error', 'dismissable');
             });
     }
 
     checkForEditDocumentLabel() {
-       canEditDocumentLabel()
-        .then((result) => {
-            this.disableDocumentLabel = !result;
-        })
-        .catch((error) => {
-            console.error('Error checking document label access', error);
-            this.disableDocumentLabel = true;
-        });
+        canEditDocumentLabel()
+            .then((result) => {
+                this.disableDocumentLabel = !result;
+            })
+            .catch((error) => {
+                console.error('Error checking document label access', error);
+                this.disableDocumentLabel = true;
+            });
     }
 
     openModal() {
@@ -245,20 +227,20 @@ filterAttachmentTypes() {
         this.selectedDocumentLabel = event.target.value;
     }
 
-   handleFileSelection(event) {
+    handleFileSelection(event) {
+        const uploadedFiles = event.detail.files || [];
+        this.selectedFiles = uploadedFiles;
 
-    const uploadedFiles = event.detail.files;
-    this.selectedFiles = uploadedFiles;
-    this.selectedFileNames = uploadedFiles
-        .map(file => file.name)
-        .join(', ');
+        this.selectedFileNames = uploadedFiles
+            .map((file) => file.name)
+            .join(', ');
 
-    if (uploadedFiles.length === 1) {
-        this.selectedDocumentLabel = this.removeExtension(uploadedFiles[0].name);
-    } else {
-        this.selectedDocumentLabel = '';
+        if (uploadedFiles.length === 1) {
+            this.selectedDocumentLabel = this.removeExtension(uploadedFiles[0].name);
+        } else {
+            this.selectedDocumentLabel = '';
+        }
     }
-}
 
     applyFilters() {
         const fileName = this.searchFileName?.toLowerCase() || '';
@@ -282,55 +264,53 @@ filterAttachmentTypes() {
     }
 
     uploadSelectedFiles() {
-    
-    if (!this.selectedFiles || this.selectedFiles.length === 0) {
-        this.showToast(
-            'Validation Error',
-            'Please select at least one file.',
-            'error',
-            'dismissable'
-        );
-        return;
-    }
+        if (!this.selectedFiles || this.selectedFiles.length === 0) {
+            this.showToast(
+                'Validation Error',
+                'Please select at least one file.',
+                'error',
+                'dismissable'
+            );
+            return;
+        }
 
-      if (!this.selectedAttachmentType) {
-        this.showToast(
-            'Validation Error',
-            'Attachment Type is required.',
-            'error',
-            'dismissable'
-        );
-        return;
-    }
-     this.handleSpinner();
+        if (!this.selectedAttachmentType) {
+            this.showToast(
+                'Validation Error',
+                'Attachment Type is required.',
+                'error',
+                'dismissable'
+            );
+            return;
+        }
 
-     
-const files = this.selectedFiles.map(file => ({
-    documentId: file.documentId,
-    fileName: file.name,
-    documentLabel: this.selectedDocumentLabel,
-    attachmentType: this.selectedAttachmentType
-}));
+        this.handleSpinner();
 
-   uploadFile({
-    recordId: this.recordId,
-    files: files
-}).then(() => {
-                this.showToast('Success', 'File uploaded successfully.', 'success');
+        const files = this.selectedFiles.map((file) => ({
+            documentId: file.documentId,
+            fileName: file.name,
+            documentLabel: this.selectedDocumentLabel,
+            attachmentType: this.selectedAttachmentType
+        }));
+
+        uploadFile({
+            recordId: this.recordId,
+            files
+        })
+            .then(() => {
+                this.showToast('Success', 'File uploaded successfully.', 'success', 'dismissable');
                 this.closeModal();
 
                 window.setTimeout(() => {
                     this.loadFiles();
                 }, 700);
             })
-            
             .catch((error) => {
-                this.showToast('Error', this.getErrorMessage(error), 'error');
+                this.showToast('Error', this.getErrorMessage(error), 'error', 'dismissable');
             })
             .finally(() => {
                 this.handleSpinner();
             });
-        
     }
 
     handleDocumentLabelChange(event) {
@@ -364,10 +344,15 @@ const files = this.selectedFiles.map(file => ({
 
                 this.applyFilters();
                 delete this.editedLabels[contentVersionId];
-                this.showToast('Success', 'Document Label updated.', 'success');
+                this.showToast('Success', 'Document Label updated.', 'success', 'dismissable');
             })
-            .catch((error) => {
-                this.showToast('Error','Insufficient permissions to edit Document Label.', 'error');
+            .catch(() => {
+                this.showToast(
+                    'Error',
+                    'Insufficient permissions to edit Document Label.',
+                    'error',
+                    'dismissable'
+                );
             });
     }
 
@@ -387,7 +372,21 @@ const files = this.selectedFiles.map(file => ({
 
     downloadFile(event) {
         const contentDocumentId = event.currentTarget.dataset.id;
-        window.open(`/sfc/servlet.shepherd/document/download/${contentDocumentId}`, '_blank');
+    
+        const link = document.createElement('a');
+    
+        link.href =
+            `/sfc/servlet.shepherd/document/download/${contentDocumentId}`;
+    
+        link.download = '';
+    
+        link.style.display = 'none';
+    
+        document.body.appendChild(link);
+    
+        link.click();
+    
+        document.body.removeChild(link);
     }
 
     deleteSelectedFile(event) {
@@ -395,13 +394,51 @@ const files = this.selectedFiles.map(file => ({
 
         deleteFile({ contentDocumentId })
             .then(() => {
-                this.showToast('Success', 'File deleted successfully.', 'success');
+                this.showToast('Success', 'File deleted successfully.', 'success', 'dismissable');
                 this.loadFiles();
             })
-            .catch((error) => {
-                this.showToast('Error', 'Insufficient permissions to delete file.', 'error');
+            .catch(() => {
+                this.showToast(
+                    'Error',
+                    'Insufficient permissions to delete file.',
+                    'error',
+                    'dismissable'
+                );
             });
     }
+
+    startColumnResize(event) {
+        event.preventDefault();
+        event.stopPropagation();
+
+        this.resizeColumn = event.target.parentElement;
+        this.startX = event.clientX;
+        this.startWidth = this.resizeColumn.offsetWidth;
+
+        document.addEventListener('mousemove', this.handleColumnResize);
+        document.addEventListener('mouseup', this.stopColumnResize);
+    }
+
+    handleColumnResize = (event) => {
+        if (!this.resizeColumn) {
+            return;
+        }
+
+        const newWidth = this.startWidth + event.clientX - this.startX;
+
+        if (newWidth > 90) {
+            this.resizeColumn.style.width = `${newWidth}px`;
+            this.resizeColumn.style.minWidth = `${newWidth}px`;
+            this.resizeColumn.style.maxWidth = `${newWidth}px`;
+        }
+    };
+
+    stopColumnResize = () => {
+        this.resizeColumn = null;
+
+        document.removeEventListener('mousemove', this.handleColumnResize);
+        document.removeEventListener('mouseup', this.stopColumnResize);
+    };
 
     removeExtension(fileName) {
         if (!fileName || !fileName.includes('.')) {
@@ -435,131 +472,14 @@ const files = this.selectedFiles.map(file => ({
         return 'Something went wrong.';
     }
 
-    //resize table
-
-    fixedWidth = "width:8rem;"
- 
-    //FOR HANDLING THE HORIZONTAL SCROLL OF TABLE MANUALLY
-    tableOuterDivScrolled(event) {
-        this._tableViewInnerDiv = this.template.querySelector(".tableViewInnerDiv");
-        if (this._tableViewInnerDiv) {
-            if (!this._tableViewInnerDivOffsetWidth || this._tableViewInnerDivOffsetWidth === 0) {
-                this._tableViewInnerDivOffsetWidth = this._tableViewInnerDiv.offsetWidth;
-            }
-            this._tableViewInnerDiv.style = 'width:' + (event.currentTarget.scrollLeft + this._tableViewInnerDivOffsetWidth) + "px;" + this.tableBodyStyle;
-        }
-        this.tableScrolled(event);
-    }
- 
-    tableScrolled(event) {
-        if (this.enableInfiniteScrolling) {
-            if ((event.target.scrollTop + event.target.offsetHeight) >= event.target.scrollHeight) {
-                this.dispatchEvent(new CustomEvent('showmorerecords', {
-                    bubbles: true
-                }));
-            }
-        }
-        if (this.enableBatchLoading) {
-            if ((event.target.scrollTop + event.target.offsetHeight) >= event.target.scrollHeight) {
-                this.dispatchEvent(new CustomEvent('shownextbatch', {
-                    bubbles: true
-                }));
-            }
-        }
-    }
-  
-    handlemouseup(e) {
-        this._tableThColumn = undefined;
-        this._tableThInnerDiv = undefined;
-        this._pageX = undefined;
-        this._tableThWidth = undefined;
-    }
- 
-    handlemousedown(e) {
-        if (!this._initWidths) {
-            this._initWidths = [];
-            let tableThs = this.template.querySelectorAll("table thead .dv-dynamic-width");
-            tableThs.forEach(th => {
-                this._initWidths.push(th.style.width);
-            });
-        }
- 
-        this._tableThColumn = e.target.parentElement;
-        this._tableThInnerDiv = e.target.parentElement;
-        while (this._tableThColumn.tagName !== "TH") {
-            this._tableThColumn = this._tableThColumn.parentNode;
-        }
-        while (!this._tableThInnerDiv.className.includes("slds-cell-fixed")) {
-            this._tableThInnerDiv = this._tableThInnerDiv.parentNode;
-        }
-        this._pageX = e.pageX;
- 
-        this._padding = this.paddingDiff(this._tableThColumn);
- 
-        this._tableThWidth = this._tableThColumn.offsetWidth - this._padding;
-    }
- 
-    handlemousemove(e) {
-        if (this._tableThColumn && this._tableThColumn.tagName === "TH") {
-            this._diffX = e.pageX - this._pageX;
- 
-            this.template.querySelector("table").style.width = (this.template.querySelector("table") - (this._diffX)) + 'px';
- 
-            this._tableThColumn.style.width = (this._tableThWidth + this._diffX) + 'px';
-            this._tableThInnerDiv.style.width = this._tableThColumn.style.width;
- 
-            let tableThs = this.template.querySelectorAll("table thead .dv-dynamic-width");
-            let tableBodyRows = this.template.querySelectorAll("table tbody tr");
-            let tableBodyTds = this.template.querySelectorAll("table tbody .dv-dynamic-width");
-            tableBodyRows.forEach(row => {
-                let rowTds = row.querySelectorAll(".dv-dynamic-width");
-                rowTds.forEach((td, ind) => {
-                    rowTds[ind].style.width = tableThs[ind].style.width;
-                });
-            });
-        }
-    }
- 
-    handledblclickresizable() {
-    let tableThs = this.template.querySelectorAll(
-        "table thead .dv-dynamic-width"
-    );
-
-    let tableBodyRows = this.template.querySelectorAll(
-        "table tbody tr"
-    );
-
-    tableThs.forEach(th => {
-        th.style.width = null;
-
-        let fixedDiv = th.querySelector(".slds-cell-fixed");
-        if (fixedDiv) {
-            fixedDiv.style.width = null;
-        }
-    });
-
-    tableBodyRows.forEach(row => {
-        let rowTds = row.querySelectorAll(".dv-dynamic-width");
-
-        rowTds.forEach(td => {
-            td.style.width = null;
-        });
-    });
-}
- 
-    paddingDiff(col) {
- 
-        if (this.getStyleVal(col, 'box-sizing') === 'border-box') {
-            return 0;
-        }
- 
-        this._padLeft = this.getStyleVal(col, 'padding-left');
-        this._padRight = this.getStyleVal(col, 'padding-right');
-        return (parseInt(this._padLeft, 10) + parseInt(this._padRight, 10));
- 
-    }
- 
-    getStyleVal(elm, css) {
-        return (window.getComputedStyle(elm, null).getPropertyValue(css))
+    showToast(title, message, variant, mode = 'dismissable') {
+        this.dispatchEvent(
+            new ShowToastEvent({
+                title,
+                message,
+                variant,
+                mode
+            })
+        );
     }
 }
