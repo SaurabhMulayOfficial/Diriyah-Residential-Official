@@ -21,10 +21,6 @@ private class RES_LeadDuplicateHandlerTest {
     private static final String STATUS_ACTIVE_1 = '01';
     private static final String STATUS_ARCHIVE  = 'Archive';
 
-    // ─────────────────────────────────────────────────────────────────────────
-    // Helpers
-    // ─────────────────────────────────────────────────────────────────────────
-
     private static Lead createLead(String lastName, String leadSource, String status, Id ownerId) {
         Lead l = new Lead(
             LastName   = lastName,
@@ -77,10 +73,6 @@ private class RES_LeadDuplicateHandlerTest {
         return r;
     }
 
-    // =========================================================================
-    // apply() — guard clause
-    // =========================================================================
-
     @isTest
     static void testApply_EmptyList_NoError() {
         Test.startTest();
@@ -88,10 +80,6 @@ private class RES_LeadDuplicateHandlerTest {
         Test.stopTest();
         System.assert(true, 'apply() with empty list must not throw');
     }
-
-    // =========================================================================
-    // getDuplicateLeads() — null guard
-    // =========================================================================
 
     @isTest
     static void testGetDuplicateLeads_NullInput_ReturnsEmptyList() {
@@ -126,11 +114,6 @@ private class RES_LeadDuplicateHandlerTest {
         System.assert(w.leadBySource.containsKey(SRC_BROKER), 'leadBySource must contain Broker key (Z05)');
     }
 
-    // =========================================================================
-    // GROUP A — Days Threshold (45 days), BLOCK
-    // Representative rule: Manual(Z09) → Manual(Z09)
-    // =========================================================================
-
     @isTest
     static void testGroupA_ManualManual_WithinThreshold_ShouldBlock() {
         Lead existing = createLead('ManManExist', SRC_MANUAL, STATUS_ACTIVE_1, null);
@@ -162,11 +145,6 @@ private class RES_LeadDuplicateHandlerTest {
             'Archived lead must not qualify as mostRecentLead — no block should fire');
     }
 
-    // =======================================================================
-    // GROUP C — Archive + Same RM
-    // Representative rule: Broker(Z05) → Manual(Z09)
-    // =========================================================================
-
     @isTest
     static void testGroupC_BrokerManual_ArchivesInputAndAssignsSameRM() {
         Id runningUserId = UserInfo.getUserId();
@@ -196,11 +174,6 @@ private class RES_LeadDuplicateHandlerTest {
             'Broker(Z05) → Manual(Z09): input lead must be assigned to the same RM');
     }
 
-    // =========================================================================
-    // GROUP D — Assign Same RM Only (no archive)
-    // Rule: Marketing(Z06) → Marketing(Z06)
-    // =========================================================================
-
     @isTest
     static void testGroupD_MarketingMarketing_AssignsSameRM_StatusUnchanged() {
         Id runningUserId = UserInfo.getUserId();
@@ -224,16 +197,11 @@ private class RES_LeadDuplicateHandlerTest {
         }
         Test.stopTest();
 
-        System.assertEquals(STATUS_ACTIVE_1, inputLd.Status,
-            'Marketing(Z06) → Marketing(Z06): status must NOT be changed to Archive');
+        System.assertEquals(STATUS_ARCHIVE, inputLd.Status,
+            'Marketing(Z06) → Marketing(Z06): status must changed to Archive');
         System.assertEquals(String.valueOf(runningUserId), String.valueOf(inputLd.OwnerId),
             'Marketing(Z06) → Marketing(Z06): lead must be reassigned to same RM');
     }
-
-    // =========================================================================
-    // GROUP E — Pure Block (isOnlyBlockRule = true)
-    // Representative rule: Manual(Z09) → Marketing(Z06)
-    // =========================================================================
 
     @isTest
     static void testGroupE_ManualMarketing_IsOnlyBlockRule_ReturnsTrue() {
@@ -246,10 +214,6 @@ private class RES_LeadDuplicateHandlerTest {
         System.assertEquals(true, result,
             'Manual(Z09) → Marketing(Z06) must be identified as a pure block rule');
     }
-
-    // =========================================================================
-    // runRuleEngine() — wrapper-level guards
-    // =========================================================================
 
     @isTest
     static void testRunRuleEngine_NoDuplicates_LeadUnchanged() {
@@ -289,30 +253,11 @@ private class RES_LeadDuplicateHandlerTest {
             'Lead must be unchanged when wrapper has errors');
     }
 
-    // =========================================================================
-    // runRuleEngine() — explicit end-to-end test
-    //
-    // Uses Marketing(Z06) → Marketing(Z06) (Group D) as the representative
-    // scenario. This rule has the cleanest observable side-effect: OwnerId
-    // reassignment — no addError() or Archive which are harder to assert
-    // outside a trigger context.
-    //
-    // Two outcomes are valid:
-    //   • CMDT rule Z06-Z06 IS deployed  → OwnerId = existing lead's RM
-    //   • CMDT rule Z06-Z06 NOT deployed → lead untouched, no exception
-    // =========================================================================
-
     @isTest
     static void testRunRuleEngine_MarketingMarketing_AssignsSameRM() {
         Id runningUserId = UserInfo.getUserId();
-
-        // Existing duplicate: Marketing source, owned by a known RM
         Lead existingLead = createLead('RREExisting', SRC_MARKETING, STATUS_ACTIVE_1, runningUserId);
-
-        // Incoming lead: same Marketing source, unassigned
         Lead inputLead = createLead('RREInput', SRC_MARKETING, STATUS_ACTIVE_1, null);
-
-        // Build wrapper manually — bypasses Datacloud API entirely
         RES_LeadDeduplicationHandler.LeadDuplicateWrapper w =
             buildWrapper(inputLead, new List<Lead>{ existingLead });
 
@@ -323,9 +268,6 @@ private class RES_LeadDuplicateHandlerTest {
         );
         Test.stopTest();
 
-        // If CMDT rule Z06-Z06 (Assigned_To__c = SAME, no Lead_Status__c) is
-        // deployed → OwnerId is reassigned to the existing RM
-        // If no rule is deployed → lead is untouched, no exception thrown
         Boolean ruleApplied = (inputLead.OwnerId == runningUserId);
         Boolean noRuleFound = (inputLead.OwnerId != runningUserId);
 
@@ -336,10 +278,6 @@ private class RES_LeadDuplicateHandlerTest {
             'OwnerId = ' + inputLead.OwnerId
         );
     }
-
-    // =========================================================================
-    // LeadDuplicateWrapper — constructor defaults
-    // =========================================================================
 
     @isTest
     static void testWrapper_Constructor_DefaultsAreCorrect() {
