@@ -49,11 +49,9 @@ export default class LeadConversionPopup extends NavigationMixin(LightningElemen
     async _checkOwnershipAndSubscribe() {
         try {
             this.isOwner = await isCurrentUserLeadOwner({ leadId: this.recordId });
-            console.log('Is Record Owner:', this.isOwner);
             if (this.isOwner) {
                 this._subscribeToChannel();
             } else {
-                console.log('Not the Lead owner — CDC subscription skipped');
             }
         } catch (error) {
             console.error('Ownership check error:', error);
@@ -65,7 +63,6 @@ export default class LeadConversionPopup extends NavigationMixin(LightningElemen
             this._processChangeEvent(response);
         }).then((response) => {
             this._subscription = response;
-            console.log('✅ Subscribed to CDC:', response.channel);
         });
     }
 
@@ -75,12 +72,6 @@ export default class LeadConversionPopup extends NavigationMixin(LightningElemen
         if (!header) return;
 
         const { changeType, recordIds, entityName, changedFields } = header;
-
-        console.log('CDC Event | Entity:', entityName,
-                    '| Type:', changeType,
-                    '| Fields:', changedFields,
-                    '| IsConverted:', payload?.IsConverted);
-
         if (entityName !== 'Lead' || changeType !== 'UPDATE') return;
 
         if (!recordIds.includes(this.recordId)) return;
@@ -88,12 +79,10 @@ export default class LeadConversionPopup extends NavigationMixin(LightningElemen
         if (payload.IsConverted !== true)           return;
 
         if (!this.isOwner) {
-            console.log('Not the Lead owner — popup suppressed');
             return;
         }
 
         if (this._isProcessing) {
-            console.warn('Already processing — skipping duplicate CDC event');
             return;
         }
 
@@ -109,13 +98,10 @@ export default class LeadConversionPopup extends NavigationMixin(LightningElemen
     async _fetchConvertedIds(retryCount = 0) {
         try {
             const result = await getConvertedRecordIds({ leadId: this.recordId });
-            console.log('Apex Result =>', JSON.stringify(result));
-
             const isEmpty = !result || Object.keys(result).length === 0 || !result.accountId;
 
             if (isEmpty) {
                 if (retryCount < 4) {
-                    console.warn(`Empty result — retry ${retryCount + 1} of 4 in 2s`);
                     await this._delay(2000);
                     return await this._fetchConvertedIds(retryCount + 1);
                 }
@@ -153,7 +139,6 @@ export default class LeadConversionPopup extends NavigationMixin(LightningElemen
             this._isProcessing = false;
 
         } catch (error) {
-            console.error('Apex error:', JSON.stringify(error));
             if (retryCount < 4) {
                 await this._delay(2000);
                 return await this._fetchConvertedIds(retryCount + 1);
@@ -252,7 +237,7 @@ export default class LeadConversionPopup extends NavigationMixin(LightningElemen
 
     _unsubscribeFromChannel() {
         unsubscribe(this._subscription, () => {
-            console.log('Unsubscribed from CDC');
+            
         });
     }
 

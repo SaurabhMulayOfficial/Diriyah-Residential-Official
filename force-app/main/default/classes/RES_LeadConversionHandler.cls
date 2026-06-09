@@ -41,7 +41,9 @@ public with sharing class RES_LeadConversionHandler {
         }
         Set<String> phoneNumber = new Set<String>();
         for(Lead ld:leadsToConvert){
-            phoneNumber.add(ld.MobilePhone);
+            if(String.isNotBlank(ld.MobilePhone)){
+                phoneNumber.add(ld.MobilePhone);
+            }
         }
         List<Contact> contactList = new RES_ContactDAOLayer().getContactByMobilePhone(phoneNumber);
         Map<String,Id> phoneToContactMap = new Map<String,Id>();
@@ -83,21 +85,18 @@ public with sharing class RES_LeadConversionHandler {
 
         try{
             List<Database.LeadConvertResult> results = Database.convertLead(qualifiedLeadsToConvert,true, AccessLevel.USER_MODE);
-
                 for(Database.LeadConvertResult res : results){
-                    System.debug('SUCCESS => ' + res.isSuccess());
-                    System.debug('ACCOUNT ID => ' + res.getAccountId());
-                    System.debug('CONTACT ID => ' + res.getContactId());
-                    System.debug('OPPORTUNITY ID => ' + res.getOpportunityId());
                     if(!res.isSuccess()){
+                        String errorMessage = '';
                         for(Database.Error err : res.getErrors()){
-                            System.debug(err.getMessage());
+                            errorMessage += err.getMessage() + ' ';
                         }
+                        throw new AuraHandledException(errorMessage.trim());
                     }
                 }
         }
         catch(Exception ex){
-            System.debug('Exception while Converting Leads '+ex.getMessage());
+            throw new AuraHandledException('Lead conversion failed.');
         }
     }
 /**
@@ -114,10 +113,9 @@ public with sharing class RES_LeadConversionHandler {
     public static Map<Id,List<SObject>> getDuplicateLeads(List<Lead> inputLeads, String sObjectName) {
         Map<Id,List<SObject>> leadDuplicateMap = new Map<Id,List<Lead>>();
         if (inputLeads == null || inputLeads.isEmpty()) {
-            return null;
+            return leadDuplicateMap;
         }
         List<Datacloud.FindDuplicatesResult> results = Datacloud.FindDuplicates.findDuplicates(inputLeads);
-
         for (Integer i = 0; i < results.size(); i++) {
             Datacloud.FindDuplicatesResult result = results[i];
 
@@ -171,29 +169,11 @@ public with sharing class RES_LeadConversionHandler {
         if (leadId == null) {
             throw new AuraHandledException('Lead Id is required.');
         }
-        List<Lead> rawLeads = [
-            SELECT Id, Name, Status, IsConverted,
-                    ConvertedAccountId, ConvertedContactId, ConvertedOpportunityId,
-                    RecordType.DeveloperName
-            FROM Lead
-            WHERE Id = :leadId
-            LIMIT 1
-        ];
-
-        System.debug('RAW LEAD FOUND: ' + rawLeads.size());
-        if (!rawLeads.isEmpty()) {
-            System.debug('IsConverted: '        + rawLeads[0].IsConverted);
-            System.debug('Status: '             + rawLeads[0].Status);
-            System.debug('ConvertedAccountId: ' + rawLeads[0].ConvertedAccountId);
-            System.debug('RecordType: '         + rawLeads[0].RecordType?.DeveloperName);
-        }
 
         Lead convertedLead = new RES_LeadDAOLayer().getConvertedLeadById(leadId);
-        System.debug('DAO returned lead: ' + convertedLead);
 
         if (convertedLead == null) {
-            System.debug('Lead is null from DAO — returning empty map');
-            return result; // LWC retry handles this
+            return result; 
         }
 
         result.put('accountId',     convertedLead.ConvertedAccountId);
@@ -244,7 +224,6 @@ public with sharing class RES_LeadConversionHandler {
         } catch (AuraHandledException ex) {
             throw ex;
         } catch (Exception ex) {
-            System.debug('Error: ' + ex.getMessage() + ' | Line: ' + ex.getLineNumber());
             throw new AuraHandledException('Error: ' + ex.getMessage());
         }
         return result;
