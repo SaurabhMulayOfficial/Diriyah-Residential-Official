@@ -44,7 +44,12 @@ public with sharing class RES_AccountDAOLayer extends RES_BaseDAOLayer{
     public Account getAccountById(Id accountId) {
         Map<String, Object> bindVars = new Map<String, Object>();
         bindVars.put('accountId', accountId);
-        String soql = 'SELECT Id, Name, Type, Phone, Website, Site, OwnerId, Owner.Name, IsPersonAccount FROM Account WHERE Id = :accountId LIMIT 1';
+        String soql = 'SELECT Id, Name, Type, Phone, Website, Rating, ' +
+                            'IsPersonAccount, AccountSource, ' +
+                            'PersonMobilePhone, PersonEmail, Owner.Name ' +
+                            'FROM Account ' +
+                            'WHERE Id = :accountId ' +
+                            'LIMIT 1';
         List<SObject> results = executeQuery(soql, '', true, bindVars, AccessLevel.SYSTEM_MODE);
         return results != null && !results.isEmpty() ? (Account) results[0] : null;
     }

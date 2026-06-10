@@ -184,12 +184,14 @@ public with sharing class RES_LeadConversionHandler {
             );
             if (acc != null) {
                 result.put('accountName',      acc.Name);
-                result.put('accountType',      acc.Type);
                 result.put('accountPhone',     acc.Phone);
                 result.put('accountWebsite',   acc.Website);
                 result.put('accountOwnerName', acc.Owner?.Name);
-                result.put('accountSite',      acc.Site);
                 result.put('isPersonAccount',  String.valueOf(acc.IsPersonAccount));
+                result.put('accountSource', acc.AccountSource);
+                result.put('accountRating', acc.Rating);
+                result.put('accountMobile', acc.PersonMobilePhone);
+                result.put('accountEmail',  acc.PersonEmail);
             }
         }
 
@@ -199,8 +201,6 @@ public with sharing class RES_LeadConversionHandler {
             );
             if (con != null) {
                 result.put('contactName',   con.Name);
-                result.put('contactTitle',  con.Title);
-                result.put('contactPhone',  con.Phone);
                 result.put('contactEmail',  con.Email);
                 result.put('contactMobile', con.MobilePhone);
             }
@@ -213,8 +213,9 @@ public with sharing class RES_LeadConversionHandler {
             if (opp != null) {
                 result.put('opportunityName',      opp.Name);
                 result.put('opportunityCloseDate', opp.CloseDate != null ? opp.CloseDate.format() : '');
-                result.put('opportunityAmount',    opp.Amount != null ? String.valueOf(opp.Amount) : '');
                 result.put('opportunityOwnerName', opp.Owner?.Name);
+                result.put('opportunityProject',    opp.RES_Project__c);
+                result.put('opportunityLeadSource', opp.LeadSource);
             }
         }
         } catch (AuraHandledException ex) {

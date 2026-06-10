@@ -33,6 +33,8 @@
                 </template>
                 <template if:false={isLoading}>
                     <div class="cards-row">
+
+                        <!-- Account / Person Account Card -->
                         <div class={accountCardClass} onclick={handleAccountClick}>
                             <div class="card-section-title">{accountTileLabel}</div>
                             <div class="card-inner">
@@ -43,30 +45,55 @@
                                     </lightning-icon>
                                     <span class="card-record-name">{accountName}</span>
                                 </div>
-                                <div class="card-fields">
-                                    <div class="card-field-row">
-                                        <span class="field-label">Type:</span>
-                                        <span class="field-value">{accountType}</span>
+
+                                <!-- ✅ Person Account fields -->
+                                <template if:true={isPersonAccount}>
+                                    <div class="card-fields">
+                                        <div class="card-field-row">
+                                            <span class="field-label">Account Source:</span>
+                                            <span class="field-value">{accountSource}</span>
+                                        </div>
+                                        <div class="card-field-row">
+                                            <span class="field-label">Mobile:</span>
+                                            <span class="field-value">{accountMobile}</span>
+                                        </div>
+                                        <div class="card-field-row">
+                                            <span class="field-label">Email:</span>
+                                            <span class="field-value owner-link">{accountEmail}</span>
+                                        </div>
+                                        <div class="card-field-row">
+                                            <span class="field-label">Rating:</span>
+                                            <span class="field-value">{accountRating}</span>
+                                        </div>
                                     </div>
-                                    <div class="card-field-row">
-                                        <span class="field-label">Phone:</span>
-                                        <span class="field-value">{accountPhone}</span>
+                                </template>
+
+                                <!-- ✅ Regular Account fields -->
+                                <template if:false={isPersonAccount}>
+                                    <div class="card-fields">
+                                        <div class="card-field-row">
+                                            <span class="field-label">Account Source:</span>
+                                            <span class="field-value">{accountSource}</span>
+                                        </div>
+                                        <div class="card-field-row">
+                                            <span class="field-label">Phone:</span>
+                                            <span class="field-value">{accountPhone}</span>
+                                        </div>
+                                        <div class="card-field-row">
+                                            <span class="field-label">Email:</span>
+                                            <span class="field-value">{accountEmail}</span>
+                                        </div>
+                                        <div class="card-field-row">
+                                            <span class="field-label">Rating:</span>
+                                            <span class="field-value">{accountRating}</span>
+                                        </div>
                                     </div>
-                                    <div class="card-field-row">
-                                        <span class="field-label">Website:</span>
-                                        <span class="field-value">{accountWebsite}</span>
-                                    </div>
-                                    <div class="card-field-row">
-                                        <span class="field-label">Account Own...:</span>
-                                        <span class="field-value owner-link">{accountOwnerName}</span>
-                                    </div>
-                                    <div class="card-field-row">
-                                        <span class="field-label">Account Site:</span>
-                                        <span class="field-value">{accountSite}</span>
-                                    </div>
-                                </div>
+                                </template>
+
                             </div>
                         </div>
+
+                        <!-- Contact Card — hidden for Person Account -->
                         <template if:false={isPersonAccount}>
                             <div class={contactCardClass} onclick={handleContactClick}>
                                 <div class="card-section-title">CONTACT</div>
@@ -78,31 +105,30 @@
                                         </lightning-icon>
                                         <span class="card-record-name">{contactName}</span>
                                     </div>
+                                    <!-- ✅ Contact fields per spec -->
                                     <div class="card-fields">
-                                        <div class="card-field-row">
-                                            <span class="field-label">Title:</span>
-                                            <span class="field-value">{contactTitle}</span>
-                                        </div>
                                         <div class="card-field-row">
                                             <span class="field-label">Account Name:</span>
                                             <span class="field-value owner-link">{accountName}</span>
                                         </div>
                                         <div class="card-field-row">
-                                            <span class="field-label">Phone:</span>
-                                            <span class="field-value">{contactPhone}</span>
+                                            <span class="field-label">Mobile:</span>
+                                            <span class="field-value">{contactMobile}</span>
                                         </div>
                                         <div class="card-field-row">
                                             <span class="field-label">Email:</span>
                                             <span class="field-value owner-link">{contactEmail}</span>
                                         </div>
                                         <div class="card-field-row">
-                                            <span class="field-label">Mobile:</span>
-                                            <span class="field-value">{contactMobile}</span>
+                                            <span class="field-label">Lead Source:</span>
+                                            <span class="field-value">{contactLeadSource}</span>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </template>
+
+                        <!-- Opportunity Card -->
                         <div class={opportunityCardClass} onclick={handleOpportunityClick}>
                             <div class="card-section-title">OPPORTUNITY</div>
                             <div class="card-inner">
@@ -113,30 +139,32 @@
                                     </lightning-icon>
                                     <span class="card-record-name">{opportunityName}</span>
                                 </div>
+                                <!-- ✅ Opportunity fields per spec -->
                                 <div class="card-fields">
                                     <div class="card-field-row">
                                         <span class="field-label">Account Name:</span>
                                         <span class="field-value owner-link">{accountName}</span>
                                     </div>
                                     <div class="card-field-row">
+                                        <span class="field-label">Project:</span>
+                                        <span class="field-value">{opportunityProject}</span>
+                                    </div>
+                                    <div class="card-field-row">
                                         <span class="field-label">Close Date:</span>
                                         <span class="field-value">{opportunityCloseDate}</span>
                                     </div>
                                     <div class="card-field-row">
-                                        <span class="field-label">Amount:</span>
-                                        <span class="field-value">{opportunityAmount}</span>
-                                    </div>
-                                    <div class="card-field-row">
-                                        <span class="field-label">Opportunity O...:</span>
-                                        <span class="field-value owner-link">{opportunityOwnerName}</span>
+                                        <span class="field-label">Lead Source:</span>
+                                        <span class="field-value">{opportunityLeadSource}</span>
                                     </div>
                                 </div>
                             </div>
                         </div>
+
                     </div>
                 </template>
                 <div class="popup-footer">
-                    <button class="btn-go-to-leads"  onclick={handleGoToLeads}>Go to Leads</button>
+                    <button class="btn-go-to-leads" onclick={handleGoToLeads}>Go to Leads</button>
                 </div>
             </div>
         </div>

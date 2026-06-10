@@ -44,7 +44,11 @@ public without sharing class RES_OpportunityDAOLayer extends RES_BaseDAOLayer{
     public Opportunity getOpportunityById(Id opportunityId) {
         Map<String, Object> bindVars = new Map<String, Object>();
         bindVars.put('opportunityId', opportunityId);
-        String soql = 'SELECT Id, Name, CloseDate, Amount, OwnerId, Owner.Name FROM Opportunity WHERE Id = :opportunityId LIMIT 1';
+        String soql = 'SELECT Id, Name, CloseDate, LeadSource, RES_Project__c, Owner.Name, ' +
+                            'Account.Name ' +
+                            'FROM Opportunity ' +
+                            'WHERE Id = :opportunityId ' +
+                            'LIMIT 1';
         List<SObject> results = executeQuery(soql, '', true, bindVars, AccessLevel.SYSTEM_MODE);
         return results != null && !results.isEmpty() ? (Opportunity) results[0] : null;
     }

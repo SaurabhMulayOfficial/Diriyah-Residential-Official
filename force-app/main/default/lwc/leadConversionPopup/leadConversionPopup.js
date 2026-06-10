@@ -15,22 +15,23 @@ export default class LeadConversionPopup extends NavigationMixin(LightningElemen
     @track convertedOpportunityId = null;
 
     @track accountName      = '';
-    @track accountType      = '';
     @track accountPhone     = '';
     @track accountWebsite   = '';
     @track accountOwnerName = '';
-    @track accountSite      = '';
+    @track accountSource = '';
+    @track accountRating = '';
+    @track accountMobile = '';
+    @track accountEmail  = '';
 
     @track contactName   = '';
-    @track contactTitle  = '';
-    @track contactPhone  = '';
     @track contactEmail  = '';
     @track contactMobile = '';
 
     @track opportunityName      = '';
     @track opportunityCloseDate = '';
-    @track opportunityAmount    = '';
     @track opportunityOwnerName = '';
+    @track opportunityProject    = '';
+    @track opportunityLeadSource = '';
 
     _subscription   = {};
     _isProcessing   = false; // ✅ Guard against duplicate CDC events
@@ -117,22 +118,23 @@ export default class LeadConversionPopup extends NavigationMixin(LightningElemen
             this.convertedOpportunityId = result.opportunityId || null;
 
             this.accountName      = result.accountName      || '';
-            this.accountType      = result.accountType      || '';
             this.accountPhone     = result.accountPhone     || '';
             this.accountWebsite   = result.accountWebsite   || '';
             this.accountOwnerName = result.accountOwnerName || '';
-            this.accountSite      = result.accountSite      || '';
+            this.accountSource = result.accountSource || '';
+            this.accountRating = result.accountRating || '';
+            this.accountMobile = result.accountMobile || ''; // Person Account
+            this.accountEmail  = result.accountEmail  || '';
 
             this.contactName   = result.contactName   || '';
-            this.contactTitle  = result.contactTitle  || '';
-            this.contactPhone  = result.contactPhone  || '';
             this.contactEmail  = result.contactEmail  || '';
             this.contactMobile = result.contactMobile || '';
 
             this.opportunityName      = result.opportunityName      || '';
             this.opportunityCloseDate = result.opportunityCloseDate || '';
-            this.opportunityAmount    = result.opportunityAmount    || '';
             this.opportunityOwnerName = result.opportunityOwnerName || '';
+            this.opportunityProject    = result.opportunityProject    || '';
+            this.opportunityLeadSource = result.opportunityLeadSource || '';
 
             this.errorMessage  = '';
             this.isLoading     = false;
@@ -196,20 +198,21 @@ export default class LeadConversionPopup extends NavigationMixin(LightningElemen
         this.convertedContactId     = null;
         this.convertedOpportunityId = null;
         this.accountName      = '';
-        this.accountType      = '';
         this.accountPhone     = '';
         this.accountWebsite   = '';
         this.accountOwnerName = '';
-        this.accountSite      = '';
         this.contactName      = '';
-        this.contactTitle     = '';
-        this.contactPhone     = '';
         this.contactEmail     = '';
         this.contactMobile    = '';
         this.opportunityName      = '';
         this.opportunityCloseDate = '';
-        this.opportunityAmount    = '';
         this.opportunityOwnerName = '';
+        this.accountSource       = '';
+        this.accountRating       = '';
+        this.accountMobile       = '';
+        this.accountEmail        = '';
+        this.opportunityProject  = '';
+        this.opportunityLeadSource = '';
     }
 
     get hasAccount()     { return !!this.convertedAccountId; }
@@ -242,6 +245,10 @@ export default class LeadConversionPopup extends NavigationMixin(LightningElemen
     }
 
     _registerErrorHandler() {
-        onError((error) => console.error('EmpApi Error:', error));
+        onError((error) => {
+            if (error?.error !== '403::Unknown client') {
+                console.error('EmpApi Error:', error);
+            }
+        });
     }
 }
