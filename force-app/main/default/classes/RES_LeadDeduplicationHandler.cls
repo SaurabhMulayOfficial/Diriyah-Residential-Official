@@ -153,24 +153,6 @@ public without sharing class RES_LeadDeduplicationHandler {
         return false;
     }
 
-    public static String fieldEqualityCheck(Lead inputLead, List<Lead> existingLeadsByExistingSource, String fieldForEquality){
-        String fieldValue = (String)inputLead.get(fieldForEquality);
-        if(fieldValue == null || fieldValue == '')return 'NO VALUE';
-
-        String assigningSameRm = '';
-
-        for(Lead existingLead : existingLeadsByExistingSource){
-            String existingFieldValue = (String) existingLead.get(fieldForEquality);
-            if(String.valueOf(existingLead.OwnerId).startsWith('005')){
-                assigningSameRm = String.valueOf(existingLead.OwnerId);
-            }
-            if(fieldValue == existingFieldValue){
-                return 'SAME FOUND';
-            }
-        }
-
-        return assigningSameRm;
-    }
 
     public static String getRmId(List<Lead> existingLeadsByExistingSource){
         String userId = '';
@@ -261,8 +243,6 @@ public without sharing class RES_LeadDeduplicationHandler {
                 
                 if(source.size() <= 1)continue;
 
-                String fieldForEquality = rule.Check_Field_Equality__c;
-
                 String incomingSource = source[0];
                 String existingSource = source[1];
 
@@ -321,42 +301,18 @@ public without sharing class RES_LeadDeduplicationHandler {
                         }
                     }
 
-                    //Cheking field Equality
-                    String checkFieldEquality = '';
-                    
-                    if(String.isNotBlank(fieldForEquality)){
-                        checkFieldEquality = fieldEqualityCheck(inputLead, existingLeadsByExistingSource, fieldForEquality);
-
-                        if(checkFieldEquality == 'SAME FOUND'){
-                            if(action == 'BLOCK'){
-                                String displayFieldForEquality = extractCleanFieldName(fieldForEquality);
-                                System.debug('Blocking because the field value is same ' + checkFieldEquality);
-                                inputLead.addError('Please review duplicates, The existing Lead has the same value for field ' + displayFieldForEquality + ' as the incoming Lead.');
-                                break;
-                            }
-                        }
-                        else if(checkFieldEquality.startsWith('005') && assignedTo == 'SAME'){
-                            RES_LeadServices.avoidReassignment.add(inputLead);
-                            hydrateWrapper(true, checkFieldEquality, wrapper, leadDuplicateWrappers);
-                            inputLead.RES_Bypass_Assignment_Rules__c = true;
-                            break;
-                        }
-                    }
-
                     //Same RM assignment + archive the lead
                     String getSameRMId = getRmId(existingLeadsByExistingSource);
 
                     if(shouldArchive != null && shouldArchive != ''){
                         inputLead.status = 'Archive';
-                        if(getSameRMId != '' && assignedTo == 'SAME'){
-                            inputLead.RES_Bypass_Assignment_Rules__c = true;
+                        if(getSameRMId != '' && assignedTo == 'SAME'){                
                             RES_LeadServices.avoidReassignment.add(inputLead);
                             hydrateWrapper(true, getSameRMId, wrapper, leadDuplicateWrappers);
                         }
                         break;
                     }
                     else if(assignedTo == 'SAME' && getSameRMId != ''){
-                        inputLead.RES_Bypass_Assignment_Rules__c = true;
                         RES_LeadServices.avoidReassignment.add(inputLead);
                         hydrateWrapper(true, getSameRMId, wrapper, leadDuplicateWrappers);
                         break;

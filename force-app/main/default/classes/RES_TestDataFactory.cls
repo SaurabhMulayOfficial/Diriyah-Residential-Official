@@ -91,6 +91,30 @@ public class RES_TestDataFactory {
         return u;
     }
 
+    public static User createSystemAdminUser(){
+        Profile prof = [
+            SELECT Id FROM Profile
+            WHERE Name = :PROFILE_SYSADMIN
+            LIMIT 1
+        ];
+
+        User u = new User(
+            Alias             = 'sadmin',
+            Email             = 'res.systemadmin.test@example.com',
+            EmailEncodingKey  = 'UTF-8',
+            FirstName         = 'System',
+            LastName          = 'Admin',
+            LanguageLocaleKey = 'en_US',
+            LocaleSidKey      = 'en_US',
+            ProfileId         = prof.Id,
+            TimeZoneSidKey    = 'Asia/Kolkata',
+            Username          = 'res.systemadmin.test@example.com.sandbox'
+        );
+
+        insert u;
+        return u;
+    }
+
     private static User buildUser(UserConfig config) {
         Profile prof = [
             SELECT Id FROM Profile
@@ -154,6 +178,30 @@ public class RES_TestDataFactory {
         return l;
     }
 
+    public static lead createLead(String email, String source, Id OwnerId){
+        Id rtId_individual = Schema.SObjectType.Lead.getRecordTypeInfosByDeveloperName().get('RES_Individual').getRecordTypeId();
+        String prefix      = email.substringBefore('@').left(10);
+        String hashStr     = String.valueOf(Math.abs(email.hashCode()));
+        String uniquePhone = '+9198' + hashStr.left(7).rightPad(7, '0');
+        
+        Lead l = new Lead(
+            OwnerId = OwnerId,
+            RecordTypeId = rtId_individual,
+            FirstName = prefix,
+            LastName = 'TestLead',
+            Company = prefix + ' Co',
+            Status = 'New',
+            Email = email,
+            Phone = uniquePhone,
+            MobilePhone = uniquePhone,
+            leadSource = source
+        );
+
+        insert l;
+        
+        return l;
+    }
+
     public static RES_LeadMassConversionUtility.ConvertRequest buildRequest(
         List<Lead>  leads,
         String      statusLabel,
@@ -186,5 +234,52 @@ public class RES_TestDataFactory {
             AssigneeId      = userId,
             PermissionSetId = ps.Id
         );
+    }
+    
+    public static Account createAccount() {
+        Account acc = new Account();
+        acc.Name = 'Test Account';
+        acc.RES_CR_number__c = '8624379423';
+        acc.RES_Identification_Type__c = 'ZIT04';
+        insert acc;
+        return acc;
+    }
+
+    public static ContentVersion createFile() {
+        ContentVersion cv = new ContentVersion();
+            cv.Title = 'TestFile';
+            cv.PathOnClient = 'TestFile.pdf';
+            cv.VersionData = Blob.valueOf('Test File Content');
+
+        insert cv;
+        return  [SELECT Id,
+                Title,
+                ContentDocumentId,
+                RES_Document_Label__c
+                FROM ContentVersion
+                WHERE Id = :cv.Id];
+    }
+
+    public static ContentDocumentLink createDocLink(String accId, String cdId) {
+        ContentDocumentLink cdl = new ContentDocumentLink();
+            cdl.ContentDocumentId = cdId;
+            cdl.LinkedEntityId = accId;
+            cdl.ShareType = 'V';
+            cdl.Visibility = 'AllUsers';
+        
+        insert cdl;
+      
+        return cdl;
+    }
+    public static Contact createContact(Id accountId, String email, String mobilePhone) {
+        Contact con = new Contact(
+            FirstName = 'Test',
+            LastName = 'Contact',
+            Email = email,
+            MobilePhone = mobilePhone,
+            AccountId = accountId
+        );
+        insert con;
+        return con;
     }
 }

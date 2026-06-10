@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>RES_Mobile_E164_Format</fullName>
+    <active>true</active>
+    <errorConditionFormula>AND(
+NOT($Setup.RES_Config_Switch__c.RES_Validation_Rules_Off__c ),
+OR(
+IF(AND($RecordType.DeveloperName = &quot;RES_Company&quot;, AND(NOT(ISBLANK(MobilePhone)),
+NOT(REGEX(MobilePhone, &quot;\\+\\d{10,15}&quot;)))), true, false)
+))</errorConditionFormula>
+    <errorDisplayField>MobilePhone</errorDisplayField>
+    <errorMessage>Mobile number must be in E.164 format (e.g., +1234567890)</errorMessage>
+</ValidationRule>

@@ -102,9 +102,16 @@
         <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
         <rules>
             <name>Yes_Retired</name>
-            <conditionLogic>and</conditionLogic>
+            <conditionLogic>or</conditionLogic>
             <conditions>
                 <leftValueReference>$Record.Status</leftValueReference>
+                <operator>IsChanged</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.RES_Lead_Sub_Status__c</leftValueReference>
                 <operator>IsChanged</operator>
                 <rightValue>
                     <booleanValue>true</booleanValue>
@@ -321,7 +328,7 @@
         <name>RetiredDateTime</name>
         <dataType>DateTime</dataType>
         <expression>IF(
-  ISCHANGED({!$Record.Status}),
+  OR(ISCHANGED({!$Record.Status}),ISCHANGED({!$Record.RES_Lead_Sub_Status__c})),
   IF(
     ISPICKVAL({!$Record.Status},&apos;05&apos;),
     NOW() + 30,

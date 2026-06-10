@@ -36,7 +36,11 @@ export default class ResLeadCreateModal extends NavigationMixin(LightningElement
     @track middleNameValue = '';
     @track lastNameValue = '';
     @track fullArabicNameValue = '';
+
+    @track mobileLocalValue = '';
+    @track mobileCountryCode = '+966';
     @track mobileValue = '';
+
     @track emailValue = '';
     @track leadSourceValue = '';
     @track cityscapeYearValue = '';
@@ -258,6 +262,13 @@ export default class ResLeadCreateModal extends NavigationMixin(LightningElement
         this.clearFieldError(field);
     }
 
+    handleMobileChange(event) {
+        this.mobileLocalValue = event.detail.phone || '';
+        this.mobileCountryCode = event.detail.countryCode || '+966';
+        this.mobileValue = event.detail.fullPhoneNumber || '';
+        this.clearFieldError('MobilePhone');
+    }
+
     handleIdentificationTypeChange(event) {
         const value = event.target.value || '';
 
@@ -363,15 +374,18 @@ export default class ResLeadCreateModal extends NavigationMixin(LightningElement
             isValid = false;
         }
 
-        const mobileNumber = this.mobileValue.trim();
+        const mobileComponent = this.template.querySelector('c-res_-country-mobile');
 
-        if (!mobileNumber) {
-            validationErrors.MobilePhone = 'Mobile is required.';
-            isValid = false;
-        } else if (!/^\+[1-9]\d{7,14}$/.test(mobileNumber)) {
-            validationErrors.MobilePhone =
-                'Mobile number must be in E.164 format, for example +1234567890.';
-            isValid = false;
+        if (mobileComponent) {
+            const mobileValidation = mobileComponent.validate();
+
+            this.mobileLocalValue = mobileComponent.phone || '';
+            this.mobileCountryCode = mobileComponent.countryCode || '+966';
+            this.mobileValue = mobileComponent.fullPhoneNumber || '';
+
+            if (!mobileValidation.isValid) {
+                isValid = false;
+            }
         }
 
         const emailVal = this.emailValue.trim();
@@ -487,9 +501,6 @@ export default class ResLeadCreateModal extends NavigationMixin(LightningElement
             case 'RES_Full_Arabic_Name__c':
                 this.fullArabicNameValue = value;
                 break;
-            case 'MobilePhone':
-                this.mobileValue = value;
-                break;
             case 'Email':
                 this.emailValue = value;
                 break;
@@ -531,9 +542,7 @@ export default class ResLeadCreateModal extends NavigationMixin(LightningElement
             return;
         }
 
-        const selectedSalutation = (salutation || '').toLowerCase();
-
-        if (!selectedSalutation) {
+        if (!salutation) {
             this.genderValue = '';
             this.updateGenderFieldOnUi();
             this.clearFieldError('GenderIdentity');
@@ -602,42 +611,22 @@ export default class ResLeadCreateModal extends NavigationMixin(LightningElement
         this.addToPayload(fieldValues, 'FirstName', this.firstNameValue);
         this.addToPayload(fieldValues, 'MiddleName', this.middleNameValue);
         this.addToPayload(fieldValues, 'LastName', this.lastNameValue);
-        this.addToPayload(
-            fieldValues,
-            'RES_Full_Arabic_Name__c',
-            this.fullArabicNameValue
-        );
+        this.addToPayload(fieldValues, 'RES_Full_Arabic_Name__c', this.fullArabicNameValue);
         this.addToPayload(fieldValues, 'MobilePhone', this.mobileValue);
         this.addToPayload(fieldValues, 'Email', this.emailValue);
         this.addToPayload(fieldValues, 'LeadSource', this.leadSourceValue);
-        this.addToPayload(
-            fieldValues,
-            'RES_Cityscape_Year__c',
-            this.cityscapeYearValue
-        );
+        this.addToPayload(fieldValues, 'RES_Cityscape_Year__c', this.cityscapeYearValue);
 
         if (this.isResidentialIndividual === true) {
             this.addToPayload(fieldValues, 'GenderIdentity', this.genderValue);
-            this.addToPayload(
-                fieldValues,
-                'RES_Identification_Type__c',
-                this.identificationTypeValue
-            );
-            this.addToPayload(
-                fieldValues,
-                'RES_Identification_Number__c',
-                this.identificationNumberValue
-            );
+            this.addToPayload(fieldValues, 'RES_Identification_Type__c', this.identificationTypeValue);
+            this.addToPayload(fieldValues, 'RES_Identification_Number__c', this.identificationNumberValue);
         }
 
         if (this.isResidentialCompany === true) {
             this.addToPayload(fieldValues, 'Company', this.companyValue);
             this.addToPayload(fieldValues, 'Website', this.websiteValue);
-            this.addToPayload(
-                fieldValues,
-                'RES_Corporate_Title__c',
-                this.corporateTitleValue
-            );
+            this.addToPayload(fieldValues, 'RES_Corporate_Title__c', this.corporateTitleValue);
             this.addToPayload(fieldValues, 'RES_CR_Number__c', this.crNumberValue);
         }
 
@@ -656,7 +645,11 @@ export default class ResLeadCreateModal extends NavigationMixin(LightningElement
         this.middleNameValue = '';
         this.lastNameValue = '';
         this.fullArabicNameValue = '';
+
+        this.mobileLocalValue = '';
+        this.mobileCountryCode = '+966';
         this.mobileValue = '';
+
         this.emailValue = '';
         this.leadSourceValue = '';
         this.cityscapeYearValue = '';

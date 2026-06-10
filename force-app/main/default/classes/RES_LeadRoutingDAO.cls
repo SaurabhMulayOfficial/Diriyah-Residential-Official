@@ -54,7 +54,7 @@ public with sharing class RES_LeadRoutingDAO extends RES_BaseDAOLayer {
             'leadIds' => leadIds
         };
 
-        String soql = 'SELECT Id, RES_Lead__c, RES_Assignment_Rule__c FROM RES_Lead_Routing__c ' +
+        String soql = 'SELECT Id, RES_Lead__c, RES_Assignment_Workload__c FROM RES_Lead_Routing__c ' +
                         'WHERE RES_Lead__c IN :leadIds';
         
         return (List<RES_Lead_Routing__c>) executeQuery(soql, '', false, bindVars, AccessLevel.SYSTEM_MODE);

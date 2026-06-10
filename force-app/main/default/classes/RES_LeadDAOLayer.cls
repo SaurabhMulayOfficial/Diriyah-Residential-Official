@@ -67,7 +67,7 @@ public without sharing class RES_LeadDAOLayer extends RES_BaseDAOLayer {
         Map<String,Object> bindVars = new Map<String,Object>();
         bindVars.put('statusLabel', statusLabel);
         String soql = 'SELECT MasterLabel, ApiName FROM LeadStatus WHERE MasterLabel = :statusLabel AND IsConverted = true ORDER BY MasterLabel ASC LIMIT 1';
-        List<SObject> results = executeQuery(soql, '', false, bindVars, AccessLevel.USER_MODE);
+        List<SObject> results = executeQuery(soql, 'getConvertedStatusLabel', true, bindVars, AccessLevel.USER_MODE);
         if (results == null || results.isEmpty()) {
             return null;
         }
@@ -112,12 +112,38 @@ public without sharing class RES_LeadDAOLayer extends RES_BaseDAOLayer {
         return newMap;
     }
     
-     //Used in RES_LeadConversionBatch to fetch Leads for processing.
     public Database.QueryLocator getQualifiedLeadsForBatch(){
         // Status API name 04 Label = Qualified
         String soql = 'SELECT Id, Name, Company, IsConverted, RecordType.developerName FROM Lead WHERE IsConverted = false AND Status = \'04\' AND (RecordType.DeveloperName = \'RES_Company\' OR RecordType.DeveloperName = \'RES_Individual\')';
         return executeBatchQuery(soql, null, AccessLevel.USER_MODE);
     }
+    
+    public Database.QueryLocator getNewLeadsForBatch(){
+        // Status API name 01 Label = New
+        String soql = 'SELECT Id, Name, RES_SLA_Due_Time__c FROM Lead WHERE Status = \'01\' AND RES_SLA_Due_Time__c != null AND RES_SLA_Status__c = \'Running\' AND (RecordType.DeveloperName = \'RES_Company\' OR RecordType.DeveloperName = \'RES_Individual\')';
+        return executeBatchQuery(soql, null, AccessLevel.USER_MODE);
+    }
+    
+    public Lead getConvertedLeadById(Id leadId) {
+        if (leadId == null) {
+            return null;
+        }
+        Map<String, Object> bindVars = new Map<String, Object>();
+        bindVars.put('leadId', leadId);
+        String soql = 'SELECT Id, Name, Status, IsConverted, ConvertedAccountId, ' +
+                        'ConvertedContactId, ConvertedOpportunityId, LastModifiedById ' +
+                        'FROM Lead ' +
+                        'WHERE Id = :leadId ' +
+                        'AND IsConverted = true ' +
+                        'LIMIT 1';
 
+        List<SObject> results = executeQuery(soql, '', false, bindVars, AccessLevel.USER_MODE);
+        if (results == null || results.isEmpty()) {
+            return null;
+        }
+        Lead ld = (Lead) results[0];
+
+        return ld.IsConverted ? ld : null;
+    }
 
 }

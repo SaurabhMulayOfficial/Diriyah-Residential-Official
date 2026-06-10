@@ -28,28 +28,43 @@ public class RES_ReassignmentLogicHandlerTest {
             RES_Assignment_Config__c config = new RES_Assignment_Config__c(
                 Name = 'Test Config',
                 RES_Record_Types__c = rt.DeveloperName,
-                RES_Channel__c = 'Z09',
+                RES_Condition__c = '(1 OR 2)',
                 RES_Queue__c = queue.Name
             );
+
             insert config;
+
+            RES_Assignment_Condition__c c1 = new RES_Assignment_Condition__c(RES_Assignment_Config__c = config.Id,
+                RES_Field_Api_Name__c = 'leadSource', RES_Operator__c = 'Equal To', RES_Value__c = 'Z09', RES_Order__c = 1);
+
+            RES_Assignment_Condition__c c2 = new RES_Assignment_Condition__c(RES_Assignment_Config__c = config.Id,
+                RES_Field_Api_Name__c = 'leadSource', RES_Operator__c = 'Equal To', RES_Value__c = 'Z06', RES_Order__c = 2);
+
+            insert new List<RES_Assignment_Condition__c>{c1, c2};
+
+            RES_Assignment_Workload__c w1 = new RES_Assignment_Workload__c(RES_Capacity__c = 2, RES_User__c = u1.Id);
+
+            RES_Assignment_Workload__c w2 = new RES_Assignment_Workload__c(RES_Capacity__c = 2, RES_User__c = u2.Id);
+
+            insert new List<RES_Assignment_Workload__c>{w1,w2};
 
             RES_Assignment_Rule__c rule1 = new RES_Assignment_Rule__c(
                 RES_Assignment_Config__c = config.Id,
-                RES_User__c = u1.Id,
                 RES_User_Availability_Status__c = 'Available',
                 RES_Order__c = 1,
-                RES_Capacity__c = 2,
-                RES_Last_Assigned__c = true
+                RES_Last_Assigned__c = true,
+                RES_User_Workload__c = w1.Id
             );
 
             RES_Assignment_Rule__c rule2 = new RES_Assignment_Rule__c(
                 RES_Assignment_Config__c = config.Id,
-                RES_User__c = u2.Id,
                 RES_User_Availability_Status__c = 'Available',
                 RES_Order__c = 2,
-                RES_Capacity__c = 2,
-                RES_Last_Assigned__c = false
+                RES_Last_Assigned__c = false,
+                RES_User_Workload__c = w2.Id
             );
+
+
 
             insert new List<RES_Assignment_Rule__c>{rule1, rule2};
 

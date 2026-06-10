@@ -1,0 +1,35 @@
+name: Extract Components from Directory
+
+on:
+  workflow_dispatch:
+    inputs:
+      branch:
+        description: 'Target branch'
+        required: true
+        type: string
+
+jobs:
+  extract-components:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Target Branch
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.inputs.branch }}
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Generate Metadata Inventory
+        run: node scripts/Extract_Components_From_DIR.js
+
+      - name: Upload Generated Inventory
+        uses: actions/upload-artifact@v4
+        with:
+          name: salesforce-metadata-inventory
+          path: salesforce_inventory.md

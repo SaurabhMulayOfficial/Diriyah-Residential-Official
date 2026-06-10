@@ -1,0 +1,326 @@
+:host {
+    display: block;
+    width: 100%;
+}
+
+.manager {
+    width: 100%;
+}
+
+/* HEADER */
+.section-header {
+    display: flex;
+    align-items: center;
+    background: #f3f3f3;
+    height: 35px;
+    border-radius: 10px;
+    padding: 0 1rem;
+    margin-bottom: 24px;
+}
+
+.section-header h2 {
+    margin: 0;
+    color: #300000;
+    font-size: 1rem;
+    font-weight: 500;
+}
+
+.collapse-icon {
+    margin-right: 8px;
+}
+
+.content {
+    width: 100%;
+    overflow: hidden;
+}
+
+/* SEARCH */
+.top-row {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 24px;
+    margin-left: 80px;
+    align-items: flex-end;
+    flex-wrap: wrap;
+}
+
+.search-field,
+.upload-area {
+    flex: 1 1 161px;
+    min-width: 161px;
+}
+
+.search-field label,
+.upload-area label {
+    display: block;
+    margin-bottom: 8px;
+    font-size: .90rem;
+    font-weight: 400;
+    color: #835038;
+}
+
+.search-field lightning-input {
+    --slds-c-input-radius-border: 10px;
+}
+
+/* TABLE */
+.table-wrapper {
+    width: 100%;
+    max-width: 100%;
+    max-height: 300px;
+    overflow-x: auto;
+    overflow-y: auto;
+    height: 60%;
+    max-height: 400px;
+    border: 1.4px solid #b4b3b3;
+    border-radius: 16px;
+    overflow: auto;
+    background: #ffffff;
+    position: relative;
+}
+
+.custom-table {
+    width: max-content;
+    min-width: 100%;
+    table-layout: fixed;
+    border-collapse: separate;
+    border-spacing: 0;
+    background: #ffffff;
+}
+
+.custom-table thead {
+    position: sticky;
+    top: 0;
+    z-index: 5;
+    background: #f5f5f5;
+}
+
+/* HEADER */
+.custom-table th {
+    position: relative;
+    background: #f5f5f5;
+    color: #300000;
+    font-size: 1.00rem;
+    font-weight: 400;
+    text-align: left;
+    white-space: nowrap;
+    padding: .60rem 1rem;
+    height: 44px;
+    overflow: visible;
+}
+
+/* BODY */
+.custom-table td {
+    vertical-align: middle;
+    color: #444444;
+    font-size: .90rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    padding: .45rem 1rem;
+    height: 44px;
+    border-top: 1px solid #eeeeee;
+}
+
+/* DEFAULT WIDTHS */
+.custom-table th:nth-child(1),
+.custom-table td:nth-child(1) {
+    width: 24%;
+}
+
+.custom-table th:nth-child(2),
+.custom-table td:nth-child(2) {
+    width: 18%;
+}
+
+.custom-table th:nth-child(3),
+.custom-table td:nth-child(3) {
+    width: 16%;
+}
+
+.custom-table th:nth-child(4),
+.custom-table td:nth-child(4) {
+    width: 14%;
+}
+
+.custom-table th:nth-child(5),
+.custom-table td:nth-child(5) {
+    width: 10%;
+}
+
+.custom-table th:nth-child(6),
+.custom-table td:nth-child(6) {
+    width: 8%;
+}
+
+.custom-table th:nth-child(7),
+.custom-table td:nth-child(7) {
+    width: 10%;
+    overflow: visible;
+}
+
+/* HEADER ONLY RESIZE */
+.resize-handle {
+    position: absolute;
+    top: 0;
+    right: -8px;
+    width: 16px;
+    height: 100%;
+    cursor: col-resize;
+    z-index: 100;
+}
+
+.resize-handle::after {
+    content: '';
+    position: absolute;
+    right: 7px;
+    top: 18%;
+    height: 64%;
+    width: 2px;
+    background: #b4b3b3;
+    transition: .15s;
+}
+
+.resize-handle:hover::after {
+    width: 4px;
+    background: #835038;
+    box-shadow: 0 0 6px rgba(131,80,56,.3);
+}
+
+.custom-table.resizing {
+    user-select: none;
+    cursor: col-resize;
+}
+
+/* LINKS */
+.document-link {
+    color: #835038;
+    font-size: .95rem;
+    text-decoration: none;
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.document-link:hover {
+    text-decoration: underline;
+}
+
+/* INPUT */
+.custom-table td:nth-child(2) lightning-input {
+    width: 100%;
+}
+
+/* ACTIONS */
+.action-buttons {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    justify-content: flex-start;
+    min-width: 120px;
+}
+
+.action-buttons lightning-button-icon {
+    flex-shrink: 0;
+    --slds-c-button-radius-border: 999px;
+}
+
+/* USER */
+.user-icon {
+    margin-right: 6px;
+}
+
+/* EMPTY */
+.no-data {
+    text-align: center;
+    padding: 40px;
+    color: #666;
+    font-size: 1rem;
+}
+
+/* MODAL */
+.upload-modal {
+    max-width: 40rem;
+}
+
+.modal-header h2 {
+    color: #835038;
+    font-size: 1.5rem;
+    font-weight: 400;
+}
+
+.upload-file-row {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 1rem;
+    align-items: end;
+    margin-bottom: 1rem;
+}
+
+.file-name-display label,
+.file-upload-button label {
+    display: block;
+    font-size: 1rem;
+    font-weight: 500;
+    margin-bottom: .5rem;
+}
+
+.selected-file-name {
+    min-height: 38px;
+    padding: .45rem 0;
+    word-break: break-word;
+}
+
+.file-upload-button {
+    min-width: 280px;
+}
+
+.document-label-input {
+    margin-bottom: 1rem;
+}
+
+.modal-footer {
+
+    background: #e9d7c3;
+
+    padding: 1rem;
+}
+
+/* INPUTS */
+lightning-input,
+lightning-combobox {
+    --slds-c-input-radius-border: 10px;
+}
+
+lightning-button {
+    --slds-c-button-brand-radius-border: 999px;
+}
+
+lightning-button-icon {
+    --slds-c-button-radius-border: 999px;
+}
+
+/* RESPONSIVE */
+@media (max-width:1200px){
+
+.top-row{
+margin-left:0;
+}
+}
+
+@media (max-width:768px){
+
+.top-row,
+.upload-file-row{
+display:block;
+}
+
+.custom-table{
+min-width:1200px;
+}
+
+.file-upload-button{
+min-width:100%;
+}
+}

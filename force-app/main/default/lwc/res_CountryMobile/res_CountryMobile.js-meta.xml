@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<LightningComponentBundle xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>64.0</apiVersion>
+    <isExposed>true</isExposed>
+    <masterLabel>Country Mobile</masterLabel>
+    <description>Flow screen component for mobile number with country code picker</description>
+    <targets>
+        <target>lightning__FlowScreen</target>
+    </targets>
+    <targetConfigs>
+        <targetConfig targets="lightning__FlowScreen">
+            <property
+                name="label"
+                type="String"
+                label="Field Label"
+                description="Label shown above the mobile field"
+            />
+            <property
+                name="placeholder"
+                type="String"
+                label="Placeholder"
+                description="Placeholder text inside the mobile input"
+            />
+            <property
+                name="required"
+                type="Boolean"
+                label="Required"
+                description="Whether mobile input is mandatory"
+            />
+            <property
+                name="phone"
+                type="String"
+                label="Local Phone Number"
+                role="outputOnly"
+            />
+            <property
+                name="countryCode"
+                type="String"
+                label="Country Code"
+                role="outputOnly"
+            />
+            <property
+                name="fullPhoneNumber"
+                type="String"
+                label="Full Phone Number"
+                role="outputOnly"
+            />
+        </targetConfig>
+    </targetConfigs>
+</LightningComponentBundle>
