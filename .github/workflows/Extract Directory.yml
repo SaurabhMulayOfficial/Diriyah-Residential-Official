@@ -11,6 +11,7 @@ on:
 jobs:
   extract-components:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout Target Branch
         uses: actions/checkout@v4
@@ -23,7 +24,7 @@ jobs:
           node-version: '20'
 
       - name: Install Dependencies
-        run: npm ci
+        run: npm install
 
       - name: Generate Metadata Inventory
         run: node scripts/Extract_Components_From_DIR.js
