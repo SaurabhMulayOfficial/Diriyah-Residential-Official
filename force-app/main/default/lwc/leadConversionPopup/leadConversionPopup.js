@@ -26,6 +26,7 @@ export default class LeadConversionPopup extends NavigationMixin(LightningElemen
     @track contactName   = '';
     @track contactEmail  = '';
     @track contactMobile = '';
+    @track contactLeadSource = '';
 
     @track opportunityName      = '';
     @track opportunityCloseDate = '';
@@ -34,8 +35,7 @@ export default class LeadConversionPopup extends NavigationMixin(LightningElemen
     @track opportunityLeadSource = '';
 
     _subscription   = {};
-    _isProcessing   = false; // ✅ Guard against duplicate CDC events
-    //CDC_CHANNEL     = '/data/LeadChangeEvent';
+    _isProcessing   = false; 
     EVENT_CHANNEL = '/event/RES_Lead_Conversion_Event__e';
 
     async connectedCallback() {
@@ -55,36 +55,6 @@ export default class LeadConversionPopup extends NavigationMixin(LightningElemen
             console.log('✅ Subscribed to Platform Event:', response.channel);
         });
     }
-
-    /* async _processChangeEvent(response) {
-        const header  = response?.data?.payload?.ChangeEventHeader;
-        const payload = response?.data?.payload;
-        if (!header) return;
-
-        const { changeType, recordIds, entityName, changedFields } = header;
-
-        console.log('CDC Event | Entity:', entityName,
-                    '| Type:', changeType,
-                    '| Fields:', changedFields,
-                    '| IsConverted:', payload?.IsConverted);
-
-        if (entityName !== 'Lead' || changeType !== 'UPDATE') return;
-
-        if (!recordIds.includes(this.recordId)) return;
-        if (!changedFields.includes('IsConverted')) return;
-        if (payload.IsConverted !== true)           return;
-
-        if (this._isProcessing) {
-            console.warn('Already processing — skipping duplicate CDC event');
-            return;
-        }
-
-        this._isProcessing = true;
-        this.isLoading     = true;
-
-        await this._delay(3000);
-        await this._fetchConvertedIds(0);
-    } */
 
         async _processPlatformEvent(response) {
             const payload = response?.data?.payload;
@@ -110,14 +80,6 @@ export default class LeadConversionPopup extends NavigationMixin(LightningElemen
     async _fetchConvertedIds(retryCount = 0) {
         try {
             const result = await getConvertedRecordIds({ leadId: this.recordId });
-            /* const convertedByUser = result?.LastModifiedById;
-            if (convertedByUser !== USER_ID) {
-                this.showPopup = false;
-                this.isLoading = false;
-                this._isProcessing = false;
-
-                return;
-            } */
                 this.showPopup = true;
             const isEmpty = !result || Object.keys(result).length === 0 || !result.accountId;
 
@@ -150,6 +112,7 @@ export default class LeadConversionPopup extends NavigationMixin(LightningElemen
             this.contactName   = result.contactName   || '';
             this.contactEmail  = result.contactEmail  || '';
             this.contactMobile = result.contactMobile || '';
+            this.contactLeadSource = result.contactLeadSource || '';
 
             this.opportunityName      = result.opportunityName      || '';
             this.opportunityCloseDate = result.opportunityCloseDate || '';
