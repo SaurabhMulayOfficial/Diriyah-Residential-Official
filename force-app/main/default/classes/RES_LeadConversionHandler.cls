@@ -84,7 +84,9 @@ public with sharing class RES_LeadConversionHandler {
         try{
             List<Database.LeadConvertResult> results = Database.convertLead(qualifiedLeadsToConvert,true, AccessLevel.USER_MODE);
                 for(Database.LeadConvertResult res : results){
-                    if(!res.isSuccess()){
+                    if(res.isSuccess()){
+                        publishLeadConversionEvent(res);
+                    } else {
                         for(Database.Error err : res.getErrors()){
                             System.debug(err.getMessage());
                         }
@@ -149,6 +151,16 @@ public with sharing class RES_LeadConversionHandler {
             }
         }
         return leadDuplicateMap;
+    }
+
+    private static void publishLeadConversionEvent( Database.LeadConvertResult res){
+        RES_Lead_Conversion_Event__e evt = new RES_Lead_Conversion_Event__e();
+        evt.Lead_Id__c          = String.valueOf(res.getLeadId());
+        evt.Account_Id__c       = String.valueOf(res.getAccountId());
+        evt.Contact_Id__c       = String.valueOf(res.getContactId());
+        evt.Opportunity_Id__c   = String.valueOf(res.getOpportunityId());
+        evt.Converted_By__c     = UserInfo.getUserId();
+        EventBus.publish(evt);
     }
 
     /**

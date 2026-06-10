@@ -35,7 +35,8 @@ export default class LeadConversionPopup extends NavigationMixin(LightningElemen
 
     _subscription   = {};
     _isProcessing   = false; // ✅ Guard against duplicate CDC events
-    CDC_CHANNEL     = '/data/LeadChangeEvent';
+    //CDC_CHANNEL     = '/data/LeadChangeEvent';
+    EVENT_CHANNEL = '/event/RES_Lead_Conversion_Event__e';
 
     async connectedCallback() {
         this._subscribeToChannel();
@@ -47,15 +48,15 @@ export default class LeadConversionPopup extends NavigationMixin(LightningElemen
     }
 
     _subscribeToChannel() {
-        subscribe(this.CDC_CHANNEL, -1, (response) => {
-            this._processChangeEvent(response);
+        subscribe(this.EVENT_CHANNEL, -1, (response) => {
+            this._processPlatformEvent(response);
         }).then((response) => {
             this._subscription = response;
-            console.log('✅ Subscribed to CDC:', response.channel);
+            console.log('✅ Subscribed to Platform Event:', response.channel);
         });
     }
 
-    async _processChangeEvent(response) {
+    /* async _processChangeEvent(response) {
         const header  = response?.data?.payload?.ChangeEventHeader;
         const payload = response?.data?.payload;
         if (!header) return;
@@ -83,20 +84,40 @@ export default class LeadConversionPopup extends NavigationMixin(LightningElemen
 
         await this._delay(3000);
         await this._fetchConvertedIds(0);
-    }
+    } */
+
+        async _processPlatformEvent(response) {
+            const payload = response?.data?.payload;
+            if (!payload) {
+                return;
+            }
+            if (payload.Lead_Id__c !== this.recordId) {
+                return;
+            }
+            if (payload.Converted_By__c !== USER_ID) {
+                return;
+            }
+            if (this._isProcessing) {
+                return;
+            }
+            this._isProcessing = true;
+            this.isLoading = true;
+            await this._delay(2000);
+            await this._fetchConvertedIds();
+        }
 
     // ─── Fetch Converted Record Details ──────────────────────────
     async _fetchConvertedIds(retryCount = 0) {
         try {
             const result = await getConvertedRecordIds({ leadId: this.recordId });
-            const convertedByUser = result?.LastModifiedById;
+            /* const convertedByUser = result?.LastModifiedById;
             if (convertedByUser !== USER_ID) {
                 this.showPopup = false;
                 this.isLoading = false;
                 this._isProcessing = false;
 
                 return;
-            }
+            } */
                 this.showPopup = true;
             const isEmpty = !result || Object.keys(result).length === 0 || !result.accountId;
 
