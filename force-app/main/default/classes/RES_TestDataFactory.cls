@@ -241,7 +241,7 @@ public class RES_TestDataFactory {
         acc.Name = 'Test Account';
         acc.RES_CR_number__c = '8624379423';
         acc.RES_Identification_Type__c = 'ZIT04';
-        insert acc;
+        insert acc ;
         return acc;
     }
 
@@ -250,7 +250,7 @@ public class RES_TestDataFactory {
             cv.Title = 'TestFile';
             cv.PathOnClient = 'TestFile.pdf';
             cv.VersionData = Blob.valueOf('Test File Content');
-
+    
         insert cv;
         return  [SELECT Id,
                 Title,
