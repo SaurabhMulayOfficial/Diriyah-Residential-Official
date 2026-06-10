@@ -52,7 +52,7 @@ public without sharing class RES_ContactDAOLayer extends RES_BaseDAOLayer {
     public Contact getContactById(Id contactId) {
         Map<String, Object> bindVars = new Map<String, Object>();
         bindVars.put('contactId', contactId);
-        String soql = 'SELECT Id, Name, Title, Phone, Email, MobilePhone FROM Contact WHERE Id = :contactId LIMIT 1';
+        String soql = 'SELECT Id, Name, Title, Phone, Email, MobilePhone, LeadSource FROM Contact WHERE Id = :contactId LIMIT 1';
         List<SObject> results = executeQuery(soql, '', true, bindVars, AccessLevel.SYSTEM_MODE);
         return results != null && !results.isEmpty() ? (Contact) results[0] : null;
     }

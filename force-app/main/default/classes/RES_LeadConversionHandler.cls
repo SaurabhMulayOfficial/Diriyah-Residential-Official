@@ -153,14 +153,24 @@ public with sharing class RES_LeadConversionHandler {
         return leadDuplicateMap;
     }
 
-    private static void publishLeadConversionEvent( Database.LeadConvertResult res){
+    private static void publishLeadConversionEvent(Database.LeadConvertResult res){
+        if(res == null){
+            return;
+        }
+    
         RES_Lead_Conversion_Event__e evt = new RES_Lead_Conversion_Event__e();
-        evt.Lead_Id__c          = String.valueOf(res.getLeadId());
-        evt.Account_Id__c       = String.valueOf(res.getAccountId());
-        evt.Contact_Id__c       = String.valueOf(res.getContactId());
-        evt.Opportunity_Id__c   = String.valueOf(res.getOpportunityId());
-        evt.Converted_By__c     = UserInfo.getUserId();
-        EventBus.publish(evt);
+        evt.Lead_Id__c        = String.valueOf(res.getLeadId());
+        evt.Account_Id__c     = String.valueOf(res.getAccountId());
+        evt.Contact_Id__c     = String.valueOf(res.getContactId());
+        evt.Opportunity_Id__c = String.valueOf(res.getOpportunityId());
+        evt.Converted_By__c   = UserInfo.getUserId();
+    
+        Database.SaveResult publishResult = EventBus.publish(evt);
+        if(!publishResult.isSuccess()){
+            for(Database.Error err : publishResult.getErrors()){
+                System.debug( LoggingLevel.ERROR,'Platform Event Publish Failed: ' + err.getMessage());
+            }
+        }
     }
 
     /**
@@ -215,6 +225,7 @@ public with sharing class RES_LeadConversionHandler {
                 result.put('contactName',   con.Name);
                 result.put('contactEmail',  con.Email);
                 result.put('contactMobile', con.MobilePhone);
+                result.put('contactLeadSource', con.LeadSource);
             }
         }
 
@@ -227,7 +238,18 @@ public with sharing class RES_LeadConversionHandler {
                 result.put('opportunityCloseDate', opp.CloseDate != null ? opp.CloseDate.format() : '');
                 result.put('opportunityOwnerName', opp.Owner?.Name);
                 result.put('opportunityProject',    opp.RES_Project__c);
-                result.put('opportunityLeadSource', opp.LeadSource);
+                String leadSourceLabel = '';
+                if(opp.LeadSource != null){
+                    Schema.DescribeFieldResult dfr = Opportunity.LeadSource.getDescribe();
+                    for(Schema.PicklistEntry pe : dfr.getPicklistValues()){
+                        if(pe.getValue() == opp.LeadSource){
+                            leadSourceLabel = pe.getLabel();
+                            break;
+                        }
+                    }
+                }
+
+                result.put('opportunityLeadSource', leadSourceLabel);
             }
         }
         } catch (AuraHandledException ex) {
