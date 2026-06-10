@@ -431,7 +431,7 @@
             <fieldInstance>
                 <fieldInstanceProperties>
                     <name>uiBehavior</name>
-                    <value>readonly</value>
+                    <value>none</value>
                 </fieldInstanceProperties>
                 <fieldItem>Record.OwnerId</fieldItem>
                 <identifier>RecordOwnerIdField</identifier>
@@ -451,7 +451,7 @@
             <fieldInstance>
                 <fieldInstanceProperties>
                     <name>uiBehavior</name>
-                    <value>readonly</value>
+                    <value>required</value>
                 </fieldInstanceProperties>
                 <fieldItem>Record.LeadSource</fieldItem>
                 <identifier>RecordLeadSourceField</identifier>
@@ -970,8 +970,8 @@
                     <name>uiBehavior</name>
                     <value>none</value>
                 </fieldInstanceProperties>
-                <fieldItem>Record.Address</fieldItem>
-                <identifier>RecordAddressField</identifier>
+                <fieldItem>Record.RES_House_Number__c</fieldItem>
+                <identifier>RecordRES_House_Number_cField</identifier>
             </fieldInstance>
         </itemInstances>
         <name>Facet-57a96da6-1422-42c5-91a4-c8dad8798a3c</name>
