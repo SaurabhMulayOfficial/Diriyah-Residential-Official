@@ -235,13 +235,13 @@ public class RES_TestDataFactory {
             PermissionSetId = ps.Id
         );
     }
-      
+    
     public static Account createAccount() {
         Account acc = new Account();
         acc.Name = 'Test Account';
         acc.RES_CR_number__c = '8624379423';
         acc.RES_Identification_Type__c = 'ZIT04';
-        
+        insert acc ;
         return acc;
     }
 
@@ -250,7 +250,7 @@ public class RES_TestDataFactory {
             cv.Title = 'TestFile';
             cv.PathOnClient = 'TestFile.pdf';
             cv.VersionData = Blob.valueOf('Test File Content');
-       
+    
         insert cv;
 
         return  [SELECT Id,
