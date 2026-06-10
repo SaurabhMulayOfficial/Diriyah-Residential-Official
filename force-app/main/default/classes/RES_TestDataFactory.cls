@@ -253,15 +253,15 @@ public class RES_TestDataFactory {
     
         insert cv;
 
+        insert cv;
         return  [SELECT Id,
-               Title,
-               ContentDocumentId,
-               RES_Document_Label__c
-        FROM ContentVersion
-        WHERE Id = :cv.Id
-    ];
+                Title,
+                ContentDocumentId,
+                RES_Document_Label__c
+                FROM ContentVersion
+                WHERE Id = :cv.Id];
     }
-   
+
     public static ContentDocumentLink createDocLink(String accId, String cdId) {
         ContentDocumentLink cdl = new ContentDocumentLink();
             cdl.ContentDocumentId = cdId;
