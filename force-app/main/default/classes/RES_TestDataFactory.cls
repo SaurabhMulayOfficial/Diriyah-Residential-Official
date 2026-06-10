@@ -91,6 +91,30 @@ public class RES_TestDataFactory {
         return u;
     }
 
+    public static User createSystemAdminUser(){
+        Profile prof = [
+            SELECT Id FROM Profile
+            WHERE Name = :PROFILE_SYSADMIN
+            LIMIT 1
+        ];
+
+        User u = new User(
+            Alias             = 'sadmin',
+            Email             = 'res.systemadmin.test@example.com',
+            EmailEncodingKey  = 'UTF-8',
+            FirstName         = 'System',
+            LastName          = 'Admin',
+            LanguageLocaleKey = 'en_US',
+            LocaleSidKey      = 'en_US',
+            ProfileId         = prof.Id,
+            TimeZoneSidKey    = 'Asia/Kolkata',
+            Username          = 'res.systemadmin.test@example.com.sandbox'
+        );
+
+        insert u;
+        return u;
+    }
+
     private static User buildUser(UserConfig config) {
         Profile prof = [
             SELECT Id FROM Profile
@@ -215,7 +239,8 @@ public class RES_TestDataFactory {
     public static Account createAccount() {
         Account acc = new Account();
         acc.Name = 'Test Account';
-        insert acc;
+        acc.RES_CR_number__c = '8624379423';
+        acc.RES_Identification_Type__c = 'ZIT04';
         
         return acc;
     }
@@ -247,5 +272,16 @@ public class RES_TestDataFactory {
         insert cdl;
       
         return cdl;
+    }
+    public static Contact createContact(Id accountId, String email, String mobilePhone) {
+        Contact con = new Contact(
+            FirstName = 'Test',
+            LastName = 'Contact',
+            Email = email,
+            MobilePhone = mobilePhone,
+            AccountId = accountId
+        );
+        insert con;
+        return con;
     }
 }

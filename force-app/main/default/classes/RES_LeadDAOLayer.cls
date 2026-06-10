@@ -130,12 +130,12 @@ public without sharing class RES_LeadDAOLayer extends RES_BaseDAOLayer {
         }
         Map<String, Object> bindVars = new Map<String, Object>();
         bindVars.put('leadId', leadId);
-        String soql = 'SELECT Id, Name, Status, IsConverted, ' +
-                      'ConvertedAccountId, ConvertedContactId, ConvertedOpportunityId ' +
-                      'FROM Lead ' +
-                      'WHERE Id = :leadId ' +
-                      'AND IsConverted = true ' +
-                      'LIMIT 1';
+        String soql = 'SELECT Id, Name, Status, IsConverted, ConvertedAccountId, ' +
+                        'ConvertedContactId, ConvertedOpportunityId, LastModifiedById ' +
+                        'FROM Lead ' +
+                        'WHERE Id = :leadId ' +
+                        'AND IsConverted = true ' +
+                        'LIMIT 1';
 
         List<SObject> results = executeQuery(soql, '', false, bindVars, AccessLevel.USER_MODE);
         if (results == null || results.isEmpty()) {
@@ -144,24 +144,6 @@ public without sharing class RES_LeadDAOLayer extends RES_BaseDAOLayer {
         Lead ld = (Lead) results[0];
 
         return ld.IsConverted ? ld : null;
-    }
-
-    public Lead getLeadOwnerById(Id leadId) {
-        if (leadId == null) {
-            return null;
-        }
-        Map<String, Object> bindVars = new Map<String, Object>();
-        bindVars.put('leadId', leadId);
-        String soql = 'SELECT Id, OwnerId ' +
-                        'FROM Lead ' +
-                        'WHERE Id = :leadId ' +
-                        'LIMIT 1';
-
-        List<SObject> results = executeQuery(soql, '', false, bindVars, AccessLevel.USER_MODE);
-        if (results == null || results.isEmpty()) {
-            return null;
-        }
-        return (Lead) results[0];
     }
 
 }
