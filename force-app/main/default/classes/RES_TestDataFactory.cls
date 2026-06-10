@@ -252,8 +252,6 @@ public class RES_TestDataFactory {
             cv.VersionData = Blob.valueOf('Test File Content');
     
         insert cv;
-
-        insert cv;
         return  [SELECT Id,
                 Title,
                 ContentDocumentId,
