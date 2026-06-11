@@ -27,7 +27,7 @@ public with sharing class RES_UploadDocumentClass {
         @AuraEnabled public String createdByName { get; set; }
         
          /** Created Date. */
-        @AuraEnabled public Datetime createdDate { get; set; }
+        @AuraEnabled public String createdDate { get; set; }
 
         /** Formatted file size. */
         @AuraEnabled public String fileSize { get; set; }
@@ -210,7 +210,7 @@ public with sharing class RES_UploadDocumentClass {
             : cv.RES_Document_Label__c;
         row.attachmentType = cv.RES_Attachment_Type__c;
         row.createdByName = cv.CreatedBy.Name;
-        row.createdDate =  cv.CreatedDate;
+        row.createdDate = cv.CreatedDate.format('dd/MM/yyyy, h:mm a');
         row.fileSize = formatFileSize(cv.ContentSize);
         row.fileType = String.isBlank(cv.FileExtension)
             ? cv.FileType
