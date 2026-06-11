@@ -26,7 +26,7 @@
         <field>ContentVersion.RES_Attachment_Type__c</field>
         <readable>true</readable>
     </fieldPermissions>
- <fieldPermissions>
+    <fieldPermissions>
         <editable>false</editable>
         <field>ContentVersion.RES_Document_Label__c</field>
         <readable>true</readable>
@@ -1523,6 +1523,10 @@
         <tab>standard-ApprovalWorkItem</tab>
         <visibility>Visible</visibility>
     </tabSettings>
+    <userPermissions>
+        <enabled>true</enabled>
+        <name>EmailSingle</name>
+    </userPermissions>
     <userPermissions>
         <enabled>true</enabled>
         <name>TransferAnyLead</name>
