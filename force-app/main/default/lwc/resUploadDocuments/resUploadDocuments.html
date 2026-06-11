@@ -65,6 +65,10 @@
                                             File Type
                                             <span class="resize-handle" onmousedown={startColumnResize}></span>
                                         </th>
+                                         <th>
+                                            Created Date
+                                            <span class="resize-handle" onmousedown={startColumnResize}></span>
+                                        </th>
                                         <th>Actions</th>
                                     </tr>
                                 </thead>
@@ -100,6 +104,7 @@
                                             <td>{file.fileSize}</td>
                                             <td>{file.fileType}</td>
 
+                                            <td>{file.createdDate}</td>
                                             <td>
                                                 <div class="action-buttons">
                                                     <lightning-button-icon

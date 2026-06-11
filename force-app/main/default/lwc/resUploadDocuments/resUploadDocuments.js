@@ -255,12 +255,13 @@ export default class ResUploadDocuments extends NavigationMixin(LightningElement
             const documentLabelValue = file.documentLabel?.toLowerCase() || '';
             const attachmentTypeValue = file.attachmentType?.toLowerCase() || '';
             const createdByValue = file.createdByName?.toLowerCase() || '';
+            const createdDateValue = file.createdDate?.toLowerCase() || '';
 
             return (
                 fileNameValue.includes(fileName) &&
                 documentLabelValue.includes(docLabel) &&
                 attachmentTypeValue.includes(attachType) &&
-                createdByValue.includes(createdBy)
+                createdByValue.includes(createdBy) 
             );
         });
     }
