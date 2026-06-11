@@ -599,7 +599,7 @@
     </fieldPermissions>
     <fieldPermissions>
         <editable>false</editable>
-        <field>Lead.RES_Financial_Readiness__c </field>
+        <field>Lead.RES_Financial_Readiness__c</field>
         <readable>true</readable>
     </fieldPermissions>
      <fieldPermissions>
@@ -619,11 +619,6 @@
     </fieldPermissions>
      <fieldPermissions>
         <editable>false</editable>
-        <field>Lead.RES_Financial_Readiness__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-     <fieldPermissions>
-        <editable>false</editable>
         <field>Lead.RES_Purchase_Timeline__c</field>
         <readable>true</readable>
     </fieldPermissions>
@@ -639,7 +634,7 @@
     </fieldPermissions>
      <fieldPermissions>
         <editable>false</editable>
-        <field>Lead.RES_Lead_Type__c </field>
+        <field>Lead.RES_Lead_Type__c</field>
         <readable>true</readable>
     </fieldPermissions>
      <fieldPermissions>
@@ -670,11 +665,6 @@
    <fieldPermissions>
         <editable>true</editable>
         <field>Lead.Address</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>Lead.RES_CR_Number__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
@@ -1427,34 +1417,6 @@
         <viewAllFields>false</viewAllFields>
         <viewAllRecords>true</viewAllRecords>
     </objectPermissions>
-    <recordTypeVisibilities>
-        <recordType>Account.RES_Company</recordType>
-        <visible>true</visible>
-    </recordTypeVisibilities>
-    <recordTypeVisibilities>
-        <recordType>Contact.RES_Company</recordType>
-        <visible>true</visible>
-    </recordTypeVisibilities>
-    <recordTypeVisibilities>
-        <recordType>Lead.RES_Company</recordType>
-        <visible>true</visible>
-    </recordTypeVisibilities>
-    <recordTypeVisibilities>
-        <recordType>Lead.RES_Individual</recordType>
-        <visible>true</visible>
-    </recordTypeVisibilities>
-    <recordTypeVisibilities>
-        <recordType>Opportunity.RES_Residential_Multi_Buyer</recordType>
-        <visible>true</visible>
-    </recordTypeVisibilities>
-    <recordTypeVisibilities>
-        <recordType>Opportunity.RES_Residential_Single_Buyer</recordType>
-        <visible>true</visible>
-    </recordTypeVisibilities>
-    <recordTypeVisibilities>
-        <recordType>PersonAccount.PersonAccount</recordType>
-        <visible>true</visible>
-    </recordTypeVisibilities>
     <recordTypeVisibilities>
         <recordType>Account.RES_Company</recordType>
         <visible>true</visible>

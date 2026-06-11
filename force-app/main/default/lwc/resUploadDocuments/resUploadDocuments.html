@@ -208,5 +208,43 @@
 
             <div class="slds-backdrop slds-backdrop_open"></div>
         </template>
+
+        <template lwc:if={showDeleteModal}>
+            <section role="dialog" tabindex="-1" class="slds-modal slds-fade-in-open">
+                <div class="slds-modal__container delete-modal">
+                    <header class="slds-modal__header delete-modal-header">
+                        <button
+                            class="slds-button slds-button_icon slds-modal__close"
+                            title="Close"
+                            onclick={closeDeleteModal}>
+                            <lightning-icon icon-name="utility:close" size="small"></lightning-icon>
+                        </button>
+
+                        <h2>Delete File?</h2>
+                    </header>
+
+                    <div class="slds-modal__content delete-modal-content">
+                        Are you sure you want to delete the record.
+                    </div>
+
+                    <footer class="slds-modal__footer modal-footer">
+                        <lightning-button
+                            label="Cancel"
+                            variant="neutral"
+                            onclick={closeDeleteModal}>
+                        </lightning-button>
+
+                        <lightning-button
+                            label="Delete"
+                            variant="brand"
+                            class="slds-m-left_small delete-confirm-button"
+                            onclick={confirmDeleteFile}>
+                        </lightning-button>
+                    </footer>
+                </div>
+            </section>
+
+            <div class="slds-backdrop slds-backdrop_open"></div>
+        </template>
     </div>
 </template>

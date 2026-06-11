@@ -25,6 +25,8 @@ export default class ResUploadDocuments extends NavigationMixin(LightningElement
     cvRecordTypeId;
     isOpen = true;
     showModal = false;
+    showDeleteModal = false;
+    selectedDeleteContentDocumentId;
     totalFiles = 0;
 
     searchFileName = '';
@@ -277,7 +279,7 @@ export default class ResUploadDocuments extends NavigationMixin(LightningElement
         if (!this.selectedAttachmentType) {
             this.showToast(
                 'Validation Error',
-                'Please select Attachment Type.',
+                'Attachment Type is required.',
                 'error',
                 'dismissable'
             );
@@ -372,29 +374,36 @@ export default class ResUploadDocuments extends NavigationMixin(LightningElement
 
     downloadFile(event) {
         const contentDocumentId = event.currentTarget.dataset.id;
-    
+
         const link = document.createElement('a');
-    
-        link.href =
-            `/sfc/servlet.shepherd/document/download/${contentDocumentId}`;
-    
+        link.href = `/sfc/servlet.shepherd/document/download/${contentDocumentId}`;
         link.download = '';
-    
         link.style.display = 'none';
-    
+
         document.body.appendChild(link);
-    
         link.click();
-    
         document.body.removeChild(link);
     }
 
     deleteSelectedFile(event) {
-        const contentDocumentId = event.currentTarget.dataset.id;
+        this.selectedDeleteContentDocumentId = event.currentTarget.dataset.id;
+        this.showDeleteModal = true;
+    }
 
-        deleteFile({ contentDocumentId })
+    closeDeleteModal() {
+        this.showDeleteModal = false;
+        this.selectedDeleteContentDocumentId = null;
+    }
+
+    confirmDeleteFile() {
+        if (!this.selectedDeleteContentDocumentId) {
+            return;
+        }
+
+        deleteFile({ contentDocumentId: this.selectedDeleteContentDocumentId })
             .then(() => {
                 this.showToast('Success', 'File deleted successfully.', 'success', 'dismissable');
+                this.closeDeleteModal();
                 this.loadFiles();
             })
             .catch(() => {

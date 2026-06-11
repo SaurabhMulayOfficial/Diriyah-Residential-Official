@@ -281,10 +281,31 @@
 }
 
 .modal-footer {
-
     background: #e9d7c3;
-
     padding: 1rem;
+}
+
+/* DELETE MODAL */
+.delete-modal {
+    max-width: 42rem;
+}
+
+.delete-modal-header h2 {
+    color: #300000;
+    font-size: 1.8rem;
+    font-weight: 400;
+}
+
+.delete-modal-content {
+    text-align: center;
+    font-size: 1rem;
+    color: #555555;
+    padding: 1.5rem;
+}
+
+.delete-confirm-button {
+    --slds-c-button-brand-color-background: #a96548;
+    --slds-c-button-brand-color-border: #a96548;
 }
 
 /* INPUTS */
@@ -302,25 +323,23 @@ lightning-button-icon {
 }
 
 /* RESPONSIVE */
-@media (max-width:1200px){
-
-.top-row{
-margin-left:0;
-}
-}
-
-@media (max-width:768px){
-
-.top-row,
-.upload-file-row{
-display:block;
+@media (max-width:1200px) {
+    .top-row {
+        margin-left:0;
+    }
 }
 
-.custom-table{
-min-width:1200px;
-}
+@media (max-width:768px) {
+    .top-row,
+    .upload-file-row {
+        display:block;
+    }
 
-.file-upload-button{
-min-width:100%;
-}
+    .custom-table {
+        min-width:1200px;
+    }
+
+    .file-upload-button {
+        min-width:100%;
+    }
 }
