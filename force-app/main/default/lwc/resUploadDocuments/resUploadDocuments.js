@@ -255,8 +255,8 @@ export default class ResUploadDocuments extends NavigationMixin(LightningElement
             const documentLabelValue = file.documentLabel?.toLowerCase() || '';
             const attachmentTypeValue = file.attachmentType?.toLowerCase() || '';
             const createdByValue = file.createdByName?.toLowerCase() || '';
-            const createdDateValue = file.createdDate?.toLowerCase() || '';
-
+            const createdDateValue = file.createdDate;
+           
             return (
                 fileNameValue.includes(fileName) &&
                 documentLabelValue.includes(docLabel) &&
@@ -265,27 +265,30 @@ export default class ResUploadDocuments extends NavigationMixin(LightningElement
             );
         });
     }
-
+    
     uploadSelectedFiles() {
-        if (!this.selectedFiles || this.selectedFiles.length === 0) {
-            this.showToast(
-                'Validation Error',
-                'Please select at least one file.',
-                'error',
-                'dismissable'
-            );
-            return;
-        }
+      const validationErrors = [];
 
-        if (!this.selectedAttachmentType) {
-            this.showToast(
-                'Validation Error',
-                'Please select Attachment Type.',
-                'error',
-                'dismissable'
-            );
-            return;
-        }
+             if (!this.selectedFiles || this.selectedFiles.length === 0) {
+                   validationErrors.push('Please select at least one file.');
+                 }
+
+             if (!this.selectedDocumentLabel) {
+                 validationErrors.push('Please enter Document Label.');
+                }
+
+             if (!this.selectedAttachmentType) {
+                    validationErrors.push('Please select Attachment Type.');
+              }
+
+              if (validationErrors.length > 0) {
+                      this.showToast('Validation Error',
+                          validationErrors.join(', '),
+                          'error',
+                          'dismissable'
+                         );
+                  return;
+               }
 
         this.handleSpinner();
 
@@ -324,10 +327,15 @@ export default class ResUploadDocuments extends NavigationMixin(LightningElement
     saveDocumentLabel(event) {
         const contentVersionId = event.target.dataset.id;
         const documentLabel = this.editedLabels[contentVersionId];
+        const inputCmp = event.target;
+            if (!documentLabel) {
+               inputCmp.setCustomValidity('Please enter Document Label.');
+               inputCmp.reportValidity();
+               return;
+              }
+               inputCmp.setCustomValidity('');
+               inputCmp.reportValidity();
 
-        if (documentLabel === undefined) {
-            return;
-        }
 
         updateDocumentLabel({
             contentVersionId,
