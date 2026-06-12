@@ -58,15 +58,15 @@
                                             <span class="resize-handle" onmousedown={startColumnResize}></span>
                                         </th>
                                         <th>
+                                            Created Date
+                                            <span class="resize-handle" onmousedown={startColumnResize}></span>
+                                        </th>
+                                        <th>
                                             File Size
                                             <span class="resize-handle" onmousedown={startColumnResize}></span>
                                         </th>
                                         <th>
                                             File Type
-                                            <span class="resize-handle" onmousedown={startColumnResize}></span>
-                                        </th>
-                                         <th>
-                                            Created Date
                                             <span class="resize-handle" onmousedown={startColumnResize}></span>
                                         </th>
                                         <th>Actions</th>
@@ -101,10 +101,10 @@
                                                 {file.createdByName}
                                             </td>
 
+                                            <td>{file.createdDate}</td>
                                             <td>{file.fileSize}</td>
                                             <td>{file.fileType}</td>
 
-                                            <td>{file.createdDate}</td>
                                             <td>
                                                 <div class="action-buttons">
                                                     <lightning-button-icon
@@ -131,7 +131,7 @@
 
                                     <template lwc:if={showNoData}>
                                         <tr>
-                                            <td colspan="7" class="no-data">No files found</td>
+                                            <td colspan="8" class="no-data">No files found</td>
                                         </tr>
                                     </template>
                                 </tbody>
@@ -158,6 +158,18 @@
                     </header>
 
                     <div class="slds-modal__content slds-p-around_medium">
+                        <template lwc:if={hasValidationErrors}>
+                            <div class="validation-box">
+                                <div class="validation-title">Review the following fields</div>
+
+                                <ul class="validation-list">
+                                    <template for:each={validationErrors} for:item="error">
+                                        <li key={error}>{error}</li>
+                                    </template>
+                                </ul>
+                            </div>
+                        </template>
+
                         <div class="upload-file-row">
                             <div class="file-name-display">
                                 <label>
@@ -229,7 +241,7 @@
                     </header>
 
                     <div class="slds-modal__content delete-modal-content">
-                        Are you sure you want to delete the record.
+                        Deleting a file also removes it from any records or posts it's attached to.
                     </div>
 
                     <footer class="slds-modal__footer modal-footer">

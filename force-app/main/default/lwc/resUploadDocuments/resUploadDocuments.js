@@ -20,6 +20,7 @@ export default class ResUploadDocuments extends NavigationMixin(LightningElement
     @track allAttachmentTypes = [];
     @track files = [];
     @track filteredFiles = [];
+    @track validationErrors = [];
 
     showSpinner = false;
     cvRecordTypeId;
@@ -66,6 +67,10 @@ export default class ResUploadDocuments extends NavigationMixin(LightningElement
         return {
             recordId: this.recordId
         };
+    }
+
+    get hasValidationErrors() {
+        return this.validationErrors && this.validationErrors.length > 0;
     }
 
     @wire(getObjectInfo, { objectApiName: CONTENT_VERSION_OBJECT })
@@ -187,6 +192,7 @@ export default class ResUploadDocuments extends NavigationMixin(LightningElement
 
     openModal() {
         this.showModal = true;
+        this.validationErrors = [];
         this.selectedFiles = [];
         this.selectedFileNames = '';
         this.selectedDocumentLabel = '';
@@ -195,6 +201,7 @@ export default class ResUploadDocuments extends NavigationMixin(LightningElement
 
     closeModal() {
         this.showModal = false;
+        this.validationErrors = [];
         this.selectedFiles = [];
         this.selectedFileNames = '';
         this.selectedDocumentLabel = '';
@@ -223,15 +230,18 @@ export default class ResUploadDocuments extends NavigationMixin(LightningElement
 
     handleAttachmentTypeChange(event) {
         this.selectedAttachmentType = event.detail.value;
+        this.validationErrors = [];
     }
 
     handleSelectedDocumentLabelChange(event) {
         this.selectedDocumentLabel = event.target.value;
+        this.validationErrors = [];
     }
 
     handleFileSelection(event) {
         const uploadedFiles = event.detail.files || [];
         this.selectedFiles = uploadedFiles;
+        this.validationErrors = [];
 
         this.selectedFileNames = uploadedFiles
             .map((file) => file.name)
@@ -255,40 +265,34 @@ export default class ResUploadDocuments extends NavigationMixin(LightningElement
             const documentLabelValue = file.documentLabel?.toLowerCase() || '';
             const attachmentTypeValue = file.attachmentType?.toLowerCase() || '';
             const createdByValue = file.createdByName?.toLowerCase() || '';
-            const createdDateValue = file.createdDate;
-           
+
             return (
                 fileNameValue.includes(fileName) &&
                 documentLabelValue.includes(docLabel) &&
                 attachmentTypeValue.includes(attachType) &&
-                createdByValue.includes(createdBy) 
+                createdByValue.includes(createdBy)
             );
         });
     }
-    
+
     uploadSelectedFiles() {
-      const validationErrors = [];
+        this.validationErrors = [];
 
-             if (!this.selectedFiles || this.selectedFiles.length === 0) {
-                   validationErrors.push('Please select at least one file.');
-                 }
+        if (!this.selectedFiles || this.selectedFiles.length === 0) {
+            this.validationErrors.push('Please select at least one file.');
+        }
 
-             if (!this.selectedDocumentLabel) {
-                 validationErrors.push('Please enter Document Label.');
-                }
+        if (!this.selectedDocumentLabel || !this.selectedDocumentLabel.trim()) {
+            this.validationErrors.push('Please enter Document Label.');
+        }
 
-             if (!this.selectedAttachmentType) {
-                    validationErrors.push('Please select Attachment Type.');
-              }
+        if (!this.selectedAttachmentType) {
+            this.validationErrors.push('Please select Attachment Type.');
+        }
 
-              if (validationErrors.length > 0) {
-                      this.showToast('Validation Error',
-                          validationErrors.join(', '),
-                          'error',
-                          'dismissable'
-                         );
-                  return;
-               }
+        if (this.validationErrors.length > 0) {
+            return;
+        }
 
         this.handleSpinner();
 
@@ -328,25 +332,30 @@ export default class ResUploadDocuments extends NavigationMixin(LightningElement
         const contentVersionId = event.target.dataset.id;
         const documentLabel = this.editedLabels[contentVersionId];
         const inputCmp = event.target;
-            if (!documentLabel) {
-               inputCmp.setCustomValidity('Please enter Document Label.');
-               inputCmp.reportValidity();
-               return;
-              }
-               inputCmp.setCustomValidity('');
-               inputCmp.reportValidity();
 
+        if (documentLabel === undefined) {
+            return;
+        }
+
+        if (!documentLabel || !documentLabel.trim()) {
+            inputCmp.setCustomValidity('Please enter Document Label.');
+            inputCmp.reportValidity();
+            return;
+        }
+
+        inputCmp.setCustomValidity('');
+        inputCmp.reportValidity();
 
         updateDocumentLabel({
             contentVersionId,
-            documentLabel
+            documentLabel: documentLabel.trim()
         })
             .then(() => {
                 this.files = this.files.map((file) => {
                     if (file.contentVersionId === contentVersionId) {
                         return {
                             ...file,
-                            documentLabel
+                            documentLabel: documentLabel.trim()
                         };
                     }
 
