@@ -125,40 +125,42 @@
 /* DEFAULT WIDTHS */
 .custom-table th:nth-child(1),
 .custom-table td:nth-child(1) {
-    width: 24%;
+    width: 22%;
 }
 
 .custom-table th:nth-child(2),
 .custom-table td:nth-child(2) {
-    width: 18%;
+    width: 16%;
 }
 
 .custom-table th:nth-child(3),
 .custom-table td:nth-child(3) {
-    width: 16%;
+    width: 14%;
 }
 
 .custom-table th:nth-child(4),
 .custom-table td:nth-child(4) {
-    width: 14%;
+    width: 13%;
 }
 
 .custom-table th:nth-child(5),
 .custom-table td:nth-child(5) {
-    width: 10%;
+    width: 13%;
 }
 
 .custom-table th:nth-child(6),
 .custom-table td:nth-child(6) {
     width: 8%;
 }
+
 .custom-table th:nth-child(7),
 .custom-table td:nth-child(7) {
-    width: 8%;
+    width: 7%;
 }
+
 .custom-table th:nth-child(8),
 .custom-table td:nth-child(8) {
-    width: 10%;
+    width: 7%;
     overflow: visible;
 }
 
@@ -288,14 +290,41 @@
     padding: 1rem;
 }
 
+/* VALIDATION BOX */
+.validation-box {
+    background: #fde7ec;
+    border: 1px solid #f3b4c3;
+    border-radius: 10px;
+    padding: 14px 18px;
+    margin-bottom: 16px;
+    color: #b30059;
+}
+
+.validation-title {
+    font-size: 1rem;
+    font-weight: 700;
+    margin-bottom: 8px;
+}
+
+.validation-list {
+    margin: 0;
+    padding-left: 22px;
+}
+
+.validation-list li {
+    margin-bottom: 6px;
+    line-height: 1.5;
+    list-style: disc;
+}
+
 /* DELETE MODAL */
 .delete-modal {
     max-width: 42rem;
 }
 
 .delete-modal-header h2 {
-    color: #300000;
-    font-size: 1.8rem;
+    color: #835038;
+    font-size: 1.5rem;
     font-weight: 400;
 }
 
@@ -326,23 +355,25 @@ lightning-button-icon {
 }
 
 /* RESPONSIVE */
-@media (max-width:1200px) {
-    .top-row {
-        margin-left:0;
-    }
+@media (max-width:1200px){
+
+.top-row{
+margin-left:0;
+}
 }
 
-@media (max-width:768px) {
-    .top-row,
-    .upload-file-row {
-        display:block;
-    }
+@media (max-width:768px){
 
-    .custom-table {
-        min-width:1200px;
-    }
+.top-row,
+.upload-file-row{
+display:block;
+}
 
-    .file-upload-button {
-        min-width:100%;
-    }
+.custom-table{
+min-width:1200px;
+}
+
+.file-upload-button{
+min-width:100%;
+}
 }
