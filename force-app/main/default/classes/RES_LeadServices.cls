@@ -100,8 +100,8 @@ public with sharing class RES_LeadServices {
                 if(l.LeadSource == 'Z09'){
                     continue;
                 }
-                if(l.Status != oldMap.get(l.Id).Status && l.OwnerId == Userinfo.getUserId()){
-                    if(l.RES_SLA_Status__c == 'Running' && SYSTEM.now() < l.RES_SLA_Due_Time__c){
+                if(l.Status != oldMap.get(l.Id).Status){
+                    if(l.RES_SLA_Status__c == 'Running' && SYSTEM.now() < l.RES_SLA_Due_Time__c && l.Status != '01'){
                         l.RES_SLA_Status__c = 'Met';
                         l.RES_SLA_Due_Time__c = null;
                     }    
@@ -111,7 +111,7 @@ public with sharing class RES_LeadServices {
                     leadForReassignment.add(l);
                 }
                 else if((oldmap.get(l.Id).OwnerId == null && String.valueOf(l.ownerId).startsWith('005')) || (l.OwnerId != oldmap.get(l.Id).OwnerId && String.valueOf(l.ownerId).startsWith('005'))){
-                    if(l.RES_SLA_Status__c != 'Met'){
+                    if(l.RES_SLA_Status__c != 'Met' && l.status == '01'){
                         startSla(l, bh, slaInHours, false);
                     }
                 }
