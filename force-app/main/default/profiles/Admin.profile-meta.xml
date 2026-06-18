@@ -662,6 +662,11 @@
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
+        <editable>false</editable>
+        <field>Lead.RES_Autonumber__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
         <editable>true</editable>
         <field>Lead.RES_SLA_Hours_Remaining__c</field>
         <readable>true</readable>
@@ -671,7 +676,7 @@
         <field>Lead.RES_SAP_Lead_Id__c</field>
         <readable>true</readable>
     </fieldPermissions>
-   <fieldPermissions>
+    <fieldPermissions>
         <editable>true</editable>
         <field>Lead.RES_Residency_Type__c</field>
         <readable>true</readable>
