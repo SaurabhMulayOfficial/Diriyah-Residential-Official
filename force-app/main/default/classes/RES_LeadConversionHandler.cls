@@ -62,7 +62,7 @@ public with sharing class RES_LeadConversionHandler {
  */
     public static void convertLeads(List<Lead> leadsToConvert, Map<Id,List<SObject>> leadDuplicateMap, Map<String,Id> phoneToContactMap){
         List<Database.LeadConvert> qualifiedLeadsToConvert = new List<Database.LeadConvert>();
-        String convertedStatusLabel = new RES_LeadDAOLayer().getConvertedStatusLabel('Qualified');
+        String convertedStatusLabel = new RES_LeadDAOLayer().getConvertedStatusLabel('Converted');
         for(Lead l:leadsToConvert){
             Database.LeadConvert lc = new Database.LeadConvert();
             lc.setLeadId(l.Id);
