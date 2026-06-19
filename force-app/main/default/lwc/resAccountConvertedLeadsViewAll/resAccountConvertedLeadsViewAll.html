@@ -1,0 +1,36 @@
+<template>
+    <div class="page">
+        <div class="header">
+            <div>
+                <div class="breadcrumb">
+                    <a onclick={navigateToAccountsList}>Accounts</a>
+                    <span> &gt; </span>
+                    <a onclick={navigateToAccountRecord}>{accountName}</a>
+                </div>
+                <h1>Converted Leads</h1>
+                <p>{totalCount} items</p>
+            </div>
+        </div>
+
+        <template if:true={isLoading}>
+            <lightning-spinner alternative-text="Loading converted leads"></lightning-spinner>
+        </template>
+
+        <template if:false={isLoading}>
+            <template if:true={hasRecords}>
+                <lightning-datatable
+                    key-field="id"
+                    data={convertedLeads}
+                    columns={columns}
+                    hide-checkbox-column>
+                </lightning-datatable>
+            </template>
+
+            <template if:false={hasRecords}>
+                <div class="empty-state">
+                    No converted leads found.
+                </div>
+            </template>
+        </template>
+    </div>
+</template>

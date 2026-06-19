@@ -72,6 +72,7 @@ public without sharing class RES_LeadDAOLayer extends RES_BaseDAOLayer {
             return null;
         }
         LeadStatus ls = (LeadStatus) results[0];
+        System.debug('LeadStatus--->'+ls.ApiName);
         return ls.ApiName;
     }
 
@@ -123,27 +124,142 @@ public without sharing class RES_LeadDAOLayer extends RES_BaseDAOLayer {
         String soql = 'SELECT Id, Name, RES_SLA_Due_Time__c FROM Lead WHERE Status = \'01\' AND RES_SLA_Due_Time__c != null AND RES_SLA_Status__c = \'Running\' AND (RecordType.DeveloperName = \'RES_Company\' OR RecordType.DeveloperName = \'RES_Individual\')';
         return executeBatchQuery(soql, null, AccessLevel.USER_MODE);
     }
-    
-    public Lead getConvertedLeadById(Id leadId) {
+
+    public List<Lead> getConvertedLeads() {
+        String soql =
+            'SELECT Id,' +
+            'Name,' +
+            'OwnerId,' +
+            'Owner.Name,' +
+            'Status,' +
+            'Company,' +
+            'Email,' +
+            'MobilePhone,' +
+            'LeadSource,' +
+            'ConvertedDate,' +
+            'CreatedDate ' +
+            'FROM Lead ' +
+            'WHERE IsConverted = true ' +
+            'ORDER BY ConvertedDate DESC ' +
+            'LIMIT 2000';
+
+        return (List<Lead>) executeQuery(
+            soql,
+            '',
+            false,
+            null,
+            AccessLevel.SYSTEM_MODE
+        );
+    }
+
+    public List<Lead> getConvertedLeadsByAccountId(Id accountId){
+        if (accountId == null) {
+            return new List<Lead>();
+        }
+
+        Set<Id> contactIds = new Set<Id>();
+
+        for (Contact con : [
+            SELECT Id
+            FROM Contact
+            WHERE AccountId = :accountId
+        ]) {
+            contactIds.add(con.Id);
+        }
+
+        Map<String,Object> bindVars = new Map<String,Object>();
+        bindVars.put('accountId', accountId);
+        bindVars.put('contactIds', contactIds);
+
+        String soql =
+            'SELECT Id,' +
+            'Name,' +
+            'Company,' +
+            'Email,' +
+            'MobilePhone,' +
+            'Rating,' +
+            'ConvertedDate,' +
+            'ConvertedAccountId,' +
+            'ConvertedContactId,' +
+            'CreatedDate ' +
+            'FROM Lead ' +
+            'WHERE IsConverted = true ' +
+            'AND (' +
+            'ConvertedAccountId = :accountId ' +
+            'OR ConvertedContactId IN :contactIds' +
+            ') ' +
+            'ORDER BY ConvertedDate DESC';
+
+        return (List<Lead>) executeQuery(
+            soql,
+            '',
+            false,
+            bindVars,
+            AccessLevel.SYSTEM_MODE
+        );
+    }
+
+    public Lead getConvertedLeadById(Id leadId){
         if (leadId == null) {
             return null;
         }
-        Map<String, Object> bindVars = new Map<String, Object>();
-        bindVars.put('leadId', leadId);
-        String soql = 'SELECT Id, Name, Status, IsConverted, ConvertedAccountId, ' +
-                        'ConvertedContactId, ConvertedOpportunityId, LastModifiedById ' +
-                        'FROM Lead ' +
-                        'WHERE Id = :leadId ' +
-                        'AND IsConverted = true ' +
-                        'LIMIT 1';
 
-        List<SObject> results = executeQuery(soql, '', false, bindVars, AccessLevel.USER_MODE);
+        Map<String,Object> bindVars = new Map<String,Object>();
+        bindVars.put('leadId', leadId);
+
+        String soql =
+            'SELECT Id,' +
+            'Name,' +
+            'Status,' +
+            'IsConverted,' +
+            'ConvertedAccountId,' +
+            'ConvertedContactId,' +
+            'ConvertedOpportunityId,' +
+            'LastModifiedById ' +
+            'FROM Lead ' +
+            'WHERE Id=:leadId ' +
+            'AND IsConverted=true ' +
+            'LIMIT 1';
+
+        List<SObject> results = executeQuery(
+            soql,
+            '',
+            false,
+            bindVars,
+            AccessLevel.USER_MODE
+        );
+
+        return results.isEmpty()
+            ? null
+            : (Lead) results[0];
+    }
+    
+    public Account getAccountNameById(Id accountId) {
+        if (accountId == null) {
+            return null;
+        }
+
+        Map<String, Object> bindVars = new Map<String, Object>();
+        bindVars.put('accountId', accountId);
+
+        String soql =
+            'SELECT Id, Name, PersonContactId ' +
+            'FROM Account ' +
+            'WHERE Id = :accountId ' +
+            'LIMIT 1';
+
+        List<SObject> results = executeQuery(
+            soql,
+            '',
+            false,
+            bindVars,
+            AccessLevel.SYSTEM_MODE
+        );
+
         if (results == null || results.isEmpty()) {
             return null;
         }
-        Lead ld = (Lead) results[0];
 
-        return ld.IsConverted ? ld : null;
+        return (Account) results[0];
     }
-
 }

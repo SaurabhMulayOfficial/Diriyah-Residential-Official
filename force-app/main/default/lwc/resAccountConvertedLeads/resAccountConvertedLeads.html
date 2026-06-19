@@ -1,0 +1,60 @@
+<template>
+    <article class="related-card">
+        <div class="header clickable-header"
+             onclick={handleViewAll}>
+   
+             <lightning-icon
+                 icon-name="standard:lead"
+                 size="small"
+                 class="header-icon">
+             </lightning-icon>
+   
+             <h2 class="title">
+                 Converted Leads ({totalCount})
+             </h2>
+   
+         </div>
+
+        <template if:true={isLoading}>
+            <div class="loading">
+                <lightning-spinner alternative-text="Loading converted leads" size="small"></lightning-spinner>
+            </div>
+        </template>
+
+        <template if:false={isLoading}>
+            <template if:true={hasRecords}>
+                <template for:each={visibleLeads} for:item="lead">
+                    <div key={lead.id} class="record-row">
+                        <div class="record-content">
+                            <a href={lead.leadUrl} target="_blank" class="record-name">{lead.name}</a>
+
+                            <div class="field-row">
+                                <span class="field-label">Email:</span>
+                                <span class="field-value">{lead.email}</span>
+                            </div>
+
+                            <div class="field-row">
+                                <span class="field-label">Mobile:</span>
+                                <span class="field-value">{lead.mobilePhone}</span>
+                            </div>
+
+                            <div class="field-row">
+                                <span class="field-label">Converted Date:</span>
+                                <span class="field-value">{lead.convertedDate}</span>
+                            </div>                            
+
+                        </div>
+                    </div>
+                </template>
+
+                <div class="view-all" onclick={handleViewAll}>
+                    View All
+                </div>
+            </template>
+
+            <template if:false={hasRecords}>
+                <div class="empty-state">No converted leads found.</div>
+            </template>
+        </template>
+    </article>
+</template>

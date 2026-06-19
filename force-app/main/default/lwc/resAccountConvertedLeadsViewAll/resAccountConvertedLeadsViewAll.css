@@ -1,0 +1,48 @@
+:host {
+    display: block;
+}
+
+.page {
+    background: #ffffff;
+    min-height: 32rem;
+    padding: 1rem;
+}
+
+.header {
+    margin-bottom: 1rem;
+}
+
+.breadcrumb {
+    color: #8b4f39;
+    font-size: 0.8rem;
+    margin-bottom: 0.25rem;
+}
+
+.breadcrumb a {
+    color: #8b4f39;
+    cursor: pointer;
+    text-decoration: none;
+}
+
+.breadcrumb a:hover {
+    text-decoration: underline;
+}
+
+h1 {
+    font-size: 1.75rem;
+    font-weight: 400;
+    margin: 0;
+}
+
+p {
+    color: #706e6b;
+    margin: 0.5rem 0 0 0;
+}
+
+.empty-state {
+    border: 1px solid #dddbda;
+    border-radius: 0.25rem;
+    color: #706e6b;
+    padding: 2rem;
+    text-align: center;
+}
