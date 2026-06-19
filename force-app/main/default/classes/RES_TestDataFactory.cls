@@ -219,7 +219,7 @@ public class RES_TestDataFactory {
         return [
             SELECT MasterLabel FROM LeadStatus
             WHERE IsConverted = true
-            AND   MasterLabel = 'Qualified'
+            AND   MasterLabel = 'Converted'
             LIMIT 1
         ].MasterLabel;
     }
