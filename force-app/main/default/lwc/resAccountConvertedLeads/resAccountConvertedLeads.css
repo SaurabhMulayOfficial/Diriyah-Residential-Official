@@ -1,0 +1,163 @@
+:host {
+    display: block;
+}
+
+/* CARD */
+.related-card {
+    background: #ffffff;
+    border-radius: 1rem;
+    overflow: hidden;
+}
+
+/* HEADER */
+.header {
+    display: flex;
+    align-items: center;
+
+    padding: 0.85rem 1rem 0.65rem 1rem;
+}
+
+.header-icon {
+    margin-right: 0.75rem;
+}
+
+.clickable-header {
+    cursor: pointer;
+}
+
+.clickable-header:hover .title {
+    text-decoration: underline;
+}
+
+.title {
+    margin: 0;
+
+    font-size: 1rem;
+    font-weight: 400;
+
+    color: #181818;
+}
+
+/* LOADER */
+.loading {
+    min-height: 4rem;
+    position: relative;
+}
+
+/* RECORD */
+.record-row {
+    padding: 0.95rem 1rem 0.55rem 1.2rem;
+}
+
+.record-content {
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: flex-start;
+}
+
+/* RECORD NAME */
+.record-name {
+    color: #8b4f39;
+
+    font-size: 0.82rem;
+
+    font-weight: 400;
+
+    line-height: 1.1rem;
+
+    margin-bottom: 0.1rem;
+
+    text-decoration-line: underline;
+    text-decoration-style: dotted;
+    text-underline-offset: 2px;
+}
+
+.record-name:hover {
+    text-decoration-style: solid;
+}
+
+/* FIELD */
+.field-row {
+    display: grid;
+
+    grid-template-columns: 120px auto;
+
+    align-items: center;
+
+    line-height: 1.1rem;
+
+    margin-bottom: 0.15rem;
+}
+
+.field-label {
+    color: #4a4a4a;
+
+    font-size: 0.82rem;
+
+    font-weight: 400;
+
+    min-width: 4.9rem;
+
+    margin-right: 0.25rem;
+}
+
+.field-value {
+    color: #5c5c5c;
+
+    font-size: 0.82rem;
+
+    font-weight: 400;
+
+    text-align: left;
+
+    word-break: break-word;
+}
+
+/* VIEW ALL */
+.view-all {
+    border-top: 1px solid #dddbda;
+
+    padding: 0.55rem;
+
+    text-align: center;
+
+    color: #8b4f39;
+
+    font-size: 0.82rem;
+
+    font-weight: 400;
+
+    cursor: pointer;
+}
+
+.view-all:hover {
+    text-decoration: underline;
+}
+
+/* EMPTY */
+.empty-state {
+    color: #706e6b;
+
+    padding: 1rem;
+
+    text-align: center;
+}
+
+/* MOBILE */
+@media (max-width: 768px) {
+    .record-row {
+        padding-left: 1rem;
+    }
+
+    .field-row {
+        flex-wrap: wrap;
+    }
+
+    .field-label {
+        min-width: auto;
+
+        margin-right: 0.3rem;
+    }
+}

@@ -1,0 +1,28 @@
+<template>
+    <lightning-card title={heading} icon-name="standard:lead">
+        <div class="slds-p-around_medium">
+
+            <template if:true={isLoading}>
+                <lightning-spinner alternative-text="Loading converted leads"></lightning-spinner>
+            </template>
+
+            <template if:true={hasRecords}>
+                <lightning-datatable
+                    key-field="id"
+                    data={convertedLeads}
+                    columns={columns}
+                    hide-checkbox-column>
+                </lightning-datatable>
+            </template>
+
+            <template if:false={hasRecords}>
+                <template if:false={isLoading}>
+                    <div class="slds-align_absolute-center slds-p-around_large empty-message">
+                        No converted leads found.
+                    </div>
+                </template>
+            </template>
+
+        </div>
+    </lightning-card>
+</template>
