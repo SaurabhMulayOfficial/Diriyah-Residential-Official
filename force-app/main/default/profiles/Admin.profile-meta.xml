@@ -14,6 +14,30 @@
         <name>RES_Show_Document_Section</name>
     </customPermissions>
     <classAccesses>
+        <apexClass>RES_AccountConvertedLeadController</apexClass>
+        <enabled>true</enabled>
+    </classAccesses>
+    <classAccesses>
+        <apexClass>RES_AccountConvertedLeadControllerTest</apexClass>
+        <enabled>true</enabled>
+    </classAccesses>
+    <classAccesses>
+        <apexClass>RES_AccountConvertedLeadService</apexClass>
+        <enabled>true</enabled>
+    </classAccesses>
+    <classAccesses>
+        <apexClass>RES_ConvertedLeadController</apexClass>
+        <enabled>true</enabled>
+    </classAccesses>
+    <classAccesses>
+        <apexClass>RES_ConvertedLeadControllerTest</apexClass>
+        <enabled>true</enabled>
+    </classAccesses>
+    <classAccesses>
+        <apexClass>RES_ConvertedLeadService</apexClass>
+        <enabled>true</enabled>
+    </classAccesses>
+    <classAccesses>
         <apexClass>RES_LeadConversionHandler_Test</apexClass>
         <enabled>true</enabled>
     </classAccesses>
@@ -1869,6 +1893,14 @@
     <tabVisibilities>
         <tab>RES_Assignment_Rule__c</tab>
         <visibility>DefaultOn</visibility>
+    </tabVisibilities>
+    <tabVisibilities>
+        <tab>RES_Account_Converted_Leads</tab>
+        <visibility>DefaultOff</visibility>
+    </tabVisibilities>
+    <tabVisibilities>
+        <tab>Converted_Leads</tab>
+        <visibility>DefaultOff</visibility>
     </tabVisibilities>
     <userLicense>Salesforce</userLicense>
     <userPermissions>
