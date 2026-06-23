@@ -1,12 +1,65 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Flow xmlns="http://soap.sforce.com/2006/04/metadata">
     <actionCalls>
+        <name>Send_Approval_Assignment_Notifications_trg</name>
+        <label>Send Approval Assignment Notifications</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <actionName>customNotificationAction</actionName>
+        <actionType>customNotificationAction</actionType>
+        <faultConnector>
+            <isGoTo>true</isGoTo>
+            <targetReference>Fault_Message</targetReference>
+        </faultConnector>
+        <flowTransactionModel>CurrentTransaction</flowTransactionModel>
+        <inputParameters>
+            <name>customNotifTypeId</name>
+            <value>
+                <elementReference>get_Notification_Type.Id</elementReference>
+                <inputConfiguratorMode>Resource</inputConfiguratorMode>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>recipientIds</name>
+            <value>
+                <elementReference>recipientId_collection</elementReference>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>title</name>
+            <value>
+                <inputConfiguratorMode>Custom</inputConfiguratorMode>
+                <stringValue>Ownership Change Awaiting Approval</stringValue>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>body</name>
+            <value>
+                <elementReference>NotificationBody</elementReference>
+                <inputConfiguratorMode>Resource</inputConfiguratorMode>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>targetId</name>
+            <value>
+                <elementReference>LeadInstance.Id</elementReference>
+                <inputConfiguratorMode>Resource</inputConfiguratorMode>
+            </value>
+        </inputParameters>
+        <nameSegment>customNotificationAction</nameSegment>
+        <offset>0</offset>
+    </actionCalls>
+    <actionCalls>
         <name>Send_Approval_Notification</name>
         <label>Send Approval Notification</label>
         <locationX>0</locationX>
         <locationY>0</locationY>
         <actionName>emailSimple</actionName>
         <actionType>emailSimple</actionType>
+        <faultConnector>
+            <isGoTo>true</isGoTo>
+            <targetReference>Fault_Message</targetReference>
+        </faultConnector>
         <flowTransactionModel>CurrentTransaction</flowTransactionModel>
         <inputParameters>
             <name>recipientAddresses</name>
@@ -61,6 +114,9 @@ Your request for reassigning the lead owner for lead {!LeadInstance.DIR_Lead_Id_
         <locationY>0</locationY>
         <actionName>emailSimple</actionName>
         <actionType>emailSimple</actionType>
+        <faultConnector>
+            <targetReference>Fault_Message</targetReference>
+        </faultConnector>
         <flowTransactionModel>CurrentTransaction</flowTransactionModel>
         <inputParameters>
             <name>recipientAddresses</name>
@@ -120,6 +176,35 @@ Your request for reassigning the lead owner for lead {!LeadInstance.DIR_Lead_Id_
             <targetReference>Check_Action</targetReference>
         </connector>
     </assignments>
+    <assignments>
+        <name>Fault_Message</name>
+        <label>Fault Message</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignmentItems>
+            <assignToReference>fault</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>$Flow.FaultMessage</elementReference>
+            </value>
+        </assignmentItems>
+    </assignments>
+    <assignments>
+        <name>recipientIds</name>
+        <label>recipientIds</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignmentItems>
+            <assignToReference>recipientId_collection</assignToReference>
+            <operator>Add</operator>
+            <value>
+                <elementReference>recipientId</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Send_Approval_Assignment_Notifications_trg</targetReference>
+        </connector>
+    </assignments>
     <decisions>
         <name>Check_Action</name>
         <label>Check Action</label>
@@ -156,6 +241,21 @@ Your request for reassigning the lead owner for lead {!LeadInstance.DIR_Lead_Id_
             </connector>
             <label>Reject Notification</label>
         </rules>
+        <rules>
+            <name>Send_Approval_Assignment_Notification</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>action</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>AssignmentNotification</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>get_Notification_Type</targetReference>
+            </connector>
+            <label>Send Approval Assignment Notification</label>
+        </rules>
     </decisions>
     <environments>Default</environments>
     <formulas>
@@ -189,6 +289,27 @@ Your request for reassigning the lead owner for lead {!LeadInstance.DIR_Lead_Id_
         </value>
     </processMetadataValues>
     <processType>AutoLaunchedFlow</processType>
+    <recordLookups>
+        <name>get_Notification_Type</name>
+        <label>get Notification Type</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>recipientIds</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>DeveloperName</field>
+            <operator>EqualTo</operator>
+            <value>
+                <stringValue>RES_Approval_Assignment_Notification</stringValue>
+            </value>
+        </filters>
+        <getFirstRecordOnly>true</getFirstRecordOnly>
+        <object>CustomNotificationType</object>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
     <start>
         <locationX>0</locationX>
         <locationY>0</locationY>
@@ -197,6 +318,11 @@ Your request for reassigning the lead owner for lead {!LeadInstance.DIR_Lead_Id_
         </connector>
     </start>
     <status>Active</status>
+    <textTemplates>
+        <name>NotificationBody</name>
+        <isViewedAsPlainText>true</isViewedAsPlainText>
+        <text>Approval Required: Ownership change request for record: {!LeadInstance.DIR_Lead_Id__c}  is pending your review.</text>
+    </textTemplates>
     <variables>
         <name>action</name>
         <dataType>String</dataType>
@@ -215,6 +341,13 @@ Your request for reassigning the lead owner for lead {!LeadInstance.DIR_Lead_Id_
         <name>Emails</name>
         <dataType>String</dataType>
         <isCollection>true</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <name>fault</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
         <isInput>false</isInput>
         <isOutput>false</isOutput>
     </variables>
@@ -238,6 +371,20 @@ Your request for reassigning the lead owner for lead {!LeadInstance.DIR_Lead_Id_
         <dataType>String</dataType>
         <isCollection>false</isCollection>
         <isInput>true</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <name>recipientId</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>true</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <name>recipientId_collection</name>
+        <dataType>String</dataType>
+        <isCollection>true</isCollection>
+        <isInput>false</isInput>
         <isOutput>false</isOutput>
     </variables>
 </Flow>
