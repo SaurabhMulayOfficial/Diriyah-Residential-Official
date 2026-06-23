@@ -1,7 +1,75 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Flow xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-    <apiVersion>66.0</apiVersion>
+    <apiVersion>65.0</apiVersion>
     <areMetricsLoggedToDataCloud>false</areMetricsLoggedToDataCloud>
+    <decisions>
+        <name>check_if_approval_Items_are_not_null</name>
+        <label>check if approval Items are not null</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnector>
+            <targetReference>Approval_Required_from_the_Last_Approver_s_Manager</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Null</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>Query_Approval_Work_Item.Outputs.workItemId</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <label>Null</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>Check_Manager_Level</name>
+        <label>Check Manager Level</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnector>
+            <targetReference>Record_Has_been_Approved</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Check_Role</name>
+            <conditionLogic>1 OR (2 AND 3 AND 4)</conditionLogic>
+            <conditions>
+                <leftValueReference>Query_Approval_Work_Item.Outputs.workItemId</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>Query_Approval_Work_Item.Outputs.userRole</leftValueReference>
+                <operator>NotEqualTo</operator>
+                <rightValue>
+                    <stringValue>RES_Sales_Enterprise_Chief_Sales_Office</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>Query_Approval_Work_Item.Outputs.Profile</leftValueReference>
+                <operator>NotEqualTo</operator>
+                <rightValue>
+                    <stringValue>System Administrator</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>Query_Approval_Work_Item.Outputs.status</leftValueReference>
+                <operator>NotEqualTo</operator>
+                <rightValue>
+                    <stringValue>Rejected</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>check_if_approval_Items_are_not_null</targetReference>
+            </connector>
+            <label>Check Role</label>
+        </rules>
+    </decisions>
     <decisions>
         <name>if_proposed_owner_is_not_null</name>
         <label>if proposed owner is not null</label>
@@ -9,15 +77,8 @@
         <locationY>0</locationY>
         <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
         <rules>
-            <name>Outcome_1_of_if_proposed_owner_is_not_null</name>
+            <name>if_proposed_owner_is_not_null_and_changed</name>
             <conditionLogic>and</conditionLogic>
-            <conditions>
-                <leftValueReference>$Record.RES_Proposed_User__c</leftValueReference>
-                <operator>IsChanged</operator>
-                <rightValue>
-                    <booleanValue>true</booleanValue>
-                </rightValue>
-            </conditions>
             <conditions>
                 <leftValueReference>$Record.RES_Proposed_User__c</leftValueReference>
                 <operator>IsNull</operator>
@@ -25,62 +86,17 @@
                     <booleanValue>false</booleanValue>
                 </rightValue>
             </conditions>
-            <connector>
-                <targetReference>Submitter_s_Role_is_Operations</targetReference>
-            </connector>
-            <label>Outcome 1 of if proposed owner is not null</label>
-        </rules>
-    </decisions>
-    <decisions>
-        <name>Submitter_s_Role_is_Operations</name>
-        <label>Submitter&apos;s Role is Operations</label>
-        <locationX>0</locationX>
-        <locationY>0</locationY>
-        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
-        <rules>
-            <name>Operations</name>
-            <conditionLogic>and</conditionLogic>
             <conditions>
-                <leftValueReference>IsOperationInitiatedApproval</leftValueReference>
-                <operator>EqualTo</operator>
+                <leftValueReference>$Record.RES_Proposed_User__c</leftValueReference>
+                <operator>IsChanged</operator>
                 <rightValue>
                     <booleanValue>true</booleanValue>
                 </rightValue>
             </conditions>
             <connector>
-                <targetReference>Approval_Stage_Sales_Operation_Initiate_Reassignment</targetReference>
+                <targetReference>InitialFirstApproval</targetReference>
             </connector>
-            <label>Operations</label>
-        </rules>
-        <rules>
-            <name>Sales_manager</name>
-            <conditionLogic>and</conditionLogic>
-            <conditions>
-                <leftValueReference>IsSalesManagersInitiatedApproval</leftValueReference>
-                <operator>EqualTo</operator>
-                <rightValue>
-                    <booleanValue>true</booleanValue>
-                </rightValue>
-            </conditions>
-            <connector>
-                <targetReference>Sales_Manager_Initiated_Reassignment</targetReference>
-            </connector>
-            <label>Sales manager</label>
-        </rules>
-        <rules>
-            <name>Director</name>
-            <conditionLogic>and</conditionLogic>
-            <conditions>
-                <leftValueReference>IsDirectorInitiatedApproval</leftValueReference>
-                <operator>EqualTo</operator>
-                <rightValue>
-                    <booleanValue>true</booleanValue>
-                </rightValue>
-            </conditions>
-            <connector>
-                <targetReference>Sales_Director_Initiated</targetReference>
-            </connector>
-            <label>Director</label>
+            <label>if proposed owner is not null &amp; changed</label>
         </rules>
     </decisions>
     <environments>Default</environments>
@@ -141,64 +157,66 @@
     <interviewLabel>Lead - {!$Flow.CurrentDateTime}</interviewLabel>
     <label>Lead - Delegation Of Assignment - Approval Flow</label>
     <orchestratedStages>
-        <name>Approval_Stage_Sales_Operation_Initiate_Reassignment</name>
-        <label>Approval Stage: Sales Operation Initiate Reassignment</label>
+        <name>Approval_Required_from_the_Last_Approver_s_Manager</name>
+        <label>Approval Required from the Last Approver’s Manager</label>
         <locationX>0</locationX>
         <locationY>0</locationY>
+        <connector>
+            <isGoTo>true</isGoTo>
+            <targetReference>Approval_Work_Item_Stage</targetReference>
+        </connector>
         <exitConditionLogic>and</exitConditionLogic>
         <stageSteps>
-            <name>Approval_Sent_to_Sales_Manager</name>
-            <actionName>standard_approvals__EvaluateApproval</actionName>
-            <actionType>stepApproval</actionType>
-            <assignees>
-                <assignee>
-                    <stringValue>RES_Sales_Manager</stringValue>
-                </assignee>
-                <assigneeType>Queue</assigneeType>
-            </assignees>
-            <canAssigneeEdit>true</canAssigneeEdit>
-            <debugSimulateStep>false</debugSimulateStep>
-            <entryConditionLogic>and</entryConditionLogic>
-            <exitConditionLogic>and</exitConditionLogic>
-            <inputParameters>
-                <name>ActionInput__RecordId</name>
-                <value>
-                    <elementReference>$Record.Id</elementReference>
-                </value>
-            </inputParameters>
-            <label>Approval Sent to Sales Manager</label>
-            <outputConfigParams>
-                <name>approvalComments</name>
-                <value xsi:nil="true"/>
-            </outputConfigParams>
-            <outputConfigParams>
-                <name>approvalDecision</name>
-                <value xsi:nil="true"/>
-            </outputConfigParams>
-            <requiresAsyncProcessing>false</requiresAsyncProcessing>
-            <runAsUser>false</runAsUser>
-            <shouldLock>true</shouldLock>
-            <stepSubtype>ApprovalStep</stepSubtype>
-        </stageSteps>
-        <stageSteps>
-            <name>Approval_Sent_to_Sales_Director</name>
-            <actionName>standard_approvals__EvaluateApproval</actionName>
-            <actionType>stepApproval</actionType>
-            <assignees>
-                <assignee>
-                    <stringValue>RES_Sales_Director</stringValue>
-                </assignee>
-                <assigneeType>Queue</assigneeType>
-            </assignees>
+            <name>Get_Manager_Of_Last_Approver</name>
+            <actionName>RES_Autolaunch_Flow_Get_User_s_Manager</actionName>
+            <actionType>stepBackground</actionType>
             <canAssigneeEdit>false</canAssigneeEdit>
             <debugSimulateStep>false</debugSimulateStep>
             <entryConditionLogic>and</entryConditionLogic>
             <entryConditions>
                 <conditionType>EntryCondition</conditionType>
-                <leftValueReference>Approval_Sent_to_Sales_Manager.Outputs.approvalDecision</leftValueReference>
+                <leftValueReference>Query_Approval_Work_Item.Outputs.reviewerId</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </entryConditions>
+            <exitConditionLogic>and</exitConditionLogic>
+            <inputParameters>
+                <name>UserID</name>
+                <value>
+                    <elementReference>Query_Approval_Work_Item.Outputs.reviewerId</elementReference>
+                </value>
+            </inputParameters>
+            <label>Get Manager Of Last Approver</label>
+            <outputConfigParams>
+                <name>username</name>
+                <value xsi:nil="true"/>
+            </outputConfigParams>
+            <requiresAsyncProcessing>false</requiresAsyncProcessing>
+            <runAsUser>false</runAsUser>
+            <shouldLock>false</shouldLock>
+            <stepSubtype>BackgroundStep</stepSubtype>
+        </stageSteps>
+        <stageSteps>
+            <name>Approval_Sent_to_Last_Approver_s_Manager_In</name>
+            <actionName>standard_approvals__EvaluateApproval</actionName>
+            <actionType>stepApproval</actionType>
+            <assignees>
+                <assignee>
+                    <elementReference>Get_Manager_Of_Last_Approver.Outputs.username</elementReference>
+                </assignee>
+                <assigneeType>Resource</assigneeType>
+            </assignees>
+            <canAssigneeEdit>true</canAssigneeEdit>
+            <debugSimulateStep>false</debugSimulateStep>
+            <entryConditionLogic>and</entryConditionLogic>
+            <entryConditions>
+                <conditionType>EntryCondition</conditionType>
+                <leftValueReference>Get_Manager_Of_Last_Approver.Status</leftValueReference>
                 <operator>EqualTo</operator>
                 <rightValue>
-                    <stringValue>Approve</stringValue>
+                    <stringValue>Completed</stringValue>
                 </rightValue>
             </entryConditions>
             <exitConditionLogic>and</exitConditionLogic>
@@ -214,7 +232,7 @@
             <inputParameters>
                 <name>ActionInput__CustomEmailBody</name>
             </inputParameters>
-            <label>Approval Sent to Sales Director</label>
+            <label>Approval Sent to Last Approver&apos;s Managers</label>
             <outputConfigParams>
                 <name>approvalComments</name>
                 <value xsi:nil="true"/>
@@ -229,24 +247,153 @@
             <stepSubtype>ApprovalStep</stepSubtype>
         </stageSteps>
         <stageSteps>
-            <name>Approval_Sent_to_CSO</name>
+            <name>Send_Approval_Notification_to_Current_Approver_approval_stage</name>
+            <actionName>RES_AutoLaunch_Flow_Send_Approval_Email_Notifications</actionName>
+            <actionType>stepBackground</actionType>
+            <canAssigneeEdit>false</canAssigneeEdit>
+            <debugSimulateStep>false</debugSimulateStep>
+            <entryConditionLogic>and</entryConditionLogic>
+            <entryConditions>
+                <conditionType>EntryCondition</conditionType>
+                <leftValueReference>Get_Manager_Of_Last_Approver.Status</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Completed</stringValue>
+                </rightValue>
+            </entryConditions>
+            <exitConditionLogic>and</exitConditionLogic>
+            <inputParameters>
+                <name>ApprovalSubmitter</name>
+            </inputParameters>
+            <inputParameters>
+                <name>LeadInstance</name>
+                <value>
+                    <elementReference>$Record</elementReference>
+                </value>
+            </inputParameters>
+            <inputParameters>
+                <name>NameOfSubmitter</name>
+            </inputParameters>
+            <inputParameters>
+                <name>ProposedOwnerName</name>
+            </inputParameters>
+            <inputParameters>
+                <name>action</name>
+                <value>
+                    <stringValue>AssignmentNotification</stringValue>
+                </value>
+            </inputParameters>
+            <inputParameters>
+                <name>recipientId</name>
+                <value>
+                    <elementReference>Get_Manager_Of_Last_Approver.Outputs.managerId</elementReference>
+                </value>
+            </inputParameters>
+            <label>Send Approval Notification to Current Approver</label>
+            <requiresAsyncProcessing>false</requiresAsyncProcessing>
+            <runAsUser>false</runAsUser>
+            <shouldLock>false</shouldLock>
+            <stepSubtype>BackgroundStep</stepSubtype>
+        </stageSteps>
+    </orchestratedStages>
+    <orchestratedStages>
+        <name>Approval_Work_Item_Stage</name>
+        <label>Approval Work Item Stage</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Check_Manager_Level</targetReference>
+        </connector>
+        <exitConditionLogic>and</exitConditionLogic>
+        <stageSteps>
+            <name>Query_Approval_Work_Item</name>
+            <actionName>RES_Autolaunch_Flow_Get_Latest_Approval_Work_Item</actionName>
+            <actionType>stepBackground</actionType>
+            <canAssigneeEdit>false</canAssigneeEdit>
+            <debugSimulateStep>false</debugSimulateStep>
+            <entryConditionLogic>and</entryConditionLogic>
+            <exitConditionLogic>and</exitConditionLogic>
+            <inputParameters>
+                <name>leadId</name>
+                <value>
+                    <elementReference>$Record.Id</elementReference>
+                </value>
+            </inputParameters>
+            <label>Query Approval Work Item</label>
+            <outputConfigParams>
+                <name>reviewerId</name>
+                <value xsi:nil="true"/>
+            </outputConfigParams>
+            <outputConfigParams>
+                <name>userRole</name>
+                <value xsi:nil="true"/>
+            </outputConfigParams>
+            <outputConfigParams>
+                <name>workItemId</name>
+                <value xsi:nil="true"/>
+            </outputConfigParams>
+            <requiresAsyncProcessing>false</requiresAsyncProcessing>
+            <runAsUser>false</runAsUser>
+            <shouldLock>false</shouldLock>
+            <stepSubtype>BackgroundStep</stepSubtype>
+        </stageSteps>
+    </orchestratedStages>
+    <orchestratedStages>
+        <name>InitialFirstApproval</name>
+        <label>Initiate First Approval</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Approval_Work_Item_Stage</targetReference>
+        </connector>
+        <exitConditionLogic>and</exitConditionLogic>
+        <stageSteps>
+            <name>Approval_Sent_to_Last_Approver_s_Manager_bs</name>
+            <actionName>RES_Autolaunch_Flow_Get_User_s_Manager</actionName>
+            <actionType>stepBackground</actionType>
+            <canAssigneeEdit>false</canAssigneeEdit>
+            <debugSimulateStep>false</debugSimulateStep>
+            <entryConditionLogic>and</entryConditionLogic>
+            <exitConditionLogic>and</exitConditionLogic>
+            <inputParameters>
+                <name>UserID</name>
+                <value>
+                    <elementReference>$Record.OwnerId</elementReference>
+                </value>
+            </inputParameters>
+            <label>Approval Sent to Last Approver&apos;s Manager BG</label>
+            <outputConfigParams>
+                <name>managerId</name>
+                <value xsi:nil="true"/>
+            </outputConfigParams>
+            <outputConfigParams>
+                <name>username</name>
+                <value xsi:nil="true"/>
+            </outputConfigParams>
+            <requiresAsyncProcessing>false</requiresAsyncProcessing>
+            <runAsUser>false</runAsUser>
+            <shouldLock>false</shouldLock>
+            <stepSubtype>BackgroundStep</stepSubtype>
+        </stageSteps>
+        <stageSteps>
+            <name>Approval_Sent_to_Last_Approver_s_Manager</name>
             <actionName>standard_approvals__EvaluateApproval</actionName>
             <actionType>stepApproval</actionType>
             <assignees>
                 <assignee>
-                    <stringValue>RES_CSO</stringValue>
+                    <elementReference>Approval_Sent_to_Last_Approver_s_Manager_bs.Outputs.username</elementReference>
                 </assignee>
-                <assigneeType>Queue</assigneeType>
+                <assigneeType>Resource</assigneeType>
             </assignees>
             <canAssigneeEdit>true</canAssigneeEdit>
             <debugSimulateStep>false</debugSimulateStep>
             <entryConditionLogic>and</entryConditionLogic>
             <entryConditions>
                 <conditionType>EntryCondition</conditionType>
-                <leftValueReference>Approval_Sent_to_Sales_Director.Outputs.approvalDecision</leftValueReference>
+                <leftValueReference>Approval_Sent_to_Last_Approver_s_Manager_bs.Status</leftValueReference>
                 <operator>EqualTo</operator>
                 <rightValue>
-                    <stringValue>Approve</stringValue>
+                    <stringValue>Completed</stringValue>
                 </rightValue>
             </entryConditions>
             <exitConditionLogic>and</exitConditionLogic>
@@ -262,7 +409,10 @@
             <inputParameters>
                 <name>ActionInput__CustomEmailBody</name>
             </inputParameters>
-            <label>Approval Sent to CSO</label>
+            <inputParameters>
+                <name>ActionInput__RequiredMultiMemberApprovalPercentage</name>
+            </inputParameters>
+            <label>Approval Sent to Last Approver&apos;s Manager</label>
             <outputConfigParams>
                 <name>approvalComments</name>
                 <value xsi:nil="true"/>
@@ -277,7 +427,7 @@
             <stepSubtype>ApprovalStep</stepSubtype>
         </stageSteps>
         <stageSteps>
-            <name>Approval_Email</name>
+            <name>Send_Approval_Notification_To_current_Approver</name>
             <actionName>RES_AutoLaunch_Flow_Send_Approval_Email_Notifications</actionName>
             <actionType>stepBackground</actionType>
             <canAssigneeEdit>false</canAssigneeEdit>
@@ -285,18 +435,15 @@
             <entryConditionLogic>and</entryConditionLogic>
             <entryConditions>
                 <conditionType>EntryCondition</conditionType>
-                <leftValueReference>Approval_Sent_to_CSO.Outputs.approvalDecision</leftValueReference>
+                <leftValueReference>Approval_Sent_to_Last_Approver_s_Manager_bs.Status</leftValueReference>
                 <operator>EqualTo</operator>
                 <rightValue>
-                    <stringValue>Approve</stringValue>
+                    <stringValue>Completed</stringValue>
                 </rightValue>
             </entryConditions>
             <exitConditionLogic>and</exitConditionLogic>
             <inputParameters>
                 <name>ApprovalSubmitter</name>
-                <value>
-                    <elementReference>$Record.LastModifiedBy.Email</elementReference>
-                </value>
             </inputParameters>
             <inputParameters>
                 <name>LeadInstance</name>
@@ -306,183 +453,23 @@
             </inputParameters>
             <inputParameters>
                 <name>NameOfSubmitter</name>
-                <value>
-                    <elementReference>FullNameOfSubmitter</elementReference>
-                </value>
             </inputParameters>
             <inputParameters>
                 <name>ProposedOwnerName</name>
-                <value>
-                    <elementReference>NameOfProposedOwner</elementReference>
-                </value>
             </inputParameters>
             <inputParameters>
                 <name>action</name>
                 <value>
-                    <stringValue>Approve</stringValue>
-                </value>
-            </inputParameters>
-            <label>Approval Email</label>
-            <requiresAsyncProcessing>false</requiresAsyncProcessing>
-            <runAsUser>false</runAsUser>
-            <shouldLock>false</shouldLock>
-            <stepSubtype>BackgroundStep</stepSubtype>
-        </stageSteps>
-        <stageSteps>
-            <name>Record_Has_been_Approved</name>
-            <actionName>RES_Autolaunched_Flow_Update_lead_Owner_to_Proposed_Owner</actionName>
-            <actionType>stepBackground</actionType>
-            <canAssigneeEdit>false</canAssigneeEdit>
-            <debugSimulateStep>false</debugSimulateStep>
-            <entryConditionLogic>and</entryConditionLogic>
-            <entryConditions>
-                <conditionType>EntryCondition</conditionType>
-                <leftValueReference>Approval_Sent_to_CSO.Outputs.approvalDecision</leftValueReference>
-                <operator>EqualTo</operator>
-                <rightValue>
-                    <stringValue>Approve</stringValue>
-                </rightValue>
-            </entryConditions>
-            <exitConditionLogic>and</exitConditionLogic>
-            <inputParameters>
-                <name>LeadRecord</name>
-                <value>
-                    <elementReference>$Record</elementReference>
+                    <stringValue>AssignmentNotification</stringValue>
                 </value>
             </inputParameters>
             <inputParameters>
-                <name>action</name>
+                <name>recipientId</name>
                 <value>
-                    <stringValue>UpdateRecord</stringValue>
+                    <elementReference>Approval_Sent_to_Last_Approver_s_Manager_bs.Outputs.managerId</elementReference>
                 </value>
             </inputParameters>
-            <label>Record Has been Approved</label>
-            <outputConfigParams>
-                <name>FaultMessage</name>
-                <value xsi:nil="true"/>
-            </outputConfigParams>
-            <requiresAsyncProcessing>false</requiresAsyncProcessing>
-            <runAsUser>false</runAsUser>
-            <shouldLock>false</shouldLock>
-            <stepSubtype>BackgroundStep</stepSubtype>
-        </stageSteps>
-        <stageSteps>
-            <name>Record_Got_Rejected</name>
-            <actionName>RES_AutoLaunch_Flow_Send_Approval_Email_Notifications</actionName>
-            <actionType>stepBackground</actionType>
-            <canAssigneeEdit>false</canAssigneeEdit>
-            <debugSimulateStep>false</debugSimulateStep>
-            <entryConditionLogic>or</entryConditionLogic>
-            <entryConditions>
-                <conditionType>EntryCondition</conditionType>
-                <leftValueReference>Approval_Sent_to_Sales_Manager.Outputs.approvalDecision</leftValueReference>
-                <operator>EqualTo</operator>
-                <rightValue>
-                    <stringValue>Reject</stringValue>
-                </rightValue>
-            </entryConditions>
-            <entryConditions>
-                <conditionType>EntryCondition</conditionType>
-                <leftValueReference>Approval_Sent_to_Sales_Director.Outputs.approvalDecision</leftValueReference>
-                <operator>EqualTo</operator>
-                <rightValue>
-                    <stringValue>Reject</stringValue>
-                </rightValue>
-            </entryConditions>
-            <entryConditions>
-                <conditionType>EntryCondition</conditionType>
-                <leftValueReference>Approval_Sent_to_CSO.Outputs.approvalDecision</leftValueReference>
-                <operator>EqualTo</operator>
-                <rightValue>
-                    <stringValue>Reject</stringValue>
-                </rightValue>
-            </entryConditions>
-            <exitConditionLogic>and</exitConditionLogic>
-            <inputParameters>
-                <name>ApprovalSubmitter</name>
-                <value>
-                    <elementReference>$Record.LastModifiedBy.Email</elementReference>
-                </value>
-            </inputParameters>
-            <inputParameters>
-                <name>LeadInstance</name>
-                <value>
-                    <elementReference>$Record</elementReference>
-                </value>
-            </inputParameters>
-            <inputParameters>
-                <name>NameOfSubmitter</name>
-                <value>
-                    <elementReference>FullNameOfSubmitter</elementReference>
-                </value>
-            </inputParameters>
-            <inputParameters>
-                <name>ProposedOwnerName</name>
-                <value>
-                    <elementReference>NameOfProposedOwner</elementReference>
-                </value>
-            </inputParameters>
-            <inputParameters>
-                <name>action</name>
-                <value>
-                    <stringValue>Reject</stringValue>
-                </value>
-            </inputParameters>
-            <label>Record Got Rejected: Email</label>
-            <requiresAsyncProcessing>false</requiresAsyncProcessing>
-            <runAsUser>false</runAsUser>
-            <shouldLock>false</shouldLock>
-            <stepSubtype>BackgroundStep</stepSubtype>
-        </stageSteps>
-        <stageSteps>
-            <name>Rejected_Record</name>
-            <actionName>RES_Autolaunched_Flow_Update_lead_Owner_to_Proposed_Owner</actionName>
-            <actionType>stepBackground</actionType>
-            <canAssigneeEdit>false</canAssigneeEdit>
-            <debugSimulateStep>false</debugSimulateStep>
-            <entryConditionLogic>or</entryConditionLogic>
-            <entryConditions>
-                <conditionType>EntryCondition</conditionType>
-                <leftValueReference>Approval_Sent_to_CSO.Outputs.approvalDecision</leftValueReference>
-                <operator>EqualTo</operator>
-                <rightValue>
-                    <stringValue>Reject</stringValue>
-                </rightValue>
-            </entryConditions>
-            <entryConditions>
-                <conditionType>EntryCondition</conditionType>
-                <leftValueReference>Approval_Sent_to_Sales_Director.Outputs.approvalDecision</leftValueReference>
-                <operator>EqualTo</operator>
-                <rightValue>
-                    <stringValue>Reject</stringValue>
-                </rightValue>
-            </entryConditions>
-            <entryConditions>
-                <conditionType>EntryCondition</conditionType>
-                <leftValueReference>Approval_Sent_to_Sales_Manager.Outputs.approvalDecision</leftValueReference>
-                <operator>EqualTo</operator>
-                <rightValue>
-                    <stringValue>Reject</stringValue>
-                </rightValue>
-            </entryConditions>
-            <exitConditionLogic>and</exitConditionLogic>
-            <inputParameters>
-                <name>LeadRecord</name>
-                <value>
-                    <elementReference>$Record</elementReference>
-                </value>
-            </inputParameters>
-            <inputParameters>
-                <name>action</name>
-                <value>
-                    <stringValue>Reject</stringValue>
-                </value>
-            </inputParameters>
-            <label>Rejected Record</label>
-            <outputConfigParams>
-                <name>FaultMessage</name>
-                <value xsi:nil="true"/>
-            </outputConfigParams>
+            <label>Send Approval Notification To current Approver</label>
             <requiresAsyncProcessing>false</requiresAsyncProcessing>
             <runAsUser>false</runAsUser>
             <shouldLock>false</shouldLock>
@@ -527,105 +514,13 @@
         </stageSteps>
     </orchestratedStages>
     <orchestratedStages>
-        <name>Sales_Director_Initiated</name>
-        <label>Sales Director Initiated Reassignment</label>
+        <name>Record_Has_been_Approved</name>
+        <label>Record Has been Approved</label>
         <locationX>0</locationX>
         <locationY>0</locationY>
         <exitConditionLogic>and</exitConditionLogic>
         <stageSteps>
-            <name>Approval_Sent_to_CSO2</name>
-            <actionName>standard_approvals__EvaluateApproval</actionName>
-            <actionType>stepApproval</actionType>
-            <assignees>
-                <assignee>
-                    <stringValue>RES_CSO</stringValue>
-                </assignee>
-                <assigneeType>Queue</assigneeType>
-            </assignees>
-            <canAssigneeEdit>true</canAssigneeEdit>
-            <debugSimulateStep>false</debugSimulateStep>
-            <entryConditionLogic>and</entryConditionLogic>
-            <exitConditionLogic>and</exitConditionLogic>
-            <inputParameters>
-                <name>ActionInput__RecordId</name>
-                <value>
-                    <elementReference>$Record.Id</elementReference>
-                </value>
-            </inputParameters>
-            <inputParameters>
-                <name>ActionInput__CustomEmailSubject</name>
-            </inputParameters>
-            <inputParameters>
-                <name>ActionInput__CustomEmailBody</name>
-            </inputParameters>
-            <label>Approval Sent to CSO</label>
-            <outputConfigParams>
-                <name>approvalComments</name>
-                <value xsi:nil="true"/>
-            </outputConfigParams>
-            <outputConfigParams>
-                <name>approvalDecision</name>
-                <value xsi:nil="true"/>
-            </outputConfigParams>
-            <requiresAsyncProcessing>false</requiresAsyncProcessing>
-            <runAsUser>false</runAsUser>
-            <shouldLock>true</shouldLock>
-            <stepSubtype>ApprovalStep</stepSubtype>
-        </stageSteps>
-        <stageSteps>
-            <name>Approval_Email2</name>
-            <actionName>RES_AutoLaunch_Flow_Send_Approval_Email_Notifications</actionName>
-            <actionType>stepBackground</actionType>
-            <canAssigneeEdit>false</canAssigneeEdit>
-            <debugSimulateStep>false</debugSimulateStep>
-            <entryConditionLogic>and</entryConditionLogic>
-            <entryConditions>
-                <conditionType>EntryCondition</conditionType>
-                <leftValueReference>Approval_Sent_to_CSO2.Outputs.approvalDecision</leftValueReference>
-                <operator>EqualTo</operator>
-                <rightValue>
-                    <stringValue>Approve</stringValue>
-                </rightValue>
-            </entryConditions>
-            <exitConditionLogic>and</exitConditionLogic>
-            <inputParameters>
-                <name>ApprovalSubmitter</name>
-                <value>
-                    <elementReference>$Record.LastModifiedBy.Email</elementReference>
-                </value>
-            </inputParameters>
-            <inputParameters>
-                <name>LeadInstance</name>
-                <value>
-                    <elementReference>$Record</elementReference>
-                </value>
-            </inputParameters>
-            <inputParameters>
-                <name>NameOfSubmitter</name>
-                <value>
-                    <elementReference>FullNameOfSubmitter</elementReference>
-                </value>
-            </inputParameters>
-            <inputParameters>
-                <name>ProposedOwnerName</name>
-                <value>
-                    <elementReference>NameOfProposedOwner</elementReference>
-                </value>
-            </inputParameters>
-            <inputParameters>
-                <name>action</name>
-                <value>
-                    <stringValue>Approve</stringValue>
-                </value>
-            </inputParameters>
-            <label>Approval Email</label>
-            <requiresAsyncProcessing>false</requiresAsyncProcessing>
-            <runAsUser>false</runAsUser>
-            <shouldLock>false</shouldLock>
-            <stepSubtype>BackgroundStep</stepSubtype>
-        </stageSteps>
-        <stageSteps>
-            <name>Record_Has_been_Approved2</name>
+            <name>Update_the_Lead_Record_with_Proposed_Owner</name>
             <actionName>RES_Autolaunched_Flow_Update_lead_Owner_to_Proposed_Owner</actionName>
             <actionType>stepBackground</actionType>
             <canAssigneeEdit>false</canAssigneeEdit>
@@ -633,10 +528,10 @@
             <entryConditionLogic>and</entryConditionLogic>
             <entryConditions>
                 <conditionType>EntryCondition</conditionType>
-                <leftValueReference>Approval_Sent_to_CSO2.Outputs.approvalDecision</leftValueReference>
+                <leftValueReference>Query_Approval_Work_Item.Outputs.status</leftValueReference>
                 <operator>EqualTo</operator>
                 <rightValue>
-                    <stringValue>Approve</stringValue>
+                    <stringValue>Approved</stringValue>
                 </rightValue>
             </entryConditions>
             <exitConditionLogic>and</exitConditionLogic>
@@ -652,7 +547,7 @@
                     <stringValue>UpdateRecord</stringValue>
                 </value>
             </inputParameters>
-            <label>Record Has been Approved</label>
+            <label>Update the Lead Record with Proposed Owner</label>
             <outputConfigParams>
                 <name>FaultMessage</name>
                 <value xsi:nil="true"/>
@@ -663,72 +558,12 @@
             <stepSubtype>BackgroundStep</stepSubtype>
         </stageSteps>
         <stageSteps>
-            <name>Record_Got_Rejected_Email2</name>
-            <actionName>RES_AutoLaunch_Flow_Send_Approval_Email_Notifications</actionName>
-            <actionType>stepBackground</actionType>
-            <canAssigneeEdit>false</canAssigneeEdit>
-            <debugSimulateStep>false</debugSimulateStep>
-            <entryConditionLogic>or</entryConditionLogic>
-            <entryConditions>
-                <conditionType>EntryCondition</conditionType>
-                <leftValueReference>Approval_Sent_to_CSO2.Outputs.approvalDecision</leftValueReference>
-                <operator>EqualTo</operator>
-                <rightValue>
-                    <stringValue>Reject</stringValue>
-                </rightValue>
-            </entryConditions>
-            <exitConditionLogic>and</exitConditionLogic>
-            <inputParameters>
-                <name>ApprovalSubmitter</name>
-                <value>
-                    <elementReference>$Record.LastModifiedBy.Email</elementReference>
-                </value>
-            </inputParameters>
-            <inputParameters>
-                <name>LeadInstance</name>
-                <value>
-                    <elementReference>$Record</elementReference>
-                </value>
-            </inputParameters>
-            <inputParameters>
-                <name>NameOfSubmitter</name>
-                <value>
-                    <elementReference>FullNameOfSubmitter</elementReference>
-                </value>
-            </inputParameters>
-            <inputParameters>
-                <name>ProposedOwnerName</name>
-                <value>
-                    <elementReference>NameOfProposedOwner</elementReference>
-                </value>
-            </inputParameters>
-            <inputParameters>
-                <name>action</name>
-                <value>
-                    <stringValue>Reject</stringValue>
-                </value>
-            </inputParameters>
-            <label>Record Got Rejected: Email</label>
-            <requiresAsyncProcessing>false</requiresAsyncProcessing>
-            <runAsUser>false</runAsUser>
-            <shouldLock>false</shouldLock>
-            <stepSubtype>BackgroundStep</stepSubtype>
-        </stageSteps>
-        <stageSteps>
-            <name>Rejected_Record2</name>
+            <name>Latest_Approver_Rejected_Approval</name>
             <actionName>RES_Autolaunched_Flow_Update_lead_Owner_to_Proposed_Owner</actionName>
             <actionType>stepBackground</actionType>
             <canAssigneeEdit>false</canAssigneeEdit>
             <debugSimulateStep>false</debugSimulateStep>
-            <entryConditionLogic>or</entryConditionLogic>
-            <entryConditions>
-                <conditionType>EntryCondition</conditionType>
-                <leftValueReference>Approval_Sent_to_CSO2.Outputs.approvalDecision</leftValueReference>
-                <operator>EqualTo</operator>
-                <rightValue>
-                    <stringValue>Reject</stringValue>
-                </rightValue>
-            </entryConditions>
+            <entryConditionLogic>and</entryConditionLogic>
             <exitConditionLogic>and</exitConditionLogic>
             <inputParameters>
                 <name>LeadRecord</name>
@@ -739,10 +574,10 @@
             <inputParameters>
                 <name>action</name>
                 <value>
-                    <stringValue>Reject</stringValue>
+                    <stringValue>Recall</stringValue>
                 </value>
             </inputParameters>
-            <label>Rejected Record</label>
+            <label>Latest Approver Rejected Approval</label>
             <outputConfigParams>
                 <name>FaultMessage</name>
                 <value xsi:nil="true"/>
@@ -752,103 +587,8 @@
             <shouldLock>false</shouldLock>
             <stepSubtype>BackgroundStep</stepSubtype>
         </stageSteps>
-    </orchestratedStages>
-    <orchestratedStages>
-        <name>Sales_Manager_Initiated_Reassignment</name>
-        <label>Sales Manager Initiated Reassignment</label>
-        <locationX>0</locationX>
-        <locationY>0</locationY>
-        <exitConditionLogic>and</exitConditionLogic>
         <stageSteps>
-            <name>Approval_Sent_to_Sales_Director1</name>
-            <actionName>standard_approvals__EvaluateApproval</actionName>
-            <actionType>stepApproval</actionType>
-            <assignees>
-                <assignee>
-                    <stringValue>RES_Sales_Director</stringValue>
-                </assignee>
-                <assigneeType>Queue</assigneeType>
-            </assignees>
-            <canAssigneeEdit>true</canAssigneeEdit>
-            <debugSimulateStep>false</debugSimulateStep>
-            <entryConditionLogic>and</entryConditionLogic>
-            <exitConditionLogic>and</exitConditionLogic>
-            <inputParameters>
-                <name>ActionInput__RecordId</name>
-                <value>
-                    <elementReference>$Record.Id</elementReference>
-                </value>
-            </inputParameters>
-            <inputParameters>
-                <name>ActionInput__CustomEmailSubject</name>
-            </inputParameters>
-            <inputParameters>
-                <name>ActionInput__CustomEmailBody</name>
-            </inputParameters>
-            <label>Approval Sent to Sales Director</label>
-            <outputConfigParams>
-                <name>approvalComments</name>
-                <value xsi:nil="true"/>
-            </outputConfigParams>
-            <outputConfigParams>
-                <name>approvalDecision</name>
-                <value xsi:nil="true"/>
-            </outputConfigParams>
-            <requiresAsyncProcessing>false</requiresAsyncProcessing>
-            <runAsUser>false</runAsUser>
-            <shouldLock>true</shouldLock>
-            <stepSubtype>ApprovalStep</stepSubtype>
-        </stageSteps>
-        <stageSteps>
-            <name>Approval_Sent_to_CSO1</name>
-            <actionName>standard_approvals__EvaluateApproval</actionName>
-            <actionType>stepApproval</actionType>
-            <assignees>
-                <assignee>
-                    <stringValue>RES_CSO</stringValue>
-                </assignee>
-                <assigneeType>Queue</assigneeType>
-            </assignees>
-            <canAssigneeEdit>true</canAssigneeEdit>
-            <debugSimulateStep>false</debugSimulateStep>
-            <entryConditionLogic>and</entryConditionLogic>
-            <entryConditions>
-                <conditionType>EntryCondition</conditionType>
-                <leftValueReference>Approval_Sent_to_Sales_Director1.Outputs.approvalDecision</leftValueReference>
-                <operator>EqualTo</operator>
-                <rightValue>
-                    <stringValue>Approve</stringValue>
-                </rightValue>
-            </entryConditions>
-            <exitConditionLogic>and</exitConditionLogic>
-            <inputParameters>
-                <name>ActionInput__RecordId</name>
-                <value>
-                    <elementReference>$Record.Id</elementReference>
-                </value>
-            </inputParameters>
-            <inputParameters>
-                <name>ActionInput__CustomEmailSubject</name>
-            </inputParameters>
-            <inputParameters>
-                <name>ActionInput__CustomEmailBody</name>
-            </inputParameters>
-            <label>Approval Sent to CSO</label>
-            <outputConfigParams>
-                <name>approvalComments</name>
-                <value xsi:nil="true"/>
-            </outputConfigParams>
-            <outputConfigParams>
-                <name>approvalDecision</name>
-                <value xsi:nil="true"/>
-            </outputConfigParams>
-            <requiresAsyncProcessing>false</requiresAsyncProcessing>
-            <runAsUser>false</runAsUser>
-            <shouldLock>true</shouldLock>
-            <stepSubtype>ApprovalStep</stepSubtype>
-        </stageSteps>
-        <stageSteps>
-            <name>Approval_Email1</name>
+            <name>Approved_By_CSO</name>
             <actionName>RES_AutoLaunch_Flow_Send_Approval_Email_Notifications</actionName>
             <actionType>stepBackground</actionType>
             <canAssigneeEdit>false</canAssigneeEdit>
@@ -856,10 +596,10 @@
             <entryConditionLogic>and</entryConditionLogic>
             <entryConditions>
                 <conditionType>EntryCondition</conditionType>
-                <leftValueReference>Approval_Sent_to_CSO1.Outputs.approvalDecision</leftValueReference>
+                <leftValueReference>Query_Approval_Work_Item.Outputs.status</leftValueReference>
                 <operator>EqualTo</operator>
                 <rightValue>
-                    <stringValue>Approve</stringValue>
+                    <stringValue>Approved</stringValue>
                 </rightValue>
             </entryConditions>
             <exitConditionLogic>and</exitConditionLogic>
@@ -893,71 +633,25 @@
                     <stringValue>Approve</stringValue>
                 </value>
             </inputParameters>
-            <label>Approval Email</label>
+            <label>Approved By CSO</label>
             <requiresAsyncProcessing>false</requiresAsyncProcessing>
             <runAsUser>false</runAsUser>
             <shouldLock>false</shouldLock>
             <stepSubtype>BackgroundStep</stepSubtype>
         </stageSteps>
         <stageSteps>
-            <name>Record_Has_been_Approved1</name>
-            <actionName>RES_Autolaunched_Flow_Update_lead_Owner_to_Proposed_Owner</actionName>
+            <name>Approval_got_Rejected</name>
+            <actionName>RES_AutoLaunch_Flow_Send_Approval_Email_Notifications</actionName>
             <actionType>stepBackground</actionType>
             <canAssigneeEdit>false</canAssigneeEdit>
             <debugSimulateStep>false</debugSimulateStep>
             <entryConditionLogic>and</entryConditionLogic>
             <entryConditions>
                 <conditionType>EntryCondition</conditionType>
-                <leftValueReference>Approval_Sent_to_CSO1.Outputs.approvalDecision</leftValueReference>
+                <leftValueReference>Query_Approval_Work_Item.Outputs.status</leftValueReference>
                 <operator>EqualTo</operator>
                 <rightValue>
-                    <stringValue>Approve</stringValue>
-                </rightValue>
-            </entryConditions>
-            <exitConditionLogic>and</exitConditionLogic>
-            <inputParameters>
-                <name>LeadRecord</name>
-                <value>
-                    <elementReference>$Record</elementReference>
-                </value>
-            </inputParameters>
-            <inputParameters>
-                <name>action</name>
-                <value>
-                    <stringValue>UpdateRecord</stringValue>
-                </value>
-            </inputParameters>
-            <label>Record Has been Approved</label>
-            <outputConfigParams>
-                <name>FaultMessage</name>
-                <value xsi:nil="true"/>
-            </outputConfigParams>
-            <requiresAsyncProcessing>false</requiresAsyncProcessing>
-            <runAsUser>false</runAsUser>
-            <shouldLock>false</shouldLock>
-            <stepSubtype>BackgroundStep</stepSubtype>
-        </stageSteps>
-        <stageSteps>
-            <name>Record_Got_Rejected1</name>
-            <actionName>RES_AutoLaunch_Flow_Send_Approval_Email_Notifications</actionName>
-            <actionType>stepBackground</actionType>
-            <canAssigneeEdit>false</canAssigneeEdit>
-            <debugSimulateStep>false</debugSimulateStep>
-            <entryConditionLogic>or</entryConditionLogic>
-            <entryConditions>
-                <conditionType>EntryCondition</conditionType>
-                <leftValueReference>Approval_Sent_to_CSO1.Outputs.approvalDecision</leftValueReference>
-                <operator>EqualTo</operator>
-                <rightValue>
-                    <stringValue>Reject</stringValue>
-                </rightValue>
-            </entryConditions>
-            <entryConditions>
-                <conditionType>EntryCondition</conditionType>
-                <leftValueReference>Approval_Sent_to_Sales_Director1.Outputs.approvalDecision</leftValueReference>
-                <operator>EqualTo</operator>
-                <rightValue>
-                    <stringValue>Reject</stringValue>
+                    <stringValue>Rejected</stringValue>
                 </rightValue>
             </entryConditions>
             <exitConditionLogic>and</exitConditionLogic>
@@ -991,53 +685,7 @@
                     <stringValue>Reject</stringValue>
                 </value>
             </inputParameters>
-            <label>Record Got Rejected: Email</label>
-            <requiresAsyncProcessing>false</requiresAsyncProcessing>
-            <runAsUser>false</runAsUser>
-            <shouldLock>false</shouldLock>
-            <stepSubtype>BackgroundStep</stepSubtype>
-        </stageSteps>
-        <stageSteps>
-            <name>Rejected_Record1</name>
-            <actionName>RES_Autolaunched_Flow_Update_lead_Owner_to_Proposed_Owner</actionName>
-            <actionType>stepBackground</actionType>
-            <canAssigneeEdit>false</canAssigneeEdit>
-            <debugSimulateStep>false</debugSimulateStep>
-            <entryConditionLogic>or</entryConditionLogic>
-            <entryConditions>
-                <conditionType>EntryCondition</conditionType>
-                <leftValueReference>Approval_Sent_to_CSO1.Outputs.approvalDecision</leftValueReference>
-                <operator>EqualTo</operator>
-                <rightValue>
-                    <stringValue>Reject</stringValue>
-                </rightValue>
-            </entryConditions>
-            <entryConditions>
-                <conditionType>EntryCondition</conditionType>
-                <leftValueReference>Approval_Sent_to_Sales_Director1.Outputs.approvalDecision</leftValueReference>
-                <operator>EqualTo</operator>
-                <rightValue>
-                    <stringValue>Reject</stringValue>
-                </rightValue>
-            </entryConditions>
-            <exitConditionLogic>and</exitConditionLogic>
-            <inputParameters>
-                <name>LeadRecord</name>
-                <value>
-                    <elementReference>$Record</elementReference>
-                </value>
-            </inputParameters>
-            <inputParameters>
-                <name>action</name>
-                <value>
-                    <stringValue>Reject</stringValue>
-                </value>
-            </inputParameters>
-            <label>Rejected Record</label>
-            <outputConfigParams>
-                <name>FaultMessage</name>
-                <value xsi:nil="true"/>
-            </outputConfigParams>
+            <label>Approval got Rejected</label>
             <requiresAsyncProcessing>false</requiresAsyncProcessing>
             <runAsUser>false</runAsUser>
             <shouldLock>false</shouldLock>
@@ -1070,14 +718,6 @@
         <connector>
             <targetReference>if_proposed_owner_is_not_null</targetReference>
         </connector>
-        <filterLogic>and</filterLogic>
-        <filters>
-            <field>RES_Proposed_User__c</field>
-            <operator>IsChanged</operator>
-            <value>
-                <booleanValue>true</booleanValue>
-            </value>
-        </filters>
         <object>Lead</object>
         <recordTriggerType>Update</recordTriggerType>
         <scheduledPaths>
@@ -1089,4 +729,14 @@
         <triggerType>RecordAfterSave</triggerType>
     </start>
     <status>Active</status>
+    <variables>
+        <name>username</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <value>
+            <stringValue>saurabh.mulay@globant.com.diriyah.dev</stringValue>
+        </value>
+    </variables>
 </Flow>
