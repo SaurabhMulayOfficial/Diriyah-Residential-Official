@@ -136,6 +136,7 @@ jobs:
 
       - name: Install Salesforce CLI
         run: npm install -g @salesforce/cli
+        run: sf --version
 
       - name: Authenticate 🐒
         run: |
