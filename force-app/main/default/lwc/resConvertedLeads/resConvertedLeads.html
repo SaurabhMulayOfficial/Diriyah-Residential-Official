@@ -1,15 +1,37 @@
 <template>
-    <lightning-card title={heading} icon-name="standard:lead">
+    <lightning-card>
+
+        <div slot="title" class="title-section">
+            <lightning-icon
+                icon-name="standard:lead"
+                size="medium"
+                class="title-icon">
+            </lightning-icon>
+            <span class="header-title">{heading}</span>
+        </div>
+
+        <div slot="actions" class="search-section">
+            <lightning-input
+                type="search"
+                variant="label-hidden"
+                placeholder="Search this list..."
+                value={searchKey}
+                onchange={handleSearch}>
+            </lightning-input>
+        </div>
+
         <div class="slds-p-around_medium">
 
             <template if:true={isLoading}>
-                <lightning-spinner alternative-text="Loading converted leads"></lightning-spinner>
+                <lightning-spinner
+                    alternative-text="Loading converted leads">
+                </lightning-spinner>
             </template>
 
             <template if:true={hasRecords}>
                 <lightning-datatable
                     key-field="id"
-                    data={convertedLeads}
+                    data={leads}
                     columns={columns}
                     hide-checkbox-column>
                 </lightning-datatable>
@@ -17,12 +39,75 @@
 
             <template if:false={hasRecords}>
                 <template if:false={isLoading}>
-                    <div class="slds-align_absolute-center slds-p-around_large empty-message">
+                    <div class="empty-message">
                         No converted leads found.
                     </div>
                 </template>
             </template>
 
         </div>
+
+        <template if:true={showPagination}>
+            <div class="pagination-bar">
+                <div class="pagination-left">
+                    <span class="pagination-label">Rows per page:</span>
+                    <div class="page-size-wrapper">
+                        <lightning-combobox
+                            value={pageSizeValue}
+                            options={pageSizeOptions}
+                            variant="label-hidden"
+                            onchange={handlePageSizeChange}>
+                        </lightning-combobox>
+                    </div>
+                    <span class="pagination-label">{recordRangeLabel}</span>
+                </div>
+                <div class="pagination-right">
+                    <lightning-button-icon
+                        icon-name="utility:jump_to_left"
+                        variant="bare"
+                        size="small"
+                        alternative-text="First Page"
+                        disabled={isFirstPage}
+                        onclick={handleFirstPage}>
+                    </lightning-button-icon>
+                    <lightning-button-icon
+                        icon-name="utility:chevronleft"
+                        variant="bare"
+                        size="small"
+                        alternative-text="Previous Page"
+                        disabled={isFirstPage}
+                        onclick={handlePrevPage}>
+                    </lightning-button-icon>
+                    <span class="pagination-label">Page</span>
+                    <input
+                        type="number"
+                        class="page-input"
+                        value={pageInputValue}
+                        min="1"
+                        max={totalPages}
+                        onchange={handlePageInputChange}
+                        onkeydown={handlePageInputKeydown}
+                        onblur={handlePageInputBlur} />
+                    <span class="pagination-label">of {totalPages}</span>
+                    <lightning-button-icon
+                        icon-name="utility:chevronright"
+                        variant="bare"
+                        size="small"
+                        alternative-text="Next Page"
+                        disabled={isLastPage}
+                        onclick={handleNextPage}>
+                    </lightning-button-icon>
+                    <lightning-button-icon
+                        icon-name="utility:jump_to_right"
+                        variant="bare"
+                        size="small"
+                        alternative-text="Last Page"
+                        disabled={isLastPage}
+                        onclick={handleLastPage}>
+                    </lightning-button-icon>
+                </div>
+            </div>
+        </template>
+
     </lightning-card>
 </template>

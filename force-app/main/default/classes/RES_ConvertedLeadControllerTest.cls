@@ -30,7 +30,7 @@ private class RES_ConvertedLeadControllerTest {
 
         Test.startTest();
         RES_ConvertedLeadService.ConvertedLeadResponse response =
-            RES_ConvertedLeadController.getConvertedLeads();
+            RES_ConvertedLeadController.getConvertedLeads(1, 20, '');
         Test.stopTest();
 
         System.assertEquals('All Converted Leads', response.heading);
@@ -54,7 +54,7 @@ private class RES_ConvertedLeadControllerTest {
         System.runAs(testUser) {
             Test.startTest();
             RES_ConvertedLeadService.ConvertedLeadResponse response =
-                RES_ConvertedLeadController.getConvertedLeads();
+                RES_ConvertedLeadController.getConvertedLeads(1, 20, '');
             Test.stopTest();
 
             System.assertEquals('My Converted Leads', response.heading);
@@ -83,7 +83,7 @@ private class RES_ConvertedLeadControllerTest {
         System.runAs(managerUser) {
             Test.startTest();
             RES_ConvertedLeadService.ConvertedLeadResponse response =
-                RES_ConvertedLeadController.getConvertedLeads();
+                RES_ConvertedLeadController.getConvertedLeads(1, 20, '');
             Test.stopTest();
 
             System.assertEquals('My Team Converted Leads', response.heading);
@@ -103,7 +103,7 @@ private class RES_ConvertedLeadControllerTest {
         System.runAs(testUser) {
             Test.startTest();
             RES_ConvertedLeadService.ConvertedLeadResponse response =
-                RES_ConvertedLeadController.getConvertedLeads();
+                RES_ConvertedLeadController.getConvertedLeads(1, 20, '');
             Test.stopTest();
 
             System.assertEquals('Converted Leads', response.heading);

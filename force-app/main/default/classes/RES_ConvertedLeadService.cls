@@ -8,6 +8,10 @@ public without sharing class RES_ConvertedLeadService {
     public class ConvertedLeadResponse {
         @AuraEnabled public String heading;
         @AuraEnabled public List<ConvertedLeadRow> leads;
+        @AuraEnabled public Integer totalCount;
+        @AuraEnabled public Integer totalPages;
+        @AuraEnabled public Integer pageNumber;
+        @AuraEnabled public Integer pageSize;
     }
 
     public class ConvertedLeadRow {
@@ -34,17 +38,45 @@ public without sharing class RES_ConvertedLeadService {
     @TestVisible private static Set<Id> testMyConvertedRoleIds;
     @TestVisible private static Set<Id> testMyTeamConvertedRoleIds;
 
-    public static ConvertedLeadResponse getConvertedLeads() {
+    public static ConvertedLeadResponse getConvertedLeads(
+        Integer pageNumber,
+        Integer pageSize,
+        String searchKey
+    ) {
         UserContext currentUserContext = getCurrentUserContext();
 
-        List<Lead> convertedLeads = filterConvertedLeads(
+        List<Lead> allLeads = filterConvertedLeads(
             getConvertedLeadSourceRecords(),
             currentUserContext
         );
 
+        if (String.isNotBlank(searchKey)) {
+            allLeads = filterBySearchKey(allLeads, searchKey.toLowerCase());
+        }
+
+        Integer total = allLeads.size();
+        Integer safeSize = (pageSize != null && pageSize > 0) ? pageSize : 20;
+        Integer totalPages = total == 0 ? 1 : (Integer) Math.ceil((Double) total / safeSize);
+        Integer safePage = (pageNumber != null && pageNumber > 0) ? pageNumber : 1;
+        if (safePage > totalPages) {
+            safePage = totalPages;
+        }
+
+        Integer startIdx = (safePage - 1) * safeSize;
+        Integer endIdx = Math.min(startIdx + safeSize, total);
+
+        List<Lead> pageLeads = new List<Lead>();
+        for (Integer i = startIdx; i < endIdx; i++) {
+            pageLeads.add(allLeads[i]);
+        }
+
         ConvertedLeadResponse response = new ConvertedLeadResponse();
         response.heading = getHeading(currentUserContext);
-        response.leads = buildConvertedLeadRows(convertedLeads);
+        response.leads = buildConvertedLeadRows(pageLeads);
+        response.totalCount = total;
+        response.totalPages = totalPages;
+        response.pageNumber = safePage;
+        response.pageSize = safeSize;
 
         return response;
     }
@@ -161,6 +193,28 @@ public without sharing class RES_ConvertedLeadService {
         }
 
         return allUserIds;
+    }
+
+    private static List<Lead> filterBySearchKey(
+        List<Lead> leads,
+        String lowerKey
+    ) {
+        List<Lead> filtered = new List<Lead>();
+        for (Lead ld : leads) {
+            String combined = (
+                (ld.Name != null ? ld.Name : '') + ' ' +
+                (ld.Owner != null && ld.Owner.Name != null ? ld.Owner.Name : '') + ' ' +
+                (ld.Company != null ? ld.Company : '') + ' ' +
+                (ld.Email != null ? ld.Email : '') + ' ' +
+                (ld.MobilePhone != null ? ld.MobilePhone : '') + ' ' +
+                (ld.Status != null ? ld.Status : '') + ' ' +
+                (ld.LeadSource != null ? ld.LeadSource : '')
+            ).toLowerCase();
+            if (combined.contains(lowerKey)) {
+                filtered.add(ld);
+            }
+        }
+        return filtered;
     }
 
     private static List<ConvertedLeadRow> buildConvertedLeadRows(
