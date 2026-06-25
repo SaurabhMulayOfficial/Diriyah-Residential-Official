@@ -1,10 +1,29 @@
-import { LightningElement, wire } from 'lwc';
+import { LightningElement } from 'lwc';
 import getConvertedLeads from '@salesforce/apex/RES_ConvertedLeadController.getConvertedLeads';
+
+const DEFAULT_PAGE_SIZE = 20;
+const SEARCH_DELAY = 300;
 
 export default class ResConvertedLeads extends LightningElement {
     heading = 'Converted Leads';
-    convertedLeads = [];
     isLoading = true;
+
+    leads = [];
+    pageNumber = 1;
+    pageSize = DEFAULT_PAGE_SIZE;
+    searchKey = '';
+    totalCount = 0;
+    totalPages = 1;
+    pageInputValue = '1';
+
+    _searchTimeout;
+
+    pageSizeOptions = [
+        { label: '10', value: '10' },
+        { label: '20', value: '20' },
+        { label: '50', value: '50' },
+        { label: '100', value: '100' }
+    ];
 
     columns = [
         {
@@ -26,42 +45,156 @@ export default class ResConvertedLeads extends LightningElement {
             label: 'Created Date',
             fieldName: 'createdDate',
             type: 'date',
-            typeAttributes: {
-                year: 'numeric',
-                month: '2-digit',
-                day: '2-digit',
-            }
+            typeAttributes: { year: 'numeric', month: '2-digit', day: '2-digit' }
         },
         {
             label: 'Converted Date',
             fieldName: 'convertedDate',
             type: 'date',
-            typeAttributes: {
-                year: 'numeric',
-                month: '2-digit',
-                day: '2-digit',
-            }
-        }    
+            typeAttributes: { year: 'numeric', month: '2-digit', day: '2-digit' }
+        }
     ];
 
-    get hasRecords() {
-        return this.convertedLeads && this.convertedLeads.length > 0;
+    connectedCallback() {
+        this.loadData();
     }
 
-    @wire(getConvertedLeads)
-    wiredConvertedLeads({ data, error }) {
-        this.isLoading = false;
+    get hasRecords() {
+        return this.leads.length > 0;
+    }
 
-        if (data) {
-            this.heading = data.heading || 'Converted Leads';
+    get isFirstPage() {
+        return this.pageNumber <= 1;
+    }
 
-            this.convertedLeads = (data.leads || []).map((leadRecord) => ({
-                ...leadRecord,
-                leadUrl: '/' + leadRecord.id
-            }));
-        } else if (error) {
-            this.convertedLeads = [];
-            console.error('Error loading converted leads', JSON.stringify(error));
+    get isLastPage() {
+        return this.pageNumber >= this.totalPages;
+    }
+
+    get startRecord() {
+        if (this.totalCount === 0) return 0;
+        return (this.pageNumber - 1) * this.pageSize + 1;
+    }
+
+    get endRecord() {
+        return Math.min(this.pageNumber * this.pageSize, this.totalCount);
+    }
+
+    get recordRangeLabel() {
+        if (this.totalCount === 0) return '0 records';
+        return `${this.startRecord}–${this.endRecord} of ${this.totalCount}`;
+    }
+
+    get showPagination() {
+        return !this.isLoading && this.totalCount > 0;
+    }
+
+    get pageSizeValue() {
+        return String(this.pageSize);
+    }
+
+    handleSearch(event) {
+        this.searchKey = event.target.value;
+        clearTimeout(this._searchTimeout);
+        // eslint-disable-next-line @lwc/lwc/no-async-operation
+        this._searchTimeout = setTimeout(() => {
+            this.pageNumber = 1;
+            this.pageInputValue = '1';
+            this.loadData();
+        }, SEARCH_DELAY);
+    }
+
+    handlePageSizeChange(event) {
+        this.pageSize = parseInt(event.detail.value, 10);
+        this.pageNumber = 1;
+        this.pageInputValue = '1';
+        this.loadData();
+    }
+
+    handleFirstPage() {
+        if (!this.isFirstPage) {
+            this.pageNumber = 1;
+            this.pageInputValue = '1';
+            this.loadData();
         }
+    }
+
+    handlePrevPage() {
+        if (!this.isFirstPage) {
+            this.pageNumber -= 1;
+            this.pageInputValue = String(this.pageNumber);
+            this.loadData();
+        }
+    }
+
+    handleNextPage() {
+        if (!this.isLastPage) {
+            this.pageNumber += 1;
+            this.pageInputValue = String(this.pageNumber);
+            this.loadData();
+        }
+    }
+
+    handleLastPage() {
+        if (!this.isLastPage) {
+            this.pageNumber = this.totalPages;
+            this.pageInputValue = String(this.pageNumber);
+            this.loadData();
+        }
+    }
+
+    handlePageInputChange(event) {
+        this.pageInputValue = event.target.value;
+    }
+
+    handlePageInputKeydown(event) {
+        if (event.key === 'Enter') {
+            this.navigateToPage();
+        }
+    }
+
+    handlePageInputBlur() {
+        this.navigateToPage();
+    }
+
+    navigateToPage() {
+        let page = parseInt(this.pageInputValue, 10);
+        if (isNaN(page) || page < 1) page = 1;
+        if (page > this.totalPages) page = this.totalPages;
+        this.pageInputValue = String(page);
+        if (page !== this.pageNumber) {
+            this.pageNumber = page;
+            this.loadData();
+        }
+    }
+
+    loadData() {
+        this.isLoading = true;
+        getConvertedLeads({
+            pageNumber: this.pageNumber,
+            pageSize: this.pageSize,
+            searchKey: this.searchKey
+        })
+            .then(result => {
+                this.heading = result.heading || 'Converted Leads';
+                this.leads = (result.leads || []).map(lead => ({
+                    ...lead,
+                    leadUrl: '/' + lead.id
+                }));
+                this.totalCount = result.totalCount || 0;
+                this.totalPages = result.totalPages || 1;
+                this.pageNumber = result.pageNumber || 1;
+                this.pageSize = result.pageSize || DEFAULT_PAGE_SIZE;
+                this.pageInputValue = String(this.pageNumber);
+            })
+            .catch(error => {
+                this.leads = [];
+                this.totalCount = 0;
+                this.totalPages = 1;
+                console.error('Error loading converted leads', JSON.stringify(error));
+            })
+            .finally(() => {
+                this.isLoading = false;
+            });
     }
 }

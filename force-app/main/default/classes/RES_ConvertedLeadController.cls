@@ -5,8 +5,12 @@
  */
 public with sharing class RES_ConvertedLeadController {
 
-    @AuraEnabled(cacheable=true)
-    public static RES_ConvertedLeadService.ConvertedLeadResponse getConvertedLeads() {
-        return RES_ConvertedLeadService.getConvertedLeads();
+    @AuraEnabled
+    public static RES_ConvertedLeadService.ConvertedLeadResponse getConvertedLeads(
+        Integer pageNumber,
+        Integer pageSize,
+        String searchKey
+    ) {
+        return RES_ConvertedLeadService.getConvertedLeads(pageNumber, pageSize, searchKey);
     }
 }

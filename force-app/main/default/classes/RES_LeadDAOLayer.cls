@@ -141,7 +141,7 @@ public without sharing class RES_LeadDAOLayer extends RES_BaseDAOLayer {
             'FROM Lead ' +
             'WHERE IsConverted = true ' +
             'ORDER BY ConvertedDate DESC ' +
-            'LIMIT 2000';
+            'LIMIT 50000';
 
         return (List<Lead>) executeQuery(
             soql,
