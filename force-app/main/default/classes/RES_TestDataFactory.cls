@@ -35,6 +35,7 @@ public class RES_TestDataFactory {
     private static final String PS_DIRECTOR         = 'RES_Diriyah_Residential_Wadi_Safar_Senior_Director_Permission_Set';
     private static final String PS_MANAGER          = 'RES_Diriyah_Residential_Wadi_Safar_Senior_Manager_Permission_Set';
     private static final String LEAD_RECORD_TYPE    = 'Residential Company';
+    private static final String PROJECT_DEFAULT     = 'Amansamar Residences Wadi Safar';
 
     private class UserConfig {
         String email;
@@ -45,6 +46,10 @@ public class RES_TestDataFactory {
         String profileName;
         String roleDeveloperName;
     }
+
+    // ═══════════════════════════════════════════════════════════════════════
+    // User Creation Methods
+    // ═══════════════════════════════════════════════════════════════════════
 
     public static User createSalesRepUser() {
         UserConfig config = new UserConfig();
@@ -91,7 +96,7 @@ public class RES_TestDataFactory {
         return u;
     }
 
-    public static User createSystemAdminUser(){
+    public static User createSystemAdminUser() {
         Profile prof = [
             SELECT Id FROM Profile
             WHERE Name = :PROFILE_SYSADMIN
@@ -141,7 +146,58 @@ public class RES_TestDataFactory {
         );
     }
 
+    // ═══════════════════════════════════════════════════════════════════════
+    // Lead Creation Methods (ENHANCED FOR CONVERSION TESTS)
+    // ═══════════════════════════════════════════════════════════════════════
+
+    /**
+     * @description Creates a basic test lead
+     * @param email Lead email address
+     * @return Lead with auto-generated phone from email hash
+     */
     public static Lead createLead(String email) {
+        return createLeadWithProject(email, PROJECT_DEFAULT);
+    }
+
+    /**
+     * @description Creates a test lead with custom project
+     * @param email Lead email address
+     * @param project RES_Project__c value
+     * @return Lead with all required fields for conversion
+     */
+    public static Lead createLeadWithProject(String email, String project) {
+        return createLeadFull(email, null, null, project, null, 'Met');
+    }
+
+    /**
+     * @description Creates a test lead with SLA status and project
+     * @param email Lead email address
+     * @param slaStatus RES_SLA_Status__c value
+     * @param project RES_Project__c value
+     * @return Lead ready for conversion testing
+     */
+    public static Lead createLeadWithSLA(String email, String slaStatus, String project) {
+        return createLeadFull(email, null, null, project, null, slaStatus);
+    }
+
+    /**
+     * @description Creates a lead with all possible parameters
+     * @param email Lead email
+     * @param mobilePhone Lead mobile phone (auto-generated if null)
+     * @param company Lead company
+     * @param project RES_Project__c
+     * @param status Lead status
+     * @param slaStatus RES_SLA_Status__c
+     * @return Lead with all fields populated
+     */
+    public static Lead createLeadFull(
+        String email,
+        String mobilePhone,
+        String company,
+        String project,
+        String status,
+        String slaStatus
+    ) {
         RecordType rt = [
             SELECT Id
             FROM RecordType
@@ -150,20 +206,22 @@ public class RES_TestDataFactory {
             LIMIT 1
         ];
     
-        String prefix      = email.substringBefore('@').left(10);
-        String hashStr     = String.valueOf(Math.abs(email.hashCode()));
-        String uniquePhone = '+9198' + hashStr.left(7).rightPad(7, '0');
+        String prefix = email.substringBefore('@').left(10);
+        String hashStr = String.valueOf(Math.abs(email.hashCode()));
+        String uniquePhone = mobilePhone != null ? mobilePhone : '+9198' + hashStr.left(7).rightPad(7, '0');
     
         Lead l = new Lead(
             OwnerId = UserInfo.getUserId(),
             RecordTypeId = rt.Id,
             FirstName = prefix,
             LastName = 'TestLead',
-            Company = prefix + ' Co',
-            Status = 'New',
+            Company = company != null ? company : prefix + ' Co',
+            Status = status != null ? status : 'New',
             Email = email,
             Phone = uniquePhone,
-            MobilePhone = uniquePhone
+            MobilePhone = uniquePhone,
+            RES_Project__c = project != null ? project : PROJECT_DEFAULT,
+            RES_SLA_Status__c = slaStatus != null ? slaStatus : 'Running'
         );
     
         Database.DMLOptions dml = new Database.DMLOptions();
@@ -178,14 +236,24 @@ public class RES_TestDataFactory {
         return l;
     }
 
-    public static lead createLead(String email, String source, Id OwnerId){
-        Id rtId_individual = Schema.SObjectType.Lead.getRecordTypeInfosByDeveloperName().get('RES_Individual').getRecordTypeId();
-        String prefix      = email.substringBefore('@').left(10);
-        String hashStr     = String.valueOf(Math.abs(email.hashCode()));
+    /**
+     * @description Creates a lead for individual record type
+     * @param email Lead email
+     * @param source Lead source
+     * @param ownerId Lead owner ID
+     * @return Lead with specified owner and source
+     */
+    public static Lead createLead(String email, String source, Id ownerId) {
+        Id rtId_individual = Schema.SObjectType.Lead.getRecordTypeInfosByDeveloperName()
+            .get('RES_Individual')
+            .getRecordTypeId();
+        
+        String prefix = email.substringBefore('@').left(10);
+        String hashStr = String.valueOf(Math.abs(email.hashCode()));
         String uniquePhone = '+9198' + hashStr.left(7).rightPad(7, '0');
         
         Lead l = new Lead(
-            OwnerId = OwnerId,
+            OwnerId = ownerId,
             RecordTypeId = rtId_individual,
             FirstName = prefix,
             LastName = 'TestLead',
@@ -194,24 +262,116 @@ public class RES_TestDataFactory {
             Email = email,
             Phone = uniquePhone,
             MobilePhone = uniquePhone,
-            leadSource = source
+            LeadSource = source,
+            RES_Project__c = PROJECT_DEFAULT,
+            RES_SLA_Status__c = 'Met'
         );
 
         insert l;
-        
         return l;
     }
 
+    // ═══════════════════════════════════════════════════════════════════════
+    // Account Creation Methods (ENHANCED)
+    // ═══════════════════════════════════════════════════════════════════════
+
+    /**
+     * @description Creates a test account with default values
+     * @return Account ready for linking in conversion tests
+     */
+    public static Account createAccount() {
+        String uniqueCRNumber = '8624' + String.valueOf(System.currentTimeMillis()).right(6);
+        return createAccountFull('Test Account', uniqueCRNumber, 'ZIT04');
+    }
+
+    /**
+     * @description Creates a test account with custom values
+     * @param name Account name
+     * @return Account
+     */
+    public static Account createAccountWithName(String name) {
+        String uniqueCRNumber = '8624' + String.valueOf(System.currentTimeMillis()).right(6);
+        return createAccountFull(name, uniqueCRNumber, 'ZIT04');
+    }
+
+    /**
+     * @description Creates a test account with all fields
+     * @param name Account name
+     * @param crNumber RES_CR_number__c
+     * @param idType RES_Identification_Type__c
+     * @return Account with all fields
+     */
+    public static Account createAccountFull(String name, String crNumber, String idType) {
+        Account acc = new Account(
+            Name = name,
+            RES_CR_number__c = crNumber != null ? crNumber : '8624' + String.valueOf(System.currentTimeMillis()).right(6),
+            RES_Identification_Type__c = idType
+        );
+        insert acc;
+        return acc;
+    }
+
+    // ═══════════════════════════════════════════════════════════════════════
+    // Contact Creation Methods (ENHANCED)
+    // ═══════════════════════════════════════════════════════════════════════
+
+    /**
+     * @description Creates a test contact
+     * @param accountId Contact's account
+     * @param email Contact email
+     * @param mobilePhone Contact mobile phone
+     * @return Contact
+     */
+    public static Contact createContact(Id accountId, String email, String mobilePhone) {
+        Contact con = new Contact(
+            FirstName = 'Test',
+            LastName = 'Contact',
+            Email = email,
+            MobilePhone = mobilePhone,
+            AccountId = accountId
+        );
+        insert con;
+        return con;
+    }
+
+    /**
+     * @description Creates a test contact with custom name
+     * @param accountId Contact's account
+     * @param firstName Contact first name
+     * @param lastName Contact last name
+     * @param mobilePhone Contact mobile phone
+     * @return Contact
+     */
+    public static Contact createContactFull(
+        Id accountId,
+        String firstName,
+        String lastName,
+        String mobilePhone
+    ) {
+        Contact con = new Contact(
+            FirstName = firstName,
+            LastName = lastName,
+            MobilePhone = mobilePhone,
+            AccountId = accountId
+        );
+        insert con;
+        return con;
+    }
+
+    // ═══════════════════════════════════════════════════════════════════════
+    // Utility Methods
+    // ═══════════════════════════════════════════════════════════════════════
+
     public static RES_LeadMassConversionUtility.ConvertRequest buildRequest(
-        List<Lead>  leads,
-        String      statusLabel,
-        Boolean     doNotCreateOpp
+        List<Lead> leads,
+        String statusLabel,
+        Boolean doNotCreateOpp
     ) {
         RES_LeadMassConversionUtility.ConvertRequest req =
             new RES_LeadMassConversionUtility.ConvertRequest();
-        req.leads                = leads;
+        req.leads = leads;
         req.convertedStatusLabel = statusLabel;
-        req.doNotCreateOpp       = doNotCreateOpp;
+        req.doNotCreateOpp = doNotCreateOpp;
         return req;
     }
 
@@ -219,7 +379,7 @@ public class RES_TestDataFactory {
         return [
             SELECT MasterLabel FROM LeadStatus
             WHERE IsConverted = true
-            AND   MasterLabel = 'Converted'
+            AND MasterLabel = 'Converted'
             LIMIT 1
         ].MasterLabel;
     }
@@ -231,7 +391,7 @@ public class RES_TestDataFactory {
             LIMIT 1
         ];
         insert new PermissionSetAssignment(
-            AssigneeId      = userId,
+            AssigneeId = userId,
             PermissionSetId = ps.Id
         );
     }
@@ -247,28 +407,24 @@ public class RES_TestDataFactory {
 
     public static ContentVersion createFile() {
         ContentVersion cv = new ContentVersion();
-            cv.Title = 'TestFile';
-            cv.PathOnClient = 'TestFile.pdf';
-            cv.VersionData = Blob.valueOf('Test File Content');
-    
+        cv.Title = 'TestFile';
+        cv.PathOnClient = 'TestFile.pdf';
+        cv.VersionData = Blob.valueOf('Test File Content');
         insert cv;
-        return  [SELECT Id,
-                Title,
-                ContentDocumentId,
-                RES_Document_Label__c
-                FROM ContentVersion
-                WHERE Id = :cv.Id];
+        return [
+            SELECT Id, Title, ContentDocumentId, RES_Document_Label__c
+            FROM ContentVersion
+            WHERE Id = :cv.Id
+        ];
     }
 
     public static ContentDocumentLink createDocLink(String accId, String cdId) {
         ContentDocumentLink cdl = new ContentDocumentLink();
-            cdl.ContentDocumentId = cdId;
-            cdl.LinkedEntityId = accId;
-            cdl.ShareType = 'V';
-            cdl.Visibility = 'AllUsers';
-        
+        cdl.ContentDocumentId = cdId;
+        cdl.LinkedEntityId = accId;
+        cdl.ShareType = 'V';
+        cdl.Visibility = 'AllUsers';
         insert cdl;
-      
         return cdl;
     }
     public static Contact createContact(Id accountId, String email, String mobilePhone) {
