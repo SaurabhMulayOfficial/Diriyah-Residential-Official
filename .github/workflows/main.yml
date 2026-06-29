@@ -71,7 +71,7 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Install Salesforce CLI
-        run: npm install -g @salesforce/cli
+        run: npm install -g @salesforce/cli@2.139.6
 
       - name: Authenticate 🐒
         run: |
@@ -109,7 +109,7 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Install Salesforce CLI
-        run: npm install -g @salesforce/cli
+        run: npm install -g @salesforce/cli@2.139.6
 
       - name: Authenticate 🐒
         run: |
@@ -144,7 +144,7 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Install Salesforce CLI
-        run: npm install -g @salesforce/cli
+        run: npm install -g @salesforce/cli@2.139.6
 
       - name: Authenticate 🐒
         run: |
@@ -180,7 +180,7 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Install Salesforce CLI
-        run: npm install -g @salesforce/cli
+        run: npm install -g @salesforce/cli@2.139.6
 
       - name: Authenticate 🦒
         run: |
@@ -215,7 +215,7 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Install Salesforce CLI
-        run: npm install -g @salesforce/cli
+        run: npm install -g @salesforce/cli@2.139.6
 
       - name: Authenticate 🗿
         run: |
@@ -250,7 +250,7 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Install Salesforce CLI
-        run: npm install -g @salesforce/cli
+        run: npm install -g @salesforce/cli@2.139.6
 
       - name: Authenticate 🗿
         run: |
@@ -286,7 +286,7 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Install Salesforce CLI
-        run: npm install -g @salesforce/cli
+        run: npm install -g @salesforce/cli@2.139.6
 
       - name: Authenticate
         run: |
@@ -321,7 +321,7 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Install Salesforce CLI
-        run: npm install -g @salesforce/cli
+        run: npm install -g @salesforce/cli@2.139.6
 
       - name: Authenticate
         run: |
