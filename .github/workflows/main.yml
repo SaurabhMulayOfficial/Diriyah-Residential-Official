@@ -68,12 +68,12 @@ jobs:
         startsWith(github.head_ref, 'feature/') && github.base_ref == 'develop')
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: 20
 
       - name: Install Salesforce CLI
-        run: npm install -g @salesforce/cli@2.139.6
+        run: npm install -g @salesforce/cli
 
       - name: Authenticate 🐒
         run: |
@@ -108,12 +108,12 @@ jobs:
       )
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: 20
 
       - name: Install Salesforce CLI
-        run: npm install -g @salesforce/cli@2.139.6
+        run: npm install -g @salesforce/cli
 
       - name: Authenticate 🐒
         run: |
@@ -150,7 +150,7 @@ jobs:
           node-version: 20
 
       - name: Install Salesforce CLI
-        run: npm install -g @salesforce/cli@2.139.6
+        run: npm install -g @salesforce/cli
 
       - name: Authenticate 🐒
         run: |
@@ -183,12 +183,12 @@ jobs:
       startsWith(github.ref, 'refs/heads/release/uat/')
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: 20
 
       - name: Install Salesforce CLI
-        run: npm install -g @salesforce/cli@2.139.6
+        run: npm install -g @salesforce/cli
 
       - name: Authenticate 🦒
         run: |
@@ -220,12 +220,12 @@ jobs:
       startsWith(github.ref, 'refs/heads/release/preprod/')
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: 20
 
       - name: Install Salesforce CLI
-        run: npm install -g @salesforce/cli@2.139.6
+        run: npm install -g @salesforce/cli
 
       - name: Authenticate 🗿
         run: |
@@ -257,12 +257,12 @@ jobs:
       startsWith(github.ref, 'refs/heads/release/preprod/')
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: 20
 
       - name: Install Salesforce CLI
-        run: npm install -g @salesforce/cli@2.139.6
+        run: npm install -g @salesforce/cli
 
       - name: Authenticate 🗿
         run: |
@@ -295,12 +295,12 @@ jobs:
       startsWith(github.ref, 'refs/heads/release/prod/')
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: 20
 
       - name: Install Salesforce CLI
-        run: npm install -g @salesforce/cli@2.139.6
+        run: npm install -g @salesforce/cli
 
       - name: Authenticate
         run: |
@@ -332,12 +332,12 @@ jobs:
       startsWith(github.ref, 'refs/heads/release/prod/')
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: 20
 
       - name: Install Salesforce CLI
-        run: npm install -g @salesforce/cli@2.139.6
+        run: npm install -g @salesforce/cli
 
       - name: Authenticate
         run: |
