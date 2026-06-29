@@ -84,7 +84,7 @@ jobs:
             --client-id "${{ secrets.SF_CLIENT_ID_QA }}" \
             --jwt-key-file server.key \
             --username "${{ secrets.SF_USERNAME_QA }}" \
-            --instance-url https://test.salesforce.com \
+            --instance-url https://login.salesforce.com \
             --set-default
 
       - name: Validate QA 🐥
@@ -126,7 +126,7 @@ jobs:
             --client-id "${{ secrets.SF_CLIENT_ID_QA }}" \
             --jwt-key-file server.key \
             --username "${{ secrets.SF_USERNAME_QA }}" \
-            --instance-url https://test.salesforce.com \
+            --instance-url https://login.salesforce.com \
             --set-default
 
       - name: Deploy QA 🦧
