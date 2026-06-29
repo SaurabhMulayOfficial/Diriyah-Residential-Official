@@ -9,7 +9,7 @@
  * Author        : Roshan Jambhule
  * Company       : Globant Inc
  * Created Date  : June 26, 2026
- * Version       : 2.1 (Optimized)
+ * Version       : 2.2 (Refactored - Retry Handler Delegation)
  * ==============================================================================
  */
 public with sharing class RES_LeadConversionQueueable implements Queueable {
@@ -46,23 +46,18 @@ public with sharing class RES_LeadConversionQueueable implements Queueable {
                 publishConversionEvents(results);
                 return;
             }
-    
-            Integer maxRetries = getMaxRetriesFromLabel();
-            if (retryCount < maxRetries && Limits.getQueueableJobs() == 0) {
-                retryCount++;
-                System.enqueueJob(new RES_LeadConversionQueueable(qualifiedLeads, retryCount));
-            } else {
-                logConversionFailure(freshLeads, maxRetries);
+            
+            List<Lead> leadsNotReady = new List<Lead>();
+            for (Lead l : freshLeads) {
+                if (l.RES_SLA_Status__c != 'Met') {
+                    leadsNotReady.add(l);
+                }
             }
-    
-        } catch (Exception ex) {
-            System.debug(LoggingLevel.ERROR, CLASS_NAME + ': ' + ex.getMessage());
-            Integer maxRetries = getMaxRetriesFromLabel();
-            if (retryCount < maxRetries && Limits.getQueueableJobs() == 0) {
-                retryCount++;
-                System.enqueueJob(new RES_LeadConversionQueueable(qualifiedLeads, retryCount));
+            RES_LeadConversionRetryHandler.handleRetry(leadsNotReady, retryCount, freshLeads);
+            
+            } catch (Exception ex) {
+                RES_LeadConversionRetryHandler.handleExceptionRetry(ex, retryCount, qualifiedLeads);
             }
-        }
     }
     
     private List<Database.LeadConvertResult> convertLeads(List<Lead> leadsToConvert) {
@@ -195,28 +190,5 @@ public with sharing class RES_LeadConversionQueueable implements Queueable {
             }
         }
         return notReadyCount == 0;
-    }
-
-    private void logConversionFailure(List<Lead> leads, Integer maxRetries) {
-        String leadIds = '';
-        for (Lead l : leads) {
-            leadIds += l.Id + ',';
-        }
-        System.debug(LoggingLevel.WARN, 'Conversion aborted after ' + maxRetries + ' retries. Leads: ' + leadIds);
-    }
-    private Integer getMaxRetriesFromLabel() {
-        try {
-            String labelValue = System.Label.RES_Lead_Conversion_Max_Retries;
-            if (String.isBlank(labelValue)) {
-                return 5;
-            }
-            Integer maxRetries = Integer.valueOf(labelValue);
-            if (maxRetries < 1 || maxRetries > 10) {
-                return 5;
-            }
-            return maxRetries;
-        } catch (Exception ex) {
-            return 5;
-        }
     }
 }

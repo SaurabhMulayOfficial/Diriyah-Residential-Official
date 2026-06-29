@@ -375,26 +375,27 @@ private class RES_LeadConversionHandler_Test {
     }
     @IsTest
     static void testQueueableMaxRetriesLogic() {
-    Account acc = RES_TestDataFactory.createAccountWithName('Max Retries Test');
-    
-    Lead l = new Lead();
-    l.FirstName = 'Max';
-    l.LastName = 'Retries';
-    l.Email = 'maxretries@test.com';
-    l.MobilePhone = '+919988884444';
-    l.Company = 'Max Retries Co';
-    l.RES_Project__c = PROJECT;
-    l.Status = '04';
-    l.RES_SLA_Status__c = 'Met';
-    insert l;
-    
-    Test.startTest();
-    RES_LeadConversionQueueable queueable = 
-        new RES_LeadConversionQueueable(new List<Lead>{ l }, 0);
-    System.enqueueJob(queueable);
-    Test.stopTest();
-    
-    Lead result = [SELECT IsConverted FROM Lead WHERE Id = :l.Id];
-    System.assertEquals(true, result.IsConverted, 'Lead should convert');
-}
+        Account acc = RES_TestDataFactory.createAccountWithName('Max Retries Test');
+        
+        Lead l = new Lead();
+        l.FirstName = 'Max';
+        l.LastName = 'Retries';
+        l.Email = 'maxretries@test.com';
+        l.MobilePhone = '+919988884444';
+        l.Company = 'Max Retries Co';
+        l.RES_Project__c = PROJECT;
+        l.Status = '04';
+        l.RES_SLA_Status__c = 'Met';
+        insert l;
+        
+        Test.startTest();
+        RES_LeadConversionQueueable queueable = 
+            new RES_LeadConversionQueueable(new List<Lead>{ l }, 0);
+        System.enqueueJob(queueable);
+        Test.stopTest();
+        
+        Lead result = [SELECT IsConverted FROM Lead WHERE Id = :l.Id];
+        System.assertEquals(true, result.IsConverted, 'Lead should convert');
+    }
+
 }
