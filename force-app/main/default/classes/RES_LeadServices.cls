@@ -240,36 +240,33 @@ public with sharing class RES_LeadServices {
         routingUpdates.clear();
     }
 
-    /**
- * @description Converts qualified leads synchronously in beforeUpdate
- *              Stores results for publishing in afterUpdate
- */
-public static void convertQualifiedLeads(List<Lead> leads, Map<Id, Lead> oldMap){
-    Id rtIdCompany = Schema.SObjectType.Lead.getRecordTypeInfosByDeveloperName().get('RES_Company').getRecordTypeId();
-    Id rtIdIndividual = Schema.SObjectType.Lead.getRecordTypeInfosByDeveloperName().get('RES_Individual').getRecordTypeId();
-    
-    List<Lead> qualifiedLeads = new List<Lead>();
-    for(Lead l : leads){
-        if(l.RecordTypeId != rtIdCompany && l.RecordTypeId != rtIdIndividual){
-            continue;
+        /**
+     * @description Converts qualified leads synchronously in beforeUpdate
+     *              Stores results for publishing in afterUpdate
+     */
+    public static void convertQualifiedLeads(List<Lead> leads, Map<Id, Lead> oldMap){
+        Id rtIdCompany = Schema.SObjectType.Lead.getRecordTypeInfosByDeveloperName().get('RES_Company').getRecordTypeId();
+        Id rtIdIndividual = Schema.SObjectType.Lead.getRecordTypeInfosByDeveloperName().get('RES_Individual').getRecordTypeId();
+        
+        List<Lead> qualifiedLeads = new List<Lead>();
+        for(Lead l : leads){
+            if(l.RecordTypeId != rtIdCompany && l.RecordTypeId != rtIdIndividual){
+                continue;
+            }
+            if(l.Status == '04' && oldMap.get(l.Id).Status != '04'){
+                qualifiedLeads.add(l);  
+            }
         }
-        if(l.Status == '04' && oldMap.get(l.Id).Status != '04'){
-            qualifiedLeads.add(l);  
+        if(qualifiedLeads.isEmpty()){
+            return;
         }
-    }
-    if(qualifiedLeads.isEmpty()){
-        return;
-    }
-    try {
-        if(Limits.getQueueableJobs() == 0) {
-            System.enqueueJob(new RES_LeadConversionQueueable(qualifiedLeads));
+        try {
+            if(Limits.getQueueableJobs() == 0) {
+                System.enqueueJob(new RES_LeadConversionQueueable(qualifiedLeads));
+            }
+        } catch(Exception ex) {
+            System.debug(LoggingLevel.ERROR, 'Failed to enqueue: ' + ex.getMessage());
         }
-    } catch(Exception ex) {
-        System.debug(LoggingLevel.ERROR, 'Failed to enqueue: ' + ex.getMessage());
     }
 
-    public static void clearStaticVariables(){
-        leadDuplicateWrapper.clear();
-        routingUpdates.clear();
-}
 }
