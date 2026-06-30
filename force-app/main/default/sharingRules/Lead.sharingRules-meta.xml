@@ -14,4 +14,15 @@
         </criteriaItems>
         <includeHVUOwnedRecords>false</includeHVUOwnedRecords>
     </sharingGuestRules>
+    <sharingOwnerRules>
+        <fullName>RES_Lead_Record_Shared</fullName>
+        <accessLevel>Edit</accessLevel>
+        <label>Lead Record Shared</label>
+        <sharedTo>
+            <group>RES_Operations_Team</group>
+        </sharedTo>
+        <sharedFrom>
+            <group>RES_Cross_Functional_Record_Access_Group</group>
+        </sharedFrom>
+    </sharingOwnerRules>
 </SharingRules>
