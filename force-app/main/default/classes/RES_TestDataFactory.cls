@@ -1,26 +1,14 @@
 /**
  * ==============================================================================
- * Class Name    : RES_TestDataFactory
- * Description   : Centralized test data factory for RES_LeadMassConversionUtility
- *                 tests. Provides reusable methods to create Users, Leads, and
- *                 ConvertRequests so test classes stay lean and maintainable.
- *                 createSalesRepUser()       Diriyah Standard Profile
- *                                            RES_Sales_DI_Specialist role
- *                                            RES_Diriyah_Sales_Relationship_Manager_Permission_Set
- *                 createSalesDirectorUser()  Diriyah Standard Profile
- *                                            RES_Sales_DI_DII_Senior_Director role
- *                                            RES_Diriyah_Sales_Director_Permission_Set
- *                 createSalesManagerUser()   System Administrator Profile
- *                                            RES_Sales_Operations_Executive_Director role
- *                                            RES_Diriyah_Sales_Manager_Permission_Set
- *                 createLead(email)          Single Lead, all dupe-sensitive
- *                                            fields derived from email hash
- *                 buildRequest(...)          Builds a ConvertRequest wrapper
- *                 getConvertedStatus()       Fetches first IsConverted LeadStatus
- * Author        : Rohan Jambhule
+ * Class Name    : RES_TestDataFactory (ENHANCED)
+ * Description   : Centralized test data factory with all fields needed for
+ *                 lead conversion tests. Includes SLA status, project fields,
+ *                 and proper account/contact creation.
+ *
+ * Author        : Roshan Jambhule
  * Company       : Globant Inc
- * Created Date  : Mar 2, 2026
- * Version       : 2.0
+ * Created Date  : June 27, 2026
+ * Version       : 3.0 (ENHANCED FOR LEAD CONVERSION TESTS)
  * ==============================================================================
  */
 @isTest
@@ -395,15 +383,6 @@ public class RES_TestDataFactory {
             PermissionSetId = ps.Id
         );
     }
-    
-    public static Account createAccount() {
-        Account acc = new Account();
-        acc.Name = 'Test Account';
-        acc.RES_CR_number__c = '8624379423';
-        acc.RES_Identification_Type__c = 'ZIT04';
-        insert acc ;
-        return acc;
-    }
 
     public static ContentVersion createFile() {
         ContentVersion cv = new ContentVersion();
@@ -426,16 +405,5 @@ public class RES_TestDataFactory {
         cdl.Visibility = 'AllUsers';
         insert cdl;
         return cdl;
-    }
-    public static Contact createContact(Id accountId, String email, String mobilePhone) {
-        Contact con = new Contact(
-            FirstName = 'Test',
-            LastName = 'Contact',
-            Email = email,
-            MobilePhone = mobilePhone,
-            AccountId = accountId
-        );
-        insert con;
-        return con;
     }
 }
