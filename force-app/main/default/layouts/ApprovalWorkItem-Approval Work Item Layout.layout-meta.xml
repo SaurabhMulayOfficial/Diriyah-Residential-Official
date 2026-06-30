@@ -1,6 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Layout xmlns="http://soap.sforce.com/2006/04/metadata">
+    <excludeButtons>ChangeOwnerOne</excludeButtons>
+    <excludeButtons>ChangeRecordType</excludeButtons>
+    <excludeButtons>Edit</excludeButtons>
     <excludeButtons>OpenSlackRecordChannel</excludeButtons>
+    <excludeButtons>OverrideApprovalWorkItem</excludeButtons>
+    <excludeButtons>PrintableView</excludeButtons>
+    <excludeButtons>ReviewApprovalWorkItem</excludeButtons>
     <layoutSections>
         <customLabel>false</customLabel>
         <detailHeading>false</detailHeading>
@@ -9,14 +15,10 @@
         <layoutColumns>
             <layoutItems>
                 <behavior>Readonly</behavior>
-                <field>ApprovalSubmissionId</field>
-            </layoutItems>
-            <layoutItems>
-                <behavior>Readonly</behavior>
                 <field>RelatedRecordObjectName</field>
             </layoutItems>
             <layoutItems>
-                <behavior>Readonly</behavior>
+                <behavior>Edit</behavior>
                 <field>RES_Existing_User__c</field>
             </layoutItems>
             <layoutItems>
@@ -32,7 +34,7 @@
                 <field>ReviewedById</field>
             </layoutItems>
             <layoutItems>
-                <behavior>Readonly</behavior>
+                <behavior>Edit</behavior>
                 <field>RES_Approval_Request_Remarks__c</field>
             </layoutItems>
         </layoutColumns>
@@ -47,15 +49,7 @@
             </layoutItems>
             <layoutItems>
                 <behavior>Readonly</behavior>
-                <field>FlowOrchestrationWorkItemId</field>
-            </layoutItems>
-            <layoutItems>
-                <behavior>Readonly</behavior>
                 <field>ReviewedDate</field>
-            </layoutItems>
-            <layoutItems>
-                <behavior>Readonly</behavior>
-                <field>ApprovalConditionName</field>
             </layoutItems>
             <layoutItems>
                 <behavior>Readonly</behavior>
@@ -79,16 +73,7 @@
                 <field>LastModifiedById</field>
             </layoutItems>
         </layoutColumns>
-        <layoutColumns>
-            <layoutItems>
-                <behavior>Readonly</behavior>
-                <field>CreatedDate</field>
-            </layoutItems>
-            <layoutItems>
-                <behavior>Readonly</behavior>
-                <field>LastModifiedDate</field>
-            </layoutItems>
-        </layoutColumns>
+        <layoutColumns/>
         <style>TwoColumnsLeftToRight</style>
     </layoutSections>
     <layoutSections>
