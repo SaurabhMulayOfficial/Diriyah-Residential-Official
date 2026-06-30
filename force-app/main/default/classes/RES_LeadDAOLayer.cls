@@ -112,6 +112,38 @@ public without sharing class RES_LeadDAOLayer extends RES_BaseDAOLayer {
 
         return newMap;
     }
+
+    public List<Lead> getLeadsBySLAStatus(Set<Id> leadIds) {
+        if (leadIds == null || leadIds.isEmpty()) {
+            return new List<Lead>();
+        }
+        
+        Map<String, Object> bindVars = new Map<String, Object>();
+        bindVars.put('leadIds', leadIds);
+        
+        String soql = 'SELECT Id, ' +
+                                'Name, ' +
+                                'Status, ' +
+                                'RecordTypeId, ' +
+                                'RES_SLA_Status__c, ' +
+                                'RES_SLA_Due_Time__c, ' +
+                                'RES_SLA_Cycle_Count__c, ' +
+                                'RES_SLA_Start_Time__c, ' +
+                                'RES_SLA_Breach_Time__c, ' +
+                                'OwnerId, ' +
+                                'Email, ' +
+                                'MobilePhone, ' +
+                                'LeadSource, ' +
+                                'Company, ' +
+                                'RecordType.DeveloperName ' +
+                        'FROM Lead ' +
+                        'WHERE Id IN :leadIds ' +
+                        'AND (RecordType.DeveloperName = \'RES_Company\' ' +
+                        'OR RecordType.DeveloperName = \'RES_Individual\')';
+        
+        List<Lead> results = (List<Lead>) executeQuery(soql, '', false, bindVars, AccessLevel.USER_MODE);
+        return results;
+    }
     
     public Database.QueryLocator getQualifiedLeadsForBatch(){
         // Status API name 04 Label = Qualified
@@ -141,7 +173,7 @@ public without sharing class RES_LeadDAOLayer extends RES_BaseDAOLayer {
             'FROM Lead ' +
             'WHERE IsConverted = true ' +
             'ORDER BY ConvertedDate DESC ' +
-            'LIMIT 5000';
+            'LIMIT 50000';
 
         return (List<Lead>) executeQuery(
             soql,

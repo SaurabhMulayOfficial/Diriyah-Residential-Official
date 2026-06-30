@@ -7,6 +7,7 @@ public with sharing class RES_LeadServices {
 
     public static List<RES_LeadDeduplicationHandler.LeadDuplicateWrapper> leadDuplicateWrapper = 
     new List<RES_LeadDeduplicationHandler.LeadDuplicateWrapper>();
+    public static Map<Id, Database.LeadConvertResult> conversionResults = new Map<Id, Database.LeadConvertResult>();
 
     public static List<RES_ReassignmentLogicHandler.leadRoutingWrapper> routingUpdates = new List<RES_ReassignmentLogicHandler.leadRoutingWrapper>();
     
@@ -234,28 +235,38 @@ public with sharing class RES_LeadServices {
             System.debug('Failed to delete lead routing records: ' + e.getMessage());
         }
     }
+    public static void clearStaticVariables(){
+        leadDuplicateWrapper.clear();
+        routingUpdates.clear();
+    }
 
+        /**
+     * @description Converts qualified leads synchronously in beforeUpdate
+     *              Stores results for publishing in afterUpdate
+     */
     public static void convertQualifiedLeads(List<Lead> leads, Map<Id, Lead> oldMap){
-        Id rtId_company = Schema.SObjectType.Lead.getRecordTypeInfosByDeveloperName().get('RES_Company').getRecordTypeId();
-        Id rtId_individual = Schema.SObjectType.Lead.getRecordTypeInfosByDeveloperName().get('RES_Individual').getRecordTypeId();
+        Id rtIdCompany = Schema.SObjectType.Lead.getRecordTypeInfosByDeveloperName().get('RES_Company').getRecordTypeId();
+        Id rtIdIndividual = Schema.SObjectType.Lead.getRecordTypeInfosByDeveloperName().get('RES_Individual').getRecordTypeId();
+        
         List<Lead> qualifiedLeads = new List<Lead>();
         for(Lead l : leads){
-            if(l.RecordTypeId != rtId_company && l.RecordTypeId != rtId_individual){
+            if(l.RecordTypeId != rtIdCompany && l.RecordTypeId != rtIdIndividual){
                 continue;
             }
             if(l.Status == '04' && oldMap.get(l.Id).Status != '04'){
                 qualifiedLeads.add(l);  
             }
         }
-        System.debug('qualifiedLeads-->'+qualifiedLeads);
         if(qualifiedLeads.isEmpty()){
             return;
         }
-        RES_LeadConversionHandler.handleLeadConversion(qualifiedLeads);
+        try {
+            if(Limits.getQueueableJobs() == 0) {
+                System.enqueueJob(new RES_LeadConversionQueueable(qualifiedLeads));
+            }
+        } catch(Exception ex) {
+            System.debug(LoggingLevel.ERROR, 'Failed to enqueue: ' + ex.getMessage());
+        }
     }
 
-    public static void clearStaticVariables(){
-        leadDuplicateWrapper.clear();
-        routingUpdates.clear();
-    }
 }
