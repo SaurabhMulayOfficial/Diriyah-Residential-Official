@@ -510,15 +510,23 @@
     <picklistValues>
         <picklist>RES_Customer_Budget__c</picklist>
         <values>
-            <fullName>Budget from 1M to 4M</fullName>
+            <fullName>Less than 1 Million</fullName>
             <default>false</default>
         </values>
         <values>
-            <fullName>Budget from 4M to 6M</fullName>
+            <fullName>1–2 Million</fullName>
             <default>false</default>
         </values>
         <values>
-            <fullName>Budget from 10M and above</fullName>
+            <fullName>2–4 Million</fullName>
+            <default>false</default>
+        </values>
+         <values>
+            <fullName>4–10 Million</fullName>
+            <default>false</default>
+        </values>
+         <values>
+            <fullName>More than 10 Million</fullName>
             <default>false</default>
         </values>
     </picklistValues>
