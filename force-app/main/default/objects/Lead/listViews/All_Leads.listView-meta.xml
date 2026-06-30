@@ -2,7 +2,6 @@
 <ListView xmlns="http://soap.sforce.com/2006/04/metadata">
     <fullName>All_Leads</fullName>
     <columns>DIR_Lead_Id__c</columns>
-    <columns>LEAD.RECORDTYPE</columns>
     <columns>FULL_NAME</columns>
     <columns>LEAD.MOBILE_PHONE</columns>
     <columns>LEAD.EMAIL</columns>
@@ -15,6 +14,7 @@
     <columns>DIR_Note__c</columns>
     <columns>CORE.USERS.ALIAS</columns>
     <columns>LEAD.CREATED_DATE</columns>
+    <columns>LEAD.LAST_UPDATE</columns>
     <columns>RES_SLA_Hours_Remaining__c</columns>
     <filterScope>Everything</filterScope>
     <label>All Leads</label>
@@ -41,5 +41,9 @@
         <role>RES_Sales_Wadi_Safar_Manager</role>
         <role>RES_Sales_Wadi_Safar_Senior_Director</role>
         <role>RES_Sales_Wadi_Safar_Senior_Manager</role>
+        <role>RES_Contract_Amendments_Operations_Specialist</role>
+        <role>RES_External_Sales_Operations_Operations_Specialist</role>
+        <role>RES_Internal_Sales_Operations_Operations_Specialist</role>
+        <role>RES_Operational_Excellence_Operations_Specialist</role>
     </sharedTo>
 </ListView>
