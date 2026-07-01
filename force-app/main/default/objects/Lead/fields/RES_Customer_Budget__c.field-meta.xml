@@ -11,18 +11,46 @@
         <valueSetDefinition>
             <sorted>false</sorted>
             <value>
+                <fullName>Less than 1 Million</fullName>
+                <default>false</default>
+                <label>Less than 1 Million</label>
+            </value>
+            <value>
+                <fullName>1–2 Million</fullName>
+                <default>false</default>
+                <label>1–2 Million</label>
+            </value>
+            <value>
+                <fullName>2–4 Million</fullName>
+                <default>false</default>
+                <label>2–4 Million</label>
+            </value>
+            <value>
+                <fullName>4–10 Million</fullName>
+                <default>false</default>
+                <label>4–10 Million</label>
+            </value>
+            <value>
+                <fullName>More than 10 Million</fullName>
+                <default>false</default>
+                <label>More than 10 Million</label>
+            </value>
+            <value>
                 <fullName>Budget from 1M to 4M</fullName>
                 <default>false</default>
+                <isActive>false</isActive>
                 <label>Budget from 1M to 4M</label>
             </value>
             <value>
                 <fullName>Budget from 4M to 6M</fullName>
                 <default>false</default>
+                <isActive>false</isActive>
                 <label>Budget from 4M to 6M</label>
             </value>
             <value>
                 <fullName>Budget from 10M and above</fullName>
                 <default>false</default>
+                 <isActive>false</isActive>
                 <label>Budget from 10M and above</label>
             </value>
         </valueSetDefinition>
