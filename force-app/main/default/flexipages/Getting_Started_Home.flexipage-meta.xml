@@ -14,10 +14,16 @@
                 <componentName>desktopDashboards:embeddedDashboard</componentName>
                 <identifier>desktopDashboards_embeddedDashboard</identifier>
                 <visibilityRule>
+                    <booleanFilter>1 OR 2</booleanFilter>
                     <criteria>
                         <leftValue>{!$User.Profile.Name}</leftValue>
                         <operator>EQUAL</operator>
                         <rightValue>System Administrator</rightValue>
+                    </criteria>
+                    <criteria>
+                        <leftValue>{!$Permission.CustomPermission.RES_Admin_Dashboard_Visibility}</leftValue>
+                        <operator>EQUAL</operator>
+                        <rightValue>true</rightValue>
                     </criteria>
                 </visibilityRule>
             </componentInstance>
