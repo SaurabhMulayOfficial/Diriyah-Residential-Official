@@ -276,98 +276,6 @@
     </flexiPageRegions>
     <flexiPageRegions>
         <itemInstances>
-            <fieldInstance>
-                <fieldInstanceProperties>
-                    <name>uiBehavior</name>
-                    <value>none</value>
-                </fieldInstanceProperties>
-                <fieldItem>Record.RES_Identification_Type__c</fieldItem>
-                <identifier>RecordRES_Identification_Type_cField</identifier>
-            </fieldInstance>
-        </itemInstances>
-        <name>Facet-6479e1cd-78f3-4800-a91f-f835e515ef77</name>
-        <type>Facet</type>
-    </flexiPageRegions>
-    <flexiPageRegions>
-        <itemInstances>
-            <fieldInstance>
-                <fieldInstanceProperties>
-                    <name>uiBehavior</name>
-                    <value>required</value>
-                </fieldInstanceProperties>
-                <fieldItem>Record.RES_Identification_Number__c</fieldItem>
-                <identifier>RecordRES_Identification_Number_cField</identifier>
-                <visibilityRule>
-                    <booleanFilter>1 OR 2 OR 3 OR 4</booleanFilter>
-                    <criteria>
-                        <leftValue>{!Record.RES_Identification_Type__c}</leftValue>
-                        <operator>EQUAL</operator>
-                        <rightValue>ZIT01</rightValue>
-                    </criteria>
-                    <criteria>
-                        <leftValue>{!Record.RES_Identification_Type__c}</leftValue>
-                        <operator>EQUAL</operator>
-                        <rightValue>ZIT03</rightValue>
-                    </criteria>
-                    <criteria>
-                        <leftValue>{!Record.RES_Identification_Type__c}</leftValue>
-                        <operator>EQUAL</operator>
-                        <rightValue>ZIT02</rightValue>
-                    </criteria>
-                    <criteria>
-                        <leftValue>{!Record.RES_Identification_Type__c}</leftValue>
-                        <operator>EQUAL</operator>
-                        <rightValue>GCC ID</rightValue>
-                    </criteria>
-                </visibilityRule>
-            </fieldInstance>
-        </itemInstances>
-        <itemInstances>
-            <fieldInstance>
-                <fieldInstanceProperties>
-                    <name>uiBehavior</name>
-                    <value>required</value>
-                </fieldInstanceProperties>
-                <fieldItem>Record.RES_CR_Number__c</fieldItem>
-                <identifier>RecordRES_CR_Number_cField</identifier>
-                <visibilityRule>
-                    <criteria>
-                        <leftValue>{!Record.RES_Identification_Type__c}</leftValue>
-                        <operator>EQUAL</operator>
-                        <rightValue>ZIT04</rightValue>
-                    </criteria>
-                </visibilityRule>
-            </fieldInstance>
-        </itemInstances>
-        <name>Facet-31849f8d-d15c-4bd0-8789-5a0d0dae3a60</name>
-        <type>Facet</type>
-    </flexiPageRegions>
-    <flexiPageRegions>
-        <itemInstances>
-            <componentInstance>
-                <componentInstanceProperties>
-                    <name>body</name>
-                    <value>Facet-6479e1cd-78f3-4800-a91f-f835e515ef77</value>
-                </componentInstanceProperties>
-                <componentName>flexipage:column</componentName>
-                <identifier>flexipage_column14</identifier>
-            </componentInstance>
-        </itemInstances>
-        <itemInstances>
-            <componentInstance>
-                <componentInstanceProperties>
-                    <name>body</name>
-                    <value>Facet-31849f8d-d15c-4bd0-8789-5a0d0dae3a60</value>
-                </componentInstanceProperties>
-                <componentName>flexipage:column</componentName>
-                <identifier>flexipage_column15</identifier>
-            </componentInstance>
-        </itemInstances>
-        <name>Facet-73159a13-8fb9-4874-959a-396c629e0098</name>
-        <type>Facet</type>
-    </flexiPageRegions>
-    <flexiPageRegions>
-        <itemInstances>
             <componentInstance>
                 <componentInstanceProperties>
                     <name>columns</name>
@@ -383,24 +291,6 @@
                 </componentInstanceProperties>
                 <componentName>flexipage:fieldSection</componentName>
                 <identifier>flexipage_fieldSection6</identifier>
-            </componentInstance>
-        </itemInstances>
-        <itemInstances>
-            <componentInstance>
-                <componentInstanceProperties>
-                    <name>columns</name>
-                    <value>Facet-73159a13-8fb9-4874-959a-396c629e0098</value>
-                </componentInstanceProperties>
-                <componentInstanceProperties>
-                    <name>horizontalAlignment</name>
-                    <value>false</value>
-                </componentInstanceProperties>
-                <componentInstanceProperties>
-                    <name>label</name>
-                    <value>Identification Information</value>
-                </componentInstanceProperties>
-                <componentName>flexipage:fieldSection</componentName>
-                <identifier>flexipage_fieldSection8</identifier>
             </componentInstance>
         </itemInstances>
         <name>Facet-722c602a-105e-476d-873f-06d210e85866</name>
@@ -745,6 +635,28 @@
         <type>Facet</type>
     </flexiPageRegions>
     <flexiPageRegions>
+        <itemInstances>
+            <componentInstance>
+                <componentInstanceProperties>
+                    <name>createQuickActionName</name>
+                    <value>NewAccount</value>
+                </componentInstanceProperties>
+                <componentInstanceProperties>
+                    <name>lookupFieldName</name>
+                    <value>Opportunity.AccountId</value>
+                </componentInstanceProperties>
+                <componentInstanceProperties>
+                    <name>titleFieldName</name>
+                    <value>Account</value>
+                </componentInstanceProperties>
+                <componentInstanceProperties>
+                    <name>updateQuickActionName</name>
+                    <value>Account.Update</value>
+                </componentInstanceProperties>
+                <componentName>console:relatedRecord</componentName>
+                <identifier>console_relatedRecord</identifier>
+            </componentInstance>
+        </itemInstances>
         <itemInstances>
             <componentInstance>
                 <componentInstanceProperties>
