@@ -213,10 +213,12 @@ public with sharing class RES_LeadServices {
         }
 
         for(Lead l: leadList){
-            if(l.OwnerId != oldMap.get(l.Id).OwnerId){
-                if(userToWorkloadMapping.containsKey(l.ownerId)){
-                    Id workId = userToWorkloadMapping.get(l.ownerId);
-                    routingRecordsToInsert.add(new RES_Lead_Routing__c(RES_Assignment_Workload__c = workId,  RES_Lead__c = l.Id));
+            if(l.status == '01' || l.status == '02'){
+                if(l.OwnerId != oldMap.get(l.Id).OwnerId){
+                    if(userToWorkloadMapping.containsKey(l.ownerId)){
+                        Id workId = userToWorkloadMapping.get(l.ownerId);
+                        routingRecordsToInsert.add(new RES_Lead_Routing__c(RES_Assignment_Workload__c = workId,  RES_Lead__c = l.Id));
+                    }
                 }
             }
         }
