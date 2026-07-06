@@ -97,7 +97,7 @@ public without sharing class RES_LeadDAOLayer extends RES_BaseDAOLayer {
     public List<Lead> getLeadByOwnerIds(Set<Id> ownerIds){
         Map<String,Object> bindVars = new Map<String, Object>();
         bindVars.put('ownerIds', ownerIds);
-        String soql = 'SELECT Id, leadSource, OwnerId, RecordTypeId, Status FROM Lead WHERE OwnerId IN: ownerIds';
+        String soql = 'SELECT FIELDS(ALL) FROM Lead WHERE OwnerId IN :ownerIds';
         List<Lead> leadList = (List<Lead>) executeQuery(soql, '', false, bindVars, AccessLevel.SYSTEM_MODE);
         return leadList;
     }
