@@ -28,7 +28,7 @@ public with sharing class RES_LeadServices {
             leadIds.add(input.leadId);
         }
 
-        List<Lead> queriedLeads = new RES_LeadDAOLayer().getLeadsById(leadIds);
+        List<Lead> queriedLeads = new RES_LeadDAOLayer().getLeadsByIds_extended(leadIds);
         if(!queriedLeads.isEmpty()){
 
             RES_ReassignmentLogicHandler.runLeadReassignment(queriedLeads, routingUpdates);

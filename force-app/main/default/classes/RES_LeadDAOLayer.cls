@@ -60,6 +60,13 @@ public without sharing class RES_LeadDAOLayer extends RES_BaseDAOLayer {
         return (List<Lead>) executeQuery(soql, '', false, bindVars, AccessLevel.USER_MODE);
     }
 
+    public List<Lead> getLeadsByIds_extended(Set<Id> leadIds){
+        Map<String,Object> bindVars = new Map<String, Object> ();
+        bindVars.put('leadIds', leadIds);
+        String soql = 'SELECT FIELDS(ALL) FROM Lead WHERE Id IN :leadIds';
+        return (List<Lead>) executeQuery(soql, '', false, bindVars, AccessLevel.SYSTEM_MODE);
+    }
+
     public String getConvertedStatusLabel(String statusLabel) {
         if (String.isBlank(statusLabel)) {
             return null;
