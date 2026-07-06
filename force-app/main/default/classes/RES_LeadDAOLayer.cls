@@ -63,7 +63,8 @@ public without sharing class RES_LeadDAOLayer extends RES_BaseDAOLayer {
     public List<Lead> getLeadsByIds_extended(Set<Id> leadIds){
         Map<String,Object> bindVars = new Map<String, Object> ();
         bindVars.put('leadIds', leadIds);
-        String soql = 'SELECT FIELDS(ALL) FROM Lead WHERE Id IN :leadIds';
+        List<String> fieldSet = new RES_ExtendedQueriesDAO().getExtendedQueriesByName('RES_Lead_Reassignment');
+        String soql = 'SELECT ' + String.join(fieldSet, ', ') + ' FROM Lead WHERE Id IN :leadIds';
         return (List<Lead>) executeQuery(soql, '', false, bindVars, AccessLevel.SYSTEM_MODE);
     }
 
@@ -104,7 +105,8 @@ public without sharing class RES_LeadDAOLayer extends RES_BaseDAOLayer {
     public List<Lead> getLeadByOwnerIds(Set<Id> ownerIds){
         Map<String,Object> bindVars = new Map<String, Object>();
         bindVars.put('ownerIds', ownerIds);
-        String soql = 'SELECT FIELDS(ALL) FROM Lead WHERE OwnerId IN :ownerIds';
+        List<String> fieldSet = new RES_ExtendedQueriesDAO().getExtendedQueriesByName('RES_Lead_Reassignment');
+        String soql = 'SELECT ' + String.join(fieldSet, ', ') + ' FROM Lead WHERE OwnerId IN :ownerIds';
         List<Lead> leadList = (List<Lead>) executeQuery(soql, '', false, bindVars, AccessLevel.SYSTEM_MODE);
         return leadList;
     }
