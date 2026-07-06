@@ -1,3 +1,196 @@
+/* ───────────── Warning Modal ───────────── */
+
+.warn-overlay {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+
+    background: rgba(0, 0, 0, 0.60);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+}
+
+.warn-card {
+    position: relative;
+    width: min(50vw, 1000px);
+    background: #ffffff;
+    border-radius: 28px;
+    overflow: visible;
+    box-shadow: 0 14px 40px rgba(0,0,0,.30);
+    animation: warnPopIn .22s ease;
+}
+
+@keyframes warnPopIn {
+    from {
+        opacity: 0;
+        transform: scale(.96);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+/* Close Button */
+
+.warn-close-btn {
+    position: absolute;
+    top: -40px;
+    right: 0;
+    width: 30px;
+    height: 30px;
+    border: none;
+    border-radius: 50%;
+    background: #ffffff;
+    color: #555;
+    font-size: 1.5rem;
+    font-weight: 500;
+    cursor: pointer;
+    box-shadow: 0 2px 10px rgba(0,0,0,.18);
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.warn-close-btn:hover {
+    background: #f7f7f7;
+}
+
+/* Header */
+
+.warn-body {
+    padding: 20px 0 20px;
+    background: #ffffff;
+    border-radius: 28px 28px 0 0;
+    text-align: center;
+}
+
+.warn-title {
+    margin: 0;
+    font-size: 1.5rem;
+    font-weight: 400;
+    color: #7C4B2E;
+}
+
+/* Divider spans full width */
+
+.warn-divider {
+    margin: 17px 0 20px;
+    border: none;
+    border-top: 2px solid #d5d5d5;
+    width: 100%;
+}
+
+/* Message */
+
+.warn-message {
+    margin: 0 auto;
+    width: 70%;
+    font-size: 1rem;
+    line-height: 1.55;
+    color: #555;
+}
+
+/* Footer */
+
+.warn-footer {
+    background: #EAD7C2;
+    border-top: 2px solid #d5d5d5;
+    border-radius: 0 0 28px 28px;
+
+    padding: 17px 20px;
+
+    display: flex;
+    justify-content: flex-end;
+    gap: 22px;
+}
+
+/* Buttons */
+
+.warn-btn {
+    min-width: 90px;
+    height: 32px;
+
+    border-radius: 20px;
+
+    font-size: 1rem;
+    font-weight: 400;
+
+    cursor: pointer;
+    transition: all .2s;
+}
+
+.warn-btn-cancel {
+    background: #ffffff;
+    color: #7C4B2E;
+    border: 1px solid #666;
+}
+
+.warn-btn-cancel:hover {
+    background: #fafafa;
+}
+
+.warn-btn-proceed {
+    background: #A45F39;
+    color: #ffffff;
+    border: 2px solid #A45F39;
+}
+
+.warn-btn-proceed:hover {
+    background: #8d4e2b;
+}
+
+/* Mobile */
+
+@media (max-width:768px){
+
+    .warn-card{
+        width:95vw;
+        border-radius:18px;
+    }
+
+    .warn-body{
+        padding:24px 0 28px;
+    }
+
+    .warn-title{
+        font-size:24px;
+    }
+
+    .warn-divider{
+        margin:20px 0 24px;
+    }
+
+    .warn-message{
+        width:90%;
+        font-size:18px;
+    }
+
+    .warn-footer{
+        justify-content:center;
+        padding:20px;
+        gap:14px;
+    }
+
+    .warn-btn{
+        min-width:130px;
+        height:48px;
+        font-size:18px;
+    }
+
+    .warn-close-btn{
+        width:46px;
+        height:46px;
+        top:-42px;
+        font-size:28px;
+    }
+}
+
+/* ── Existing overlay ─────────────────────────────────────────── */
     .overlay {
         position: fixed;
         inset: 0;

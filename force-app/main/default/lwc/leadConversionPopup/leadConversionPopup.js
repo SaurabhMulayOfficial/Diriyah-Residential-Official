@@ -1,8 +1,12 @@
-import { LightningElement, api, track } from 'lwc';
+import { LightningElement, api, track, wire } from 'lwc';
 import { NavigationMixin }              from 'lightning/navigation';
 import { subscribe, unsubscribe, onError } from 'lightning/empApi';
+import { getRecord, getFieldValue, updateRecord } from 'lightning/uiRecordApi';
+import ID_FIELD from '@salesforce/schema/Lead.Id';
 import getConvertedRecordIds from '@salesforce/apex/RES_LeadConversionHandler.getConvertedRecordIds';
 import USER_ID from '@salesforce/user/Id';
+import SUB_STATUS_FIELD from '@salesforce/schema/Lead.RES_Lead_Sub_Status__c';
+import STATUS_FIELD     from '@salesforce/schema/Lead.Status';
 export default class LeadConversionPopup extends NavigationMixin(LightningElement) {
     @api recordId;
     @track showPopup      = false;
@@ -34,9 +38,64 @@ export default class LeadConversionPopup extends NavigationMixin(LightningElemen
     @track opportunityProject    = '';
     @track opportunityLeadSource = '';
 
+    // ── Warning modal state ──────────────────────────────────────
+    @track showWarningModal = false;
+    _previousSubStatus      = '';
+    _currentSubStatus         = '';
+    _previousStatus           = '';
+    _currentStatus            = '';
+    _isFirstLoad              = true;
+    _isReverting              = false;
+    _isProceedSave            = false;
+
     _subscription   = {};
-    _isProcessing   = false; 
+    _isProcessing   = false;
     EVENT_CHANNEL = '/event/RES_Lead_Conversion_Event__e';
+
+    // ── Wire: watch Sub-Status + Status — show warning on Qualified ──
+    @wire(getRecord, { recordId: '$recordId', fields: [SUB_STATUS_FIELD, STATUS_FIELD] })
+    wiredLead({ data }) {
+        if (!data) return;
+        const subStatus = getFieldValue(data, SUB_STATUS_FIELD) || '';
+        const status    = getFieldValue(data, STATUS_FIELD)     || '';
+
+        if (this._isFirstLoad) {
+            this._previousSubStatus = subStatus;
+            this._currentSubStatus  = subStatus;
+            this._previousStatus    = status;
+            this._currentStatus     = status;
+            this._isFirstLoad       = false;
+            return;
+        }
+
+        // Skip reactions caused by our own Proceed/Cancel updateRecord calls
+        if (this._isReverting || this._isProceedSave) {
+            this._previousSubStatus = subStatus;
+            this._currentSubStatus  = subStatus;
+            this._previousStatus    = status;
+            this._currentStatus     = status;
+            this._isReverting       = false;
+            this._isProceedSave     = false;
+            return;
+        }
+
+        const changedToQualified =
+            subStatus === 'Qualified' &&
+            this._currentSubStatus !== 'Qualified';
+
+        if (changedToQualified) {
+            // Keep _previous* intact for revert; update _current* to new values
+            this._currentSubStatus = subStatus;
+            this._currentStatus    = status;
+            this.showWarningModal  = true;
+        } else if (subStatus !== this._currentSubStatus || status !== this._currentStatus) {
+            // Unrelated field change — update all tracking
+            this._previousSubStatus = subStatus;
+            this._currentSubStatus  = subStatus;
+            this._previousStatus    = status;
+            this._currentStatus     = status;
+        }
+    }
 
     async connectedCallback() {
         this._subscribeToChannel();
@@ -171,6 +230,41 @@ export default class LeadConversionPopup extends NavigationMixin(LightningElemen
         this.closePopup();
     }
 
+
+    // ── Warning modal: Proceed — set Status='04' to trigger conversion ─
+    handleProceed() {
+        this.showWarningModal = false;
+        this._isProceedSave   = true;
+        updateRecord({
+            fields: {
+                [ID_FIELD.fieldApiName]         : this.recordId,
+                [STATUS_FIELD.fieldApiName]     : '04',
+                [SUB_STATUS_FIELD.fieldApiName] : 'Qualified'
+            }
+        }).then(() => {
+            this._previousSubStatus = 'Qualified';
+            this._previousStatus    = '04';
+        }).catch(error => {
+            this._isProceedSave = false;
+            console.error('Error on Proceed:', JSON.stringify(error));
+        });
+    }
+
+    // ── Warning modal: Cancel/X — close immediately, revert in background ──
+    handleCancelWarning() {
+        this.showWarningModal = false;
+        this._isReverting     = true;
+        updateRecord({
+            fields: {
+                [ID_FIELD.fieldApiName]         : this.recordId,
+                [SUB_STATUS_FIELD.fieldApiName] : this._previousSubStatus || null,
+                [STATUS_FIELD.fieldApiName]     : this._previousStatus    || null
+            }
+        }).catch(error => {
+            this._isReverting = false;
+            console.error('Error reverting fields:', JSON.stringify(error));
+        });
+    }
 
     closePopup() {
         this.showPopup              = false;

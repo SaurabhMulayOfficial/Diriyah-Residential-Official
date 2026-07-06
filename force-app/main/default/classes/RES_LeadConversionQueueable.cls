@@ -49,7 +49,7 @@ public with sharing class RES_LeadConversionQueueable implements Queueable {
             
             List<Lead> leadsNotReady = new List<Lead>();
             for (Lead l : freshLeads) {
-                if (l.RES_SLA_Status__c != 'Met') {
+                if (!isLeadReady(l)) {
                     leadsNotReady.add(l);
                 }
             }
@@ -182,13 +182,19 @@ public with sharing class RES_LeadConversionQueueable implements Queueable {
         }
     }
 
+    private Boolean isLeadReady(Lead l) {
+        if (l.LeadSource == 'Z09') {
+            return l.RES_SLA_Status__c == 'Met' || l.RES_SLA_Status__c == null;
+        }
+        return l.RES_SLA_Status__c == 'Met';
+    }
+
     private Boolean checkAllLeadsReady(List<Lead> leads) {
-        Integer notReadyCount = 0;
         for (Lead l : leads) {
-            if (l.RES_SLA_Status__c != 'Met') {
-                notReadyCount++;
+            if (!isLeadReady(l)) {
+                return false;
             }
         }
-        return notReadyCount == 0;
+        return true;
     }
 }
