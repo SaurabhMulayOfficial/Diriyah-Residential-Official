@@ -1272,6 +1272,11 @@
     </fieldPermissions>
     <fieldPermissions>
         <editable>true</editable>
+        <field>RES_Extended_Queries__mdt.Fields__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
         <field>Opportunity.ExpectedRevenue	</field>
         <readable>true</readable>
     </fieldPermissions>
@@ -1697,6 +1702,9 @@
     </layoutAssignments>
     <layoutAssignments>
         <layout>Lead_Deduplication_Rule__mdt-Lead Deduplication Rule Layout</layout>
+    </layoutAssignments>
+    <layoutAssignments>
+        <layout>RES_Extended_Queries__mdt-Extended Queries Layout</layout>
     </layoutAssignments>
     <layoutAssignments>
         <layout>Opportunity-RES Residential Multi Buyer</layout>
