@@ -1,4 +1,36 @@
 <template>
+
+    <!-- ── Warning Modal ─────────────────────────────────────────── -->
+    <template if:true={showWarningModal}>
+        <div class="warn-overlay">
+            <div class="warn-card">
+                <!-- X button outside top-right corner -->
+                <button class="warn-close-btn" onclick={handleCancelWarning} title="Close">&#x2715;</button>
+
+                <!-- White body: title + message -->
+                <div class="warn-body">
+                    <h2 class="warn-title">Lead Conversion</h2>
+                    <hr class="warn-divider" />
+                    <p class="warn-message">
+                        Once you set the lead to Qualified, an automated lead conversion
+                        will happen. Do you wish to proceed?
+                    </p>
+                </div>
+
+                <!-- Beige footer with pill buttons -->
+                <div class="warn-footer">
+                    <button class="warn-btn warn-btn-cancel"
+                        onclick={handleCancelWarning}
+                        disabled={isReverting}>Cancel</button>
+                    <button class="warn-btn warn-btn-proceed"
+                        onclick={handleProceed}
+                        disabled={isProceedLoading}>Proceed</button>
+                </div>
+            </div>
+        </div>
+    </template>
+
+    <!-- ── Post-Conversion Popup ─────────────────────────────────── -->
     <template if:true={showPopup}>
         <div class="overlay">
             <div class="popup-box">
