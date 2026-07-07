@@ -8,6 +8,7 @@ import triggerLeadConversion from '@salesforce/apex/RES_LeadConversionHandler.tr
 import USER_ID from '@salesforce/user/Id';
 import SUB_STATUS_FIELD from '@salesforce/schema/Lead.RES_Lead_Sub_Status__c';
 import STATUS_FIELD     from '@salesforce/schema/Lead.Status';
+import OWNER_FIELD      from '@salesforce/schema/Lead.OwnerId';
 export default class LeadConversionPopup extends NavigationMixin(LightningElement) {
     @api recordId;
     @track showPopup      = false;
@@ -55,11 +56,14 @@ export default class LeadConversionPopup extends NavigationMixin(LightningElemen
     EVENT_CHANNEL = '/event/RES_Lead_Conversion_Event__e';
 
     // ── Wire: watch Sub-Status + Status — show warning on Qualified ──
-    @wire(getRecord, { recordId: '$recordId', fields: [SUB_STATUS_FIELD, STATUS_FIELD] })
+    _ownerId = '';
+
+    @wire(getRecord, { recordId: '$recordId', fields: [SUB_STATUS_FIELD, STATUS_FIELD, OWNER_FIELD] })
     wiredLead({ data }) {
         if (!data) return;
         const subStatus = getFieldValue(data, SUB_STATUS_FIELD) || '';
         const status    = getFieldValue(data, STATUS_FIELD)     || '';
+        this._ownerId   = getFieldValue(data, OWNER_FIELD)      || '';
 
         if (this._isFirstLoad) {
             this._previousSubStatus = subStatus;
@@ -235,7 +239,11 @@ export default class LeadConversionPopup extends NavigationMixin(LightningElemen
 
     // ── Warning modal: Proceed — update Status to '04' and directly enqueue conversion ─
     handleProceed() {
-        this._proceedError  = '';
+        this._proceedError = '';
+        if (this._ownerId && !this._ownerId.startsWith('005')) {
+            this._proceedError = 'This lead is assigned to a Queue. Please reassign it to a User before converting.';
+            return;
+        }
         this.showWarningModal = false;
         this._isProceedSave   = true;
         updateRecord({
