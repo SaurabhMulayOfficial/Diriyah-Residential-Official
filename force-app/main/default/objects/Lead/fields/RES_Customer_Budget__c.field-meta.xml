@@ -4,7 +4,7 @@
     <label>Customer Budget</label>
     <required>false</required>
     <trackFeedHistory>false</trackFeedHistory>
-    <trackHistory>false</trackHistory>
+    <trackHistory>true</trackHistory>
     <type>Picklist</type>
     <valueSet>
         <restricted>true</restricted>
@@ -36,6 +36,12 @@
                 <label>More than 10 Million</label>
             </value>
             <value>
+                <fullName>Budget from 10M and above</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Budget from 10M and above</label>
+            </value>
+            <value>
                 <fullName>Budget from 1M to 4M</fullName>
                 <default>false</default>
                 <isActive>false</isActive>
@@ -46,12 +52,6 @@
                 <default>false</default>
                 <isActive>false</isActive>
                 <label>Budget from 4M to 6M</label>
-            </value>
-            <value>
-                <fullName>Budget from 10M and above</fullName>
-                <default>false</default>
-                 <isActive>false</isActive>
-                <label>Budget from 10M and above</label>
             </value>
         </valueSetDefinition>
     </valueSet>
