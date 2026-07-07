@@ -367,7 +367,10 @@
         <fields>CORE.USERS.FULL_NAME</fields>
         <relatedList>RelatedHistoryList</relatedList>
     </relatedLists>
-    <runAssignmentRulesDefault>false</runAssignmentRulesDefault>
+    <relatedLists>
+        <fields>NAME</fields>
+        <relatedList>RES_Lead_History__c.RES_Lead__c</relatedList>
+    </relatedLists>
     <showEmailCheckbox>false</showEmailCheckbox>
     <showHighlightsPanel>false</showHighlightsPanel>
     <showInteractionLogPanel>false</showInteractionLogPanel>
