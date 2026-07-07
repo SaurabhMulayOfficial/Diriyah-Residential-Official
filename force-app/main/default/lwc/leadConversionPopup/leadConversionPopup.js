@@ -4,6 +4,7 @@ import { subscribe, unsubscribe, onError } from 'lightning/empApi';
 import { getRecord, getFieldValue, updateRecord } from 'lightning/uiRecordApi';
 import ID_FIELD from '@salesforce/schema/Lead.Id';
 import getConvertedRecordIds from '@salesforce/apex/RES_LeadConversionHandler.getConvertedRecordIds';
+import triggerLeadConversion from '@salesforce/apex/RES_LeadConversionHandler.triggerLeadConversion';
 import USER_ID from '@salesforce/user/Id';
 import SUB_STATUS_FIELD from '@salesforce/schema/Lead.RES_Lead_Sub_Status__c';
 import STATUS_FIELD     from '@salesforce/schema/Lead.Status';
@@ -40,6 +41,7 @@ export default class LeadConversionPopup extends NavigationMixin(LightningElemen
 
     // ── Warning modal state ──────────────────────────────────────
     @track showWarningModal = false;
+    @track _proceedError    = '';
     _previousSubStatus      = '';
     _currentSubStatus         = '';
     _previousStatus           = '';
@@ -231,8 +233,9 @@ export default class LeadConversionPopup extends NavigationMixin(LightningElemen
     }
 
 
-    // ── Warning modal: Proceed — set Status='04' to trigger conversion ─
+    // ── Warning modal: Proceed — update Status to '04' and directly enqueue conversion ─
     handleProceed() {
+        this._proceedError  = '';
         this.showWarningModal = false;
         this._isProceedSave   = true;
         updateRecord({
@@ -244,15 +247,18 @@ export default class LeadConversionPopup extends NavigationMixin(LightningElemen
         }).then(() => {
             this._previousSubStatus = 'Qualified';
             this._previousStatus    = '04';
+            return triggerLeadConversion({ leadId: this.recordId });
         }).catch(error => {
-            this._isProceedSave = false;
-            console.error('Error on Proceed:', JSON.stringify(error));
+            this._isProceedSave  = false;
+            this._proceedError   = this._extractErrorMessage(error);
+            this.showWarningModal = true;
         });
     }
 
     // ── Warning modal: Cancel/X — close immediately, revert in background ──
     handleCancelWarning() {
         this.showWarningModal = false;
+        this._proceedError    = '';
         this._isReverting     = true;
         updateRecord({
             fields: {
@@ -264,6 +270,23 @@ export default class LeadConversionPopup extends NavigationMixin(LightningElemen
             this._isReverting = false;
             console.error('Error reverting fields:', JSON.stringify(error));
         });
+    }
+
+    _extractErrorMessage(error) {
+        const messages = [];
+        const output = error?.body?.output;
+        if (output?.errors?.length) {
+            output.errors.forEach(e => { if (e.message) messages.push(e.message); });
+        }
+        if (output?.fieldErrors) {
+            Object.values(output.fieldErrors).forEach(fieldErrs => {
+                fieldErrs.forEach(e => { if (e.message) messages.push(e.message); });
+            });
+        }
+        if (!messages.length && error?.body?.message) {
+            messages.push(error.body.message);
+        }
+        return messages.join(' ') || 'An error occurred. Please check required fields and try again.';
     }
 
     closePopup() {

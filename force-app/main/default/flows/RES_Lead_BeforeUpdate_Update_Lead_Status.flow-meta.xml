@@ -16,19 +16,6 @@
         </assignmentItems>
     </assignments>
     <assignments>
-        <name>Assigned_Lead_Status_as_Qualified</name>
-        <label>Assigned Lead Status as Qualified</label>
-        <locationX>0</locationX>
-        <locationY>0</locationY>
-        <assignmentItems>
-            <assignToReference>$Record.Status</assignToReference>
-            <operator>Assign</operator>
-            <value>
-                <elementReference>RES_Get_Lead_Status_Mapping.RES_Target_Lead_Status__c</elementReference>
-            </value>
-        </assignmentItems>
-    </assignments>
-    <assignments>
         <name>RES_Assigned_Lead_Status_as_Retired</name>
         <label>Assigned Lead Status as Retired</label>
         <locationX>0</locationX>
@@ -123,9 +110,6 @@
                     <stringValue>04</stringValue>
                 </rightValue>
             </conditions>
-            <connector>
-                <targetReference>Assigned_Lead_Status_as_Qualified</targetReference>
-            </connector>
             <label>Qualified Status Mapping</label>
         </rules>
     </decisions>

@@ -183,7 +183,7 @@ public with sharing class RES_LeadConversionQueueable implements Queueable {
     }
 
     private Boolean isLeadReady(Lead l) {
-        if (l.LeadSource == 'Z09') {
+        if (l.LeadSource == 'Z09' || l.LeadSource == 'Direct Sales') {
             return l.RES_SLA_Status__c == 'Met' || l.RES_SLA_Status__c == null;
         }
         return l.RES_SLA_Status__c == 'Met';
