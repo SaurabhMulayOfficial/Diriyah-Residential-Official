@@ -296,7 +296,26 @@ public with sharing class RES_LeadConversionHandler {
             System.debug('Error: ' + ex.getMessage() + ' | Line: ' + ex.getLineNumber());
             throw new AuraHandledException('Error: ' + ex.getMessage());
         }
-        
+
         return result;
+    }
+
+    @AuraEnabled(cacheable=false)
+    public static void triggerLeadConversion(Id leadId) {
+        try {
+            if (leadId == null) {
+                throw new AuraHandledException('Lead Id is required.');
+            }
+            List<Lead> leads = new RES_LeadDAOLayer().getLeadsBySLAStatus(new Set<Id>{ leadId });
+            if (leads == null || leads.isEmpty()) {
+                throw new AuraHandledException('Lead not found.');
+            }
+            System.enqueueJob(new RES_LeadConversionQueueable(leads));
+        } catch (AuraHandledException ex) {
+            throw ex;
+        } catch (Exception ex) {
+            System.debug('triggerLeadConversion error: ' + ex.getMessage());
+            throw new AuraHandledException('Error: ' + ex.getMessage());
+        }
     }
 }

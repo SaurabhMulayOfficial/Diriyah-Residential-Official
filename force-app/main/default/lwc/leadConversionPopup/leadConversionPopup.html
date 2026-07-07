@@ -15,6 +15,9 @@
                         Once you set the lead to Qualified, an automated lead conversion
                         will happen. Do you wish to proceed?
                     </p>
+                    <template if:true={_proceedError}>
+                        <p class="warn-error">{_proceedError}</p>
+                    </template>
                 </div>
 
                 <!-- Beige footer with pill buttons -->
