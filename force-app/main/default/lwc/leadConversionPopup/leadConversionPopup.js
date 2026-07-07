@@ -9,6 +9,7 @@ import USER_ID from '@salesforce/user/Id';
 import SUB_STATUS_FIELD from '@salesforce/schema/Lead.RES_Lead_Sub_Status__c';
 import STATUS_FIELD     from '@salesforce/schema/Lead.Status';
 import OWNER_FIELD      from '@salesforce/schema/Lead.OwnerId';
+import PROJECT_FIELD    from '@salesforce/schema/Lead.RES_Project__c';
 export default class LeadConversionPopup extends NavigationMixin(LightningElement) {
     @api recordId;
     @track showPopup      = false;
@@ -58,12 +59,15 @@ export default class LeadConversionPopup extends NavigationMixin(LightningElemen
     // ── Wire: watch Sub-Status + Status — show warning on Qualified ──
     _ownerId = '';
 
-    @wire(getRecord, { recordId: '$recordId', fields: [SUB_STATUS_FIELD, STATUS_FIELD, OWNER_FIELD] })
+    _projectId = '';
+
+    @wire(getRecord, { recordId: '$recordId', fields: [SUB_STATUS_FIELD, STATUS_FIELD, OWNER_FIELD, PROJECT_FIELD] })
     wiredLead({ data }) {
         if (!data) return;
         const subStatus = getFieldValue(data, SUB_STATUS_FIELD) || '';
         const status    = getFieldValue(data, STATUS_FIELD)     || '';
         this._ownerId   = getFieldValue(data, OWNER_FIELD)      || '';
+        this._projectId = getFieldValue(data, PROJECT_FIELD)    || '';
 
         if (this._isFirstLoad) {
             this._previousSubStatus = subStatus;
@@ -240,8 +244,15 @@ export default class LeadConversionPopup extends NavigationMixin(LightningElemen
     // ── Warning modal: Proceed — update Status to '04' and directly enqueue conversion ─
     handleProceed() {
         this._proceedError = '';
+        const errors = [];
         if (this._ownerId && !this._ownerId.startsWith('005')) {
-            this._proceedError = 'This lead is assigned to a Queue. Please reassign it to a User before converting.';
+            errors.push('This lead is assigned to a Queue. Please reassign it to a User before converting.');
+        }
+        if (!this._projectId) {
+            errors.push('Project is required when changing status to Active, Qualified or Converted');
+        }
+        if (errors.length > 0) {
+            this._proceedError = errors.join(' ');
             return;
         }
         this.showWarningModal = false;
