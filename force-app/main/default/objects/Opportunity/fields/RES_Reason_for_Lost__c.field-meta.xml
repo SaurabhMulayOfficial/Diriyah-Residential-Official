@@ -5,6 +5,7 @@
     <label>Reason for Lost</label>
     <required>false</required>
     <trackFeedHistory>false</trackFeedHistory>
+    <trackHistory>true</trackHistory>
     <type>Picklist</type>
     <valueSet>
         <controllingField>StageName</controllingField>
@@ -46,5 +47,4 @@
             <valueName>Customer Budget</valueName>
         </valueSettings>
     </valueSet>
-    <trackHistory>true</trackHistory>
 </CustomField>

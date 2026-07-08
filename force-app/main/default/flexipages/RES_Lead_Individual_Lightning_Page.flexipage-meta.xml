@@ -66,6 +66,10 @@
                     <name>hideChatterActions</name>
                     <value>false</value>
                 </componentInstanceProperties>
+                <componentInstanceProperties>
+                    <name>hideSlackAction</name>
+                    <value>false</value>
+                </componentInstanceProperties>
                 <componentName>force:highlightsPanel</componentName>
                 <identifier>force_highlightsPanel2</identifier>
             </componentInstance>
@@ -178,32 +182,10 @@
                     <name>uiBehavior</name>
                     <value>required</value>
                 </fieldInstanceProperties>
-                <fieldItem>Record.RES_Broker_Registration__c</fieldItem>
-                <identifier>RecordRES_Broker_Registration_cField</identifier>
-                <visibilityRule>
-                    <criteria>
-                        <leftValue>{!Record.RES_Lead_Sub_Status__c}</leftValue>
-                        <operator>EQUAL</operator>
-                        <rightValue>261</rightValue>
-                    </criteria>
-                </visibilityRule>
-            </fieldInstance>
-        </itemInstances>
-        <itemInstances>
-            <fieldInstance>
-                <fieldInstanceProperties>
-                    <name>uiBehavior</name>
-                    <value>required</value>
-                </fieldInstanceProperties>
                 <fieldItem>Record.RES_Customer_Budget__c</fieldItem>
                 <identifier>RecordRES_Customer_Budget_cField</identifier>
                 <visibilityRule>
-                    <booleanFilter>1 OR 2 OR 3 OR 4 OR 5 OR 6</booleanFilter>
-                    <criteria>
-                        <leftValue>{!Record.RES_Lead_Sub_Status__c}</leftValue>
-                        <operator>EQUAL</operator>
-                        <rightValue>101</rightValue>
-                    </criteria>
+                    <booleanFilter>1 OR 2 OR 3</booleanFilter>
                     <criteria>
                         <leftValue>{!Record.RES_Lead_Sub_Status__c}</leftValue>
                         <operator>EQUAL</operator>
@@ -213,16 +195,6 @@
                         <leftValue>{!Record.RES_Lead_Sub_Status__c}</leftValue>
                         <operator>EQUAL</operator>
                         <rightValue>171</rightValue>
-                    </criteria>
-                    <criteria>
-                        <leftValue>{!Record.RES_Lead_Sub_Status__c}</leftValue>
-                        <operator>EQUAL</operator>
-                        <rightValue>141</rightValue>
-                    </criteria>
-                    <criteria>
-                        <leftValue>{!Record.RES_Lead_Sub_Status__c}</leftValue>
-                        <operator>EQUAL</operator>
-                        <rightValue>291</rightValue>
                     </criteria>
                     <criteria>
                         <leftValue>{!Record.RES_Lead_Sub_Status__c}</leftValue>
@@ -241,12 +213,7 @@
                 <fieldItem>Record.RES_Customer_Unit_Preference__c</fieldItem>
                 <identifier>RecordRES_Customer_Unit_Preference_cField</identifier>
                 <visibilityRule>
-                    <booleanFilter>1 OR 2 OR 3 OR 4 OR 5 OR 6</booleanFilter>
-                    <criteria>
-                        <leftValue>{!Record.RES_Lead_Sub_Status__c}</leftValue>
-                        <operator>EQUAL</operator>
-                        <rightValue>101</rightValue>
-                    </criteria>
+                    <booleanFilter>1 OR 2 OR 3</booleanFilter>
                     <criteria>
                         <leftValue>{!Record.RES_Lead_Sub_Status__c}</leftValue>
                         <operator>EQUAL</operator>
@@ -256,16 +223,6 @@
                         <leftValue>{!Record.RES_Lead_Sub_Status__c}</leftValue>
                         <operator>EQUAL</operator>
                         <rightValue>171</rightValue>
-                    </criteria>
-                    <criteria>
-                        <leftValue>{!Record.RES_Lead_Sub_Status__c}</leftValue>
-                        <operator>EQUAL</operator>
-                        <rightValue>141</rightValue>
-                    </criteria>
-                    <criteria>
-                        <leftValue>{!Record.RES_Lead_Sub_Status__c}</leftValue>
-                        <operator>EQUAL</operator>
-                        <rightValue>291</rightValue>
                     </criteria>
                     <criteria>
                         <leftValue>{!Record.RES_Lead_Sub_Status__c}</leftValue>
@@ -1505,32 +1462,6 @@
                 </componentInstanceProperties>
                 <componentName>runtime_sales_merge:mergeCandidatesPreviewCard</componentName>
                 <identifier>runtime_sales_merge_mergeCandidatesPreviewCard</identifier>
-            </componentInstance>
-        </itemInstances>
-        <itemInstances>
-            <componentInstance>
-                <componentInstanceProperties>
-                    <name>parentFieldApiName</name>
-                    <value>Lead.Id</value>
-                </componentInstanceProperties>
-                <componentInstanceProperties>
-                    <name>relatedListApiName</name>
-                    <value>Histories</value>
-                </componentInstanceProperties>
-                <componentInstanceProperties>
-                    <name>relatedListComponentOverride</name>
-                    <value>NONE</value>
-                </componentInstanceProperties>
-                <componentInstanceProperties>
-                    <name>rowsToDisplay</name>
-                    <value>10</value>
-                </componentInstanceProperties>
-                <componentInstanceProperties>
-                    <name>showActionBar</name>
-                    <value>true</value>
-                </componentInstanceProperties>
-                <componentName>force:relatedListSingleContainer</componentName>
-                <identifier>force_relatedListSingleContainer</identifier>
             </componentInstance>
         </itemInstances>
         <name>sidebar</name>
