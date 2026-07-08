@@ -4,7 +4,7 @@
     <label>Active Lead Count</label>
     <summaryForeignKey>RES_Lead_Routing__c.RES_Assignment_Workload__c</summaryForeignKey>
     <summaryOperation>count</summaryOperation>
-    <trackHistory>true</trackHistory>
+    <trackHistory>false</trackHistory>
     <trackTrending>false</trackTrending>
     <type>Summary</type>
 </CustomField>
