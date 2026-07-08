@@ -21,8 +21,19 @@
                 <elementReference>Request_Remark</elementReference>
             </value>
         </assignmentItems>
+        <assignmentItems>
+            <assignToReference>Get_Lead_Record.RES_SLA_Due_Time__c</assignToReference>
+            <operator>Assign</operator>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>Get_Lead_Record.RES_SLA_Status__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>SLA_Status</elementReference>
+            </value>
+        </assignmentItems>
         <connector>
-            <targetReference>Update_Lead_Record</targetReference>
+            <targetReference>If_Lead_SLA_is_Met</targetReference>
         </connector>
     </assignments>
     <customProperties>
@@ -31,6 +42,31 @@
             <stringValue>{&quot;location&quot;:&quot;top&quot;,&quot;type&quot;:&quot;simple&quot;}</stringValue>
         </value>
     </customProperties>
+    <decisions>
+        <name>If_Lead_SLA_is_Met</name>
+        <label>If Lead SLA is Met?</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnector>
+            <targetReference>Update_Lead_Record</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Running</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>Get_Lead_Record.RES_SLA_Status__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Running</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Create_Content_Note</targetReference>
+            </connector>
+            <label>Running</label>
+        </rules>
+    </decisions>
     <decisions>
         <name>If_Record_Is_In_Phase_of_Approval</name>
         <label>If Record Is In Phase of Approval</label>
@@ -82,6 +118,11 @@
         </rules>
     </decisions>
     <environments>Default</environments>
+    <formulas>
+        <name>SLA_Status</name>
+        <dataType>String</dataType>
+        <expression>IF(ISPICKVAL({!Get_Lead_Record.RES_SLA_Status__c}, &apos;&apos;), NULL, &apos;Met&apos;)</expression>
+    </formulas>
     <interviewLabel>RES Lead - Screen Flow - Change Record Owner {!$Flow.CurrentDateTime}</interviewLabel>
     <label>RES Lead - Screen Flow - Change Record Owner</label>
     <processMetadataValues>
@@ -103,6 +144,78 @@
         </value>
     </processMetadataValues>
     <processType>Flow</processType>
+    <recordCreates>
+        <name>Create_Content_Document_Link</name>
+        <label>Create Content Document Link</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Update_Lead_Record</targetReference>
+        </connector>
+        <faultConnector>
+            <isGoTo>true</isGoTo>
+            <targetReference>Fault</targetReference>
+        </faultConnector>
+        <inputAssignments>
+            <field>ContentDocumentId</field>
+            <value>
+                <elementReference>Create_Content_Note.Id</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>LinkedEntityId</field>
+            <value>
+                <elementReference>Get_Lead_Record.Id</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>ShareType</field>
+            <value>
+                <stringValue>V</stringValue>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Visibility</field>
+            <value>
+                <stringValue>AllUsers</stringValue>
+            </value>
+        </inputAssignments>
+        <object>ContentDocumentLink</object>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordCreates>
+    <recordCreates>
+        <name>Create_Content_Note</name>
+        <label>Create Content Note</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Create_Content_Document_Link</targetReference>
+        </connector>
+        <faultConnector>
+            <isGoTo>true</isGoTo>
+            <targetReference>Fault</targetReference>
+        </faultConnector>
+        <inputAssignments>
+            <field>Content</field>
+            <value>
+                <elementReference>$Label.RES_Lead_SLA_Met_Message</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>SharingPrivacy</field>
+            <value>
+                <stringValue>N</stringValue>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Title</field>
+            <value>
+                <elementReference>$Label.RES_Lead_Content_Note_Title</elementReference>
+            </value>
+        </inputAssignments>
+        <object>ContentNote</object>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordCreates>
     <recordLookups>
         <name>Get_Lead_Record</name>
         <label>Get Lead Record</label>
