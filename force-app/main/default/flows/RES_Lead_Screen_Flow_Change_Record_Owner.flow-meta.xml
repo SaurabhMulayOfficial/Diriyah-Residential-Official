@@ -33,7 +33,7 @@
             </value>
         </assignmentItems>
         <connector>
-            <targetReference>If_Lead_SLA_is_Met</targetReference>
+            <targetReference>Update_Lead_Record</targetReference>
         </connector>
     </assignments>
     <customProperties>
@@ -48,7 +48,7 @@
         <locationX>0</locationX>
         <locationY>0</locationY>
         <defaultConnector>
-            <targetReference>Update_Lead_Record</targetReference>
+            <targetReference>Update_Proposed_User_c</targetReference>
         </defaultConnector>
         <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
         <rules>
@@ -98,7 +98,7 @@
         <locationX>0</locationX>
         <locationY>0</locationY>
         <defaultConnector>
-            <targetReference>Update_Proposed_User_c</targetReference>
+            <targetReference>If_Lead_SLA_is_Met</targetReference>
         </defaultConnector>
         <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
         <rules>
@@ -150,7 +150,7 @@
         <locationX>0</locationX>
         <locationY>0</locationY>
         <connector>
-            <targetReference>Update_Lead_Record</targetReference>
+            <targetReference>Update_Proposed_User_c</targetReference>
         </connector>
         <faultConnector>
             <isGoTo>true</isGoTo>
