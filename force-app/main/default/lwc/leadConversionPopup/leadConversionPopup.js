@@ -345,29 +345,38 @@ export default class LeadConversionPopup extends NavigationMixin(LightningElemen
         return `record-card${this.hasOpportunity ? ' clickable' : ' disabled'}`;
     }
 
-    // ── Pending-revert helpers: survive page refresh via sessionStorage ──
+    // ── Pending-revert helpers: survive page refresh AND tab close via localStorage ──
+    // TTL of 2 hours — prevents a stale entry from reverting a record opened much later.
+    static REVERT_TTL_MS = 2 * 60 * 60 * 1000;
+
     get _revertKey() {
         return `res_lead_pending_revert_${this.recordId}`;
     }
 
     _savePendingRevert(prevSubStatus, prevStatus) {
         try {
-            sessionStorage.setItem(this._revertKey, JSON.stringify({ subStatus: prevSubStatus, status: prevStatus }));
-        } catch (e) { /* storage unavailable — revert won't survive refresh */ }
+            localStorage.setItem(this._revertKey, JSON.stringify({
+                subStatus : prevSubStatus,
+                status    : prevStatus,
+                savedAt   : new Date().getTime()
+            }));
+        } catch (e) { /* storage unavailable */ }
     }
 
     _clearPendingRevert() {
-        try { sessionStorage.removeItem(this._revertKey); } catch (e) { /* ignore */ }
+        try { localStorage.removeItem(this._revertKey); } catch (e) { /* ignore */ }
     }
 
     _checkAndApplyPendingRevert() {
         if (!this.recordId) return;
         let stored;
-        try { stored = sessionStorage.getItem(this._revertKey); } catch (e) { return; }
+        try { stored = localStorage.getItem(this._revertKey); } catch (e) { return; }
         if (!stored) return;
         this._clearPendingRevert();
         let parsed;
         try { parsed = JSON.parse(stored); } catch (e) { return; }
+        const age = new Date().getTime() - (parsed.savedAt || 0);
+        if (age > LeadConversionPopup.REVERT_TTL_MS) return;
         this._isReverting = true;
         updateRecord({
             fields: {
@@ -377,7 +386,7 @@ export default class LeadConversionPopup extends NavigationMixin(LightningElemen
             }
         }).catch(error => {
             this._isReverting = false;
-            console.error('Error reverting fields after refresh:', JSON.stringify(error));
+            console.error('Error reverting fields after tab close/refresh:', JSON.stringify(error));
         });
     }
 
