@@ -93,6 +93,7 @@ export default class LeadConversionPopup extends NavigationMixin(LightningElemen
             // Keep _previous* intact for revert; update _current* to new values
             this._currentSubStatus = subStatus;
             this._currentStatus    = status;
+            this._savePendingRevert(this._previousSubStatus, this._previousStatus);
             this.showWarningModal  = true;
         } else if (subStatus !== this._currentSubStatus || status !== this._currentStatus) {
             // Unrelated field change — update all tracking
@@ -104,6 +105,7 @@ export default class LeadConversionPopup extends NavigationMixin(LightningElemen
     }
 
     async connectedCallback() {
+        this._checkAndApplyPendingRevert();
         this._subscribeToChannel();
         this._registerErrorHandler();
     }
@@ -240,6 +242,7 @@ export default class LeadConversionPopup extends NavigationMixin(LightningElemen
     // ── Warning modal: Proceed — update Status to '04' and directly enqueue conversion ─
     handleProceed() {
         this._proceedError = '';
+        this._clearPendingRevert();
         if (this._ownerId && !this._ownerId.startsWith('005')) {
             this._proceedError = 'This lead is assigned to a Queue. Please reassign it to a User before converting.';
             return;
@@ -267,6 +270,7 @@ export default class LeadConversionPopup extends NavigationMixin(LightningElemen
     handleCancelWarning() {
         this.showWarningModal = false;
         this._proceedError    = '';
+        this._clearPendingRevert();
         this._isReverting     = true;
         updateRecord({
             fields: {
@@ -339,6 +343,42 @@ export default class LeadConversionPopup extends NavigationMixin(LightningElemen
     }
     get opportunityCardClass() {
         return `record-card${this.hasOpportunity ? ' clickable' : ' disabled'}`;
+    }
+
+    // ── Pending-revert helpers: survive page refresh via sessionStorage ──
+    get _revertKey() {
+        return `res_lead_pending_revert_${this.recordId}`;
+    }
+
+    _savePendingRevert(prevSubStatus, prevStatus) {
+        try {
+            sessionStorage.setItem(this._revertKey, JSON.stringify({ subStatus: prevSubStatus, status: prevStatus }));
+        } catch (e) { /* storage unavailable — revert won't survive refresh */ }
+    }
+
+    _clearPendingRevert() {
+        try { sessionStorage.removeItem(this._revertKey); } catch (e) { /* ignore */ }
+    }
+
+    _checkAndApplyPendingRevert() {
+        if (!this.recordId) return;
+        let stored;
+        try { stored = sessionStorage.getItem(this._revertKey); } catch (e) { return; }
+        if (!stored) return;
+        this._clearPendingRevert();
+        let parsed;
+        try { parsed = JSON.parse(stored); } catch (e) { return; }
+        this._isReverting = true;
+        updateRecord({
+            fields: {
+                [ID_FIELD.fieldApiName]         : this.recordId,
+                [SUB_STATUS_FIELD.fieldApiName] : parsed.subStatus || null,
+                [STATUS_FIELD.fieldApiName]     : parsed.status    || null
+            }
+        }).catch(error => {
+            this._isReverting = false;
+            console.error('Error reverting fields after refresh:', JSON.stringify(error));
+        });
     }
 
     _delay(ms) {
