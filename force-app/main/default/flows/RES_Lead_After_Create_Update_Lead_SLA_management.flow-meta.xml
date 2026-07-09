@@ -383,6 +383,13 @@
                     <booleanValue>false</booleanValue>
                 </rightValue>
             </conditions>
+            <conditions>
+                <leftValueReference>$Record.RES_Reassignment_Count__c</leftValueReference>
+                <operator>LessThan</operator>
+                <rightValue>
+                    <numberValue>1.0</numberValue>
+                </rightValue>
+            </conditions>
             <connector>
                 <targetReference>Assign_Next_Owner_and_Update_Lead</targetReference>
             </connector>
