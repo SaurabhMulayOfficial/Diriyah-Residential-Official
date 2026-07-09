@@ -328,7 +328,7 @@
         <name>RetiredDateTime</name>
         <dataType>DateTime</dataType>
         <expression>IF(
-  ISCHANGED({!$Record.Status}),
+  ISCHANGED({!$Record.RES_Lead_Sub_Status__c}),
   IF(
     ISPICKVAL({!$Record.RES_Lead_Sub_Status__c},&apos;151&apos;),
     NOW() + 30,
