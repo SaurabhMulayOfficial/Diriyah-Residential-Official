@@ -15,7 +15,7 @@ on:
 
 jobs:
   setup:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     outputs:
       env_name:   ${{ steps.setenv.outputs.env_name }}
       test_level: ${{ steps.setenv.outputs.test_level }}
@@ -53,7 +53,7 @@ jobs:
           fi
 
   validate-qa:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     needs: setup
     environment: env
 
@@ -93,7 +93,7 @@ jobs:
             --wait 30
 
   deploy-qa:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     needs: [setup, validate-qa]
     environment: env
 
@@ -134,7 +134,7 @@ jobs:
             --wait 30
 
   validate-uat:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     needs: setup
     environment: env
 
@@ -171,7 +171,7 @@ jobs:
 
 
   deploy-uat:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     needs: [setup, validate-uat]
     environment: env
 
@@ -209,7 +209,7 @@ jobs:
             --wait 30
 
   validate-preprod:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     needs: setup
     environment: env   
 
@@ -245,7 +245,7 @@ jobs:
             --wait 30
 
   deploy-preprod:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     needs: [setup, validate-preprod]
     environment: env
 
@@ -284,7 +284,7 @@ jobs:
 
 
   validate-prod:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     needs: setup
     environment: env
 
@@ -320,7 +320,7 @@ jobs:
             --wait 30
 
   deploy-prod:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     needs: [setup, validate-prod]
     environment: env   
 
