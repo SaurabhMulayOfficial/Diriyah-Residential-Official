@@ -42,6 +42,10 @@ public with sharing class RES_LeadServices {
                 l.RES_SLA_Breach_Time__c = null;
                 l.status = '01';
                 l.RES_Lead_Sub_Status__c =  null;
+                if(l.RES_Reassignment_Count__c == null){
+                    l.RES_Reassignment_Count__c = 0;
+                }
+                l.RES_Reassignment_Count__c += 1;
             }
             
             try{
