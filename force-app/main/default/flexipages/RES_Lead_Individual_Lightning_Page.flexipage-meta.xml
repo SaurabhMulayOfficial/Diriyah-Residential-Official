@@ -1477,10 +1477,16 @@
                 <valueListItems>
                     <value>Convert</value>
                     <visibilityRule>
+                        <booleanFilter>1 AND 2</booleanFilter>
                         <criteria>
                             <leftValue>{!Record.Status}</leftValue>
                             <operator>EQUAL</operator>
                             <rightValue>04</rightValue>
+                        </criteria>
+                        <criteria>
+                            <leftValue>{!$Client.formFactor}</leftValue>
+                            <operator>EQUAL</operator>
+                            <rightValue>Large</rightValue>
                         </criteria>
                     </visibilityRule>
                 </valueListItems>
