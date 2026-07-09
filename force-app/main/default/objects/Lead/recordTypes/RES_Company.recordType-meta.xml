@@ -549,7 +549,7 @@
             <default>false</default>
         </values>
         <values>
-            <fullName>4 bedrooms and more</fullName>
+            <fullName>4 bedrooms and Above</fullName>
             <default>false</default>
         </values>
         <values>
@@ -2608,6 +2608,10 @@
             <fullName>Wadi Safar – Plots</fullName>
             <default>false</default>
         </values>
+        <values>
+            <fullName>Not Decided</fullName>
+            <default>false</default>
+        </values>
     </picklistValues>
     <picklistValues>
         <picklist>RES_Project_of_Interest__c</picklist>
@@ -3232,4 +3236,57 @@
             <default>false</default>
         </values>
     </picklistValues>
+    <picklistValues>
+        <picklist>RES_Type_of_Leasing__c</picklist>
+        <values>
+            <fullName>Retail Leasing</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Specialty Leasing</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Commercial Leasing</fullName>
+            <default>false</default>
+        </values>
+         <values>
+            <fullName>Residential Leasing</fullName>
+            <default>false</default>
+        </values>
+    </picklistValues>
+    <picklistValues>
+        <picklist>RES_Unit_Type__c</picklist>
+        <values>
+            <fullName>Apartment</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Penthouse</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Villa</fullName>
+            <default>false</default>
+        </values>
+         <values>
+            <fullName>Plots</fullName>
+            <default>false</default>
+        </values>
+    </picklistValues> 
+    <picklistValues>
+        <picklist>RES_Project_Type__c</picklist>
+        <values>
+            <fullName>Branded</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Non-Branded</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Future Project</fullName>
+            <default>false</default>
+        </values>
+    </picklistValues> 
 </RecordType>

@@ -340,10 +340,49 @@
                     <name>uiBehavior</name>
                     <value>required</value>
                 </fieldInstanceProperties>
-                <fieldItem>Record.RES_Customer_Budget__c</fieldItem>
-                <identifier>RecordRES_Customer_Budget_cField</identifier>
+                <fieldItem>Record.RES_Reason__c</fieldItem>
+                <identifier>RecordRES_Reason_cField</identifier>
+                <visibilityRule>
+                    <criteria>
+                        <leftValue>{!Record.RES_Lead_Sub_Status__c}</leftValue>
+                        <operator>EQUAL</operator>
+                        <rightValue>151</rightValue>
+                    </criteria>
+                </visibilityRule>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>required</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.RES_Type_of_Leasing__c</fieldItem>
+                <identifier>RecordRES_Type_of_Leasing_cField</identifier>
+                <visibilityRule>
+                    <criteria>
+                        <leftValue>{!Record.RES_Lead_Sub_Status__c}</leftValue>
+                        <operator>EQUAL</operator>
+                        <rightValue>281</rightValue>
+                    </criteria>
+                </visibilityRule>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>required</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.RES_Project__c</fieldItem>
+                <identifier>RecordRES_Project_cField2</identifier>
                 <visibilityRule>
                     <booleanFilter>1 OR 2 OR 3</booleanFilter>
+                    <criteria>
+                        <leftValue>{!Record.RES_Lead_Sub_Status__c}</leftValue>
+                        <operator>EQUAL</operator>
+                        <rightValue>251</rightValue>
+                    </criteria>
                     <criteria>
                         <leftValue>{!Record.RES_Lead_Sub_Status__c}</leftValue>
                         <operator>EQUAL</operator>
@@ -354,10 +393,88 @@
                         <operator>EQUAL</operator>
                         <rightValue>171</rightValue>
                     </criteria>
+                </visibilityRule>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>required</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.RES_Project_Type__c</fieldItem>
+                <identifier>RecordRES_Project_Type_cField</identifier>
+                <visibilityRule>
+                    <criteria>
+                        <leftValue>{!Record.RES_Lead_Sub_Status__c}</leftValue>
+                        <operator>EQUAL</operator>
+                        <rightValue>251</rightValue>
+                    </criteria>
+                </visibilityRule>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.RES_Customer_Budget__c</fieldItem>
+                <identifier>RecordRES_Customer_Budget_cField</identifier>
+                <visibilityRule>
+                    <booleanFilter>1 OR 2 OR 3 OR 4</booleanFilter>
                     <criteria>
                         <leftValue>{!Record.RES_Lead_Sub_Status__c}</leftValue>
                         <operator>EQUAL</operator>
                         <rightValue>161</rightValue>
+                    </criteria>
+                    <criteria>
+                        <leftValue>{!Record.RES_Lead_Sub_Status__c}</leftValue>
+                        <operator>EQUAL</operator>
+                        <rightValue>251</rightValue>
+                    </criteria>
+                    <criteria>
+                        <leftValue>{!Record.RES_Lead_Sub_Status__c}</leftValue>
+                        <operator>EQUAL</operator>
+                        <rightValue>131</rightValue>
+                    </criteria>
+                    <criteria>
+                        <leftValue>{!Record.RES_Lead_Sub_Status__c}</leftValue>
+                        <operator>EQUAL</operator>
+                        <rightValue>171</rightValue>
+                    </criteria>
+                </visibilityRule>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.RES_Unit_Type__c</fieldItem>
+                <identifier>RecordRES_Unit_Type_cField</identifier>
+                <visibilityRule>
+                    <booleanFilter>1 OR 2 OR 3 OR 4</booleanFilter>
+                    <criteria>
+                        <leftValue>{!Record.RES_Lead_Sub_Status__c}</leftValue>
+                        <operator>EQUAL</operator>
+                        <rightValue>161</rightValue>
+                    </criteria>
+                    <criteria>
+                        <leftValue>{!Record.RES_Lead_Sub_Status__c}</leftValue>
+                        <operator>EQUAL</operator>
+                        <rightValue>251</rightValue>
+                    </criteria>
+                    <criteria>
+                        <leftValue>{!Record.RES_Lead_Sub_Status__c}</leftValue>
+                        <operator>EQUAL</operator>
+                        <rightValue>171</rightValue>
+                    </criteria>
+                    <criteria>
+                        <leftValue>{!Record.RES_Lead_Sub_Status__c}</leftValue>
+                        <operator>EQUAL</operator>
+                        <rightValue>131</rightValue>
                     </criteria>
                 </visibilityRule>
             </fieldInstance>
@@ -371,21 +488,33 @@
                 <fieldItem>Record.RES_Customer_Unit_Preference__c</fieldItem>
                 <identifier>RecordRES_Customer_Unit_Preference_cField</identifier>
                 <visibilityRule>
-                    <booleanFilter>1 OR 2 OR 3</booleanFilter>
+                    <booleanFilter>1 OR 2</booleanFilter>
                     <criteria>
-                        <leftValue>{!Record.RES_Lead_Sub_Status__c}</leftValue>
+                        <leftValue>{!Record.RES_Unit_Type__c}</leftValue>
                         <operator>EQUAL</operator>
-                        <rightValue>131</rightValue>
+                        <rightValue>Apartment</rightValue>
                     </criteria>
                     <criteria>
-                        <leftValue>{!Record.RES_Lead_Sub_Status__c}</leftValue>
+                        <leftValue>{!Record.RES_Unit_Type__c}</leftValue>
                         <operator>EQUAL</operator>
-                        <rightValue>171</rightValue>
+                        <rightValue>Villa</rightValue>
                     </criteria>
+                </visibilityRule>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>required</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.RES_Plot_Size_sqm__c</fieldItem>
+                <identifier>RecordRES_Plot_Size_sqm_cField</identifier>
+                <visibilityRule>
                     <criteria>
-                        <leftValue>{!Record.RES_Lead_Sub_Status__c}</leftValue>
+                        <leftValue>{!Record.RES_Unit_Type__c}</leftValue>
                         <operator>EQUAL</operator>
-                        <rightValue>161</rightValue>
+                        <rightValue>Plots</rightValue>
                     </criteria>
                 </visibilityRule>
             </fieldInstance>
