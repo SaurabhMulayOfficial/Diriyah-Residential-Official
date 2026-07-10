@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>RES_Project_Type__c</fullName>
+    <label>Project Type</label>
+    <required>false</required>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackHistory>false</trackHistory>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>Branded</fullName>
+                <default>false</default>
+                <label>Branded</label>
+            </value>
+            <value>
+                <fullName>Non-Branded</fullName>
+                <default>false</default>
+                <label>Non-Branded</label>
+            </value>
+            <value>
+                <fullName>Future Project</fullName>
+                <default>false</default>
+                <label>Future Project</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

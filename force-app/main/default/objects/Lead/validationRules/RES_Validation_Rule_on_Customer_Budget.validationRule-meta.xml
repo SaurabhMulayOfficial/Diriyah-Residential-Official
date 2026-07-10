@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>RES_Validation_Rule_on_Customer_Budget</fullName>
+    <active>true</active>
+    <errorConditionFormula>AND(
+    NOT($Setup.RES_Config_Switch__c.RES_Validation_Rules_Off__c),
+    OR(
+        $RecordType.DeveloperName = &quot;RES_Company&quot;,
+        $RecordType.DeveloperName = &quot;RES_Individual&quot;
+    ),
+    OR(
+        ISPICKVAL(RES_Lead_Sub_Status__c, &quot;251&quot;),
+        ISPICKVAL(RES_Lead_Sub_Status__c, &quot;161&quot;)
+    ),
+    ISBLANK(TEXT(RES_Customer_Budget__c))
+)</errorConditionFormula>
+    <errorDisplayField>RES_Customer_Budget__c</errorDisplayField>
+    <errorMessage>Customer Budget is required when Lead Sub Status is Future Interest or Budget Misalignment.</errorMessage>
+</ValidationRule>
