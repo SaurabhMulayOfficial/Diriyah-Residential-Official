@@ -7,6 +7,7 @@
     <trackHistory>true</trackHistory>
     <type>Picklist</type>
     <valueSet>
+        <controllingField>RES_Unit_Type__c</controllingField>
         <valueSetDefinition>
             <sorted>false</sorted>
             <value>
@@ -40,5 +41,28 @@
                 <label>Plots</label>
             </value>
         </valueSetDefinition>
+        <valueSettings>
+            <controllingFieldValue>Apartment</controllingFieldValue>
+            <valueName>Studio</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Apartment</controllingFieldValue>
+            <valueName>1 bedroom</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Apartment</controllingFieldValue>
+            <controllingFieldValue>Villa</controllingFieldValue>
+            <valueName>2 bedrooms</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Apartment</controllingFieldValue>
+            <controllingFieldValue>Villa</controllingFieldValue>
+            <valueName>3 bedrooms</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Apartment</controllingFieldValue>
+            <controllingFieldValue>Villa</controllingFieldValue>
+            <valueName>4 bedrooms and Above</valueName>
+        </valueSettings>
     </valueSet>
 </CustomField>
