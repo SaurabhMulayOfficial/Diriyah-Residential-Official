@@ -86,7 +86,7 @@
             <componentInstance>
                 <componentInstanceProperties>
                     <name>dashboardName</name>
-                    <value>RkmuOJPNwMrThNoLcWOltZSUbpGxdE</value>
+                    <value>dQMOGjttuLzSLaoQmmMpagyGhRRcMq</value>
                 </componentInstanceProperties>
                 <componentInstanceProperties>
                     <name>hideOnError</name>
@@ -95,10 +95,16 @@
                 <componentName>desktopDashboards:embeddedDashboard</componentName>
                 <identifier>desktopDashboards_embeddedDashboard5</identifier>
                 <visibilityRule>
+                    <booleanFilter>1 OR 2</booleanFilter>
                     <criteria>
-                        <leftValue>{!$Permission.CustomPermission.RES_Operations_Dashboard_Visibility}</leftValue>
+                        <leftValue>{!$Permission.CustomPermission.RES_Lead_Reassignment_Dashboard_Visibility}</leftValue>
                         <operator>EQUAL</operator>
                         <rightValue>true</rightValue>
+                    </criteria>
+                    <criteria>
+                        <leftValue>{!$User.Profile.Name}</leftValue>
+                        <operator>EQUAL</operator>
+                        <rightValue>System Administrator</rightValue>
                     </criteria>
                 </visibilityRule>
             </componentInstance>
