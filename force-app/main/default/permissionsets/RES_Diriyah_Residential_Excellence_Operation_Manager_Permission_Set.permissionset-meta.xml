@@ -2,6 +2,10 @@
 <PermissionSet xmlns="http://soap.sforce.com/2006/04/metadata">
     <description>Permission Set for Operational Excellence – Operations – Manager</description>
     <customPermissions>
+        <enabled>true</enabled>
+        <name>RES_Lead_Reassignment_Dashboard_Visibility</name>
+    </customPermissions>
+    <customPermissions>
         <enabled>false</enabled>
         <name>RES_Manager_Dashboard_Visibility</name>
     </customPermissions>
