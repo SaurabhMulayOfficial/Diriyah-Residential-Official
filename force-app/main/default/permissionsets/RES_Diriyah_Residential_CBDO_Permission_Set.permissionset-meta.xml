@@ -605,6 +605,11 @@
         <field>Lead.RES_Plot_Size_sqm__c</field>
         <readable>true</readable>
     </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>Lead.RES_Unit_Preference__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
      <fieldPermissions>
         <editable>false</editable>
         <field>Lead.RES_Project_Type__c</field>
@@ -1198,18 +1203,8 @@
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
-       <editable>false</editable>
-        <field>Opportunity.RES_City__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
         <editable>false</editable>
         <field>Opportunity.RES_Cityscape_Year__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-       <editable>false</editable>
-        <field>Opportunity.RES_Country__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
@@ -1220,21 +1215,6 @@
     <fieldPermissions>
         <editable>false</editable>
         <field>Opportunity.RES_Distribution_Channel__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-       <editable>false</editable>
-        <field>Opportunity.RES_House_Number__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-       <editable>false</editable>
-        <field>Opportunity.RES_Identification_Number__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-       <editable>false</editable>
-        <field>Opportunity.RES_Identification_Type__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
@@ -1270,22 +1250,7 @@
     </fieldPermissions>
     <fieldPermissions>
        <editable>false</editable>
-        <field>Opportunity.RES_State_Province__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-       <editable>false</editable>
-        <field>Opportunity.RES_Street__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-       <editable>false</editable>
         <field>Opportunity.RES_Sub_Stage__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-       <editable>false</editable>
-        <field>Opportunity.RES_Zip_Postal_Code__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>

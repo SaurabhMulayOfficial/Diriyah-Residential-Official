@@ -452,19 +452,14 @@
                     <name>uiBehavior</name>
                     <value>none</value>
                 </fieldInstanceProperties>
-                <fieldItem>Record.RES_Unit_Type__c</fieldItem>
-                <identifier>RecordRES_Unit_Type_cField</identifier>
+                <fieldItem>Record.RES_Unit_Preference__c</fieldItem>
+                <identifier>RecordRES_Unit_Preference_cField</identifier>
                 <visibilityRule>
-                    <booleanFilter>1 OR 2 OR 3 OR 4</booleanFilter>
+                    <booleanFilter>1 OR 2 OR 3</booleanFilter>
                     <criteria>
                         <leftValue>{!Record.RES_Lead_Sub_Status__c}</leftValue>
                         <operator>EQUAL</operator>
-                        <rightValue>161</rightValue>
-                    </criteria>
-                    <criteria>
-                        <leftValue>{!Record.RES_Lead_Sub_Status__c}</leftValue>
-                        <operator>EQUAL</operator>
-                        <rightValue>251</rightValue>
+                        <rightValue>131</rightValue>
                     </criteria>
                     <criteria>
                         <leftValue>{!Record.RES_Lead_Sub_Status__c}</leftValue>
@@ -474,7 +469,30 @@
                     <criteria>
                         <leftValue>{!Record.RES_Lead_Sub_Status__c}</leftValue>
                         <operator>EQUAL</operator>
-                        <rightValue>131</rightValue>
+                        <rightValue>251</rightValue>
+                    </criteria>
+                </visibilityRule>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>required</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.RES_Unit_Type__c</fieldItem>
+                <identifier>RecordRES_Unit_Type_cField</identifier>
+                <visibilityRule>
+                    <booleanFilter>1 OR 2</booleanFilter>
+                    <criteria>
+                        <leftValue>{!Record.RES_Lead_Sub_Status__c}</leftValue>
+                        <operator>EQUAL</operator>
+                        <rightValue>161</rightValue>
+                    </criteria>
+                    <criteria>
+                        <leftValue>{!Record.RES_Lead_Sub_Status__c}</leftValue>
+                        <operator>EQUAL</operator>
+                        <rightValue>251</rightValue>
                     </criteria>
                 </visibilityRule>
             </fieldInstance>
@@ -488,7 +506,7 @@
                 <fieldItem>Record.RES_Customer_Unit_Preference__c</fieldItem>
                 <identifier>RecordRES_Customer_Unit_Preference_cField</identifier>
                 <visibilityRule>
-                    <booleanFilter>1 OR 2</booleanFilter>
+                    <booleanFilter>(1 OR 2 ) And (3 OR 4)</booleanFilter>
                     <criteria>
                         <leftValue>{!Record.RES_Unit_Type__c}</leftValue>
                         <operator>EQUAL</operator>
@@ -498,6 +516,16 @@
                         <leftValue>{!Record.RES_Unit_Type__c}</leftValue>
                         <operator>EQUAL</operator>
                         <rightValue>Villa</rightValue>
+                    </criteria>
+                    <criteria>
+                        <leftValue>{!Record.RES_Lead_Sub_Status__c}</leftValue>
+                        <operator>EQUAL</operator>
+                        <rightValue>251</rightValue>
+                    </criteria>
+                    <criteria>
+                        <leftValue>{!Record.RES_Lead_Sub_Status__c}</leftValue>
+                        <operator>EQUAL</operator>
+                        <rightValue>161</rightValue>
                     </criteria>
                 </visibilityRule>
             </fieldInstance>
@@ -511,10 +539,21 @@
                 <fieldItem>Record.RES_Plot_Size_sqm__c</fieldItem>
                 <identifier>RecordRES_Plot_Size_sqm_cField</identifier>
                 <visibilityRule>
+                    <booleanFilter>1 And (2 OR 3)</booleanFilter>
                     <criteria>
                         <leftValue>{!Record.RES_Unit_Type__c}</leftValue>
                         <operator>EQUAL</operator>
                         <rightValue>Plots</rightValue>
+                    </criteria>
+                    <criteria>
+                        <leftValue>{!Record.RES_Lead_Sub_Status__c}</leftValue>
+                        <operator>EQUAL</operator>
+                        <rightValue>161</rightValue>
+                    </criteria>
+                    <criteria>
+                        <leftValue>{!Record.RES_Lead_Sub_Status__c}</leftValue>
+                        <operator>EQUAL</operator>
+                        <rightValue>251</rightValue>
                     </criteria>
                 </visibilityRule>
             </fieldInstance>
