@@ -170,7 +170,6 @@ public with sharing class RES_ReassignmentLogicHandler {
                     else{
                         l.OwnerId = queueId;
                     }
-                    l.RES_Previous_Lead_Owner__c = queueId;
                 }
 
                 System.debug('No Assignment Rule found Assigning every lead to QUEUE');
@@ -201,8 +200,6 @@ public with sharing class RES_ReassignmentLogicHandler {
                     }else{
                         inputLeadList[i].OwnerId = queueId;
                     }
-
-                    inputLeadList[i].RES_Previous_Lead_Owner__c = queueId;
                     i+=1;
                     continue;
                 }
@@ -225,21 +222,28 @@ public with sharing class RES_ReassignmentLogicHandler {
                     Boolean isOwnerChanged = false;
 
                     if(currentLead.Id != null){
-                        if(workload.RES_User__c != currentLead.OwnerId){
+                        if(workload.RES_User__c != currentLead.OwnerId && workload.RES_User__c != currentLead.RES_Previous_Lead_Owner__c){
                             events.add(new RES_Ownership_Reassignment_Event__e(
                                     RES_LeadId__c = currentLead.Id,
                                     RES_OwnerId__c = workload.RES_User__c
                                 ));
                             ruleToLeadCountOverhead.put(currentRule.Id, ruleToLeadCountOverhead.get(currentRule.Id) + 1);
                             isOwnerChanged = true;
+                        }else{
+                            events.add(new RES_Ownership_Reassignment_Event__e(
+                                    RES_LeadId__c = currentLead.Id,
+                                    RES_OwnerId__c = queueId
+                                ));
+
+                                i+=1;
+                                continue;
                         }
                     }else{
                         currentLead.OwnerId = workload.RES_User__c;
                         isOwnerChanged = true;
                         ruleToLeadCountOverhead.put(currentRule.Id, ruleToLeadCountOverhead.get(currentRule.Id) + 1);
                     }
-        
-                    currentLead.RES_Previous_Lead_Owner__c = queueId;
+
                     if(isOwnerChanged == true){
                         System.debug('ADDING ROUTING UPDATE');
                         routingUpdates.add(new leadRoutingWrapper(currentLead, workload));
