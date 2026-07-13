@@ -39,6 +39,13 @@
                 <stringValue>02</stringValue>
             </value>
         </assignmentItems>
+        <assignmentItems>
+            <assignToReference>RES_Get_the_Parent_Lead_Record.RES_Lead_Sub_Status__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <stringValue>131</stringValue>
+            </value>
+        </assignmentItems>
         <connector>
             <targetReference>RES_Update_Lead_Status</targetReference>
         </connector>
