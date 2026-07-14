@@ -575,6 +575,33 @@
         <field>Account.Website</field>
         <readable>true</readable>
     </fieldPermissions>
+
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>Contract.RES_Down_Payment_Receipt__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>Contract.RES_Payment_Plan_Confirmed__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>Contract.RES_SIMAH_Form_Received__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>Contract.RES_SPA_Signed__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>Contract.RES_URC_Signed__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    
     <fieldPermissions>
         <editable>true</editable>
         <field>Contact.AccountId</field>
@@ -1270,7 +1297,7 @@
         <field>Lead.RES_Marital_Status__c</field>
         <readable>true</readable>
     </fieldPermissions>
-     <fieldPermissions>
+    <fieldPermissions>
         <editable>true</editable>
         <field>Lead.RES_Reason_Code__c</field>
         <readable>true</readable>
@@ -1278,6 +1305,16 @@
     <fieldPermissions>
         <editable>true</editable>
         <field>Lead.RES_Approval_Request_Remarks__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>RES_File_Type__mdt.RES_File_Types__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>RES_File_Type__mdt.RES_Object_Name__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
@@ -1696,12 +1733,35 @@
         <field>RES_Lead_Conversion_Event__e.Opportunity_Id__c</field>
         <readable>true</readable>
     </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>RES_Process_Attachment__e.RES_Action__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>RES_Process_Attachment__e.RES_Attachment_Type__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>RES_Process_Attachment__e.RES_Object_Name__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>RES_Process_Attachment__e.RES_recordId__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
     <layoutAssignments>
         <layout>Account-RES Company</layout>
         <recordType>Account.RES_Company</recordType>
     </layoutAssignments>
     <layoutAssignments>
         <layout>Lead_Deduplication_Rule__mdt-Lead Deduplication Rule Layout</layout>
+    </layoutAssignments>
+    <layoutAssignments>
+        <layout>RES_File_Type__mdt-File Type Layout</layout>
     </layoutAssignments>
     <layoutAssignments>
         <layout>RES_Extended_Queries__mdt-Extended Queries Layout</layout>
@@ -1833,6 +1893,15 @@
         <allowRead>true</allowRead>
         <modifyAllRecords>true</modifyAllRecords>
         <object>RES_Ownership_Reassignment_Event__e</object>
+        <viewAllRecords>true</viewAllRecords>
+    </objectPermissions>
+    <objectPermissions>
+        <allowCreate>true</allowCreate>
+        <allowDelete>true</allowDelete>
+        <allowEdit>true</allowEdit>
+        <allowRead>true</allowRead>
+        <modifyAllRecords>true</modifyAllRecords>
+        <object>RES_Process_Attachment__e</object>
         <viewAllRecords>true</viewAllRecords>
     </objectPermissions>
     <objectPermissions>
