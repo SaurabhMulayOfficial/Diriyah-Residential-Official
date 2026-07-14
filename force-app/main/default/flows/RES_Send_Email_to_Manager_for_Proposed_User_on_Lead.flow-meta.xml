@@ -51,7 +51,7 @@
             <name>emailBody</name>
             <value>
                 <inputConfiguratorMode>Custom</inputConfiguratorMode>
-                <stringValue>&lt;p&gt;Hello {!managerName},&lt;/p&gt;&lt;p&gt;A request to update a lead owner has been submitted for your approval.&lt;/p&gt;&lt;ul&gt;&lt;li&gt;&lt;strong&gt;Lead Name: &lt;/strong&gt;{!Get_Lead_Record.Name}&lt;/li&gt;&lt;li&gt;&lt;strong&gt;Current Owner : &lt;/strong&gt;{!CurrentOwnerFullName}&lt;/li&gt;&lt;li&gt;&lt;strong&gt;New Owner Requested : &lt;/strong&gt;{!NewOwnerFullName}&lt;/li&gt;&lt;/ul&gt;&lt;p&gt;Please click here to approve or reject this request: &lt;a href=&quot;{!OrgBaseUrl}lightning/r/ApprovalWorkItem/{!Get_Approval_Record.Id}/view&quot; rel=&quot;noopener noreferrer&quot; target=&quot;_blank&quot;&gt; {!Get_Approval_Record.Name}&lt;/a&gt;&lt;/p&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;Best Regards,&lt;/p&gt;&lt;p&gt;Salesforce Administrator&lt;/p&gt;</stringValue>
+                <stringValue>&lt;p&gt;Hello {!managerName},&lt;/p&gt;&lt;p&gt;A request to update a lead owner has been submitted for your approval.&lt;/p&gt;&lt;ul&gt;&lt;li&gt;&lt;strong&gt;Lead Name: &lt;/strong&gt;{!Get_Lead_Record.Name}&lt;/li&gt;&lt;li&gt;&lt;strong&gt;Sub Status: &lt;/strong&gt;{!LeadSubStatusLabel}&lt;/li&gt;&lt;li&gt;&lt;strong&gt;No. of days RM is holding the lead : &lt;/strong&gt;{!Get_Lead_Record.RES_Days_Lead_Held_by_RM__c}&lt;/li&gt;&lt;li&gt;&lt;strong&gt;Current Owner : &lt;/strong&gt;{!CurrentOwnerFullName}&lt;/li&gt;&lt;li&gt;&lt;strong&gt;New Owner Requested : &lt;/strong&gt;{!NewOwnerFullName}&lt;/li&gt;&lt;/ul&gt;&lt;p&gt;Please click here to approve or reject this request: &lt;a href=&quot;{!OrgBaseUrl}lightning/r/ApprovalWorkItem/{!Get_Approval_Record.Id}/view&quot; rel=&quot;noopener noreferrer&quot; target=&quot;_blank&quot;&gt; {!Get_Approval_Record.Name}&lt;/a&gt;&lt;/p&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;Best Regards,&lt;/p&gt;&lt;p&gt;Salesforce Administrator&lt;/p&gt;</stringValue>
             </value>
         </inputParameters>
         <inputParameters>
@@ -109,10 +109,61 @@
                     <booleanValue>false</booleanValue>
                 </rightValue>
             </conditions>
+            <conditions>
+                <leftValueReference>managerId</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
             <connector>
                 <targetReference>Get_Lead_Record</targetReference>
             </connector>
             <label>Manager Email Not Null</label>
+        </rules>
+        <rules>
+            <name>Manager_Id_is_null</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>managerId</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Get_the_Latest_Approval_Record</targetReference>
+            </connector>
+            <label>Manager Id is null</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>Update_Check_for_CSO_and_System_Admin</name>
+        <label>Update Check for CSO and System Admin</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Not_CSO_and_Admin</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>Get_the_Latest_Approval_Record.ReviewedBy.UserRole.DeveloperName</leftValueReference>
+                <operator>NotEqualTo</operator>
+                <rightValue>
+                    <stringValue>RES_Sales_Enterprise_Chief_Sales_Office</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>Get_the_Latest_Approval_Record.ReviewedBy.Profile.Name</leftValueReference>
+                <operator>NotEqualTo</operator>
+                <rightValue>
+                    <stringValue>System Administrator</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Update_Records_1</targetReference>
+            </connector>
+            <label>Not CSO and Admin</label>
         </rules>
     </decisions>
     <environments>Default</environments>
@@ -123,6 +174,24 @@
 BLANKVALUE({!Get_Lead_Record.Owner:User.FirstName}, &quot;&quot;) &amp; &quot; &quot; &amp;
 BLANKVALUE({!Get_Lead_Record.Owner:User.MiddleName}, &quot;&quot;) &amp; &quot; &quot; &amp;
 BLANKVALUE({!Get_Lead_Record.Owner:User.LastName}, &quot;&quot;)
+)</expression>
+    </formulas>
+    <formulas>
+        <name>LeadSubStatusLabel</name>
+        <dataType>String</dataType>
+        <expression>CASE(
+    TEXT({!Get_Lead_Record.RES_Lead_Sub_Status__c}),
+    &quot;221&quot;, &quot;Duplicate&quot;,
+    &quot;161&quot;, &quot;Budget Misalignment&quot;,
+    &quot;131&quot;, &quot;Follow Up&quot;,
+    &quot;191&quot;, &quot;Invalid Contact Details&quot;,
+    &quot;251&quot;, &quot;Future Interest&quot;,
+    &quot;281&quot;, &quot;Referred to Leasing&quot;,
+    &quot;171&quot;, &quot;Needs Time&quot;,
+    &quot;151&quot;, &quot;Not Interested&quot;,
+    &quot;Qualified&quot;, &quot;Qualified&quot;,
+    &quot;Non_Sales_Inquiry&quot;, &quot;Non-Sales Inquiry&quot;,
+    TEXT({!Get_Lead_Record.RES_Lead_Sub_Status__c})
 )</expression>
     </formulas>
     <formulas>
@@ -218,6 +287,57 @@ BLANKVALUE({!Get_Lead_Record.RES_Proposed_User__r.LastName}, &quot;&quot;)
         <object>Lead</object>
         <storeOutputAutomatically>true</storeOutputAutomatically>
     </recordLookups>
+    <recordLookups>
+        <name>Get_the_Latest_Approval_Record</name>
+        <label>Get the Latest Approval Record</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Update_Check_for_CSO_and_System_Admin</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>RelatedRecordId</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>recordId</elementReference>
+            </value>
+        </filters>
+        <filters>
+            <field>ReviewedById</field>
+            <operator>IsNull</operator>
+            <value>
+                <booleanValue>false</booleanValue>
+            </value>
+        </filters>
+        <getFirstRecordOnly>true</getFirstRecordOnly>
+        <object>ApprovalWorkItem</object>
+        <sortField>CreatedDate</sortField>
+        <sortOrder>Desc</sortOrder>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
+    <recordUpdates>
+        <name>Update_Records_1</name>
+        <label>Update Approval Work Item</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Id</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>Get_the_Latest_Approval_Record.Id</elementReference>
+            </value>
+        </filters>
+        <inputAssignments>
+            <field>RES_Manager_Approval_Error__c</field>
+            <value>
+                <elementReference>$Label.RES_Approval_Failure_Reason</elementReference>
+            </value>
+        </inputAssignments>
+        <object>ApprovalWorkItem</object>
+    </recordUpdates>
     <start>
         <locationX>0</locationX>
         <locationY>0</locationY>
@@ -249,6 +369,13 @@ Salesforce Administrator</text>
     </variables>
     <variables>
         <name>managerEmail</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>true</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <name>managerId</name>
         <dataType>String</dataType>
         <isCollection>false</isCollection>
         <isInput>true</isInput>

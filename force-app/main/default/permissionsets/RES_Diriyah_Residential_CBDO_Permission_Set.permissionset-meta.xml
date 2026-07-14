@@ -572,6 +572,16 @@
     </fieldPermissions>
     <fieldPermissions>
         <editable>false</editable>
+        <field>Lead.RES_Owner_Assignment_Date__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>Lead.RES_Days_Lead_Held_by_RM__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
         <field>Lead.RES_SLA_Hours_Remaining__c</field>
         <readable>true</readable>
     </fieldPermissions>
@@ -1294,10 +1304,10 @@
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
-        <editable>true</editable>
-        <field>Event.Location</field>
+        <editable>false</editable>
+        <field>ApprovalWorkItem.RES_Manager_Approval_Error__c</field>
         <readable>true</readable>
-    </fieldPermissions>
+    </fieldPermissions> 
     <hasActivationRequired>false</hasActivationRequired>
     <label>Diriyah Residential – CBDO Permission Set</label>
     <license>Salesforce</license>

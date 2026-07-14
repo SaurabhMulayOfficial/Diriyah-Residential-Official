@@ -583,6 +583,16 @@
         <field>Contact.TitleType</field>
         <readable>true</readable>
     </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>Lead.RES_Owner_Assignment_Date__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>Lead.RES_Days_Lead_Held_by_RM__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
      <fieldPermissions>
         <editable>false</editable>
         <field>Lead.RES_SLA_Hours_Remaining__c</field>
@@ -1323,11 +1333,11 @@
         <field>RES_Opportunity_Account_Link__c.RES_Relationship_between_buyers__c</field>
         <readable>true</readable>
     </fieldPermissions>
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>Event.Location</field>
+      <fieldPermissions>
+        <editable>false</editable>
+        <field>ApprovalWorkItem.RES_Manager_Approval_Error__c</field>
         <readable>true</readable>
-    </fieldPermissions>
+    </fieldPermissions> 
     <fieldPermissions>
         <editable>true</editable>
         <field>Event.IsAllDayEvent</field>
