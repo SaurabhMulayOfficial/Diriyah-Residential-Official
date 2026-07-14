@@ -3,37 +3,12 @@
     <apiVersion>65.0</apiVersion>
     <areMetricsLoggedToDataCloud>false</areMetricsLoggedToDataCloud>
     <decisions>
-        <name>Check_for_Manager_s_Exists</name>
-        <label>Check for Manager&apos;s Exists</label>
-        <locationX>0</locationX>
-        <locationY>0</locationY>
-        <defaultConnector>
-            <targetReference>Record_Has_been_Approved</targetReference>
-        </defaultConnector>
-        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
-        <rules>
-            <name>Manager_Id_not_Null</name>
-            <conditionLogic>and</conditionLogic>
-            <conditions>
-                <leftValueReference>Get_Manager_Of_Last_Approver.Outputs.managerId</leftValueReference>
-                <operator>IsNull</operator>
-                <rightValue>
-                    <booleanValue>false</booleanValue>
-                </rightValue>
-            </conditions>
-            <connector>
-                <targetReference>Approval_Required_from_the_Last_Approver_s_Manager</targetReference>
-            </connector>
-            <label>Manager Id not Null</label>
-        </rules>
-    </decisions>
-    <decisions>
         <name>check_if_approval_Items_are_not_null</name>
         <label>check if approval Items are not null</label>
         <locationX>0</locationX>
         <locationY>0</locationY>
         <defaultConnector>
-            <targetReference>Get_Manager_s_Details</targetReference>
+            <targetReference>Approval_Required_from_the_Last_Approver_s_Manager</targetReference>
         </defaultConnector>
         <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
         <rules>
@@ -199,18 +174,62 @@
         </connector>
         <exitConditionLogic>and</exitConditionLogic>
         <stageSteps>
+            <name>Reviewer_Details</name>
+            <actionName>RES_Autolaunch_Flow_Get_User_s_Manager</actionName>
+            <actionType>stepBackground</actionType>
+            <canAssigneeEdit>false</canAssigneeEdit>
+            <debugSimulateStep>false</debugSimulateStep>
+            <entryConditionLogic>and</entryConditionLogic>
+            <exitConditionLogic>and</exitConditionLogic>
+            <inputParameters>
+                <name>UserID</name>
+                <value>
+                    <elementReference>Query_Approval_Work_Item.Outputs.reviewerId</elementReference>
+                </value>
+            </inputParameters>
+            <label>Reviewer Details</label>
+            <outputConfigParams>
+                <name>managerEmail</name>
+                <value xsi:nil="true"/>
+            </outputConfigParams>
+            <outputConfigParams>
+                <name>managerId</name>
+                <value xsi:nil="true"/>
+            </outputConfigParams>
+            <outputConfigParams>
+                <name>managerName</name>
+                <value xsi:nil="true"/>
+            </outputConfigParams>
+            <outputConfigParams>
+                <name>username</name>
+                <value xsi:nil="true"/>
+            </outputConfigParams>
+            <requiresAsyncProcessing>false</requiresAsyncProcessing>
+            <runAsUser>false</runAsUser>
+            <shouldLock>false</shouldLock>
+            <stepSubtype>BackgroundStep</stepSubtype>
+        </stageSteps>
+        <stageSteps>
             <name>Approval_Sent_to_Last_Approver_s_Managers</name>
             <actionName>standard_approvals__EvaluateApproval</actionName>
             <actionType>stepApproval</actionType>
             <assignees>
                 <assignee>
-                    <elementReference>Get_Manager_Of_Last_Approver.Outputs.username</elementReference>
+                    <elementReference>Reviewer_Details.Outputs.username</elementReference>
                 </assignee>
                 <assigneeType>Resource</assigneeType>
             </assignees>
             <canAssigneeEdit>false</canAssigneeEdit>
             <debugSimulateStep>false</debugSimulateStep>
             <entryConditionLogic>and</entryConditionLogic>
+            <entryConditions>
+                <conditionType>EntryCondition</conditionType>
+                <leftValueReference>Reviewer_Details.Outputs.managerId</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </entryConditions>
             <exitConditionLogic>and</exitConditionLogic>
             <inputParameters>
                 <name>ActionInput__RecordId</name>
@@ -223,6 +242,9 @@
             </inputParameters>
             <inputParameters>
                 <name>ActionInput__CustomEmailBody</name>
+            </inputParameters>
+            <inputParameters>
+                <name>ActionInput__RequiredMultiMemberApprovalPercentage</name>
             </inputParameters>
             <label>Approval Sent to Last Approver&apos;s Managers</label>
             <outputConfigParams>
@@ -247,7 +269,7 @@
             <entryConditionLogic>and</entryConditionLogic>
             <entryConditions>
                 <conditionType>EntryCondition</conditionType>
-                <leftValueReference>Approval_Sent_to_Last_Approver_s_Managers.Status</leftValueReference>
+                <leftValueReference>Reviewer_Details.Status</leftValueReference>
                 <operator>EqualTo</operator>
                 <rightValue>
                     <stringValue>Completed</stringValue>
@@ -278,7 +300,7 @@
             <inputParameters>
                 <name>recipientId</name>
                 <value>
-                    <elementReference>Get_Manager_Of_Last_Approver.Outputs.managerId</elementReference>
+                    <elementReference>Reviewer_Details.Outputs.managerId</elementReference>
                 </value>
             </inputParameters>
             <label>Send Approval Notification to Current Approver</label>
@@ -288,7 +310,8 @@
             <stepSubtype>BackgroundStep</stepSubtype>
         </stageSteps>
         <stageSteps>
-            <name>Send_Email_to_Manager_Approval</name>
+            <description>Send email for manager approval, or update the approval if the manager is unavailable.</description>
+            <name>Send_email_for_manager_approval_or_update_the_approval</name>
             <actionName>RES_Send_Email_to_Manager_for_Proposed_User_on_Lead</actionName>
             <actionType>stepBackground</actionType>
             <canAssigneeEdit>false</canAssigneeEdit>
@@ -296,23 +319,29 @@
             <entryConditionLogic>and</entryConditionLogic>
             <entryConditions>
                 <conditionType>EntryCondition</conditionType>
-                <leftValueReference>Get_Manager_Of_Last_Approver.Outputs.managerEmail</leftValueReference>
-                <operator>IsNull</operator>
+                <leftValueReference>Reviewer_Details.Status</leftValueReference>
+                <operator>EqualTo</operator>
                 <rightValue>
-                    <booleanValue>false</booleanValue>
+                    <stringValue>Completed</stringValue>
                 </rightValue>
             </entryConditions>
             <exitConditionLogic>and</exitConditionLogic>
             <inputParameters>
                 <name>managerEmail</name>
                 <value>
-                    <elementReference>Get_Manager_Of_Last_Approver.Outputs.managerEmail</elementReference>
+                    <elementReference>Reviewer_Details.Outputs.managerEmail</elementReference>
+                </value>
+            </inputParameters>
+            <inputParameters>
+                <name>managerId</name>
+                <value>
+                    <elementReference>Reviewer_Details.Outputs.managerId</elementReference>
                 </value>
             </inputParameters>
             <inputParameters>
                 <name>managerName</name>
                 <value>
-                    <elementReference>Get_Manager_Of_Last_Approver.Outputs.managerName</elementReference>
+                    <elementReference>Reviewer_Details.Outputs.managerName</elementReference>
                 </value>
             </inputParameters>
             <inputParameters>
@@ -321,7 +350,7 @@
                     <elementReference>$Record.Id</elementReference>
                 </value>
             </inputParameters>
-            <label>Send Email to Manager_Approval</label>
+            <label>Send email for manager approval, or update the approval</label>
             <requiresAsyncProcessing>false</requiresAsyncProcessing>
             <runAsUser>false</runAsUser>
             <shouldLock>false</shouldLock>
@@ -362,60 +391,6 @@
             </outputConfigParams>
             <outputConfigParams>
                 <name>workItemId</name>
-                <value xsi:nil="true"/>
-            </outputConfigParams>
-            <requiresAsyncProcessing>false</requiresAsyncProcessing>
-            <runAsUser>false</runAsUser>
-            <shouldLock>false</shouldLock>
-            <stepSubtype>BackgroundStep</stepSubtype>
-        </stageSteps>
-    </orchestratedStages>
-    <orchestratedStages>
-        <name>Get_Manager_s_Details</name>
-        <label>Get Manager&apos;s Details</label>
-        <locationX>0</locationX>
-        <locationY>0</locationY>
-        <connector>
-            <targetReference>Check_for_Manager_s_Exists</targetReference>
-        </connector>
-        <exitConditionLogic>and</exitConditionLogic>
-        <stageSteps>
-            <name>Get_Manager_Of_Last_Approver</name>
-            <actionName>RES_Autolaunch_Flow_Get_User_s_Manager</actionName>
-            <actionType>stepBackground</actionType>
-            <canAssigneeEdit>false</canAssigneeEdit>
-            <debugSimulateStep>false</debugSimulateStep>
-            <entryConditionLogic>and</entryConditionLogic>
-            <entryConditions>
-                <conditionType>EntryCondition</conditionType>
-                <leftValueReference>Query_Approval_Work_Item.Outputs.reviewerId</leftValueReference>
-                <operator>IsNull</operator>
-                <rightValue>
-                    <booleanValue>false</booleanValue>
-                </rightValue>
-            </entryConditions>
-            <exitConditionLogic>and</exitConditionLogic>
-            <inputParameters>
-                <name>UserID</name>
-                <value>
-                    <elementReference>Query_Approval_Work_Item.Outputs.reviewerId</elementReference>
-                </value>
-            </inputParameters>
-            <label>Get Manager Of Last Approver</label>
-            <outputConfigParams>
-                <name>managerEmail</name>
-                <value xsi:nil="true"/>
-            </outputConfigParams>
-            <outputConfigParams>
-                <name>managerId</name>
-                <value xsi:nil="true"/>
-            </outputConfigParams>
-            <outputConfigParams>
-                <name>managerName</name>
-                <value xsi:nil="true"/>
-            </outputConfigParams>
-            <outputConfigParams>
-                <name>username</name>
                 <value xsi:nil="true"/>
             </outputConfigParams>
             <requiresAsyncProcessing>false</requiresAsyncProcessing>
@@ -502,7 +477,7 @@
                 <value xsi:nil="true"/>
             </outputConfigParams>
             <requiresAsyncProcessing>false</requiresAsyncProcessing>
-            <runAsUser>false</runAsUser>
+           <runAsUser>false</runAsUser>
             <shouldLock>true</shouldLock>
             <stepSubtype>ApprovalStep</stepSubtype>
         </stageSteps>
@@ -575,6 +550,12 @@
                 <name>managerEmail</name>
                 <value>
                     <elementReference>Approval_Sent_to_Last_Approver_s_Manager_bs.Outputs.managerEmail</elementReference>
+                </value>
+            </inputParameters>
+            <inputParameters>
+                <name>managerId</name>
+                <value>
+                    <elementReference>Approval_Sent_to_Last_Approver_s_Manager_bs.Outputs.managerId</elementReference>
                 </value>
             </inputParameters>
             <inputParameters>
