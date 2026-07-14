@@ -13,7 +13,10 @@
         <enabled>true</enabled>
         <name>RES_Update_Owner_Visibility</name>
     </customPermissions>
-    <customPermissions>         <enabled>true</enabled>         <name>RES_Sub_Stage_Visibility</name>     </customPermissions>
+    <customPermissions>
+        <enabled>true</enabled>
+        <name>RES_Sub_Stage_Visibility</name>
+    </customPermissions>
     <customPermissions>
         <enabled>true</enabled>
         <name>RES_System_Information_Visibility</name>
@@ -900,8 +903,11 @@
         <field>Lead.RES_Date_of_Expiry__c</field>
         <readable>true</readable>
     </fieldPermissions>
-    <fieldPermissions>         <editable>true</editable>         <field>Lead.RES_CR_Number__c</field>         <readable>
-        true</readable>     </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>Lead.RES_CR_Number__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
     <fieldPermissions>
         <editable>false</editable>
         <field>Lead.RES_End_Date__c</field>
