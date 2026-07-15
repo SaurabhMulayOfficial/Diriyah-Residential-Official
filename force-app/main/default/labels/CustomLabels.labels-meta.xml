@@ -351,9 +351,10 @@ Please go back and select at least one lead with status = “Qualified” to pro
     </labels>
     <labels>
         <fullName>RES_Approval_Failure_Reason</fullName>
+        <categories>RES_Send_Email_to_Manager_for_Proposed_User_on_Lead, 	RES Lead - Screen Flow - Change Record Owner</categories>
         <language>en_US</language>
         <protected>false</protected>
         <shortDescription>Approval Failure Reason</shortDescription>
-        <value>Approval cannot be completed because no manager is assigned to the current user approving this request.</value>
+        <value>Approval cannot be completed because no manager is assigned to user.</value>
     </labels>
 </CustomLabels>

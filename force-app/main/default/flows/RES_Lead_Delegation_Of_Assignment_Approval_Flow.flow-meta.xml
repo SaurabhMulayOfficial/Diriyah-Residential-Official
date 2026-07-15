@@ -77,7 +77,7 @@
         <locationY>0</locationY>
         <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
         <rules>
-            <name>if_proposed_owner_is_not_null_and_changed</name>
+            <name>if_proposed_owner_is_not_null_changed_Owner_manager_not_null</name>
             <conditionLogic>and</conditionLogic>
             <conditions>
                 <leftValueReference>$Record.RES_Proposed_User__c</leftValueReference>
@@ -94,7 +94,7 @@
                 </rightValue>
             </conditions>
             <conditions>
-                <leftValueReference>$Record.RES_Proposed_User__r.Manager.ManagerId</leftValueReference>
+                <leftValueReference>$Record.Owner:User.ManagerId</leftValueReference>
                 <operator>IsNull</operator>
                 <rightValue>
                     <booleanValue>false</booleanValue>
@@ -103,7 +103,7 @@
             <connector>
                 <targetReference>InitialFirstApproval</targetReference>
             </connector>
-            <label>if proposed owner is not null &amp; changed</label>
+            <label>if proposed owner is not null &amp; changed Owner manager not null</label>
         </rules>
     </decisions>
     <environments>Default</environments>
@@ -477,7 +477,7 @@
                 <value xsi:nil="true"/>
             </outputConfigParams>
             <requiresAsyncProcessing>false</requiresAsyncProcessing>
-           <runAsUser>false</runAsUser>
+            <runAsUser>false</runAsUser>
             <shouldLock>true</shouldLock>
             <stepSubtype>ApprovalStep</stepSubtype>
         </stageSteps>
