@@ -43,6 +43,38 @@
         </value>
     </customProperties>
     <decisions>
+        <name>Check_for_manager</name>
+        <label>Check for manager</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnector>
+            <targetReference>update_proposed_user</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Current_Owner_Manager_Null</name>
+            <conditionLogic>or</conditionLogic>
+            <conditions>
+                <leftValueReference>Get_Lead_Record.Owner:User.ManagerId</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$User.ManagerId</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Lead_Owner_Update_Manager_Assignment_Required</targetReference>
+            </connector>
+            <label>Current Owner Manager Null</label>
+        </rules>
+    </decisions>
+    <decisions>
         <name>If_Lead_SLA_is_Met</name>
         <label>If Lead SLA is Met?</label>
         <locationX>0</locationX>
@@ -87,7 +119,7 @@
                 </rightValue>
             </conditions>
             <connector>
-                <targetReference>update_proposed_user</targetReference>
+                <targetReference>Check_for_manager</targetReference>
             </connector>
             <label>Yes, In Approval</label>
         </rules>
@@ -285,6 +317,30 @@
         <fields>
             <name>InPhaseOfApprovalStages</name>
             <fieldText>&lt;p&gt;&lt;strong style=&quot;color: rgb(0, 0, 0);&quot;&gt;{!$Label.Record_Is_In_Phase_Of_Approval}&lt;span class=&quot;ql-cursor&quot;&gt;﻿&lt;/span&gt;&lt;/strong&gt;&lt;/p&gt;</fieldText>
+            <fieldType>DisplayText</fieldType>
+            <styleProperties>
+                <verticalAlignment>
+                    <stringValue>top</stringValue>
+                </verticalAlignment>
+                <width>
+                    <stringValue>12</stringValue>
+                </width>
+            </styleProperties>
+        </fields>
+        <showFooter>true</showFooter>
+        <showHeader>false</showHeader>
+    </screens>
+    <screens>
+        <name>Lead_Owner_Update_Manager_Assignment_Required</name>
+        <label>Lead Owner Update: Manager Assignment Required</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <allowBack>true</allowBack>
+        <allowFinish>true</allowFinish>
+        <allowPause>true</allowPause>
+        <fields>
+            <name>InPhaseManagerNull</name>
+            <fieldText>&lt;p&gt;{!$Label.RES_Approval_Failure_Reason}&lt;/p&gt;</fieldText>
             <fieldType>DisplayText</fieldType>
             <styleProperties>
                 <verticalAlignment>
