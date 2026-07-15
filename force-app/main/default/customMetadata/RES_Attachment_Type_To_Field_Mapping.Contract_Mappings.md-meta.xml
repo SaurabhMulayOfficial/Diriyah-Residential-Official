@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <label>Contract Mappings</label>
+    <protected>false</protected>
+    <values>
+        <field>RES_JsonMapping__c</field>
+        <value xsi:type="xsd:string">{
+    &quot;Signed URC&quot;: &quot;RES_URC_Signed__c&quot;,
+    &quot;Down Payment Receipt&quot;: &quot;RES_Down_Payment_Receipt__c&quot;,
+    &quot;Simah Form&quot;: &quot;RES_SIMAH_Form_Received__c&quot;,
+    &quot;Payment Plan&quot;: &quot;RES_Payment_Plan_Confirmed__c&quot;,
+    &quot;Signed SPA&quot;: &quot;RES_SPA_Signed__c&quot;
+}</value>
+    </values>
+    <values>
+        <field>RES_Object_Name__c</field>
+        <value xsi:type="xsd:string">Contract</value>
+    </values>
+</CustomMetadata>
