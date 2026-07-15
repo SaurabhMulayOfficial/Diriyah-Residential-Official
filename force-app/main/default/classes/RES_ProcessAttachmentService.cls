@@ -7,64 +7,82 @@
 
 public with sharing class RES_ProcessAttachmentService {
 
-    public static Map<String, String> typeToFieldMapping_contract = new Map<String, String>{
-            'Signed URC'             => 'RES_URC_Signed__c',
-            'Down Payment Receipt'   => 'RES_Down_Payment_Receipt__c',
-            'Simah Form'             => 'RES_SIMAH_Form_Received__c',
-            'Payment Plan'           => 'RES_Payment_Plan_Confirmed__c',
-            'Signed SPA'             => 'RES_SPA_Signed__c'
-        };
-
-
-    public static void processAttachments(List<RES_Process_Attachment__e> events){
-        Map<String, List<RES_Process_Attachment__e>> objectToIds = new Map<String, List<RES_Process_Attachment__e>>();
-
-        for(RES_Process_Attachment__e event: events){
-            if(!objectToIds.containsKey(event.RES_Object_Name__c)){
-                objectToIds.put(event.RES_Object_Name__c, new List<RES_Process_Attachment__e>());
-            }
-            objectToIds.get(event.RES_Object_Name__c).add(event);
-        }
+    public static Map<String, Map<String, String>> objectToFieldMappings = new Map<String, Map<String, String>>();
     
-        if(objectToIds.size() <= 0){
-            return;
-        }
+    public static void hydrateMappings(){
+        List<RES_Attachment_Type_To_Field_Mapping__mdt> mappings = new RES_ActtachmentTypeToFieldMappingDAO().getAllMappings();
+        for(RES_Attachment_Type_To_Field_Mapping__mdt mapping: mappings){
+            String objectName = mapping.RES_Object_Name__c;
+            String jsonMapping = mapping.RES_JsonMapping__c;
 
-        if(objectToIds.containsKey('Contract')){
-            List<RES_Process_Attachment__e> contractEvents = objectToIds.get('Contract');
+            if(objectToFieldMappings.containsKey(objectName)){
+                continue;
+            }
             
-            List<Contract> contractsToUpdate = new List<Contract>();
-            for(RES_Process_Attachment__e contractEvent: contractEvents){
-                Contract c =processContract(contractEvent);
-                if(c != null){
-                    contractsToUpdate.add(c);
-                }
+            Map<String, Object> tempMap =(Map<String, Object>)JSON.deserializeUntyped(mapping.RES_JsonMapping__c);
+            Map<String, String> fieldMap = new Map<String, String>();
+            for (String key : tempMap.keySet()) {
+                fieldMap.put(key, (String)tempMap.get(key));
             }
 
-            try{
-                Database.update(contractsToUpdate, false, AccessLevel.SYSTEM_MODE);
-            }
-            catch(Exception e){
-                System.debug('Exception Processing Attachments ' + e.getMessage());
-            }
+            objectToFieldMappings.put(objectName, fieldMap);
         }
     }
 
-    private static Contract processContract(RES_Process_Attachment__e e){
-        Contract c = new Contract(Id = e.RES_recordId__c);
-        String action = e.RES_Action__c;
-        String attachmentType = e.RES_Attachment_Type__c;
-        String fieldApiName = typeToFieldMapping_contract.get(attachmentType);
+    public static void processAttachments(List<RES_Process_Attachment__e> events){
+        hydrateMappings();
 
-        if(fieldApiName == null){
+        List<SObject> recordsToUpdate = new List<SObject>();
+
+        if(objectToFieldMappings.size() <= 0){
+            return;
+        }
+
+        for(RES_Process_Attachment__e e: events){
+            SObject record =processSObject(e);
+            if(record != null){
+                recordsToUpdate.add(record);
+            }
+        }
+
+        try{
+            Database.update(recordsToUpdate, false, AccessLevel.SYSTEM_MODE);
+        }
+        catch(DmlException e){
+            System.debug('Error updating records: ' + e.getMessage());
+        }
+    }
+
+    private static SObject processSObject(RES_Process_Attachment__e e){
+        String objectName = e.RES_Object_Name__c;
+        if(objectName == 'PersonAccount' || objectName == 'CompanyAccount'){
+            objectName = 'Account';
+        }
+        String recordId = e.RES_recordId__c;
+        String attachmentType = e.RES_Attachment_Type__c;
+        String action = e.RES_Action__c;
+
+        if(!objectToFieldMappings.containsKey(objectName)){
             return null;
         }
 
-        if(action == 'Update'){
-            c.put(fieldApiName, true);
-        }else if(action == 'Delete'){
-            c.put(fieldApiName, false);
+        Map<String, String> fieldMappings = objectToFieldMappings.get(objectName);
+
+        if(!fieldMappings.containsKey(attachmentType)){
+            return null;
         }
-        return c;
+
+        String fieldAPIName = (String)fieldMappings.get(attachmentType);
+        
+        Schema.SObjectType sObjectType = Schema.getGlobalDescribe().get(objectName);
+        SObject record = sObjectType.newSObject();
+        record.Id = recordId;
+        if(action == 'Delete'){
+            record.put(fieldAPIName, false);
+        }else if(action == 'Update'){
+            record.put(fieldAPIName, true);
+        }
+
+        return record;
     }
 }

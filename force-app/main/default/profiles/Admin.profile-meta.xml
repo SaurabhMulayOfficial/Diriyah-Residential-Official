@@ -1308,6 +1308,16 @@
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
+        <editable>true</editable>
+        <field>RES_Attachment_Type_To_Field_Mapping__mdt.RES_JsonMapping__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>RES_Attachment_Type_To_Field_Mapping__mdt.RES_Object_Name__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
         <editable>false</editable>
         <field>RES_File_Type__mdt.RES_File_Types__c</field>
         <readable>true</readable>
@@ -1742,6 +1752,9 @@
     </layoutAssignments>
     <layoutAssignments>
         <layout>RES_File_Type__mdt-File Type Layout</layout>
+    </layoutAssignments>
+    <layoutAssignments>
+        <layout>RES_Attachment_Type_To_Field_Mapping__mdt-Attachment Type To Field Mapping Layout</layout>
     </layoutAssignments>
     <layoutAssignments>
         <layout>RES_Extended_Queries__mdt-Extended Queries Layout</layout>
