@@ -109,6 +109,8 @@ public with sharing class RES_LeadServices {
                     if(l.RES_SLA_Status__c == 'Running' && SYSTEM.now() < l.RES_SLA_Due_Time__c && l.Status != '01'){
                         l.RES_SLA_Status__c = 'Met';
                         l.RES_SLA_Due_Time__c = null;
+                        l.RES_SLA_Met_Time__c = SYSTEM.now();
+                        l.RES_Lead_Response_Time__c = calculateResponseTime(l, bh);
                     }    
                 }
                 else if(l.RES_SLA_Status__c != oldMap.get(l.Id).RES_SLA_Status__c && l.RES_SLA_Status__c == 'Breached'){
@@ -134,6 +136,22 @@ public with sharing class RES_LeadServices {
                 System.debug('Failed to update SLA fields on Lead after reassignment: ' + e.getMessage());
             }
         }
+    }
+
+    private static String calculateResponseTime(Lead leadRecord, BusinessHours bh){
+        Datetime startTime = leadRecord.RES_SLA_Start_Time__c;
+        Datetime endTime   = leadRecord.RES_SLA_Met_Time__c;
+
+        Long diffMillis = BusinessHours.diff(bh.Id, startTime, endTime);
+        Long totalSeconds = diffMillis / 1000;
+        Long hours = totalSeconds / 3600;
+        leadRecord.RES_Lead_Response_Time_Hours__c = hours;
+        Long minutes = Math.mod(totalSeconds, 3600) / 60;
+        leadRecord.RES_Lead_Response_Time_Minutes__c = minutes;
+        Long seconds = Math.mod(totalSeconds, 60);
+        leadRecord.RES_Lead_Response_Time_Seconds__c = seconds;
+        String formattedTime = String.valueOf(hours).leftPad(2, '0') + ':' + String.valueOf(minutes).leftPad(2, '0') + ':' + String.valueOf(seconds).leftPad(2, '0');
+        return formattedTime;
     }
 
     private static void startSla(Lead l, BusinessHours bh, Integer slaInHours, Boolean shouldCycleCount){

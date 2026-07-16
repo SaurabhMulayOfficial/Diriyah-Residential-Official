@@ -31,7 +31,8 @@ private class RES_LeadServicesTest {
                 Status = 'New',
                 MobilePhone ='+1424124214',
                 OwnerId = u.Id,
-                RES_SLA_Cycle_Count__c = 0
+                RES_SLA_Cycle_Count__c = 0,
+                RES_SLA_Start_Time__c  = SYSTEM.NOW()
             );
 
             insert l;
@@ -60,7 +61,8 @@ private class RES_LeadServicesTest {
                 MobilePhone ='+1424124215',
                 RES_SLA_Status__c = 'Running',
                 RES_SLA_Cycle_Count__c = 1,
-                RES_SLA_Due_Time__c = System.now().addHours(5)
+                RES_SLA_Due_Time__c = System.now().addHours(5),
+                RES_SLA_Start_Time__c  = SYSTEM.NOW()
             );
 
             insert l;
@@ -103,7 +105,8 @@ private class RES_LeadServicesTest {
                 MobilePhone ='+1424124216',
                 RES_SLA_Status__c = 'Running',
                 RES_SLA_Cycle_Count__c = 1,
-                RES_Previous_Lead_Owner__c = q.Id
+                RES_Previous_Lead_Owner__c = q.Id,
+                RES_SLA_Start_Time__c  = SYSTEM.NOW()
             );
 
             insert l;
@@ -144,7 +147,7 @@ private class RES_LeadServicesTest {
         insert new GroupMember(GroupId = q.Id, UserOrGroupId = u1.Id);
         insert new GroupMember(GroupId = q.Id, UserOrGroupId = u2.Id);
 
-        System.runAs(u1) { 
+        System.runAs(u1) {   // 👈 separates transaction context
 
             Test.startTest();
 
@@ -173,65 +176,78 @@ private class RES_LeadServicesTest {
         }
     }
 
+    /**
+     * @description Validates Lead Record Type assignment based on RES_Marketing_Area__c.
+     * BRANDED_RESIDENTIAL -> RES_Individual
+     * All others/Blank -> RES_Company
+     */
     @IsTest
     static void testSelectLeadRecordTypeByMarketingArea() {
-        User u = createUser();
-        Id individualRTId = Schema.SObjectType.Lead.getRecordTypeInfosByDeveloperName()
-                            .get('RES_Individual').getRecordTypeId();
-        Id companyRTId = Schema.SObjectType.Lead.getRecordTypeInfosByDeveloperName()
-                        .get('RES_Company').getRecordTypeId();
+    User u = createUser();
+    
+    // Fetch Record Type IDs dynamically to verify logic
+    Id individualRTId = Schema.SObjectType.Lead.getRecordTypeInfosByDeveloperName()
+                        .get('RES_Individual').getRecordTypeId();
+    Id companyRTId = Schema.SObjectType.Lead.getRecordTypeInfosByDeveloperName()
+                     .get('RES_Company').getRecordTypeId();
 
-        System.runAs(u) {
-            List<Lead> leadsToTest = new List<Lead>();
-            for(Integer i=0; i<5; i++) {
-                leadsToTest.add(new Lead(
-                    LastName = 'IndividualTest' + i,
-                    Company = 'Test Company', 
-                    RES_Marketing_Area__c = 'BRANDED_RESIDENTIAL',
-                    LeadSource = 'Z06', 
-                    RES_Form_Submission_ID__c = 'bfd2a104-d237-34a2-936e-88fc215d9b44',
-                    MobilePhone = '+142412421' + i,
-                    Status = '01'
-                ));
-            }
+    System.runAs(u) {
+        List<Lead> leadsToTest = new List<Lead>();
 
-            for(Integer i=0; i<5; i++) {
-                leadsToTest.add(new Lead(
-                    LastName = 'CompanyTest' + i,
-                    Company = 'Test Company',
-                    RES_Marketing_Area__c = 'B2B_RETAIL_LEASING',
-                    LeadSource = 'Z06', 
-                    RES_Form_Submission_ID__c = 'bfd2a104-d237-34a2-936e-88fc215d9b77',
-                    MobilePhone = '+152412421' + i,
-                    Status = '01'
-                ));
-            }
-
+        // 1. Scenario: Marketing Area is BRANDED_RESIDENTIAL (Individual)
+        for(Integer i=0; i<5; i++) {
             leadsToTest.add(new Lead(
-                LastName = 'BlankAreaTest',
-                Company = 'Test Company',
-                RES_Marketing_Area__c = null,
+                LastName = 'IndividualTest' + i,
+                Company = 'Test Company', 
+                RES_Marketing_Area__c = 'BRANDED_RESIDENTIAL',
                 LeadSource = 'Z06', 
-                RES_Form_Submission_ID__c = 'bfd2a104-d237-34a2-936e-88fc215d9b88',
-                MobilePhone = '+1624124214',
+                RES_Form_Submission_ID__c = 'bfd2a104-d237-34a2-936e-88fc215d9b44',
+                MobilePhone = '+142412421' + i,
                 Status = '01'
             ));
+        }
 
-            Test.startTest();
-            RES_LeadServices.selectLeadRecordType(leadsToTest);
-            Test.stopTest();
+        // 2. Scenario: Marketing Area is B2B_RETAIL_LEASING (Should be Company)
+        for(Integer i=0; i<5; i++) {
+            leadsToTest.add(new Lead(
+                LastName = 'CompanyTest' + i,
+                Company = 'Test Company',
+                RES_Marketing_Area__c = 'B2B_RETAIL_LEASING',
+                LeadSource = 'Z06', 
+                RES_Form_Submission_ID__c = 'bfd2a104-d237-34a2-936e-88fc215d9b77',
+                MobilePhone = '+152412421' + i,
+                Status = '01'
+            ));
+        }
 
-            for (Lead l : leadsToTest) {
-                if (l.LeadSource == 'Z06') {
-                    if (l.RES_Marketing_Area__c == 'BRANDED_RESIDENTIAL' || l.RES_Marketing_Area__c == 'WADI_SAFAR') {
-                        System.assertEquals(individualRTId, l.RecordTypeId, 
-                            'Branded Residential/Wadi Safar should result in Individual Record Type');
-                    } else {
-                        System.assertEquals(companyRTId, l.RecordTypeId, 
-                            'Non-Branded or Blank area with Z06 source should result in Company Record Type');
-                    }
+        // 3. Scenario: Marketing Area is Blank (Should be Company)
+        leadsToTest.add(new Lead(
+            LastName = 'BlankAreaTest',
+            Company = 'Test Company',
+            RES_Marketing_Area__c = null,
+            LeadSource = 'Z06', 
+            RES_Form_Submission_ID__c = 'bfd2a104-d237-34a2-936e-88fc215d9b88',
+            MobilePhone = '+1624124214',
+            Status = '01'
+        ));
+
+        Test.startTest();
+        RES_LeadServices.selectLeadRecordType(leadsToTest);
+        Test.stopTest();
+
+        // 4. Verification (Assertions)
+        for (Lead l : leadsToTest) {
+            // Logic Check: If Z06, then check marketing area
+            if (l.LeadSource == 'Z06') {
+                if (l.RES_Marketing_Area__c == 'BRANDED_RESIDENTIAL' || l.RES_Marketing_Area__c == 'WADI_SAFAR') {
+                    System.assertEquals(individualRTId, l.RecordTypeId, 
+                        'Branded Residential/Wadi Safar should result in Individual Record Type');
+                } else {
+                    System.assertEquals(companyRTId, l.RecordTypeId, 
+                        'Non-Branded or Blank area with Z06 source should result in Company Record Type');
                 }
             }
         }
     }
+}
 }
