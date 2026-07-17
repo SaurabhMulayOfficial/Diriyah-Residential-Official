@@ -10,7 +10,7 @@
         <field>OWNER</field>
     </columns>
     <columns>
-        <field>LEAD_ID</field>
+        <field>Lead.DIR_Lead_Id__c</field>
     </columns>
     <columns>
         <field>Lead.RES_SLA_Due_Time__c</field>
@@ -44,7 +44,12 @@
         </criteriaItems>
         <language>en_US</language>
     </filter>
-    <format>Tabular</format>
+    <format>Summary</format>
+    <groupingsDown>
+        <dateGranularity>Day</dateGranularity>
+        <field>RATING</field>
+        <sortOrder>Asc</sortOrder>
+    </groupingsDown>
     <name>SLA Breaching Leads Report</name>
     <params>
         <name>co</name>
