@@ -413,30 +413,115 @@
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
-        <editable>false</editable>
-        <field>Contract.RES_Down_Payment_Receipt__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>false</editable>
-        <field>Contract.RES_Payment_Plan_Confirmed__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>false</editable>
-        <field>Contract.RES_SIMAH_Form_Received__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>false</editable>
-        <field>Contract.RES_SPA_Signed__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>false</editable>
-        <field>Contract.RES_URC_Signed__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
+    <editable>true</editable>
+    <field>Contract.ActivatedDate</field>
+    <readable>true</readable>
+</fieldPermissions>
+<fieldPermissions>
+    <editable>true</editable>
+    <field>Contract.BillingAddress</field>
+    <readable>true</readable>
+</fieldPermissions>
+<fieldPermissions>
+    <editable>true</editable>
+    <field>Contract.CompanySignedId</field>
+    <readable>true</readable>
+</fieldPermissions>
+<fieldPermissions>
+    <editable>true</editable>
+    <field>Contract.CompanySignedDate</field>
+    <readable>true</readable>
+</fieldPermissions>
+<fieldPermissions>
+    <editable>true</editable>
+    <field>Contract.EndDate</field>
+    <readable>true</readable>
+</fieldPermissions>
+<fieldPermissions>
+    <editable>true</editable>
+    <field>Contract.Name</field>
+    <readable>true</readable>
+</fieldPermissions>
+<fieldPermissions>
+    <editable>true</editable>
+    <field>Contract.StartDate</field>
+    <readable>true</readable>
+</fieldPermissions>
+<fieldPermissions>
+    <editable>true</editable>
+    <field>Contract.ContractTerm</field>
+    <readable>true</readable>
+</fieldPermissions>
+<fieldPermissions>
+    <editable>true</editable>
+    <field>Contract.CustomerSignedId</field>
+    <readable>true</readable>
+</fieldPermissions>
+<fieldPermissions>
+    <editable>true</editable>
+    <field>Contract.CustomerSignedDate</field>
+    <readable>true</readable>
+</fieldPermissions>
+<fieldPermissions>
+    <editable>true</editable>
+    <field>Contract.CustomerSignedTitle</field>
+    <readable>true</readable>
+</fieldPermissions>
+<fieldPermissions>
+    <editable>true</editable>
+    <field>Contract.Description</field>
+    <readable>true</readable>
+</fieldPermissions>
+<fieldPermissions>
+    <editable>true</editable>
+    <field>Contract.OwnerExpirationNotice</field>
+    <readable>true</readable>
+</fieldPermissions>
+<fieldPermissions>
+    <editable>true</editable>
+    <field>Contract.Pricebook2Id</field>
+    <readable>true</readable>
+</fieldPermissions>
+<fieldPermissions>
+    <editable>true</editable>
+    <field>Contract.ShippingAddress</field>
+    <readable>true</readable>
+</fieldPermissions>
+<fieldPermissions>
+    <editable>true</editable>
+    <field>Contract.SpecialTerms</field>
+    <readable>true</readable>
+</fieldPermissions>
+<fieldPermissions>
+    <editable>true</editable>
+    <field>Contract.SpecialTerms</field>
+    <readable>true</readable>
+</fieldPermissions>
+<fieldPermissions>
+    <editable>false</editable>
+    <field>Contract.RES_Down_Payment_Receipt__c</field>
+    <readable>true</readable>
+</fieldPermissions>
+<fieldPermissions>
+    <editable>false</editable>
+    <field>Contract.RES_Payment_Plan_Confirmed__c</field>
+    <readable>true</readable>
+</fieldPermissions>
+<fieldPermissions>
+    <editable>false</editable>
+    <field>Contract.RES_SIMAH_Form_Received__c</field>
+    <readable>true</readable>
+</fieldPermissions>
+<fieldPermissions>
+    <editable>false</editable>
+    <field>Contract.RES_SPA_Signed__c</field>
+    <readable>true</readable>
+</fieldPermissions>
+<fieldPermissions>
+    <editable>false</editable>
+    <field>Contract.RES_URC_Signed__c</field>
+    <readable>true</readable>
+</fieldPermissions>
     <fieldPermissions>
         <editable>true</editable>
         <field>Contact.RES_Full_Arabic_Name__c</field>
@@ -1455,6 +1540,16 @@
         <viewAllRecords>false</viewAllRecords>
     </objectPermissions>
     <objectPermissions>
+    <allowCreate>true</allowCreate>
+    <allowDelete>false</allowDelete>
+    <allowEdit>true</allowEdit>
+    <allowRead>true</allowRead>
+    <modifyAllRecords>false</modifyAllRecords>
+    <object>Contract</object>
+    <viewAllFields>false</viewAllFields>
+    <viewAllRecords>false</viewAllRecords>
+</objectPermissions>
+    <objectPermissions>
         <allowCreate>true</allowCreate>
         <allowDelete>false</allowDelete>
         <allowEdit>true</allowEdit>
@@ -1506,6 +1601,10 @@
         <tab>standard-Account</tab>
         <visibility>Visible</visibility>
     </tabSettings>
+    <tabSettings>
+    <tab>standard-Contract</tab>
+    <visibility>Visible</visibility>
+</tabSettings>
     <tabSettings>
         <tab>standard-Contact</tab>
         <visibility>Visible</visibility>
