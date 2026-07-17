@@ -1667,6 +1667,22 @@
                 <valueListItems>
                     <value>EmailHighlightAction</value>
                 </valueListItems>
+                <valueListItems>
+                    <value>Lead.RES_Update_Owner</value>
+                    <visibilityRule>
+                        <booleanFilter>1 AND 2</booleanFilter>
+                        <criteria>
+                            <leftValue>{!$Permission.CustomPermission.RES_Update_Owner_Visibility}</leftValue>
+                            <operator>EQUAL</operator>
+                            <rightValue>true</rightValue>
+                        </criteria>
+                        <criteria>
+                            <leftValue>{!$User.UserRole.DeveloperName}</leftValue>
+                            <operator>NE</operator>
+                            <rightValue>RES_Sales_Enterprise_Chief_Sales_Office</rightValue>
+                        </criteria>
+                    </visibilityRule>
+                </valueListItems>
             </valueList>
         </properties>
         <properties>
