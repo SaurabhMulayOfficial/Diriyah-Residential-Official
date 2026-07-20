@@ -515,7 +515,7 @@
     <readable>true</readable>
 </fieldPermissions>
  <fieldPermissions>
-        <editable>false</editable>
+        <editable>true</editable>
         <field>Contact.AccountId</field>
         <readable>true</readable>
     </fieldPermissions>
@@ -528,11 +528,6 @@
         <editable>true</editable>
         <field>Contact.RES_Nationality__c</field>
        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>Contact.AccountId</field>
-        <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
         <editable>false</editable>
@@ -1306,11 +1301,6 @@
      <fieldPermissions>
         <editable>false</editable>
         <field>Opportunity.RES_Lead_Medium__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>false</editable>
-        <field>Opportunity.AccountId</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>

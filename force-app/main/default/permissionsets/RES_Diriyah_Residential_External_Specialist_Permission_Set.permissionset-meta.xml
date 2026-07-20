@@ -520,11 +520,6 @@ Sales – External – Relationship Manager</description>
     <field>Contract.RES_URC_Signed__c</field>
     <readable>true</readable>
 </fieldPermissions>
- <fieldPermissions>
-        <editable>false</editable>
-        <field>Contact.AccountId</field>
-        <readable>true</readable>
-    </fieldPermissions>
     <fieldPermissions>
         <editable>true</editable>
         <field>Contact.RES_Full_Arabic_Name__c</field>
@@ -1312,11 +1307,6 @@ Sales – External – Relationship Manager</description>
     <fieldPermissions>
         <editable>false</editable>
         <field>Opportunity.RES_Lead_Medium__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>false</editable>
-        <field>Opportunity.AccountId</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
