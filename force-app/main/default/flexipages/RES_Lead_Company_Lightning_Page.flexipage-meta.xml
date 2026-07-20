@@ -35,7 +35,7 @@
                         <valueListItems>
                             <value>Lead.RES_Update_Owner</value>
                             <visibilityRule>
-                                <booleanFilter>1 AND 2</booleanFilter>
+                                <booleanFilter>1 AND 2 AND 3</booleanFilter>
                                 <criteria>
                                     <leftValue>{!$Permission.CustomPermission.RES_Update_Owner_Visibility}</leftValue>
                                     <operator>EQUAL</operator>
@@ -45,6 +45,11 @@
                                     <leftValue>{!$User.UserRole.DeveloperName}</leftValue>
                                     <operator>NE</operator>
                                     <rightValue>RES_Sales_Enterprise_Chief_Sales_Office</rightValue>
+                                </criteria>
+                                <criteria>
+                                    <leftValue>{!$User.Profile.Name}</leftValue>
+                                    <operator>NE</operator>
+                                    <rightValue>System Administrator</rightValue>
                                 </criteria>
                             </visibilityRule>
                         </valueListItems>
@@ -1747,7 +1752,7 @@
                 <valueListItems>
                     <value>Lead.RES_Update_Owner</value>
                     <visibilityRule>
-                        <booleanFilter>1 AND 2</booleanFilter>
+                        <booleanFilter>1 AND 2 AND 3</booleanFilter>
                         <criteria>
                             <leftValue>{!$Permission.CustomPermission.RES_Update_Owner_Visibility}</leftValue>
                             <operator>EQUAL</operator>
@@ -1757,6 +1762,11 @@
                             <leftValue>{!$User.UserRole.DeveloperName}</leftValue>
                             <operator>NE</operator>
                             <rightValue>RES_Sales_Enterprise_Chief_Sales_Office</rightValue>
+                        </criteria>
+                        <criteria>
+                            <leftValue>{!$User.Profile.Name}</leftValue>
+                            <operator>NE</operator>
+                            <rightValue>System Administrator</rightValue>
                         </criteria>
                     </visibilityRule>
                 </valueListItems>
