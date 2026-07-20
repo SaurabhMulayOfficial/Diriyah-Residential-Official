@@ -89,7 +89,7 @@
             <name>recipientAddresses</name>
             <value>
                 <collectionElements>
-                    <elementReference>Get_the_Latest_Approval_Record.ReviewedBy.Email</elementReference>
+                    <elementReference>Get_the_Latest_Reviewer_Approval_Record.ReviewedBy.Email</elementReference>
                 </collectionElements>
             </value>
         </inputParameters>
@@ -167,8 +167,8 @@
         </assignmentItems>
     </assignments>
     <decisions>
-        <name>Check_for_Manager</name>
-        <label>Check for Manager</label>
+        <name>Check_for_Manager_email</name>
+        <label>Check for Manager email</label>
         <locationX>0</locationX>
         <locationY>0</locationY>
         <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
@@ -182,61 +182,25 @@
                     <booleanValue>false</booleanValue>
                 </rightValue>
             </conditions>
-            <conditions>
-                <leftValueReference>managerId</leftValueReference>
-                <operator>IsNull</operator>
-                <rightValue>
-                    <booleanValue>false</booleanValue>
-                </rightValue>
-            </conditions>
             <connector>
                 <targetReference>Get_Approval_Record</targetReference>
             </connector>
             <label>Manager Email Not Null</label>
         </rules>
         <rules>
-            <name>Manager_Id_is_null</name>
+            <name>Manager_Email_is_null</name>
             <conditionLogic>and</conditionLogic>
             <conditions>
-                <leftValueReference>managerId</leftValueReference>
+                <leftValueReference>managerEmail</leftValueReference>
                 <operator>IsNull</operator>
                 <rightValue>
                     <booleanValue>true</booleanValue>
                 </rightValue>
             </conditions>
             <connector>
-                <targetReference>Get_the_Latest_Approval_Record</targetReference>
+                <targetReference>Get_the_Latest_Reviewer_Approval_Record</targetReference>
             </connector>
-            <label>Manager Id is null</label>
-        </rules>
-    </decisions>
-    <decisions>
-        <name>Update_Check_for_CSO_and_System_Admin</name>
-        <label>Update Check for CSO and System Admin</label>
-        <locationX>0</locationX>
-        <locationY>0</locationY>
-        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
-        <rules>
-            <name>Not_CSO_and_Admin</name>
-            <conditionLogic>and</conditionLogic>
-            <conditions>
-                <leftValueReference>Get_the_Latest_Approval_Record.ReviewedBy.UserRole.DeveloperName</leftValueReference>
-                <operator>NotEqualTo</operator>
-                <rightValue>
-                    <stringValue>RES_Sales_Enterprise_Chief_Sales_Office</stringValue>
-                </rightValue>
-            </conditions>
-            <conditions>
-                <leftValueReference>Get_the_Latest_Approval_Record.ReviewedBy.Profile.Name</leftValueReference>
-                <operator>NotEqualTo</operator>
-                <rightValue>
-                    <stringValue>System Administrator</stringValue>
-                </rightValue>
-            </conditions>
-            <connector>
-                <targetReference>Send_Email_to_Current_Reviewer</targetReference>
-            </connector>
-            <label>Not CSO and Admin</label>
+            <label>Manager Email is null</label>
         </rules>
     </decisions>
     <environments>Default</environments>
@@ -253,9 +217,9 @@ BLANKVALUE({!Get_Lead_Record.Owner:User.LastName}, &quot;&quot;)
         <name>currentReviwerName</name>
         <dataType>String</dataType>
         <expression>TRIM(
-BLANKVALUE({!Get_the_Latest_Approval_Record.ReviewedBy.FirstName}, &quot;&quot;) &amp; &quot; &quot; &amp;
-BLANKVALUE({!Get_the_Latest_Approval_Record.ReviewedBy.MiddleName}, &quot;&quot;) &amp; &quot; &quot; &amp;
-BLANKVALUE({!Get_the_Latest_Approval_Record.ReviewedBy.LastName}, &quot;&quot;)
+BLANKVALUE({!Get_the_Latest_Reviewer_Approval_Record.ReviewedBy.FirstName}, &quot;&quot;) &amp; &quot; &quot; &amp;
+BLANKVALUE({!Get_the_Latest_Reviewer_Approval_Record.ReviewedBy.MiddleName}, &quot;&quot;) &amp; &quot; &quot; &amp;
+BLANKVALUE({!Get_the_Latest_Reviewer_Approval_Record.ReviewedBy.LastName}, &quot;&quot;)
 )</expression>
     </formulas>
     <formulas>
@@ -320,6 +284,10 @@ BLANKVALUE({!Get_Lead_Record.RES_Proposed_User__r.LastName}, &quot;&quot;)
         <connector>
             <targetReference>Send_Email</targetReference>
         </connector>
+        <faultConnector>
+            <isGoTo>true</isGoTo>
+            <targetReference>Fault_Message</targetReference>
+        </faultConnector>
         <filterLogic>and</filterLogic>
         <filters>
             <field>RelatedRecordId</field>
@@ -341,7 +309,7 @@ BLANKVALUE({!Get_Lead_Record.RES_Proposed_User__r.LastName}, &quot;&quot;)
         <locationY>0</locationY>
         <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
         <connector>
-            <targetReference>Check_for_Manager</targetReference>
+            <targetReference>Check_for_Manager_email</targetReference>
         </connector>
         <faultConnector>
             <targetReference>Fault_Message</targetReference>
@@ -366,14 +334,18 @@ BLANKVALUE({!Get_Lead_Record.RES_Proposed_User__r.LastName}, &quot;&quot;)
         <storeOutputAutomatically>true</storeOutputAutomatically>
     </recordLookups>
     <recordLookups>
-        <name>Get_the_Latest_Approval_Record</name>
-        <label>Get the Latest Approval Record</label>
+        <name>Get_the_Latest_Reviewer_Approval_Record</name>
+        <label>Get the Latest Reviewer Approval Record</label>
         <locationX>0</locationX>
         <locationY>0</locationY>
         <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
         <connector>
-            <targetReference>Update_Check_for_CSO_and_System_Admin</targetReference>
+            <targetReference>Send_Email_to_Current_Reviewer</targetReference>
         </connector>
+        <faultConnector>
+            <isGoTo>true</isGoTo>
+            <targetReference>Fault_Message</targetReference>
+        </faultConnector>
         <filterLogic>and</filterLogic>
         <filters>
             <field>RelatedRecordId</field>
@@ -396,8 +368,8 @@ BLANKVALUE({!Get_Lead_Record.RES_Proposed_User__r.LastName}, &quot;&quot;)
         <storeOutputAutomatically>true</storeOutputAutomatically>
     </recordLookups>
     <recordUpdates>
-        <name>Update_Records_1</name>
-        <label>Update Approval Work Item</label>
+        <name>Update_Lead_Proposed_User</name>
+        <label>Update Lead Proposed User</label>
         <locationX>0</locationX>
         <locationY>0</locationY>
         <filterLogic>and</filterLogic>
@@ -405,7 +377,28 @@ BLANKVALUE({!Get_Lead_Record.RES_Proposed_User__r.LastName}, &quot;&quot;)
             <field>Id</field>
             <operator>EqualTo</operator>
             <value>
-                <elementReference>Get_the_Latest_Approval_Record.Id</elementReference>
+                <elementReference>Get_Lead_Record.Id</elementReference>
+            </value>
+        </filters>
+        <inputAssignments>
+            <field>RES_Proposed_User__c</field>
+        </inputAssignments>
+        <object>Lead</object>
+    </recordUpdates>
+    <recordUpdates>
+        <name>Update_Records_1</name>
+        <label>Update Approval Work Item</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Update_Lead_Proposed_User</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Id</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>Get_the_Latest_Reviewer_Approval_Record.Id</elementReference>
             </value>
         </filters>
         <inputAssignments>

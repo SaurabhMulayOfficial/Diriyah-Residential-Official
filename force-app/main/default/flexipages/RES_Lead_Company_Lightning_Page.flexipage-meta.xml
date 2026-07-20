@@ -35,7 +35,7 @@
                         <valueListItems>
                             <value>Lead.RES_Update_Owner</value>
                             <visibilityRule>
-                                <booleanFilter>1 AND 2</booleanFilter>
+                                <booleanFilter>1 AND 2 AND 3</booleanFilter>
                                 <criteria>
                                     <leftValue>{!$Permission.CustomPermission.RES_Update_Owner_Visibility}</leftValue>
                                     <operator>EQUAL</operator>
@@ -45,6 +45,11 @@
                                     <leftValue>{!$User.UserRole.DeveloperName}</leftValue>
                                     <operator>NE</operator>
                                     <rightValue>RES_Sales_Enterprise_Chief_Sales_Office</rightValue>
+                                </criteria>
+                                <criteria>
+                                    <leftValue>{!$User.Profile.Name}</leftValue>
+                                    <operator>NE</operator>
+                                    <rightValue>System Administrator</rightValue>
                                 </criteria>
                             </visibilityRule>
                         </valueListItems>
@@ -1252,6 +1257,19 @@
                 </fieldInstanceProperties>
                 <fieldItem>Record.CreatedById</fieldItem>
                 <identifier>RecordCreatedByIdField</identifier>
+                <visibilityRule>
+                    <booleanFilter>1 OR 2</booleanFilter>
+                    <criteria>
+                        <leftValue>{!$User.Profile.Name}</leftValue>
+                        <operator>EQUAL</operator>
+                        <rightValue>System Administrator</rightValue>
+                    </criteria>
+                    <criteria>
+                        <leftValue>{!$Permission.CustomPermission.RES_System_Information_Visibility}</leftValue>
+                        <operator>EQUAL</operator>
+                        <rightValue>true</rightValue>
+                    </criteria>
+                </visibilityRule>
             </fieldInstance>
         </itemInstances>
         <name>Facet-33815272-eea2-4698-a651-c5b2800ddc32</name>
@@ -1734,7 +1752,7 @@
                 <valueListItems>
                     <value>Lead.RES_Update_Owner</value>
                     <visibilityRule>
-                        <booleanFilter>1 AND 2</booleanFilter>
+                        <booleanFilter>1 AND 2 AND 3</booleanFilter>
                         <criteria>
                             <leftValue>{!$Permission.CustomPermission.RES_Update_Owner_Visibility}</leftValue>
                             <operator>EQUAL</operator>
@@ -1744,6 +1762,11 @@
                             <leftValue>{!$User.UserRole.DeveloperName}</leftValue>
                             <operator>NE</operator>
                             <rightValue>RES_Sales_Enterprise_Chief_Sales_Office</rightValue>
+                        </criteria>
+                        <criteria>
+                            <leftValue>{!$User.Profile.Name}</leftValue>
+                            <operator>NE</operator>
+                            <rightValue>System Administrator</rightValue>
                         </criteria>
                     </visibilityRule>
                 </valueListItems>

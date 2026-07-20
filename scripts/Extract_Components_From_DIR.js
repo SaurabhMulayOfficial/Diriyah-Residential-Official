@@ -30,8 +30,8 @@ for (const metadataFolder of getDirectories(ROOT)) {
   const folderPath = path.join(ROOT, metadataFolder);
 
   md += `## ${metadataFolder}\n\n`;
-  md += "| Component | Path |\n";
-  md += "|-----------|------|\n";
+  md += "| Component  \n";
+  md += "|----------- \n";
 
   function walk(current) {
     const entries = fs.readdirSync(current, {
@@ -44,18 +44,13 @@ for (const metadataFolder of getDirectories(ROOT)) {
       if (entry.isDirectory()) {
         walk(fullPath);
       } else {
-        const relative = path.relative(
-          folderPath,
-          fullPath
-        );
-
         const componentName =
           path.basename(
             entry.name,
             path.extname(entry.name)
           );
 
-        md += `| ${componentName} | ${relative} |\n`;
+        md += `| ${componentName} |\n`;
       }
     }
   }

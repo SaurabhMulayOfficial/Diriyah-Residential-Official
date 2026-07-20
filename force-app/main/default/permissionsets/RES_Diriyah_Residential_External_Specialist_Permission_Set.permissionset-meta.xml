@@ -1290,6 +1290,11 @@ Sales – External – Relationship Manager</description>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
+        <editable>true</editable>
+        <field>Opportunity.AccountId</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
         <editable>false</editable>
         <field>Opportunity.RES_Days_to_Close_Planned__c</field>
         <readable>true</readable>
@@ -1300,11 +1305,6 @@ Sales – External – Relationship Manager</description>
         <readable>true</readable>
     </fieldPermissions>
     
-    <fieldPermissions>
-        <editable>false</editable>
-        <field>Opportunity.AccountId</field>
-        <readable>true</readable>
-    </fieldPermissions>
     <fieldPermissions>
         <editable>true</editable>
         <field>Opportunity.Amount</field>

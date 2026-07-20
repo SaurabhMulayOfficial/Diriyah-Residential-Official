@@ -289,7 +289,7 @@
                 </rightValue>
             </conditions>
             <connector>
-                <targetReference>RES_Update_Opportunity_Address_Fields</targetReference>
+                <targetReference>Update_Opportunity_Email_mobile_fields</targetReference>
             </connector>
             <label>Opportunity Created</label>
         </rules>
@@ -596,8 +596,66 @@
         <storeOutputAutomatically>true</storeOutputAutomatically>
     </recordLookups>
     <recordUpdates>
-        <name>RES_Update_Opportunity_Address_Fields</name>
-        <label>Update Opportunity Address Fields</label>
+        <name>SLA_breached</name>
+        <label>SLA breached</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Get_Owners_Manager</targetReference>
+        </connector>
+        <inputReference>leadInstance</inputReference>
+    </recordUpdates>
+    <recordUpdates>
+        <name>Update_Account_Phone</name>
+        <label>Update Account Phone</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Check_Related_to_Opportunity</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Id</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>$Record.ConvertedAccountId</elementReference>
+            </value>
+        </filters>
+        <inputAssignments>
+            <field>Phone</field>
+            <value>
+                <elementReference>$Record.MobilePhone</elementReference>
+            </value>
+        </inputAssignments>
+        <object>Account</object>
+    </recordUpdates>
+    <recordUpdates>
+        <name>Update_Contact_BirthDate</name>
+        <label>Update Contact BirthDate</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Update_Account_Phone</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Id</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>$Record.ConvertedContactId</elementReference>
+            </value>
+        </filters>
+        <inputAssignments>
+            <field>Birthdate</field>
+            <value>
+                <elementReference>$Record.RES_Date_of_Birth__c</elementReference>
+            </value>
+        </inputAssignments>
+        <object>Contact</object>
+    </recordUpdates>
+    <recordUpdates>
+        <name>Update_Opportunity_Email_mobile_fields</name>
+        <label>Update Opportunity Email, mobile fields</label>
         <locationX>0</locationX>
         <locationY>0</locationY>
         <connector>
@@ -624,40 +682,6 @@
             </value>
         </inputAssignments>
         <object>Opportunity</object>
-    </recordUpdates>
-    <recordUpdates>
-        <name>SLA_breached</name>
-        <label>SLA breached</label>
-        <locationX>0</locationX>
-        <locationY>0</locationY>
-        <connector>
-            <targetReference>Get_Owners_Manager</targetReference>
-        </connector>
-        <inputReference>leadInstance</inputReference>
-    </recordUpdates>
-    <recordUpdates>
-        <name>Update_Contact_BirthDate</name>
-        <label>Update Contact BirthDate</label>
-        <locationX>0</locationX>
-        <locationY>0</locationY>
-        <connector>
-            <targetReference>Check_Related_to_Opportunity</targetReference>
-        </connector>
-        <filterLogic>and</filterLogic>
-        <filters>
-            <field>Id</field>
-            <operator>EqualTo</operator>
-            <value>
-                <elementReference>$Record.ConvertedContactId</elementReference>
-            </value>
-        </filters>
-        <inputAssignments>
-            <field>Birthdate</field>
-            <value>
-                <elementReference>$Record.RES_Date_of_Birth__c</elementReference>
-            </value>
-        </inputAssignments>
-        <object>Contact</object>
     </recordUpdates>
     <recordUpdates>
         <name>Update_Person_Account_BirthDate</name>
