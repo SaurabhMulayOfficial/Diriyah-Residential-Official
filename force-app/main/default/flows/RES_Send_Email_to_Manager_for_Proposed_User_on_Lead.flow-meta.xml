@@ -368,10 +368,31 @@ BLANKVALUE({!Get_Lead_Record.RES_Proposed_User__r.LastName}, &quot;&quot;)
         <storeOutputAutomatically>true</storeOutputAutomatically>
     </recordLookups>
     <recordUpdates>
+        <name>Update_Lead_Proposed_User</name>
+        <label>Update Lead Proposed User</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Id</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>Get_Lead_Record.Id</elementReference>
+            </value>
+        </filters>
+        <inputAssignments>
+            <field>RES_Proposed_User__c</field>
+        </inputAssignments>
+        <object>Lead</object>
+    </recordUpdates>
+    <recordUpdates>
         <name>Update_Records_1</name>
         <label>Update Approval Work Item</label>
         <locationX>0</locationX>
         <locationY>0</locationY>
+        <connector>
+            <targetReference>Update_Lead_Proposed_User</targetReference>
+        </connector>
         <filterLogic>and</filterLogic>
         <filters>
             <field>Id</field>
