@@ -356,44 +356,6 @@
             <shouldLock>false</shouldLock>
             <stepSubtype>BackgroundStep</stepSubtype>
         </stageSteps>
-        <stageSteps>
-            <name>Recalling_Record_When_Manager_Is_null</name>
-            <actionName>RES_Autolaunched_Flow_Update_lead_Owner_to_Proposed_Owner</actionName>
-            <actionType>stepBackground</actionType>
-            <canAssigneeEdit>false</canAssigneeEdit>
-            <debugSimulateStep>false</debugSimulateStep>
-            <entryConditionLogic>and</entryConditionLogic>
-            <entryConditions>
-                <conditionType>EntryCondition</conditionType>
-                <leftValueReference>Reviewer_Details.Outputs.managerId</leftValueReference>
-                <operator>IsNull</operator>
-                <rightValue>
-                    <booleanValue>true</booleanValue>
-                </rightValue>
-            </entryConditions>
-            <exitConditionLogic>and</exitConditionLogic>
-            <inputParameters>
-                <name>LeadRecord</name>
-                <value>
-                    <elementReference>$Record</elementReference>
-                </value>
-            </inputParameters>
-            <inputParameters>
-                <name>action</name>
-                <value>
-                    <stringValue>Recall</stringValue>
-                </value>
-            </inputParameters>
-            <label>Recalling Record When Manager Is null</label>
-            <outputConfigParams>
-                <name>FaultMessage</name>
-                <value xsi:nil="true"/>
-            </outputConfigParams>
-            <requiresAsyncProcessing>false</requiresAsyncProcessing>
-            <runAsUser>false</runAsUser>
-            <shouldLock>false</shouldLock>
-            <stepSubtype>BackgroundStep</stepSubtype>
-        </stageSteps>
     </orchestratedStages>
     <orchestratedStages>
         <name>Approval_Work_Item_Stage</name>
