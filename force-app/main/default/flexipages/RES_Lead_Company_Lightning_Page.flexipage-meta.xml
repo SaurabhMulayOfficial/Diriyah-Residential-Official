@@ -1693,10 +1693,16 @@
                 <componentName>runtime_approvals:approvalTrace</componentName>
                 <identifier>runtime_approvals_approvalTrace</identifier>
                 <visibilityRule>
+                    <booleanFilter>1 OR 2</booleanFilter>
                     <criteria>
                         <leftValue>{!$Permission.CustomPermission.RES_Update_Owner_Visibility}</leftValue>
                         <operator>EQUAL</operator>
                         <rightValue>true</rightValue>
+                    </criteria>
+                    <criteria>
+                        <leftValue>{!$User.UserRole.DeveloperName}</leftValue>
+                        <operator>EQUAL</operator>
+                        <rightValue>RES_Sales_Enterprise_Chief_Sales_Office</rightValue>
                     </criteria>
                 </visibilityRule>
             </componentInstance>
