@@ -644,7 +644,7 @@
         <field>Lead.RES_Plot_Size_sqm__c</field>
         <readable>true</readable>
     </fieldPermissions>
-    
+
     <fieldPermissions>
         <editable>true</editable>
         <field>Lead.RES_Project_Type__c</field>
@@ -1177,17 +1177,17 @@
         <field>Lead.Website</field>
         <readable>true</readable>
     </fieldPermissions>
-         <fieldPermissions>
+    <fieldPermissions>
         <editable>false</editable>
         <field>Lead.RES_SLA_Met_Time__c</field>
         <readable>true</readable>
-     </fieldPermissions>
-     <fieldPermissions>
+    </fieldPermissions>
+    <fieldPermissions>
         <editable>false</editable>
         <field>Lead.RES_Lead_Response_Time__c</field>
         <readable>true</readable>
-     </fieldPermissions>
-     <fieldPermissions>
+    </fieldPermissions>
+    <fieldPermissions>
         <editable>false</editable>
         <field>Lead.RES_Lead_Response_Time_Hours__c</field>
         <readable>true</readable>
@@ -1263,7 +1263,7 @@
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
-        <editable>true</editable>
+        <editable>false</editable>
         <field>Opportunity.LeadSource</field>
         <readable>true</readable>
     </fieldPermissions>
@@ -1327,16 +1327,56 @@
         <field>Opportunity.Type</field>
         <readable>true</readable>
     </fieldPermissions>
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>Opportunity.RES_Lead_Medium__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>Opportunity.Budget_Confirmed__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>Opportunity.Discovery_Completed__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>Opportunity.Loss_Reason__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>Opportunity.RES_Campaign_Name__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>Opportunity.RES_Distribution_Channel__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>Opportunity.RES_Joint_Account_Check__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>Opportunity.RES_Opportunity_Email__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>Opportunity.RES_Opportunity_Mobile__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>Opportunity.ROI_Analysis_Completed__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
     <fieldPermissions>
         <editable>true</editable>
         <field>RES_Opportunity_Account_Link__c.RES_Account__c</field>
@@ -1513,7 +1553,7 @@
         <name>ViewMyTeamsDashboards</name>
     </userPermissions>
     <userPermissions>
-        <enabled>false</enabled> 
+        <enabled>false</enabled>
         <name>ExportReport</name>
     </userPermissions>
 </PermissionSet>
