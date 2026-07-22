@@ -553,6 +553,9 @@
         <layout>RES_Opportunity_Account_Link__c-Opportunity Account Link Layout</layout>
     </layoutAssignments>
     <layoutAssignments>
+        <layout>RES_Apex_Email_Template__mdt-Apex Email Template Layout</layout>
+    </layoutAssignments>
+    <layoutAssignments>
         <layout>ApprovalSubmission-Approval Submission Layout</layout>
     </layoutAssignments>
     <layoutAssignments>
@@ -783,6 +786,31 @@
     </fieldPermissions>
     <fieldPermissions>
         <editable>true</editable>
+        <field>RES_Apex_Email_Template__mdt.Html_Body__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>RES_Apex_Email_Template__mdt.Subject__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>RES_Send_Email__e.Group__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>RES_Send_Email__e.Merge_Fields__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>RES_Send_Email__e.Merge_Fields__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
         <field>RES_Lead_Conversion_Event__e.Account_Id__c</field>
         <readable>true</readable>
     </fieldPermissions>
@@ -922,6 +950,15 @@
         <viewAllRecords>false</viewAllRecords>
     </objectPermissions>
     <objectPermissions>
+        <allowCreate>true</allowCreate>
+        <allowDelete>false</allowDelete>
+        <allowEdit>false</allowEdit>
+        <allowRead>true</allowRead>
+        <modifyAllRecords>false</modifyAllRecords>
+        <object>RES_Send_Email__e</object>
+        <viewAllRecords>false</viewAllRecords>
+    </objectPermissions>
+    <objectPermissions>
         <allowCreate>false</allowCreate>
         <allowDelete>false</allowDelete>
         <allowEdit>true</allowEdit>
@@ -981,7 +1018,7 @@
         <viewAllFields>false</viewAllFields>
         <viewAllRecords>false</viewAllRecords>
     </objectPermissions>
-     <objectPermissions>
+    <objectPermissions>
         <allowCreate>false</allowCreate>
         <allowDelete>false</allowDelete>
         <allowEdit>false</allowEdit>

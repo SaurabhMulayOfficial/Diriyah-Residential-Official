@@ -24,23 +24,18 @@
  * =============================================================================
  */
 
-public with sharing class RES_GroupDAOLayer extends RES_BaseDAOLayer {
-    public RES_GroupDAOLayer() {}
+public without sharing class RES_OrgWideAddressDAO extends RES_BaseDAOLayer {
+    public RES_OrgWideAddressDAO() {}
+
     protected override String getSObjectName() {
-        return 'Group';
+        return 'OrgWideEmailAddress';
     }
 
-    public Map<String,Id> getQueueMappingbyIds(Set<String> queueDevNames){
-        Map<String, Object> bindVars = new Map<String, Object>();
-        bindVars.put('queueDevNames', queueDevNames);
-        String soql = 'SELECT Id, developerName FROM Group WHERE developerName IN: queueDevNames';
-        List<Group> queue = executeQuery(soql, 'getQueueByNames', true, bindVars, AccessLevel.SYSTEM_MODE);
-        Map<String, Id> queueMapping = new Map<String, Id>();
+    public List<OrgWideEmailAddress> getOrgWideAddressByDisplayName(String displayName){
+        Map<String,Object> bindvars = new Map<String, Object>();
+        bindvars.put('displayName', displayName);
 
-        for(Group g: queue){
-            queueMapping.put(g.DeveloperName, g.Id);
-        }
-
-        return queueMapping;
+        String soql = 'SELECT Id, DisplayName FROM OrgWideEmailAddress WHERE DisplayName =: displayName';
+        return (List<OrgWideEmailAddress>) executeQuery(soql, 'getOrgWideAddressByDisplayName', true, bindvars, AccessLevel.SYSTEM_MODE);
     }
 }
