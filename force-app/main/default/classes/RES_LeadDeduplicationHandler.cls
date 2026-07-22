@@ -282,6 +282,14 @@ public without sharing class RES_LeadDeduplicationHandler {
                     //Block + Notify to Operation Team or Assign to Residential Duplicate Queue.
                     if(isBlockAndNotifyRule(rule)){
                         //check if existing lead is active/New
+                        if(incomingSource == 'Z09' && existingSource == 'Z09'){
+                            Id existingRM = getRmId(existingLeadsByExistingSource);
+                            if(existingRM != null && inputLead.OwnerId == existingRM){
+                                inputLead.addError('Please review duplicates, The incoming Lead has '+ displayIncomingSource +' as Source and the existing duplicate Lead has ' + displayExistingSource + ' as a Source.');
+                                break;
+                            }
+                        }
+
                         if(newAndActiveLeads.size() > 0){
                             if(orgWideEmailAddressId != null){
                                 RES_Send_Email__e event = new RES_Send_Email__e();
