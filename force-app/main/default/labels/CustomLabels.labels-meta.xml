@@ -357,4 +357,36 @@ Please go back and select at least one lead with status = “Qualified” to pro
         <shortDescription>Approval Failure Reason</shortDescription>
         <value>Approval cannot be completed because no manager is assigned to user.</value>
     </labels>
+    <labels>
+        <fullName>Notify_CSO_Template</fullName>
+        <categories>Lead Deduplication</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Notify CSO: Template</shortDescription>
+        <value>Notify_CSO_On_Lead_Duplication</value>
+    </labels>
+    <labels>
+        <fullName>RES_Deduplication_Templates</fullName>
+        <categories>Lead Deduplication</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Deduplication Templates: Operations Team</shortDescription>
+        <value>Notify_Operations_On_Lead_Duplication</value>
+    </labels>
+    <labels>
+        <fullName>RES_Duplicate_Lead_Block_Notification</fullName>
+        <categories>Lead Deduplication</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Duplicate Lead Block Notification</shortDescription>
+        <value>Please review for duplicate records. The incoming lead was blocked because an existing lead with the same details is currently in either the New or Active status.</value>
+    </labels>
+    <labels>
+        <fullName>RES_Notify_Queues_for_Duplication</fullName>
+        <categories>Lead Deduplication</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Notify Queues for Duplication</shortDescription>
+        <value>RES_Operations_Team,RES_Residential_Duplicate_Leads</value>
+    </labels>
 </CustomLabels>
