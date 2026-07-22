@@ -12,8 +12,8 @@ public with sharing class RES_LeadTriggerHandler extends RES_BaseTriggerHandler 
     }
 
     protected override void afterInsert(){
-        RES_LeadServices.processDeduplicationResults();
         RES_LeadServices.updateRoutingRecordResults();
+        RES_LeadServices.processDuplicationEmails();
     }
 
     protected override void beforeUpdate() {

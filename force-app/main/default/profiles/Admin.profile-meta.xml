@@ -1333,6 +1333,16 @@
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
+        <editable>true</editable>
+        <field>RES_Apex_Email_Template__mdt.Html_Body__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>RES_Apex_Email_Template__mdt.Subject__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
         <editable>false</editable>
         <field>RES_File_Type__mdt.RES_File_Types__c</field>
         <readable>true</readable>
@@ -1696,6 +1706,21 @@
     </fieldPermissions>
     <fieldPermissions>
         <editable>true</editable>
+        <field>RES_Send_Email__e.Group__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>RES_Send_Email__e.Merge_Fields__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>RES_Send_Email__e.Merge_Fields__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
         <field>RES_Lead_Conversion_Event__e.Account_Id__c</field>
         <readable>true</readable>
     </fieldPermissions>
@@ -1847,6 +1872,9 @@
         <layout>Lead_Deduplication_Rule__mdt-Lead Deduplication Rule Layout</layout>
     </layoutAssignments>
     <layoutAssignments>
+        <layout>RES_Apex_Email_Template__mdt-Apex Email Template Layout</layout>
+    </layoutAssignments>
+    <layoutAssignments>
         <layout>RES_File_Type__mdt-File Type Layout</layout>
     </layoutAssignments>
     <layoutAssignments>
@@ -1982,6 +2010,15 @@
         <allowRead>true</allowRead>
         <modifyAllRecords>true</modifyAllRecords>
         <object>RES_Ownership_Reassignment_Event__e</object>
+        <viewAllRecords>true</viewAllRecords>
+    </objectPermissions>
+    <objectPermissions>
+        <allowCreate>true</allowCreate>
+        <allowDelete>true</allowDelete>
+        <allowEdit>true</allowEdit>
+        <allowRead>true</allowRead>
+        <modifyAllRecords>true</modifyAllRecords>
+        <object>RES_Send_Email__e</object>
         <viewAllRecords>true</viewAllRecords>
     </objectPermissions>
     <objectPermissions>

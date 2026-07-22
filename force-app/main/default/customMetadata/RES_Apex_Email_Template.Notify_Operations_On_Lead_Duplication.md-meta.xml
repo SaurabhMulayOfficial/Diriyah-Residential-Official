@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <label>Notify Operations On Lead Duplication</label>
+    <protected>false</protected>
+    <values>
+        <field>Html_Body__c</field>
+        <value xsi:type="xsd:string">&lt;!DOCTYPE html&gt;
+
+&lt;html&gt;
+&lt;head&gt;
+    &lt;meta charset=&quot;UTF-8&quot;&gt;
+    &lt;title&gt;Duplicate Lead Blocked&lt;/title&gt;
+&lt;/head&gt;
+&lt;body style=&quot;font-family: Arial, sans-serif; color: #333333; line-height: 1.6;&quot;&gt;
+
+&lt;p&gt;Hello Operations Team,&lt;/p&gt;
+
+&lt;p&gt;
+    A new lead creation attempt has been blocked because a duplicate lead already exists
+    in the system with an &lt;strong&gt;Active&lt;/strong&gt; or &lt;strong&gt;New&lt;/strong&gt; status.
+&lt;/p&gt;
+
+&lt;p&gt;
+    As per the lead deduplication rules, the incoming lead was not created in the system.
+&lt;/p&gt;
+
+&lt;h3&gt;Incoming Lead Details&lt;/h3&gt;
+
+&lt;table cellpadding=&quot;8&quot; cellspacing=&quot;0&quot; border=&quot;1&quot;
+       style=&quot;border-collapse: collapse; border: 1px solid #cccccc;&quot;&gt;
+    &lt;tr&gt;
+        &lt;td&gt;&lt;strong&gt;Name&lt;/strong&gt;&lt;/td&gt;
+        &lt;td&gt;{0}&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+        &lt;td&gt;&lt;strong&gt;Mobile Number&lt;/strong&gt;&lt;/td&gt;
+        &lt;td&gt;{1}&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+        &lt;td&gt;&lt;strong&gt;Email&lt;/strong&gt;&lt;/td&gt;
+        &lt;td&gt;{2}&lt;/td&gt;
+    &lt;/tr&gt;
+&lt;/table&gt;
+
+&lt;p&gt;
+    Please review the existing lead if any further action is required.
+&lt;/p&gt;
+
+&lt;p&gt;
+    Regards,&lt;br/&gt;
+    CRM System
+&lt;/p&gt;
+
+
+&lt;/body&gt;
+&lt;/html&gt;</value>
+    </values>
+    <values>
+        <field>Subject__c</field>
+        <value xsi:type="xsd:string">Duplicate Lead Blocked – Existing Lead in Active/New Status</value>
+    </values>
+</CustomMetadata>

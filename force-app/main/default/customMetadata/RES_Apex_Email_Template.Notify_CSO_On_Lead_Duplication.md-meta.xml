@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <label>Notify CSO On Lead Duplication</label>
+    <protected>false</protected>
+    <values>
+        <field>Html_Body__c</field>
+        <value xsi:type="xsd:string">&lt;!DOCTYPE html&gt;
+
+&lt;html&gt;
+&lt;head&gt;
+    &lt;meta charset=&quot;UTF-8&quot;&gt;
+    &lt;title&gt;Duplicate Lead Created&lt;/title&gt;
+&lt;/head&gt;
+&lt;body style=&quot;font-family: Arial, sans-serif; color: #333333; line-height: 1.6;&quot;&gt;
+
+&lt;p&gt;Hello Team,&lt;/p&gt;
+
+&lt;p&gt;
+    A new lead has been created in the system after identifying a matching existing lead
+    with an &lt;strong&gt;Archived&lt;/strong&gt; or &lt;strong&gt;Retired&lt;/strong&gt; status.
+&lt;/p&gt;
+
+&lt;p&gt;
+    Since the existing matching lead is no longer active, the incoming lead was allowed
+    to proceed and has been created in the system.
+&lt;/p&gt;
+
+&lt;h3&gt;New Lead Details&lt;/h3&gt;
+
+&lt;table cellpadding=&quot;8&quot; cellspacing=&quot;0&quot; border=&quot;1&quot;
+       style=&quot;border-collapse: collapse; border: 1px solid #cccccc;&quot;&gt;
+    &lt;tr&gt;
+        &lt;td&gt;&lt;strong&gt;Name&lt;/strong&gt;&lt;/td&gt;
+        &lt;td&gt;{0}&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+        &lt;td&gt;&lt;strong&gt;Mobile Number&lt;/strong&gt;&lt;/td&gt;
+        &lt;td&gt;{1}&lt;/td&gt;
+    &lt;/tr&gt;
+&lt;/table&gt;
+
+&lt;br&gt;
+
+&lt;p&gt;
+    &lt;a href=&quot;{2}&quot;
+       style=&quot;background-color: #e9d7c2;
+              color: black;
+              padding: 10px 16px;
+              text-decoration: none;
+              border-radius: 4px;&quot;&gt;
+        View Lead
+    &lt;/a&gt;
+&lt;/p&gt;
+
+&lt;p&gt;
+    Please review the new lead and take any necessary action.
+&lt;/p&gt;
+
+&lt;p&gt;
+    Regards,&lt;br/&gt;
+    CRM System
+&lt;/p&gt;
+
+&lt;/body&gt;
+&lt;/html&gt;</value>
+    </values>
+    <values>
+        <field>Subject__c</field>
+        <value xsi:type="xsd:string">Duplicate Lead Created – Existing Lead is Archived/Retired</value>
+    </values>
+</CustomMetadata>

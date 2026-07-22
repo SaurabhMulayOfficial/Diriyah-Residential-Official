@@ -24,23 +24,23 @@
  * =============================================================================
  */
 
-public with sharing class RES_GroupDAOLayer extends RES_BaseDAOLayer {
-    public RES_GroupDAOLayer() {}
+public without sharing class RES_ApexEmailTemplateDAO extends RES_BaseDAOLayer {
+    public RES_ApexEmailTemplateDAO() {}
+
     protected override String getSObjectName() {
-        return 'Group';
+        return 'RES_Apex_Email_Template__mdt';
     }
 
-    public Map<String,Id> getQueueMappingbyIds(Set<String> queueDevNames){
+    public Map<String,RES_Apex_Email_Template__mdt> getApexTemplateByName(Set<String> apexTemplateNames){
         Map<String, Object> bindVars = new Map<String, Object>();
-        bindVars.put('queueDevNames', queueDevNames);
-        String soql = 'SELECT Id, developerName FROM Group WHERE developerName IN: queueDevNames';
-        List<Group> queue = executeQuery(soql, 'getQueueByNames', true, bindVars, AccessLevel.SYSTEM_MODE);
-        Map<String, Id> queueMapping = new Map<String, Id>();
+        bindVars.put('apexTemplateNames', apexTemplateNames);
+        String soql = 'SELECT DeveloperName, Html_Body__c, Subject__c FROM RES_Apex_Email_Template__mdt WHERE DeveloperName IN :apexTemplateNames';
+        List<RES_Apex_Email_Template__mdt> apexTemplates = executeQuery(soql, 'ApexTemplateByName', true, bindVars, AccessLevel.SYSTEM_MODE);
+        Map<String, RES_Apex_Email_Template__mdt> result = new Map<String, RES_Apex_Email_Template__mdt>();
 
-        for(Group g: queue){
-            queueMapping.put(g.DeveloperName, g.Id);
+        for(RES_Apex_Email_Template__mdt template : apexTemplates){
+            result.put(template.developerName, template);
         }
-
-        return queueMapping;
+        return result;
     }
 }

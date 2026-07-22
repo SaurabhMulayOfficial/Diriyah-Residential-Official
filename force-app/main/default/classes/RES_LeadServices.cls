@@ -5,8 +5,6 @@
 public with sharing class RES_LeadServices {
     public static Set<Lead> avoidReassignment = new Set<Lead>();
 
-    public static List<RES_LeadDeduplicationHandler.LeadDuplicateWrapper> leadDuplicateWrapper = 
-    new List<RES_LeadDeduplicationHandler.LeadDuplicateWrapper>();
     public static Map<Id, Database.LeadConvertResult> conversionResults = new Map<Id, Database.LeadConvertResult>();
 
     public static List<RES_ReassignmentLogicHandler.leadRoutingWrapper> routingUpdates = new List<RES_ReassignmentLogicHandler.leadRoutingWrapper>();
@@ -187,11 +185,11 @@ public with sharing class RES_LeadServices {
     }
 
     public static void applyDeduplicationRules(List<Lead> leadList){
-        RES_LeadDeduplicationHandler.apply(leadList,leadDuplicateWrapper);
+        RES_LeadDeduplicationHandler.apply(leadList);
     }
 
-    public static void processDeduplicationResults(){
-        RES_LeadDeduplicationHandler.processResults(leadDuplicateWrapper);
+    public static void processDuplicationEmails(){
+        RES_LeadDeduplicationHandler.processEmails();
     }
 
     public static void updateRoutingRecordResults(){
@@ -260,7 +258,6 @@ public with sharing class RES_LeadServices {
         }
     }
     public static void clearStaticVariables(){
-        leadDuplicateWrapper.clear();
         routingUpdates.clear();
     }
 
