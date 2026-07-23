@@ -4,5 +4,9 @@
     <entityName>Opportunity</entityName>
     <fieldName>StageName</fieldName>
     <masterLabel>Opportunity Path</masterLabel>
+    <pathAssistantSteps>
+        <info>&lt;p&gt;&lt;span style=&quot;font-size: 14px;&quot;&gt;To advance, ensure the Quote is created, a Unit is selected, ID/CR details are captured, and the Account Address is complete&lt;/span&gt;&lt;/p&gt;</info>
+        <picklistValueName>Proposal</picklistValueName>
+    </pathAssistantSteps>
     <recordTypeName>RES_Residential_Multi_Buyer</recordTypeName>
 </PathAssistant>
