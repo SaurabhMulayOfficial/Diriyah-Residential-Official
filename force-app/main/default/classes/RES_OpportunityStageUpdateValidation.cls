@@ -9,28 +9,34 @@ public with sharing class RES_OpportunityStageUpdateValidation {
     public static void validateOpportunity(List<Input> inputs) {
         
         if(!inputs.isEmpty()){
-
+			Set<Id> accountIdSet = new Set<Id>();
             List<Opportunity> opportunityLstUpdate = new List<Opportunity>();
-            Id recordTypeId = inputs[0].accountRecord.RecordTypeId;
-            String recordType = Schema.SObjectType.Account
-                                .getRecordTypeInfosById()
-                                .get(recordTypeId)
-                                .getDeveloperName();
+            for(Input inputObj : inputs){
+                Id recordTypeId = inputObj.accountRecord.RecordTypeId;
+                String recordType = Schema.SObjectType.Account
+                    .getRecordTypeInfosById()
+                    .get(recordTypeId)
+                    .getDeveloperName();
+                
+                if((inputObj.accountRecord.BillingCountry != null && 
+                    inputObj.accountRecord.BillingStreet != null &&
+                    inputObj.accountRecord.BillingPostalCode != null &&
+                    inputObj.accountRecord.BillingCity != null) && 
+                   ((recordType == System.Label.RES_Company_RT && inputObj.accountRecord.RES_CR_number__c != null) || 
+                    (recordType == System.Label.RES_Person_Account_RT && inputObj.accountRecord.RES_Identification_Number__c  != null))){
+                        if(inputObj.opportunityRecordId != null){
+                            Opportunity oppObj = new Opportunity(Id = inputObj.opportunityRecordId, StageName = 'Unit Selected');
+                            opportunityLstUpdate.add(oppObj);
+                        }
+                        else{
+                            accountIdSet.add(inputObj.accountRecord.Id);
+                        }
+                    }
+            }
             
-            if((inputs[0].accountRecord.BillingCountry != null && 
-                inputs[0].accountRecord.BillingStreet != null &&
-                inputs[0].accountRecord.BillingPostalCode != null &&
-                inputs[0].accountRecord.BillingCity != null) && 
-               ((recordType == System.Label.RES_Company_RT && inputs[0].accountRecord.RES_CR_number__c != null) || 
-                (recordType == System.Label.RES_Person_Account_RT && inputs[0].accountRecord.RES_Identification_Number__c  != null))){
-                    if(inputs[0].opportunityRecordId != null){
-                        Opportunity oppObj = new Opportunity(Id = inputs[0].opportunityRecordId, StageName = 'Unit Selected');
-                        opportunityLstUpdate.add(oppObj);
-                    }
-                    else{
-                        updateOpportunities(inputs[0].accountRecord.Id);
-                    }
-                }
+            if(!accountIdSet.isEmpty()){
+                updateOpportunities(accountIdSet);
+            }
 
             if(!opportunityLstUpdate.isEmpty()){
                 Database.update(opportunityLstUpdate, false, AccessLevel.SYSTEM_MODE);
@@ -38,9 +44,9 @@ public with sharing class RES_OpportunityStageUpdateValidation {
         }
     }
     
-    private static void updateOpportunities(Id accountId){
+    private static void updateOpportunities(Set<Id> accountIdSet){
         List<Opportunity> opportunityLstUpdate = new List<Opportunity>();
-        List<Opportunity> opportunityLst = new RES_OpportunityDAOLayer().getOpportunitiesRelatedToAccount(accountId);
+        List<Opportunity> opportunityLst = new RES_OpportunityDAOLayer().getOpportunitiesRelatedToAccount(accountIdSet);
         
         if(opportunityLst != null){
             for(Opportunity opp : opportunityLst){
