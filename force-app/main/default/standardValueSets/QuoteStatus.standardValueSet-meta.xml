@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<StandardValueSet xmlns="http://soap.sforce.com/2006/04/metadata">
+    <sorted>false</sorted>
+    <standardValue>
+        <fullName>Draft</fullName>
+        <default>true</default>
+        <label>Draft</label>
+        <allowEmail>true</allowEmail>
+    </standardValue>
+    <standardValue>
+        <fullName>Awaiting Client Confirmation</fullName>
+        <default>false</default>
+        <label>Awaiting Client Confirmation</label>
+        <allowEmail>false</allowEmail>
+    </standardValue>
+    <standardValue>
+        <fullName>Negotiating</fullName>
+        <default>false</default>
+        <label>Negotiating</label>
+        <allowEmail>false</allowEmail>
+    </standardValue>
+    <standardValue>
+        <fullName>Approved</fullName>
+        <default>false</default>
+        <label>Approved</label>
+        <allowEmail>true</allowEmail>
+    </standardValue>
+    <standardValue>
+        <fullName>Rejected</fullName>
+        <default>false</default>
+        <label>Rejected</label>
+        <allowEmail>true</allowEmail>
+    </standardValue>
+    <standardValue>
+        <fullName>Expired</fullName>
+        <default>false</default>
+        <label>Expired</label>
+        <allowEmail>false</allowEmail>
+    </standardValue>
+    <standardValue>
+        <fullName>Superseded</fullName>
+        <default>false</default>
+        <label>Superseded</label>
+        <allowEmail>false</allowEmail>
+    </standardValue>
+</StandardValueSet>
