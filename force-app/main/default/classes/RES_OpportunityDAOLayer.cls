@@ -52,4 +52,28 @@ public without sharing class RES_OpportunityDAOLayer extends RES_BaseDAOLayer{
         List<SObject> results = executeQuery(soql, '', true, bindVars, AccessLevel.SYSTEM_MODE);
         return results != null && !results.isEmpty() ? (Opportunity) results[0] : null;
     }
+
+    public List<Opportunity> getOpportunitiesRelatedToAccount(Id accountId){
+        Map<String, Object> bindVars = new Map<String, Object>();
+        Set<String> quoteStatusValues = new Set<String>{'Draft', 'Awaiting Client Confirmation', 'Negotiating'};
+        String stageName = 'Proposal';
+        bindVars.put('accountId', accountId);
+        bindVars.put('stageName', stageName);
+        bindVars.put('quoteStatusValues', quoteStatusValues);
+        
+        String soql = 'SELECT Id ' + 
+                      'FROM Opportunity ' +
+                      'WHERE Id IN ( ' +
+                      'SELECT OpportunityId ' +
+                      'FROM Quote ' +
+                      'WHERE LineItemCount > 0 AND Status IN : quoteStatusValues ) AND ' +
+                      'AccountId =: accountId AND ' + 
+                      'StageName =: stageName';
+
+        List<SObject> results = executeQuery(soql, '', true, bindVars, AccessLevel.SYSTEM_MODE);
+        if(!results.isEmpty()){
+            return results;
+        }
+        return null;
+    }
 }

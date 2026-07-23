@@ -298,6 +298,29 @@ public class RES_TestDataFactory {
         insert acc;
         return acc;
     }
+    
+    /**
+     * @description Creates a Company Record Type test account with all fields
+     * @param name Account name
+     * @return Account with all fields
+     */
+    public static Account createCompanyRTAccount(String name) {
+        Id recordTypeId = Schema.SObjectType.Account
+                         .getRecordTypeInfosByDeveloperName()
+                         .get('RES_Company')
+                         .getRecordTypeId();
+        
+        Account acc = new Account(
+            Name = name,
+            RecordTypeId = recordTypeId,
+            BillingCountry = 'India',
+            BillingStreet = 'Pune',
+            BillingPostalCode = '411014',
+            BillingCity = 'Pune'
+        );
+        insert acc;
+        return acc;
+    }
 
     // ═══════════════════════════════════════════════════════════════════════
     // Contact Creation Methods (ENHANCED)
@@ -405,5 +428,114 @@ public class RES_TestDataFactory {
         cdl.Visibility = 'AllUsers';
         insert cdl;
         return cdl;
+    }
+    
+    // ═══════════════════════════════════════════════════════════════════════
+    // Opportunity Creation Methods
+    // ═══════════════════════════════════════════════════════════════════════
+	/**
+     * @description Creates a test contact
+     * @param name - Opportunity Name
+     * @param accountId - Account Record Id
+     * @param stage - Opportunity Stage
+     * @param closeDate - Opportunity Close Date
+     * @param project - Opportunity Project
+     * @return Opportunity
+     */
+    public static Opportunity createSingleBuyerOpportunity(String name, Id accountId, String stage, Date closeDate, String project) {
+        Id recordTypeId = Schema.SObjectType.Opportunity
+    					.getRecordTypeInfosByDeveloperName()
+    					.get('RES_Residential_Single_Buyer')
+    					.getRecordTypeId();
+
+        Opportunity opp = new Opportunity(
+            Name = name,
+            AccountId = accountId,
+            StageName = stage, 
+            CloseDate = closeDate, 
+            RES_Project__c  = project,
+            RecordTypeId = recordTypeId
+        );
+        insert opp;
+        return opp;
+    }
+    
+    // ═══════════════════════════════════════════════════════════════════════
+    // Quote Creation Methods
+    // ═══════════════════════════════════════════════════════════════════════
+	/**
+     * @description Creates a test Quote
+     * @param name - Quote Name
+     * @param opportunityId - opportunity Record Id
+     * @param priceBookId - priceBookId
+     * @param status - quote status
+     * @return Quote
+     */
+    public static Quote createQuote(String name, Id opportunityId, Id priceBookId, String status) {
+        Quote quoteObj = new Quote(
+            Name = name,
+            OpportunityId = opportunityId,
+            Pricebook2Id = priceBookId,
+            Status = status
+        );
+        insert quoteObj;
+        return quoteObj;
+    }
+    
+    // ═══════════════════════════════════════════════════════════════════════
+    // Quote Line Item Creation Methods
+    // ═══════════════════════════════════════════════════════════════════════
+	/**
+     * @description Creates a test Quote Line Item
+     * @param quoteId - quoteId
+     * @param quantity - quantity
+     * @param unitPrice - unitPrice
+     * @return QuoteLineItem
+     */
+    public static QuoteLineItem createQuoteLineItem(Id quoteId, Integer quantity, Integer unitPrice) {
+        QuoteLineItem qli = new QuoteLineItem(
+            QuoteId = quoteId,
+            PricebookEntryId = createPricebookEntry().Id,
+            Quantity = quantity,
+            UnitPrice = unitPrice
+        );
+        insert qli;
+        return qli;
+    }
+    
+    // ═══════════════════════════════════════════════════════════════════════
+    // Product Creation Methods
+    // ═══════════════════════════════════════════════════════════════════════
+	/**
+     * @description Creates a test Product
+     * @param name - name
+     * @return Product2
+     */
+    public static Product2 createProduct(String name) {
+        Product2 prod = new Product2(
+            Name = name,
+            IsActive = true
+        );
+        insert prod;
+        return prod;
+    }
+    
+    // ═══════════════════════════════════════════════════════════════════════
+    // Product Creation Methods
+    // ═══════════════════════════════════════════════════════════════════════
+	/**
+     * @description Creates a test PricebookEntry
+     * @param 
+     * @return PricebookEntry
+     */
+    public static PricebookEntry createPricebookEntry() {
+        PricebookEntry pbe = new PricebookEntry(
+            Pricebook2Id = Test.getStandardPricebookId(),
+            Product2Id = createProduct('Mobile').Id,
+            UnitPrice = 100,
+            IsActive = true
+        );
+        insert pbe;
+        return pbe;
     }
 }
