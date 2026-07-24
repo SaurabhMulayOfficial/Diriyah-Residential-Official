@@ -1,14 +1,18 @@
 import { LightningElement, api, track, wire } from 'lwc';
 import { NavigationMixin }              from 'lightning/navigation';
+import { CurrentPageReference }         from 'lightning/navigation';
 import { subscribe, unsubscribe, onError } from 'lightning/empApi';
-import { getRecord, getFieldValue, updateRecord } from 'lightning/uiRecordApi';
+import { getRecord, getFieldValue, updateRecord, notifyRecordUpdateAvailable } from 'lightning/uiRecordApi';
+import { refreshApex } from '@salesforce/apex';
+import getPendingQualifiedFlag from '@salesforce/apex/RES_LeadConversionHandler.getPendingQualifiedFlag';
 import ID_FIELD from '@salesforce/schema/Lead.Id';
 import getConvertedRecordIds from '@salesforce/apex/RES_LeadConversionHandler.getConvertedRecordIds';
 import triggerLeadConversion from '@salesforce/apex/RES_LeadConversionHandler.triggerLeadConversion';
 import USER_ID from '@salesforce/user/Id';
-import SUB_STATUS_FIELD from '@salesforce/schema/Lead.RES_Lead_Sub_Status__c';
-import STATUS_FIELD     from '@salesforce/schema/Lead.Status';
-import OWNER_FIELD      from '@salesforce/schema/Lead.OwnerId';
+import SUB_STATUS_FIELD      from '@salesforce/schema/Lead.RES_Lead_Sub_Status__c';
+import STATUS_FIELD          from '@salesforce/schema/Lead.Status';
+import OWNER_FIELD           from '@salesforce/schema/Lead.OwnerId';
+import PENDING_QUALIFIED_FIELD from '@salesforce/schema/Lead.RES_Pending_Qualified_Review__c';
 export default class LeadConversionPopup extends NavigationMixin(LightningElement) {
     @api recordId;
     @track showPopup      = false;
@@ -58,60 +62,88 @@ export default class LeadConversionPopup extends NavigationMixin(LightningElemen
     // ── Wire: watch Sub-Status + Status — show warning on Qualified ──
     _ownerId = '';
 
-    @wire(getRecord, { recordId: '$recordId', fields: [SUB_STATUS_FIELD, STATUS_FIELD, OWNER_FIELD] })
-    wiredLead({ data }) {
+    _wiredLeadResult; // stored so refreshApex can force a server re-fetch
+
+    @wire(getRecord, { recordId: '$recordId', fields: [PENDING_QUALIFIED_FIELD, SUB_STATUS_FIELD, STATUS_FIELD, OWNER_FIELD] })
+    wiredLead(result) {
+        this._wiredLeadResult = result;
+        const { data } = result;
         if (!data) return;
-        const subStatus = getFieldValue(data, SUB_STATUS_FIELD) || '';
-        const status    = getFieldValue(data, STATUS_FIELD)     || '';
-        this._ownerId   = getFieldValue(data, OWNER_FIELD)      || '';
+        const pendingQualified = getFieldValue(data, PENDING_QUALIFIED_FIELD) || false;
+        const subStatus        = getFieldValue(data, SUB_STATUS_FIELD)        || '';
+        const status           = getFieldValue(data, STATUS_FIELD)            || '';
+        this._ownerId          = getFieldValue(data, OWNER_FIELD)             || '';
 
-        if (this._isFirstLoad) {
-            this._previousSubStatus = subStatus;
-            this._currentSubStatus  = subStatus;
-            this._previousStatus    = status;
-            this._currentStatus     = status;
-            this._isFirstLoad       = false;
+        this._currentSubStatus = subStatus;
+        this._currentStatus    = status;
+
+        // Server-side flag set by Before-Save flow when user directly edits Sub Status to Qualified.
+        // Works on desktop AND mobile (flag persists on server across navigation/remount).
+        if (pendingQualified && !this.showWarningModal && !this._isProceedSave) {
+            this.showWarningModal = true;
             return;
         }
 
-        // Skip reactions caused by our own Proceed/Cancel updateRecord calls
-        if (this._isReverting || this._isProceedSave) {
-            this._previousSubStatus = subStatus;
-            this._currentSubStatus  = subStatus;
-            this._previousStatus    = status;
-            this._currentStatus     = status;
-            this._isReverting       = false;
-            this._isProceedSave     = false;
-            return;
-        }
-
-        const changedToQualified =
-            subStatus === 'Qualified' &&
-            this._currentSubStatus !== 'Qualified';
-
-        if (changedToQualified) {
-            // Keep _previous* intact for revert; update _current* to new values
-            this._currentSubStatus = subStatus;
-            this._currentStatus    = status;
-            this._savePendingRevert(this._previousSubStatus, this._previousStatus);
-            this.showWarningModal  = true;
-        } else if (subStatus !== this._currentSubStatus || status !== this._currentStatus) {
-            // Unrelated field change — update all tracking
-            this._previousSubStatus = subStatus;
-            this._currentSubStatus  = subStatus;
-            this._previousStatus    = status;
-            this._currentStatus     = status;
+        if (!pendingQualified) {
+            this._isReverting   = false;
+            this._isProceedSave = false;
+            if (!this.showWarningModal) {
+                this._previousSubStatus = subStatus;
+                this._previousStatus    = status;
+            }
         }
     }
 
-    async connectedCallback() {
-        this._checkAndApplyPendingRevert();
+    // Fires when the page reference changes — on mobile this may fire when the
+    // user navigates back from the native Edit form to the record page.
+    @wire(CurrentPageReference)
+    wiredPageRef(pageRef) {
+        if (pageRef && this.recordId) {
+            this._checkPendingFlag();
+        }
+    }
+
+    _pollTimer = null;
+
+    connectedCallback() {
         this._subscribeToChannel();
         this._registerErrorHandler();
+        this._checkPendingFlag(); // immediate — handles remount (close+reopen)
+        this._startPolling();    // every 2s backup
+        // On mobile, JS timers are frozen while the native Edit form is open.
+        // When the user navigates back, the first touch on the record page fires
+        // touchstart — use that as a reliable trigger to check the server flag.
+        this._handleTouch = () => this._checkPendingFlag();
+        document.addEventListener('touchstart', this._handleTouch, { passive: true });
     }
 
     disconnectedCallback() {
         this._unsubscribeFromChannel();
+        this._stopPolling();
+        document.removeEventListener('touchstart', this._handleTouch);
+    }
+
+    _startPolling() {
+        this._stopPolling();
+        // eslint-disable-next-line @lwc/lwc/no-async-operation
+        this._pollTimer = setInterval(() => { this._checkPendingFlag(); }, 2000);
+    }
+
+    _stopPolling() {
+        if (this._pollTimer) {
+            clearInterval(this._pollTimer);
+            this._pollTimer = null;
+        }
+    }
+
+    async _checkPendingFlag() {
+        if (!this.recordId || this.showWarningModal || this._isProceedSave) return;
+        try {
+            const pending = await getPendingQualifiedFlag({ leadId: this.recordId });
+            if (pending && !this.showWarningModal && !this._isProceedSave) {
+                this.showWarningModal = true;
+            }
+        } catch(e) { /* non-fatal */ }
     }
 
     _subscribeToChannel() {
@@ -190,6 +222,9 @@ export default class LeadConversionPopup extends NavigationMixin(LightningElemen
             this.errorMessage  = '';
             this.isLoading     = false;
             this._isProcessing = false;
+            // Invalidate LDS cache so the list view fetches the Converted status
+            // instead of the stale Qualified value cached from handleProceed's updateRecord.
+            notifyRecordUpdateAvailable([{ recordId: this.recordId }]);
 
         } catch (error) {
             console.error('Apex error:', JSON.stringify(error));
@@ -230,6 +265,7 @@ export default class LeadConversionPopup extends NavigationMixin(LightningElemen
 
     handleGoToLeads(event) {
         event.stopPropagation();
+        notifyRecordUpdateAvailable([{ recordId: this.recordId }]);
         this[NavigationMixin.Navigate]({
             type      : 'standard__objectPage',
             attributes: { objectApiName: 'Lead', actionName: 'list' },
@@ -242,23 +278,35 @@ export default class LeadConversionPopup extends NavigationMixin(LightningElemen
     // ── Warning modal: Proceed — update Status to '04' and directly enqueue conversion ─
     handleProceed() {
         this._proceedError = '';
-        this._clearPendingRevert();
         if (this._ownerId && !this._ownerId.startsWith('005')) {
             this._proceedError = 'This lead is assigned to a Queue. Please reassign it to a User before converting.';
             return;
         }
         this.showWarningModal = false;
         this._isProceedSave   = true;
+        // Set Sub Status = Qualified + Status = Qualified + clear the server flag.
+        // Prior flag = true → Before-Save flow detects this as the Proceed path and allows the save.
         updateRecord({
             fields: {
-                [ID_FIELD.fieldApiName]         : this.recordId,
-                [STATUS_FIELD.fieldApiName]     : '04',
-                [SUB_STATUS_FIELD.fieldApiName] : 'Qualified'
+                [ID_FIELD.fieldApiName]               : this.recordId,
+                [STATUS_FIELD.fieldApiName]           : '04',
+                [SUB_STATUS_FIELD.fieldApiName]       : 'Qualified',
+                [PENDING_QUALIFIED_FIELD.fieldApiName]: false
             }
         }).then(() => {
             this._previousSubStatus = 'Qualified';
             this._previousStatus    = '04';
             return triggerLeadConversion({ leadId: this.recordId });
+        }).then(() => {
+            // empApi Platform Events are not delivered on Salesforce Mobile App,
+            // so trigger the converted-records fetch directly here.
+            // _isProcessing guards against a double-fetch on desktop when the
+            // Platform Event also fires.
+            if (!this._isProcessing) {
+                this._isProcessing = true;
+                this.isLoading     = true;
+                this._delay(2000).then(() => this._fetchConvertedIds());
+            }
         }).catch(error => {
             this._isProceedSave  = false;
             this._proceedError   = this._extractErrorMessage(error);
@@ -266,21 +314,20 @@ export default class LeadConversionPopup extends NavigationMixin(LightningElemen
         });
     }
 
-    // ── Warning modal: Cancel/X — close immediately, revert in background ──
+    // ── Warning modal: Cancel/X — close immediately, clear server flag ──
+    // Sub Status was already reverted by the Before-Save flow — only need to clear the flag.
     handleCancelWarning() {
         this.showWarningModal = false;
         this._proceedError    = '';
-        this._clearPendingRevert();
         this._isReverting     = true;
         updateRecord({
             fields: {
-                [ID_FIELD.fieldApiName]         : this.recordId,
-                [SUB_STATUS_FIELD.fieldApiName] : this._previousSubStatus || null,
-                [STATUS_FIELD.fieldApiName]     : this._previousStatus    || null
+                [ID_FIELD.fieldApiName]               : this.recordId,
+                [PENDING_QUALIFIED_FIELD.fieldApiName]: false
             }
         }).catch(error => {
             this._isReverting = false;
-            console.error('Error reverting fields:', JSON.stringify(error));
+            console.error('Error clearing pending qualified flag:', JSON.stringify(error));
         });
     }
 
@@ -345,50 +392,6 @@ export default class LeadConversionPopup extends NavigationMixin(LightningElemen
         return `record-card${this.hasOpportunity ? ' clickable' : ' disabled'}`;
     }
 
-    // ── Pending-revert helpers: survive page refresh AND tab close via localStorage ──
-    // TTL of 2 hours — prevents a stale entry from reverting a record opened much later.
-    static REVERT_TTL_MS = 2 * 60 * 60 * 1000;
-
-    get _revertKey() {
-        return `res_lead_pending_revert_${this.recordId}`;
-    }
-
-    _savePendingRevert(prevSubStatus, prevStatus) {
-        try {
-            localStorage.setItem(this._revertKey, JSON.stringify({
-                subStatus : prevSubStatus,
-                status    : prevStatus,
-                savedAt   : new Date().getTime()
-            }));
-        } catch (e) { /* storage unavailable */ }
-    }
-
-    _clearPendingRevert() {
-        try { localStorage.removeItem(this._revertKey); } catch (e) { /* ignore */ }
-    }
-
-    _checkAndApplyPendingRevert() {
-        if (!this.recordId) return;
-        let stored;
-        try { stored = localStorage.getItem(this._revertKey); } catch (e) { return; }
-        if (!stored) return;
-        this._clearPendingRevert();
-        let parsed;
-        try { parsed = JSON.parse(stored); } catch (e) { return; }
-        const age = new Date().getTime() - (parsed.savedAt || 0);
-        if (age > LeadConversionPopup.REVERT_TTL_MS) return;
-        this._isReverting = true;
-        updateRecord({
-            fields: {
-                [ID_FIELD.fieldApiName]         : this.recordId,
-                [SUB_STATUS_FIELD.fieldApiName] : parsed.subStatus || null,
-                [STATUS_FIELD.fieldApiName]     : parsed.status    || null
-            }
-        }).catch(error => {
-            this._isReverting = false;
-            console.error('Error reverting fields after tab close/refresh:', JSON.stringify(error));
-        });
-    }
 
     _delay(ms) {
         return new Promise(resolve => {

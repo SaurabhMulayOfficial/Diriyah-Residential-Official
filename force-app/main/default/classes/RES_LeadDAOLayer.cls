@@ -240,6 +240,34 @@ public without sharing class RES_LeadDAOLayer extends RES_BaseDAOLayer {
         );
     }
 
+    public Lead getLeadPendingQualifiedFlag(Id leadId) {
+        if (leadId == null) {
+            return null;
+        }
+
+        Map<String, Object> bindVars = new Map<String, Object>();
+        bindVars.put('leadId', leadId);
+
+        String soql =
+            'SELECT Id,' +
+            'RES_Pending_Qualified_Review__c ' +
+            'FROM Lead ' +
+            'WHERE Id = :leadId ' +
+            'LIMIT 1';
+
+        List<SObject> results = executeQuery(
+            soql,
+            '',
+            false,
+            bindVars,
+            AccessLevel.USER_MODE
+        );
+
+        return results.isEmpty()
+            ? null
+            : (Lead) results[0];
+    }
+
     public Lead getConvertedLeadById(Id leadId){
         if (leadId == null) {
             return null;
