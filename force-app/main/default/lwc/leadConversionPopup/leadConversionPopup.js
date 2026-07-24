@@ -103,37 +103,14 @@ export default class LeadConversionPopup extends NavigationMixin(LightningElemen
         }
     }
 
-    _pollTimer = null;
-
     connectedCallback() {
         this._subscribeToChannel();
         this._registerErrorHandler();
-        this._checkPendingFlag(); // immediate — handles remount (close+reopen)
-        this._startPolling();    // every 2s backup
-        // On mobile, JS timers are frozen while the native Edit form is open.
-        // When the user navigates back, the first touch on the record page fires
-        // touchstart — use that as a reliable trigger to check the server flag.
-        this._handleTouch = () => this._checkPendingFlag();
-        document.addEventListener('touchstart', this._handleTouch, { passive: true });
+        this._checkPendingFlag();
     }
 
     disconnectedCallback() {
         this._unsubscribeFromChannel();
-        this._stopPolling();
-        document.removeEventListener('touchstart', this._handleTouch);
-    }
-
-    _startPolling() {
-        this._stopPolling();
-        // eslint-disable-next-line @lwc/lwc/no-async-operation
-        this._pollTimer = setInterval(() => { this._checkPendingFlag(); }, 2000);
-    }
-
-    _stopPolling() {
-        if (this._pollTimer) {
-            clearInterval(this._pollTimer);
-            this._pollTimer = null;
-        }
     }
 
     async _checkPendingFlag() {
