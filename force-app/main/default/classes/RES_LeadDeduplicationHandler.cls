@@ -317,8 +317,8 @@ public without sharing class RES_LeadDeduplicationHandler {
                             if(queueMapping.containsKey(rule.Allow_Creation_Notify_Queue__c)){
                                 fallbackQueueId = queueMapping.get(rule.Allow_Creation_Notify_Queue__c);
                             }
-                            RES_LeadServices.avoidReassignment.add(inputLead);
                             inputLead.OwnerId = fallbackQueueId;
+                            RES_LeadServices.avoidReassignment.add(inputLead);
                             break;
                         }
                     }
@@ -329,9 +329,9 @@ public without sharing class RES_LeadDeduplicationHandler {
                         inputLead.status = rule.Lead_Status__c;
 
                         if(assignedTo == 'SAME'){
-                            RES_LeadServices.avoidReassignment.add(inputLead);
                             if(getSameRMId != ''){
                                 inputLead.OwnerId = getSameRMId;
+                                RES_LeadServices.avoidReassignment.add(inputLead);
                                 break;
                             }
                         }
