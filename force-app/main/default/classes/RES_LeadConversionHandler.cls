@@ -303,8 +303,8 @@ public with sharing class RES_LeadConversionHandler {
     @AuraEnabled(cacheable=false)
     public static Boolean getPendingQualifiedFlag(Id leadId) {
         if (leadId == null) return false;
-        List<Lead> leads = [SELECT RES_Pending_Qualified_Review__c FROM Lead WHERE Id = :leadId LIMIT 1];
-        return leads.isEmpty() ? false : leads[0].RES_Pending_Qualified_Review__c;
+        Lead lead = new RES_LeadDAOLayer().getLeadPendingQualifiedFlag(leadId);
+        return lead != null && lead.RES_Pending_Qualified_Review__c;
     }
 
     @AuraEnabled(cacheable=false)
