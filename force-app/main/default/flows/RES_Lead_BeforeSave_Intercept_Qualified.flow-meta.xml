@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>65.0</apiVersion>
+    <assignments>
+        <name>Assign_Revert_And_Set_Flag</name>
+        <label>Revert Sub Status and Set Pending Flag</label>
+        <locationX>50</locationX>
+        <locationY>362</locationY>
+        <assignmentItems>
+            <assignToReference>$Record.RES_Lead_Sub_Status__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>$Record__Prior.RES_Lead_Sub_Status__c</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>$Record.RES_Pending_Qualified_Review__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </assignmentItems>
+    </assignments>
+    <decisions>
+        <name>Should_Intercept</name>
+        <label>Should Intercept Qualified Change?</label>
+        <locationX>182</locationX>
+        <locationY>242</locationY>
+        <defaultConnectorLabel>No — Allow Save</defaultConnectorLabel>
+        <rules>
+            <name>Yes_Intercept</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.RES_Lead_Sub_Status__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Qualified</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <!-- Prior flag = false = direct user edit path.
+                     LWC Proceed sets flag false while prior was true — so this condition
+                     fails on Proceed and the flow does not intercept. -->
+                <leftValueReference>$Record__Prior.RES_Pending_Qualified_Review__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <!-- Skip interception during lead conversion. When Salesforce converts the lead
+                     it updates IsConverted = true in the same DML, which re-fires this flow.
+                     At that point prior flag is already false (cleared by LWC Proceed) so without
+                     this guard the flow would incorrectly set the flag back to true. -->
+                <leftValueReference>$Record.IsConverted</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Assign_Revert_And_Set_Flag</targetReference>
+            </connector>
+            <doesRequireRecordChangedToMeetCriteria>false</doesRequireRecordChangedToMeetCriteria>
+            <label>Yes — Intercept</label>
+        </rules>
+    </decisions>
+    <description>Before-Save flow on Lead. When a user directly sets Sub Status to Qualified (desktop inline edit or mobile Edit button), reverts the Sub Status and sets RES_Pending_Qualified_Review__c = true. The LWC leadConversionPopup reads this flag via wire and shows the warning popup. On LWC Proceed, the prior flag value is true so this flow skips interception and allows the save.</description>
+    <interviewLabel>RES Lead Before Save - Intercept Qualified {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>RES Lead Before Save - Intercept Qualified</label>
+    <processMetadataValues>
+        <name>BuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>CanvasMode</name>
+        <value>
+            <stringValue>AUTO_LAYOUT_CANVAS</stringValue>
+        </value>
+    </processMetadataValues>
+    <processType>AutoLaunchedFlow</processType>
+    <start>
+        <locationX>56</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Should_Intercept</targetReference>
+        </connector>
+        <doesRequireRecordChangedToMeetCriteria>false</doesRequireRecordChangedToMeetCriteria>
+        <object>Lead</object>
+        <recordTriggerType>Update</recordTriggerType>
+        <triggerType>RecordBeforeSave</triggerType>
+    </start>
+    <status>Active</status>
+</Flow>
