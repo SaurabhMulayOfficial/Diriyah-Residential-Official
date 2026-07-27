@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>RES_Validation_on_Identification_Type</fullName>
+    <active>true</active>
+    <errorConditionFormula>AND(
+NOT($Setup.RES_Config_Switch__c.RES_Validation_Rules_Off__c),
+OR(
+$RecordType.DeveloperName = &quot;RES_Individual&quot;,
+$RecordType.DeveloperName = &quot;RES_Company&quot;
+),
+ISPICKVAL(RES_Identification_Type__c, &quot;&quot;),
+OR(
+NOT(ISBLANK(RES_Identification_Number__c)),
+NOT(ISBLANK(RES_CR_Number__c))
+)
+)</errorConditionFormula>
+    <errorDisplayField>RES_Identification_Type__c</errorDisplayField>
+    <errorMessage>Please select the appropriate Identification Type that corresponds to the Identification Number or Commercial Registration Number provided.</errorMessage>
+</ValidationRule>
