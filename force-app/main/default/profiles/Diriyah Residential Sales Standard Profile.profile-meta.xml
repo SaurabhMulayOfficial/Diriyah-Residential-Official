@@ -575,6 +575,12 @@
         <layout>ProductCatalog-Catalog Layout</layout>
         <recordType>ProductCatalog.RES_Residential_Sales</recordType>
     </layoutAssignments>
+    <layoutAssignments>
+        <layout>Quote-Quote Layout</layout>
+    </layoutAssignments>
+    <layoutAssignments>
+        <layout>QuoteLineItem-Quote Line Item Layout</layout>
+    </layoutAssignments>
     <fieldPermissions>
         <editable>false</editable>
         <field>RES_Assignment_Condition__c.RES_Assignment_Config__c</field>
