@@ -26,7 +26,7 @@
                 <indicatorHighColor>#A46449</indicatorHighColor>
                 <indicatorLowColor>#A46449</indicatorLowColor>
                 <indicatorMiddleColor>#A46449</indicatorMiddleColor>
-                <report>RES_Diriyah_Marketing_Report_Folder/RES_Total_Marketing_Leads</report>
+                <report>RES_DiriyahMarketingReportsFolder/RES_Total_Marketing_Leads</report>
                 <showRange>false</showRange>
             </dashboardComponent>
             <rowIndex>0</rowIndex>
@@ -36,21 +36,14 @@
             <colSpan>4</colSpan>
             <columnIndex>4</columnIndex>
             <dashboardComponent>
-                <autoselectColumnsFromReport>false</autoselectColumnsFromReport>
+                <autoselectColumnsFromReport>true</autoselectColumnsFromReport>
                 <chartAxisRange>Auto</chartAxisRange>
-                <chartSummary>
-                    <axisBinding>y</axisBinding>
-                    <column>RowCount</column>
-                </chartSummary>
-                <componentType>BarGrouped</componentType>
-                <decimalPrecision>-1</decimalPrecision>
+                <componentType>Bar</componentType>
                 <displayUnits>Auto</displayUnits>
                 <drillEnabled>false</drillEnabled>
                 <drillToDetailEnabled>false</drillToDetailEnabled>
                 <enableHover>false</enableHover>
                 <expandOthers>false</expandOthers>
-                <groupingColumn>Lead.RES_Lead_Status__c</groupingColumn>
-                <groupingColumn>Lead.RES_Lead_Sub_Status__c</groupingColumn>
                 <groupingSortProperties>
                     <groupingSorts>
                         <groupingLevel>g1</groupingLevel>
@@ -63,12 +56,13 @@
                 </groupingSortProperties>
                 <header>Leads - Status &amp; Sub-Status</header>
                 <legendPosition>Right</legendPosition>
-                <report>RES_Diriyah_Marketing_Report_Folder/RES_Leads_Status_SubStatus</report>
+                <report>RES_DiriyahMarketingReportsFolder/RES_Leads_Status_SubStatus</report>
                 <showPercentage>false</showPercentage>
+                <showPicturesOnCharts>false</showPicturesOnCharts>
                 <showValues>true</showValues>
                 <sortBy>RowLabelAscending</sortBy>
                 <sortLegendValues>true</sortLegendValues>
-                <useReportChart>false</useReportChart>
+                <useReportChart>true</useReportChart>
             </dashboardComponent>
             <rowIndex>0</rowIndex>
             <rowSpan>8</rowSpan>
@@ -94,7 +88,7 @@
                 <indicatorHighColor>#633A29</indicatorHighColor>
                 <indicatorLowColor>#CC9E8A</indicatorLowColor>
                 <indicatorMiddleColor>#A46449</indicatorMiddleColor>
-                <report>RES_Diriyah_Marketing_Report_Folder/RES_Lead_to_Opportunity_Conversion</report>
+                <report>RES_DiriyahMarketingReportsFolder/RES_Lead_to_Opportunity_Conversion</report>
                 <showPercentage>true</showPercentage>
                 <showRange>false</showRange>
                 <showTotal>false</showTotal>
@@ -130,7 +124,7 @@
                 </groupingSortProperties>
                 <header>Marketing Leads - Source Analysis</header>
                 <legendPosition>Right</legendPosition>
-                <report>RES_Diriyah_Marketing_Report_Folder/RES_Marketing_Leads_Source_Analysis</report>
+                <report>RES_DiriyahMarketingReportsFolder/RES_Marketing_Leads_Source_Analysis</report>
                 <showPercentage>false</showPercentage>
                 <showTotal>true</showTotal>
                 <showValues>true</showValues>
@@ -167,7 +161,7 @@
                 </groupingSortProperties>
                 <header>Sales Funnel</header>
                 <legendPosition>Right</legendPosition>
-                <report>RES_Diriyah_Marketing_Report_Folder/RES_Sales_Funnel</report>
+                <report>RES_DiriyahMarketingReportsFolder/RES_Sales_Funnel</report>
                 <showPercentage>false</showPercentage>
                 <showValues>true</showValues>
                 <sortBy>RowLabelAscending</sortBy>
@@ -204,7 +198,7 @@
                 </groupingSortProperties>
                 <header>Response Time Analytics</header>
                 <legendPosition>Bottom</legendPosition>
-                <report>RES_Diriyah_Marketing_Report_Folder/RES_Response_Time_Analytics1</report>
+                <report>RES_DiriyahMarketingReportsFolder/RES_Response_Time_Analytics1</report>
                 <showPercentage>false</showPercentage>
                 <showPicturesOnCharts>false</showPicturesOnCharts>
                 <showValues>true</showValues>
