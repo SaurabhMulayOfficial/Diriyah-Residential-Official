@@ -334,9 +334,9 @@ private class RES_LeadDuplicateHandlerTest {
 
         Lead existingLead = createLead(
             'Existing',
-            'Employee',
+            'Broker',
             'archived-duplicate@test.com',
-            'Z04',
+            'Z05',
             'Archive',
             UserInfo.getUserId()
         );
@@ -345,9 +345,9 @@ private class RES_LeadDuplicateHandlerTest {
 
         Lead incomingLead = createLead(
             'Incoming',
-            'Broker',
+            'Employee',
             'archived-duplicate@test.com',
-            'Z05',
+            'Z04',
             '01',
             UserInfo.getUserId()
         );
