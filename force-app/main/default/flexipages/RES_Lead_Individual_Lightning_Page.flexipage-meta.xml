@@ -1640,6 +1640,43 @@
         <itemInstances>
             <componentInstance>
                 <componentInstanceProperties>
+                    <name>componentLabel</name>
+                    <value>Work Guide</value>
+                </componentInstanceProperties>
+                <componentInstanceProperties>
+                    <name>isHiddenWhenEmpty</name>
+                    <value>false</value>
+                </componentInstanceProperties>
+                <componentInstanceProperties>
+                    <name>isRunNameDisplayed</name>
+                    <value>false</value>
+                </componentInstanceProperties>
+                <componentInstanceProperties>
+                    <name>isStageNameDisplayed</name>
+                    <value>false</value>
+                </componentInstanceProperties>
+                <componentInstanceProperties>
+                    <name>isStepNameDisplayed</name>
+                    <value>false</value>
+                </componentInstanceProperties>
+                <componentInstanceProperties>
+                    <name>prioritizationCriteria</name>
+                    <value>Last Modified Date (Ascending)</value>
+                </componentInstanceProperties>
+                <componentName>interaction_orchestrator:workGuide</componentName>
+                <identifier>interaction_orchestrator_workGuide</identifier>
+                <visibilityRule>
+                    <criteria>
+                        <leftValue>{!$Client.formFactor}</leftValue>
+                        <operator>EQUAL</operator>
+                        <rightValue>Small</rightValue>
+                    </criteria>
+                </visibilityRule>
+            </componentInstance>
+        </itemInstances>
+        <itemInstances>
+            <componentInstance>
+                <componentInstanceProperties>
                     <name>displayOption</name>
                     <value>BOTH</value>
                 </componentInstanceProperties>
