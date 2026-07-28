@@ -11,7 +11,7 @@
         <chartType>HorizontalBarGrouped</chartType>
         <enableHoverLabels>false</enableHoverLabels>
         <expandOthers>true</expandOthers>
-        <groupingColumn>Lead.RES_Lead_Status__c</groupingColumn>
+        <groupingColumn>STATUS</groupingColumn>
         <legendPosition>Right</legendPosition>
         <location>CHART_BOTTOM</location>
         <secondaryGroupingColumn>Lead.RES_Lead_Sub_Status__c</secondaryGroupingColumn>
@@ -66,7 +66,7 @@
     <format>Summary</format>
     <groupingsDown>
         <dateGranularity>Day</dateGranularity>
-        <field>Lead.RES_Lead_Status__c</field>
+        <field>STATUS</field>
         <sortOrder>Asc</sortOrder>
     </groupingsDown>
     <groupingsDown>
