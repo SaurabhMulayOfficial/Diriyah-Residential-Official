@@ -1,0 +1,66 @@
+<template>
+    <lightning-card title="Product Recommendations" icon-name="standard:product">
+        <div class="slds-p-around_medium">
+            
+            <!-- POPUP/ALERT TRIGGER: Only shows on Lead if rules are met -->
+            <template if:true={showRecommendationAlert}>
+                <div class="slds-notify slds-notify_alert slds-alert_success" role="alert">
+                    <h2>New Product Recommendations are available based on this Lead's interests! 
+                        <a href="javascript:void(0);" onclick={openModal}> Click here to view and select.</a>
+                    </h2>
+                </div>
+            </template>
+
+            <!-- DISPLAY TABLE: Shows selected products on both Lead and Opp -->
+            <template if:true={hasSavedProducts}>
+                <h3 class="slds-text-heading_small slds-m-bottom_small slds-m-top_small">Selected Products</h3>
+                <lightning-datatable
+                    key-field="Id"
+                    data={savedProducts}
+                    columns={columns}
+                    hide-checkbox-column="true">
+                </lightning-datatable>
+                
+                <!-- Edit button only for Leads -->
+                <template if:true={isLead}>
+                    <div class="slds-m-top_medium">
+                        <lightning-button label="Edit Preferences" onclick={openModal}></lightning-button>
+                    </div>
+                </template>
+            </template>
+
+            <template if:false={hasSavedProducts}>
+                <p class="slds-text-color_weak slds-m-top_small">No products selected yet.</p>
+            </template>
+        </div>
+    </lightning-card>
+
+    <!-- MODAL POPUP FOR SELECTING PRODUCTS -->
+    <template if:true={isModalOpen}>
+        <section role="dialog" tabindex="-1" class="slds-modal slds-fade-in-open slds-modal_large">
+            <div class="slds-modal__container">
+                <header class="slds-modal__header">
+                    <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" title="Close" onclick={closeModal}>
+                        <lightning-icon icon-name="utility:close" alternative-text="close" variant="inverse" size="small"></lightning-icon>
+                        <span class="slds-assistive-text">Close</span>
+                    </button>
+                    <h2 class="slds-text-heading_medium slds-hyphenate">Available Recommendations</h2>
+                </header>
+                <div class="slds-modal__content slds-p-around_medium">
+                    <lightning-datatable
+                        key-field="Id"
+                        data={recommendedProducts}
+                        columns={columns}
+                        onrowselection={handleRowSelection}
+                        selected-rows={preSelectedRows}>
+                    </lightning-datatable>
+                </div>
+                <footer class="slds-modal__footer">
+                    <lightning-button label="Cancel" onclick={closeModal} class="slds-m-right_small"></lightning-button>
+                    <lightning-button variant="brand" label="Save Selection" onclick={saveSelection}></lightning-button>
+                </footer>
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open"></div>
+    </template>
+</template>
