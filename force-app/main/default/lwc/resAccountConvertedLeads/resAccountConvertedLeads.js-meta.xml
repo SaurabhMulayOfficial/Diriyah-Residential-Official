@@ -8,6 +8,11 @@
     </targets>
     <targetConfigs>
         <targetConfig targets="lightning__RecordPage">
+            <property name="recordId" type="String" label="Record Id"/>
+            <supportedFormFactors>
+                <supportedFormFactor type="Large"/>
+                <supportedFormFactor type="Small"/>
+            </supportedFormFactors>
             <objects>
                 <object>Account</object>
             </objects>
