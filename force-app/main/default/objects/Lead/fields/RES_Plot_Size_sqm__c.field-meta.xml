@@ -1,13 +1,34 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
     <fullName>RES_Plot_Size_sqm__c</fullName>
-    <externalId>false</externalId>
     <label>Plot Size (sqm)</label>
-    <precision>18</precision>
     <required>false</required>
-    <scale>2</scale>
     <trackFeedHistory>false</trackFeedHistory>
     <trackHistory>false</trackHistory>
-    <type>Number</type>
-    <unique>false</unique>
+    <type>Picklist</type>
+    <valueSet>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>Less than 20 K</fullName>
+                <default>false</default>
+                <label>Less than 20 K</label>
+            </value>
+            <value>
+                <fullName>20 K</fullName>
+                <default>false</default>
+                <label>20 K</label>
+            </value>
+            <value>
+                <fullName>50 K</fullName>
+                <default>false</default>
+                <label>50 K</label>
+            </value>
+            <value>
+                <fullName>More than 50 K</fullName>
+                <default>false</default>
+                <label>More than 50 K</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
 </CustomField>

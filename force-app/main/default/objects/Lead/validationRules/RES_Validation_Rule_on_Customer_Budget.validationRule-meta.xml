@@ -10,10 +10,11 @@
     ),
     OR(
         ISPICKVAL(RES_Lead_Sub_Status__c, &quot;251&quot;),
-        ISPICKVAL(RES_Lead_Sub_Status__c, &quot;161&quot;)
+        ISPICKVAL(RES_Lead_Sub_Status__c, &quot;161&quot;),
+							 ISPICKVAL(RES_Lead_Sub_Status__c, &quot;Qualified&quot;)
     ),
     ISBLANK(TEXT(RES_Customer_Budget__c))
 )</errorConditionFormula>
     <errorDisplayField>RES_Customer_Budget__c</errorDisplayField>
-    <errorMessage>Customer Budget is required when Lead Sub Status is Future Interest or Budget Misalignment.</errorMessage>
+    <errorMessage>Customer Budget is required when Lead Sub Status is Future Interest, Budget Misalignment and Qualified.</errorMessage>
 </ValidationRule>
