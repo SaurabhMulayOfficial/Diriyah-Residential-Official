@@ -425,10 +425,16 @@
                 <fieldItem>Record.RES_Project_Type__c</fieldItem>
                 <identifier>RecordRES_Project_Type_cField</identifier>
                 <visibilityRule>
+                    <booleanFilter>1 OR 2</booleanFilter>
                     <criteria>
                         <leftValue>{!Record.RES_Lead_Sub_Status__c}</leftValue>
                         <operator>EQUAL</operator>
                         <rightValue>251</rightValue>
+                    </criteria>
+                    <criteria>
+                        <leftValue>{!Record.RES_Lead_Sub_Status__c}</leftValue>
+                        <operator>EQUAL</operator>
+                        <rightValue>Qualified</rightValue>
                     </criteria>
                 </visibilityRule>
             </fieldInstance>
@@ -442,7 +448,7 @@
                 <fieldItem>Record.RES_Customer_Budget__c</fieldItem>
                 <identifier>RecordRES_Customer_Budget_cField</identifier>
                 <visibilityRule>
-                    <booleanFilter>1 OR 2 OR 3 OR 4</booleanFilter>
+                    <booleanFilter>1 OR 2 OR 3 OR 4 OR 5</booleanFilter>
                     <criteria>
                         <leftValue>{!Record.RES_Lead_Sub_Status__c}</leftValue>
                         <operator>EQUAL</operator>
@@ -462,6 +468,11 @@
                         <leftValue>{!Record.RES_Lead_Sub_Status__c}</leftValue>
                         <operator>EQUAL</operator>
                         <rightValue>171</rightValue>
+                    </criteria>
+                    <criteria>
+                        <leftValue>{!Record.RES_Lead_Sub_Status__c}</leftValue>
+                        <operator>EQUAL</operator>
+                        <rightValue>Qualified</rightValue>
                     </criteria>
                 </visibilityRule>
             </fieldInstance>
@@ -475,7 +486,7 @@
                 <fieldItem>Record.RES_Unit_Type__c</fieldItem>
                 <identifier>RecordRES_Unit_Type_cField</identifier>
                 <visibilityRule>
-                    <booleanFilter>1 OR 2 OR 3 OR 4</booleanFilter>
+                    <booleanFilter>1 OR 2 OR 3 OR 4 OR 5</booleanFilter>
                     <criteria>
                         <leftValue>{!Record.RES_Lead_Sub_Status__c}</leftValue>
                         <operator>EQUAL</operator>
@@ -495,6 +506,11 @@
                         <leftValue>{!Record.RES_Lead_Sub_Status__c}</leftValue>
                         <operator>EQUAL</operator>
                         <rightValue>171</rightValue>
+                    </criteria>
+                    <criteria>
+                        <leftValue>{!Record.RES_Lead_Sub_Status__c}</leftValue>
+                        <operator>EQUAL</operator>
+                        <rightValue>Qualified</rightValue>
                     </criteria>
                 </visibilityRule>
             </fieldInstance>

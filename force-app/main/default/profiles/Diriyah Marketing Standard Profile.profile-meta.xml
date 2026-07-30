@@ -73,7 +73,6 @@
         <field>Lead.RES_Plot_Size_sqm__c</field>
         <readable>true</readable>
     </fieldPermissions>
-
     <fieldPermissions>
         <editable>false</editable>
         <field>Lead.RES_Project_Type__c</field>
@@ -994,11 +993,19 @@
     <tab>standard-Home</tab>
     <visibility>DefaultOn</visibility>
     </tabVisibilities>
-      <tabVisibilities>
+    <tabVisibilities>
+    <tab>standard-MobileHome</tab>
+    <visibility>DefaultOn</visibility>
+    </tabVisibilities>
+    <tabVisibilities>
         <tab>standard-Event</tab>
         <visibility>Hidden</visibility>
     </tabVisibilities>
     <userLicense>Salesforce</userLicense>
+     <userPermissions>
+        <enabled>true</enabled>
+        <name>ApiEnabled</name>
+    </userPermissions>
     <userPermissions>
         <enabled>true</enabled>
         <name>ActivitiesAccess</name>
