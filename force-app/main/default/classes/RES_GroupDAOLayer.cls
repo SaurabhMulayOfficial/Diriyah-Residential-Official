@@ -34,7 +34,7 @@ public with sharing class RES_GroupDAOLayer extends RES_BaseDAOLayer {
         Map<String, Object> bindVars = new Map<String, Object>();
         bindVars.put('queueDevNames', queueDevNames);
         String soql = 'SELECT Id, developerName FROM Group WHERE developerName IN: queueDevNames';
-        List<Group> queue = executeQuery(soql, 'getQueueByNames', true, bindVars, AccessLevel.SYSTEM_MODE);
+        List<Group> queue = executeQuery(soql, '' , false, bindVars, AccessLevel.SYSTEM_MODE);
         Map<String, Id> queueMapping = new Map<String, Id>();
 
         for(Group g: queue){
