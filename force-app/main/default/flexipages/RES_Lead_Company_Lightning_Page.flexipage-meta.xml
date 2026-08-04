@@ -524,7 +524,7 @@
                 <fieldItem>Record.RES_Customer_Unit_Preference__c</fieldItem>
                 <identifier>RecordRES_Customer_Unit_Preference_cField</identifier>
                 <visibilityRule>
-                    <booleanFilter>(1 OR 2 ) And (3 OR 4 OR 5 OR 6)</booleanFilter>
+                    <booleanFilter>(1 OR 2 ) And (3 OR 4 OR 5 OR 6 OR 7)</booleanFilter>
                     <criteria>
                         <leftValue>{!Record.RES_Unit_Type__c}</leftValue>
                         <operator>EQUAL</operator>
@@ -555,6 +555,11 @@
                         <operator>EQUAL</operator>
                         <rightValue>171</rightValue>
                     </criteria>
+                    <criteria>
+                        <leftValue>{!Record.RES_Lead_Sub_Status__c}</leftValue>
+                        <operator>EQUAL</operator>
+                        <rightValue>Qualified</rightValue>
+                    </criteria>
                 </visibilityRule>
             </fieldInstance>
         </itemInstances>
@@ -567,7 +572,7 @@
                 <fieldItem>Record.RES_Plot_Size_sqm__c</fieldItem>
                 <identifier>RecordRES_Plot_Size_sqm_cField</identifier>
                 <visibilityRule>
-                    <booleanFilter>1 And (2 OR 3 OR 4 OR 5)</booleanFilter>
+                    <booleanFilter>1 And (2 OR 3 OR 4 OR 5 OR 6)</booleanFilter>
                     <criteria>
                         <leftValue>{!Record.RES_Unit_Type__c}</leftValue>
                         <operator>EQUAL</operator>
@@ -592,6 +597,11 @@
                         <leftValue>{!Record.RES_Lead_Sub_Status__c}</leftValue>
                         <operator>EQUAL</operator>
                         <rightValue>171</rightValue>
+                    </criteria>
+                    <criteria>
+                        <leftValue>{!Record.RES_Lead_Sub_Status__c}</leftValue>
+                        <operator>EQUAL</operator>
+                        <rightValue>Qualified</rightValue>
                     </criteria>
                 </visibilityRule>
             </fieldInstance>
