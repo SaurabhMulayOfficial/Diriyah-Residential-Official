@@ -25,4 +25,16 @@ public with sharing class RES_UserDAOLayer extends RES_BaseDAOLayer {
         // We set useCache to false for dynamic user session data
         return (List<User>) executeQuery(soql, 'currentUserRole', false, bindVars, AccessLevel.SYSTEM_MODE);
     }
+
+    public Map<String, User> getUserByUsername(Set<String> userNames){
+        Map<String, Object> bindVars = new Map<String, Object>();
+        bindVars.put('userNames', userNames);
+        String soql = 'SELECT ID, Username, Email FROM User WHERE Username IN :userNames';
+        Map<String, User> userMap = new Map<String, User>();
+        List<User> users = (List<User>)executeQuery(soql, 'userByUsername', false, bindVars, AccessLevel.SYSTEM_MODE);
+        for(User u : users){
+            userMap.put(u.Username, u);
+        }
+        return userMap;
+    }
 }

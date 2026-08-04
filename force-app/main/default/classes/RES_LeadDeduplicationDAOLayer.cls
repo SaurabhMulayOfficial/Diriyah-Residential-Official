@@ -46,7 +46,7 @@ public without sharing class RES_LeadDeduplicationDAOLayer extends RES_BaseDAOLa
     }
 
     public List<Lead_Deduplication_Rule__mdt> getAllRules(){
-        String soql = 'SELECT Action__c , Lead_Status__c, Assigned_To__c , Source__c, Allow_Creation_Notify_Queue__c, Block_Notification_Queue__c FROM Lead_Deduplication_Rule__mdt';
+        String soql = 'SELECT Action__c , Lead_Status__c, Assigned_To__c , Source__c, Allow_Creation_Notify_Queue__c, Block_Notification_Queue__c, Allow_Creation_Notify_User__c FROM Lead_Deduplication_Rule__mdt';
         return (List<Lead_Deduplication_Rule__mdt>) executeQuery(soql, 'getAllRules', true, null, AccessLevel.SYSTEM_MODE);
     }
     
