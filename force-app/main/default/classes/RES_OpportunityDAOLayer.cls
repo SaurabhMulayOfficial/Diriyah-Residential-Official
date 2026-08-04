@@ -55,20 +55,29 @@ public without sharing class RES_OpportunityDAOLayer extends RES_BaseDAOLayer{
 
     public List<Opportunity> getOpportunitiesRelatedToAccount(Set<Id> accountIdSet){
         Map<String, Object> bindVars = new Map<String, Object>();
-        Set<String> quoteStatusValues = new Set<String>{'Draft', 'Awaiting Client Confirmation', 'Negotiating'};
-        String stageName = 'Proposal';
+        Set<String> quoteStatusValues = new Set<String>{'Customer Approved'};
+        Set<String> quoteRecordTypeNames = new Set<String>{System.Label.RES_Quote_Residential_Sales_RT};
+        Set<String> recordTypeNames = new Set<String>{System.Label.RES_Opportunity_Single_Buyer_RT, System.Label.RES_Opportunity_Multi_Buyer_RT};
+        String stageName = 'Unit Selected';
+        Boolean isSyncing = true;
+        
         bindVars.put('accountIdSet', accountIdSet);
         bindVars.put('stageName', stageName);
         bindVars.put('quoteStatusValues', quoteStatusValues);
+        bindVars.put('recordTypeNames', recordTypeNames);
+        bindVars.put('isSyncing', isSyncing);
+		bindVars.put('quoteRecordTypeNames', quoteRecordTypeNames);
         
-        String soql = 'SELECT Id ' + 
+        String soql = 'SELECT Id, AccountId, ' +
+            		  '(SELECT Id, Name, OpportunityId, Status, IsSyncing ' +
+                      'FROM Quotes ' +
+                      'WHERE Status =: quoteStatusValues AND ' +
+                      'IsSyncing =: isSyncing AND ' +
+                      'RecordType.DeveloperName =: quoteRecordTypeNames) ' +
                       'FROM Opportunity ' +
-                      'WHERE Id IN ( ' +
-                      'SELECT OpportunityId ' +
-                      'FROM Quote ' +
-                      'WHERE LineItemCount > 0 AND Status IN : quoteStatusValues ) AND ' +
-                      'AccountId =: accountIdSet AND ' + 
-                      'StageName =: stageName';
+                      'WHERE AccountId =: accountIdSet AND ' +
+                      'StageName =: stageName AND ' +
+                      'RecordType.DeveloperName =: recordTypeNames';
 
         List<Opportunity> results = (List<Opportunity>) executeQuery(soql, '', true, bindVars, AccessLevel.SYSTEM_MODE);
         if(!results.isEmpty()){

@@ -471,12 +471,13 @@ public class RES_TestDataFactory {
      * @param status - quote status
      * @return Quote
      */
-    public static Quote createQuote(String name, Id opportunityId, Id priceBookId, String status) {
+    public static Quote createQuote(String name, Id opportunityId, Id priceBookId, String status, Id quoteRecordTypeId) {
         Quote quoteObj = new Quote(
             Name = name,
             OpportunityId = opportunityId,
             Pricebook2Id = priceBookId,
-            Status = status
+            Status = status,
+            RecordTypeId = quoteRecordTypeId
         );
         insert quoteObj;
         return quoteObj;

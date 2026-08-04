@@ -16,54 +16,24 @@
             </value>
         </inputParameters>
         <inputParameters>
-            <name>opportunityRecordId</name>
+            <name>opportunityRecord</name>
             <value>
-                <elementReference>Get_Opportunity_On_Quote.Id</elementReference>
+                <elementReference>Get_Opportunity_On_Quote</elementReference>
+                <inputConfiguratorMode>Resource</inputConfiguratorMode>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>quoteRecord</name>
+            <value>
+                <elementReference>Get_Quote_Record</elementReference>
                 <inputConfiguratorMode>Resource</inputConfiguratorMode>
             </value>
         </inputParameters>
         <nameSegment>RES_OpportunityStageUpdateValidation</nameSegment>
         <offset>0</offset>
-        <storeOutputAutomatically>true</storeOutputAutomatically>
     </actionCalls>
     <apiVersion>67.0</apiVersion>
     <areMetricsLoggedToDataCloud>false</areMetricsLoggedToDataCloud>
-    <decisions>
-        <name>Check_Quote_Status</name>
-        <label>Check Quote Status</label>
-        <locationX>0</locationX>
-        <locationY>0</locationY>
-        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
-        <rules>
-            <name>Is_Status_Draft_Awaiting_Client_Confirmation_or_Negotiating</name>
-            <conditionLogic>or</conditionLogic>
-            <conditions>
-                <leftValueReference>Get_Quote_Record.Status</leftValueReference>
-                <operator>EqualTo</operator>
-                <rightValue>
-                    <stringValue>Draft</stringValue>
-                </rightValue>
-            </conditions>
-            <conditions>
-                <leftValueReference>Get_Quote_Record.Status</leftValueReference>
-                <operator>EqualTo</operator>
-                <rightValue>
-                    <stringValue>Awaiting Client Confirmation</stringValue>
-                </rightValue>
-            </conditions>
-            <conditions>
-                <leftValueReference>Get_Quote_Record.Status</leftValueReference>
-                <operator>EqualTo</operator>
-                <rightValue>
-                    <stringValue>Negotiating</stringValue>
-                </rightValue>
-            </conditions>
-            <connector>
-                <targetReference>Get_Opportunity_On_Quote</targetReference>
-            </connector>
-            <label>Is Status - (Draft, Awaiting Client Confirmation, or Negotiating)</label>
-        </rules>
-    </decisions>
     <environments>Default</environments>
     <interviewLabel>RES Quote Line Item - After Insert - After Update - Update Opportunity Stage {!$Flow.CurrentDateTime}</interviewLabel>
     <label>RES Quote Line Item - After Insert - After Update - Update Opportunity Stage</label>
@@ -124,6 +94,13 @@
                 <elementReference>Get_Quote_Record.OpportunityId</elementReference>
             </value>
         </filters>
+        <filters>
+            <field>StageName</field>
+            <operator>EqualTo</operator>
+            <value>
+                <stringValue>Proposal</stringValue>
+            </value>
+        </filters>
         <getFirstRecordOnly>true</getFirstRecordOnly>
         <object>Opportunity</object>
         <storeOutputAutomatically>true</storeOutputAutomatically>
@@ -135,7 +112,7 @@
         <locationY>0</locationY>
         <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
         <connector>
-            <targetReference>Check_Quote_Status</targetReference>
+            <targetReference>Get_Opportunity_On_Quote</targetReference>
         </connector>
         <filterLogic>and</filterLogic>
         <filters>
@@ -156,7 +133,7 @@
             <targetReference>Get_Quote_Record</targetReference>
         </connector>
         <object>QuoteLineItem</object>
-        <recordTriggerType>CreateAndUpdate</recordTriggerType>
+        <recordTriggerType>Create</recordTriggerType>
         <triggerType>RecordAfterSave</triggerType>
     </start>
     <status>Active</status>

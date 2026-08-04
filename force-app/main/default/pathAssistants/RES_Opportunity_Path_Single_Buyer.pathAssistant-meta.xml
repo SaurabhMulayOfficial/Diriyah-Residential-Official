@@ -5,8 +5,20 @@
     <fieldName>StageName</fieldName>
     <masterLabel>RES Opportunity Path - Single Buyer</masterLabel>
     <pathAssistantSteps>
-        <info>&lt;p&gt;&lt;span style=&quot;font-size: 14px;&quot;&gt;To advance, ensure the Quote is created, a Unit is selected, ID/CR details are captured, and the Account Address is complete&lt;/span&gt;&lt;/p&gt;</info>
+        <fieldNames>RES_Reason_for_Lost__c</fieldNames>
+        <picklistValueName>Closed Lost</picklistValueName>
+    </pathAssistantSteps>
+    <pathAssistantSteps>
+        <info>&lt;p&gt;&lt;span style=&quot;font-size: 13px;&quot;&gt;To advance, ensure the Quote is created, a Unit is selected.&lt;/span&gt;&lt;/p&gt;</info>
         <picklistValueName>Proposal</picklistValueName>
+    </pathAssistantSteps>
+    <pathAssistantSteps>
+        <info>&lt;p&gt;To advance, ensure the Customer Signed URC, SIMAH and Payment Plan are uploaded.&lt;/p&gt;</info>
+        <picklistValueName>Reservation</picklistValueName>
+    </pathAssistantSteps>
+    <pathAssistantSteps>
+        <info>&lt;p&gt;To advance, ensure the National ID / Company Registration and Address details are completed.&lt;/p&gt;</info>
+        <picklistValueName>Unit Selected</picklistValueName>
     </pathAssistantSteps>
     <recordTypeName>RES_Residential_Single_Buyer</recordTypeName>
 </PathAssistant>
