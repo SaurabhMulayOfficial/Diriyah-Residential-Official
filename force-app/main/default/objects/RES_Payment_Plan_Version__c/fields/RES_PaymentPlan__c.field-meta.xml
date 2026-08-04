@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>RES_PaymentPlan__c</fullName>
+    <deleteConstraint>SetNull</deleteConstraint>
+    <label>PaymentPlan</label>
+    <referenceTo>RES_Payment_Plan__c</referenceTo>
+    <relationshipLabel>Payment Plan Versions</relationshipLabel>
+    <relationshipName>Payment_Plan_Versions</relationshipName>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Lookup</type>
+</CustomField>
