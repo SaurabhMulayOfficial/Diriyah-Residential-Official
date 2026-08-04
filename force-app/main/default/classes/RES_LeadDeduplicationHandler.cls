@@ -9,12 +9,14 @@ public without sharing class RES_LeadDeduplicationHandler {
     public class Notify{
         public String recipientQueue;
         public Lead leadInstance; 
+        public String recipientUserEmail;
     }
 
     public static List<Notify> notifyOperationTeam = new List<Notify>();
     public static List<Notify> notifyCSO = new List<Notify>();
     public static Id orgWideEmailAddressId;
-    
+    public static Map<String, User> userNameToUserIdMapping = new Map<String, User>();
+
 
     public class LeadDuplicateWrapper {
         public Lead inputLead;
@@ -173,7 +175,7 @@ public without sharing class RES_LeadDeduplicationHandler {
         return userId;
     }
 
-    public static boolean isOnlyBlockRule(Lead_Deduplication_Rule__mdt rule){
+    public static Boolean isOnlyBlockRule(Lead_Deduplication_Rule__mdt rule){
         return rule.Action__c != null &&
             rule.Action__c.toUpperCase() == 'BLOCK' && 
             String.isBlank(rule.Assigned_To__c) &&
@@ -182,9 +184,18 @@ public without sharing class RES_LeadDeduplicationHandler {
             String.isBlank(rule.Lead_Status__c);
     }
 
-    public static boolean isBlockAndNotifyRule(Lead_Deduplication_Rule__mdt rule){
+    public static Boolean isBlockAndNotifyRule(Lead_Deduplication_Rule__mdt rule){
         return (String.isNotBlank(rule.Block_Notification_Queue__c) && 
                 String.isNotBlank(rule.Allow_Creation_Notify_Queue__c) &&
+                String.isBlank(rule.Allow_Creation_Notify_User__c) && 
+                String.isNotBlank(rule.Action__c) && String.isBlank(rule.Assigned_To__c) &&
+                String.isBlank(rule.Lead_Status__c));
+    }
+
+    public static Boolean isBlockAndNotifyUserRule(Lead_Deduplication_Rule__mdt rule){
+        return (String.isNotBlank(rule.Block_Notification_Queue__c) && 
+                String.isNotBlank(rule.Allow_Creation_Notify_User__c) &&
+                String.isNotBlank(rule.Allow_Creation_Notify_Queue__c) && 
                 String.isNotBlank(rule.Action__c) && String.isBlank(rule.Assigned_To__c) &&
                 String.isBlank(rule.Lead_Status__c));
     }
@@ -228,6 +239,18 @@ public without sharing class RES_LeadDeduplicationHandler {
             if(wrapper.hasError == true){
                 System.debug('Errors in Duplicates '+ wrapper.errors);
                 continue;
+            }
+
+            Set<String> notifyUsers = new Set<String>();
+
+            for(Lead_Deduplication_Rule__mdt rule: rules){
+                if(rule.Allow_Creation_Notify_User__c != null || String.isNotBlank(rule.Allow_Creation_Notify_User__c)){
+                    notifyUsers.add(rule.Allow_Creation_Notify_User__c);
+                } 
+            }
+
+            if(notifyUsers.size() > 0){
+                userNameToUserIdMapping = new RES_UserDAOLayer().getUserByUsername(notifyUsers);
             }
 
             Lead inputLead = wrapper.inputLead;
@@ -280,8 +303,10 @@ public without sharing class RES_LeadDeduplicationHandler {
                     }
 
                     //Block + Notify to Operation Team or Assign to Residential Duplicate Queue.
-                    if(isBlockAndNotifyRule(rule)){
+                    if(isBlockAndNotifyRule(rule) || isBlockAndNotifyUserRule(rule)){
                         //check if existing lead is active/New
+                        boolean isAssigneeUser = isBlockAndNotifyUserRule(rule);
+
                         if(incomingSource == 'Z09' && existingSource == 'Z09'){
                             Id existingRM = getRmId(existingLeadsByExistingSource);
                             if(existingRM != null && inputLead.OwnerId == existingRM){
@@ -312,10 +337,14 @@ public without sharing class RES_LeadDeduplicationHandler {
                             Notify emailNode = new Notify();
                             emailNode.leadInstance = inputLead;
                             emailNode.recipientQueue = rule.Allow_Creation_Notify_Queue__c;
+
                             notifyCSO.add(emailNode);
                             Id fallbackQueueId;
-                            if(queueMapping.containsKey(rule.Allow_Creation_Notify_Queue__c)){
+                            if(isAssigneeUser == false && queueMapping.containsKey(rule.Allow_Creation_Notify_Queue__c)){
                                 fallbackQueueId = queueMapping.get(rule.Allow_Creation_Notify_Queue__c);
+                            }
+                            else if(isAssigneeUser == true && userNameToUserIdMapping.containsKey(rule.Allow_Creation_Notify_User__c)){
+                                fallbackQueueId = userNameToUserIdMapping.get(rule.Allow_Creation_Notify_User__c).Id;
                             }
                             inputLead.OwnerId = fallbackQueueId;
                             RES_LeadServices.avoidReassignment.add(inputLead);
@@ -372,13 +401,13 @@ public without sharing class RES_LeadDeduplicationHandler {
                 String subject = csoTemplateRecord.Subject__c;
 
                 for(Notify node: notifyCSO){
-                    if(groupToEmailsMapping.containsKey(node.recipientQueue)){
-                        String fullName = node.leadInstance.FirstName + ' ' + node.leadInstance.LastName;
-                        String leadUrl = URL.getOrgDomainUrl().toExternalForm()+ '/' + node.leadInstance.Id;
 
-                        List<String> mergeFields = new List<String>(); mergeFields.add(fullName); 
-                        mergeFields.add(node.leadInstance.MobilePhone); mergeFields.add(leadUrl);
+                    String fullName = node.leadInstance.FirstName + ' ' + node.leadInstance.LastName;
+                    String leadUrl = URL.getOrgDomainUrl().toExternalForm()+ '/' + node.leadInstance.Id;
+                    List<String> mergeFields = new List<String>(); mergeFields.add(fullName); 
+                    mergeFields.add(node.leadInstance.MobilePhone); mergeFields.add(leadUrl);
 
+                    if(node.recipientQueue != null && groupToEmailsMapping.containsKey(node.recipientQueue)){
                         for(String email: groupToEmailsMapping.get(node.recipientQueue)){
                             RES_EmailUtilityService utilNode = new RES_EmailUtilityService();
                             utilNode.setToAddresses(new List<String>{email});
@@ -387,6 +416,14 @@ public without sharing class RES_LeadDeduplicationHandler {
                             utilNode.setSubject(subject);
                             emailUtility.add(utilNode);
                         }
+                    }
+                    else if(node.recipientUserEmail != null){
+                        RES_EmailUtilityService utilNode = new RES_EmailUtilityService();
+                        utilNode.setToAddresses(new List<String>{node.recipientUserEmail});
+                        utilNode.setHtmlBody(htmlBody,mergeFields);
+                        utilNode.setOrgWideEmailAddressId(orgWideEmailAddressId);
+                        utilNode.setSubject(subject);
+                        emailUtility.add(utilNode);
                     }
                 }
             }
