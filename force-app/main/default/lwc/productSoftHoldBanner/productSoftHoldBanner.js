@@ -1,13 +1,34 @@
-import { LightningElement } from 'lwc';
+import { LightningElement, api } from 'lwc';
+export default class productSoftHoldBanner extends LightningElement {
+    @api header;
+    @api body;
+    @api variant = 'warning';
 
-import PRODUCT_HOLD_TITLE from '@salesforce/label/c.RES_ProductSoftHoldTitle';
-import PRODUCT_HOLD_MESSAGE from '@salesforce/label/c.RES_ProductSoftHoldMessage';
+    get themeClass() {
+        switch (this.variant) {
+            case 'info':
+                return 'slds-theme_info';
+            case 'error':
+                return 'slds-theme_error';
+            case 'warning':
+            default:
+                return 'slds-theme_warning';
+        }
+    }
 
-export default class ProductSoftHoldBanner extends LightningElement {
+    get bannerClass() {
+        return `slds-notify slds-notify_alert slds-theme_alert-texture slds-p-around_medium ${this.themeClass}`;
+    }
 
-    labels = {
-        PRODUCT_HOLD_TITLE,
-        PRODUCT_HOLD_MESSAGE
-    };
-
+    get iconName() {
+        switch (this.variant) {
+            case 'info':
+                return 'utility:info';
+            case 'error':
+                return 'utility:error';
+            case 'warning':
+            default:
+                return 'utility:warning';
+        }
+    }
 }

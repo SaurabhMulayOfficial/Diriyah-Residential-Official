@@ -431,4 +431,28 @@ Please go back and select at least one lead with status = “Qualified” to pro
         <shortDescription>RES_Quote_Residential_Sales_RT</shortDescription>
         <value>RES_Residential_Sales</value>
     </labels>
+    <labels>
+        <fullName>RES_ProductSoftHoldMessage</fullName>
+        <categories>Product Soft Hold</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>ProductSoftHoldMessage</shortDescription>
+        <value>This unit is currently on Soft Hold by another Opportunity and is temporarily unavailable for reservation. Please wait until the Soft Hold expires or is released before attempting to reserve this unit.</value>
+    </labels>
+    <labels>
+        <fullName>RES_ProductSoftHoldTitle</fullName>
+        <categories>Product Soft Hold</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>ProductSoftHoldTitle</shortDescription>
+        <value>🔒 Unit Currently on Soft Hold</value>
+    </labels>
+    <labels>
+        <fullName>Soft_Hold_Window</fullName>
+        <categories>Product Soft Hold</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Soft Hold Window (In hours)</shortDescription>
+        <value>8</value>
+    </labels>
 </CustomLabels>
