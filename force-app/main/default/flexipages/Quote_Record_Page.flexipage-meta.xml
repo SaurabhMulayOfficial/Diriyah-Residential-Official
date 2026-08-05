@@ -51,6 +51,12 @@
                 <identifier>force_highlightsPanel</identifier>
             </componentInstance>
         </itemInstances>
+        <itemInstances>
+            <componentInstance>
+                <componentName>c:resLineItemAlertToast</componentName>
+                <identifier>c_resLineItemAlertToast</identifier>
+            </componentInstance>
+        </itemInstances>
         <mode>Replace</mode>
         <name>header</name>
         <type>Region</type>
@@ -220,6 +226,16 @@
                 </fieldInstanceProperties>
                 <fieldItem>Record.IsSyncing</fieldItem>
                 <identifier>RecordIsSyncingField</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>readonly</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.RES_Project__c</fieldItem>
+                <identifier>RecordRES_Project_cField</identifier>
             </fieldInstance>
         </itemInstances>
         <itemInstances>

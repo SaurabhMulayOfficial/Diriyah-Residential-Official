@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>RES_Customer_Approved_Needs_Approval</fullName>
+    <active>true</active>
+    <description>DIR-763: When a discount is applied (Discount &gt; 0), a Quote can only move to Customer Approved after the DOA approval was Approved (prior status must be Approved).</description>
+    <errorConditionFormula>AND(
+    NOT($Setup.RES_Config_Switch__c.RES_Validation_Rules_Off__c),
+    ISCHANGED(Status),
+    ISPICKVAL(Status, "Customer Approved"),
+    Discount &gt; 0,
+    NOT(ISPICKVAL(PRIORVALUE(Status), "Approved"))
+)</errorConditionFormula>
+    <errorDisplayField>Status</errorDisplayField>
+    <errorMessage>This Quote has a discount applied, so it must be approved through the discount approval process before it can be set to Customer Approved.</errorMessage>
+</ValidationRule>

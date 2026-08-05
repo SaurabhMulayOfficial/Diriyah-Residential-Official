@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>RES_Quote_Product_Quantity_Check</fullName>
+    <active>true</active>
+    <description>DIR-1128: Blocks quantity greater than 1 when EDITING an existing line (update only). Create-time quantity is enforced in the RES Quote Line Item after-save flow, which also alerts Browse Catalogs users. NOT(ISNEW()) keeps this off during create.</description>
+    <errorConditionFormula>AND(
+    NOT($Setup.RES_Config_Switch__c.RES_Validation_Rules_Off__c),
+    NOT(ISNEW()),
+    Quantity &gt; 1
+)</errorConditionFormula>
+    <errorMessage>A product can be added with a quantity of 1 only.</errorMessage>
+</ValidationRule>
