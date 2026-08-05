@@ -25,6 +25,16 @@
                         <valueListItems>
                             <value>ChangeRecordType</value>
                         </valueListItems>
+                        <valueListItems>
+                            <value>Opportunity.RES_Close_Opportunity</value>
+                            <visibilityRule>
+                                <criteria>
+                                    <leftValue>{!Record.StageName}</leftValue>
+                                    <operator>NE</operator>
+                                    <rightValue>Closed Lost</rightValue>
+                                </criteria>
+                            </visibilityRule>
+                        </valueListItems>
                     </valueList>
                 </componentInstanceProperties>
                 <componentInstanceProperties>
@@ -126,16 +136,6 @@
                     <name>uiBehavior</name>
                     <value>required</value>
                 </fieldInstanceProperties>
-                <fieldItem>Record.StageName</fieldItem>
-                <identifier>RecordStageNameField</identifier>
-            </fieldInstance>
-        </itemInstances>
-        <itemInstances>
-            <fieldInstance>
-                <fieldInstanceProperties>
-                    <name>uiBehavior</name>
-                    <value>required</value>
-                </fieldInstanceProperties>
                 <fieldItem>Record.RES_Reason_for_Lost__c</fieldItem>
                 <identifier>RecordRES_Reason_for_Lost_cField</identifier>
                 <visibilityRule>
@@ -174,6 +174,16 @@
                 </visibilityRule>
             </fieldInstance>
         </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>required</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.RES_Project__c</fieldItem>
+                <identifier>RecordRES_Project_cField</identifier>
+            </fieldInstance>
+        </itemInstances>
         <name>Facet-bda0868e-f60d-43d1-bc15-da4b2cf8d682</name>
         <type>Facet</type>
     </flexiPageRegions>
@@ -206,16 +216,6 @@
                 </fieldInstanceProperties>
                 <fieldItem>Record.CloseDate</fieldItem>
                 <identifier>RecordCloseDateField</identifier>
-            </fieldInstance>
-        </itemInstances>
-        <itemInstances>
-            <fieldInstance>
-                <fieldInstanceProperties>
-                    <name>uiBehavior</name>
-                    <value>required</value>
-                </fieldInstanceProperties>
-                <fieldItem>Record.RES_Project__c</fieldItem>
-                <identifier>RecordRES_Project_cField</identifier>
             </fieldInstance>
         </itemInstances>
         <itemInstances>
