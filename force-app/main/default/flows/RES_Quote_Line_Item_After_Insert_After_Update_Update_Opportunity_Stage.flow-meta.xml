@@ -34,6 +34,149 @@
     </actionCalls>
     <apiVersion>67.0</apiVersion>
     <areMetricsLoggedToDataCloud>false</areMetricsLoggedToDataCloud>
+    <assignments>
+        <name>Count_Quote_Line_Item_Records</name>
+        <label>Count Quote Line Item Records</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignmentItems>
+            <assignToReference>quoteLineItemCount</assignToReference>
+            <operator>AssignCount</operator>
+            <value>
+                <elementReference>Get_all_Quote_Line_Item</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Check_for_Quote_Line_Item_on_quote</targetReference>
+        </connector>
+    </assignments>
+    <customErrors>
+        <name>Validate_Quote_Line_Item_Insertion</name>
+        <label>Validate Quote Line Item Insertion</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <customErrorMessages>
+            <errorMessage>Only one product can be added to a quote.</errorMessage>
+            <isFieldError>false</isFieldError>
+        </customErrorMessages>
+    </customErrors>
+    <customErrors>
+        <name>Validate_Quantity</name>
+        <label>Validate Quantity</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <customErrorMessages>
+            <errorMessage>A product can be added with a quantity of 1 only.</errorMessage>
+            <isFieldError>false</isFieldError>
+        </customErrorMessages>
+    </customErrors>
+    <customErrors>
+        <name>Validate_Product_And_Quantity</name>
+        <label>Validate Product And Quantity</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <customErrorMessages>
+            <errorMessage>Only one product can be added to a quote, and a product can be added with a quantity of 1 only.</errorMessage>
+            <isFieldError>false</isFieldError>
+        </customErrorMessages>
+    </customErrors>
+    <decisions>
+        <name>Check_Flow_Switch</name>
+        <label>Check Flow Switch</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Outcome_1_of_Check_Flow_Switch</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Setup.RES_Config_Switch__c.RES_Flows_Off__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Get_all_Quote_Line_Item</targetReference>
+            </connector>
+            <label>Outcome 1 of Check Flow Switch</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>Check_for_Quote_Line_Item_on_quote</name>
+        <label>Check for Quote Line Item on quote</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Product_And_Quantity_Both</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>quoteLineItemCount</leftValueReference>
+                <operator>GreaterThan</operator>
+                <rightValue>
+                    <numberValue>1.0</numberValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Quantity</leftValueReference>
+                <operator>GreaterThan</operator>
+                <rightValue>
+                    <numberValue>1.0</numberValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Publish_Alert_Both</targetReference>
+            </connector>
+            <label>Product and Quantity Both</label>
+        </rules>
+        <rules>
+            <name>Product_Only</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>quoteLineItemCount</leftValueReference>
+                <operator>GreaterThan</operator>
+                <rightValue>
+                    <numberValue>1.0</numberValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Publish_Alert_Product</targetReference>
+            </connector>
+            <label>Product Only</label>
+        </rules>
+        <rules>
+            <name>Quantity_Only</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.Quantity</leftValueReference>
+                <operator>GreaterThan</operator>
+                <rightValue>
+                    <numberValue>1.0</numberValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Publish_Alert_Quantity</targetReference>
+            </connector>
+            <label>Quantity Only</label>
+        </rules>
+        <rules>
+            <name>Quote_Line_Item_1</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>quoteLineItemCount</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <numberValue>1.0</numberValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Get_Quote_Record</targetReference>
+            </connector>
+            <label>Quote Line Item = 1</label>
+        </rules>
+    </decisions>
+    <description>DIR-1128: On QuoteLineItem create, enforces one product per Quote and quantity of 1 (both errors surface together), then on a valid single line updates the Opportunity stage. Before each block it publishes RES_Line_Item_Alert__e (publish-immediately) so the user gets a real-time bell even from Browse Catalogs, which swallows save-time error messages. Opportunity-stage logic is unchanged.</description>
     <environments>Default</environments>
     <interviewLabel>RES Quote Line Item - After Insert - After Update - Update Opportunity Stage {!$Flow.CurrentDateTime}</interviewLabel>
     <label>RES Quote Line Item - After Insert - After Update - Update Opportunity Stage</label>
@@ -56,6 +199,90 @@
         </value>
     </processMetadataValues>
     <processType>AutoLaunchedFlow</processType>
+    <recordCreates>
+        <name>Publish_Alert_Both</name>
+        <label>Publish Alert Both</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Validate_Product_And_Quantity</targetReference>
+        </connector>
+        <inputAssignments>
+            <field>Message__c</field>
+            <value>
+                <stringValue>Only one product can be added to a quote, and a product can be added with a quantity of 1 only.</stringValue>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>QuoteId__c</field>
+            <value>
+                <elementReference>$Record.QuoteId</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>RecipientUserId__c</field>
+            <value>
+                <elementReference>$User.Id</elementReference>
+            </value>
+        </inputAssignments>
+        <object>RES_Line_Item_Alert__e</object>
+    </recordCreates>
+    <recordCreates>
+        <name>Publish_Alert_Product</name>
+        <label>Publish Alert Product</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Validate_Quote_Line_Item_Insertion</targetReference>
+        </connector>
+        <inputAssignments>
+            <field>Message__c</field>
+            <value>
+                <stringValue>Only one product can be added to a quote.</stringValue>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>QuoteId__c</field>
+            <value>
+                <elementReference>$Record.QuoteId</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>RecipientUserId__c</field>
+            <value>
+                <elementReference>$User.Id</elementReference>
+            </value>
+        </inputAssignments>
+        <object>RES_Line_Item_Alert__e</object>
+    </recordCreates>
+    <recordCreates>
+        <name>Publish_Alert_Quantity</name>
+        <label>Publish Alert Quantity</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Validate_Quantity</targetReference>
+        </connector>
+        <inputAssignments>
+            <field>Message__c</field>
+            <value>
+                <stringValue>A product can be added with a quantity of 1 only.</stringValue>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>QuoteId__c</field>
+            <value>
+                <elementReference>$Record.QuoteId</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>RecipientUserId__c</field>
+            <value>
+                <elementReference>$User.Id</elementReference>
+            </value>
+        </inputAssignments>
+        <object>RES_Line_Item_Alert__e</object>
+    </recordCreates>
     <recordLookups>
         <name>Get_Account_On_Opportunity</name>
         <label>Get Account On Opportunity</label>
@@ -75,6 +302,27 @@
         </filters>
         <getFirstRecordOnly>true</getFirstRecordOnly>
         <object>Account</object>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
+    <recordLookups>
+        <name>Get_all_Quote_Line_Item</name>
+        <label>Get all Quote Line Item</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Count_Quote_Line_Item_Records</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>QuoteId</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>$Record.QuoteId</elementReference>
+            </value>
+        </filters>
+        <getFirstRecordOnly>false</getFirstRecordOnly>
+        <object>QuoteLineItem</object>
         <storeOutputAutomatically>true</storeOutputAutomatically>
     </recordLookups>
     <recordLookups>
@@ -130,11 +378,19 @@
         <locationX>0</locationX>
         <locationY>0</locationY>
         <connector>
-            <targetReference>Get_Quote_Record</targetReference>
+            <targetReference>Check_Flow_Switch</targetReference>
         </connector>
         <object>QuoteLineItem</object>
         <recordTriggerType>Create</recordTriggerType>
         <triggerType>RecordAfterSave</triggerType>
     </start>
     <status>Active</status>
+    <variables>
+        <name>quoteLineItemCount</name>
+        <dataType>Number</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <scale>0</scale>
+    </variables>
 </Flow>

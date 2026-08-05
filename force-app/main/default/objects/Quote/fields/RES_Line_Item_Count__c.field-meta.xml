@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>RES_Line_Item_Count__c</fullName>
+    <label>Line Item Count</label>
+    <description>DIR-1128: Roll-up count of Quote Line Items. Used by the RES_QLI_Only_One_Product validation rule so the single-product rule surfaces as a validation error (including in Browse Catalogs) alongside the quantity rule.</description>
+    <summaryForeignKey>QuoteLineItem.QuoteId</summaryForeignKey>
+    <summaryOperation>count</summaryOperation>
+    <type>Summary</type>
+</CustomField>

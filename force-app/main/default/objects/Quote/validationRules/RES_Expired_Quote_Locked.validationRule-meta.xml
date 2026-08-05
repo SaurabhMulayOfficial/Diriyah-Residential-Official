@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>RES_Expired_Quote_Locked</fullName>
+    <active>true</active>
+    <description>DIR-763: An Expired Quote is locked (read-only) and cannot be used further. Blocks any edit when the prior Status was Expired, unless the system flag is set (admin/system un-expire) or the kill switch is on.</description>
+    <errorConditionFormula>AND(
+    NOT($Setup.RES_Config_Switch__c.RES_Validation_Rules_Off__c),
+    ISPICKVAL(PRIORVALUE(Status), "Expired"),
+    NOT(RES_System_Status_Update__c)
+)</errorConditionFormula>
+    <errorDisplayField>Status</errorDisplayField>
+    <errorMessage>This quote has expired and can no longer be used or edited.</errorMessage>
+</ValidationRule>

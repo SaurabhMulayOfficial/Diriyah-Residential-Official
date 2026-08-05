@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>67.0</apiVersion>
+    <description>DIR-869: Returns the Status (Approved/Rejected/Assigned) of the latest ApprovalWorkItem for a record and a given approval-condition (step) name. Used by the Quote Discount DOA orchestration to branch on an approval decision (orchestration can't gate on an approval step's approvalDecision output directly).</description>
+    <environments>Default</environments>
+    <interviewLabel>RES Get Approval Decision {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>RES Autolaunched Get Approval Decision</label>
+    <processType>AutoLaunchedFlow</processType>
+    <assignments>
+        <name>Set_Status_Output</name>
+        <label>Set Status Output</label>
+        <locationX>176</locationX>
+        <locationY>276</locationY>
+        <assignmentItems>
+            <assignToReference>status</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>Get_Latest_Work_Item.Status</elementReference>
+            </value>
+        </assignmentItems>
+    </assignments>
+    <recordLookups>
+        <name>Get_Latest_Work_Item</name>
+        <label>Get Latest Work Item</label>
+        <locationX>176</locationX>
+        <locationY>168</locationY>
+        <assignNullValuesIfNoRecordsFound>true</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Set_Status_Output</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>RelatedRecordId</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>recordId</elementReference>
+            </value>
+        </filters>
+        <filters>
+            <field>ApprovalConditionName</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>conditionName</elementReference>
+            </value>
+        </filters>
+        <getFirstRecordOnly>true</getFirstRecordOnly>
+        <object>ApprovalWorkItem</object>
+        <sortField>CreatedDate</sortField>
+        <sortOrder>Desc</sortOrder>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
+    <start>
+        <locationX>50</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Get_Latest_Work_Item</targetReference>
+        </connector>
+    </start>
+    <status>Active</status>
+    <variables>
+        <name>conditionName</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>true</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <name>recordId</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>true</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <name>status</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>true</isOutput>
+    </variables>
+</Flow>
