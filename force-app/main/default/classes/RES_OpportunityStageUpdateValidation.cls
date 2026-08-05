@@ -42,10 +42,10 @@ public with sharing class RES_OpportunityStageUpdateValidation {
                                     Contract contractObj = new Contract();
                                     contractObj.AccountId = inputObj.accountRecord.Id;
                                     contractObj.Status = 'Draft';
-                                    contractObj.RES_Opportunity_Id__c = oppObj.Id;
+                                    contractObj.SourceOpportunityId = oppObj.Id;
                                     contractObj.RecordTypeId = contractRecordTypeId;
                                     if(inputObj.quoteRecord.IsSyncing == true){
-                                        contractObj.RES_Quote_Id__c = inputObj.quoteRecord.Id;
+                                        contractObj.SourceQuoteId = inputObj.quoteRecord.Id;
                                     }
                                     contractLstInsert.add(contractObj);
                                 }
@@ -92,10 +92,10 @@ public with sharing class RES_OpportunityStageUpdateValidation {
                 Contract contractObj = new Contract();
                 contractObj.AccountId = opp.AccountId;
                 contractObj.Status = 'Draft';
-                contractObj.RES_Opportunity_Id__c = oppObj.Id;
+                contractObj.SourceOpportunityId = oppObj.Id;
                 contractObj.RecordTypeId = contractRecordTypeId;
                 if(!opp.Quotes.isEmpty()){
-                    contractObj.RES_Quote_Id__c = opp.Quotes[0].Id;
+                    contractObj.SourceQuoteId = opp.Quotes[0].Id;
                 }
                 contractLstInsert.add(contractObj);
             }
@@ -135,8 +135,8 @@ public with sharing class RES_OpportunityStageUpdateValidation {
         Map<Id, Id> quoteMap = new Map<Id, Id>();
         List<Quote> quoteLstUpdate = new List<Quote>();
         for(Contract contractObj : contractLst){
-            if(contractObj.RES_Quote_Id__c != null){
-                Quote quoteObj = new Quote(Id = contractObj.RES_Quote_Id__c, ContractId = contractObj.Id);
+            if(contractObj.SourceQuoteId != null){
+                Quote quoteObj = new Quote(Id = contractObj.SourceQuoteId, ContractId = contractObj.Id);
                 if(!quoteMap.containsKey(quoteObj.Id)){
                     quoteMap.put(quoteObj.Id, quoteObj.Id);
                     quoteLstUpdate.add(quoteObj);

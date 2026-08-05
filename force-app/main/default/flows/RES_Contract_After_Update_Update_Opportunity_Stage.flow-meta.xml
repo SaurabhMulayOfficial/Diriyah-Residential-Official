@@ -180,6 +180,7 @@
             <label>SPA</label>
         </rules>
     </decisions>
+    <description>DIR-1145 Opportunity Stage Transition</description>
     <environments>Default</environments>
     <interviewLabel>RES Contract - After Update - Update Opportunity Stage {!$Flow.CurrentDateTime}</interviewLabel>
     <label>RES Contract - After Update - Update Opportunity Stage</label>
@@ -230,7 +231,7 @@
             <field>Id</field>
             <operator>EqualTo</operator>
             <value>
-                <elementReference>$Record.RES_Opportunity_Id__c</elementReference>
+                <elementReference>$Record.SourceOpportunityId</elementReference>
             </value>
         </filters>
         <filters>
