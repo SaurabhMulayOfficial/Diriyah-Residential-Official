@@ -20,6 +20,12 @@
         <allowEmail>false</allowEmail>
     </standardValue>
     <standardValue>
+        <fullName>Pending Approval</fullName>
+        <default>false</default>
+        <label>Pending Approval</label>
+        <allowEmail>false</allowEmail>
+    </standardValue>
+    <standardValue>
         <fullName>Approved</fullName>
         <default>false</default>
         <label>Approved</label>
@@ -32,9 +38,21 @@
         <allowEmail>true</allowEmail>
     </standardValue>
     <standardValue>
+        <fullName>Customer Approved</fullName>
+        <default>false</default>
+        <label>Customer Approved</label>
+        <allowEmail>false</allowEmail>
+    </standardValue>
+    <standardValue>
         <fullName>Expired</fullName>
         <default>false</default>
         <label>Expired</label>
+        <allowEmail>false</allowEmail>
+    </standardValue>
+    <standardValue>
+        <fullName>Cancelled</fullName>
+        <default>false</default>
+        <label>Cancelled</label>
         <allowEmail>false</allowEmail>
     </standardValue>
     <standardValue>
