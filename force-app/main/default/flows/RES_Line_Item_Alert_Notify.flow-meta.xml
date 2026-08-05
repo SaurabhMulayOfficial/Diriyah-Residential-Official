@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>67.0</apiVersion>
+    <description>DIR-1128: Subscribes to RES_Line_Item_Alert__e and sends a real-time bell notification to the user who was blocked. Gives visible feedback for the Browse Catalogs path, which swallows save-time validation messages. Runs in its own transaction (event delivery) so the notification is not rolled back with the blocked insert.</description>
+    <environments>Default</environments>
+    <interviewLabel>RES Line Item Alert Notify {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>RES Line Item Alert Notify</label>
+    <processType>AutoLaunchedFlow</processType>
+    <start>
+        <locationX>176</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Get_Notif_Type</targetReference>
+        </connector>
+        <object>RES_Line_Item_Alert__e</object>
+        <triggerType>PlatformEvent</triggerType>
+    </start>
+    <recordLookups>
+        <name>Get_Notif_Type</name>
+        <label>Get Notification Type</label>
+        <locationX>176</locationX>
+        <locationY>108</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Add_Recipient</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>DeveloperName</field>
+            <operator>EqualTo</operator>
+            <value>
+                <stringValue>RES_Line_Item_Alert</stringValue>
+            </value>
+        </filters>
+        <getFirstRecordOnly>true</getFirstRecordOnly>
+        <object>CustomNotificationType</object>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
+    <assignments>
+        <name>Add_Recipient</name>
+        <label>Add Recipient</label>
+        <locationX>176</locationX>
+        <locationY>216</locationY>
+        <assignmentItems>
+            <assignToReference>recipientCollection</assignToReference>
+            <operator>Add</operator>
+            <value>
+                <elementReference>$Record.RecipientUserId__c</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Send_Alert</targetReference>
+        </connector>
+    </assignments>
+    <actionCalls>
+        <name>Send_Alert</name>
+        <label>Send Alert</label>
+        <locationX>176</locationX>
+        <locationY>324</locationY>
+        <actionName>customNotificationAction</actionName>
+        <actionType>customNotificationAction</actionType>
+        <flowTransactionModel>CurrentTransaction</flowTransactionModel>
+        <inputParameters>
+            <name>customNotifTypeId</name>
+            <value>
+                <elementReference>Get_Notif_Type.Id</elementReference>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>recipientIds</name>
+            <value>
+                <elementReference>recipientCollection</elementReference>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>title</name>
+            <value>
+                <stringValue>Product could not be added</stringValue>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>body</name>
+            <value>
+                <elementReference>$Record.Message__c</elementReference>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>targetId</name>
+            <value>
+                <elementReference>$Record.QuoteId__c</elementReference>
+            </value>
+        </inputParameters>
+    </actionCalls>
+    <status>Active</status>
+    <variables>
+        <name>recipientCollection</name>
+        <dataType>String</dataType>
+        <isCollection>true</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+</Flow>

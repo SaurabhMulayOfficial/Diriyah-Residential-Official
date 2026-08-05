@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<PermissionSet xmlns="http://soap.sforce.com/2006/04/metadata">
+    <label>RES Quote Manage Sync</label>
+    <description>DIR-763: Grants the "Manage Quote Sync (Primary Quote)" custom permission so RM/Specialist users see the Start Sync / Stop Sync buttons and can set the Primary Quote. Assign to Relationship Manager and Specialist users (not Operations Specialist).</description>
+    <hasActivationRequired>false</hasActivationRequired>
+    <customPermissions>
+        <enabled>true</enabled>
+        <name>RES_Quote_Manage_Sync</name>
+    </customPermissions>
+</PermissionSet>

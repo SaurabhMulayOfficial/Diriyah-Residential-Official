@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>67.0</apiVersion>
+    <description>DIR-1128: On creating a Quote, inherit the Project from the parent Opportunity (RES_Project__c), mirroring how Account is inherited. Only sets the value when the Opportunity has a Project.</description>
+    <environments>Default</environments>
+    <interviewLabel>RES Quote Before Save Inherit Project {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>RES Quote Before Save Inherit Project</label>
+    <processType>AutoLaunchedFlow</processType>
+    <assignments>
+        <name>Set_Project_From_Opportunity</name>
+        <label>Set Project From Opportunity</label>
+        <locationX>176</locationX>
+        <locationY>276</locationY>
+        <assignmentItems>
+            <assignToReference>$Record.RES_Project__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>$Record.Opportunity.RES_Project__c</elementReference>
+            </value>
+        </assignmentItems>
+    </assignments>
+    <decisions>
+        <name>Opportunity_Has_Project</name>
+        <label>Opportunity Has Project</label>
+        <locationX>176</locationX>
+        <locationY>158</locationY>
+        <defaultConnectorLabel>No Project</defaultConnectorLabel>
+        <rules>
+            <name>Has_Project</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.Opportunity.RES_Project__c</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Set_Project_From_Opportunity</targetReference>
+            </connector>
+            <label>Has Project</label>
+        </rules>
+    </decisions>
+    <start>
+        <locationX>50</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Opportunity_Has_Project</targetReference>
+        </connector>
+        <object>Quote</object>
+        <recordTriggerType>Create</recordTriggerType>
+        <triggerType>RecordBeforeSave</triggerType>
+    </start>
+    <status>Active</status>
+</Flow>

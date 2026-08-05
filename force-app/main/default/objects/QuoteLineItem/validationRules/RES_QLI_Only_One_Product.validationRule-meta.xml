@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>RES_QLI_Only_One_Product</fullName>
+    <active>false</active>
+    <description>DIR-1128: Superseded by the RES Quote Line Item after-save flow (which enforces one product per Quote AND publishes RES_Line_Item_Alert__e so Browse Catalogs users get a real-time bell). Kept inactive; the flow owns single-product enforcement.</description>
+    <errorConditionFormula>AND(
+    NOT($Setup.RES_Config_Switch__c.RES_Validation_Rules_Off__c),
+    ISNEW(),
+    Quote.RES_Line_Item_Count__c &gt;= 1
+)</errorConditionFormula>
+    <errorMessage>Only one product can be added to a quote.</errorMessage>
+</ValidationRule>
