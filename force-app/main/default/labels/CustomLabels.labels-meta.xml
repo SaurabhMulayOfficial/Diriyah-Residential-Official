@@ -455,4 +455,24 @@ Please go back and select at least one lead with status = “Qualified” to pro
         <shortDescription>Soft Hold Window (In hours)</shortDescription>
         <value>8</value>
     </labels>
+    <labels>
+        <fullName>Soft_Hold_Extension_Error_Message</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Soft Hold Extension Error Message</shortDescription>
+        <value>Approval cannot be submitted for this product because one or more validation checks failed:
+
+🔴 Product is already under Soft Hold Extension. 
+🔴 The associated Unit is already reserved by another user.
+🔴 No Unit is associated with this Quote.
+🔴 Associated Unit is not in Soft Hold status.</value>
+    </labels>
+    <labels>
+        <fullName>RES_Approval_Submitted_For_Soft_Hold</fullName>
+        <categories>Product Soft Hold</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Approval Submitted For Soft Hold</shortDescription>
+        <value>Your request for Soft Hold Extension approval has been submitted and is awaiting approval.</value>
+    </labels>
 </CustomLabels>
