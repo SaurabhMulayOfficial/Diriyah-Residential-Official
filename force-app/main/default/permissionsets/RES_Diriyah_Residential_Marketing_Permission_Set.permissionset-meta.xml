@@ -1567,6 +1567,11 @@
         <field>Contract.SourceQuoteId</field>
         <readable>true</readable>
     </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>Quote.RES_Project__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
     <hasActivationRequired>false</hasActivationRequired>
     <label>Diriyah Residential – Marketing Permission Set</label>
     <license>Salesforce</license>
