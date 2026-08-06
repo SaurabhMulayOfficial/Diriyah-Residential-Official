@@ -437,6 +437,10 @@
         <apexClass>RES_UserServicePresenceDAOLayer</apexClass>
         <enabled>true</enabled>
     </classAccesses>
+    <flowAccesses>
+        <flow>RES_Opportunity_ScreenFlow_Opportunity_Closed_Lost</flow>
+        <enabled>true</enabled>
+    </flowAccesses>
     <applicationVisibilities>
         <application>standard__LightningSales</application>
         <default>true</default>
