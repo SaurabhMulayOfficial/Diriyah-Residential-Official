@@ -2,6 +2,31 @@
 <Flow xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
     <apiVersion>67.0</apiVersion>
     <areMetricsLoggedToDataCloud>false</areMetricsLoggedToDataCloud>
+    <decisions>
+        <name>Closed_date_Check</name>
+        <label>Closed date Check</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnector>
+            <targetReference>GoBackAndUpdateClosed</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Greater_than</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>Closedate</leftValueReference>
+                <operator>GreaterThanOrEqualTo</operator>
+                <rightValue>
+                    <elementReference>$Flow.CurrentDate</elementReference>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Update_Opportunity</targetReference>
+            </connector>
+            <label>Greater than</label>
+        </rules>
+    </decisions>
     <dynamicChoiceSets>
         <name>OpportunityStage</name>
         <dataType>Picklist</dataType>
@@ -32,17 +57,50 @@
         </value>
     </processMetadataValues>
     <processType>Flow</processType>
+    <recordLookups>
+        <name>GetOpportunity</name>
+        <label>GetOpportunity</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Please_provide_reason_for_lost</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Id</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>recordId</elementReference>
+            </value>
+        </filters>
+        <object>Opportunity</object>
+        <outputAssignments>
+            <assignToReference>Closedate</assignToReference>
+            <field>CloseDate</field>
+        </outputAssignments>
+    </recordLookups>
     <recordUpdates>
         <name>Update_Opportunity</name>
         <label>Update Opportunity</label>
         <locationX>0</locationX>
         <locationY>0</locationY>
+        <faultConnector>
+            <targetReference>GotErrorException</targetReference>
+        </faultConnector>
         <filterLogic>and</filterLogic>
         <filters>
             <field>Id</field>
             <operator>EqualTo</operator>
             <value>
                 <stringValue>{!recordId}</stringValue>
+            </value>
+        </filters>
+        <filters>
+            <field>CloseDate</field>
+            <operator>GreaterThanOrEqualTo</operator>
+            <value>
+                <elementReference>$Flow.CurrentDate</elementReference>
             </value>
         </filters>
         <inputAssignments>
@@ -61,6 +119,55 @@
     </recordUpdates>
     <runInMode>DefaultMode</runInMode>
     <screens>
+        <name>GoBackAndUpdateClosed</name>
+        <label>GoBackAndUpdateClosed</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <allowBack>false</allowBack>
+        <allowFinish>true</allowFinish>
+        <allowPause>false</allowPause>
+        <fields>
+            <name>updateClosedate</name>
+            <fieldText>&lt;p&gt;&lt;strong style=&quot;background-color: rgb(255, 255, 255);&quot;&gt;Close date must be present or future date, cannot be in the past.&lt;/strong&gt;&lt;/p&gt;</fieldText>
+            <fieldType>DisplayText</fieldType>
+            <styleProperties>
+                <verticalAlignment>
+                    <stringValue>top</stringValue>
+                </verticalAlignment>
+                <width>
+                    <stringValue>12</stringValue>
+                </width>
+            </styleProperties>
+        </fields>
+        <nextOrFinishButtonLabel>Update Closed Date</nextOrFinishButtonLabel>
+        <showFooter>true</showFooter>
+        <showHeader>false</showHeader>
+    </screens>
+    <screens>
+        <name>GotErrorException</name>
+        <label>GotErrorException</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <allowBack>true</allowBack>
+        <allowFinish>true</allowFinish>
+        <allowPause>true</allowPause>
+        <fields>
+            <name>ErrorMessagae</name>
+            <fieldText>&lt;p&gt;Got Exception:-{!$Flow.FaultMessage}&lt;/p&gt;</fieldText>
+            <fieldType>DisplayText</fieldType>
+            <styleProperties>
+                <verticalAlignment>
+                    <stringValue>top</stringValue>
+                </verticalAlignment>
+                <width>
+                    <stringValue>12</stringValue>
+                </width>
+            </styleProperties>
+        </fields>
+        <showFooter>true</showFooter>
+        <showHeader>false</showHeader>
+    </screens>
+    <screens>
         <name>Please_provide_reason_for_lost</name>
         <label>Please provide reason for lost</label>
         <locationX>0</locationX>
@@ -69,7 +176,7 @@
         <allowFinish>true</allowFinish>
         <allowPause>false</allowPause>
         <connector>
-            <targetReference>Update_Opportunity</targetReference>
+            <targetReference>Closed_date_Check</targetReference>
         </connector>
         <fields>
             <name>Reason_for_lost</name>
@@ -88,7 +195,7 @@
                 </width>
             </styleProperties>
         </fields>
-        <nextOrFinishButtonLabel>Update Reason</nextOrFinishButtonLabel>
+        <nextOrFinishButtonLabel>Update Close Lost</nextOrFinishButtonLabel>
         <showFooter>true</showFooter>
         <showHeader>false</showHeader>
     </screens>
@@ -96,10 +203,17 @@
         <locationX>0</locationX>
         <locationY>0</locationY>
         <connector>
-            <targetReference>Please_provide_reason_for_lost</targetReference>
+            <targetReference>GetOpportunity</targetReference>
         </connector>
     </start>
     <status>Active</status>
+    <variables>
+        <name>Closedate</name>
+        <dataType>Date</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+    </variables>
     <variables>
         <name>recordId</name>
         <dataType>String</dataType>
