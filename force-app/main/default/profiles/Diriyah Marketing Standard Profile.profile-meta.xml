@@ -5,7 +5,7 @@
         <default>true</default>
         <visible>true</visible>
     </applicationVisibilities>
-     <applicationVisibilities>
+    <applicationVisibilities>
         <application>standard__AllTabSet</application>
         <default>false</default>
         <visible>true</visible>
@@ -25,7 +25,7 @@
         <layout>Contract-Residential Sales</layout>
         <recordType>Contract.RES_Residential_Sales</recordType>
     </layoutAssignments>
-   <layoutAssignments>
+    <layoutAssignments>
         <layout>Opportunity-RES Residential Multi Buyer</layout>
         <recordType>Opportunity.RES_Residential_Multi_Buyer</recordType>
     </layoutAssignments>
@@ -396,7 +396,7 @@
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
-       <editable>false</editable>
+        <editable>false</editable>
         <field>Lead.RES_CR_Number__c</field>
         <readable>true</readable>
     </fieldPermissions>
@@ -421,7 +421,7 @@
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
-       <editable>false</editable>
+        <editable>false</editable>
         <field>Lead.RES_Pending_Qualified_Review__c</field>
         <readable>true</readable>
     </fieldPermissions>
@@ -805,7 +805,7 @@
         <viewAllFields>false</viewAllFields>
         <viewAllRecords>false</viewAllRecords>
     </objectPermissions>
-      <objectPermissions>
+    <objectPermissions>
         <allowCreate>false</allowCreate>
         <allowDelete>false</allowDelete>
         <allowEdit>false</allowEdit>
@@ -815,7 +815,7 @@
         <viewAllFields>false</viewAllFields>
         <viewAllRecords>false</viewAllRecords>
     </objectPermissions>
-      <objectPermissions>
+    <objectPermissions>
         <allowCreate>false</allowCreate>
         <allowDelete>false</allowDelete>
         <allowEdit>false</allowEdit>
@@ -996,11 +996,11 @@
     <tab>standard-Dashboard</tab>
     <visibility>DefaultOn</visibility>
     </tabVisibilities>
-     <tabVisibilities>
+    <tabVisibilities>
     <tab>standard-Report</tab>
     <visibility>DefaultOn</visibility>
     </tabVisibilities>
-     <tabVisibilities>
+    <tabVisibilities>
     <tab>standard-Home</tab>
     <visibility>DefaultOn</visibility>
     </tabVisibilities>
@@ -1013,7 +1013,7 @@
         <visibility>Hidden</visibility>
     </tabVisibilities>
     <userLicense>Salesforce</userLicense>
-     <userPermissions>
+    <userPermissions>
         <enabled>true</enabled>
         <name>ApiEnabled</name>
     </userPermissions>
