@@ -1849,6 +1849,11 @@ Sales – DI – Relationship Manager</description>
         <field>RES_Payment_Plan__c.RES_Years__c</field>
         <readable>true</readable>
     </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>Quote.RES_Project__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
     <hasActivationRequired>false</hasActivationRequired>
     <label>Diriyah Residential – DI Specialist Permission Set</label>
     <license>Salesforce</license>
