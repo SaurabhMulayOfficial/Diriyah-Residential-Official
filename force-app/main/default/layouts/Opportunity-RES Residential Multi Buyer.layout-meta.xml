@@ -244,10 +244,10 @@
     </quickActionList>
     <relatedLists>
         <fields>CONTRACT.CONTRACT_NUMBER</fields>
-        <fields>CONTRACT.NAME</fields>
-        <fields>SALES.ACCOUNT.NAME</fields>
         <fields>CONTRACT.STATUS</fields>
-        <relatedList>Contract.RES_Opportunity_Id__c</relatedList>
+        <fields>CONTRACT.START_DATE</fields>
+        <fields>CONTRACT.END_DATE</fields>
+        <relatedList>Contracts</relatedList>
     </relatedLists>
     <relatedLists>
         <fields>NAME</fields>
