@@ -59,6 +59,72 @@
         <offset>0</offset>
     </actionCalls>
     <actionCalls>
+        <name>Send_Email_to_Leasing_Group</name>
+        <label>Send Email to Leasing Group</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <actionName>emailSimple</actionName>
+        <actionType>emailSimple</actionType>
+        <connector>
+            <targetReference>Check_if_Lead_is_Converted_and_Flow_Switch</targetReference>
+        </connector>
+        <flowTransactionModel>CurrentTransaction</flowTransactionModel>
+        <inputParameters>
+            <name>recipientAddresses</name>
+            <value>
+                <collectionElements>
+                    <elementReference>Get_Email_of_all_members_from_Queue.emailRecipients</elementReference>
+                </collectionElements>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>senderType</name>
+            <value>
+                <inputConfiguratorMode>Custom</inputConfiguratorMode>
+                <stringValue>OrgWideEmailAddress</stringValue>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>senderAddress</name>
+            <value>
+                <inputConfiguratorMode>Custom</inputConfiguratorMode>
+                <stringValue>saurabh.mulay@globant.com</stringValue>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>composeEmailContent</name>
+            <value>
+                <stringValue>True</stringValue>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>emailSubject</name>
+            <value>
+                <inputConfiguratorMode>Custom</inputConfiguratorMode>
+                <stringValue> New Lead Referred to Leasing for Review</stringValue>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>emailBody</name>
+            <value>
+                <inputConfiguratorMode>Custom</inputConfiguratorMode>
+                <stringValue>&lt;p&gt;Hello,&lt;/p&gt;&lt;p&gt;The following lead has been forwarded from the Residential Sales team with interest expressed for leasing:&lt;/p&gt;&lt;p&gt;Lead Details:&lt;/p&gt;&lt;ul&gt;&lt;li&gt;&lt;strong&gt;Lead Name&lt;/strong&gt;:   &lt;a href=&quot;{!OrgBaseUrl}lightning/r/Lead/{!$Record.Id}/view&quot; rel=&quot;noopener noreferrer&quot; target=&quot;_blank&quot;&gt;{!leadFullName} &lt;/a&gt;&lt;/li&gt;&lt;li&gt;&lt;strong&gt;Contact Number:&lt;/strong&gt;{!$Record.Phone}&lt;/li&gt;&lt;li&gt;&lt;strong&gt;Email Address:&lt;/strong&gt; {!$Record.Email}&lt;/li&gt;&lt;li&gt;&lt;strong&gt;Project/Interest&lt;/strong&gt;: {!$Record.RES_Project__c}&lt;/li&gt;&lt;/ul&gt;&lt;p&gt;Please review the lead and proceed with the necessary action as per the governance process.&lt;/p&gt;</stringValue>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>sendRichBody</name>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>recipientId</name>
+        </inputParameters>
+        <nameSegment>emailSimple</nameSegment>
+        <offset>0</offset>
+        <versionString>2.0.1</versionString>
+    </actionCalls>
+    <actionCalls>
         <name>Send_Email_to_Owner_Leasing</name>
         <label>Send Email to Owner - Leasing</label>
         <locationX>0</locationX>
@@ -66,7 +132,7 @@
         <actionName>emailSimple</actionName>
         <actionType>emailSimple</actionType>
         <connector>
-            <targetReference>Check_if_Lead_is_Converted_and_Flow_Switch</targetReference>
+            <targetReference>Check_for_Type_Of_Leasing</targetReference>
         </connector>
         <flowTransactionModel>CurrentTransaction</flowTransactionModel>
         <inputParameters>
@@ -107,7 +173,7 @@
             <name>emailBody</name>
             <value>
                 <inputConfiguratorMode>Custom</inputConfiguratorMode>
-                <stringValue>&lt;p&gt;Hello {!OwnerName},&lt;/p&gt;&lt;p&gt;A new lead has been referred for leasing review and approval.&lt;/p&gt;&lt;p&gt;Lead Details:&lt;/p&gt;&lt;ul&gt;&lt;li&gt;&lt;strong&gt;Lead Name&lt;/strong&gt;: &lt;a href=&quot;https://diriyah--dev.sandbox.lightning.force.com/builder_platform_interaction/%7B!OrgBaseUrl%7Dlightning/r/Lead/%7B!LeadId%7D/view&quot; rel=&quot;noopener noreferrer&quot; target=&quot;_blank&quot; style=&quot;color: rgb(1, 118, 211);&quot;&gt;{!LeadName}&lt;/a&gt;&lt;/li&gt;&lt;li&gt;&lt;strong&gt;Contact Number:&lt;/strong&gt;{!$Record.MobilePhone}&lt;/li&gt;&lt;li&gt;&lt;strong&gt;Email Address:&lt;/strong&gt; {!$Record.Email}&lt;/li&gt;&lt;li&gt;&lt;strong&gt;Project/Interest&lt;/strong&gt;: {!$Record.RES_Project__c}&lt;/li&gt;&lt;li&gt;&lt;strong&gt;Type of Leasing: &lt;/strong&gt;{!$Record.RES_Type_of_Leasing__c}&lt;/li&gt;&lt;/ul&gt;&lt;p&gt;Please review the lead and proceed with the necessary action as per the governance process.&lt;/p&gt;</stringValue>
+                <stringValue>&lt;p&gt;Hello {!OwnerName},&lt;/p&gt;&lt;p&gt;A new lead has been referred for leasing review and approval.&lt;/p&gt;&lt;p&gt;Lead Details:&lt;/p&gt;&lt;ul&gt;&lt;li&gt;&lt;strong&gt;Lead Name&lt;/strong&gt;:  &lt;a href=&quot;{!OrgBaseUrl}lightning/r/Lead/{!$Record.Id}/view&quot; rel=&quot;noopener noreferrer&quot; target=&quot;_blank&quot;&gt;{!LeadName} &lt;/a&gt;&lt;/li&gt;&lt;li&gt;&lt;strong&gt;Contact Number:&lt;/strong&gt;{!$Record.MobilePhone}&lt;/li&gt;&lt;li&gt;&lt;strong&gt;Email Address:&lt;/strong&gt; {!$Record.Email}&lt;/li&gt;&lt;li&gt;&lt;strong&gt;Project/Interest&lt;/strong&gt;: {!$Record.RES_Project__c}&lt;/li&gt;&lt;li&gt;&lt;strong&gt;Type of Leasing: &lt;/strong&gt;{!$Record.RES_Type_of_Leasing__c}&lt;/li&gt;&lt;/ul&gt;&lt;p&gt;Please review the lead and proceed with the necessary action as per the governance process.&lt;/p&gt;</stringValue>
             </value>
         </inputParameters>
         <inputParameters>
@@ -138,7 +204,7 @@
             </value>
         </assignmentItems>
         <connector>
-            <targetReference>If_Type_Of_Leasing_has_Changed</targetReference>
+            <targetReference>If_Type_Of_Leasing_has_Changed_and_Check_Sub_Status_Change</targetReference>
         </connector>
     </assignments>
     <assignments>
@@ -171,6 +237,86 @@
             <targetReference>SLA_breached</targetReference>
         </connector>
     </assignments>
+    <decisions>
+        <name>check_for_Email</name>
+        <label>check for Email</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnector>
+            <targetReference>Check_for_Type_Of_Leasing</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Yes_Changed</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>Emails</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Send_Email_to_Owner_Leasing</targetReference>
+            </connector>
+            <label>Yes, Changed</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <description>Exclude Residential Leasing when sending Notification</description>
+        <name>Check_for_Type_Of_Leasing</name>
+        <label>Check for Type Of Leasing</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnector>
+            <targetReference>Check_if_Lead_is_Converted_and_Flow_Switch</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Type_of_Leasing</name>
+            <conditionLogic>or</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.RES_Type_of_Leasing__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Retail Leasing</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.RES_Type_of_Leasing__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Specialty Leasing</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.RES_Type_of_Leasing__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Commercial Leasing</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Get_Email_of_all_members_from_Queue</targetReference>
+            </connector>
+            <label>Type of Leasing</label>
+        </rules>
+        <rules>
+            <name>Type_of_Leasing_is_Residential_Leasing</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.RES_Type_of_Leasing__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Residential Leasing</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Update_Lead_Status_to_Retired</targetReference>
+            </connector>
+            <label>Type of Leasing is Residential Leasing</label>
+        </rules>
+    </decisions>
     <decisions>
         <name>Check_if_Lead_is_Converted_and_Flow_Switch</name>
         <label>Check if Lead is Converted and Flow Switch</label>
@@ -450,8 +596,8 @@
         </rules>
     </decisions>
     <decisions>
-        <name>If_Type_Of_Leasing_has_Changed</name>
-        <label>If Type Of Leasing has Changed</label>
+        <name>If_Type_Of_Leasing_has_Changed_and_Check_Sub_Status_Change</name>
+        <label>If Type Of Leasing has Changed and Check Sub Status Change</label>
         <locationX>0</locationX>
         <locationY>0</locationY>
         <defaultConnector>
@@ -459,8 +605,8 @@
         </defaultConnector>
         <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
         <rules>
-            <name>Yes_Changed</name>
-            <conditionLogic>and</conditionLogic>
+            <name>Check_for_Type</name>
+            <conditionLogic>(1 OR 3) AND 2</conditionLogic>
             <conditions>
                 <leftValueReference>$Record.RES_Type_of_Leasing__c</leftValueReference>
                 <operator>IsChanged</operator>
@@ -469,23 +615,23 @@
                 </rightValue>
             </conditions>
             <conditions>
-                <leftValueReference>Emails</leftValueReference>
-                <operator>IsNull</operator>
-                <rightValue>
-                    <booleanValue>false</booleanValue>
-                </rightValue>
-            </conditions>
-            <conditions>
                 <leftValueReference>$Record.RES_Type_of_Leasing__c</leftValueReference>
                 <operator>IsNull</operator>
                 <rightValue>
                     <booleanValue>false</booleanValue>
                 </rightValue>
             </conditions>
+            <conditions>
+                <leftValueReference>$Record.RES_Lead_Sub_Status__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>281</stringValue>
+                </rightValue>
+            </conditions>
             <connector>
-                <targetReference>Send_Email_to_Owner_Leasing</targetReference>
+                <targetReference>check_for_Email</targetReference>
             </connector>
-            <label>Yes, Changed</label>
+            <label>Check for Type</label>
         </rules>
     </decisions>
     <description>Lead SLA management, Task Creation after lead Convert</description>
@@ -494,6 +640,16 @@
         <name>isNew</name>
         <dataType>Boolean</dataType>
         <expression>ISNEW()</expression>
+    </formulas>
+    <formulas>
+        <name>leadFullName</name>
+        <dataType>String</dataType>
+        <expression>TRIM(
+    BLANKVALUE(TEXT({!$Record.Salutation}), &quot;&quot;) &amp; &quot; &quot; &amp;
+    BLANKVALUE({!$Record.FirstName}, &quot;&quot;) &amp; &quot; &quot; &amp;
+    BLANKVALUE({!$Record.MiddleName}, &quot;&quot;) &amp; &quot; &quot; &amp;
+    BLANKVALUE({!$Record.LastName}, &quot;&quot;)
+)</expression>
     </formulas>
     <formulas>
         <name>NOW</name>
@@ -654,6 +810,22 @@
         <object>Contact</object>
     </recordUpdates>
     <recordUpdates>
+        <name>Update_Lead_Status_to_Retired</name>
+        <label>Update Lead Status to Retired</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Check_if_Lead_is_Converted_and_Flow_Switch</targetReference>
+        </connector>
+        <inputAssignments>
+            <field>Status</field>
+            <value>
+                <stringValue>05</stringValue>
+            </value>
+        </inputAssignments>
+        <inputReference>$Record</inputReference>
+    </recordUpdates>
+    <recordUpdates>
         <name>Update_Opportunity_Email_mobile_fields</name>
         <label>Update Opportunity Email, mobile fields</label>
         <locationX>0</locationX>
@@ -747,6 +919,23 @@
         <triggerType>RecordAfterSave</triggerType>
     </start>
     <status>Active</status>
+    <subflows>
+        <name>Get_Email_of_all_members_from_Queue</name>
+        <label>Get Email of all members from Queue</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Send_Email_to_Leasing_Group</targetReference>
+        </connector>
+        <flowName>RES_Get_All_Users_Email_from_Group_Queue</flowName>
+        <inputAssignments>
+            <name>recipientQueueName</name>
+            <value>
+                <stringValue>RES_Leasing_Retail_Routing</stringValue>
+            </value>
+        </inputAssignments>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </subflows>
     <subflows>
         <name>Notify_User_s_Manager</name>
         <label>Notify User&apos;s Manager</label>
