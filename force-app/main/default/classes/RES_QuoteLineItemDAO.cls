@@ -65,4 +65,15 @@ public with sharing class RES_QuoteLineItemDAO extends RES_BaseDAOLayer {
         
         return (List<QuoteLineItem>) executeQuery(soql, '', false, bindVars, AccessLevel.SYSTEM_MODE);
     }
+
+    public List<QuoteLineItem> getQuoteLineItemsByQuoteIds(Set<Id> quoteIds){
+        Map<String, Object> bindVars = new Map<String, Object>();
+        bindVars.put('quoteIds', quoteIds);
+
+        String soql = 'SELECT Id, QuoteId, Product2.RES_Soft_Hold_Extended_By_Hours__c, Product2Id, Product2.RES_Unit_Status__c, Product2.RES_Is_In_Soft_Hold_Extension__c, Product2.RES_Soft_Hold_Until__c ' +
+                    'FROM QuoteLineItem ' +
+                    'WHERE QuoteId IN :quoteIds';
+        
+        return (List<QuoteLineItem>) executeQuery(soql, '', false, bindVars, AccessLevel.SYSTEM_MODE);
+    }
 }
