@@ -47,19 +47,26 @@
     <apiVersion>67.0</apiVersion>
     <areMetricsLoggedToDataCloud>false</areMetricsLoggedToDataCloud>
     <assignments>
-        <name>Add_Recipients</name>
-        <label>Add Recipients</label>
+        <name>Hydrate_Lists</name>
+        <label>Hydrate Lists</label>
         <locationX>0</locationX>
         <locationY>0</locationY>
+        <assignmentItems>
+            <assignToReference>QuoteIds</assignToReference>
+            <operator>Add</operator>
+            <value>
+                <elementReference>Loop_Over_QuoteProduct.QuoteId</elementReference>
+            </value>
+        </assignmentItems>
         <assignmentItems>
             <assignToReference>recipients</assignToReference>
             <operator>Add</operator>
             <value>
-                <elementReference>Loop_Over_QLI.Quote.Owner:User.Email</elementReference>
+                <elementReference>Loop_Over_QuoteProduct.Quote.Owner:User.Email</elementReference>
             </value>
         </assignmentItems>
         <connector>
-            <targetReference>Loop_Over_QLI</targetReference>
+            <targetReference>Loop_Over_QuoteProduct</targetReference>
         </connector>
     </assignments>
     <assignments>
@@ -89,9 +96,82 @@
             </value>
         </assignmentItems>
         <connector>
-            <targetReference>Loop_Over_QLI</targetReference>
+            <targetReference>Update_Quotes_Soft_Hold</targetReference>
         </connector>
     </assignments>
+    <decisions>
+        <name>Check_Flow_Flag</name>
+        <label>Check Flow Flag</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Not_Enabled</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Setup.RES_Config_Switch__c.RES_Flows_Off__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Check_if_Unit_Status_Changed_to_Available</targetReference>
+            </connector>
+            <label>Not Enabled</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>Check_if_QLI_Exist</name>
+        <label>Check if QLI Exist</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Yes_QLI_Present</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>Get_All_QLI_Related_to_Product</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Loop_Over_QuoteProduct</targetReference>
+            </connector>
+            <label>Yes, QLI Present</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>Check_if_Unit_Status_Changed_to_Available</name>
+        <label>Check if Unit Status Changed to Available</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Yes_available</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.RES_Unit_Status__c</leftValueReference>
+                <operator>IsChanged</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.RES_Unit_Status__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Available</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Get_All_QLI_Related_to_Product</targetReference>
+            </connector>
+            <label>Yes</label>
+        </rules>
+    </decisions>
     <decisions>
         <name>If_Everything_Looks_Good</name>
         <label>If Everything Looks Good</label>
@@ -175,17 +255,17 @@
     <interviewLabel>Product After Insert Update - {!$Flow.CurrentDateTime}</interviewLabel>
     <label>Product After Insert Update - Product Management Flow</label>
     <loops>
-        <name>Loop_Over_QLI</name>
+        <name>Loop_Over_QuoteProduct</name>
         <label>Loop Over QLI</label>
         <locationX>0</locationX>
         <locationY>0</locationY>
-        <collectionReference>Get_All_QLI</collectionReference>
+        <collectionReference>Get_All_QLI_Related_to_Product</collectionReference>
         <iterationOrder>Asc</iterationOrder>
         <nextValueConnector>
-            <targetReference>Add_Recipients</targetReference>
+            <targetReference>Hydrate_Lists</targetReference>
         </nextValueConnector>
         <noMoreValuesConnector>
-            <targetReference>If_Everything_Looks_Good</targetReference>
+            <targetReference>Get_Apex_Template</targetReference>
         </noMoreValuesConnector>
     </loops>
     <processMetadataValues>
@@ -208,13 +288,13 @@
     </processMetadataValues>
     <processType>AutoLaunchedFlow</processType>
     <recordLookups>
-        <name>Get_All_QLI</name>
-        <label>Get All QLI</label>
+        <name>Get_All_QLI_Related_to_Product</name>
+        <label>Get All QLI Related to Product</label>
         <locationX>0</locationX>
         <locationY>0</locationY>
         <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
         <connector>
-            <targetReference>Get_Apex_Template</targetReference>
+            <targetReference>Check_if_QLI_Exist</targetReference>
         </connector>
         <filterLogic>and</filterLogic>
         <filters>
@@ -263,7 +343,7 @@
             <field>DisplayName</field>
             <operator>EqualTo</operator>
             <value>
-                <stringValue>Salesforce Notifications</stringValue>
+                <elementReference>$Label.Org_Wide_Email</elementReference>
             </value>
         </filters>
         <getFirstRecordOnly>true</getFirstRecordOnly>
@@ -275,9 +355,6 @@
         <label>Update Product Record To Available</label>
         <locationX>0</locationX>
         <locationY>0</locationY>
-        <connector>
-            <targetReference>Get_All_QLI</targetReference>
-        </connector>
         <inputAssignments>
             <field>RES_Soft_Hold_Extended_By_Hours__c</field>
         </inputAssignments>
@@ -295,9 +372,36 @@
         </inputAssignments>
         <inputReference>$Record</inputReference>
     </recordUpdates>
+    <recordUpdates>
+        <name>Update_Quotes_Soft_Hold</name>
+        <label>Update Quotes Soft Hold</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>If_Everything_Looks_Good</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Id</field>
+            <operator>In</operator>
+            <value>
+                <elementReference>QuoteIds</elementReference>
+            </value>
+        </filters>
+        <inputAssignments>
+            <field>RES_Product_Soft_Held__c</field>
+            <value>
+                <booleanValue>false</booleanValue>
+            </value>
+        </inputAssignments>
+        <object>Quote</object>
+    </recordUpdates>
     <start>
         <locationX>0</locationX>
         <locationY>0</locationY>
+        <connector>
+            <targetReference>Check_Flow_Flag</targetReference>
+        </connector>
         <object>Product2</object>
         <recordTriggerType>CreateAndUpdate</recordTriggerType>
         <scheduledPaths>
@@ -316,6 +420,20 @@
     <status>Active</status>
     <variables>
         <name>MergeFields</name>
+        <dataType>String</dataType>
+        <isCollection>true</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <name>QuoteIds</name>
+        <dataType>String</dataType>
+        <isCollection>true</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <name>QuoteOwnerEmails</name>
         <dataType>String</dataType>
         <isCollection>true</isCollection>
         <isInput>false</isInput>
