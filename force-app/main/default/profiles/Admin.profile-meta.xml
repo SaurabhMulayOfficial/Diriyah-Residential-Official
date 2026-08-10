@@ -17,6 +17,17 @@
         <apexClass>RES_AccountConvertedLeadController</apexClass>
         <enabled>true</enabled>
     </classAccesses>
+
+    <classAccesses>
+        <apexClass>RES_SoftHoldPostApprovalActions</apexClass>
+        <enabled>true</enabled>
+    </classAccesses>
+
+    <classAccesses>
+        <apexClass>RES_SendEmailInvocable</apexClass>
+        <enabled>true</enabled>
+    </classAccesses>
+
     <classAccesses>
         <apexClass>RES_AccountConvertedLeadControllerTest</apexClass>
         <enabled>true</enabled>
