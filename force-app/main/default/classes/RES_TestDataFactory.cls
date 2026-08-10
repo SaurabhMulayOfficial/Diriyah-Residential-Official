@@ -304,7 +304,7 @@ public class RES_TestDataFactory {
      * @param name Account name
      * @return Account with all fields
      */
-    public static Account createCompanyRTAccount(String name) {
+    public static Account createCompanyRTAccount(String name, String crNumber) {
         Id recordTypeId = Schema.SObjectType.Account
                          .getRecordTypeInfosByDeveloperName()
                          .get('RES_Company')
@@ -316,7 +316,9 @@ public class RES_TestDataFactory {
             BillingCountry = 'India',
             BillingStreet = 'Pune',
             BillingPostalCode = '411014',
-            BillingCity = 'Pune'
+            BillingCity = 'Pune',
+            RES_CR_number__c = crNumber, 
+            RES_Identification_Type__c = 'ZIT04'
         );
         insert acc;
         return acc;

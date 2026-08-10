@@ -11,6 +11,20 @@
         <inputParameters>
             <name>accountRecord</name>
             <value>
+                <elementReference>Get_Account_Related_To_Quote</elementReference>
+                <inputConfiguratorMode>Resource</inputConfiguratorMode>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>opportunityRecord</name>
+            <value>
+                <elementReference>Get_Opportunity_Related_To_Quote</elementReference>
+                <inputConfiguratorMode>Resource</inputConfiguratorMode>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>quoteRecord</name>
+            <value>
                 <elementReference>$Record</elementReference>
                 <inputConfiguratorMode>Resource</inputConfiguratorMode>
             </value>
@@ -37,14 +51,14 @@
                 </rightValue>
             </conditions>
             <connector>
-                <targetReference>Opportunity_Stage_Update_Validation_Action</targetReference>
+                <targetReference>Get_Account_Related_To_Quote</targetReference>
             </connector>
             <label>Switch On</label>
         </rules>
     </decisions>
     <environments>Default</environments>
-    <interviewLabel>RES Account - After Update {!$Flow.CurrentDateTime}</interviewLabel>
-    <label>RES Account - After Update - Update Opportunity Stage</label>
+    <interviewLabel>RES Quote - After Update - Update Opportunity Stage {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>RES Quote - After Update - Update Opportunity Stage</label>
     <processMetadataValues>
         <name>BuilderType</name>
         <value>
@@ -64,56 +78,84 @@
         </value>
     </processMetadataValues>
     <processType>AutoLaunchedFlow</processType>
+    <recordLookups>
+        <name>Get_Account_Related_To_Quote</name>
+        <label>Get Account Related To Quote</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Get_Opportunity_Related_To_Quote</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Id</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>$Record.AccountId</elementReference>
+            </value>
+        </filters>
+        <getFirstRecordOnly>true</getFirstRecordOnly>
+        <object>Account</object>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
+    <recordLookups>
+        <name>Get_Opportunity_Related_To_Quote</name>
+        <label>Get Opportunity Related To Quote</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Opportunity_Stage_Update_Validation_Action</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Id</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>$Record.OpportunityId</elementReference>
+            </value>
+        </filters>
+        <getFirstRecordOnly>true</getFirstRecordOnly>
+        <object>Opportunity</object>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
     <start>
         <locationX>0</locationX>
         <locationY>0</locationY>
         <connector>
             <targetReference>Check_Flow_Switch</targetReference>
         </connector>
-        <filterLogic>or</filterLogic>
+        <filterLogic>(1 AND 2) OR (3 AND 4)</filterLogic>
         <filters>
-            <field>RES_CR_number__c</field>
+            <field>IsSyncing</field>
+            <operator>EqualTo</operator>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </filters>
+        <filters>
+            <field>IsSyncing</field>
             <operator>IsChanged</operator>
             <value>
                 <booleanValue>true</booleanValue>
             </value>
         </filters>
         <filters>
-            <field>RES_Identification_Number__c</field>
-            <operator>IsChanged</operator>
+            <field>Status</field>
+            <operator>EqualTo</operator>
             <value>
-                <booleanValue>true</booleanValue>
+                <stringValue>Customer Approved</stringValue>
             </value>
         </filters>
         <filters>
-            <field>BillingCity</field>
+            <field>Status</field>
             <operator>IsChanged</operator>
             <value>
                 <booleanValue>true</booleanValue>
             </value>
         </filters>
-        <filters>
-            <field>BillingStreet</field>
-            <operator>IsChanged</operator>
-            <value>
-                <booleanValue>true</booleanValue>
-            </value>
-        </filters>
-        <filters>
-            <field>BillingPostalCode</field>
-            <operator>IsChanged</operator>
-            <value>
-                <booleanValue>true</booleanValue>
-            </value>
-        </filters>
-        <filters>
-            <field>BillingCountry</field>
-            <operator>IsChanged</operator>
-            <value>
-                <booleanValue>true</booleanValue>
-            </value>
-        </filters>
-        <object>Account</object>
+        <object>Quote</object>
         <recordTriggerType>Update</recordTriggerType>
         <triggerType>RecordAfterSave</triggerType>
     </start>
