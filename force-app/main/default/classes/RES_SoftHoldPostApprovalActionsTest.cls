@@ -11,13 +11,19 @@ private class RES_SoftHoldPostApprovalActionsTest {
 
         Id standardPricebookId = Test.getStandardPricebookId();
 
+        Id recordTypeId = Schema.SObjectType.Product2
+            .getRecordTypeInfosByDeveloperName()
+            .get('RES_Residential_Sales')
+            .getRecordTypeId();
+
         // Product 1 - used for Approve/Future Extension
         Product2 product1 = new Product2(
             Name = 'Unit A101',
             IsActive = true,
             RES_Unit_Status__c = 'Soft Hold',
             RES_Soft_Hold_Until__c = System.now().addHours(2),
-            RES_Is_In_Soft_Hold_Extension__c = true
+            RES_Is_In_Soft_Hold_Extension__c = true,
+            recordTypeId = recordTypeId
         );
 
         // Product 2 - used for Approve/Expired Extension

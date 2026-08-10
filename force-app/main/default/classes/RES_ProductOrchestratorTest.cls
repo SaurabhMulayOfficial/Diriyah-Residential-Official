@@ -9,10 +9,17 @@ private class RES_ProductOrchestratorTest {
         );
         insert acc;
 
+        Id recordTypeId = Schema.SObjectType.Product2
+            .getRecordTypeInfosByDeveloperName()
+            .get('RES_Residential_Sales')
+            .getRecordTypeId();
+
+
         Product2 product = new Product2(
             Name = 'Unit A101',
             IsActive = true,
             RES_Unit_Status__c = 'Available',
+            recordTypeId = recordTypeId,
             RES_HardBlock_Start__c = System.now()
         );
         insert product;

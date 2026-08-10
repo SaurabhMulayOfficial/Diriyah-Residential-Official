@@ -6,6 +6,10 @@
     <picklistValues>
         <picklist>Family</picklist>
         <values>
+            <fullName>1003</fullName>
+            <default>false</default>
+        </values>
+        <values>
             <fullName>None</fullName>
             <default>false</default>
         </values>
@@ -14,6 +18,29 @@
         <picklist>QuantityUnitOfMeasure</picklist>
         <values>
             <fullName>Each</fullName>
+            <default>false</default>
+        </values>
+    </picklistValues>
+    <picklistValues>
+        <picklist>RES_Unit_Status__c</picklist>
+        <values>
+            <fullName>Draft</fullName>
+            <default>true</default>
+        </values>
+        <values>
+            <fullName>Soft Hold</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Hard Block</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Available</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Sold</fullName>
             <default>false</default>
         </values>
     </picklistValues>
