@@ -1,7 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <FlexiPage xmlns="http://soap.sforce.com/2006/04/metadata">
     <flexiPageRegions>
-                <itemInstances>
+        <itemInstances>
+            <componentInstance>
+                <componentName>resLineItemAlertToast</componentName>
+                <identifier>c_resLineItemAlertToast</identifier>
+            </componentInstance>
+        </itemInstances>
+        <itemInstances>
             <componentInstance>
                 <componentInstanceProperties>
                     <name>actionNames</name>
@@ -16,7 +22,7 @@
                             <value>SyncQuote</value>
                         </valueListItems>
                         <valueListItems>
-                            <value>EmailQuote</value>
+                            <value>CreateOrder</value>
                         </valueListItems>
                         <valueListItems>
                             <value>CreateContract</value>
@@ -54,17 +60,6 @@
                 <identifier>force_highlightsPanel</identifier>
             </componentInstance>
         </itemInstances>
-        <itemInstances>
-            <componentInstance>
-                <componentName>resLineItemAlertToast</componentName>
-                <identifier>c_resLineItemAlertToast</identifier>
-            </componentInstance>
-        </itemInstances>
-        <mode>Replace</mode>
-        <name>header</name>
-        <type>Region</type>
-    </flexiPageRegions>
-    <flexiPageRegions>
         <itemInstances>
             <componentInstance>
                 <componentInstanceProperties>
@@ -256,6 +251,13 @@
                 </fieldInstanceProperties>
                 <fieldItem>Record.OwnerId</fieldItem>
                 <identifier>RecordOwnerIdField</identifier>
+                <visibilityRule>
+                    <criteria>
+                        <leftValue>{!$User.Profile.Name}</leftValue>
+                        <operator>EQUAL</operator>
+                        <rightValue>System Administrator</rightValue>
+                    </criteria>
+                </visibilityRule>
             </fieldInstance>
         </itemInstances>
         <name>Facet-bef25890-bde0-41e3-8a4d-40550ea23bfd</name>
