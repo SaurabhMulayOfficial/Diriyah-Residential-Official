@@ -17,6 +17,17 @@
         <apexClass>RES_AccountConvertedLeadController</apexClass>
         <enabled>true</enabled>
     </classAccesses>
+
+    <classAccesses>
+        <apexClass>RES_SoftHoldPostApprovalActions</apexClass>
+        <enabled>true</enabled>
+    </classAccesses>
+
+    <classAccesses>
+        <apexClass>RES_SendEmailInvocable</apexClass>
+        <enabled>true</enabled>
+    </classAccesses>
+
     <classAccesses>
         <apexClass>RES_AccountConvertedLeadControllerTest</apexClass>
         <enabled>true</enabled>
@@ -1882,6 +1893,26 @@
     </fieldPermissions>
     <fieldPermissions>
         <editable>true</editable>
+        <field>Product2.RES_Soft_Hold_Start__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>Product2.RES_Soft_Hold_Until__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>Product2.RES_Is_In_Soft_Hold_Extension__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>Product2.RES_HardBlock_Start__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
         <field>Product2.RES_Business_Entity__c</field>
         <readable>true</readable>
     </fieldPermissions>
@@ -1945,6 +1976,23 @@
         <field>Product2.StockKeepingUnit</field>
         <readable>true</readable>
     </fieldPermissions>
+
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>Quote.RES_Extend_Soft_Hold_By_Hours__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>Quote.RES_Product_Soft_Held__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>Quote.RES_Approval_Request_Remarks__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+
     <fieldPermissions>
         <editable>true</editable>
         <field>ProductCatalog.RES_BP_Number__c</field>
@@ -2098,6 +2146,11 @@
     <fieldPermissions>
         <editable>true</editable>
         <field>Contract.SourceQuoteId</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>Contract.RES_Product_Soft_Held__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>

@@ -3,6 +3,12 @@
     <flexiPageRegions>
         <itemInstances>
             <componentInstance>
+                <componentName>resLineItemAlertToast</componentName>
+                <identifier>c_resLineItemAlertToast</identifier>
+            </componentInstance>
+        </itemInstances>
+        <itemInstances>
+            <componentInstance>
                 <componentInstanceProperties>
                     <name>actionNames</name>
                     <valueList>
@@ -16,10 +22,13 @@
                             <value>SyncQuote</value>
                         </valueListItems>
                         <valueListItems>
-                            <value>EmailQuote</value>
+                            <value>CreateOrder</value>
                         </valueListItems>
                         <valueListItems>
                             <value>CreateContract</value>
+                        </valueListItems>
+                        <valueListItems>
+                            <value>Quote.RES_Request_Soft_Hold_Extension</value>
                         </valueListItems>
                     </valueList>
                 </componentInstanceProperties>
@@ -45,7 +54,7 @@
                 </componentInstanceProperties>
                 <componentInstanceProperties>
                     <name>numVisibleActions</name>
-                    <value>3</value>
+                    <value>6</value>
                 </componentInstanceProperties>
                 <componentName>force:highlightsPanel</componentName>
                 <identifier>force_highlightsPanel</identifier>
@@ -53,8 +62,27 @@
         </itemInstances>
         <itemInstances>
             <componentInstance>
-                <componentName>resLineItemAlertToast</componentName>
-                <identifier>c_resLineItemAlertToast</identifier>
+                <componentInstanceProperties>
+                    <name>body</name>
+                    <value>{!$Label.RES_ProductSoftHoldMessage}</value>
+                </componentInstanceProperties>
+                <componentInstanceProperties>
+                    <name>header</name>
+                    <value>{!$Label.RES_ProductSoftHoldTitle}</value>
+                </componentInstanceProperties>
+                <componentInstanceProperties>
+                    <name>variant</name>
+                    <value>error</value>
+                </componentInstanceProperties>
+                <componentName>productSoftHoldBanner</componentName>
+                <identifier>c_productSoftHoldBanner</identifier>
+                <visibilityRule>
+                    <criteria>
+                        <leftValue>{!Record.RES_Product_Soft_Held__c}</leftValue>
+                        <operator>EQUAL</operator>
+                        <rightValue>true</rightValue>
+                    </criteria>
+                </visibilityRule>
             </componentInstance>
         </itemInstances>
         <mode>Replace</mode>
@@ -223,6 +251,13 @@
                 </fieldInstanceProperties>
                 <fieldItem>Record.OwnerId</fieldItem>
                 <identifier>RecordOwnerIdField</identifier>
+                <visibilityRule>
+                    <criteria>
+                        <leftValue>{!$User.Profile.Name}</leftValue>
+                        <operator>EQUAL</operator>
+                        <rightValue>System Administrator</rightValue>
+                    </criteria>
+                </visibilityRule>
             </fieldInstance>
         </itemInstances>
         <name>Facet-bef25890-bde0-41e3-8a4d-40550ea23bfd</name>

@@ -1,0 +1,23 @@
+<template>
+    <div
+        class={bannerClass}
+        role="alert">
+
+        <lightning-icon
+            icon-name={iconName}
+            alternative-text={variant}
+            size="small"
+            class="slds-m-right_medium">
+        </lightning-icon>
+
+        <div class="slds-grow">
+            <h1 class="slds-text-heading_medium slds-text-title_bold">
+                {header}
+            </h1>
+
+            <h2 class="slds-m-top_small">
+                {body}
+            </h2>
+        </div>
+    </div>
+</template>
