@@ -103,6 +103,28 @@
         </rules>
     </decisions>
     <decisions>
+        <name>Check_Flow_Switch</name>
+        <label>Check Flow Switch</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnectorLabel>Switch Off</defaultConnectorLabel>
+        <rules>
+            <name>Switch_On</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Setup.RES_Config_Switch__c.RES_Flows_Off__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Get_Residential_Sales_Contract_Record_Type</targetReference>
+            </connector>
+            <label>Switch On</label>
+        </rules>
+    </decisions>
+    <decisions>
         <name>Check_Opp_RT</name>
         <label>Check Opp RT</label>
         <locationX>0</locationX>
@@ -340,7 +362,7 @@
         <locationX>0</locationX>
         <locationY>0</locationY>
         <connector>
-            <targetReference>Get_Residential_Sales_Contract_Record_Type</targetReference>
+            <targetReference>Check_Flow_Switch</targetReference>
         </connector>
         <filterLogic>(1 AND 2 AND 3 AND 4 AND 5) OR (6 AND 7 AND 8)</filterLogic>
         <filters>
