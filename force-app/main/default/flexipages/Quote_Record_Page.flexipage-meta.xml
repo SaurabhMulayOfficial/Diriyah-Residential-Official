@@ -56,6 +56,17 @@
         </itemInstances>
         <itemInstances>
             <componentInstance>
+                <componentName>resLineItemAlertToast</componentName>
+                <identifier>c_resLineItemAlertToast</identifier>
+            </componentInstance>
+        </itemInstances>
+        <mode>Replace</mode>
+        <name>header</name>
+        <type>Region</type>
+    </flexiPageRegions>
+    <flexiPageRegions>
+        <itemInstances>
+            <componentInstance>
                 <componentInstanceProperties>
                     <name>body</name>
                     <value>{!$Label.RES_ProductSoftHoldMessage}</value>
