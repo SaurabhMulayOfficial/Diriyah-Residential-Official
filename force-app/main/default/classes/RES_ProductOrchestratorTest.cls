@@ -12,7 +12,7 @@ private class RES_ProductOrchestratorTest {
         Product2 product = new Product2(
             Name = 'Unit A101',
             IsActive = true,
-            RES_Unit_Status__c = 'Hard Block',
+            RES_Unit_Status__c = 'Available',
             RES_HardBlock_Start__c = System.now()
         );
         insert product;
