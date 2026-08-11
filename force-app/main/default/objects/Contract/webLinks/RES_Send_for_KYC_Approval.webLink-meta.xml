@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<WebLink xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>RES_Send_for_KYC_Approval</fullName>
+    <availability>online</availability>
+    <displayType>button</displayType>
+    <encodingKey>UTF-8</encodingKey>
+    <linkType>url</linkType>
+    <masterLabel>Send for KYC Approval</masterLabel>
+    <openType>replace</openType>
+    <protected>false</protected>
+    <url>/flow/RES_Autolaunch_Flow_Contract_KYC_Approval_Process?recordId={!Contract.Id}&amp;submitter={!$User.Id}&amp;retURL={!Contract.Id}</url>
+</WebLink>

@@ -1,6 +1,98 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Flow xmlns="http://soap.sforce.com/2006/04/metadata">
     <actionCalls>
+        <name>Send_Custom_Notification_On_KYC_Approval</name>
+        <label>Send Custom Notification On KYC Approval</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <actionName>customNotificationAction</actionName>
+        <actionType>customNotificationAction</actionType>
+        <flowTransactionModel>CurrentTransaction</flowTransactionModel>
+        <inputParameters>
+            <name>customNotifTypeId</name>
+            <value>
+                <elementReference>Get_Push_Notification.Id</elementReference>
+                <inputConfiguratorMode>Resource</inputConfiguratorMode>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>recipientIds</name>
+            <value>
+                <elementReference>PushNotificationRecipientIds</elementReference>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>title</name>
+            <value>
+                <elementReference>ApprovalBody</elementReference>
+                <inputConfiguratorMode>Resource</inputConfiguratorMode>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>body</name>
+            <value>
+                <inputConfiguratorMode>Resource</inputConfiguratorMode>
+                <stringValue>KYC Approval Update</stringValue>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>targetId</name>
+            <value>
+                <elementReference>Get_Contract.Id</elementReference>
+                <inputConfiguratorMode>Resource</inputConfiguratorMode>
+            </value>
+        </inputParameters>
+        <nameSegment>customNotificationAction</nameSegment>
+        <offset>0</offset>
+    </actionCalls>
+    <actionCalls>
+        <name>Send_Email_to_Contract_Owner</name>
+        <label>Send Email to Contract Owner</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <actionName>RES_SendEmailInvocable</actionName>
+        <actionType>apex</actionType>
+        <connector>
+            <targetReference>Get_Push_Notification</targetReference>
+        </connector>
+        <flowTransactionModel>Automatic</flowTransactionModel>
+        <inputParameters>
+            <name>emailBody</name>
+            <value>
+                <elementReference>Get_Apex_Template.Html_Body__c</elementReference>
+                <inputConfiguratorMode>Resource</inputConfiguratorMode>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>emailSubject</name>
+            <value>
+                <elementReference>Get_Apex_Template.Subject__c</elementReference>
+                <inputConfiguratorMode>Resource</inputConfiguratorMode>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>mergeFields</name>
+            <value>
+                <elementReference>mergeFields</elementReference>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>orgWideEmailAddressId</name>
+            <value>
+                <elementReference>Get_OrgWide_Email.Id</elementReference>
+                <inputConfiguratorMode>Resource</inputConfiguratorMode>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>recipients</name>
+            <value>
+                <elementReference>recipients</elementReference>
+            </value>
+        </inputParameters>
+        <nameSegment>RES_SendEmailInvocable</nameSegment>
+        <offset>0</offset>
+    </actionCalls>
+    <actionCalls>
         <name>Send_Notification_to_Quote_Owner</name>
         <label>Send Notification to Quote Owner</label>
         <locationX>0</locationX>
@@ -46,6 +138,57 @@
     </actionCalls>
     <apiVersion>67.0</apiVersion>
     <areMetricsLoggedToDataCloud>false</areMetricsLoggedToDataCloud>
+    <assignments>
+        <name>Hydrate_Merge_Field</name>
+        <label>Hydrate Merge Field</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignmentItems>
+            <assignToReference>recipients</assignToReference>
+            <operator>Add</operator>
+            <value>
+                <elementReference>Get_Contract.Owner.Email</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>mergeFields</assignToReference>
+            <operator>Add</operator>
+            <value>
+                <elementReference>ContractRecipient</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>mergeFields</assignToReference>
+            <operator>Add</operator>
+            <value>
+                <elementReference>ApprovalStatus</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>mergeFields</assignToReference>
+            <operator>Add</operator>
+            <value>
+                <elementReference>Get_Contract.ContractNumber</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>mergeFields</assignToReference>
+            <operator>Add</operator>
+            <value>
+                <elementReference>ContractURL</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>mergeFields</assignToReference>
+            <operator>Add</operator>
+            <value>
+                <elementReference>ApproverRemarks</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>If_everything_Looks_Good_Contract</targetReference>
+        </connector>
+    </assignments>
     <assignments>
         <name>Merge_Fields</name>
         <label>Merge Fields</label>
@@ -97,6 +240,81 @@
             <targetReference>If_Everything_Looks_Good</targetReference>
         </connector>
     </assignments>
+    <assignments>
+        <name>Push_Notification_Recipient</name>
+        <label>Push Notification Recipient</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignmentItems>
+            <assignToReference>PushNotificationRecipientIds</assignToReference>
+            <operator>Add</operator>
+            <value>
+                <elementReference>Get_Contract.OwnerId</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Send_Custom_Notification_On_KYC_Approval</targetReference>
+        </connector>
+    </assignments>
+    <decisions>
+        <name>Check_Object_Name</name>
+        <label>Check Object Name</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>If_Object_is_Quote</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>objectName</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Quote</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Get_Quote_Product</targetReference>
+            </connector>
+            <label>If Object is &quot;Quote&quot;</label>
+        </rules>
+        <rules>
+            <name>Else_If_Contract</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>objectName</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Contract</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Get_Contract</targetReference>
+            </connector>
+            <label>Else If &quot;Contract&quot;</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>If_Contract_Is_Not_Null</name>
+        <label>If Contract Is Not Null</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Not_Null</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>Get_Contract</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Hydrate_Merge_Field</targetReference>
+            </connector>
+            <label>Not Null</label>
+        </rules>
+    </decisions>
     <decisions>
         <name>If_Everything_Looks_Good</name>
         <label>If Everything Looks Good?</label>
@@ -134,6 +352,42 @@
         </rules>
     </decisions>
     <decisions>
+        <name>If_everything_Looks_Good_Contract</name>
+        <label>If everything Looks Good?</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Yes_C</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>Get_OrgWide_Email</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>Get_Apex_Template</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>recipients</leftValueReference>
+                <operator>IsEmpty</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Send_Email_to_Contract_Owner</targetReference>
+            </connector>
+            <label>Yes</label>
+        </rules>
+    </decisions>
+    <decisions>
         <name>If_QLI_Exist</name>
         <label>If QLI Exist</label>
         <locationX>0</locationX>
@@ -150,16 +404,34 @@
                 </rightValue>
             </conditions>
             <connector>
-                <targetReference>Get_Apex_Template</targetReference>
+                <targetReference>Merge_Fields</targetReference>
             </connector>
             <label>Yes</label>
         </rules>
     </decisions>
     <environments>Default</environments>
     <formulas>
+        <name>ApprovalBody</name>
+        <dataType>String</dataType>
+        <expression>&apos;KYC for Contract &apos; +  {!Get_Contract.ContractNumber} +  &apos; has been &apos; + {!ApprovalStatus} + &apos;.&apos;  + &apos;Please review the contract for more details.&apos;</expression>
+    </formulas>
+    <formulas>
         <name>ApprovalStatus</name>
         <dataType>String</dataType>
         <expression>IF({!action} == &apos;Approve&apos;, &apos;Approved&apos;, &apos;Rejected&apos;)</expression>
+    </formulas>
+    <formulas>
+        <name>ContractRecipient</name>
+        <dataType>String</dataType>
+        <expression>{!Get_Contract.Owner.FirstName} + &apos; &apos; + {!Get_Contract.Owner.LastName}</expression>
+    </formulas>
+    <formulas>
+        <name>ContractURL</name>
+        <dataType>String</dataType>
+        <expression>LEFT({!$Api.Partner_Server_URL_600}, FIND(&quot;/services&quot;, {!$Api.Partner_Server_URL_600})) &amp;
+&quot;/lightning/r/Contract/&quot; &amp;
+{!recordId} &amp;
+&quot;/view&quot;</expression>
     </formulas>
     <formulas>
         <name>quoteURL</name>
@@ -202,18 +474,39 @@
         <locationY>0</locationY>
         <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
         <connector>
-            <targetReference>Get_OrgWide_Email</targetReference>
+            <targetReference>Check_Object_Name</targetReference>
         </connector>
         <filterLogic>and</filterLogic>
         <filters>
             <field>DeveloperName</field>
             <operator>EqualTo</operator>
             <value>
-                <stringValue>Soft_Hold_Approve_Reject_Notification</stringValue>
+                <elementReference>ApexEmailTemplateName</elementReference>
             </value>
         </filters>
         <getFirstRecordOnly>true</getFirstRecordOnly>
         <object>RES_Apex_Email_Template__mdt</object>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
+    <recordLookups>
+        <name>Get_Contract</name>
+        <label>Get Contract</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>If_Contract_Is_Not_Null</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Id</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>recordId</elementReference>
+            </value>
+        </filters>
+        <getFirstRecordOnly>true</getFirstRecordOnly>
+        <object>Contract</object>
         <storeOutputAutomatically>true</storeOutputAutomatically>
     </recordLookups>
     <recordLookups>
@@ -223,7 +516,7 @@
         <locationY>0</locationY>
         <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
         <connector>
-            <targetReference>Merge_Fields</targetReference>
+            <targetReference>Get_Apex_Template</targetReference>
         </connector>
         <filterLogic>and</filterLogic>
         <filters>
@@ -235,6 +528,27 @@
         </filters>
         <getFirstRecordOnly>true</getFirstRecordOnly>
         <object>OrgWideEmailAddress</object>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
+    <recordLookups>
+        <name>Get_Push_Notification</name>
+        <label>Get Push Notification</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Push_Notification_Recipient</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>DeveloperName</field>
+            <operator>EqualTo</operator>
+            <value>
+                <stringValue>RES_KYC_Approval_Update_Push_Notification</stringValue>
+            </value>
+        </filters>
+        <getFirstRecordOnly>true</getFirstRecordOnly>
+        <object>CustomNotificationType</object>
         <storeOutputAutomatically>true</storeOutputAutomatically>
     </recordLookups>
     <recordLookups>
@@ -262,12 +576,19 @@
         <locationX>0</locationX>
         <locationY>0</locationY>
         <connector>
-            <targetReference>Get_Quote_Product</targetReference>
+            <targetReference>Get_OrgWide_Email</targetReference>
         </connector>
     </start>
     <status>Active</status>
     <variables>
         <name>action</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>true</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <name>ApexEmailTemplateName</name>
         <dataType>String</dataType>
         <isCollection>false</isCollection>
         <isInput>true</isInput>
@@ -282,6 +603,20 @@
     </variables>
     <variables>
         <name>mergeFields</name>
+        <dataType>String</dataType>
+        <isCollection>true</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <name>objectName</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>true</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <name>PushNotificationRecipientIds</name>
         <dataType>String</dataType>
         <isCollection>true</isCollection>
         <isInput>false</isInput>

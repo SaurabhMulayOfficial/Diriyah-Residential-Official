@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <label>Contract Kyc Approval Email Template</label>
+    <protected>false</protected>
+    <values>
+        <field>Html_Body__c</field>
+        <value xsi:type="xsd:string">&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;head&gt;
+&lt;meta charset=&quot;UTF-8&quot;&gt;
+&lt;title&gt;KYC Approval Required&lt;/title&gt;
+&lt;/head&gt;
+
+&lt;body style=&quot;margin:0;padding:0;background-color:#F4F4F4;&quot;&gt;
+
+&lt;table width=&quot;100%&quot; cellpadding=&quot;0&quot; cellspacing=&quot;0&quot; border=&quot;0&quot; bgcolor=&quot;#F4F4F4&quot;&gt;
+&lt;tr&gt;
+&lt;td align=&quot;center&quot; style=&quot;padding:30px 15px;&quot;&gt;
+
+&lt;table width=&quot;600&quot; cellpadding=&quot;0&quot; cellspacing=&quot;0&quot; border=&quot;0&quot;
+       style=&quot;background:#FFFFFF;border-collapse:collapse;&quot;&gt;
+
+    &lt;!-- Header --&gt;
+    &lt;tr&gt;
+        &lt;td bgcolor=&quot;#C89B5A&quot;
+            style=&quot;background-color:#C89B5A;
+                   padding:30px;
+                   text-align:center;
+                   font-family:Arial,Helvetica,sans-serif;&quot;&gt;
+
+            &lt;h1 style=&quot;margin:0;
+                       color:#FFFFFF;
+                       font-size:28px;
+                       font-weight:bold;
+                       line-height:36px;&quot;&gt;
+                KYC Approval Required
+            &lt;/h1&gt;
+
+            &lt;p style=&quot;margin:12px 0 0;
+                      color:#FFFFFF;
+                      font-size:15px;
+                      line-height:22px;&quot;&gt;
+                A KYC approval request is awaiting your review.
+            &lt;/p&gt;
+
+        &lt;/td&gt;
+    &lt;/tr&gt;
+
+    &lt;!-- Body --&gt;
+    &lt;tr&gt;
+        &lt;td bgcolor=&quot;#FFFFFF&quot;
+            style=&quot;padding:35px;
+                   font-family:Arial,Helvetica,sans-serif;
+                   color:#444444;&quot;&gt;
+
+            &lt;p style=&quot;margin:0 0 20px;
+                      font-size:16px;
+                      line-height:24px;&quot;&gt;
+                Hello &lt;strong&gt;{0}&lt;/strong&gt;,
+            &lt;/p&gt;
+
+            &lt;p style=&quot;margin:0 0 18px;
+                      font-size:15px;
+                      line-height:26px;&quot;&gt;
+                A &lt;strong&gt;KYC approval request&lt;/strong&gt; has been submitted and is awaiting your review.
+            &lt;/p&gt;
+
+            &lt;p style=&quot;margin:0 0 30px;
+                      font-size:15px;
+                      line-height:26px;&quot;&gt;
+                Please review the contract and complete the approval request at your earliest convenience.
+            &lt;/p&gt;
+
+            &lt;!-- Information Box --&gt;
+            &lt;table width=&quot;100%&quot;
+                   cellpadding=&quot;14&quot;
+                   cellspacing=&quot;0&quot;
+                   border=&quot;0&quot;
+                   bgcolor=&quot;#FBF8F2&quot;
+                   style=&quot;background-color:#FBF8F2;
+                          border:1px solid #EADFC9;
+                          border-collapse:collapse;&quot;&gt;
+
+                &lt;tr&gt;
+                    &lt;td style=&quot;font-family:Arial,Helvetica,sans-serif;
+                               font-size:15px;
+                               color:#444444;
+                               line-height:24px;&quot;&gt;
+                        Use the buttons below to review the contract and access the approval work item.
+                    &lt;/td&gt;
+                &lt;/tr&gt;
+
+            &lt;/table&gt;
+
+            &lt;!-- Spacer --&gt;
+            &lt;table width=&quot;100%&quot; cellpadding=&quot;0&quot; cellspacing=&quot;0&quot;&gt;
+                &lt;tr&gt;
+                    &lt;td height=&quot;30&quot;&gt;&amp;nbsp;&lt;/td&gt;
+                &lt;/tr&gt;
+            &lt;/table&gt;
+
+            &lt;!-- Buttons --&gt;
+            &lt;table align=&quot;center&quot; cellpadding=&quot;0&quot; cellspacing=&quot;0&quot; border=&quot;0&quot;&gt;
+                &lt;tr&gt;
+
+                    &lt;td align=&quot;center&quot; bgcolor=&quot;#E9D7C2&quot;&gt;
+                        &lt;a href=&quot;{1}&quot;
+                           style=&quot;display:block;
+                                  width:180px;
+                                  line-height:46px;
+                                  text-align:center;
+                                  text-decoration:none;
+                                  color:#000000;
+                                  font-family:Arial,Helvetica,sans-serif;
+                                  font-size:15px;
+                                  font-weight:bold;&quot;&gt;
+                            View Contract
+                        &lt;/a&gt;
+                    &lt;/td&gt;
+
+                    &lt;td width=&quot;15&quot;&gt;&amp;nbsp;&lt;/td&gt;
+
+                    &lt;td align=&quot;center&quot; bgcolor=&quot;#2E7D32&quot;&gt;
+                        &lt;a href=&quot;{2}&quot;
+                           style=&quot;display:block;
+                                  width:220px;
+                                  line-height:46px;
+                                  text-align:center;
+                                  text-decoration:none;
+                                  color:#FFFFFF;
+                                  font-family:Arial,Helvetica,sans-serif;
+                                  font-size:15px;
+                                  font-weight:bold;&quot;&gt;
+                            Open Approval Work Item
+                        &lt;/a&gt;
+                    &lt;/td&gt;
+
+                &lt;/tr&gt;
+            &lt;/table&gt;
+
+            &lt;p style=&quot;margin:35px 0 0;
+                      font-size:15px;
+                      line-height:26px;
+                      color:#444444;&quot;&gt;
+                Thank you for your prompt attention to this request.
+            &lt;/p&gt;
+
+        &lt;/td&gt;
+    &lt;/tr&gt;
+
+    &lt;!-- Footer --&gt;
+    &lt;tr&gt;
+        &lt;td bgcolor=&quot;#F9F6EF&quot;
+            style=&quot;background-color:#F9F6EF;
+                   padding:22px;
+                   text-align:center;
+                   border-top:1px solid #ECE4D5;
+                   font-family:Arial,Helvetica,sans-serif;&quot;&gt;
+
+            &lt;p style=&quot;margin:0;
+                      color:#666666;
+                      font-size:14px;&quot;&gt;
+                Regards,
+            &lt;/p&gt;
+
+            &lt;p style=&quot;margin:8px 0 0;
+                      color:#7A5A2A;
+                      font-size:15px;
+                      font-weight:bold;&quot;&gt;
+                CRM System
+            &lt;/p&gt;
+
+        &lt;/td&gt;
+    &lt;/tr&gt;
+
+&lt;/table&gt;
+
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/table&gt;
+
+&lt;/body&gt;
+&lt;/html&gt;</value>
+    </values>
+    <values>
+        <field>Subject__c</field>
+        <value xsi:type="xsd:string">KYC Approval</value>
+    </values>
+</CustomMetadata>
