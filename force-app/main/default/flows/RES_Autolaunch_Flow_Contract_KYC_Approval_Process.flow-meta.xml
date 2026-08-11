@@ -3,90 +3,57 @@
     <apiVersion>67.0</apiVersion>
     <areMetricsLoggedToDataCloud>false</areMetricsLoggedToDataCloud>
     <decisions>
-        <name>Check_Flow_Enable_Flag</name>
-        <label>Check Flow Enable Flag</label>
+        <name>Was_KYC_Approved</name>
+        <label>Was KYC Approved?</label>
         <locationX>0</locationX>
         <locationY>0</locationY>
-        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <defaultConnectorLabel>Rejected</defaultConnectorLabel>
         <rules>
-            <name>If_Not_True</name>
+            <name>Approved</name>
             <conditionLogic>and</conditionLogic>
             <conditions>
-                <leftValueReference>$Setup.RES_Config_Switch__c.RES_Flows_Off__c</leftValueReference>
+                <leftValueReference>Legal_Team_Approval.Outputs.approvalDecision</leftValueReference>
                 <operator>EqualTo</operator>
                 <rightValue>
-                    <booleanValue>false</booleanValue>
+                    <stringValue>Approve</stringValue>
                 </rightValue>
             </conditions>
             <connector>
-                <targetReference>Soft_Hold_Extension_requested</targetReference>
+                <targetReference>Update_Contract_Record_Stage</targetReference>
             </connector>
-            <label>If Not True</label>
-        </rules>
-    </decisions>
-    <decisions>
-        <name>Soft_Hold_Extension_requested</name>
-        <label>Soft Hold Extension requested?</label>
-        <locationX>0</locationX>
-        <locationY>0</locationY>
-        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
-        <rules>
-            <name>Extension_requested</name>
-            <conditionLogic>and</conditionLogic>
-            <conditions>
-                <leftValueReference>$Record.RES_Extend_Soft_Hold_By_Hours__c</leftValueReference>
-                <operator>IsChanged</operator>
-                <rightValue>
-                    <booleanValue>true</booleanValue>
-                </rightValue>
-            </conditions>
-            <conditions>
-                <leftValueReference>$Record.RES_Extend_Soft_Hold_By_Hours__c</leftValueReference>
-                <operator>IsNull</operator>
-                <rightValue>
-                    <booleanValue>false</booleanValue>
-                </rightValue>
-            </conditions>
-            <conditions>
-                <leftValueReference>$Record.RES_Extend_Soft_Hold_By_Hours__c</leftValueReference>
-                <operator>GreaterThan</operator>
-                <rightValue>
-                    <numberValue>0.0</numberValue>
-                </rightValue>
-            </conditions>
-            <connector>
-                <targetReference>Approval_Stage_Background_Actions</targetReference>
-            </connector>
-            <label>Yes</label>
+            <label>Approved</label>
         </rules>
     </decisions>
     <environments>Default</environments>
-    <interviewLabel>Quote Approval Flow - Quote Approval Management {!$Flow.CurrentDateTime}</interviewLabel>
-    <label>Quote Approval Flow - Quote Approval Management</label>
+    <interviewLabel>RES Autolaunch Flow - Contract KYC Approval Process {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>RES Autolaunch Flow - Contract KYC Approval Process</label>
     <orchestratedStages>
-        <name>Approval_Stage_Background_Actions</name>
-        <label>Approval Stage + Background Actions</label>
+        <name>KYC_Review_Stage</name>
+        <label>KYC Review Stage</label>
         <locationX>0</locationX>
         <locationY>0</locationY>
+        <connector>
+            <targetReference>Was_KYC_Approved</targetReference>
+        </connector>
         <exitConditionLogic>and</exitConditionLogic>
         <stageSteps>
-            <name>Raise_Extension_Approval</name>
+            <name>Legal_Team_Approval</name>
             <actionName>standard_approvals__EvaluateApproval</actionName>
             <actionType>stepApproval</actionType>
             <assignees>
                 <assignee>
-                    <stringValue>RES_Soft_Hold_Extension_Approvals</stringValue>
+                    <stringValue>RES_Legal_Team</stringValue>
                 </assignee>
                 <assigneeType>Group</assigneeType>
             </assignees>
-            <canAssigneeEdit>false</canAssigneeEdit>
+            <canAssigneeEdit>true</canAssigneeEdit>
             <debugSimulateStep>false</debugSimulateStep>
             <entryConditionLogic>and</entryConditionLogic>
             <exitConditionLogic>and</exitConditionLogic>
             <inputParameters>
                 <name>ActionInput__RecordId</name>
                 <value>
-                    <elementReference>$Record.Id</elementReference>
+                    <elementReference>recordId</elementReference>
                 </value>
             </inputParameters>
             <inputParameters>
@@ -113,7 +80,7 @@
             <inputParameters>
                 <name>ActionInput__RequiredMultiMemberApprovalPercentage</name>
             </inputParameters>
-            <label>Raise Extension Approval</label>
+            <label>Legal Team Approval</label>
             <outputConfigParams>
                 <name>approvalComments</name>
                 <value xsi:nil="true"/>
@@ -124,11 +91,11 @@
             </outputConfigParams>
             <requiresAsyncProcessing>false</requiresAsyncProcessing>
             <runAsUser>false</runAsUser>
-            <shouldLock>false</shouldLock>
+            <shouldLock>true</shouldLock>
             <stepSubtype>ApprovalStep</stepSubtype>
         </stageSteps>
         <stageSteps>
-            <name>Send_Approval_Emails</name>
+            <name>Send_Approval_email_to_Legal_team</name>
             <actionName>RES_Autolaunch_Flow_Contract_KYC_Approval_Emails</actionName>
             <actionType>stepBackground</actionType>
             <canAssigneeEdit>false</canAssigneeEdit>
@@ -138,69 +105,35 @@
             <inputParameters>
                 <name>ApexEmailTemplateName</name>
                 <value>
-                    <stringValue>Soft_Hold_Extension_Request</stringValue>
+                    <stringValue>Contract_Kyc_Approval_Email_Template</stringValue>
                 </value>
             </inputParameters>
             <inputParameters>
                 <name>GroupName</name>
                 <value>
-                    <stringValue>RES_Soft_Hold_Extension_Approvals</stringValue>
+                    <stringValue>RES_Legal_Team</stringValue>
                 </value>
             </inputParameters>
             <inputParameters>
                 <name>ObjectName</name>
                 <value>
-                    <stringValue>Quote</stringValue>
+                    <stringValue>Contract</stringValue>
                 </value>
             </inputParameters>
             <inputParameters>
                 <name>recordId</name>
                 <value>
-                    <elementReference>$Record.Id</elementReference>
+                    <elementReference>recordId</elementReference>
                 </value>
             </inputParameters>
-            <label>Send Approval Emails</label>
+            <label>Send Approval email to Legal team</label>
             <requiresAsyncProcessing>false</requiresAsyncProcessing>
             <runAsUser>false</runAsUser>
             <shouldLock>false</shouldLock>
             <stepSubtype>BackgroundStep</stepSubtype>
         </stageSteps>
         <stageSteps>
-            <name>Execute_Post_Approval_Actions</name>
-            <actionName>RES_Autolaunch_Flow_Execute_Soft_Hold_Post_Approval_Actions</actionName>
-            <actionType>stepBackground</actionType>
-            <canAssigneeEdit>false</canAssigneeEdit>
-            <debugSimulateStep>false</debugSimulateStep>
-            <entryConditionLogic>and</entryConditionLogic>
-            <entryConditions>
-                <conditionType>EntryCondition</conditionType>
-                <leftValueReference>Raise_Extension_Approval.Status</leftValueReference>
-                <operator>EqualTo</operator>
-                <rightValue>
-                    <stringValue>Completed</stringValue>
-                </rightValue>
-            </entryConditions>
-            <exitConditionLogic>and</exitConditionLogic>
-            <inputParameters>
-                <name>action</name>
-                <value>
-                    <elementReference>Raise_Extension_Approval.Outputs.approvalDecision</elementReference>
-                </value>
-            </inputParameters>
-            <inputParameters>
-                <name>recordId</name>
-                <value>
-                    <elementReference>$Record.Id</elementReference>
-                </value>
-            </inputParameters>
-            <label>Execute Post Approval Actions</label>
-            <requiresAsyncProcessing>false</requiresAsyncProcessing>
-            <runAsUser>false</runAsUser>
-            <shouldLock>false</shouldLock>
-            <stepSubtype>BackgroundStep</stepSubtype>
-        </stageSteps>
-        <stageSteps>
-            <name>Notify_Owner_On_Approval_Update</name>
+            <name>Send_Approval_Emails</name>
             <actionName>RES_Autolaunch_Flow_Send_Approval_Emails</actionName>
             <actionType>stepBackground</actionType>
             <canAssigneeEdit>false</canAssigneeEdit>
@@ -208,7 +141,7 @@
             <entryConditionLogic>and</entryConditionLogic>
             <entryConditions>
                 <conditionType>EntryCondition</conditionType>
-                <leftValueReference>Raise_Extension_Approval.Status</leftValueReference>
+                <leftValueReference>Legal_Team_Approval.Status</leftValueReference>
                 <operator>EqualTo</operator>
                 <rightValue>
                     <stringValue>Completed</stringValue>
@@ -218,34 +151,61 @@
             <inputParameters>
                 <name>ApexEmailTemplateName</name>
                 <value>
-                    <stringValue>Soft_Hold_Approve_Reject_Notification</stringValue>
+                    <stringValue>Kyc_Approval_Status</stringValue>
                 </value>
             </inputParameters>
             <inputParameters>
                 <name>ApproverRemarks</name>
                 <value>
-                    <elementReference>Raise_Extension_Approval.Outputs.approvalComments</elementReference>
+                    <elementReference>Legal_Team_Approval.Outputs.approvalComments</elementReference>
                 </value>
             </inputParameters>
             <inputParameters>
                 <name>action</name>
                 <value>
-                    <elementReference>Raise_Extension_Approval.Outputs.approvalDecision</elementReference>
+                    <elementReference>Legal_Team_Approval.Outputs.approvalDecision</elementReference>
                 </value>
             </inputParameters>
             <inputParameters>
                 <name>objectName</name>
                 <value>
-                    <stringValue>Quote</stringValue>
+                    <stringValue>Contract</stringValue>
                 </value>
             </inputParameters>
             <inputParameters>
                 <name>recordId</name>
                 <value>
-                    <elementReference>$Record.Id</elementReference>
+                    <elementReference>recordId</elementReference>
                 </value>
             </inputParameters>
-            <label>Notify Owner On Approval Update</label>
+            <label>Send Approval Emails</label>
+            <requiresAsyncProcessing>false</requiresAsyncProcessing>
+            <runAsUser>false</runAsUser>
+            <shouldLock>false</shouldLock>
+            <stepSubtype>BackgroundStep</stepSubtype>
+        </stageSteps>
+    </orchestratedStages>
+    <orchestratedStages>
+        <name>Update_Contract_Record_Stage</name>
+        <label>Update Contract Record Stage</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <exitConditionLogic>and</exitConditionLogic>
+        <stageSteps>
+            <name>Set_KYC_Cleared</name>
+            <actionName>RES_AutoLaunchFlow_Update_Contract_KYC_Approval</actionName>
+            <actionType>stepBackground</actionType>
+            <canAssigneeEdit>false</canAssigneeEdit>
+            <debugSimulateStep>false</debugSimulateStep>
+            <entryConditionLogic>and</entryConditionLogic>
+            <exitConditionLogic>and</exitConditionLogic>
+            <inputParameters>
+                <name>recordId</name>
+                <value>
+                    <elementReference>recordId</elementReference>
+                </value>
+            </inputParameters>
+            <label>Set KYC Cleared</label>
             <requiresAsyncProcessing>false</requiresAsyncProcessing>
             <runAsUser>false</runAsUser>
             <shouldLock>false</shouldLock>
@@ -276,11 +236,36 @@
         <locationX>0</locationX>
         <locationY>0</locationY>
         <connector>
-            <targetReference>Check_Flow_Enable_Flag</targetReference>
+            <targetReference>KYC_Review_Stage</targetReference>
         </connector>
-        <object>Quote</object>
-        <recordTriggerType>CreateAndUpdate</recordTriggerType>
-        <triggerType>RecordAfterSave</triggerType>
     </start>
     <status>Active</status>
+    <variables>
+        <name>firstApprover</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>true</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <name>recordId</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>true</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <name>submissionComments</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>true</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <name>submitter</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>true</isInput>
+        <isOutput>false</isOutput>
+    </variables>
 </Flow>
