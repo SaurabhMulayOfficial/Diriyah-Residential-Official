@@ -237,33 +237,81 @@
             <targetReference>SLA_breached</targetReference>
         </connector>
     </assignments>
+    <assignments>
+        <name>Set_Commercial_Queue</name>
+        <label>Set Commercial Queue</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignmentItems>
+            <assignToReference>leasingQueueName</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <stringValue>RES_Commercial_Leasing_Queue</stringValue>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Get_Leasing_Queue</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
+        <name>Set_Retail_Queue</name>
+        <label>Set Retail Queue</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignmentItems>
+            <assignToReference>leasingQueueName</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <stringValue>RES_Retail_Leasing_Queue</stringValue>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Get_Leasing_Queue</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
+        <name>Set_Specialty_Queue</name>
+        <label>Set Specialty Queue</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignmentItems>
+            <assignToReference>leasingQueueName</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <stringValue>RES_Specialty_Leasing_Queue</stringValue>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Get_Leasing_Queue</targetReference>
+        </connector>
+    </assignments>
     <decisions>
-        <name>check_for_Email</name>
-        <label>check for Email</label>
+        <name>Check_for_emailRecipients_Null_check</name>
+        <label>Check  for emailRecipients Null check</label>
         <locationX>0</locationX>
         <locationY>0</locationY>
         <defaultConnector>
-            <targetReference>Check_for_Type_Of_Leasing</targetReference>
+            <targetReference>Check_if_Lead_is_Converted_and_Flow_Switch</targetReference>
         </defaultConnector>
-        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <defaultConnectorLabel>Emails Null</defaultConnectorLabel>
         <rules>
-            <name>Yes_Changed</name>
+            <name>Email_Present</name>
             <conditionLogic>and</conditionLogic>
             <conditions>
-                <leftValueReference>Emails</leftValueReference>
+                <leftValueReference>Get_Email_of_all_members_from_Queue.emailRecipients</leftValueReference>
                 <operator>IsNull</operator>
                 <rightValue>
                     <booleanValue>false</booleanValue>
                 </rightValue>
             </conditions>
             <connector>
-                <targetReference>Send_Email_to_Owner_Leasing</targetReference>
+                <targetReference>Send_Email_to_Leasing_Group</targetReference>
             </connector>
-            <label>Yes, Changed</label>
+            <label>Email Present</label>
         </rules>
     </decisions>
     <decisions>
-        <description>Exclude Residential Leasing when sending Notification</description>
+        <description>Route each leasing type to its respective queue; Residential Leasing is retired.</description>
         <name>Check_for_Type_Of_Leasing</name>
         <label>Check for Type Of Leasing</label>
         <locationX>0</locationX>
@@ -273,22 +321,8 @@
         </defaultConnector>
         <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
         <rules>
-            <name>Type_of_Leasing</name>
-            <conditionLogic>or</conditionLogic>
-            <conditions>
-                <leftValueReference>$Record.RES_Type_of_Leasing__c</leftValueReference>
-                <operator>EqualTo</operator>
-                <rightValue>
-                    <stringValue>Retail Leasing</stringValue>
-                </rightValue>
-            </conditions>
-            <conditions>
-                <leftValueReference>$Record.RES_Type_of_Leasing__c</leftValueReference>
-                <operator>EqualTo</operator>
-                <rightValue>
-                    <stringValue>Specialty Leasing</stringValue>
-                </rightValue>
-            </conditions>
+            <name>Commercial_Leasing</name>
+            <conditionLogic>and</conditionLogic>
             <conditions>
                 <leftValueReference>$Record.RES_Type_of_Leasing__c</leftValueReference>
                 <operator>EqualTo</operator>
@@ -297,9 +331,39 @@
                 </rightValue>
             </conditions>
             <connector>
-                <targetReference>Get_Email_of_all_members_from_Queue</targetReference>
+                <targetReference>Set_Commercial_Queue</targetReference>
             </connector>
-            <label>Type of Leasing</label>
+            <label>Commercial Leasing</label>
+        </rules>
+        <rules>
+            <name>Retail_Leasing</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.RES_Type_of_Leasing__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Retail Leasing</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Set_Retail_Queue</targetReference>
+            </connector>
+            <label>Retail Leasing</label>
+        </rules>
+        <rules>
+            <name>Specialty_Leasing</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.RES_Type_of_Leasing__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Specialty Leasing</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Set_Specialty_Queue</targetReference>
+            </connector>
+            <label>Specialty Leasing</label>
         </rules>
         <rules>
             <name>Type_of_Leasing_is_Residential_Leasing</name>
@@ -416,6 +480,58 @@
                 <targetReference>Update_Contact_BirthDate</targetReference>
             </connector>
             <label>Is Company Lead</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <description>Only email the owner when the owner is a user (Id prefix 005); skip when the lead is owned by a queue so the send never has 0 recipients.</description>
+        <name>Check_Owner_Has_Email</name>
+        <label>Check Owner Has Email</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnector>
+            <targetReference>Check_for_Type_Of_Leasing</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Owner is a Queue</defaultConnectorLabel>
+        <rules>
+            <name>Owner_Is_User</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.OwnerId</leftValueReference>
+                <operator>StartsWith</operator>
+                <rightValue>
+                    <stringValue>005</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Send_Email_to_Owner_Leasing</targetReference>
+            </connector>
+            <label>Owner is a User</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <description>Only reassign owner and notify when the leasing queue exists in this org.</description>
+        <name>Check_Queue_Found</name>
+        <label>Check Queue Found</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnector>
+            <targetReference>Check_if_Lead_is_Converted_and_Flow_Switch</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Queue Not Found</defaultConnectorLabel>
+        <rules>
+            <name>Queue_Found</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>Get_Leasing_Queue</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Assign_Owner_to_Queue</targetReference>
+            </connector>
+            <label>Queue Found</label>
         </rules>
     </decisions>
     <decisions>
@@ -606,14 +722,7 @@
         <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
         <rules>
             <name>Check_for_Type</name>
-            <conditionLogic>(1 OR 3) AND 2</conditionLogic>
-            <conditions>
-                <leftValueReference>$Record.RES_Type_of_Leasing__c</leftValueReference>
-                <operator>IsChanged</operator>
-                <rightValue>
-                    <booleanValue>true</booleanValue>
-                </rightValue>
-            </conditions>
+            <conditionLogic>1 AND 2 AND (3 OR 4)</conditionLogic>
             <conditions>
                 <leftValueReference>$Record.RES_Type_of_Leasing__c</leftValueReference>
                 <operator>IsNull</operator>
@@ -628,8 +737,22 @@
                     <stringValue>281</stringValue>
                 </rightValue>
             </conditions>
+            <conditions>
+                <leftValueReference>$Record.RES_Type_of_Leasing__c</leftValueReference>
+                <operator>IsChanged</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.RES_Lead_Sub_Status__c</leftValueReference>
+                <operator>IsChanged</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
             <connector>
-                <targetReference>check_for_Email</targetReference>
+                <targetReference>Check_Owner_Has_Email</targetReference>
             </connector>
             <label>Check for Type</label>
         </rules>
@@ -727,6 +850,37 @@
         <storeOutputAutomatically>true</storeOutputAutomatically>
     </recordLookups>
     <recordLookups>
+        <description>Look up the leasing queue (Group) by developer name to reassign the lead owner.</description>
+        <name>Get_Leasing_Queue</name>
+        <label>Get Leasing Queue</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Check_Queue_Found</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>DeveloperName</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>leasingQueueName</elementReference>
+            </value>
+        </filters>
+        <filters>
+            <field>Type</field>
+            <operator>EqualTo</operator>
+            <value>
+                <stringValue>Queue</stringValue>
+            </value>
+        </filters>
+        <getFirstRecordOnly>true</getFirstRecordOnly>
+        <object>Group</object>
+        <queriedFields>Id</queriedFields>
+        <queriedFields>DeveloperName</queriedFields>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
+    <recordLookups>
         <name>Get_Owners_Manager</name>
         <label>Get Owners Manager</label>
         <locationX>0</locationX>
@@ -751,6 +905,23 @@
         <queriedFields>Username</queriedFields>
         <storeOutputAutomatically>true</storeOutputAutomatically>
     </recordLookups>
+    <recordUpdates>
+        <description>Assign the lead owner to the leasing queue matched by type of leasing.</description>
+        <name>Assign_Owner_to_Queue</name>
+        <label>Assign Owner to Queue</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Get_Email_of_all_members_from_Queue</targetReference>
+        </connector>
+        <inputAssignments>
+            <field>OwnerId</field>
+            <value>
+                <elementReference>Get_Leasing_Queue.Id</elementReference>
+            </value>
+        </inputAssignments>
+        <inputReference>$Record</inputReference>
+    </recordUpdates>
     <recordUpdates>
         <name>SLA_breached</name>
         <label>SLA breached</label>
@@ -925,13 +1096,13 @@
         <locationX>0</locationX>
         <locationY>0</locationY>
         <connector>
-            <targetReference>Send_Email_to_Leasing_Group</targetReference>
+            <targetReference>Check_for_emailRecipients_Null_check</targetReference>
         </connector>
         <flowName>RES_Get_All_Users_Email_from_Group_Queue</flowName>
         <inputAssignments>
             <name>recipientQueueName</name>
             <value>
-                <stringValue>RES_Leasing_Retail_Routing</stringValue>
+                <elementReference>leasingQueueName</elementReference>
             </value>
         </inputAssignments>
         <storeOutputAutomatically>true</storeOutputAutomatically>
@@ -1013,6 +1184,13 @@
         <value>
             <elementReference>$Record.LastName</elementReference>
         </value>
+    </variables>
+    <variables>
+        <name>leasingQueueName</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
     </variables>
     <variables>
         <name>OwnerId</name>
