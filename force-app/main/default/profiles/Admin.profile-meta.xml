@@ -2198,6 +2198,46 @@
         <field>RES_Payment_Plan__c.RES_Years__c</field>
         <readable>true</readable>
     </fieldPermissions>
+      <fieldPermissions>
+        <editable>true</editable>
+        <field>RES_Contract_Installments__c.RES_Payment_Number__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>RES_Contract_Installments__c.RES_Payment_Percentage__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>RES_Contract_Installments__c.RES_Accumulative_Payments__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>RES_Contract_Installments__c.RES_Construction_Progress__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>RES_Contract_Installments__c.RES_Amount__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>RES_Contract_Installments__c.RES_Indicative_Due_Date__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>RES_Contract_Installments__c.RES_Contract__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>RES_Contract_Installments__c.Name</field>
+        <readable>true</readable>
+    </fieldPermissions>
     <layoutAssignments>
         <layout>Global-Global Layout</layout>
     </layoutAssignments>
@@ -2262,7 +2302,6 @@
         <layout>ProductCatalog-Catalog Layout</layout>
         <recordType>ProductCatalog.RES_Residential_Sales</recordType>
     </layoutAssignments>
-
     <layoutAssignments>
         <layout>Quote-Residential Sales</layout>
         <recordType>Quote.RES_Residential_Sales</recordType>
@@ -2271,6 +2310,16 @@
         <layout>Contract-Residential Sales</layout>
         <recordType>Contract.RES_Residential_Sales</recordType>
     </layoutAssignments>
+   <objectPermissions>
+        <allowCreate>true</allowCreate>
+        <allowDelete>true</allowDelete>
+        <allowEdit>true</allowEdit>
+        <allowRead>true</allowRead>
+        <modifyAllRecords>true</modifyAllRecords>
+        <object>RES_Contract_Installments__c</object>
+        <viewAllFields>false</viewAllFields>
+        <viewAllRecords>true</viewAllRecords>
+    </objectPermissions>
     <objectPermissions>
         <allowCreate>true</allowCreate>
         <allowDelete>true</allowDelete>
@@ -2532,6 +2581,10 @@
         <recordType>ProductCatalog.RES_Residential_Sales</recordType>
         <visible>true</visible>
     </recordTypeVisibilities>
+     <tabVisibilities>
+        <tab>RES_Contract_Installments__c</tab>
+        <visibility>DefaultOn</visibility>
+    </tabVisibilities>
     <tabVisibilities>
         <tab>RES_Payment_Plan_Version__c</tab>
         <visibility>DefaultOn</visibility>
