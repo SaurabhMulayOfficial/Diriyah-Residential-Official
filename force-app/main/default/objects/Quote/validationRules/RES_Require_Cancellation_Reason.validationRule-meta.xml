@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>RES_Require_Cancellation_Reason</fullName>
+    <active>true</active>
+    <description>Enforces Cancellation Reason when Quote Status is set to Cancelled.</description>
+    <errorConditionFormula>AND(
+    NOT($Setup.RES_Config_Switch__c.RES_Validation_Rules_Off__c),
+    RecordType.DeveloperName = &quot;RES_Residential_Sales&quot;,
+    ISPICKVAL(Status, &quot;Cancelled&quot;),
+    ISBLANK(TEXT(RES_Quote_Cancellation_reason__c))
+)</errorConditionFormula>
+    <errorDisplayField>RES_Quote_Cancellation_reason__c</errorDisplayField>
+    <errorMessage>Quote Cancellation Reason is mandatory when the Quote status is Cancelled.</errorMessage>
+</ValidationRule>
