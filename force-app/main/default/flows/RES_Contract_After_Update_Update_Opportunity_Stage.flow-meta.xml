@@ -125,6 +125,28 @@
         </rules>
     </decisions>
     <decisions>
+        <name>Check_If_Contract_Is_Activated</name>
+        <label>Check If Contract Is Activated?</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Activated</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.Status</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Activated</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Set_Opportunity_Stage_to_Closed_Won</targetReference>
+            </connector>
+            <label>Activated</label>
+        </rules>
+    </decisions>
+    <decisions>
         <name>Check_Opp_RT</name>
         <label>Check Opp RT</label>
         <locationX>0</locationX>
@@ -197,7 +219,7 @@
                 </rightValue>
             </conditions>
             <connector>
-                <targetReference>Set_Opportunity_Stage_to_Closed_Won</targetReference>
+                <targetReference>Check_If_Contract_Is_Activated</targetReference>
             </connector>
             <label>SPA</label>
         </rules>
