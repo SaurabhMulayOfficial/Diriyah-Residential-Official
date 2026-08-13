@@ -15,6 +15,23 @@
             </value>
         </assignmentItems>
     </assignments>
+    <assignments>
+        <name>Mark_Reserved_By_To_Null</name>
+        <label>Mark Reserved By To Null</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignmentItems>
+            <assignToReference>$Record.RES_Reserved_By_Contract__c</assignToReference>
+            <operator>Assign</operator>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>$Record.RES_Reserved_By_Quote__c</assignToReference>
+            <operator>Assign</operator>
+        </assignmentItems>
+        <connector>
+            <targetReference>If_Reserved_By_quote_Changes</targetReference>
+        </connector>
+    </assignments>
     <decisions>
         <name>Check_Flow_Enabled_Flag</name>
         <label>Check Flow Enabled Flag</label>
@@ -32,9 +49,41 @@
                 </rightValue>
             </conditions>
             <connector>
-                <targetReference>If_Reserved_By_quote_Changes</targetReference>
+                <targetReference>check_if_Product_Marked_as_Available</targetReference>
             </connector>
             <label>Not Bypassed</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>check_if_Product_Marked_as_Available</name>
+        <label>check if Product Marked as Available</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnector>
+            <targetReference>If_Reserved_By_quote_Changes</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>YesAvailable</name>
+            <conditionLogic>or</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.RES_Unit_Status__c</leftValueReference>
+                <operator>IsChanged</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.RES_Unit_Status__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Available</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Mark_Reserved_By_To_Null</targetReference>
+            </connector>
+            <label>Yes</label>
         </rules>
     </decisions>
     <decisions>
