@@ -65,7 +65,7 @@
         <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
         <rules>
             <name>YesAvailable</name>
-            <conditionLogic>or</conditionLogic>
+            <conditionLogic>and</conditionLogic>
             <conditions>
                 <leftValueReference>$Record.RES_Unit_Status__c</leftValueReference>
                 <operator>IsChanged</operator>

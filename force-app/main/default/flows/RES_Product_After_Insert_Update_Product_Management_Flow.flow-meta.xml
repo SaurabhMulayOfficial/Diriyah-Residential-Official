@@ -49,9 +49,6 @@
         <locationY>0</locationY>
         <actionName>RES_SendEmailInvocable</actionName>
         <actionType>apex</actionType>
-        <connector>
-            <targetReference>Get_Appproval_Work_Items</targetReference>
-        </connector>
         <flowTransactionModel>Automatic</flowTransactionModel>
         <inputParameters>
             <name>emailBody</name>
@@ -141,7 +138,7 @@
             </value>
         </assignmentItems>
         <connector>
-            <targetReference>Update_Quotes_Soft_Hold</targetReference>
+            <targetReference>Get_Appproval_Work_Items</targetReference>
         </connector>
     </assignments>
     <decisions>
@@ -222,6 +219,9 @@
         <label>If Approval Work Items Exist</label>
         <locationX>0</locationX>
         <locationY>0</locationY>
+        <defaultConnector>
+            <targetReference>Update_Quotes_Soft_Hold</targetReference>
+        </defaultConnector>
         <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
         <rules>
             <name>Yes</name>
@@ -244,9 +244,6 @@
         <label>If Everything Looks Good</label>
         <locationX>0</locationX>
         <locationY>0</locationY>
-        <defaultConnector>
-            <targetReference>Get_Appproval_Work_Items</targetReference>
-        </defaultConnector>
         <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
         <rules>
             <name>Looks_Good</name>
@@ -327,6 +324,9 @@
         <nextValueConnector>
             <targetReference>Auto_Update_Existing_Approvals_to_REJECT</targetReference>
         </nextValueConnector>
+        <noMoreValuesConnector>
+            <targetReference>Update_Quotes_Soft_Hold</targetReference>
+        </noMoreValuesConnector>
     </loops>
     <loops>
         <name>Loop_Over_QuoteProduct</name>
@@ -497,6 +497,27 @@
                 <elementReference>QuoteIds</elementReference>
             </value>
         </filters>
+        <filters>
+            <field>Status</field>
+            <operator>NotEqualTo</operator>
+            <value>
+                <stringValue>Cancelled</stringValue>
+            </value>
+        </filters>
+        <filters>
+            <field>Status</field>
+            <operator>NotEqualTo</operator>
+            <value>
+                <stringValue>Expired</stringValue>
+            </value>
+        </filters>
+        <filters>
+            <field>Status</field>
+            <operator>NotEqualTo</operator>
+            <value>
+                <stringValue>Rejected</stringValue>
+            </value>
+        </filters>
         <inputAssignments>
             <field>RES_Product_Soft_Held__c</field>
             <value>
@@ -526,7 +547,7 @@
         </scheduledPaths>
         <triggerType>RecordAfterSave</triggerType>
     </start>
-    <status>Draft</status>
+    <status>Active</status>
     <variables>
         <name>MergeFields</name>
         <dataType>String</dataType>
