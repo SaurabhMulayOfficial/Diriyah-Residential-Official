@@ -1,30 +1,137 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Flow xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <actionCalls>
+        <name>Release_Opportunity_Units</name>
+        <label>Release Opportunity Units</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <actionName>RES_OpportunityClosedLostService</actionName>
+        <actionType>apex</actionType>
+        <connector>
+            <targetReference>Were_Units_Released</targetReference>
+        </connector>
+        <faultConnector>
+            <isGoTo>true</isGoTo>
+            <targetReference>GotErrorException</targetReference>
+        </faultConnector>
+        <flowTransactionModel>Automatic</flowTransactionModel>
+        <inputParameters>
+            <name>opportunityId</name>
+            <value>
+                <elementReference>recordId</elementReference>
+                <inputConfiguratorMode>Resource</inputConfiguratorMode>
+            </value>
+        </inputParameters>
+        <nameSegment>RES_OpportunityClosedLostService</nameSegment>
+        <offset>0</offset>
+    </actionCalls>
     <apiVersion>67.0</apiVersion>
     <areMetricsLoggedToDataCloud>false</areMetricsLoggedToDataCloud>
     <decisions>
-        <name>Closed_date_Check</name>
-        <label>Closed date Check</label>
+        <name>Is_Reason_Provided</name>
+        <label>Is Reason Provided ?</label>
         <locationX>0</locationX>
         <locationY>0</locationY>
         <defaultConnector>
-            <targetReference>GoBackAndUpdateClosed</targetReference>
+            <targetReference>Reason_Not_provided</targetReference>
         </defaultConnector>
         <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
         <rules>
-            <name>Greater_than</name>
+            <name>Yes</name>
             <conditionLogic>and</conditionLogic>
             <conditions>
-                <leftValueReference>Closedate</leftValueReference>
+                <leftValueReference>Reason_for_lost</leftValueReference>
+                <operator>IsBlank</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Update_Opportunity_as_Closed_Lost</targetReference>
+            </connector>
+            <label>Yes</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>Validate_Close_Date</name>
+        <label>Validate Close Date</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnector>
+            <targetReference>Invalid_Close_Date</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Screen - Invalid Close Date</defaultConnectorLabel>
+        <rules>
+            <name>Valid</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>GetOpportunity.CloseDate</leftValueReference>
                 <operator>GreaterThanOrEqualTo</operator>
                 <rightValue>
                     <elementReference>$Flow.CurrentDate</elementReference>
                 </rightValue>
             </conditions>
             <connector>
-                <targetReference>Update_Opportunity</targetReference>
+                <targetReference>Provide_Loss_Reason</targetReference>
             </connector>
-            <label>Greater than</label>
+            <label>Valid</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>Validate_Opportunity_Stage</name>
+        <label>Validate Opportunity Stage</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnector>
+            <targetReference>Screen_Invalid_Stage</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Stage Not Allowed</defaultConnectorLabel>
+        <rules>
+            <name>Allowed_Stage</name>
+            <conditionLogic>or</conditionLogic>
+            <conditions>
+                <leftValueReference>GetOpportunity.StageName</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Proposal</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>GetOpportunity.StageName</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Unit Selected</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Validate_Close_Date</targetReference>
+            </connector>
+            <label>Allowed Stage</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>Were_Units_Released</name>
+        <label>Were Units Released?</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnector>
+            <targetReference>Opportunity_Closed_Successfully_without_units</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Units_Released</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>Release_Opportunity_Units</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Opportunity_Closed_Successfully</targetReference>
+            </connector>
+            <label>Units Released</label>
         </rules>
     </decisions>
     <dynamicChoiceSets>
@@ -64,7 +171,7 @@
         <locationY>0</locationY>
         <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
         <connector>
-            <targetReference>Please_provide_reason_for_lost</targetReference>
+            <targetReference>Validate_Opportunity_Stage</targetReference>
         </connector>
         <filterLogic>and</filterLogic>
         <filters>
@@ -74,17 +181,18 @@
                 <elementReference>recordId</elementReference>
             </value>
         </filters>
+        <getFirstRecordOnly>true</getFirstRecordOnly>
         <object>Opportunity</object>
-        <outputAssignments>
-            <assignToReference>Closedate</assignToReference>
-            <field>CloseDate</field>
-        </outputAssignments>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
     </recordLookups>
     <recordUpdates>
-        <name>Update_Opportunity</name>
-        <label>Update Opportunity</label>
+        <name>Update_Opportunity_as_Closed_Lost</name>
+        <label>Update Opportunity as Closed Lost</label>
         <locationX>0</locationX>
         <locationY>0</locationY>
+        <connector>
+            <targetReference>Release_Opportunity_Units</targetReference>
+        </connector>
         <faultConnector>
             <targetReference>GotErrorException</targetReference>
         </faultConnector>
@@ -93,7 +201,7 @@
             <field>Id</field>
             <operator>EqualTo</operator>
             <value>
-                <stringValue>{!recordId}</stringValue>
+                <elementReference>GetOpportunity.Id</elementReference>
             </value>
         </filters>
         <filters>
@@ -119,38 +227,13 @@
     </recordUpdates>
     <runInMode>DefaultMode</runInMode>
     <screens>
-        <name>GoBackAndUpdateClosed</name>
-        <label>GoBackAndUpdateClosed</label>
+        <name>GotErrorException</name>
+        <label>GotErrorException</label>
         <locationX>0</locationX>
         <locationY>0</locationY>
         <allowBack>false</allowBack>
         <allowFinish>true</allowFinish>
         <allowPause>false</allowPause>
-        <fields>
-            <name>updateClosedate</name>
-            <fieldText>&lt;p&gt;&lt;strong style=&quot;background-color: rgb(255, 255, 255);&quot;&gt;Close date must be present or future date, cannot be in the past.&lt;/strong&gt;&lt;/p&gt;</fieldText>
-            <fieldType>DisplayText</fieldType>
-            <styleProperties>
-                <verticalAlignment>
-                    <stringValue>top</stringValue>
-                </verticalAlignment>
-                <width>
-                    <stringValue>12</stringValue>
-                </width>
-            </styleProperties>
-        </fields>
-        <nextOrFinishButtonLabel>Update Closed Date</nextOrFinishButtonLabel>
-        <showFooter>true</showFooter>
-        <showHeader>false</showHeader>
-    </screens>
-    <screens>
-        <name>GotErrorException</name>
-        <label>GotErrorException</label>
-        <locationX>0</locationX>
-        <locationY>0</locationY>
-        <allowBack>true</allowBack>
-        <allowFinish>true</allowFinish>
-        <allowPause>true</allowPause>
         <fields>
             <name>ErrorMessagae</name>
             <fieldText>&lt;p&gt;Got Exception:-{!$Flow.FaultMessage}&lt;/p&gt;</fieldText>
@@ -164,19 +247,95 @@
                 </width>
             </styleProperties>
         </fields>
+        <nextOrFinishButtonLabel>Close</nextOrFinishButtonLabel>
         <showFooter>true</showFooter>
         <showHeader>false</showHeader>
     </screens>
     <screens>
-        <name>Please_provide_reason_for_lost</name>
-        <label>Please provide reason for lost</label>
+        <name>Invalid_Close_Date</name>
+        <label>Invalid Close Date</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <allowBack>false</allowBack>
+        <allowFinish>true</allowFinish>
+        <allowPause>false</allowPause>
+        <fields>
+            <name>Closeloss</name>
+            <fieldText>&lt;p&gt;&lt;strong&gt;&quot;Close Date&quot; must be today or a future date.&lt;/strong&gt;&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Please update the Opportunity Close Date before closing it as Lost.&lt;/strong&gt;&lt;/p&gt;</fieldText>
+            <fieldType>DisplayText</fieldType>
+            <styleProperties>
+                <verticalAlignment>
+                    <stringValue>top</stringValue>
+                </verticalAlignment>
+                <width>
+                    <stringValue>12</stringValue>
+                </width>
+            </styleProperties>
+        </fields>
+        <nextOrFinishButtonLabel>Close</nextOrFinishButtonLabel>
+        <showFooter>true</showFooter>
+        <showHeader>false</showHeader>
+    </screens>
+    <screens>
+        <name>Opportunity_Closed_Successfully</name>
+        <label>Opportunity Closed Successfully</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <allowBack>false</allowBack>
+        <allowFinish>true</allowFinish>
+        <allowPause>false</allowPause>
+        <fields>
+            <name>SuccessMessage</name>
+            <fieldText>&lt;p&gt;&lt;strong&gt;Opportunity has been marked as Closed Lost.&lt;/strong&gt;&lt;/p&gt;&lt;p&gt;&lt;strong&gt;All related Units have been released successfully.&lt;/strong&gt;&lt;/p&gt;</fieldText>
+            <fieldType>DisplayText</fieldType>
+            <styleProperties>
+                <verticalAlignment>
+                    <stringValue>top</stringValue>
+                </verticalAlignment>
+                <width>
+                    <stringValue>12</stringValue>
+                </width>
+            </styleProperties>
+        </fields>
+        <nextOrFinishButtonLabel>Close</nextOrFinishButtonLabel>
+        <showFooter>true</showFooter>
+        <showHeader>false</showHeader>
+    </screens>
+    <screens>
+        <name>Opportunity_Closed_Successfully_without_units</name>
+        <label>Opportunity Closed Successfully without units</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <allowBack>false</allowBack>
+        <allowFinish>true</allowFinish>
+        <allowPause>false</allowPause>
+        <fields>
+            <name>Copy_1_of_SuccessMessage</name>
+            <fieldText>&lt;p&gt;&lt;strong&gt;Opportunity has been marked as Closed Lost.&lt;/strong&gt;&lt;/p&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;&lt;strong&gt;No related Units were found for this Opportunity.&lt;/strong&gt;&lt;/p&gt;&lt;p&gt;&lt;strong&gt;No Unit status updates were required.&lt;/strong&gt;&lt;/p&gt;</fieldText>
+            <fieldType>DisplayText</fieldType>
+            <styleProperties>
+                <verticalAlignment>
+                    <stringValue>top</stringValue>
+                </verticalAlignment>
+                <width>
+                    <stringValue>12</stringValue>
+                </width>
+            </styleProperties>
+        </fields>
+        <nextOrFinishButtonLabel>Close</nextOrFinishButtonLabel>
+        <showFooter>true</showFooter>
+        <showHeader>false</showHeader>
+    </screens>
+    <screens>
+        <name>Provide_Loss_Reason</name>
+        <label>Provide Loss Reason</label>
         <locationX>0</locationX>
         <locationY>0</locationY>
         <allowBack>true</allowBack>
         <allowFinish>true</allowFinish>
         <allowPause>false</allowPause>
         <connector>
-            <targetReference>Closed_date_Check</targetReference>
+            <targetReference>Is_Reason_Provided</targetReference>
         </connector>
         <fields>
             <name>Reason_for_lost</name>
@@ -195,7 +354,57 @@
                 </width>
             </styleProperties>
         </fields>
-        <nextOrFinishButtonLabel>Update Close Lost</nextOrFinishButtonLabel>
+        <nextOrFinishButtonLabel>Update To Closed Lost</nextOrFinishButtonLabel>
+        <showFooter>true</showFooter>
+        <showHeader>false</showHeader>
+    </screens>
+    <screens>
+        <name>Reason_Not_provided</name>
+        <label>Reason Not provided</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <allowBack>false</allowBack>
+        <allowFinish>true</allowFinish>
+        <allowPause>false</allowPause>
+        <fields>
+            <name>Copy_1_of_ErrorMessagae</name>
+            <fieldText>&lt;p&gt;Reason not Provided:-{!$Flow.FaultMessage}&lt;/p&gt;</fieldText>
+            <fieldType>DisplayText</fieldType>
+            <styleProperties>
+                <verticalAlignment>
+                    <stringValue>top</stringValue>
+                </verticalAlignment>
+                <width>
+                    <stringValue>12</stringValue>
+                </width>
+            </styleProperties>
+        </fields>
+        <nextOrFinishButtonLabel>Close</nextOrFinishButtonLabel>
+        <showFooter>true</showFooter>
+        <showHeader>false</showHeader>
+    </screens>
+    <screens>
+        <name>Screen_Invalid_Stage</name>
+        <label>Screen - Invalid Stage</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <allowBack>false</allowBack>
+        <allowFinish>true</allowFinish>
+        <allowPause>false</allowPause>
+        <fields>
+            <name>CannotCloseOpportunity</name>
+            <fieldText>&lt;p&gt;&lt;strong&gt;This Opportunity can only be marked as &quot;Closed Lost&quot; when it is in Proposal or Unit Selected stage.&lt;/strong&gt;&lt;/p&gt;</fieldText>
+            <fieldType>DisplayText</fieldType>
+            <styleProperties>
+                <verticalAlignment>
+                    <stringValue>top</stringValue>
+                </verticalAlignment>
+                <width>
+                    <stringValue>12</stringValue>
+                </width>
+            </styleProperties>
+        </fields>
+        <nextOrFinishButtonLabel>Close</nextOrFinishButtonLabel>
         <showFooter>true</showFooter>
         <showHeader>false</showHeader>
     </screens>

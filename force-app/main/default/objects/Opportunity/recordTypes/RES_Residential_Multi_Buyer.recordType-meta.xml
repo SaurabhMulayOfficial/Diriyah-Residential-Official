@@ -19,6 +19,10 @@
             <default>false</default>
         </values>
         <values>
+            <fullName>Commit%2B</fullName>
+            <default>false</default>
+        </values>
+        <values>
             <fullName>Omitted</fullName>
             <default>false</default>
         </values>
@@ -59,7 +63,7 @@
         </values>
         <values>
             <fullName>Z09</fullName>
-            <default>true</default>
+            <default>false</default>
         </values>
         <values>
             <fullName>Z12</fullName>
@@ -98,7 +102,7 @@
             <default>false</default>
         </values>
     </picklistValues>
-   <picklistValues>
+    <picklistValues>
         <picklist>RES_Area_Of_Interest__c</picklist>
         <values>
             <fullName>COMMERCIAL_OFFICE_LEASING</fullName>
@@ -109,11 +113,27 @@
             <default>false</default>
         </values>
         <values>
+            <fullName>Golf</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>HOSPITALITY</fullName>
+            <default>false</default>
+        </values>
+        <values>
             <fullName>INVESTMENT</fullName>
             <default>false</default>
         </values>
         <values>
+            <fullName>MAHBA</fullName>
+            <default>false</default>
+        </values>
+        <values>
             <fullName>MASTERPLAN_OVERVIEW</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>OFFICE</fullName>
             <default>false</default>
         </values>
         <values>
@@ -126,22 +146,6 @@
         </values>
         <values>
             <fullName>RETAIL_LEASING</fullName>
-            <default>false</default>
-        </values>
-        <values>
-            <fullName>HOSPITALITY</fullName>
-            <default>false</default>
-        </values>
-        <values>
-            <fullName>OFFICE</fullName>
-            <default>false</default>
-        </values>
-        <values>
-            <fullName>Golf</fullName>
-            <default>false</default>
-        </values>
-        <values>
-            <fullName>MAHBA</fullName>
             <default>false</default>
         </values>
     </picklistValues>
@@ -234,6 +238,10 @@
             <default>false</default>
         </values>
         <values>
+            <fullName>Not Decided</fullName>
+            <default>false</default>
+        </values>
+        <values>
             <fullName>Oberoi Branded Residences Wadi Safar</fullName>
             <default>false</default>
         </values>
@@ -254,26 +262,58 @@
             <default>false</default>
         </values>
         <values>
-            <fullName>Wadi Safar – Plots</fullName>
-            <default>false</default>
-        </values>
-        <values>
-            <fullName>Not Decided</fullName>
+            <fullName>Wadi Safar %E2%80%93 Plots</fullName>
             <default>false</default>
         </values>
     </picklistValues>
     <picklistValues>
         <picklist>RES_Reason_for_Lost__c</picklist>
         <values>
-            <fullName>Competition</fullName>
+            <fullName>Booking %2F Down Payment Not Received</fullName>
             <default>false</default>
         </values>
         <values>
-            <fullName>Customer Budget</fullName>
+            <fullName>Contract Terms Not Accepted</fullName>
             <default>false</default>
         </values>
         <values>
-            <fullName>Unresponsive Customer</fullName>
+            <fullName>Eligibility %2F Compliance Issue</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Financing Not Secured</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Payment Plan Not Suitable</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Preferred Unit Unavailable</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Purchase Postponed</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Purchased from Competitor</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Reservation Cancelled</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Service Charges Not Accepted</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Unit Change</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Unit Specifications Not Suitable</fullName>
             <default>false</default>
         </values>
     </picklistValues>

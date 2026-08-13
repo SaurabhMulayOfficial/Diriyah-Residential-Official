@@ -13,19 +13,64 @@
         <valueSetDefinition>
             <sorted>false</sorted>
             <value>
-                <fullName>Competition</fullName>
+                <fullName>Payment Plan Not Suitable</fullName>
                 <default>false</default>
-                <label>Competition</label>
+                <label>Payment Plan Not Suitable</label>
             </value>
             <value>
-                <fullName>Unresponsive Customer</fullName>
+                <fullName>Financing Not Secured</fullName>
                 <default>false</default>
-                <label>Unresponsive Customer</label>
+                <label>Financing Not Secured</label>
             </value>
             <value>
-                <fullName>Customer Budget</fullName>
+                <fullName>Preferred Unit Unavailable</fullName>
                 <default>false</default>
-                <label>Customer Budget</label>
+                <label>Preferred Unit Unavailable</label>
+            </value>
+            <value>
+                <fullName>Unit Specifications Not Suitable</fullName>
+                <default>false</default>
+                <label>Unit Specifications Not Suitable</label>
+            </value>
+            <value>
+                <fullName>Purchased from Competitor</fullName>
+                <default>false</default>
+                <label>Purchased from Competitor</label>
+            </value>
+            <value>
+                <fullName>Purchase Postponed</fullName>
+                <default>false</default>
+                <label>Purchase Postponed</label>
+            </value>
+            <value>
+                <fullName>Reservation Cancelled</fullName>
+                <default>false</default>
+                <label>Reservation Cancelled</label>
+            </value>
+            <value>
+                <fullName>Booking / Down Payment Not Received</fullName>
+                <default>false</default>
+                <label>Booking / Down Payment Not Received</label>
+            </value>
+            <value>
+                <fullName>Contract Terms Not Accepted</fullName>
+                <default>false</default>
+                <label>Contract Terms Not Accepted</label>
+            </value>
+            <value>
+                <fullName>Eligibility / Compliance Issue</fullName>
+                <default>false</default>
+                <label>Eligibility / Compliance Issue</label>
+            </value>
+            <value>
+                <fullName>Service Charges Not Accepted</fullName>
+                <default>false</default>
+                <label>Service Charges Not Accepted</label>
+            </value>
+            <value>
+                <fullName>Unit Change</fullName>
+                <default>false</default>
+                <label>Unit Change</label>
             </value>
             <value>
                 <fullName>Budget</fullName>
@@ -33,18 +78,72 @@
                 <isActive>false</isActive>
                 <label>Budget</label>
             </value>
+            <value>
+                <fullName>Competition</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Competition</label>
+            </value>
+            <value>
+                <fullName>Customer Budget</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Customer Budget</label>
+            </value>
+            <value>
+                <fullName>Unresponsive Customer</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Unresponsive Customer</label>
+            </value>
         </valueSetDefinition>
         <valueSettings>
             <controllingFieldValue>Closed Lost</controllingFieldValue>
-            <valueName>Competition</valueName>
+            <valueName>Payment Plan Not Suitable</valueName>
         </valueSettings>
         <valueSettings>
             <controllingFieldValue>Closed Lost</controllingFieldValue>
-            <valueName>Unresponsive Customer</valueName>
+            <valueName>Financing Not Secured</valueName>
         </valueSettings>
         <valueSettings>
             <controllingFieldValue>Closed Lost</controllingFieldValue>
-            <valueName>Customer Budget</valueName>
+            <valueName>Preferred Unit Unavailable</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Closed Lost</controllingFieldValue>
+            <valueName>Unit Specifications Not Suitable</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Closed Lost</controllingFieldValue>
+            <valueName>Purchased from Competitor</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Closed Lost</controllingFieldValue>
+            <valueName>Purchase Postponed</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Closed Lost</controllingFieldValue>
+            <valueName>Reservation Cancelled</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Closed Lost</controllingFieldValue>
+            <valueName>Booking / Down Payment Not Received</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Closed Lost</controllingFieldValue>
+            <valueName>Contract Terms Not Accepted</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Closed Lost</controllingFieldValue>
+            <valueName>Eligibility / Compliance Issue</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Closed Lost</controllingFieldValue>
+            <valueName>Service Charges Not Accepted</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Closed Lost</controllingFieldValue>
+            <valueName>Unit Change</valueName>
         </valueSettings>
     </valueSet>
 </CustomField>
