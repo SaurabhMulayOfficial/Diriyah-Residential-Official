@@ -17,7 +17,7 @@ public without sharing class RES_ProductOrchestrator {
         Map<Id, Id> productBlockedBy = new Map<Id, Id>();
         for(QuoteLineItem qli: quoteLineItems){
             if(!productBlockedBy.containsKey(qli.Product2Id)){
-                productBlockedBy.put(qli.Product2Id, qli.Quote.OpportunityId);
+                productBlockedBy.put(qli.Product2Id, qli.QuoteId);
             }
         }
         System.debug('Products Blocked By '+ productBlockedBy.size());
@@ -25,7 +25,7 @@ public without sharing class RES_ProductOrchestrator {
         Set<Id> quotesIds = new Set<Id>();
         system.debug('All Related Quote Line Items: ' + allRelatedQuoteLineItems.size());
         for(QuoteLineItem qli: allRelatedQuoteLineItems){
-            if(productBlockedBy.containsKey(qli.Product2Id) && qli.Quote.OpportunityId != productBlockedBy.get(qli.Product2Id)){
+            if(productBlockedBy.containsKey(qli.Product2Id) && qli.QuoteId != productBlockedBy.get(qli.Product2Id)){
                 quotesIds.add(qli.QuoteId);
             }
         }
@@ -60,6 +60,7 @@ public without sharing class RES_ProductOrchestrator {
             p.RES_Soft_Hold_Start__c = System.now();
             Long interval = (Long)softHoldWindow * 60 * 60 * 1000;
             p.RES_Soft_Hold_Until__c = BusinessHours.add(businessHourLst[0].Id, System.now(), interval);
+            p.RES_Reserved_By_Quote__c = productBlockedBy.get(productId);
             productsToUpdate.add(p);
         }
 
