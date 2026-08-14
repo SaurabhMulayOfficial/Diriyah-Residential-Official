@@ -660,7 +660,11 @@
         <field>Account.Website</field>
         <readable>true</readable>
     </fieldPermissions>
-
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>Contract.RES_Is_Under_KYC_Approval__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
     <fieldPermissions>
         <editable>true</editable>
         <field>Contract.RES_Down_Payment_Receipt__c</field>
