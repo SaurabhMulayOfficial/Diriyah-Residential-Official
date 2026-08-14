@@ -298,6 +298,13 @@
                     <booleanValue>false</booleanValue>
                 </rightValue>
             </conditions>
+            <conditions>
+                <leftValueReference>$Record.RES_Unit_Status__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Soft Hold</stringValue>
+                </rightValue>
+            </conditions>
             <connector>
                 <targetReference>Update_Product_Record_To_Available</targetReference>
             </connector>
