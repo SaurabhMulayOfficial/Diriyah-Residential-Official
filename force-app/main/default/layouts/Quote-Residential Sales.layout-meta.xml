@@ -1,7 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Layout xmlns="http://soap.sforce.com/2006/04/metadata">
-    <excludeButtons>OpenSlackRecordChannel</excludeButtons>
-    <excludeButtons>SmartFillEnrich</excludeButtons>
     <layoutSections>
         <customLabel>false</customLabel>
         <detailHeading>false</detailHeading>
@@ -295,6 +293,11 @@
         </relatedContentItems>
     </relatedContent>
     <relatedLists>
+        <excludeButtons>AddQuoteLine</excludeButtons>
+        <excludeButtons>EditAllQuoteLine</excludeButtons>
+        <excludeButtons>MultiAdd</excludeButtons>
+        <excludeButtons>MultiEdit</excludeButtons>
+        <excludeButtons>Sort</excludeButtons>
         <fields>QUOTE_LI.PRODUCT2</fields>
         <fields>QUOTE_LI.UNIT_PRICE</fields>
         <fields>QUOTE_LI.QUANTITY</fields>

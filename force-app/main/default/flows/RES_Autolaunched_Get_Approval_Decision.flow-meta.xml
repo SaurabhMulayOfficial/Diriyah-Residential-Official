@@ -1,11 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Flow xmlns="http://soap.sforce.com/2006/04/metadata">
     <apiVersion>67.0</apiVersion>
-    <description>DIR-869: Returns the Status (Approved/Rejected/Assigned) of the latest ApprovalWorkItem for a record and a given approval-condition (step) name. Used by the Quote Discount DOA orchestration to branch on an approval decision (orchestration can't gate on an approval step's approvalDecision output directly).</description>
-    <environments>Default</environments>
-    <interviewLabel>RES Get Approval Decision {!$Flow.CurrentDateTime}</interviewLabel>
-    <label>RES Autolaunched Get Approval Decision</label>
-    <processType>AutoLaunchedFlow</processType>
+    <areMetricsLoggedToDataCloud>false</areMetricsLoggedToDataCloud>
     <assignments>
         <name>Set_Status_Output</name>
         <label>Set Status Output</label>
@@ -19,6 +15,11 @@
             </value>
         </assignmentItems>
     </assignments>
+    <description>DIR-869: Returns the Status (Approved/Rejected/Assigned) of the latest ApprovalWorkItem for a record and a given approval-condition (step) name. Used by the Quote Discount DOA orchestration to branch on an approval decision (orchestration can&apos;t gate on an approval step&apos;s approvalDecision output directly).</description>
+    <environments>Default</environments>
+    <interviewLabel>RES Get Approval Decision {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>RES Autolaunched Get Approval Decision</label>
+    <processType>AutoLaunchedFlow</processType>
     <recordLookups>
         <name>Get_Latest_Work_Item</name>
         <label>Get Latest Work Item</label>

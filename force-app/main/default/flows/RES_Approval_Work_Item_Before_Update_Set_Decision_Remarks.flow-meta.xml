@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>67.0</apiVersion>
+    <areMetricsLoggedToDataCloud>false</areMetricsLoggedToDataCloud>
+    <assignments>
+        <name>Clear_Remarks_On_Decision</name>
+        <label>Clear Remarks On Decision</label>
+        <locationX>176</locationX>
+        <locationY>168</locationY>
+        <assignmentItems>
+            <assignToReference>$Record.RES_Approval_Request_Remarks__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>fEmptyString</elementReference>
+            </value>
+        </assignmentItems>
+    </assignments>
+    <description>DIR-869: RES_Approval_Request_Remarks__c and Comments are kept on separate paths by design - the field name means it&apos;s for the approval REQUEST (context about what&apos;s being asked, e.g. the bell-notification text set on insert), not the decision. Comments is the approver&apos;s own decision remark, written only by the native approval screen - never touched by automation. Once the approver decides (Status becomes Approved/Rejected), this clears Remarks back to blank so field history tracking on it shows a clean request-then-resolved story instead of overlapping with Comments&apos; own separate history.</description>
+    <environments>Default</environments>
+    <formulas>
+        <name>fEmptyString</name>
+        <dataType>String</dataType>
+        <expression>&quot;&quot;</expression>
+    </formulas>
+    <interviewLabel>Approval Work Item - Before Update - Clear Remarks On Decision {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>Approval Work Item - Before Update - Clear Remarks On Decision</label>
+    <processType>AutoLaunchedFlow</processType>
+    <start>
+        <locationX>50</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Clear_Remarks_On_Decision</targetReference>
+        </connector>
+        <filterFormula>AND(
+    ISCHANGED({!$Record.Status}),
+    OR(
+        ISPICKVAL({!$Record.Status}, &quot;Approved&quot;),
+        ISPICKVAL({!$Record.Status}, &quot;Rejected&quot;)
+    )
+)</filterFormula>
+        <object>ApprovalWorkItem</object>
+        <recordTriggerType>Update</recordTriggerType>
+        <triggerType>RecordBeforeSave</triggerType>
+    </start>
+    <status>Active</status>
+</Flow>

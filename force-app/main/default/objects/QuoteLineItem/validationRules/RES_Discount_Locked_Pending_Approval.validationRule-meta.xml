@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>RES_Discount_Locked_Pending_Approval</fullName>
+    <active>true</active>
+    <description>DIR-763: While a discount approval is in progress (Negotiating/Pending Approval), the line item Discount cannot be changed. Unlocked automatically once the Quote reaches Approved or Rejected.</description>
+    <errorConditionFormula>AND(
+    NOT($Setup.RES_Config_Switch__c.RES_Validation_Rules_Off__c),
+    ISCHANGED(Discount),
+    OR(
+        ISPICKVAL(Quote.Status, &quot;Negotiating&quot;),
+        ISPICKVAL(Quote.Status, &quot;Pending Approval&quot;)
+    )
+)</errorConditionFormula>
+    <errorDisplayField>Discount</errorDisplayField>
+    <errorMessage>Discount cannot be changed while this Quote&apos;s discount approval is in progress (Negotiating or Pending Approval).</errorMessage>
+</ValidationRule>

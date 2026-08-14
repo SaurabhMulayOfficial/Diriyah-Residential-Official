@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Flow xmlns="http://soap.sforce.com/2006/04/metadata">
     <apiVersion>67.0</apiVersion>
-    <description>DIR-763: Daily scheduled job. Sets Status = Expired on every Quote that is NOT the Primary Quote (IsSyncing = false) and has not been modified in more than 3 months (90 days). Already-Expired quotes are skipped so they are not reprocessed. Once Expired, RES_Expired_Quote_Locked makes the quote read-only (cannot be used).</description>
+    <areMetricsLoggedToDataCloud>false</areMetricsLoggedToDataCloud>
+    <description>DIR-763: Daily scheduled job. Sets Status = Expired (and ExpirationDate = today, via the system bypass flag) on every Quote that is NOT the Primary Quote (IsSyncing = false) and has not been modified in more than 3 months (90 days). Already-Expired quotes are skipped so they are not reprocessed. Once Expired, RES_Expired_Quote_Locked makes the quote read-only (cannot be used), and RES_System_Statuses_Locked prevents anyone from manually setting Status back to Expired.</description>
     <environments>Default</environments>
     <formulas>
         <name>fThreshold</name>
@@ -16,6 +17,9 @@
         <label>Expire Old Non-Primary Quotes</label>
         <locationX>176</locationX>
         <locationY>276</locationY>
+        <connector>
+            <targetReference>Reset_System_Flag</targetReference>
+        </connector>
         <filterLogic>and</filterLogic>
         <filters>
             <field>IsSyncing</field>
@@ -42,6 +46,46 @@
             <field>Status</field>
             <value>
                 <stringValue>Expired</stringValue>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>ExpirationDate</field>
+            <value>
+                <elementReference>$Flow.CurrentDate</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>RES_System_Status_Update__c</field>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </inputAssignments>
+        <object>Quote</object>
+    </recordUpdates>
+    <recordUpdates>
+        <name>Reset_System_Flag</name>
+        <label>Reset System Flag</label>
+        <locationX>176</locationX>
+        <locationY>384</locationY>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Status</field>
+            <operator>EqualTo</operator>
+            <value>
+                <stringValue>Expired</stringValue>
+            </value>
+        </filters>
+        <filters>
+            <field>RES_System_Status_Update__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </filters>
+        <inputAssignments>
+            <field>RES_System_Status_Update__c</field>
+            <value>
+                <booleanValue>false</booleanValue>
             </value>
         </inputAssignments>
         <object>Quote</object>

@@ -2,12 +2,12 @@
 <ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
     <fullName>RES_Manager_Required_On_Submit</fullName>
     <active>true</active>
-    <description>DIR-1128/DIR-869 DOA: Blocks submitting a Quote for approval (Status -> Pending Approval) when the Quote owner (RM/Specialist) has no manager set on their user record, so the DOA approval can route to the Sales Manager.</description>
+    <description>DIR-1128/DIR-869 DOA: Blocks submitting a Quote for approval (Status -&gt; Pending Approval) when the Quote owner (RM/Specialist) has no manager set on their user record, so the DOA approval can route to the Sales Manager.</description>
     <errorConditionFormula>AND(
     ISCHANGED(Status),
-    ISPICKVAL(Status, "Pending Approval"),
+    ISPICKVAL(Status, &quot;Pending Approval&quot;),
     ISBLANK( Owner:User.ManagerId )
 )</errorConditionFormula>
     <errorDisplayField>Status</errorDisplayField>
-    <errorMessage>You cannot submit this quote for approval because a manager is not set on the owner's user record. Please ask your administrator to assign a manager before submitting for approval.</errorMessage>
+    <errorMessage>You cannot submit this quote for approval because a manager is not set on the owner&apos;s user record. Please ask your administrator to assign a manager before submitting for approval.</errorMessage>
 </ValidationRule>
