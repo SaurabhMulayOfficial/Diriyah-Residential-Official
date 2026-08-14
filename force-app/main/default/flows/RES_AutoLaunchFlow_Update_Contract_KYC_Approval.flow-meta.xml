@@ -2,6 +2,65 @@
 <Flow xmlns="http://soap.sforce.com/2006/04/metadata">
     <apiVersion>67.0</apiVersion>
     <areMetricsLoggedToDataCloud>false</areMetricsLoggedToDataCloud>
+    <decisions>
+        <name>Check_Action</name>
+        <label>Check Action</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Action_KYC_Under_Approval</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>action</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>KYCUnderApproval</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Update_KYC_under_approval</targetReference>
+            </connector>
+            <label>Action = KYC Under Approval</label>
+        </rules>
+        <rules>
+            <name>Action_KYC_Cleared</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>action</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>KYCCleared</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>approvalDecision</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Approve</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Update_KYC_to_True</targetReference>
+            </connector>
+            <label>Action = KYC Cleared</label>
+        </rules>
+        <rules>
+            <name>Approval_Decision_is_Rejected</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>approvalDecision</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Reject</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Update_if_KYC_rejected</targetReference>
+            </connector>
+            <label>Approval Decision is Rejected</label>
+        </rules>
+    </decisions>
     <environments>Default</environments>
     <interviewLabel>KYC DML Update Flow {!$Flow.CurrentDateTime}</interviewLabel>
     <label>RES AutoLaunchFlow - Update Contract KYC Approval</label>
@@ -25,6 +84,27 @@
     </processMetadataValues>
     <processType>AutoLaunchedFlow</processType>
     <recordUpdates>
+        <name>Update_if_KYC_rejected</name>
+        <label>Update if KYC rejected</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Id</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>recordId</elementReference>
+            </value>
+        </filters>
+        <inputAssignments>
+            <field>RES_Is_Under_KYC_Approval__c</field>
+            <value>
+                <booleanValue>false</booleanValue>
+            </value>
+        </inputAssignments>
+        <object>Contract</object>
+    </recordUpdates>
+    <recordUpdates>
         <name>Update_KYC_to_True</name>
         <label>Update KYC to True</label>
         <locationX>0</locationX>
@@ -37,29 +117,35 @@
                 <elementReference>recordId</elementReference>
             </value>
         </filters>
-        <filters>
-            <field>RES_URC_Signed__c</field>
-            <operator>EqualTo</operator>
+        <inputAssignments>
+            <field>RES_Is_Under_KYC_Approval__c</field>
+            <value>
+                <booleanValue>false</booleanValue>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>RES_KYC_Cleared__c</field>
             <value>
                 <booleanValue>true</booleanValue>
             </value>
-        </filters>
+        </inputAssignments>
+        <object>Contract</object>
+    </recordUpdates>
+    <recordUpdates>
+        <name>Update_KYC_under_approval</name>
+        <label>Update KYC under approval</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <filterLogic>and</filterLogic>
         <filters>
-            <field>RES_SIMAH_Form_Received__c</field>
+            <field>Id</field>
             <operator>EqualTo</operator>
             <value>
-                <booleanValue>true</booleanValue>
-            </value>
-        </filters>
-        <filters>
-            <field>RES_Payment_Plan_Confirmed__c</field>
-            <operator>EqualTo</operator>
-            <value>
-                <booleanValue>true</booleanValue>
+                <elementReference>recordId</elementReference>
             </value>
         </filters>
         <inputAssignments>
-            <field>RES_KYC_Cleared__c</field>
+            <field>RES_Is_Under_KYC_Approval__c</field>
             <value>
                 <booleanValue>true</booleanValue>
             </value>
@@ -70,10 +156,24 @@
         <locationX>0</locationX>
         <locationY>0</locationY>
         <connector>
-            <targetReference>Update_KYC_to_True</targetReference>
+            <targetReference>Check_Action</targetReference>
         </connector>
     </start>
     <status>Active</status>
+    <variables>
+        <name>action</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>true</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <name>approvalDecision</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>true</isInput>
+        <isOutput>false</isOutput>
+    </variables>
     <variables>
         <name>recordId</name>
         <dataType>String</dataType>

@@ -2,28 +2,6 @@
 <Flow xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
     <apiVersion>67.0</apiVersion>
     <areMetricsLoggedToDataCloud>false</areMetricsLoggedToDataCloud>
-    <decisions>
-        <name>Was_KYC_Approved</name>
-        <label>Was KYC Approved?</label>
-        <locationX>0</locationX>
-        <locationY>0</locationY>
-        <defaultConnectorLabel>Rejected</defaultConnectorLabel>
-        <rules>
-            <name>Approved</name>
-            <conditionLogic>and</conditionLogic>
-            <conditions>
-                <leftValueReference>Legal_Team_Approval.Outputs.approvalDecision</leftValueReference>
-                <operator>EqualTo</operator>
-                <rightValue>
-                    <stringValue>Approve</stringValue>
-                </rightValue>
-            </conditions>
-            <connector>
-                <targetReference>Update_Contract_Record_Stage</targetReference>
-            </connector>
-            <label>Approved</label>
-        </rules>
-    </decisions>
     <environments>Default</environments>
     <interviewLabel>RES Autolaunch Flow - Contract KYC Approval Process {!$Flow.CurrentDateTime}</interviewLabel>
     <label>RES Autolaunch Flow - Contract KYC Approval Process</label>
@@ -33,9 +11,35 @@
         <locationX>0</locationX>
         <locationY>0</locationY>
         <connector>
-            <targetReference>Was_KYC_Approved</targetReference>
+            <targetReference>Update_Contract_Record_Stage</targetReference>
         </connector>
         <exitConditionLogic>and</exitConditionLogic>
+        <stageSteps>
+            <name>Set_KYC_Under_Approval</name>
+            <actionName>RES_AutoLaunchFlow_Update_Contract_KYC_Approval</actionName>
+            <actionType>stepBackground</actionType>
+            <canAssigneeEdit>false</canAssigneeEdit>
+            <debugSimulateStep>false</debugSimulateStep>
+            <entryConditionLogic>and</entryConditionLogic>
+            <exitConditionLogic>and</exitConditionLogic>
+            <inputParameters>
+                <name>action</name>
+                <value>
+                    <stringValue>KYCUnderApproval</stringValue>
+                </value>
+            </inputParameters>
+            <inputParameters>
+                <name>recordId</name>
+                <value>
+                    <elementReference>recordId</elementReference>
+                </value>
+            </inputParameters>
+            <label>Set KYC Under Approval</label>
+            <requiresAsyncProcessing>false</requiresAsyncProcessing>
+            <runAsUser>false</runAsUser>
+            <shouldLock>false</shouldLock>
+            <stepSubtype>BackgroundStep</stepSubtype>
+        </stageSteps>
         <stageSteps>
             <name>Legal_Team_Approval</name>
             <actionName>standard_approvals__EvaluateApproval</actionName>
@@ -49,6 +53,14 @@
             <canAssigneeEdit>true</canAssigneeEdit>
             <debugSimulateStep>false</debugSimulateStep>
             <entryConditionLogic>and</entryConditionLogic>
+            <entryConditions>
+                <conditionType>EntryCondition</conditionType>
+                <leftValueReference>Set_KYC_Under_Approval.Status</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Completed</stringValue>
+                </rightValue>
+            </entryConditions>
             <exitConditionLogic>and</exitConditionLogic>
             <inputParameters>
                 <name>ActionInput__RecordId</name>
@@ -90,6 +102,7 @@
                 <value xsi:nil="true"/>
             </outputConfigParams>
             <requiresAsyncProcessing>false</requiresAsyncProcessing>
+            <requiresMultiMemberApproval>interaction.definition.mdapi.FlowAbstractParameter$FlowStageStepInputParameter@51c1787</requiresMultiMemberApproval>
             <runAsUser>false</runAsUser>
             <shouldLock>true</shouldLock>
             <stepSubtype>ApprovalStep</stepSubtype>
@@ -101,6 +114,14 @@
             <canAssigneeEdit>false</canAssigneeEdit>
             <debugSimulateStep>false</debugSimulateStep>
             <entryConditionLogic>and</entryConditionLogic>
+            <entryConditions>
+                <conditionType>EntryCondition</conditionType>
+                <leftValueReference>Set_KYC_Under_Approval.Status</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Completed</stringValue>
+                </rightValue>
+            </entryConditions>
             <exitConditionLogic>and</exitConditionLogic>
             <inputParameters>
                 <name>ApexEmailTemplateName</name>
@@ -199,6 +220,18 @@
             <debugSimulateStep>false</debugSimulateStep>
             <entryConditionLogic>and</entryConditionLogic>
             <exitConditionLogic>and</exitConditionLogic>
+            <inputParameters>
+                <name>action</name>
+                <value>
+                    <stringValue>KYCCleared</stringValue>
+                </value>
+            </inputParameters>
+            <inputParameters>
+                <name>approvalDecision</name>
+                <value>
+                    <elementReference>Legal_Team_Approval.Outputs.approvalDecision</elementReference>
+                </value>
+            </inputParameters>
             <inputParameters>
                 <name>recordId</name>
                 <value>
