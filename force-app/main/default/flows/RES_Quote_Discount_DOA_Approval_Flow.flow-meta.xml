@@ -1,76 +1,41 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Flow xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
     <apiVersion>67.0</apiVersion>
-    <description>DIR-869 DOA-Routed Discount Approval. Auto-submits when a Quote in Negotiating has Discount changed ( &gt; 0 ). Sets Pending Approval, notifies the manager (bell + email), routes: Discount &lt;= 10% -&gt; Sales Manager only; &gt; 10% -&gt; Sales Manager then RES_Finance_Team queue. Branches on the queried ApprovalWorkItem status (orchestration can't gate on an approval step's approvalDecision output). Final approve -&gt; Approved; any reject -&gt; Rejected + notify initiator; Recall -&gt; Negotiating.</description>
+    <areMetricsLoggedToDataCloud>false</areMetricsLoggedToDataCloud>
+    <description>DIR-869 DOA-Routed Discount Approval. Auto-submits when a Quote in Negotiating has Discount changed ( &gt; 0 ). Sets Pending Approval, notifies the manager (bell + email), routes: Discount &lt;= 10% -&gt; Sales Manager only; &gt; 10% -&gt; Sales Manager then RES_Finance_Team queue. Branches on the queried ApprovalWorkItem status (orchestration can&apos;t gate on an approval step&apos;s approvalDecision output). Final approve -&gt; Approved; any reject -&gt; Rejected + notify initiator; Recall -&gt; Negotiating.</description>
     <environments>Default</environments>
+    <formulas>
+        <name>fApprovedBody</name>
+        <dataType>String</dataType>
+        <expression>&quot;Your discount request on Quote &apos;&quot; &amp; {!$Record.Name} &amp; &quot;&apos; (&quot; &amp; {!$Record.QuoteNumber} &amp; &quot;) - &quot; &amp; TEXT({!$Record.Discount}) &amp; &quot;% (Amount &quot; &amp; TEXT(({!$Record.Subtotal} - {!$Record.GrandTotal})) &amp; &quot;) - has been approved.&quot;</expression>
+    </formulas>
     <formulas>
         <name>fApproverBody</name>
         <dataType>String</dataType>
-        <expression>"Quote " &amp; {!$Record.Name} &amp; " (" &amp; {!$Record.QuoteNumber} &amp; ") needs your approval. Discount " &amp; TEXT({!$Record.Discount}) &amp; "% (Amount " &amp; TEXT(({!$Record.Subtotal} - {!$Record.GrandTotal})) &amp; "). Submitted by " &amp; {!$Record.CreatedBy.FirstName} &amp; " " &amp; {!$Record.CreatedBy.LastName} &amp; "."</expression>
+        <expression>&quot;Quote &apos;&quot; &amp; {!$Record.Name} &amp; &quot;&apos; (&quot; &amp; {!$Record.QuoteNumber} &amp; &quot;) needs your approval. Discount &quot; &amp; TEXT({!$Record.Discount}) &amp; &quot;% (Amount &quot; &amp; TEXT(({!$Record.Subtotal} - {!$Record.GrandTotal})) &amp; &quot;). Submitted by &quot; &amp; {!$Record.CreatedBy.FirstName} &amp; &quot; &quot; &amp; {!$Record.CreatedBy.LastName} &amp; &quot;.&quot;</expression>
     </formulas>
     <formulas>
         <name>fApproverSubject</name>
         <dataType>String</dataType>
-        <expression>"Approval required: Quote " &amp; {!$Record.QuoteNumber} &amp; " - " &amp; TEXT({!$Record.Discount}) &amp; "% discount"</expression>
+        <expression>&quot;Approval required: Quote &quot; &amp; {!$Record.QuoteNumber} &amp; &quot; - &quot; &amp; TEXT({!$Record.Discount}) &amp; &quot;% discount&quot;</expression>
     </formulas>
     <formulas>
         <name>fRejectBody</name>
         <dataType>String</dataType>
-        <expression>"Your discount request on Quote " &amp; {!$Record.Name} &amp; " (" &amp; {!$Record.QuoteNumber} &amp; ") - " &amp; TEXT({!$Record.Discount}) &amp; "% (Amount " &amp; TEXT(({!$Record.Subtotal} - {!$Record.GrandTotal})) &amp; ") - was rejected. The Quote has been set to Rejected; please revise and resubmit."</expression>
-    </formulas>
-    <formulas>
-        <name>fWorkItemDesc</name>
-        <dataType>String</dataType>
-        <expression>"Discount approval requested - " &amp; TEXT({!$Record.Discount}) &amp; "% (Amount " &amp; TEXT(({!$Record.Subtotal} - {!$Record.GrandTotal})) &amp; ") on Quote " &amp; {!$Record.QuoteNumber} &amp; "."</expression>
-    </formulas>
-    <formulas>
-        <name>fQuoteUrl</name>
-        <dataType>String</dataType>
-        <expression>LEFT({!$Api.Partner_Server_URL_260}, FIND("/services", {!$Api.Partner_Server_URL_260})) &amp; {!$Record.Id}</expression>
-    </formulas>
-    <formulas>
-        <name>fOwnerName</name>
-        <dataType>String</dataType>
-        <expression>{!$Record.Owner:User.FirstName} &amp; " " &amp; {!$Record.Owner:User.LastName}</expression>
-    </formulas>
-    <formulas>
-        <name>fLink</name>
-        <dataType>String</dataType>
-        <expression>"&lt;a href='" &amp; {!fQuoteUrl} &amp; "'&gt;" &amp; {!$Record.QuoteNumber} &amp; "&lt;/a&gt;"</expression>
-    </formulas>
-    <formulas>
-        <name>fApproverDetail</name>
-        <dataType>String</dataType>
-        <expression>"A discount on Quote " &amp; {!fLink} &amp; " requires your approval.&lt;br/&gt;&lt;br/&gt;Discount: " &amp; TEXT({!$Record.Discount}) &amp; "%&lt;br/&gt;Discount Amount: " &amp; TEXT(({!$Record.Subtotal} - {!$Record.GrandTotal})) &amp; "&lt;br/&gt;Submitted by: " &amp; {!$Record.CreatedBy.FirstName} &amp; " " &amp; {!$Record.CreatedBy.LastName} &amp; "&lt;br/&gt;&lt;br/&gt;Please review it in Salesforce to Approve or Reject."</expression>
-    </formulas>
-    <formulas>
-        <name>fApprovedDetail</name>
-        <dataType>String</dataType>
-        <expression>"Your discount request on Quote " &amp; {!fLink} &amp; " - " &amp; TEXT({!$Record.Discount}) &amp; "% (Amount " &amp; TEXT(({!$Record.Subtotal} - {!$Record.GrandTotal})) &amp; ") - has been approved."</expression>
-    </formulas>
-    <formulas>
-        <name>fStage1Detail</name>
-        <dataType>String</dataType>
-        <expression>"The Sales Manager approved your discount request on Quote " &amp; {!fLink} &amp; " - " &amp; TEXT({!$Record.Discount}) &amp; "% (Amount " &amp; TEXT(({!$Record.Subtotal} - {!$Record.GrandTotal})) &amp; "). It has been routed to the Finance team for final approval."</expression>
+        <expression>&quot;Your discount request on Quote &apos;&quot; &amp; {!$Record.Name} &amp; &quot;&apos; (&quot; &amp; {!$Record.QuoteNumber} &amp; &quot;) - &quot; &amp; TEXT({!$Record.Discount}) &amp; &quot;% (Amount &quot; &amp; TEXT(({!$Record.Subtotal} - {!$Record.GrandTotal})) &amp; &quot;) - was rejected. The Quote has been set to Rejected; please revise and resubmit.&quot;</expression>
     </formulas>
     <formulas>
         <name>fStage1Bell</name>
         <dataType>String</dataType>
-        <expression>"Sales Manager approved Quote " &amp; {!$Record.QuoteNumber} &amp; " (" &amp; TEXT({!$Record.Discount}) &amp; "%). Routed to Finance for final approval."</expression>
+        <expression>&quot;Sales Manager approved Quote &quot; &amp; {!$Record.QuoteNumber} &amp; &quot; (&quot; &amp; TEXT({!$Record.Discount}) &amp; &quot;%). Routed to Finance for final approval.&quot;</expression>
     </formulas>
     <formulas>
-        <name>fRejectDetail</name>
+        <name>fWorkItemDesc</name>
         <dataType>String</dataType>
-        <expression>"Your discount request on Quote " &amp; {!fLink} &amp; " - " &amp; TEXT({!$Record.Discount}) &amp; "% (Amount " &amp; TEXT(({!$Record.Subtotal} - {!$Record.GrandTotal})) &amp; ") - was rejected. The Quote has been set to Rejected; please revise and resubmit."</expression>
-    </formulas>
-    <formulas>
-        <name>fApprovedBody</name>
-        <dataType>String</dataType>
-        <expression>"Your discount request on Quote " &amp; {!$Record.Name} &amp; " (" &amp; {!$Record.QuoteNumber} &amp; ") - " &amp; TEXT({!$Record.Discount}) &amp; "% (Amount " &amp; TEXT(({!$Record.Subtotal} - {!$Record.GrandTotal})) &amp; ") - has been approved."</expression>
+        <expression>&quot;Discount approval requested - &quot; &amp; TEXT({!$Record.Discount}) &amp; &quot;% (Amount &quot; &amp; TEXT(({!$Record.Subtotal} - {!$Record.GrandTotal})) &amp; &quot;) on Quote &quot; &amp; {!$Record.QuoteNumber} &amp; &quot;.&quot;</expression>
     </formulas>
     <interviewLabel>Quote Discount DOA {!$Flow.CurrentDateTime}</interviewLabel>
     <label>RES Quote Discount DOA Approval Flow</label>
-    <processType>ApprovalWorkflow</processType>
     <orchestratedStages>
         <name>Initiate_Approval</name>
         <label>Initiate Approval</label>
@@ -184,27 +149,9 @@
                 </value>
             </inputParameters>
             <inputParameters>
-                <name>greetingName</name>
+                <name>ApexEmailTemplateName</name>
                 <value>
-                    <elementReference>Get_Owner_Manager.Outputs.managerName</elementReference>
-                </value>
-            </inputParameters>
-            <inputParameters>
-                <name>emailBodyDetail</name>
-                <value>
-                    <elementReference>fApproverDetail</elementReference>
-                </value>
-            </inputParameters>
-            <inputParameters>
-                <name>emailAddress</name>
-                <value>
-                    <elementReference>Get_Owner_Manager.Outputs.managerEmail</elementReference>
-                </value>
-            </inputParameters>
-            <inputParameters>
-                <name>emailSubject</name>
-                <value>
-                    <elementReference>fApproverSubject</elementReference>
+                    <stringValue>Quote_Discount_Approval_Request</stringValue>
                 </value>
             </inputParameters>
             <label>Notify Manager</label>
@@ -266,6 +213,7 @@
                 <value xsi:nil="true"/>
             </outputConfigParams>
             <requiresAsyncProcessing>false</requiresAsyncProcessing>
+            <requiresMultiMemberApproval>interaction.definition.mdapi.FlowAbstractParameter$FlowStageStepInputParameter@600a638e</requiresMultiMemberApproval>
             <runAsUser>false</runAsUser>
             <shouldLock>true</shouldLock>
             <stepSubtype>ApprovalStep</stepSubtype>
@@ -399,27 +347,21 @@
                 </value>
             </inputParameters>
             <inputParameters>
-                <name>greetingName</name>
+                <name>ApexEmailTemplateName</name>
                 <value>
-                    <elementReference>fOwnerName</elementReference>
+                    <stringValue>Quote_Discount_Approval_Decision</stringValue>
                 </value>
             </inputParameters>
             <inputParameters>
-                <name>emailBodyDetail</name>
+                <name>decision</name>
                 <value>
-                    <elementReference>fApprovedDetail</elementReference>
+                    <stringValue>Approved</stringValue>
                 </value>
             </inputParameters>
             <inputParameters>
-                <name>emailAddress</name>
+                <name>approverRemarks</name>
                 <value>
-                    <elementReference>$Record.Owner:User.Email</elementReference>
-                </value>
-            </inputParameters>
-            <inputParameters>
-                <name>emailSubject</name>
-                <value>
-                    <stringValue>Your Quote discount request was approved</stringValue>
+                    <elementReference>Sales_Manager_Approval.Outputs.approvalComments</elementReference>
                 </value>
             </inputParameters>
             <label>Notify Approved (Manager)</label>
@@ -503,27 +445,21 @@
                 </value>
             </inputParameters>
             <inputParameters>
-                <name>greetingName</name>
+                <name>ApexEmailTemplateName</name>
                 <value>
-                    <elementReference>fOwnerName</elementReference>
+                    <stringValue>Quote_Discount_Approval_Decision</stringValue>
                 </value>
             </inputParameters>
             <inputParameters>
-                <name>emailBodyDetail</name>
+                <name>decision</name>
                 <value>
-                    <elementReference>fRejectDetail</elementReference>
+                    <stringValue>Rejected</stringValue>
                 </value>
             </inputParameters>
             <inputParameters>
-                <name>emailAddress</name>
+                <name>approverRemarks</name>
                 <value>
-                    <elementReference>$Record.Owner:User.Email</elementReference>
-                </value>
-            </inputParameters>
-            <inputParameters>
-                <name>emailSubject</name>
-                <value>
-                    <stringValue>Your Quote discount request was rejected</stringValue>
+                    <elementReference>Sales_Manager_Approval.Outputs.approvalComments</elementReference>
                 </value>
             </inputParameters>
             <label>Notify Reject (Manager)</label>
@@ -593,6 +529,7 @@
                 <value xsi:nil="true"/>
             </outputConfigParams>
             <requiresAsyncProcessing>false</requiresAsyncProcessing>
+            <requiresMultiMemberApproval>interaction.definition.mdapi.FlowAbstractParameter$FlowStageStepInputParameter@2e6ed99a</requiresMultiMemberApproval>
             <runAsUser>false</runAsUser>
             <shouldLock>true</shouldLock>
             <stepSubtype>ApprovalStep</stepSubtype>
@@ -646,21 +583,9 @@
                 </value>
             </inputParameters>
             <inputParameters>
-                <name>greetingName</name>
+                <name>ApexEmailTemplateName</name>
                 <value>
-                    <stringValue>Finance Team</stringValue>
-                </value>
-            </inputParameters>
-            <inputParameters>
-                <name>emailBodyDetail</name>
-                <value>
-                    <elementReference>fApproverDetail</elementReference>
-                </value>
-            </inputParameters>
-            <inputParameters>
-                <name>emailSubject</name>
-                <value>
-                    <elementReference>fApproverSubject</elementReference>
+                    <stringValue>Quote_Discount_Approval_Request</stringValue>
                 </value>
             </inputParameters>
             <label>Notify Finance</label>
@@ -718,27 +643,21 @@
                 </value>
             </inputParameters>
             <inputParameters>
-                <name>greetingName</name>
+                <name>ApexEmailTemplateName</name>
                 <value>
-                    <elementReference>fOwnerName</elementReference>
+                    <stringValue>Quote_Discount_Approval_Decision</stringValue>
                 </value>
             </inputParameters>
             <inputParameters>
-                <name>emailBodyDetail</name>
+                <name>decision</name>
                 <value>
-                    <elementReference>fStage1Detail</elementReference>
+                    <stringValue>approved by the Sales Manager and routed to Finance for final approval</stringValue>
                 </value>
             </inputParameters>
             <inputParameters>
-                <name>emailAddress</name>
+                <name>approverRemarks</name>
                 <value>
-                    <elementReference>$Record.Owner:User.Email</elementReference>
-                </value>
-            </inputParameters>
-            <inputParameters>
-                <name>emailSubject</name>
-                <value>
-                    <stringValue>Sales Manager approved your Quote discount - pending Finance</stringValue>
+                    <elementReference>Sales_Manager_Approval.Outputs.approvalComments</elementReference>
                 </value>
             </inputParameters>
             <label>Notify Stage1 Manager</label>
@@ -860,27 +779,21 @@
                 </value>
             </inputParameters>
             <inputParameters>
-                <name>greetingName</name>
+                <name>ApexEmailTemplateName</name>
                 <value>
-                    <elementReference>fOwnerName</elementReference>
+                    <stringValue>Quote_Discount_Approval_Decision</stringValue>
                 </value>
             </inputParameters>
             <inputParameters>
-                <name>emailBodyDetail</name>
+                <name>decision</name>
                 <value>
-                    <elementReference>fApprovedDetail</elementReference>
+                    <stringValue>Approved</stringValue>
                 </value>
             </inputParameters>
             <inputParameters>
-                <name>emailAddress</name>
+                <name>approverRemarks</name>
                 <value>
-                    <elementReference>$Record.Owner:User.Email</elementReference>
-                </value>
-            </inputParameters>
-            <inputParameters>
-                <name>emailSubject</name>
-                <value>
-                    <stringValue>Your Quote discount request was approved</stringValue>
+                    <elementReference>Finance_Approval.Outputs.approvalComments</elementReference>
                 </value>
             </inputParameters>
             <label>Notify Approved (Finance)</label>
@@ -964,27 +877,21 @@
                 </value>
             </inputParameters>
             <inputParameters>
-                <name>greetingName</name>
+                <name>ApexEmailTemplateName</name>
                 <value>
-                    <elementReference>fOwnerName</elementReference>
+                    <stringValue>Quote_Discount_Approval_Decision</stringValue>
                 </value>
             </inputParameters>
             <inputParameters>
-                <name>emailBodyDetail</name>
+                <name>decision</name>
                 <value>
-                    <elementReference>fRejectDetail</elementReference>
+                    <stringValue>Rejected</stringValue>
                 </value>
             </inputParameters>
             <inputParameters>
-                <name>emailAddress</name>
+                <name>approverRemarks</name>
                 <value>
-                    <elementReference>$Record.Owner:User.Email</elementReference>
-                </value>
-            </inputParameters>
-            <inputParameters>
-                <name>emailSubject</name>
-                <value>
-                    <stringValue>Your Quote discount request was rejected</stringValue>
+                    <elementReference>Finance_Approval.Outputs.approvalComments</elementReference>
                 </value>
             </inputParameters>
             <label>Notify Reject (Finance)</label>
@@ -1027,17 +934,17 @@
             <stepSubtype>BackgroundStep</stepSubtype>
         </stageSteps>
     </orchestratedStages>
+    <processType>ApprovalWorkflow</processType>
     <start>
         <locationX>50</locationX>
         <locationY>0</locationY>
         <connector>
             <targetReference>Initiate_Approval</targetReference>
         </connector>
-        <filterFormula>AND(ISPICKVAL({!$Record.Status}, "Negotiating"), {!$Record.Discount} &gt; 0, NOT({!$Record.RES_System_Status_Update__c}), OR(ISCHANGED({!$Record.Discount}), ISCHANGED({!$Record.Status})))</filterFormula>
+        <filterFormula>AND(ISPICKVAL({!$Record.Status}, &quot;Negotiating&quot;), {!$Record.Discount} &gt; 0, NOT({!$Record.RES_System_Status_Update__c}), OR(ISCHANGED({!$Record.Discount}), ISCHANGED({!$Record.Status})))</filterFormula>
         <object>Quote</object>
         <recordTriggerType>Update</recordTriggerType>
         <scheduledPaths>
-            <name>Approval_Recall_Path</name>
             <connector>
                 <targetReference>Recall_Stage</targetReference>
             </connector>

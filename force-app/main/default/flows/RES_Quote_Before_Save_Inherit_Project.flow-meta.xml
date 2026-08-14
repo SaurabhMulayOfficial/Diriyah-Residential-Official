@@ -1,11 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Flow xmlns="http://soap.sforce.com/2006/04/metadata">
     <apiVersion>67.0</apiVersion>
-    <description>DIR-1128: On creating a Quote, inherit the Project from the parent Opportunity (RES_Project__c), mirroring how Account is inherited. Only sets the value when the Opportunity has a Project.</description>
-    <environments>Default</environments>
-    <interviewLabel>RES Quote Before Save Inherit Project {!$Flow.CurrentDateTime}</interviewLabel>
-    <label>RES Quote Before Save Inherit Project</label>
-    <processType>AutoLaunchedFlow</processType>
+    <areMetricsLoggedToDataCloud>false</areMetricsLoggedToDataCloud>
     <assignments>
         <name>Set_Project_From_Opportunity</name>
         <label>Set Project From Opportunity</label>
@@ -41,6 +37,11 @@
             <label>Has Project</label>
         </rules>
     </decisions>
+    <description>DIR-1128: On creating a Quote, inherit the Project from the parent Opportunity (RES_Project__c), mirroring how Account is inherited. Only sets the value when the Opportunity has a Project.</description>
+    <environments>Default</environments>
+    <interviewLabel>RES Quote Before Save Inherit Project {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>RES Quote Before Save Inherit Project</label>
+    <processType>AutoLaunchedFlow</processType>
     <start>
         <locationX>50</locationX>
         <locationY>0</locationY>

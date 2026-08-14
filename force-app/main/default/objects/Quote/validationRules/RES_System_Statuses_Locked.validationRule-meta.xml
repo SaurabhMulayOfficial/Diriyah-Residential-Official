@@ -2,17 +2,18 @@
 <ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
     <fullName>RES_System_Statuses_Locked</fullName>
     <active>true</active>
-    <description>DIR-763: Pending Approval, Approved and Rejected are set only by the DOA approval automation (bypass flag), not manually by RM/Specialist. Respects the RES_Config_Switch kill switch.</description>
+    <description>DIR-763: Pending Approval, Approved, Rejected and Expired are set only by system automation (bypass flag) - not manually by RM/Specialist. Respects the RES_Config_Switch kill switch.</description>
     <errorConditionFormula>AND(
     NOT($Setup.RES_Config_Switch__c.RES_Validation_Rules_Off__c),
     ISCHANGED(Status),
     OR(
-        ISPICKVAL(Status, "Pending Approval"),
-        ISPICKVAL(Status, "Approved"),
-        ISPICKVAL(Status, "Rejected")
+        ISPICKVAL(Status, &quot;Pending Approval&quot;),
+        ISPICKVAL(Status, &quot;Approved&quot;),
+        ISPICKVAL(Status, &quot;Rejected&quot;),
+        ISPICKVAL(Status, &quot;Expired&quot;)
     ),
     NOT(RES_System_Status_Update__c)
 )</errorConditionFormula>
     <errorDisplayField>Status</errorDisplayField>
-    <errorMessage>Pending Approval, Approved and Rejected are set automatically by the discount approval process and can't be changed manually.</errorMessage>
+    <errorMessage>Pending Approval, Approved, Rejected and Expired are set automatically by system processes and can&apos;t be changed manually.</errorMessage>
 </ValidationRule>

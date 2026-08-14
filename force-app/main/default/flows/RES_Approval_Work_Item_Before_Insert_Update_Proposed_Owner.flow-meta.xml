@@ -29,6 +29,19 @@
             </value>
         </assignmentItems>
     </assignments>
+    <assignments>
+        <name>Assign_Quote_Remarks</name>
+        <label>Assign Quote Remarks</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignmentItems>
+            <assignToReference>$Record.RES_Approval_Request_Remarks__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>fQuoteApproverBody</elementReference>
+            </value>
+        </assignmentItems>
+    </assignments>
     <decisions>
         <name>If_Related_Record_Object_Is_Lead</name>
         <label>If Related Record Object Is Lead</label>
@@ -50,6 +63,21 @@
             </connector>
             <label>Yes, Lead</label>
         </rules>
+        <rules>
+            <name>Yes_Quote</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.RelatedRecordObjectName</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Quote</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Get_Quote</targetReference>
+            </connector>
+            <label>Yes, Quote</label>
+        </rules>
     </decisions>
     <environments>Default</environments>
     <formulas>
@@ -65,6 +93,11 @@
         <name>UserName</name>
         <dataType>String</dataType>
         <expression>{!Get_Lead.Owner:User.FirstName}  + &apos; &apos; + {!Get_Lead.Owner:User.LastName}</expression>
+    </formulas>
+    <formulas>
+        <name>fQuoteApproverBody</name>
+        <dataType>String</dataType>
+        <expression>&quot;Quote &apos;&quot; &amp; {!Get_Quote.Name} &amp; &quot;&apos; (&quot; &amp; {!Get_Quote.QuoteNumber} &amp; &quot;) needs your approval. Discount &quot; &amp; TEXT({!Get_Quote.Discount}) &amp; &quot;% (Amount &quot; &amp; TEXT(({!Get_Quote.Subtotal} - {!Get_Quote.GrandTotal})) &amp; &quot;). Submitted by &quot; &amp; {!Get_Quote.CreatedBy.FirstName} &amp; &quot; &quot; &amp; {!Get_Quote.CreatedBy.LastName} &amp; &quot;.&quot;</expression>
     </formulas>
     <interviewLabel>Approval Work Item - Before Insert - Update Proposed Owner {!$Flow.CurrentDateTime}</interviewLabel>
     <label>Approval Work Item - Before Insert - Update Proposed Owner</label>
@@ -106,6 +139,27 @@
         </filters>
         <getFirstRecordOnly>true</getFirstRecordOnly>
         <object>Lead</object>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
+    <recordLookups>
+        <name>Get_Quote</name>
+        <label>Get Quote</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Assign_Quote_Remarks</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Id</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>$Record.RelatedRecordId</elementReference>
+            </value>
+        </filters>
+        <getFirstRecordOnly>true</getFirstRecordOnly>
+        <object>Quote</object>
         <storeOutputAutomatically>true</storeOutputAutomatically>
     </recordLookups>
     <start>
