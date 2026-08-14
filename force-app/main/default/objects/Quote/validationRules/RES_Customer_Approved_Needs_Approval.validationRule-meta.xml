@@ -6,9 +6,9 @@
     <errorConditionFormula>AND(
     NOT($Setup.RES_Config_Switch__c.RES_Validation_Rules_Off__c),
     ISCHANGED(Status),
-    ISPICKVAL(Status, "Customer Approved"),
+    ISPICKVAL(Status, &quot;Customer Approved&quot;),
     Discount &gt; 0,
-    NOT(ISPICKVAL(PRIORVALUE(Status), "Approved"))
+    NOT(ISPICKVAL(PRIORVALUE(Status), &quot;Approved&quot;))
 )</errorConditionFormula>
     <errorDisplayField>Status</errorDisplayField>
     <errorMessage>This Quote has a discount applied, so it must be approved through the discount approval process before it can be set to Customer Approved.</errorMessage>

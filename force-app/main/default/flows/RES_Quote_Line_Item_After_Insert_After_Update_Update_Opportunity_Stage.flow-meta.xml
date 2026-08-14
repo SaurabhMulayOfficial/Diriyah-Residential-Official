@@ -1,37 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Flow xmlns="http://soap.sforce.com/2006/04/metadata">
-    <actionCalls>
-        <name>Opportunity_Stage_Update</name>
-        <label>Opportunity Stage Update</label>
-        <locationX>0</locationX>
-        <locationY>0</locationY>
-        <actionName>RES_OpportunityStageUpdateValidation</actionName>
-        <actionType>apex</actionType>
-        <flowTransactionModel>Automatic</flowTransactionModel>
-        <inputParameters>
-            <name>accountRecord</name>
-            <value>
-                <elementReference>Get_Account_On_Opportunity</elementReference>
-                <inputConfiguratorMode>Resource</inputConfiguratorMode>
-            </value>
-        </inputParameters>
-        <inputParameters>
-            <name>opportunityRecord</name>
-            <value>
-                <elementReference>Get_Opportunity_On_Quote</elementReference>
-                <inputConfiguratorMode>Resource</inputConfiguratorMode>
-            </value>
-        </inputParameters>
-        <inputParameters>
-            <name>quoteRecord</name>
-            <value>
-                <elementReference>Get_Quote_Record</elementReference>
-                <inputConfiguratorMode>Resource</inputConfiguratorMode>
-            </value>
-        </inputParameters>
-        <nameSegment>RES_OpportunityStageUpdateValidation</nameSegment>
-        <offset>0</offset>
-    </actionCalls>
     <apiVersion>67.0</apiVersion>
     <areMetricsLoggedToDataCloud>false</areMetricsLoggedToDataCloud>
     <assignments>
@@ -51,12 +19,12 @@
         </connector>
     </assignments>
     <customErrors>
-        <name>Validate_Quote_Line_Item_Insertion</name>
-        <label>Validate Quote Line Item Insertion</label>
+        <name>Validate_Product_And_Quantity</name>
+        <label>Validate Product And Quantity</label>
         <locationX>0</locationX>
         <locationY>0</locationY>
         <customErrorMessages>
-            <errorMessage>Only one product can be added to a quote.</errorMessage>
+            <errorMessage>Only one product can be added to a quote, and a product can be added with a quantity of 1 only.</errorMessage>
             <isFieldError>false</isFieldError>
         </customErrorMessages>
     </customErrors>
@@ -71,12 +39,12 @@
         </customErrorMessages>
     </customErrors>
     <customErrors>
-        <name>Validate_Product_And_Quantity</name>
-        <label>Validate Product And Quantity</label>
+        <name>Validate_Quote_Line_Item_Insertion</name>
+        <label>Validate Quote Line Item Insertion</label>
         <locationX>0</locationX>
         <locationY>0</locationY>
         <customErrorMessages>
-            <errorMessage>Only one product can be added to a quote, and a product can be added with a quantity of 1 only.</errorMessage>
+            <errorMessage>Only one product can be added to a quote.</errorMessage>
             <isFieldError>false</isFieldError>
         </customErrorMessages>
     </customErrors>
@@ -176,7 +144,36 @@
             <label>Quote Line Item = 1</label>
         </rules>
     </decisions>
-    <description>DIR-1128: On QuoteLineItem create, enforces one product per Quote and quantity of 1 (both errors surface together), then on a valid single line updates the Opportunity stage. Before each block it publishes RES_Line_Item_Alert__e (publish-immediately) so the user gets a real-time bell even from Browse Catalogs, which swallows save-time error messages. Opportunity-stage logic is unchanged.</description>
+    <decisions>
+        <name>Check_Opportunity_Stage</name>
+        <label>Check Opportunity Stage</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnectorLabel>No Update Needed</defaultConnectorLabel>
+        <rules>
+            <name>Needs_Stage_Update</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>Get_Opportunity_On_Quote.Id</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>Get_Opportunity_On_Quote.StageName</leftValueReference>
+                <operator>NotEqualTo</operator>
+                <rightValue>
+                    <stringValue>Unit Selected</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Update_Opportunity_Stage</targetReference>
+            </connector>
+            <label>Needs Stage Update</label>
+        </rules>
+    </decisions>
+    <description>DIR-1128: On QuoteLineItem create, enforces one product per Quote and quantity of 1 (both errors surface together, published as a real-time alert since Browse Catalogs swallows save-time error messages). On a valid single line, updates the linked Opportunity's stage to Unit Selected.</description>
     <environments>Default</environments>
     <interviewLabel>RES Quote Line Item - After Insert - After Update - Update Opportunity Stage {!$Flow.CurrentDateTime}</interviewLabel>
     <label>RES Quote Line Item - After Insert - After Update - Update Opportunity Stage</label>
@@ -284,27 +281,6 @@
         <object>RES_Line_Item_Alert__e</object>
     </recordCreates>
     <recordLookups>
-        <name>Get_Account_On_Opportunity</name>
-        <label>Get Account On Opportunity</label>
-        <locationX>0</locationX>
-        <locationY>0</locationY>
-        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
-        <connector>
-            <targetReference>Opportunity_Stage_Update</targetReference>
-        </connector>
-        <filterLogic>and</filterLogic>
-        <filters>
-            <field>Id</field>
-            <operator>EqualTo</operator>
-            <value>
-                <elementReference>Get_Opportunity_On_Quote.AccountId</elementReference>
-            </value>
-        </filters>
-        <getFirstRecordOnly>true</getFirstRecordOnly>
-        <object>Account</object>
-        <storeOutputAutomatically>true</storeOutputAutomatically>
-    </recordLookups>
-    <recordLookups>
         <name>Get_all_Quote_Line_Item</name>
         <label>Get all Quote Line Item</label>
         <locationX>0</locationX>
@@ -330,9 +306,9 @@
         <label>Get Opportunity On Quote</label>
         <locationX>0</locationX>
         <locationY>0</locationY>
-        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <assignNullValuesIfNoRecordsFound>true</assignNullValuesIfNoRecordsFound>
         <connector>
-            <targetReference>Get_Account_On_Opportunity</targetReference>
+            <targetReference>Check_Opportunity_Stage</targetReference>
         </connector>
         <filterLogic>and</filterLogic>
         <filters>
@@ -340,13 +316,6 @@
             <operator>EqualTo</operator>
             <value>
                 <elementReference>Get_Quote_Record.OpportunityId</elementReference>
-            </value>
-        </filters>
-        <filters>
-            <field>StageName</field>
-            <operator>EqualTo</operator>
-            <value>
-                <stringValue>Proposal</stringValue>
             </value>
         </filters>
         <getFirstRecordOnly>true</getFirstRecordOnly>
@@ -374,6 +343,27 @@
         <object>Quote</object>
         <storeOutputAutomatically>true</storeOutputAutomatically>
     </recordLookups>
+    <recordUpdates>
+        <name>Update_Opportunity_Stage</name>
+        <label>Update Opportunity Stage</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Id</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>Get_Opportunity_On_Quote.Id</elementReference>
+            </value>
+        </filters>
+        <inputAssignments>
+            <field>StageName</field>
+            <value>
+                <stringValue>Unit Selected</stringValue>
+            </value>
+        </inputAssignments>
+        <object>Opportunity</object>
+    </recordUpdates>
     <start>
         <locationX>0</locationX>
         <locationY>0</locationY>
