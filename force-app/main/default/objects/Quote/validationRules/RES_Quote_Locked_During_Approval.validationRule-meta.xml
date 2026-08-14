@@ -8,10 +8,9 @@
     NOT(RES_System_Status_Update__c),
     NOT(PRIORVALUE(RES_System_Status_Update__c)),
     OR(
-        ISPICKVAL(PRIORVALUE(Status), &quot;Negotiating&quot;),
         ISPICKVAL(PRIORVALUE(Status), &quot;Pending Approval&quot;)
     )
 )</errorConditionFormula>
     <errorDisplayField>Status</errorDisplayField>
-    <errorMessage>This Quote is locked while the discount approval is in progress (Negotiating/Pending Approval). Wait for the approval decision before editing.</errorMessage>
+    <errorMessage>This Quote is locked while the discount approval is in progress (Pending Approval). Wait for the approval decision before editing.</errorMessage>
 </ValidationRule>
