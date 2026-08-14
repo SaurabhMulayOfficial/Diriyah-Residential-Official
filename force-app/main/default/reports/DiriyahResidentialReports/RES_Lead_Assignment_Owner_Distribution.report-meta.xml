@@ -78,6 +78,13 @@
             <operator>equals</operator>
             <value>0</value>
         </criteriaItems>
+        <criteriaItems>
+            <column>OWNER</column>
+            <columnToColumn>false</columnToColumn>
+            <isUnlocked>true</isUnlocked>
+            <operator>notEqual</operator>
+            <value>System User</value>
+        </criteriaItems>
         <language>en_US</language>
     </filter>
     <format>Matrix</format>

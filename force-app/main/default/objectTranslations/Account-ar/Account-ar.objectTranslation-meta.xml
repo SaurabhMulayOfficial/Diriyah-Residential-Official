@@ -1,2 +1,66 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<CustomObjectTranslation xmlns="http://soap.sforce.com/2006/04/metadata"></CustomObjectTranslation>
+<CustomObjectTranslation xmlns="http://soap.sforce.com/2006/04/metadata">
+    <layouts>
+        <layout>Person Account Layout</layout>
+        <layoutType>PersonAccount</layoutType>
+        <sections>
+            <label><!-- Account Summary --></label>
+            <section>Account Summary</section>
+        </sections>
+    </layouts>
+    <layouts>
+        <layout>RES Company</layout>
+        <sections>
+            <label><!-- Account Summary --></label>
+            <section>Account Summary</section>
+        </sections>
+    </layouts>
+    <recordTypes>
+        <label><!-- RES Company --></label>
+        <name>RES_Company</name>
+    </recordTypes>
+    <validationRules>
+        <errorMessage><!-- Mobile number must be in E.164 format (e.g., +1234567890) --></errorMessage>
+        <name>RES_Mobile_E164_Format</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage><!-- Please enter either Email or Mobile. --></errorMessage>
+        <name>RES_Mobile_Or_Email_Mandatory</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage><!-- You do not have the required permissions to change the Account Owner --></errorMessage>
+        <name>RES_Restrict_Account_Owner_field_editing</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage><!-- Date of Birth must be in the past and age must be at least 18 years. --></errorMessage>
+        <name>RES_Validation_Rule_on_BirthDate</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage><!-- Invalid Identification Number. National ID must start with 1 and be up to 10 digits. Iqama must start with 2 and be up to 10 digits. --></errorMessage>
+        <name>RES_Validation_Rule_on_IdentificationNum</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage><!-- Please fill out Identification Number instead of Commercial Registration Number. --></errorMessage>
+        <name>RES_Validation_on_CR_Number</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage><!-- Please fill out the Commercial Registration Number instead of Identification Number. --></errorMessage>
+        <name>RES_Validation_on_Identidfication_Number</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage><!-- Please select the appropriate Identification Type that corresponds to the Identification Number or Commercial Registration Number provided. --></errorMessage>
+        <name>RES_Validation_on_Identification_Type</name>
+    </validationRules>
+    <webLinks>
+        <label><!-- GoogleMaps --></label>
+        <name>GoogleMaps</name>
+    </webLinks>
+    <webLinks>
+        <label><!-- GoogleNews --></label>
+        <name>GoogleNews</name>
+    </webLinks>
+    <webLinks>
+        <label><!-- GoogleSearch --></label>
+        <name>GoogleSearch</name>
+    </webLinks>
+</CustomObjectTranslation>

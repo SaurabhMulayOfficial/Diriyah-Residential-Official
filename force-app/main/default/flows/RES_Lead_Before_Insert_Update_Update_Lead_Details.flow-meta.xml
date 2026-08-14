@@ -102,19 +102,19 @@
         <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
         <rules>
             <name>Yes_Retired</name>
-            <conditionLogic>or</conditionLogic>
+            <conditionLogic>and</conditionLogic>
             <conditions>
-                <leftValueReference>$Record.Status</leftValueReference>
+                <leftValueReference>$Record.RES_Lead_Sub_Status__c</leftValueReference>
                 <operator>IsChanged</operator>
                 <rightValue>
                     <booleanValue>true</booleanValue>
                 </rightValue>
             </conditions>
             <conditions>
-                <leftValueReference>$Record.RES_Lead_Sub_Status__c</leftValueReference>
-                <operator>IsChanged</operator>
+                <leftValueReference>$Record.RES_Reassignment_Count__c</leftValueReference>
+                <operator>LessThan</operator>
                 <rightValue>
-                    <booleanValue>true</booleanValue>
+                    <numberValue>1.0</numberValue>
                 </rightValue>
             </conditions>
             <connector>
@@ -134,23 +134,9 @@
             <conditionLogic>and</conditionLogic>
             <conditions>
                 <leftValueReference>$Record.OwnerId</leftValueReference>
-                <operator>StartsWith</operator>
-                <rightValue>
-                    <stringValue>005</stringValue>
-                </rightValue>
-            </conditions>
-            <conditions>
-                <leftValueReference>$Record.OwnerId</leftValueReference>
                 <operator>IsChanged</operator>
                 <rightValue>
                     <booleanValue>true</booleanValue>
-                </rightValue>
-            </conditions>
-            <conditions>
-                <leftValueReference>$Record__Prior.OwnerId</leftValueReference>
-                <operator>StartsWith</operator>
-                <rightValue>
-                    <stringValue>00G</stringValue>
                 </rightValue>
             </conditions>
             <connector>
@@ -328,9 +314,9 @@
         <name>RetiredDateTime</name>
         <dataType>DateTime</dataType>
         <expression>IF(
-  OR(ISCHANGED({!$Record.Status}),ISCHANGED({!$Record.RES_Lead_Sub_Status__c})),
+  ISCHANGED({!$Record.RES_Lead_Sub_Status__c}),
   IF(
-    ISPICKVAL({!$Record.Status},&apos;05&apos;),
+    ISPICKVAL({!$Record.RES_Lead_Sub_Status__c},&apos;151&apos;),
     NOW() + 30,
     NULL
   ),

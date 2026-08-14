@@ -1,65 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <PermissionSet xmlns="http://soap.sforce.com/2006/04/metadata">
-    <description>Permission Set for 
-Sales – External – Specialist
-Sales – External – Relationship Manager</description>
-    <customPermissions>
-        <enabled>true</enabled>
-        <name>RES_Specalist_Dashboard_Visibility</name>
-    </customPermissions>
-    <customPermissions>         
-        <enabled>true</enabled>         
-        <name>RES_Sub_Stage_Visibility</name>     
-    </customPermissions>
     <customPermissions>
         <enabled>true</enabled>
         <name>RES_Show_Document_Section</name>
     </customPermissions>
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>ContentVersion.RES_Attachment_Type__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
- <fieldPermissions>
-        <editable>true</editable>
-        <field>ContentVersion.RES_Document_Label__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-     <fieldPermissions>
-        <editable>true</editable>
-        <field>Account.RES_National_ID_Status__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
- <fieldPermissions>
-        <editable>true</editable>
-        <field>Account.RES_Iqama_Id_Status__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
- <fieldPermissions>
-        <editable>true</editable>
-        <field>Account.RES_GCC_Id_Status__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
- <fieldPermissions>
-        <editable>true</editable>
-        <field>Account.RES_Passport_Status__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
- <fieldPermissions>
-        <editable>true</editable>
-        <field>Account.RES_Simah_Form_Status__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
- <fieldPermissions>
-        <editable>true</editable>
-        <field>Account.RES_Company_Reg_Certificate_Status__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
- <fieldPermissions>
-        <editable>true</editable>
-        <field>Account.RES_Power_of_Attorney_Status__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
+    <customPermissions>
+        <enabled>true</enabled>
+        <name>RES_Specalist_Dashboard_Visibility</name>
+    </customPermissions>
+    <customPermissions>
+        <enabled>true</enabled>
+        <name>RES_Sub_Stage_Visibility</name>
+    </customPermissions>
+    <description>Permission Set for 
+Sales – External – Specialist
+Sales – External – Relationship Manager</description>
     <fieldPermissions>
         <editable>false</editable>
         <field>Account.AccountNumber</field>
@@ -80,14 +35,9 @@ Sales – External – Relationship Manager</description>
         <field>Account.BillingAddress</field>
         <readable>true</readable>
     </fieldPermissions>
-     <fieldPermissions>
-        <editable>true</editable>
-        <field>Account.ShippingAddress</field>
-        <readable>true</readable>
-    </fieldPermissions>
     <fieldPermissions>
         <editable>true</editable>
-        <field>Account.RES_CR_number__c</field>
+        <field>Account.DIR_Country__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
@@ -127,6 +77,11 @@ Sales – External – Relationship Manager</description>
     </fieldPermissions>
     <fieldPermissions>
         <editable>true</editable>
+        <field>Account.PersonBirthdate</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
         <field>Account.PersonEmail</field>
         <readable>true</readable>
     </fieldPermissions>
@@ -138,11 +93,6 @@ Sales – External – Relationship Manager</description>
     <fieldPermissions>
         <editable>true</editable>
         <field>Account.PersonMobilePhone</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>Account.PersonBirthdate</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
@@ -177,6 +127,11 @@ Sales – External – Relationship Manager</description>
     </fieldPermissions>
     <fieldPermissions>
         <editable>true</editable>
+        <field>Account.RES_CR_number__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
         <field>Account.RES_Certificateof_Saudization_ExpiryDate__c</field>
         <readable>true</readable>
     </fieldPermissions>
@@ -195,11 +150,6 @@ Sales – External – Relationship Manager</description>
         <field>Account.RES_Commercial_Registration_Number__c</field>
         <readable>true</readable>
     </fieldPermissions>
-     <fieldPermissions>
-        <editable>true</editable>
-        <field>Account.RES_CR_Number__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
     <fieldPermissions>
         <editable>true</editable>
         <field>Account.RES_Company_Operates_In_Saudi__c</field>
@@ -208,6 +158,11 @@ Sales – External – Relationship Manager</description>
     <fieldPermissions>
         <editable>true</editable>
         <field>Account.RES_Company_Organization__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>Account.RES_Company_Reg_Certificate_Status__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
@@ -257,6 +212,11 @@ Sales – External – Relationship Manager</description>
     </fieldPermissions>
     <fieldPermissions>
         <editable>true</editable>
+        <field>Account.RES_GCC_Id_Status__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
         <field>Account.RES_GL_Account__c</field>
         <readable>true</readable>
     </fieldPermissions>
@@ -282,7 +242,17 @@ Sales – External – Relationship Manager</description>
     </fieldPermissions>
     <fieldPermissions>
         <editable>true</editable>
+        <field>Account.RES_Iqama_Id_Status__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
         <field>Account.RES_Marketing_Permission__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>Account.RES_National_ID_Status__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
@@ -312,7 +282,17 @@ Sales – External – Relationship Manager</description>
     </fieldPermissions>
     <fieldPermissions>
         <editable>true</editable>
+        <field>Account.RES_Passport_Status__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
         <field>Account.RES_Position__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>Account.RES_Power_of_Attorney_Status__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
@@ -333,6 +313,11 @@ Sales – External – Relationship Manager</description>
     <fieldPermissions>
         <editable>false</editable>
         <field>Account.RES_Services_Offered__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>Account.RES_Simah_Form_Status__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
@@ -381,6 +366,11 @@ Sales – External – Relationship Manager</description>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
+        <editable>true</editable>
+        <field>Account.ShippingAddress</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
         <editable>false</editable>
         <field>Account.Sic</field>
         <readable>true</readable>
@@ -410,16 +400,6 @@ Sales – External – Relationship Manager</description>
         <field>Account.Website</field>
         <readable>true</readable>
     </fieldPermissions>
-     <fieldPermissions>
-        <editable>true</editable>
-        <field>Contact.RES_Full_Arabic_Name__c</field>
-       <readable>true</readable>
-    </fieldPermissions>
-      <fieldPermissions>
-        <editable>true</editable>
-        <field>Contact.RES_Nationality__c</field>
-       <readable>true</readable>
-    </fieldPermissions>
     <fieldPermissions>
         <editable>true</editable>
         <field>Contact.AccountId</field>
@@ -443,6 +423,11 @@ Sales – External – Relationship Manager</description>
     <fieldPermissions>
         <editable>false</editable>
         <field>Contact.BuyerAttributes</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>Contact.DIR_Country__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
@@ -547,7 +532,7 @@ Sales – External – Relationship Manager</description>
     </fieldPermissions>
     <fieldPermissions>
         <editable>true</editable>
-        <field>Contact.RES_Cityspace_Year__c</field>
+        <field>Contact.RES_Full_Arabic_Name__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
@@ -565,15 +550,9 @@ Sales – External – Relationship Manager</description>
         <field>Contact.RES_Marital_Status__c</field>
         <readable>true</readable>
     </fieldPermissions>
-
     <fieldPermissions>
-        <editable>false</editable>
-        <field>Contact.RES_Status__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>false</editable>
-        <field>Contact.ReportsToId</field>
+        <editable>true</editable>
+        <field>Contact.RES_Nationality__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
@@ -596,99 +575,89 @@ Sales – External – Relationship Manager</description>
         <field>Contact.TitleType</field>
         <readable>true</readable>
     </fieldPermissions>
-     <fieldPermissions>
-        <editable>false</editable>
-        <field>Lead.RES_SLA_Hours_Remaining__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
     <fieldPermissions>
         <editable>false</editable>
-        <field>Lead.RES_Residency_Type__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>false</editable>
-        <field>Lead.RES_Financial_Readiness__c </field>
-        <readable>true</readable>
-    </fieldPermissions>
-     <fieldPermissions>
-        <editable>true</editable>
-        <field>Lead.RES_Customer_Budget__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-     <fieldPermissions>
-        <editable>true</editable>
-        <field>Lead.RES_Customer_Unit_Preference__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-     <fieldPermissions>
-        <editable>true</editable>
-        <field>Lead.RES_Broker_Registration__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-     <fieldPermissions>
-        <editable>false</editable>
-        <field>Lead.RES_Financial_Readiness__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-     <fieldPermissions>
-        <editable>false</editable>
-        <field>Lead.RES_Purchase_Timeline__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>false</editable>
-        <field>Lead.RES_Lead_Status__c</field>
+        <field>Contract.ActivatedDate</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
         <editable>true</editable>
-        <field>Lead.RES_Date_of_Birth__c</field>
+        <field>Contract.BillingAddress</field>
         <readable>true</readable>
     </fieldPermissions>
-     <fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>Contract.CompanySignedDate</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>Contract.CompanySignedId</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>Contract.ContractTerm</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>Contract.CustomerSignedDate</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>Contract.CustomerSignedId</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>Contract.CustomerSignedTitle</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>Contract.Description</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
         <editable>false</editable>
-        <field>Lead.RES_Lead_Type__c </field>
+        <field>Contract.EndDate</field>
         <readable>true</readable>
     </fieldPermissions>
-     <fieldPermissions>
-        <editable>false</editable>
-        <field>Lead.DIR_Lead_Id__c</field>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>Contract.Name</field>
         <readable>true</readable>
     </fieldPermissions>
-     <fieldPermissions>
-        <editable>false</editable>
-        <field>Lead.RES_Year_Of_Establishment__c</field>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>Contract.OwnerExpirationNotice</field>
         <readable>true</readable>
     </fieldPermissions>
-     <fieldPermissions>
-        <editable>false</editable>
-        <field>Lead.RES_Vat_Cert_Expiry_Date__c</field>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>Contract.Pricebook2Id</field>
         <readable>true</readable>
     </fieldPermissions>
-     <fieldPermissions>
-        <editable>false</editable>
-        <field>Lead.RES_Marital_Status__c</field>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>Contract.ShippingAddress</field>
         <readable>true</readable>
     </fieldPermissions>
-     <fieldPermissions>
-        <editable>false</editable>
-        <field>Lead.RES_Reason_Code__c</field>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>Contract.SpecialTerms</field>
         <readable>true</readable>
     </fieldPermissions>
-   <fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>Contract.StartDate</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
         <editable>true</editable>
         <field>Lead.Address</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>Lead.RES_CR_Number__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>Lead.RES_Bypass_Assignment_Rules__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
@@ -698,11 +667,21 @@ Sales – External – Relationship Manager</description>
     </fieldPermissions>
     <fieldPermissions>
         <editable>true</editable>
-        <field>Lead.DIR_Note__c</field>
+        <field>Lead.DIR_Country__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>Lead.DIR_Lead_Id__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
         <editable>true</editable>
+        <field>Lead.DIR_Note__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
         <field>Lead.Description</field>
         <readable>true</readable>
     </fieldPermissions>
@@ -787,6 +766,11 @@ Sales – External – Relationship Manager</description>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
+        <editable>true</editable>
+        <field>Lead.RES_Broker_Registration__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
         <editable>false</editable>
         <field>Lead.RES_Broker__c</field>
         <readable>true</readable>
@@ -796,10 +780,19 @@ Sales – External – Relationship Manager</description>
         <field>Lead.RES_Budget_Range__c</field>
         <readable>true</readable>
     </fieldPermissions>
-
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>Lead.RES_Bypass_Assignment_Rules__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
     <fieldPermissions>
         <editable>false</editable>
         <field>Lead.RES_CAPTCHA_TCs__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>Lead.RES_CR_Number__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
@@ -822,11 +815,6 @@ Sales – External – Relationship Manager</description>
         <field>Lead.RES_Commercial_Registration_Number__c</field>
         <readable>true</readable>
     </fieldPermissions>
-     <fieldPermissions>
-        <editable>true</editable>
-        <field>Lead.RES_CR_Number__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
     <fieldPermissions>
         <editable>true</editable>
         <field>Lead.RES_Corporate_Title__c</field>
@@ -843,8 +831,23 @@ Sales – External – Relationship Manager</description>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
+        <editable>true</editable>
+        <field>Lead.RES_Customer_Budget__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
         <editable>false</editable>
         <field>Lead.RES_Customer_Interest__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>Lead.RES_Customer_Unit_Preference__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>Lead.RES_Date_of_Birth__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
@@ -855,6 +858,11 @@ Sales – External – Relationship Manager</description>
     <fieldPermissions>
         <editable>false</editable>
         <field>Lead.RES_End_Date__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>Lead.RES_Financial_Readiness__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
@@ -884,26 +892,6 @@ Sales – External – Relationship Manager</description>
     </fieldPermissions>
     <fieldPermissions>
         <editable>true</editable>
-        <field>Lead.DIR_Country__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>Account.DIR_Country__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>Contact.DIR_Country__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>Opportunity.DIR_Country__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>true</editable>
         <field>Lead.RES_Identification_Number__c</field>
         <readable>true</readable>
     </fieldPermissions>
@@ -913,15 +901,10 @@ Sales – External – Relationship Manager</description>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
-        <editable>true</editable>
+        <editable>false</editable>
         <field>Lead.RES_Interest_Type__c</field>
         <readable>true</readable>
     </fieldPermissions>
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>Lead.RES_CR_Number__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
     <fieldPermissions>
         <editable>true</editable>
         <field>Lead.RES_Language__c</field>
@@ -933,13 +916,48 @@ Sales – External – Relationship Manager</description>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
-        <editable>true</editable>
+        <editable>false</editable>
         <field>Lead.RES_Lead_Medium__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>Lead.RES_Lead_Response_Time_Hours__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>Lead.RES_Lead_Response_Time_Minutes__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>Lead.RES_Lead_Response_Time_Seconds__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>Lead.RES_Lead_Response_Time__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>Lead.RES_Lead_Status__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
         <editable>true</editable>
         <field>Lead.RES_Lead_Sub_Status__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>Lead.RES_Lead_Type__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>Lead.RES_Marital_Status__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
@@ -989,6 +1007,21 @@ Sales – External – Relationship Manager</description>
     </fieldPermissions>
     <fieldPermissions>
         <editable>true</editable>
+        <field>Lead.RES_Next_Assignment_Date__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>Lead.RES_Pending_Qualified_Review__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>Lead.RES_Plot_Size_sqm__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
         <field>Lead.RES_Position__c</field>
         <readable>true</readable>
     </fieldPermissions>
@@ -1009,12 +1042,12 @@ Sales – External – Relationship Manager</description>
     </fieldPermissions>
     <fieldPermissions>
         <editable>true</editable>
-        <field>Lead.RES_Project__c</field>
+        <field>Lead.RES_Project_Type__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
         <editable>true</editable>
-        <field>Lead.RES_Next_Assignment_Date__c</field>
+        <field>Lead.RES_Project__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
@@ -1028,17 +1061,37 @@ Sales – External – Relationship Manager</description>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
+        <editable>false</editable>
+        <field>Lead.RES_Purchase_Timeline__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
         <editable>true</editable>
         <field>Lead.RES_Qualification_Level__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
-        <editable>true</editable>
-        <field>Lead.RES_Requested_Timing__c</field>
+        <editable>false</editable>
+        <field>Lead.RES_Reason_Code__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
         <editable>true</editable>
+        <field>Lead.RES_Reason__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>Lead.RES_Requested_Timing__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>Lead.RES_Residency_Type__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
         <field>Lead.RES_SHA__c</field>
         <readable>true</readable>
     </fieldPermissions>
@@ -1059,6 +1112,16 @@ Sales – External – Relationship Manager</description>
     </fieldPermissions>
     <fieldPermissions>
         <editable>false</editable>
+        <field>Lead.RES_SLA_Hours_Remaining__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>Lead.RES_SLA_Met_Time__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
         <field>Lead.RES_SLA_Start_Time__c</field>
         <readable>true</readable>
     </fieldPermissions>
@@ -1068,7 +1131,7 @@ Sales – External – Relationship Manager</description>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
-        <editable>true</editable>
+        <editable>false</editable>
         <field>Lead.RES_Services_Offered__c</field>
         <readable>true</readable>
     </fieldPermissions>
@@ -1093,6 +1156,16 @@ Sales – External – Relationship Manager</description>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
+        <editable>true</editable>
+        <field>Lead.RES_Type_of_Leasing__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>Lead.RES_Unit_Type__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
         <editable>false</editable>
         <field>Lead.RES_Unit_of_Interest__c</field>
         <readable>true</readable>
@@ -1109,10 +1182,20 @@ Sales – External – Relationship Manager</description>
     </fieldPermissions>
     <fieldPermissions>
         <editable>false</editable>
+        <field>Lead.RES_Vat_Cert_Expiry_Date__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
         <field>Lead.RES_Villa_of_Interest__c</field>
         <readable>true</readable>
     </fieldPermissions>
-     <fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>Lead.RES_Year_Of_Establishment__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
         <editable>false</editable>
         <field>Lead.RES_Z_CurrentRentcurrencyCode_KUT__c</field>
         <readable>true</readable>
@@ -1137,34 +1220,14 @@ Sales – External – Relationship Manager</description>
         <field>Lead.Website</field>
         <readable>true</readable>
     </fieldPermissions>
-     <fieldPermissions>
-        <editable>false</editable>
-        <field>Opportunity.RES_Days_to_Close_Planned__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-     <fieldPermissions>
-        <editable>false</editable>
-        <field>Opportunity.RES_Deal_Age_Days__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-     <fieldPermissions>
-        <editable>false</editable>
-        <field>Opportunity.RES_Lead_Medium__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
     <fieldPermissions>
-        <editable>false</editable>
+        <editable>true</editable>
         <field>Opportunity.AccountId</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
         <editable>true</editable>
         <field>Opportunity.Amount</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>Opportunity.Budget_Confirmed__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
@@ -1184,11 +1247,6 @@ Sales – External – Relationship Manager</description>
     </fieldPermissions>
     <fieldPermissions>
         <editable>false</editable>
-        <field>Opportunity.Discovery_Completed__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>true</editable>
         <field>Opportunity.ExpectedRevenue</field>
         <readable>true</readable>
     </fieldPermissions>
@@ -1200,11 +1258,6 @@ Sales – External – Relationship Manager</description>
     <fieldPermissions>
         <editable>false</editable>
         <field>Opportunity.LeadSource</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>false</editable>
-        <field>Opportunity.Loss_Reason__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
@@ -1223,23 +1276,8 @@ Sales – External – Relationship Manager</description>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
-        <editable>false</editable>
-        <field>Opportunity.RES_Campaign_Name__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>Opportunity.RES_City__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
         <editable>true</editable>
         <field>Opportunity.RES_Cityscape_Year__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>Opportunity.RES_Country__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
@@ -1249,33 +1287,12 @@ Sales – External – Relationship Manager</description>
     </fieldPermissions>
     <fieldPermissions>
         <editable>false</editable>
-        <field>Opportunity.RES_Distribution_Channel__c</field>
+        <field>Opportunity.RES_Days_to_Close_Planned__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
-        <editable>true</editable>
-        <field>Opportunity.RES_House_Number__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>Opportunity.RES_Identification_Number__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>Opportunity.RES_Identification_Type__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>Opportunity.RES_Joint_Account_Check__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>Opportunity.RES_Opportunity_Email__c</field>
+        <editable>false</editable>
+        <field>Opportunity.RES_Deal_Age_Days__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
@@ -1299,36 +1316,6 @@ Sales – External – Relationship Manager</description>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
-        <editable>true</editable>
-        <field>Opportunity.RES_State_Province__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>Opportunity.RES_Street__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>Opportunity.RES_Sub_Stage__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>Opportunity.RES_CR_Number__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>Opportunity.RES_Zip_Postal_Code__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>Opportunity.ROI_Analysis_Completed__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
         <editable>false</editable>
         <field>Opportunity.TotalOpportunityQuantity</field>
         <readable>true</readable>
@@ -1336,6 +1323,71 @@ Sales – External – Relationship Manager</description>
     <fieldPermissions>
         <editable>false</editable>
         <field>Opportunity.Type</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>Product2.AvailabilityDate</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>Product2.Description</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>Product2.DiscontinuedDate</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>Product2.Family</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>Product2.ProductCode</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>Product2.StockKeepingUnit</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>Quote.AccountId</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>Quote.ContactId</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>Quote.ContractId</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>Quote.Description</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>Quote.ExpirationDate</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>Quote.GrandTotal</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>Quote.Status</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
@@ -1363,11 +1415,6 @@ Sales – External – Relationship Manager</description>
         <field>RES_Opportunity_Account_Link__c.RES_Relationship_between_buyers__c</field>
         <readable>true</readable>
     </fieldPermissions>
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>Event.Location</field>
-        <readable>true</readable>
-    </fieldPermissions>
     <hasActivationRequired>false</hasActivationRequired>
     <label>Diriyah Residential – External Specialist Permission Set</label>
     <license>Salesforce</license>
@@ -1377,19 +1424,19 @@ Sales – External – Relationship Manager</description>
         <allowEdit>true</allowEdit>
         <allowRead>true</allowRead>
         <modifyAllRecords>false</modifyAllRecords>
-        <object>Lead</object>
+        <object>Account</object>
         <viewAllFields>false</viewAllFields>
         <viewAllRecords>true</viewAllRecords>
     </objectPermissions>
     <objectPermissions>
-        <allowCreate>true</allowCreate>
+        <allowCreate>false</allowCreate>
         <allowDelete>false</allowDelete>
-        <allowEdit>true</allowEdit>
+        <allowEdit>false</allowEdit>
         <allowRead>true</allowRead>
         <modifyAllRecords>false</modifyAllRecords>
-        <object>Account</object>
+        <object>AppUsageAssignment</object>
         <viewAllFields>false</viewAllFields>
-        <viewAllRecords>true</viewAllRecords>
+        <viewAllRecords>false</viewAllRecords>
     </objectPermissions>
     <objectPermissions>
         <allowCreate>true</allowCreate>
@@ -1407,9 +1454,79 @@ Sales – External – Relationship Manager</description>
         <allowEdit>true</allowEdit>
         <allowRead>true</allowRead>
         <modifyAllRecords>false</modifyAllRecords>
+        <object>Contract</object>
+        <viewAllFields>false</viewAllFields>
+        <viewAllRecords>false</viewAllRecords>
+    </objectPermissions>
+    <objectPermissions>
+        <allowCreate>true</allowCreate>
+        <allowDelete>false</allowDelete>
+        <allowEdit>true</allowEdit>
+        <allowRead>true</allowRead>
+        <modifyAllRecords>false</modifyAllRecords>
+        <object>Lead</object>
+        <viewAllFields>false</viewAllFields>
+        <viewAllRecords>true</viewAllRecords>
+    </objectPermissions>
+    <objectPermissions>
+        <allowCreate>true</allowCreate>
+        <allowDelete>false</allowDelete>
+        <allowEdit>true</allowEdit>
+        <allowRead>true</allowRead>
+        <modifyAllRecords>false</modifyAllRecords>
         <object>Opportunity</object>
         <viewAllFields>false</viewAllFields>
         <viewAllRecords>false</viewAllRecords>
+    </objectPermissions>
+    <objectPermissions>
+        <allowCreate>false</allowCreate>
+        <allowDelete>false</allowDelete>
+        <allowEdit>false</allowEdit>
+        <allowRead>true</allowRead>
+        <modifyAllRecords>false</modifyAllRecords>
+        <object>Product2</object>
+        <viewAllFields>false</viewAllFields>
+        <viewAllRecords>false</viewAllRecords>
+    </objectPermissions>
+    <objectPermissions>
+        <allowCreate>false</allowCreate>
+        <allowDelete>false</allowDelete>
+        <allowEdit>false</allowEdit>
+        <allowRead>true</allowRead>
+        <modifyAllRecords>false</modifyAllRecords>
+        <object>ProductCatalog</object>
+        <viewAllFields>false</viewAllFields>
+        <viewAllRecords>false</viewAllRecords>
+    </objectPermissions>
+    <objectPermissions>
+        <allowCreate>false</allowCreate>
+        <allowDelete>false</allowDelete>
+        <allowEdit>false</allowEdit>
+        <allowRead>true</allowRead>
+        <modifyAllRecords>false</modifyAllRecords>
+        <object>ProductCategory</object>
+        <viewAllFields>false</viewAllFields>
+        <viewAllRecords>false</viewAllRecords>
+    </objectPermissions>
+    <objectPermissions>
+        <allowCreate>true</allowCreate>
+        <allowDelete>false</allowDelete>
+        <allowEdit>true</allowEdit>
+        <allowRead>true</allowRead>
+        <modifyAllRecords>false</modifyAllRecords>
+        <object>Quote</object>
+        <viewAllFields>false</viewAllFields>
+        <viewAllRecords>false</viewAllRecords>
+    </objectPermissions>
+    <objectPermissions>
+        <allowCreate>true</allowCreate>
+        <allowDelete>false</allowDelete>
+        <allowEdit>true</allowEdit>
+        <allowRead>true</allowRead>
+        <modifyAllRecords>false</modifyAllRecords>
+        <object>RES_Opportunity_Account_Link__c</object>
+        <viewAllFields>false</viewAllFields>
+        <viewAllRecords>true</viewAllRecords>
     </objectPermissions>
     <recordTypeVisibilities>
         <recordType>Account.RES_Company</recordType>
@@ -1448,6 +1565,14 @@ Sales – External – Relationship Manager</description>
         <visibility>Visible</visibility>
     </tabSettings>
     <tabSettings>
+        <tab>standard-Contract</tab>
+        <visibility>Visible</visibility>
+    </tabSettings>
+    <tabSettings>
+        <tab>standard-Dashboard</tab>
+        <visibility>Visible</visibility>
+    </tabSettings>
+    <tabSettings>
         <tab>standard-Event</tab>
         <visibility>Visible</visibility>
     </tabSettings>
@@ -1460,55 +1585,51 @@ Sales – External – Relationship Manager</description>
         <visibility>Visible</visibility>
     </tabSettings>
     <tabSettings>
-        <tab>standard-OmniSupervisor</tab>
+        <tab>standard-Product2</tab>
         <visibility>Visible</visibility>
     </tabSettings>
     <tabSettings>
-        <tab>standard-report</tab>
+        <tab>standard-ProductCatalog</tab>
         <visibility>Visible</visibility>
     </tabSettings>
     <tabSettings>
-        <tab>standard-Dashboard</tab>
+        <tab>standard-ProductCategory</tab>
+        <visibility>Visible</visibility>
+    </tabSettings>
+    <tabSettings>
+        <tab>standard-Quote</tab>
         <visibility>Visible</visibility>
     </tabSettings>
     <tabSettings>
         <tab>standard-Task</tab>
         <visibility>Visible</visibility>
     </tabSettings>
-    <userPermissions>
-        <enabled>true</enabled>
-        <name>EditTask</name>
-    </userPermissions>
+    <tabSettings>
+        <tab>standard-report</tab>
+        <visibility>Visible</visibility>
+    </tabSettings>
     <userPermissions>
         <enabled>true</enabled>
         <name>ApiEnabled</name>
     </userPermissions>
     <userPermissions>
         <enabled>true</enabled>
-        <name>EmailSingle</name>
+        <name>ConvertLeads</name>
     </userPermissions>
     <userPermissions>
-        <enabled>false</enabled>
-        <name>ViewPublicReports</name>
+        <enabled>true</enabled>
+        <name>EditTask</name>
+    </userPermissions>
+    <userPermissions>
+        <enabled>true</enabled>
+        <name>EmailSingle</name>
     </userPermissions>
     <userPermissions>
         <enabled>true</enabled>
         <name>RunReports</name>
     </userPermissions>
     <userPermissions>
-        <enabled>false</enabled>
-        <name>ViewPublicDashboards</name>
-    </userPermissions>
-    <userPermissions>
         <enabled>true</enabled>
         <name>ViewMyTeamsDashboards</name>
-    </userPermissions>
-    <userPermissions>
-        <enabled>true</enabled>
-        <name>ConvertLeads</name>
-    </userPermissions>
-    <userPermissions> 
-        <enabled>false</enabled> 
-        <name>ExportReport</name> 
     </userPermissions>
 </PermissionSet>

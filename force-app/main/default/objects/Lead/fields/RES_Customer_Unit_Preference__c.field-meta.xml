@@ -4,9 +4,10 @@
     <label>Customer Unit Preference</label>
     <required>false</required>
     <trackFeedHistory>false</trackFeedHistory>
-    <trackHistory>false</trackHistory>
+    <trackHistory>true</trackHistory>
     <type>Picklist</type>
     <valueSet>
+        <controllingField>RES_Unit_Type__c</controllingField>
         <valueSetDefinition>
             <sorted>false</sorted>
             <value>
@@ -30,9 +31,9 @@
                 <label>3 bedrooms</label>
             </value>
             <value>
-                <fullName>4 bedrooms and more</fullName>
+                <fullName>4 bedrooms and Above</fullName>
                 <default>false</default>
-                <label>4 bedrooms and more</label>
+                <label>4 bedrooms and Above</label>
             </value>
             <value>
                 <fullName>Plots</fullName>
@@ -40,5 +41,28 @@
                 <label>Plots</label>
             </value>
         </valueSetDefinition>
+        <valueSettings>
+            <controllingFieldValue>Apartment</controllingFieldValue>
+            <valueName>Studio</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Apartment</controllingFieldValue>
+            <valueName>1 bedroom</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Apartment</controllingFieldValue>
+            <controllingFieldValue>Villa</controllingFieldValue>
+            <valueName>2 bedrooms</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Apartment</controllingFieldValue>
+            <controllingFieldValue>Villa</controllingFieldValue>
+            <valueName>3 bedrooms</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Apartment</controllingFieldValue>
+            <controllingFieldValue>Villa</controllingFieldValue>
+            <valueName>4 bedrooms and Above</valueName>
+        </valueSettings>
     </valueSet>
 </CustomField>

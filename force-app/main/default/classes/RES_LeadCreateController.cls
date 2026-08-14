@@ -104,7 +104,14 @@ public with sharing class RES_LeadCreateController {
             return false;
         }
 
-        List<RES_Role_Field_Access__mdt> accessRecords = new RES_RoleFieldAccessDAO().getMetadataByRole(users[0].UserRole.DeveloperName, 'LeadSource');
+        List<RES_Role_Field_Access__mdt> accessRecords = [
+            SELECT Id
+            FROM RES_Role_Field_Access__mdt
+            WHERE Role_API__c = :users[0].UserRole.DeveloperName
+            AND Field_API__c = 'LeadSource'
+            LIMIT 1
+        ];
+
         return !accessRecords.isEmpty();
     }
 
@@ -133,7 +140,12 @@ public with sharing class RES_LeadCreateController {
             throw new AuraHandledException(cleanMsg);
         }
 
-        return newLead;
+        return [
+            SELECT Id, Name, FirstName, LastName
+            FROM Lead
+            WHERE Id = :newLead.Id
+            LIMIT 1
+        ];
     }
 
     @AuraEnabled(cacheable=true)

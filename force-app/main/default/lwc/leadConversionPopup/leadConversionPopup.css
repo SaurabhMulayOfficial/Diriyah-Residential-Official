@@ -1,274 +1,467 @@
-.overlay {
-    position        : fixed;
-    inset           : 0;
-    background      : rgba(0, 0, 0, 0.55);
-    z-index         : 9999;
-    display         : flex;
-    align-items     : center;
-    justify-content : center;
+/* ───────────── Warning Modal ───────────── */
+
+.warn-overlay {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+
+    background: rgba(0, 0, 0, 0.60);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
 }
 
-.popup-box {
-    background    : #f3f3f3;
-    border-radius : 16px;
-    width         : 900px;
-    max-width     : 95vw;
-    max-height    : 90vh;
-    overflow-y    : auto;
-    box-shadow    : 0 12px 48px rgba(0, 0, 0, 0.25);
-    animation     : popIn 0.3s ease;
-    position      : relative;
+.warn-card {
+    position: relative;
+    width: min(50vw, 1000px);
+    background: #ffffff;
+    border-radius: 28px;
+    overflow: visible;
+    box-shadow: 0 14px 40px rgba(0,0,0,.30);
+    animation: warnPopIn .22s ease;
 }
 
-@keyframes popIn {
-    from { transform: scale(0.88); opacity: 0; }
-    to   { transform: scale(1);    opacity: 1; }
+@keyframes warnPopIn {
+    from {
+        opacity: 0;
+        transform: scale(.96);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
 }
 
-/* ── Header ── */
-.popup-header {
-    background    : white;
-    border-radius : 16px 16px 0 0;
-    padding       : 32px 32px 24px;
-    text-align    : center;
-    position      : relative;
+/* Close Button */
+
+.warn-close-btn {
+    position: absolute;
+    top: -40px;
+    right: 0;
+    width: 30px;
+    height: 30px;
+    border: none;
+    border-radius: 50%;
+    background: #ffffff;
+    color: #555;
+    font-size: 1.5rem;
+    font-weight: 500;
+    cursor: pointer;
+    box-shadow: 0 2px 10px rgba(0,0,0,.18);
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
-.close-x {
-    position   : absolute;
-    top        : 16px;
-    right      : 16px;
-    background : #f44336;
-    color      : white;
-    border     : none;
-    border-radius : 50%;
-    width      : 32px;
-    height     : 32px;
-    font-size  : 16px;
-    cursor     : pointer;
-    display    : flex;
-    align-items     : center;
-    justify-content : center;
-    font-weight: bold;
+.warn-close-btn:hover {
+    background: #f7f7f7;
 }
 
-.close-x:hover { background: #c62828; }
+/* Header */
 
-.header-title {
-    font-size   : 22px;
-    font-weight : 400;
-    color       : #1a1a1a;
-    margin      : 0 0 20px;
-}
-
-.trophy-icon {
-    margin : 0 auto;
-    width  : fit-content;
-}
-
-/* ── 3 Cards Row ── */
-.cards-row {
-    display   : flex;
-    gap       : 16px;
-    padding   : 20px 20px 0;
-}
-
-.record-card {
-    flex          : 1;
-    background    : white;
-    border-radius : 12px;
-    border        : 1px solid #e0e0e0;
-    overflow      : hidden;
-    transition    : box-shadow 0.2s, transform 0.2s;
-}
-
-.record-card.clickable {
-    cursor : pointer;
-}
-
-.record-card.clickable:hover {
-    box-shadow : 0 4px 20px rgba(0, 0, 0, 0.12);
-    transform  : translateY(-2px);
-}
-
-.record-card.disabled {
-    opacity : 0.45;
-    cursor  : not-allowed;
-}
-
-/* ── Card Section Title ── */
-.card-section-title {
-    font-size     : 11px;
-    font-weight   : 700;
-    letter-spacing: 1.2px;
-    color         : #555;
-    padding       : 14px 16px 8px;
-    border-bottom : 1px solid #f0f0f0;
-}
-
-/* ── Card Inner ── */
-.card-inner { padding: 14px 16px 16px; }
-
-.card-record-header {
-    display     : flex;
-    align-items : center;
-    gap         : 10px;
-    margin-bottom: 14px;
-}
-
-.card-record-name {
-    font-size   : 15px;
-    font-weight : 600;
-    color       : #e07000;  /* Orange like Salesforce record links */
-    flex        : 1;
-}
-
-/* ── Field Rows ── */
-.card-fields {
-    display        : flex;
-    flex-direction : column;
-    gap            : 6px;
-}
-
-.card-field-row {
-    display   : flex;
-    gap       : 6px;
-    font-size : 12px;
-    line-height: 1.4;
-}
-
-.field-label {
-    color      : #444;
-    min-width  : 90px;
-    flex-shrink: 0;
-}
-
-.field-value {
-    color     : #1a1a1a;
-    word-break: break-word;
-}
-
-.owner-link { color: #e07000; }
-
-/* ── Spinner ── */
-.spinner-wrapper {
-    padding  : 60px 0;
+.warn-body {
+    padding: 20px 0 20px;
+    background: #ffffff;
+    border-radius: 28px 28px 0 0;
     text-align: center;
-    position : relative;
-    min-height: 120px;
 }
 
-.loading-text {
-    margin-top : 56px;
-    font-size  : 13px;
-    color      : #888;
+.warn-title {
+    margin: 0;
+    font-size: 1.5rem;
+    font-weight: 400;
+    color: #7C4B2E;
 }
 
-/* ── Error ── */
-.error-banner {
-    display     : flex;
-    align-items : center;
-    gap         : 8px;
-    background  : #fef0f0;
-    border      : 1px solid #f5c6c6;
-    border-radius: 8px;
-    padding     : 12px 16px;
-    margin      : 16px 20px;
-    font-size   : 13px;
-    color       : #c23934;
+/* Divider spans full width */
+
+.warn-divider {
+    margin: 17px 0 20px;
+    border: none;
+    border-top: 2px solid #d5d5d5;
+    width: 100%;
 }
 
-/* ── Footer ── */
-.popup-footer {
-    display         : flex;
-    justify-content : flex-end;
-    gap             : 12px;
-    padding         : 20px;
-    background      : white;
-    border-radius   : 0 0 16px 16px;
-    margin-top      : 20px;
-    border-top      : 1px solid #e8e8e8;
+/* Message */
+
+.warn-message {
+    margin: 0 auto;
+    width: 70%;
+    font-size: 1rem;
+    line-height: 1.55;
+    color: #555;
 }
 
-.btn-new-task {
-    padding       : 10px 24px;
-    border        : 1px solid #ddd;
-    border-radius : 24px;
-    background    : white;
-    font-size     : 14px;
-    color         : #1a1a1a;
-    cursor        : pointer;
-    transition    : background 0.2s;
+.warn-error {
+    margin: 10px auto 0;
+    width: 70%;
+    font-size: 0.85rem;
+    color: #c0392b;
+    font-weight: 500;
 }
 
-.btn-new-task:hover { background: #f5f5f5; }
+/* Footer */
 
-.btn-go-to-leads {
-    padding       : 10px 24px;
-    border        : none;
-    border-radius : 24px;
-    background    : #6600cc;
-    color         : white;
-    font-size     : 14px;
-    font-weight   : 600;
-    cursor        : pointer;
-    transition    : background 0.2s;
+.warn-footer {
+    background: #EAD7C2;
+    border-top: 2px solid #d5d5d5;
+    border-radius: 0 0 28px 28px;
+
+    padding: 17px 20px;
+
+    display: flex;
+    justify-content: flex-end;
+    gap: 22px;
 }
-/* ── Mobile Responsive ── */
-@media (max-width: 768px) {
+
+/* Buttons */
+
+.warn-btn {
+    min-width: 90px;
+    height: 32px;
+
+    border-radius: 20px;
+
+    font-size: 1rem;
+    font-weight: 400;
+
+    cursor: pointer;
+    transition: all .2s;
+}
+
+.warn-btn-cancel {
+    background: #ffffff;
+    color: #7C4B2E;
+    border: 1px solid #666;
+}
+
+.warn-btn-cancel:hover {
+    background: #fafafa;
+}
+
+.warn-btn-proceed {
+    background: #A45F39;
+    color: #ffffff;
+    border: 2px solid #A45F39;
+}
+
+.warn-btn-proceed:hover {
+    background: #8d4e2b;
+}
+
+/* Mobile */
+
+@media (max-width:768px){
+
+    .warn-card{
+        width:95vw;
+        border-radius:18px;
+    }
+
+    .warn-body{
+        padding:24px 0 28px;
+    }
+
+    .warn-title{
+        font-size:24px;
+    }
+
+    .warn-divider{
+        margin:20px 0 24px;
+    }
+
+    .warn-message{
+        width:90%;
+        font-size:18px;
+    }
+
+    .warn-footer{
+        justify-content:center;
+        padding:20px;
+        gap:14px;
+    }
+
+    .warn-btn{
+        min-width:130px;
+        height:48px;
+        font-size:18px;
+    }
+
+    .warn-close-btn{
+        width:46px;
+        height:46px;
+        top:-42px;
+        font-size:28px;
+    }
+}
+
+/* ── Existing overlay ─────────────────────────────────────────── */
+    .overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.55);
+        z-index: 9999;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
     .popup-box {
-        width         : 95vw;
-        max-height    : 85vh;
-        border-radius : 12px;
-        margin        : 0 auto;
+        background: #F3F3F3;
+        border-radius: 16px;
+        width: 900px;
+        max-width: 95vw;
+        max-height: 90vh;
+        overflow-y: auto;
+        box-shadow: 0 12px 48px rgba(0, 0, 0, 0.25);
+        animation: popIn 0.3s ease;
+        position: relative;
+    }
+
+    @keyframes popIn {
+        from {
+            transform: scale(0.88);
+            opacity: 0;
+        }
+        to {
+            transform: scale(1);
+            opacity: 1;
+        }
     }
 
     .popup-header {
-        padding : 20px 16px 16px;
-    }
-
-    .header-title {
-        font-size : 16px;
-    }
-
-    /* ✅ Stack cards vertically on mobile */
-    .cards-row {
-        flex-direction : column;
-        gap            : 12px;
-        padding        : 12px 12px 0;
-    }
-
-    .record-card {
-        width : 100%;
-    }
-
-    .card-record-name {
-        font-size : 13px;
-    }
-
-    .card-field-row {
-        font-size : 11px;
-    }
-
-    .field-label {
-        min-width : 80px;
-    }
-
-    .popup-footer {
-        padding    : 12px 16px;
-        margin-top : 12px;
-    }
-
-    .btn-go-to-leads {
-        width     : 100%;
+        background: #FFFFFF;
+        border-radius: 16px 16px 0 0;
+        padding: 32px 32px 24px;
         text-align: center;
-        padding   : 12px;
+        position: relative;
     }
 
     .close-x {
-        width  : 28px;
-        height : 28px;
+        position: absolute;
+        top: 16px;
+        right: 16px;
+        background: #F44336;
+        color: white;
+        border: none;
+        border-radius: 50%;
+        width: 32px;
+        height: 32px;
+        font-size: 16px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+    }
+
+    .close-x:hover {
+        background: #C62828;
+    }
+
+    .header-title {
+        font-size: 22px;
+        font-weight: 400;
+        color: #181818;
+        margin: 0 0 20px;
+    }
+
+    .trophy-icon {
+        margin: 0 auto;
+        width: fit-content;
+    }
+
+    .cards-row {
+        display: flex;
+        gap: 16px;
+        padding: 20px 20px 0;
+    }
+
+    .record-card {
+        flex: 1;
+        background: #FFFFFF;
+        border-radius: 12px;
+        border: 1px solid #D8DDE6;
+        overflow: hidden;
+        transition: box-shadow 0.2s, transform 0.2s;
+    }
+
+    .record-card.clickable {
+        cursor: pointer;
+    }
+
+    .record-card.clickable:hover {
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12);
+        transform: translateY(-2px);
+    }
+
+    .record-card.disabled {
+        opacity: 0.45;
+        cursor: not-allowed;
+    }
+
+    .card-section-title {
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 1.2px;
+        color: #3E3E3C;
+        padding: 14px 16px 8px;
+        border-bottom: 1px solid #F0F0F0;
+    }
+
+    .card-inner {
+        padding: 14px 16px 16px;
+    }
+
+    .card-record-header {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 14px;
+    }
+
+    .card-record-name {
+        font-size: 15px;
+        font-weight: 600;
+        color: #8B5A3C;
+        flex: 1;
+    }
+
+
+    .card-fields {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+    }
+
+    .card-field-row {
+        display: flex;
+        gap: 6px;
+        font-size: 12px;
+        line-height: 1.4;
+    }
+
+    .field-label {
+        color: #3E3E3C;
+        min-width: 90px;
+        flex-shrink: 0;
+    }
+
+    .field-value {
+        color: #181818;
+        word-break: break-word;
+    }
+
+    .owner-link {
+        color: #8B5A3C;
+    }
+
+
+    .spinner-wrapper {
+        padding: 60px 0;
+        text-align: center;
+        position: relative;
+        min-height: 120px;
+    }
+
+    .loading-text {
+        margin-top: 56px;
+        font-size: 13px;
+        color: #888888;
+    }
+
+    .error-banner {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        background: #FEF0F0;
+        border: 1px solid #F5C6C6;
+        border-radius: 8px;
+        padding: 12px 16px;
+        margin: 16px 20px;
+        font-size: 13px;
+        color: #C23934;
+    }
+
+
+    .popup-footer {
+        display: flex;
+        justify-content: flex-end;
+        padding: 20px;
+        background: #FFFFFF;
+        border-radius: 0 0 16px 16px;
+        margin-top: 20px;
+        border-top: 1px solid #E8E8E8;
+    }
+
+    .btn-go-to-leads {
+        padding: 10px 24px;
+        border: none;
+        border-radius: 24px;
+        background: #6600CC;
+        color: #FFFFFF;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background 0.2s;
+    }
+
+    .btn-go-to-leads:hover {
+        background: #5200A3;
+    }
+
+
+    @media (max-width: 768px) {
+
+    .popup-box {
+        width: 95vw;
+        max-height: 85vh;
+        border-radius: 12px;
+        margin: 0 auto;
+    }
+
+    .popup-header {
+        padding: 20px 16px 16px;
+    }
+
+    .header-title {
+        font-size: 16px;
+    }
+
+    .cards-row {
+        flex-direction: column;
+        gap: 12px;
+        padding: 12px 12px 0;
+    }
+
+    .record-card {
+        width: 100%;
+    }
+
+    .card-field-row {
+        font-size: 11px;
+    }
+
+    .field-label {
+        min-width: 80px;
+    }
+
+    .popup-footer {
+        padding: 12px 16px;
+        margin-top: 12px;
+    }
+
+    .btn-go-to-leads {
+        width: 100%;
+        text-align: center;
+        padding: 12px;
+    }
+
+    .close-x {
+        width: 28px;
+        height: 28px;
     }
 }
-
-.btn-go-to-leads:hover { background: #5200a3; }

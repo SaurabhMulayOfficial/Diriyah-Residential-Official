@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
     <fullName>RES_Identification_Type_is_mandatory</fullName>
-    <active>true</active>
+    <active>false</active>
     <description>Identification Type is mandatory when Stage is not Closed Lost.</description>
     <errorConditionFormula>AND(
     NOT($Setup.RES_Config_Switch__c.RES_Validation_Rules_Off__c),

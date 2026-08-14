@@ -35,7 +35,7 @@
                         <valueListItems>
                             <value>Lead.RES_Update_Owner</value>
                             <visibilityRule>
-                                <booleanFilter>1 AND 2</booleanFilter>
+                                <booleanFilter>1 AND 2 AND 3</booleanFilter>
                                 <criteria>
                                     <leftValue>{!$Permission.CustomPermission.RES_Update_Owner_Visibility}</leftValue>
                                     <operator>EQUAL</operator>
@@ -45,6 +45,11 @@
                                     <leftValue>{!$User.UserRole.DeveloperName}</leftValue>
                                     <operator>NE</operator>
                                     <rightValue>RES_Sales_Enterprise_Chief_Sales_Office</rightValue>
+                                </criteria>
+                                <criteria>
+                                    <leftValue>{!$User.Profile.Name}</leftValue>
+                                    <operator>NE</operator>
+                                    <rightValue>System Administrator</rightValue>
                                 </criteria>
                             </visibilityRule>
                         </valueListItems>
@@ -67,6 +72,10 @@
                     <value>false</value>
                 </componentInstanceProperties>
                 <componentInstanceProperties>
+                    <name>hideSlackAction</name>
+                    <value>false</value>
+                </componentInstanceProperties>
+                <componentInstanceProperties>
                     <name>numVisibleActions</name>
                     <value>4</value>
                 </componentInstanceProperties>
@@ -86,6 +95,16 @@
                 </componentInstanceProperties>
                 <componentName>runtime_sales_lead:pathAssistant</componentName>
                 <identifier>runtime_sales_lead_pathAssistant</identifier>
+            </componentInstance>
+        </itemInstances>
+        <itemInstances>
+            <componentInstance>
+                <componentInstanceProperties>
+                    <name>recordId</name>
+                    <value>recordId</value>
+                </componentInstanceProperties>
+                <componentName>leadConversionPopup</componentName>
+                <identifier>c_leadConversionPopup</identifier>
             </componentInstance>
         </itemInstances>
         <name>header</name>
@@ -326,13 +345,13 @@
                     <name>uiBehavior</name>
                     <value>required</value>
                 </fieldInstanceProperties>
-                <fieldItem>Record.RES_Broker_Registration__c</fieldItem>
-                <identifier>RecordRES_Broker_Registration_cField</identifier>
+                <fieldItem>Record.RES_Reason__c</fieldItem>
+                <identifier>RecordRES_Reason_cField</identifier>
                 <visibilityRule>
                     <criteria>
                         <leftValue>{!Record.RES_Lead_Sub_Status__c}</leftValue>
                         <operator>EQUAL</operator>
-                        <rightValue>261</rightValue>
+                        <rightValue>151</rightValue>
                     </criteria>
                 </visibilityRule>
             </fieldInstance>
@@ -343,14 +362,102 @@
                     <name>uiBehavior</name>
                     <value>required</value>
                 </fieldInstanceProperties>
-                <fieldItem>Record.RES_Customer_Budget__c</fieldItem>
-                <identifier>RecordRES_Customer_Budget_cField</identifier>
+                <fieldItem>Record.RES_Type_of_Leasing__c</fieldItem>
+                <identifier>RecordRES_Type_of_Leasing_cField</identifier>
+                <visibilityRule>
+                    <criteria>
+                        <leftValue>{!Record.RES_Lead_Sub_Status__c}</leftValue>
+                        <operator>EQUAL</operator>
+                        <rightValue>281</rightValue>
+                    </criteria>
+                </visibilityRule>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.RES_Project__c</fieldItem>
+                <identifier>RecordRES_Project_cField2</identifier>
                 <visibilityRule>
                     <booleanFilter>1 OR 2 OR 3 OR 4 OR 5 OR 6</booleanFilter>
                     <criteria>
                         <leftValue>{!Record.RES_Lead_Sub_Status__c}</leftValue>
                         <operator>EQUAL</operator>
-                        <rightValue>101</rightValue>
+                        <rightValue>251</rightValue>
+                    </criteria>
+                    <criteria>
+                        <leftValue>{!Record.RES_Lead_Sub_Status__c}</leftValue>
+                        <operator>EQUAL</operator>
+                        <rightValue>131</rightValue>
+                    </criteria>
+                    <criteria>
+                        <leftValue>{!Record.RES_Lead_Sub_Status__c}</leftValue>
+                        <operator>EQUAL</operator>
+                        <rightValue>171</rightValue>
+                    </criteria>
+                    <criteria>
+                        <leftValue>{!Record.Status}</leftValue>
+                        <operator>EQUAL</operator>
+                        <rightValue>Converted</rightValue>
+                    </criteria>
+                    <criteria>
+                        <leftValue>{!Record.RES_Lead_Sub_Status__c}</leftValue>
+                        <operator>EQUAL</operator>
+                        <rightValue>161</rightValue>
+                    </criteria>
+                    <criteria>
+                        <leftValue>{!Record.RES_Lead_Sub_Status__c}</leftValue>
+                        <operator>EQUAL</operator>
+                        <rightValue>Qualified</rightValue>
+                    </criteria>
+                </visibilityRule>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>required</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.RES_Project_Type__c</fieldItem>
+                <identifier>RecordRES_Project_Type_cField</identifier>
+                <visibilityRule>
+                    <booleanFilter>1 OR 2</booleanFilter>
+                    <criteria>
+                        <leftValue>{!Record.RES_Lead_Sub_Status__c}</leftValue>
+                        <operator>EQUAL</operator>
+                        <rightValue>251</rightValue>
+                    </criteria>
+                    <criteria>
+                        <leftValue>{!Record.RES_Lead_Sub_Status__c}</leftValue>
+                        <operator>EQUAL</operator>
+                        <rightValue>Qualified</rightValue>
+                    </criteria>
+                </visibilityRule>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.RES_Customer_Budget__c</fieldItem>
+                <identifier>RecordRES_Customer_Budget_cField</identifier>
+                <visibilityRule>
+                    <booleanFilter>1 OR 2 OR 3 OR 4 OR 5</booleanFilter>
+                    <criteria>
+                        <leftValue>{!Record.RES_Lead_Sub_Status__c}</leftValue>
+                        <operator>EQUAL</operator>
+                        <rightValue>161</rightValue>
+                    </criteria>
+                    <criteria>
+                        <leftValue>{!Record.RES_Lead_Sub_Status__c}</leftValue>
+                        <operator>EQUAL</operator>
+                        <rightValue>251</rightValue>
                     </criteria>
                     <criteria>
                         <leftValue>{!Record.RES_Lead_Sub_Status__c}</leftValue>
@@ -365,17 +472,45 @@
                     <criteria>
                         <leftValue>{!Record.RES_Lead_Sub_Status__c}</leftValue>
                         <operator>EQUAL</operator>
-                        <rightValue>141</rightValue>
+                        <rightValue>Qualified</rightValue>
                     </criteria>
-                    <criteria>
-                        <leftValue>{!Record.RES_Lead_Sub_Status__c}</leftValue>
-                        <operator>EQUAL</operator>
-                        <rightValue>291</rightValue>
-                    </criteria>
+                </visibilityRule>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.RES_Unit_Type__c</fieldItem>
+                <identifier>RecordRES_Unit_Type_cField</identifier>
+                <visibilityRule>
+                    <booleanFilter>1 OR 2 OR 3 OR 4 OR 5</booleanFilter>
                     <criteria>
                         <leftValue>{!Record.RES_Lead_Sub_Status__c}</leftValue>
                         <operator>EQUAL</operator>
                         <rightValue>161</rightValue>
+                    </criteria>
+                    <criteria>
+                        <leftValue>{!Record.RES_Lead_Sub_Status__c}</leftValue>
+                        <operator>EQUAL</operator>
+                        <rightValue>251</rightValue>
+                    </criteria>
+                    <criteria>
+                        <leftValue>{!Record.RES_Lead_Sub_Status__c}</leftValue>
+                        <operator>EQUAL</operator>
+                        <rightValue>131</rightValue>
+                    </criteria>
+                    <criteria>
+                        <leftValue>{!Record.RES_Lead_Sub_Status__c}</leftValue>
+                        <operator>EQUAL</operator>
+                        <rightValue>171</rightValue>
+                    </criteria>
+                    <criteria>
+                        <leftValue>{!Record.RES_Lead_Sub_Status__c}</leftValue>
+                        <operator>EQUAL</operator>
+                        <rightValue>Qualified</rightValue>
                     </criteria>
                 </visibilityRule>
             </fieldInstance>
@@ -389,11 +524,26 @@
                 <fieldItem>Record.RES_Customer_Unit_Preference__c</fieldItem>
                 <identifier>RecordRES_Customer_Unit_Preference_cField</identifier>
                 <visibilityRule>
-                    <booleanFilter>1 OR 2 OR 3 OR 4 OR 5 OR 6</booleanFilter>
+                    <booleanFilter>(1 OR 2 ) And (3 OR 4 OR 5 OR 6 OR 7)</booleanFilter>
+                    <criteria>
+                        <leftValue>{!Record.RES_Unit_Type__c}</leftValue>
+                        <operator>EQUAL</operator>
+                        <rightValue>Apartment</rightValue>
+                    </criteria>
+                    <criteria>
+                        <leftValue>{!Record.RES_Unit_Type__c}</leftValue>
+                        <operator>EQUAL</operator>
+                        <rightValue>Villa</rightValue>
+                    </criteria>
                     <criteria>
                         <leftValue>{!Record.RES_Lead_Sub_Status__c}</leftValue>
                         <operator>EQUAL</operator>
-                        <rightValue>101</rightValue>
+                        <rightValue>251</rightValue>
+                    </criteria>
+                    <criteria>
+                        <leftValue>{!Record.RES_Lead_Sub_Status__c}</leftValue>
+                        <operator>EQUAL</operator>
+                        <rightValue>161</rightValue>
                     </criteria>
                     <criteria>
                         <leftValue>{!Record.RES_Lead_Sub_Status__c}</leftValue>
@@ -408,17 +558,50 @@
                     <criteria>
                         <leftValue>{!Record.RES_Lead_Sub_Status__c}</leftValue>
                         <operator>EQUAL</operator>
-                        <rightValue>141</rightValue>
+                        <rightValue>Qualified</rightValue>
                     </criteria>
+                </visibilityRule>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>required</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.RES_Plot_Size_sqm__c</fieldItem>
+                <identifier>RecordRES_Plot_Size_sqm_cField</identifier>
+                <visibilityRule>
+                    <booleanFilter>1 And (2 OR 3 OR 4 OR 5 OR 6)</booleanFilter>
                     <criteria>
-                        <leftValue>{!Record.RES_Lead_Sub_Status__c}</leftValue>
+                        <leftValue>{!Record.RES_Unit_Type__c}</leftValue>
                         <operator>EQUAL</operator>
-                        <rightValue>291</rightValue>
+                        <rightValue>Plots</rightValue>
                     </criteria>
                     <criteria>
                         <leftValue>{!Record.RES_Lead_Sub_Status__c}</leftValue>
                         <operator>EQUAL</operator>
                         <rightValue>161</rightValue>
+                    </criteria>
+                    <criteria>
+                        <leftValue>{!Record.RES_Lead_Sub_Status__c}</leftValue>
+                        <operator>EQUAL</operator>
+                        <rightValue>251</rightValue>
+                    </criteria>
+                    <criteria>
+                        <leftValue>{!Record.RES_Lead_Sub_Status__c}</leftValue>
+                        <operator>EQUAL</operator>
+                        <rightValue>131</rightValue>
+                    </criteria>
+                    <criteria>
+                        <leftValue>{!Record.RES_Lead_Sub_Status__c}</leftValue>
+                        <operator>EQUAL</operator>
+                        <rightValue>171</rightValue>
+                    </criteria>
+                    <criteria>
+                        <leftValue>{!Record.RES_Lead_Sub_Status__c}</leftValue>
+                        <operator>EQUAL</operator>
+                        <rightValue>Qualified</rightValue>
                     </criteria>
                 </visibilityRule>
             </fieldInstance>
@@ -431,7 +614,7 @@
             <fieldInstance>
                 <fieldInstanceProperties>
                     <name>uiBehavior</name>
-                    <value>none</value>
+                    <value>readonly</value>
                 </fieldInstanceProperties>
                 <fieldItem>Record.OwnerId</fieldItem>
                 <identifier>RecordOwnerIdField</identifier>
@@ -451,7 +634,7 @@
             <fieldInstance>
                 <fieldInstanceProperties>
                     <name>uiBehavior</name>
-                    <value>required</value>
+                    <value>readonly</value>
                 </fieldInstanceProperties>
                 <fieldItem>Record.LeadSource</fieldItem>
                 <identifier>RecordLeadSourceField</identifier>
@@ -472,16 +655,6 @@
                         <rightValue>Cityscape</rightValue>
                     </criteria>
                 </visibilityRule>
-            </fieldInstance>
-        </itemInstances>
-        <itemInstances>
-            <fieldInstance>
-                <fieldInstanceProperties>
-                    <name>uiBehavior</name>
-                    <value>none</value>
-                </fieldInstanceProperties>
-                <fieldItem>Record.RES_Project__c</fieldItem>
-                <identifier>RecordRES_Project_cField</identifier>
             </fieldInstance>
         </itemInstances>
         <itemInstances>
@@ -970,8 +1143,8 @@
                     <name>uiBehavior</name>
                     <value>none</value>
                 </fieldInstanceProperties>
-                <fieldItem>Record.RES_House_Number__c</fieldItem>
-                <identifier>RecordRES_House_Number_cField</identifier>
+                <fieldItem>Record.Address</fieldItem>
+                <identifier>RecordAddressField</identifier>
             </fieldInstance>
         </itemInstances>
         <name>Facet-57a96da6-1422-42c5-91a4-c8dad8798a3c</name>
@@ -1028,6 +1201,16 @@
                 </fieldInstanceProperties>
                 <fieldItem>Record.RES_SLA_Start_Time__c</fieldItem>
                 <identifier>RecordRES_SLA_Start_Time_cField</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>readonly</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.RES_SLA_Met_Time__c</fieldItem>
+                <identifier>RecordRES_SLA_Met_Time_cField</identifier>
             </fieldInstance>
         </itemInstances>
         <itemInstances>
@@ -1100,6 +1283,19 @@
                 </fieldInstanceProperties>
                 <fieldItem>Record.CreatedById</fieldItem>
                 <identifier>RecordCreatedByIdField</identifier>
+                <visibilityRule>
+                    <booleanFilter>1 OR 2</booleanFilter>
+                    <criteria>
+                        <leftValue>{!$User.Profile.Name}</leftValue>
+                        <operator>EQUAL</operator>
+                        <rightValue>System Administrator</rightValue>
+                    </criteria>
+                    <criteria>
+                        <leftValue>{!$Permission.CustomPermission.RES_System_Information_Visibility}</leftValue>
+                        <operator>EQUAL</operator>
+                        <rightValue>true</rightValue>
+                    </criteria>
+                </visibilityRule>
             </fieldInstance>
         </itemInstances>
         <name>Facet-33815272-eea2-4698-a651-c5b2800ddc32</name>
@@ -1114,13 +1310,6 @@
                 </fieldInstanceProperties>
                 <fieldItem>Record.LastModifiedById</fieldItem>
                 <identifier>RecordLastModifiedByIdField</identifier>
-                <visibilityRule>
-                    <criteria>
-                        <leftValue>{!$User.Profile.Name}</leftValue>
-                        <operator>EQUAL</operator>
-                        <rightValue>System Administrator</rightValue>
-                    </criteria>
-                </visibilityRule>
             </fieldInstance>
         </itemInstances>
         <name>Facet-9c4063b6-ef08-406f-9f1b-5fc160cfd317</name>
@@ -1228,19 +1417,6 @@
                 </componentInstanceProperties>
                 <componentName>flexipage:fieldSection</componentName>
                 <identifier>flexipage_fieldSection4</identifier>
-                <visibilityRule>
-                    <booleanFilter>1 OR 2</booleanFilter>
-                    <criteria>
-                        <leftValue>{!$User.Profile.Name}</leftValue>
-                        <operator>EQUAL</operator>
-                        <rightValue>System Administrator</rightValue>
-                    </criteria>
-                    <criteria>
-                        <leftValue>{!$Permission.CustomPermission.RES_System_Information_Visibility}</leftValue>
-                        <operator>EQUAL</operator>
-                        <rightValue>true</rightValue>
-                    </criteria>
-                </visibilityRule>
             </componentInstance>
         </itemInstances>
         <name>Facet-e0e74ccf-ad36-42d3-9a16-21bb55a4b369</name>
@@ -1419,6 +1595,36 @@
         <itemInstances>
             <componentInstance>
                 <componentInstanceProperties>
+                    <name>parentFieldApiName</name>
+                    <value>Lead.Id</value>
+                </componentInstanceProperties>
+                <componentInstanceProperties>
+                    <name>relatedListApiName</name>
+                    <value>Histories</value>
+                </componentInstanceProperties>
+                <componentInstanceProperties>
+                    <name>relatedListComponentOverride</name>
+                    <value>NONE</value>
+                </componentInstanceProperties>
+                <componentInstanceProperties>
+                    <name>rowsToDisplay</name>
+                    <value>10</value>
+                </componentInstanceProperties>
+                <componentInstanceProperties>
+                    <name>showActionBar</name>
+                    <value>true</value>
+                </componentInstanceProperties>
+                <componentName>force:relatedListSingleContainer</componentName>
+                <identifier>hist_rl1</identifier>
+            </componentInstance>
+        </itemInstances>
+        <name>Facet-a5ccc812-f311-4aad-abef-032daf2ee24c</name>
+        <type>Facet</type>
+    </flexiPageRegions>
+    <flexiPageRegions>
+        <itemInstances>
+            <componentInstance>
+                <componentInstanceProperties>
                     <name>active</name>
                     <value>true</value>
                 </componentInstanceProperties>
@@ -1476,6 +1682,20 @@
                 <identifier>flexipage_tab8</identifier>
             </componentInstance>
         </itemInstances>
+        <itemInstances>
+            <componentInstance>
+                <componentInstanceProperties>
+                    <name>body</name>
+                    <value>Facet-a5ccc812-f311-4aad-abef-032daf2ee24c</value>
+                </componentInstanceProperties>
+                <componentInstanceProperties>
+                    <name>title</name>
+                    <value>History</value>
+                </componentInstanceProperties>
+                <componentName>flexipage:tab</componentName>
+                <identifier>hist_tab1</identifier>
+            </componentInstance>
+        </itemInstances>
         <name>Facet-c18ef363-d1d5-4686-91bc-635f9b542688</name>
         <type>Facet</type>
     </flexiPageRegions>
@@ -1500,9 +1720,46 @@
                 <identifier>runtime_approvals_approvalTrace</identifier>
                 <visibilityRule>
                     <criteria>
-                        <leftValue>{!$Permission.CustomPermission.RES_Update_Owner_Visibility}</leftValue>
+                        <leftValue>{!$Permission.CustomPermission.RES_Approval_Work_Item_Visibility}</leftValue>
                         <operator>EQUAL</operator>
                         <rightValue>true</rightValue>
+                    </criteria>
+                </visibilityRule>
+            </componentInstance>
+        </itemInstances>
+        <itemInstances>
+            <componentInstance>
+                <componentInstanceProperties>
+                    <name>componentLabel</name>
+                    <value>Work Guide</value>
+                </componentInstanceProperties>
+                <componentInstanceProperties>
+                    <name>isHiddenWhenEmpty</name>
+                    <value>false</value>
+                </componentInstanceProperties>
+                <componentInstanceProperties>
+                    <name>isRunNameDisplayed</name>
+                    <value>false</value>
+                </componentInstanceProperties>
+                <componentInstanceProperties>
+                    <name>isStageNameDisplayed</name>
+                    <value>false</value>
+                </componentInstanceProperties>
+                <componentInstanceProperties>
+                    <name>isStepNameDisplayed</name>
+                    <value>false</value>
+                </componentInstanceProperties>
+                <componentInstanceProperties>
+                    <name>prioritizationCriteria</name>
+                    <value>Last Modified Date (Ascending)</value>
+                </componentInstanceProperties>
+                <componentName>interaction_orchestrator:workGuide</componentName>
+                <identifier>interaction_orchestrator_workGuide</identifier>
+                <visibilityRule>
+                    <criteria>
+                        <leftValue>{!$Client.formFactor}</leftValue>
+                        <operator>EQUAL</operator>
+                        <rightValue>Small</rightValue>
                     </criteria>
                 </visibilityRule>
             </componentInstance>
@@ -1554,6 +1811,27 @@
                 </valueListItems>
                 <valueListItems>
                     <value>EmailHighlightAction</value>
+                </valueListItems>
+                <valueListItems>
+                    <value>Lead.RES_Update_Owner</value>
+                    <visibilityRule>
+                        <booleanFilter>1 AND 2 AND 3</booleanFilter>
+                        <criteria>
+                            <leftValue>{!$Permission.CustomPermission.RES_Update_Owner_Visibility}</leftValue>
+                            <operator>EQUAL</operator>
+                            <rightValue>true</rightValue>
+                        </criteria>
+                        <criteria>
+                            <leftValue>{!$User.UserRole.DeveloperName}</leftValue>
+                            <operator>NE</operator>
+                            <rightValue>RES_Sales_Enterprise_Chief_Sales_Office</rightValue>
+                        </criteria>
+                        <criteria>
+                            <leftValue>{!$User.Profile.Name}</leftValue>
+                            <operator>NE</operator>
+                            <rightValue>System Administrator</rightValue>
+                        </criteria>
+                    </visibilityRule>
                 </valueListItems>
             </valueList>
         </properties>

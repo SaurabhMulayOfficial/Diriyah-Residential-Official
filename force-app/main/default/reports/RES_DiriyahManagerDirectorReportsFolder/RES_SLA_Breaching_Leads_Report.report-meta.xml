@@ -7,10 +7,10 @@
         <field>LAST_NAME</field>
     </columns>
     <columns>
-        <field>EMAIL</field>
+        <field>OWNER</field>
     </columns>
     <columns>
-        <field>OWNER</field>
+        <field>Lead.DIR_Lead_Id__c</field>
     </columns>
     <columns>
         <field>Lead.RES_SLA_Due_Time__c</field>
@@ -26,7 +26,7 @@
             <columnToColumn>false</columnToColumn>
             <isUnlocked>true</isUnlocked>
             <operator>equals</operator>
-            <value>01,New</value>
+            <value>01</value>
         </criteriaItems>
         <criteriaItems>
             <column>Lead.RES_SLA_Hours_Remaining__c</column>

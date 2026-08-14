@@ -16,8 +16,21 @@
         </assignmentItems>
     </assignments>
     <assignments>
-        <name>Assigned_Lead_Status_as_Qualified</name>
-        <label>Assigned Lead Status as Qualified</label>
+        <name>Assigned_Lead_Status_as_Archive</name>
+        <label>Assigned Lead Status as Archive</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignmentItems>
+            <assignToReference>$Record.Status</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>RES_Get_Lead_Status_Mapping.RES_Target_Lead_Status__c</elementReference>
+            </value>
+        </assignmentItems>
+    </assignments>
+    <assignments>
+        <name>Assigned_Lead_Status_as_New</name>
+        <label>Assigned Lead Status as New</label>
         <locationX>0</locationX>
         <locationY>0</locationY>
         <assignmentItems>
@@ -123,10 +136,37 @@
                     <stringValue>04</stringValue>
                 </rightValue>
             </conditions>
-            <connector>
-                <targetReference>Assigned_Lead_Status_as_Qualified</targetReference>
-            </connector>
             <label>Qualified Status Mapping</label>
+        </rules>
+        <rules>
+            <name>New_Status_Mapping</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>RES_Get_Lead_Status_Mapping.RES_Target_Lead_Status__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>01</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Assigned_Lead_Status_as_New</targetReference>
+            </connector>
+            <label>New Status Mapping</label>
+        </rules>
+        <rules>
+            <name>Archive_Status_Mapping</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>RES_Get_Lead_Status_Mapping.RES_Target_Lead_Status__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Archive</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Assigned_Lead_Status_as_Archive</targetReference>
+            </connector>
+            <label>Archive Status Mapping</label>
         </rules>
     </decisions>
     <decisions>

@@ -6,7 +6,7 @@
         <language>en_US</language>
         <protected>false</protected>
         <shortDescription>Org Wide Email</shortDescription>
-        <value>Operations</value>
+        <value>Salesforce Notifications</value>
     </labels>
     <labels>
         <fullName>RES_Account_Additional_Information_Tab</fullName>
@@ -312,5 +312,181 @@ Please go back and select at least one lead with status = “Qualified” to pro
         <protected>false</protected>
         <shortDescription>RES Account Attachments Tab</shortDescription>
         <value>Attachments</value>
+    </labels>
+    <labels>
+        <fullName>Notify_CSO_Template</fullName>
+        <categories>Lead Deduplication</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Notify CSO: Template</shortDescription>
+        <value>Notify_CSO_On_Lead_Duplication</value>
+    </labels>
+    <labels>
+        <fullName>RES_Admin_All_Converted_Leads</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>RES Admin All Converted Leads</shortDescription>
+        <value>00eWz000001yQtV</value>
+    </labels>
+    <labels>
+        <fullName>RES_Approval_Failure_Reason</fullName>
+        <categories>RES_Send_Email_to_Manager_for_Proposed_User_on_Lead, 	RES Lead - Screen Flow - Change Record Owner</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Approval Failure Reason</shortDescription>
+        <value>Approval cannot be completed because no manager is assigned to user.</value>
+    </labels>
+    <labels>
+        <fullName>RES_Approval_Submitted_For_Soft_Hold</fullName>
+        <categories>Product Soft Hold</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Approval Submitted For Soft Hold</shortDescription>
+        <value>Your request for Soft Hold Extension approval has been submitted and is awaiting approval.</value>
+    </labels>
+    <labels>
+        <fullName>RES_Company_RT</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>RES Company RT</shortDescription>
+        <value>RES_Company</value>
+    </labels>
+    <labels>
+        <fullName>RES_Contract_Residential_Sales_RT</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>RES_Contract_Residential_Sales_RT</shortDescription>
+        <value>RES_Residential_Sales</value>
+    </labels>
+    <labels>
+        <fullName>RES_Deduplication_Templates</fullName>
+        <categories>Lead Deduplication</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Deduplication Templates: Operations Team</shortDescription>
+        <value>Notify_Operations_On_Lead_Duplication</value>
+    </labels>
+    <labels>
+        <fullName>RES_Document_Default_Value</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>RES Document Default Value</shortDescription>
+        <value>Missing</value>
+    </labels>
+    <labels>
+        <fullName>RES_Duplicate_Lead_Block_Notification</fullName>
+        <categories>Lead Deduplication</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Duplicate Lead Block Notification</shortDescription>
+        <value>Please review for duplicate records. The incoming lead was blocked because an existing lead with the same details is currently in either the New or Active status.</value>
+    </labels>
+    <labels>
+        <fullName>RES_Lead_Content_Note_Title</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Lead Content Note Title</shortDescription>
+        <value>Automated Lead SLA Met Notification</value>
+    </labels>
+    <labels>
+        <fullName>RES_Lead_Conversion_Max_Retries</fullName>
+        <categories>Auto Lead Conversion</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>RES Lead Conversion Max Retries</shortDescription>
+        <value>3</value>
+    </labels>
+    <labels>
+        <fullName>RES_Lead_SLA_Met_Message</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Lead SLA Met Message</shortDescription>
+        <value>Lead SLA has been met due to Approvals.</value>
+    </labels>
+    <labels>
+        <fullName>RES_My_Converted_Lead_Roles</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>RES My Converted Lead Roles</shortDescription>
+        <value>00EMz00000eK1aVMAS;00EMz00000eK1aXMAS;00EMz00000eK1abMAC;00EMz00000eK1adMAC;00EMz00000eK1agMAC;00EMz00000eK1alMAC;00EMz00000eK1atMAC;00EMz00000eK1auMAC;00EMz00000eK1axMAC;00EMz00000eK1b1MAC;00EMz00000eK1b2MAC;00EMz00000eK1ajMAC;00EMz00000eK1arMAC</value>
+    </labels>
+    <labels>
+        <fullName>RES_My_Team_Converted_Lead_Roles</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>RES My Team Converted Lead Roles</shortDescription>
+        <value>00EMz00000eK1aUMAS;00EMz00000eK1aPMAS;00EMz00000eK1aWMAS;00EMz00000eK1aYMAS;00EMz00000eK1aQMAS;00EMz00000eK1aZMAS;00EMz00000eK1aaMAC;00EMz00000eK1aRMAS;00EMz00000eK1acMAC;00EMz00000eK1aeMAC;00EMz00000eK1afMAC;00EMz00000eK1ahMAC;00EMz00000eK1aiMAC;00EMz00000eK1akMAC;00EMz00000eK1amMAC;00EMz00000eK1anMAC;00EMz00000eK1aoMAC;00EMz00000eK1apMAC;00EMz00000eK1aqMAC;00EMz00000eK1asMAC;00EMz00000eK1avMAC;00EMz00000eK1awMAC;00EMz00000eK1ayMAC;00EMz00000eK1azMAC;00EMz00000eK1b0MAC;00EMz00000eK1aSMAS;00EMz00000eK1aTMAS</value>
+    </labels>
+    <labels>
+        <fullName>RES_Notify_Queues_for_Duplication</fullName>
+        <categories>Lead Deduplication</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Notify Queues for Duplication</shortDescription>
+        <value>RES_Operations_Team,RES_Residential_Duplicate_Leads</value>
+    </labels>
+    <labels>
+        <fullName>RES_Opportunity_Multi_Buyer_RT</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>RES Opportunity Multi Buyer RT</shortDescription>
+        <value>RES_Residential_Multi_Buyer</value>
+    </labels>
+    <labels>
+        <fullName>RES_Opportunity_Single_Buyer_RT</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>RES_Opportunity_Single_Buyer_RT</shortDescription>
+        <value>RES_Residential_Single_Buyer</value>
+    </labels>
+    <labels>
+        <fullName>RES_Person_Account_RT</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>RES Person Account RT</shortDescription>
+        <value>PersonAccount</value>
+    </labels>
+    <labels>
+        <fullName>RES_ProductSoftHoldMessage</fullName>
+        <categories>Product Soft Hold</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>ProductSoftHoldMessage</shortDescription>
+        <value>This unit is currently on Soft Hold by another Opportunity and is temporarily unavailable for reservation. Please wait until the Soft Hold expires or is released before attempting to reserve this unit.</value>
+    </labels>
+    <labels>
+        <fullName>RES_ProductSoftHoldTitle</fullName>
+        <categories>Product Soft Hold</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>ProductSoftHoldTitle</shortDescription>
+        <value>🔒 Unit Currently on Soft Hold</value>
+    </labels>
+    <labels>
+        <fullName>RES_Quote_Residential_Sales_RT</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>RES_Quote_Residential_Sales_RT</shortDescription>
+        <value>RES_Residential_Sales</value>
+    </labels>
+    <labels>
+        <fullName>Soft_Hold_Extension_Error_Message</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Soft Hold Extension Error Message</shortDescription>
+        <value>Approval cannot be submitted for this product because one or more validation checks failed:
+
+🔴 Product is already under Soft Hold Extension. 
+🔴 The associated Unit is already reserved by another user.
+🔴 No Unit is associated with this Quote.
+🔴 Associated Unit is not in Soft Hold status.</value>
+    </labels>
+    <labels>
+        <fullName>Soft_Hold_Window</fullName>
+        <categories>Product Soft Hold</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Soft Hold Window (In hours)</shortDescription>
+        <value>8</value>
     </labels>
 </CustomLabels>

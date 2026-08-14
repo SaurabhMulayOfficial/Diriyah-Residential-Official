@@ -2,15 +2,7 @@
 <RecordType xmlns="http://soap.sforce.com/2006/04/metadata">
     <fullName>PersonAccount</fullName>
     <active>true</active>
-    <compactLayoutAssignment>Person_Account_Compact_Layout</compactLayoutAssignment>
     <label>Person Account</label>
-    <picklistValues>
-        <picklist>AccountSource</picklist>
-        <values>
-            <fullName>Cityscape</fullName>
-            <default>false</default>
-        </values>
-    </picklistValues>
     <picklistValues>
         <picklist>DIR_Country__c</picklist>
         <values>
@@ -1241,6 +1233,21 @@
         </values>
     </picklistValues>
     <picklistValues>
+        <picklist>RES_Company_Reg_Certificate_Status__c</picklist>
+        <values>
+            <fullName>Approved</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Missing</fullName>
+            <default>true</default>
+        </values>
+        <values>
+            <fullName>Pending Review</fullName>
+            <default>false</default>
+        </values>
+    </picklistValues>
+    <picklistValues>
         <picklist>RES_Company_Type__c</picklist>
         <values>
             <fullName>ZT01</fullName>
@@ -1323,7 +1330,26 @@
         </values>
     </picklistValues>
     <picklistValues>
+        <picklist>RES_GCC_Id_Status__c</picklist>
+        <values>
+            <fullName>Approved</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Missing</fullName>
+            <default>true</default>
+        </values>
+        <values>
+            <fullName>Pending Review</fullName>
+            <default>false</default>
+        </values>
+    </picklistValues>
+    <picklistValues>
         <picklist>RES_Identification_Type__c</picklist>
+        <values>
+            <fullName>GCC ID</fullName>
+            <default>false</default>
+        </values>
         <values>
             <fullName>ZIT01</fullName>
             <default>false</default>
@@ -1336,13 +1362,67 @@
             <fullName>ZIT03</fullName>
             <default>false</default>
         </values>
+    </picklistValues>
+    <picklistValues>
+        <picklist>RES_Iqama_Id_Status__c</picklist>
         <values>
-            <fullName>ZIT04</fullName>
+            <fullName>Approved</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Missing</fullName>
+            <default>true</default>
+        </values>
+        <values>
+            <fullName>Pending Review</fullName>
+            <default>false</default>
+        </values>
+    </picklistValues>
+    <picklistValues>
+        <picklist>RES_National_ID_Status__c</picklist>
+        <values>
+            <fullName>Approved</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Missing</fullName>
+            <default>true</default>
+        </values>
+        <values>
+            <fullName>Pending Review</fullName>
             <default>false</default>
         </values>
     </picklistValues>
     <picklistValues>
         <picklist>RES_Onboarding_Status__c</picklist>
+        <values>
+            <fullName>Z101</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Z102</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Z103</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Z104</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Z105</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Z106</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Z107</fullName>
+            <default>false</default>
+        </values>
         <values>
             <fullName>tes</fullName>
             <default>false</default>
@@ -1356,9 +1436,39 @@
         </values>
     </picklistValues>
     <picklistValues>
+        <picklist>RES_Passport_Status__c</picklist>
+        <values>
+            <fullName>Approved</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Missing</fullName>
+            <default>true</default>
+        </values>
+        <values>
+            <fullName>Pending Review</fullName>
+            <default>false</default>
+        </values>
+    </picklistValues>
+    <picklistValues>
         <picklist>RES_Position__c</picklist>
         <values>
             <fullName>Manager</fullName>
+            <default>false</default>
+        </values>
+    </picklistValues>
+    <picklistValues>
+        <picklist>RES_Power_of_Attorney_Status__c</picklist>
+        <values>
+            <fullName>Approved</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Missing</fullName>
+            <default>true</default>
+        </values>
+        <values>
+            <fullName>Pending Review</fullName>
             <default>false</default>
         </values>
     </picklistValues>
@@ -1437,6 +1547,21 @@
         </values>
         <values>
             <fullName>ZT11</fullName>
+            <default>false</default>
+        </values>
+    </picklistValues>
+    <picklistValues>
+        <picklist>RES_Simah_Form_Status__c</picklist>
+        <values>
+            <fullName>Approved</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Missing</fullName>
+            <default>true</default>
+        </values>
+        <values>
+            <fullName>Pending Review</fullName>
             <default>false</default>
         </values>
     </picklistValues>

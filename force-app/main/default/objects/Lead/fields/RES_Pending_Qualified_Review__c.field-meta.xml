@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>RES_Pending_Qualified_Review__c</fullName>
+    <defaultValue>false</defaultValue>
+    <description>Set to true by Before-Save flow when user directly sets Sub Status to Qualified (bypassing the LWC warning popup). Cleared by the LWC after user confirms (Proceed) or cancels. Persists across sessions so mobile remount still shows the popup.</description>
+    <label>Pending Qualified Review</label>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackHistory>false</trackHistory>
+    <type>Checkbox</type>
+</CustomField>

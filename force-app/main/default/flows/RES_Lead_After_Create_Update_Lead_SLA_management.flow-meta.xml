@@ -58,89 +58,8 @@
         <nameSegment>NewTask</nameSegment>
         <offset>0</offset>
     </actionCalls>
-    <actionCalls>
-        <name>Send_Email_to_Owner_Leasing</name>
-        <label>Send Email to Owner - Leasing</label>
-        <locationX>0</locationX>
-        <locationY>0</locationY>
-        <actionName>emailSimple</actionName>
-        <actionType>emailSimple</actionType>
-        <connector>
-            <targetReference>Check_if_Lead_is_Converted_and_Flow_Switch</targetReference>
-        </connector>
-        <flowTransactionModel>CurrentTransaction</flowTransactionModel>
-        <inputParameters>
-            <name>recipientAddresses</name>
-            <value>
-                <collectionElements>
-                    <elementReference>Emails</elementReference>
-                </collectionElements>
-            </value>
-        </inputParameters>
-        <inputParameters>
-            <name>senderType</name>
-            <value>
-                <inputConfiguratorMode>Custom</inputConfiguratorMode>
-                <stringValue>OrgWideEmailAddress</stringValue>
-            </value>
-        </inputParameters>
-        <inputParameters>
-            <name>senderAddress</name>
-            <value>
-                <inputConfiguratorMode>Custom</inputConfiguratorMode>
-                <stringValue>saurabh.mulay@globant.com</stringValue>
-            </value>
-        </inputParameters>
-        <inputParameters>
-            <name>composeEmailContent</name>
-            <value>
-                <stringValue>True</stringValue>
-            </value>
-        </inputParameters>
-        <inputParameters>
-            <name>emailSubject</name>
-            <value>
-                <stringValue> New Lead Referred to Leasing for Review</stringValue>
-            </value>
-        </inputParameters>
-        <inputParameters>
-            <name>emailBody</name>
-            <value>
-                <inputConfiguratorMode>Custom</inputConfiguratorMode>
-                <stringValue>&lt;p&gt;Hello {!OwnerName},&lt;/p&gt;&lt;p&gt;A new lead has been referred for leasing review and approval.&lt;/p&gt;&lt;p&gt;Lead Details:&lt;/p&gt;&lt;ul&gt;&lt;li&gt;&lt;strong&gt;Lead Name&lt;/strong&gt;: &lt;a href=&quot;https://diriyah--dev.sandbox.lightning.force.com/builder_platform_interaction/%7B!OrgBaseUrl%7Dlightning/r/Lead/%7B!LeadId%7D/view&quot; rel=&quot;noopener noreferrer&quot; target=&quot;_blank&quot; style=&quot;color: rgb(1, 118, 211);&quot;&gt;{!LeadName}&lt;/a&gt;&lt;/li&gt;&lt;li&gt;&lt;strong&gt;Contact Number:&lt;/strong&gt;{!$Record.MobilePhone}&lt;/li&gt;&lt;li&gt;&lt;strong&gt;Email Address:&lt;/strong&gt; {!$Record.Email}&lt;/li&gt;&lt;li&gt;&lt;strong&gt;Project/Interest&lt;/strong&gt;: {!$Record.RES_Project__c}&lt;/li&gt;&lt;li&gt;&lt;strong&gt;Type of Leasing: &lt;/strong&gt;{!$Record.RES_Type_of_Leasing__c}&lt;/li&gt;&lt;/ul&gt;&lt;p&gt;Please review the lead and proceed with the necessary action as per the governance process.&lt;/p&gt;</stringValue>
-            </value>
-        </inputParameters>
-        <inputParameters>
-            <name>sendRichBody</name>
-            <value>
-                <booleanValue>true</booleanValue>
-            </value>
-        </inputParameters>
-        <inputParameters>
-            <name>recipientId</name>
-        </inputParameters>
-        <nameSegment>emailSimple</nameSegment>
-        <offset>0</offset>
-        <versionString>2.0.1</versionString>
-    </actionCalls>
     <apiVersion>66.0</apiVersion>
     <areMetricsLoggedToDataCloud>false</areMetricsLoggedToDataCloud>
-    <assignments>
-        <name>Add_Emails</name>
-        <label>Add Emails</label>
-        <locationX>0</locationX>
-        <locationY>0</locationY>
-        <assignmentItems>
-            <assignToReference>Emails</assignToReference>
-            <operator>Add</operator>
-            <value>
-                <elementReference>$Record.Owner:User.Email</elementReference>
-            </value>
-        </assignmentItems>
-        <connector>
-            <targetReference>If_Type_Of_Leasing_has_Changed</targetReference>
-        </connector>
-    </assignments>
     <assignments>
         <name>Assign_Instance</name>
         <label>Assign Instance</label>
@@ -319,7 +238,7 @@
         <locationX>0</locationX>
         <locationY>0</locationY>
         <defaultConnector>
-            <targetReference>Add_Emails</targetReference>
+            <targetReference>Check_if_Lead_is_Converted_and_Flow_Switch</targetReference>
         </defaultConnector>
         <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
         <rules>
@@ -376,13 +295,6 @@
                     <booleanValue>false</booleanValue>
                 </rightValue>
             </conditions>
-            <conditions>
-                <leftValueReference>$Record.RES_Next_Assignment_Date__c</leftValueReference>
-                <operator>IsBlank</operator>
-                <rightValue>
-                    <booleanValue>false</booleanValue>
-                </rightValue>
-            </conditions>
             <connector>
                 <targetReference>Assign_Next_Owner_and_Update_Lead</targetReference>
             </connector>
@@ -395,7 +307,7 @@
         <locationX>0</locationX>
         <locationY>0</locationY>
         <defaultConnector>
-            <targetReference>Add_Emails</targetReference>
+            <targetReference>Check_if_Lead_is_Converted_and_Flow_Switch</targetReference>
         </defaultConnector>
         <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
         <rules>
@@ -442,45 +354,6 @@
             <label>Status Has Changed to ( Qualified, Retired, Archive)</label>
         </rules>
     </decisions>
-    <decisions>
-        <name>If_Type_Of_Leasing_has_Changed</name>
-        <label>If Type Of Leasing has Changed</label>
-        <locationX>0</locationX>
-        <locationY>0</locationY>
-        <defaultConnector>
-            <targetReference>Check_if_Lead_is_Converted_and_Flow_Switch</targetReference>
-        </defaultConnector>
-        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
-        <rules>
-            <name>Yes_Changed</name>
-            <conditionLogic>and</conditionLogic>
-            <conditions>
-                <leftValueReference>$Record.RES_Type_of_Leasing__c</leftValueReference>
-                <operator>IsChanged</operator>
-                <rightValue>
-                    <booleanValue>true</booleanValue>
-                </rightValue>
-            </conditions>
-            <conditions>
-                <leftValueReference>Emails</leftValueReference>
-                <operator>IsNull</operator>
-                <rightValue>
-                    <booleanValue>false</booleanValue>
-                </rightValue>
-            </conditions>
-            <conditions>
-                <leftValueReference>$Record.RES_Type_of_Leasing__c</leftValueReference>
-                <operator>IsNull</operator>
-                <rightValue>
-                    <booleanValue>false</booleanValue>
-                </rightValue>
-            </conditions>
-            <connector>
-                <targetReference>Send_Email_to_Owner_Leasing</targetReference>
-            </connector>
-            <label>Yes, Changed</label>
-        </rules>
-    </decisions>
     <description>Lead SLA management, Task Creation after lead Convert</description>
     <environments>Default</environments>
     <formulas>
@@ -492,11 +365,6 @@
         <name>NOW</name>
         <dataType>DateTime</dataType>
         <expression>NOW()</expression>
-    </formulas>
-    <formulas>
-        <name>OrgBaseUrl</name>
-        <dataType>String</dataType>
-        <expression>LEFT({!$Api.Partner_Server_URL_370}, FIND(&quot;/services&quot;, {!$Api.Partner_Server_URL_370}))</expression>
     </formulas>
     <formulas>
         <name>OwnerName</name>
@@ -530,7 +398,7 @@
         <locationX>0</locationX>
         <locationY>0</locationY>
         <connector>
-            <targetReference>Add_Emails</targetReference>
+            <targetReference>Check_if_Lead_is_Converted_and_Flow_Switch</targetReference>
         </connector>
         <filterLogic>and</filterLogic>
         <filters>
@@ -605,6 +473,18 @@
             </value>
         </filters>
         <inputAssignments>
+            <field>RES_City__c</field>
+            <value>
+                <elementReference>$Record.City</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>RES_Country__c</field>
+            <value>
+                <elementReference>$Record.Country</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
             <field>RES_Opportunity_Email__c</field>
             <value>
                 <elementReference>$Record.Email</elementReference>
@@ -614,6 +494,24 @@
             <field>RES_Opportunity_Mobile__c</field>
             <value>
                 <elementReference>$Record.MobilePhone</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>RES_State_Province__c</field>
+            <value>
+                <elementReference>$Record.State</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>RES_Street__c</field>
+            <value>
+                <elementReference>$Record.Street</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>RES_Zip_Postal_Code__c</field>
+            <value>
+                <elementReference>$Record.PostalCode</elementReference>
             </value>
         </inputAssignments>
         <object>Opportunity</object>
@@ -759,13 +657,6 @@
             </value>
         </inputAssignments>
     </subflows>
-    <variables>
-        <name>Emails</name>
-        <dataType>String</dataType>
-        <isCollection>true</isCollection>
-        <isInput>false</isInput>
-        <isOutput>false</isOutput>
-    </variables>
     <variables>
         <name>LeadId</name>
         <dataType>String</dataType>

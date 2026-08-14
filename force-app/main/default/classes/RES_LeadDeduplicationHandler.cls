@@ -6,6 +6,18 @@
 
 public without sharing class RES_LeadDeduplicationHandler {
 
+    public class Notify{
+        public String recipientQueue;
+        public Lead leadInstance; 
+        public String recipientUserEmail;
+    }
+
+    public static List<Notify> notifyOperationTeam = new List<Notify>();
+    public static List<Notify> notifyCSO = new List<Notify>();
+    public static Id orgWideEmailAddressId;
+    public static Map<String, User> userNameToUserIdMapping = new Map<String, User>();
+
+
     public class LeadDuplicateWrapper {
         public Lead inputLead;
         public List<Lead> duplicateLeads = new List<Lead>();
@@ -22,16 +34,31 @@ public without sharing class RES_LeadDeduplicationHandler {
             this.inputLead = inputLead;
         }   
     }
-    
-    public static void apply(List<lead> leadList, List<LeadDuplicateWrapper> leadDuplicateWrappers){
 
+    public static Map<String, Id> queueMapping = new Map<String, Id>();
+
+    public static void apply(List<lead> leadList){
         if(leadList.isEmpty())return;
         List<LeadDuplicateWrapper> duplicateLeadsWrapper = getDuplicateLeads(leadList);
-
         duplicateLeadsWrapper = hydrateDuplicateWrapper(duplicateLeadsWrapper);
 
-        System.debug(' Hydrated Duplicate Lead Wrapper ' + duplicateLeadsWrapper);
-        runRuleEngine(duplicateLeadsWrapper, leadDuplicateWrappers);
+        Set<String> queueNames = new Set<String>();
+        for (String queueName : System.Label.RES_Notify_Queues_for_Duplication.split(',')) {
+            queueNames.add(queueName.trim());
+        }
+
+        queueMapping = new RES_GroupDAOLayer().getQueueMappingbyIds(queueNames);
+
+        List<OrgWideEmailAddress> orgWideAddress= new RES_OrgWideAddressDAO().getOrgWideAddressByDisplayName(
+            'Salesforce Notifications'
+        );
+
+        if(orgWideAddress.size() > 0){
+            orgWideEmailAddressId = orgWideAddress[0].Id;
+        }
+
+        System.debug(' Hydrated Duplicate Lead Wrapper ' + duplicateLeadsWrapper + 'Queue Names are ' + queueMapping);
+        runRuleEngine(duplicateLeadsWrapper);
     }
 
     public static List<LeadDuplicateWrapper> getDuplicateLeads(List<Lead> inputLeads) {
@@ -135,25 +162,6 @@ public without sharing class RES_LeadDeduplicationHandler {
         return response;
     }
 
-
-    public static boolean checkDaysThreshold(Lead existingLead, Lead inputLead, Integer daysThreshold){
-        
-        Datetime nowDate = (inputLead != null && inputLead.CreatedDate != null) 
-        ? inputLead.CreatedDate 
-        : Datetime.now();
-
-        Date existingDate = existingLead.CreatedDate.date();
-        Date compareDate = nowDate.date();
-
-        Integer daysDiff = existingDate.daysBetween(compareDate);
-
-        if(Math.abs(daysDiff) <= daysThreshold){
-            return true;
-        }
-        return false;
-    }
-
-
     public static String getRmId(List<Lead> existingLeadsByExistingSource){
         String userId = '';
 
@@ -167,12 +175,36 @@ public without sharing class RES_LeadDeduplicationHandler {
         return userId;
     }
 
-    public static boolean isOnlyBlockRule(Lead_Deduplication_Rule__mdt rule){
+    public static Boolean isOnlyBlockRule(Lead_Deduplication_Rule__mdt rule){
         return rule.Action__c != null &&
-            rule.Action__c.toUpperCase() == 'BLOCK' &&
-            rule.Lead_Age_Threshold_Days__c == null &&
-            String.isBlank(rule.Check_Field_Equality__c) &&
+            rule.Action__c.toUpperCase() == 'BLOCK' && 
+            String.isBlank(rule.Assigned_To__c) &&
+            String.isBlank(rule.Block_Notification_Queue__c) &&
+            String.isBlank(rule.Allow_Creation_Notify_Queue__c) &&
             String.isBlank(rule.Lead_Status__c);
+    }
+
+    public static Boolean isBlockAndNotifyRule(Lead_Deduplication_Rule__mdt rule){
+        return (String.isNotBlank(rule.Block_Notification_Queue__c) && 
+                String.isNotBlank(rule.Allow_Creation_Notify_Queue__c) &&
+                String.isBlank(rule.Allow_Creation_Notify_User__c) && 
+                String.isNotBlank(rule.Action__c) && String.isBlank(rule.Assigned_To__c) &&
+                String.isBlank(rule.Lead_Status__c));
+    }
+
+    public static Boolean isBlockAndNotifyUserRule(Lead_Deduplication_Rule__mdt rule){
+        return (String.isNotBlank(rule.Block_Notification_Queue__c) && 
+                String.isNotBlank(rule.Allow_Creation_Notify_User__c) &&
+                String.isNotBlank(rule.Allow_Creation_Notify_Queue__c) && 
+                String.isNotBlank(rule.Action__c) && String.isBlank(rule.Assigned_To__c) &&
+                String.isBlank(rule.Lead_Status__c));
+    }
+
+    public static Boolean isNoBlockSameRMRule(Lead_Deduplication_Rule__mdt rule){
+        return (String.isBlank(rule.Block_Notification_Queue__c) && 
+                String.isBlank(rule.Allow_Creation_Notify_Queue__c) &&
+                String.isNotBlank(rule.Action__c) && String.isNotBlank(rule.Assigned_To__c) &&
+                String.isNotBlank(rule.Lead_Status__c));
     }
 
     public static Map<String, String> getLeadSourceMap() {
@@ -181,19 +213,6 @@ public without sharing class RES_LeadDeduplicationHandler {
             leadSourceMap.put(entry.getValue(), entry.getLabel());
         }
         return leadSourceMap;
-    }
-
-    public static String extractCleanFieldName(String apiName) {
-        if (String.isBlank(apiName)) return null;
-        String result = apiName;
-        if (result.startsWith('RES_')) {
-            result = result.substring(4);
-        }
-        if (result.endsWith('__c')) {
-            result = result.substring(0, result.length() - 3);
-        }
-        result = result.replace('_', ' ');
-        return result.trim();
     }
 
     public static void publishReassignmentEvent(String leadId, String ownerId){
@@ -209,18 +228,7 @@ public without sharing class RES_LeadDeduplicationHandler {
         }
     }
 
-    public static void hydrateWrapper(Boolean isOwnerChange,
-                                    String newOwnerId,
-                                    LeadDuplicateWrapper wrapper, 
-                                    List<LeadDuplicateWrapper> leadDuplicateWrappers){
-
-            wrapper.isOwnerChange = isOwnerChange;
-            wrapper.newOwnerId = newOwnerId;
-            leadDuplicateWrappers.add(wrapper);
-    }
-
-
-    public static void runRuleEngine(List<LeadDuplicateWrapper> input, List<LeadDuplicateWrapper> leadDuplicateWrappers){
+    public static void runRuleEngine(List<LeadDuplicateWrapper> input){
         List<Lead_Deduplication_Rule__mdt> rules = new RES_LeadDeduplicationDAOLayer().getAllRules();
 
         Map<String, String> leadSourceMap = getLeadSourceMap();
@@ -231,6 +239,18 @@ public without sharing class RES_LeadDeduplicationHandler {
             if(wrapper.hasError == true){
                 System.debug('Errors in Duplicates '+ wrapper.errors);
                 continue;
+            }
+
+            Set<String> notifyUsers = new Set<String>();
+
+            for(Lead_Deduplication_Rule__mdt rule: rules){
+                if(rule.Allow_Creation_Notify_User__c != null || String.isNotBlank(rule.Allow_Creation_Notify_User__c)){
+                    notifyUsers.add(rule.Allow_Creation_Notify_User__c);
+                } 
+            }
+
+            if(notifyUsers.size() > 0){
+                userNameToUserIdMapping = new RES_UserDAOLayer().getUserByUsername(notifyUsers);
             }
 
             Lead inputLead = wrapper.inputLead;
@@ -248,14 +268,28 @@ public without sharing class RES_LeadDeduplicationHandler {
 
                 if(inputLead.LeadSource != incomingSource)continue;
 
-                Integer daysThreshold = (rule.Lead_Age_Threshold_Days__c == null) ? null : Integer.valueOf(rule.Lead_Age_Threshold_Days__c);
-
                 String assignedTo = rule.Assigned_To__c != null ? rule.Assigned_To__c.toUpperCase() : '';
                 String action = rule.Action__c != null ? rule.Action__c.toUpperCase() : '';
 
                 if(leadBySource != null && leadBySource.containsKey(existingSource)){
-                    System.debug('Rule Statisfied '  + ' '+ rule.Source__c + ' ' + rule.Lead_Age_Threshold_Days__c);
                     List<Lead> existingLeadsByExistingSource = leadBySource.get(existingSource);
+                    
+                    List<Lead> retiredAndArchiveLeads = new List<Lead>();
+                    List<Lead> newAndActiveLeads = new List<Lead>();
+
+                    for(Lead iterator: existingLeadsByExistingSource){
+                        if(iterator.status == '05' || iterator.Status == 'Archive'){
+                            retiredAndArchiveLeads.add(iterator);
+                        }
+                        else if(iterator.Status == '01' || iterator.Status == '02'){
+                            newAndActiveLeads.add(iterator);
+                        }
+                    }
+
+                    if(retiredAndArchiveLeads.size() <= 0 && newAndActiveLeads.size() <= 0){
+                        break;
+                    }
+                    
                     String shouldArchive = rule.Lead_Status__c;
 
                     String displayIncomingSource = leadSourceMap.containsKey(incomingSource) ? leadSourceMap.get(incomingSource) : incomingSource;
@@ -264,78 +298,140 @@ public without sharing class RES_LeadDeduplicationHandler {
                     //Anyway Block
                     if(isOnlyBlockRule(rule)){
                         System.debug('Simply Blocking by rule');
-                        if(assignedTo == 'DIFFERENT'){
-                            for(Lead l : existingLeadsByExistingSource){
-                                if(l.OwnerId != null && String.valueOf(l.OwnerId).startsWith('005') && l.OwnerId != inputLead.OwnerId){                            
-                                    inputLead.addError('Please review duplicates, The incoming Lead has '+ displayIncomingSource +' as Source and the existing duplicate Lead has ' + displayExistingSource + ' as a Source and the lead has been owned by a different RM.');
-                                    break;
-                                }
+                        inputLead.addError('Please review duplicates, The incoming Lead has '+ displayIncomingSource +' as Source and the existing duplicate Lead has ' + displayExistingSource + ' as a Source.');
+                        break;
+                    }
+
+                    //Block + Notify to Operation Team or Assign to Residential Duplicate Queue.
+                    if(isBlockAndNotifyRule(rule) || isBlockAndNotifyUserRule(rule)){
+                        //check if existing lead is active/New
+                        boolean isAssigneeUser = isBlockAndNotifyUserRule(rule);
+
+                        if(incomingSource == 'Z09' && existingSource == 'Z09'){
+                            Id existingRM = getRmId(existingLeadsByExistingSource);
+                            if(existingRM != null && inputLead.OwnerId == existingRM){
+                                inputLead.addError('Please review duplicates, The incoming Lead has '+ displayIncomingSource +' as Source and the existing duplicate Lead has ' + displayExistingSource + ' as a Source.');
+                                break;
                             }
                         }
-                        else{
-                            inputLead.addError('Please review duplicates, The incoming Lead has '+ displayIncomingSource +' as Source and the existing duplicate Lead has ' + displayExistingSource + ' as a Source.');
+
+                        if(newAndActiveLeads.size() > 0){
+                            if(orgWideEmailAddressId != null){
+                                RES_Send_Email__e event = new RES_Send_Email__e();
+                                event.Merge_Fields__c = inputLead.FirstName + ' ' + inputLead.LastName + ',' + inputLead.MobilePhone + ',' + inputLead.Email;
+                                event.Group__c = rule.Block_Notification_Queue__c;
+                                event.Type__c = 'Lead Duplication';
+                                event.OrgWideAddressID__c = orgWideEmailAddressId;
+                                try{
+                                    EventBus.publish(event);
+                                }catch(Exception e){
+                                    System.debug('Error Publishing Send Email Platform Event ' + e.getMessage());
+                                }
+                            }
+
+                            inputLead.addError(SYSTEM.Label.RES_Duplicate_Lead_Block_Notification);
+                            break;
+                        }
+                        //else check if retired / Archived.
+                        else if(retiredAndArchiveLeads.size() > 0){
+                            Notify emailNode = new Notify();
+                            emailNode.leadInstance = inputLead;
+                            emailNode.recipientQueue = rule.Allow_Creation_Notify_Queue__c;
+
+                            notifyCSO.add(emailNode);
+                            Id fallbackQueueId;
+                            if(isAssigneeUser == false && queueMapping.containsKey(rule.Allow_Creation_Notify_Queue__c)){
+                                fallbackQueueId = queueMapping.get(rule.Allow_Creation_Notify_Queue__c);
+                            }
+                            else if(isAssigneeUser == true && userNameToUserIdMapping.containsKey(rule.Allow_Creation_Notify_User__c)){
+                                fallbackQueueId = userNameToUserIdMapping.get(rule.Allow_Creation_Notify_User__c).Id;
+                            }
+                            inputLead.OwnerId = fallbackQueueId;
+                            RES_LeadServices.avoidReassignment.add(inputLead);
                             break;
                         }
                     }
 
-                    //Checking days Threshold
-                    if(daysThreshold != null){
-                        
-                        Lead mostRecentLead;
+                    // Assignment to Same RM + Mark Lead Archive
+                    if(isNoBlockSameRMRule(rule)){
+                        String getSameRMId = getRmId(existingLeadsByExistingSource);
+                        inputLead.status = rule.Lead_Status__c;
 
-                        for (Lead l : existingLeadsByExistingSource) {
-                            if (l.Status == '01' || l.Status == '02') {
-                                if (mostRecentLead == null || l.CreatedDate > mostRecentLead.CreatedDate) {
-                                    mostRecentLead = l;
-                                }
-                            }
-                        }
-                        
-                        if(mostRecentLead != null){
-                            boolean shouldBlock =  checkDaysThreshold(mostRecentLead, inputLead, daysThreshold);
-                            if(shouldBlock == true && action == 'BLOCK'){
-                                System.debug('Days Threshold Statisfied ' + mostRecentLead.CreatedDate +' ' +mostRecentLead.Id);
-                                inputLead.addError('Please Review duplicates, The existing Lead is created within ' + daysThreshold + ' days.');
+                        if(assignedTo == 'SAME'){
+                            if(getSameRMId != ''){
+                                inputLead.OwnerId = getSameRMId;
+                                RES_LeadServices.avoidReassignment.add(inputLead);
                                 break;
                             }
                         }
                     }
+                }
+            }
+        }
+    }
 
-                    //Same RM assignment + archive the lead
-                    String getSameRMId = getRmId(existingLeadsByExistingSource);
 
-                    if(shouldArchive != null && shouldArchive != ''){
-                        inputLead.status = 'Archive';
-                        if(getSameRMId != '' && assignedTo == 'SAME'){                
-                            RES_LeadServices.avoidReassignment.add(inputLead);
-                            hydrateWrapper(true, getSameRMId, wrapper, leadDuplicateWrappers);
+    public static void processEmails(){
+        System.debug('Processing Email Results CSO ' + notifyCSO.size());
+    
+        if(orgWideEmailAddressId == null){
+            System.debug('Org Wide Email Not Found Named "Salesforce Notifications');
+            return;
+        }
+        Set<String> groupNames = new Set<String>();
+
+        for(Notify node: notifyCSO){
+            groupNames.add(node.recipientQueue);
+        }
+
+        Map<String, Set<String>> groupToEmailsMapping = new RES_GroupMemberDAOLayer().getGroupMembersByGroupNames(groupNames);
+
+        List<RES_EmailUtilityService> emailUtility = new List<RES_EmailUtilityService>();
+        Set<String> templates = new Set<String>();
+
+        String csoTemplate = SYSTEM.Label.Notify_CSO_Template;
+        templates.add(csoTemplate);
+
+        Map<String, RES_Apex_Email_Template__mdt> apexTemplates = new RES_ApexEmailTemplateDAO().getApexTemplateByName(templates);
+
+        if(notifyCSO.size() > 0){
+            if(apexTemplates.containsKey(csoTemplate)){
+                RES_Apex_Email_Template__mdt csoTemplateRecord = apexTemplates.get(csoTemplate);
+                String htmlBody = csoTemplateRecord.Html_Body__c;
+                String subject = csoTemplateRecord.Subject__c;
+
+                for(Notify node: notifyCSO){
+
+                    String fullName = node.leadInstance.FirstName + ' ' + node.leadInstance.LastName;
+                    String leadUrl = URL.getOrgDomainUrl().toExternalForm()+ '/' + node.leadInstance.Id;
+                    List<String> mergeFields = new List<String>(); mergeFields.add(fullName); 
+                    mergeFields.add(node.leadInstance.MobilePhone); mergeFields.add(leadUrl);
+
+                    if(node.recipientQueue != null && groupToEmailsMapping.containsKey(node.recipientQueue)){
+                        for(String email: groupToEmailsMapping.get(node.recipientQueue)){
+                            RES_EmailUtilityService utilNode = new RES_EmailUtilityService();
+                            utilNode.setToAddresses(new List<String>{email});
+                            utilNode.setHtmlBody(htmlBody,mergeFields);
+                            utilNode.setOrgWideEmailAddressId(orgWideEmailAddressId);
+                            utilNode.setSubject(subject);
+                            emailUtility.add(utilNode);
                         }
-                        break;
                     }
-                    else if(assignedTo == 'SAME' && getSameRMId != ''){
-                        RES_LeadServices.avoidReassignment.add(inputLead);
-                        hydrateWrapper(true, getSameRMId, wrapper, leadDuplicateWrappers);
-                        break;
+                    else if(node.recipientUserEmail != null){
+                        RES_EmailUtilityService utilNode = new RES_EmailUtilityService();
+                        utilNode.setToAddresses(new List<String>{node.recipientUserEmail});
+                        utilNode.setHtmlBody(htmlBody,mergeFields);
+                        utilNode.setOrgWideEmailAddressId(orgWideEmailAddressId);
+                        utilNode.setSubject(subject);
+                        emailUtility.add(utilNode);
                     }
                 }
             }
         }
+        try{
+            RES_EmailService.sendEmail(emailUtility);
+        }catch(Exception e){
+            System.debug('Exception While Sending Duplicate Lead Emails ' + e.getMessage());
+        }   
     }
-
-    public static void processResults(List<LeadDuplicateWrapper> leadDuplicateWrappers){
-
-        for(LeadDuplicateWrapper wrapper: leadDuplicateWrappers){
-            System.debug('Processing Wrapper: '+ wrapper.isOwnerChange + ' ' + wrapper.newOwnerId + ' '+ wrapper.inputLead.Id);
-            if(wrapper.isOwnerChange == true && wrapper.newOwnerId != ''){
-                try{
-                    Lead l = new Lead(Id = wrapper.inputLead.Id, OwnerId = wrapper.newOwnerId);
-                    publishReassignmentEvent(wrapper.inputLead.Id, wrapper.newOwnerId);
-                }
-                catch(Exception e){
-                    System.debug('Failed to change Owner of Lead '+ e.getMessage());
-                }
-            }
-        }
-    }
-
 }

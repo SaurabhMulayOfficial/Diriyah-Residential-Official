@@ -6,7 +6,6 @@
     <trackHistory>false</trackHistory>
     <type>Picklist</type>
     <valueSet>
-        <restricted>true</restricted>
         <valueSetDefinition>
             <sorted>false</sorted>
             <value>
@@ -43,6 +42,26 @@
                 <fullName>POA (Power of Attorney)</fullName>
                 <default>false</default>
                 <label>POA (Power of Attorney)</label>
+            </value>
+            <value>
+                <fullName>Signed URC</fullName>
+                <default>false</default>
+                <label>Signed URC</label>
+            </value>
+            <value>
+                <fullName>Down Payment Receipt</fullName>
+                <default>false</default>
+                <label>Down Payment Receipt</label>
+            </value>
+            <value>
+                <fullName>Payment Plan</fullName>
+                <default>false</default>
+                <label>Payment Plan</label>
+            </value>
+            <value>
+                <fullName>Signed SPA</fullName>
+                <default>false</default>
+                <label>Signed SPA</label>
             </value>
         </valueSetDefinition>
     </valueSet>

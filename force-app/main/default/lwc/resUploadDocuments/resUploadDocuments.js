@@ -11,7 +11,9 @@ import updateDocumentLabel from '@salesforce/apex/RES_UploadDocumentClass.update
 import deleteFile from '@salesforce/apex/RES_UploadDocumentClass.deleteFile';
 import canEditDocumentLabel from '@salesforce/apex/RES_UploadDocumentClass.canEditDocumentLabel';
 import USER_ID from '@salesforce/user/Id';
-
+import getFileTypes from '@salesforce/apex/RES_FileTypeMdtService.getFileTypes';
+import findObjectNameFromRecordIdPrefix from '@salesforce/apex/RES_FileTypeMdtService.findObjectNameFromRecordIdPrefix';
+import publishProcessAttachmentEvent from '@salesforce/apex/RES_FileTypeMdtService.publishProcessAttachmentEvent';
 export default class ResUploadDocuments extends NavigationMixin(LightningElement) {
     @api recordId;
     userId = USER_ID;
@@ -20,12 +22,17 @@ export default class ResUploadDocuments extends NavigationMixin(LightningElement
     @track allAttachmentTypes = [];
     @track files = [];
     @track filteredFiles = [];
+    @track validationErrors = [];
 
     showSpinner = false;
     cvRecordTypeId;
     isOpen = true;
     showModal = false;
+    showDeleteModal = false;
+    selectedDeleteContentDocumentId;
+    selectedDeleteContentDocumentAttachmentType;
     totalFiles = 0;
+    objectName = '';
 
     searchFileName = '';
     searchDocumentLabel = '';
@@ -55,6 +62,27 @@ export default class ResUploadDocuments extends NavigationMixin(LightningElement
         }
     }
 
+    getObjectNameFromRecordId(){
+        if(this.recordId == null){
+            return;
+        }
+        findObjectNameFromRecordIdPrefix({ recordIdOrPrefix: String(this.recordId) })
+            .then((result) => {
+                this.objectName = result;
+                if(this.objectName == 'Account'){
+                    if(this.isPersonAccount){
+                        this.objectName = 'PersonAccount';
+                    }else{
+                        this.objectName = 'CompanyAccount';
+                    }
+                }
+                this.filterAttachmentTypes();
+            })
+            .catch((error) => {
+                console.error('Error finding object name from recordId prefix:', error);
+            });
+    }
+
     disconnectedCallback() {
         document.removeEventListener('mousemove', this.handleColumnResize);
         document.removeEventListener('mouseup', this.stopColumnResize);
@@ -66,6 +94,10 @@ export default class ResUploadDocuments extends NavigationMixin(LightningElement
         };
     }
 
+    get hasValidationErrors() {
+        return this.validationErrors && this.validationErrors.length > 0;
+    }
+
     @wire(getObjectInfo, { objectApiName: CONTENT_VERSION_OBJECT })
     objectInfo({ data, error }) {
         if (data) {
@@ -75,18 +107,6 @@ export default class ResUploadDocuments extends NavigationMixin(LightningElement
         }
     }
 
-    @wire(getPicklistValues, {
-        recordTypeId: '$cvRecordTypeId',
-        fieldApiName: ATTACHMENT_TYPE_FIELD
-    })
-    picklistValues({ data, error }) {
-        if (data) {
-            this.allAttachmentTypes = data.values;
-            this.filterAttachmentTypes();
-        } else if (error) {
-            console.error(error);
-        }
-    }
 
     @wire(graphql, {
         query: gql`
@@ -113,10 +133,10 @@ export default class ResUploadDocuments extends NavigationMixin(LightningElement
         if (data) {
             const account = data.uiapi.query.Account.edges?.[0]?.node;
             this.isPersonAccount = account?.IsPersonAccount?.value || false;
-            this.filterAttachmentTypes();
         } else if (errors) {
             console.error(errors);
         }
+        this.getObjectNameFromRecordId();
     }
 
     get sectionIcon() {
@@ -136,28 +156,14 @@ export default class ResUploadDocuments extends NavigationMixin(LightningElement
     }
 
     filterAttachmentTypes() {
-        if (!this.allAttachmentTypes?.length) {
-            return;
-        }
-
-        const allowed = this.isPersonAccount
-            ? [
-                  'National Id',
-                  'Iqama Id',
-                  'GCC Id',
-                  'Passport',
-                  'Simah Form',
-                  'POA (Power of Attorney)'
-              ]
-            : [
-                  'Company Registration Certificate',
-                  'Simah Form',
-                  'POA (Power of Attorney)'
-              ];
-
-        this.attachmentTypeOptions = this.allAttachmentTypes.filter((option) =>
-            allowed.includes(option.value)
-        );
+        getFileTypes({
+            ObjectName: this.objectName
+        }).then((result) => {
+            this.attachmentTypeOptions = result.map((type) => ({
+                label: type,
+                value: type
+            }));
+        });
     }
 
     loadFiles() {
@@ -185,6 +191,7 @@ export default class ResUploadDocuments extends NavigationMixin(LightningElement
 
     openModal() {
         this.showModal = true;
+        this.validationErrors = [];
         this.selectedFiles = [];
         this.selectedFileNames = '';
         this.selectedDocumentLabel = '';
@@ -193,6 +200,7 @@ export default class ResUploadDocuments extends NavigationMixin(LightningElement
 
     closeModal() {
         this.showModal = false;
+        this.validationErrors = [];
         this.selectedFiles = [];
         this.selectedFileNames = '';
         this.selectedDocumentLabel = '';
@@ -221,15 +229,18 @@ export default class ResUploadDocuments extends NavigationMixin(LightningElement
 
     handleAttachmentTypeChange(event) {
         this.selectedAttachmentType = event.detail.value;
+        this.validationErrors = [];
     }
 
     handleSelectedDocumentLabelChange(event) {
         this.selectedDocumentLabel = event.target.value;
+        this.validationErrors = [];
     }
 
     handleFileSelection(event) {
         const uploadedFiles = event.detail.files || [];
         this.selectedFiles = uploadedFiles;
+        this.validationErrors = [];
 
         this.selectedFileNames = uploadedFiles
             .map((file) => file.name)
@@ -264,23 +275,21 @@ export default class ResUploadDocuments extends NavigationMixin(LightningElement
     }
 
     uploadSelectedFiles() {
+        this.validationErrors = [];
+
         if (!this.selectedFiles || this.selectedFiles.length === 0) {
-            this.showToast(
-                'Validation Error',
-                'Please select at least one file.',
-                'error',
-                'dismissable'
-            );
-            return;
+            this.validationErrors.push('Please select at least one file.');
+        }
+
+        if (!this.selectedDocumentLabel || !this.selectedDocumentLabel.trim()) {
+            this.validationErrors.push('Please enter Document Label.');
         }
 
         if (!this.selectedAttachmentType) {
-            this.showToast(
-                'Validation Error',
-                'Please select Attachment Type.',
-                'error',
-                'dismissable'
-            );
+            this.validationErrors.push('Please select Attachment Type.');
+        }
+
+        if (this.validationErrors.length > 0) {
             return;
         }
 
@@ -299,6 +308,7 @@ export default class ResUploadDocuments extends NavigationMixin(LightningElement
         })
             .then(() => {
                 this.showToast('Success', 'File uploaded successfully.', 'success', 'dismissable');
+                this.publishEvent(this.objectName, this.recordId, this.selectedAttachmentType, 'Update');
                 this.closeModal();
 
                 window.setTimeout(() => {
@@ -321,21 +331,31 @@ export default class ResUploadDocuments extends NavigationMixin(LightningElement
     saveDocumentLabel(event) {
         const contentVersionId = event.target.dataset.id;
         const documentLabel = this.editedLabels[contentVersionId];
+        const inputCmp = event.target;
 
         if (documentLabel === undefined) {
             return;
         }
 
+        if (!documentLabel || !documentLabel.trim()) {
+            inputCmp.setCustomValidity('Please enter Document Label.');
+            inputCmp.reportValidity();
+            return;
+        }
+
+        inputCmp.setCustomValidity('');
+        inputCmp.reportValidity();
+
         updateDocumentLabel({
             contentVersionId,
-            documentLabel
+            documentLabel: documentLabel.trim()
         })
             .then(() => {
                 this.files = this.files.map((file) => {
                     if (file.contentVersionId === contentVersionId) {
                         return {
                             ...file,
-                            documentLabel
+                            documentLabel: documentLabel.trim()
                         };
                     }
 
@@ -372,29 +392,39 @@ export default class ResUploadDocuments extends NavigationMixin(LightningElement
 
     downloadFile(event) {
         const contentDocumentId = event.currentTarget.dataset.id;
-    
+
         const link = document.createElement('a');
-    
-        link.href =
-            `/sfc/servlet.shepherd/document/download/${contentDocumentId}`;
-    
+        link.href = `/sfc/servlet.shepherd/document/download/${contentDocumentId}`;
         link.download = '';
-    
         link.style.display = 'none';
-    
+
         document.body.appendChild(link);
-    
         link.click();
-    
         document.body.removeChild(link);
     }
 
     deleteSelectedFile(event) {
-        const contentDocumentId = event.currentTarget.dataset.id;
+        this.selectedDeleteContentDocumentId = event.currentTarget.dataset.id;
+        this.selectedDeleteContentDocumentAttachmentType = event.currentTarget.dataset.attachmenttype;
+        this.showDeleteModal = true;
+    }
 
-        deleteFile({ contentDocumentId })
+    closeDeleteModal() {
+        this.showDeleteModal = false;
+        this.selectedDeleteContentDocumentId = null;
+        this.selectedDeleteContentDocumentAttachmentType = null;
+    }
+
+    confirmDeleteFile(e) {
+        if (!this.selectedDeleteContentDocumentId) {
+            return;
+        }
+
+        deleteFile({ contentDocumentId: this.selectedDeleteContentDocumentId })
             .then(() => {
                 this.showToast('Success', 'File deleted successfully.', 'success', 'dismissable');
+                this.publishEvent(this.objectName, this.recordId, this.selectedDeleteContentDocumentAttachmentType, 'Delete');
+                this.closeDeleteModal();
                 this.loadFiles();
             })
             .catch(() => {
@@ -481,5 +511,13 @@ export default class ResUploadDocuments extends NavigationMixin(LightningElement
                 mode
             })
         );
+    }
+
+    publishEvent(objectName, recordId, attachmentType, action){
+        if(!objectName || !recordId || !attachmentType || !action) {
+            console.error('Missing parameters for publishProcessAttachmentEvent:', objectName, recordId, attachmentType, action);
+            return;
+        }
+        publishProcessAttachmentEvent({ objectName: objectName, recordId: recordId, attachmentType: attachmentType, action: action });
     }
 }

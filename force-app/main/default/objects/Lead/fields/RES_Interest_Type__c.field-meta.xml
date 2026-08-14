@@ -4,7 +4,7 @@
     <label>Interest Type</label>
     <required>false</required>
     <trackFeedHistory>false</trackFeedHistory>
-    <trackHistory>false</trackHistory>
+    <trackHistory>true</trackHistory>
     <type>Picklist</type>
     <valueSet>
         <valueSetDefinition>
@@ -413,6 +413,11 @@
                 <fullName>WADISAFARRYI</fullName>
                 <default>false</default>
                 <label>Wadi Safar RYI</label>
+            </value>
+            <value>
+                <fullName>MAHBA</fullName>
+                <default>false</default>
+                <label>MAHBA</label>
             </value>
         </valueSetDefinition>
     </valueSet>

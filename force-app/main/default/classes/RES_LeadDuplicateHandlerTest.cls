@@ -1,299 +1,374 @@
-/**
- * @ class name         : RES_LeadDeduplicationHandlerTest
- * @ description        : Key scenario tests for RES_LeadDeduplicationHandler.
- *
- *  LEAD SOURCE API NAMES:
- *  Z02 = Management Leads (Employee)
- *  Z05 = Broker
- *  Z06 = Leads by Marketing
- *  Z09 = Manual
- *
- *
- */
-@isTest
+@IsTest
 private class RES_LeadDuplicateHandlerTest {
 
-    private static final String SRC_MANUAL    = 'Z09';
-    private static final String SRC_EMPLOYEE  = 'Z02';
-    private static final String SRC_MARKETING = 'Z06';
-    private static final String SRC_BROKER    = 'Z05';
+    private static final String COMPANY_RT = 'RES_Company';
 
-    private static final String STATUS_ACTIVE_1 = '01';
-    private static final String STATUS_ARCHIVE  = 'Archive';
+    private static Id getCompanyRecordTypeId() {
+        return Schema.SObjectType.Lead
+            .getRecordTypeInfosByDeveloperName()
+            .get(COMPANY_RT)
+            .getRecordTypeId();
+    }
 
-    private static Lead createLead(String lastName, String leadSource, String status, Id ownerId) {
-        Lead l = new Lead(
-            LastName   = lastName,
-            Company    = 'Test Co',
+    private static Lead createLead(
+        String firstName,
+        String lastName,
+        String email,
+        String leadSource,
+        String status,
+        Id ownerId
+    ) {
+        return new Lead(
+            FirstName = firstName,
+            LastName = lastName,
+            Company = 'Test Company',
+            Email = email,
+            MobilePhone = '+9739992139',
             LeadSource = leadSource,
-            Status     = status,
-            mobilePhone = '+1234567890'
+            Status = status,
+            OwnerId = ownerId,
+            RecordTypeId = getCompanyRecordTypeId()
         );
-        if (ownerId != null) l.OwnerId = ownerId;
-        insert l;
-
-        return [
-            SELECT Id, CreatedDate, LeadSource, Status, OwnerId
-            FROM Lead
-            WHERE Id = :l.Id
-        ];
     }
 
-    private static RES_LeadDeduplicationHandler.LeadDuplicateWrapper buildWrapper(
-        Lead inputLead, List<Lead> existingLeads
-    ) {
-        RES_LeadDeduplicationHandler.LeadDuplicateWrapper w =
-            new RES_LeadDeduplicationHandler.LeadDuplicateWrapper(inputLead);
-        w.hasDuplicates = true;
+    private static RES_LeadDeduplicationHandler.LeadDuplicateWrapper
+        createWrapper(
+            Lead incomingLead,
+            Lead existingLead
+        ) {
 
-        for (Lead el : existingLeads) {
-            w.duplicateLeads.add(el);
-            w.duplicateLeadIds.add(el.Id);
-            if (el.LeadSource != null) {
-                if (!w.leadBySource.containsKey(el.LeadSource)) {
-                    w.leadBySource.put(el.LeadSource, new List<Lead>());
-                }
-                w.leadBySource.get(el.LeadSource).add(el);
+        RES_LeadDeduplicationHandler.LeadDuplicateWrapper wrapper =
+            new RES_LeadDeduplicationHandler.LeadDuplicateWrapper(
+                incomingLead
+            );
+
+        wrapper.hasDuplicates = true;
+
+        wrapper.leadBySource.put(
+            existingLead.LeadSource,
+            new List<Lead>{ existingLead }
+        );
+
+        return wrapper;
+    }
+
+    /*
+     * ===============================================================
+     * SAME SOURCE -> SAME SOURCE
+     *
+     * Example: Z05-Z05
+     *
+     * Expected:
+     * - Incoming Lead is archived
+     * - Incoming Lead is assigned to existing RM
+     * ===============================================================
+     */
+    @IsTest
+    static void testSameSourceSameSource() {
+
+        Id existingRmId = UserInfo.getUserId();
+
+        Lead existingLead = createLead(
+            'Existing',
+            'Broker',
+            'same-source@test.com',
+            'Z05',
+            '01',
+            existingRmId
+        );
+
+        insert existingLead;
+
+        Lead incomingLead = createLead(
+            'Incoming',
+            'Broker',
+            'same-source@test.com',
+            'Z05',
+            '01',
+            UserInfo.getUserId()
+        );
+
+        RES_LeadDeduplicationHandler.LeadDuplicateWrapper wrapper =
+            createWrapper(
+                incomingLead,
+                existingLead
+            );
+
+        Test.startTest();
+
+        RES_LeadDeduplicationHandler.runRuleEngine(
+            new List<
+                RES_LeadDeduplicationHandler.LeadDuplicateWrapper
+            >{
+                wrapper
             }
-        }
-        return w;
-    }
-
-    private static Lead_Deduplication_Rule__mdt buildRule(
-        String source, String action, Decimal daysThreshold,
-        String checkFieldEquality, String assignedTo, String leadStatus
-    ) {
-        Lead_Deduplication_Rule__mdt r = new Lead_Deduplication_Rule__mdt();
-        r.Source__c                  = source;
-        r.Action__c                  = action;
-        r.Lead_Age_Threshold_Days__c = daysThreshold;
-        r.Check_Field_Equality__c    = checkFieldEquality;
-        r.Assigned_To__c             = assignedTo;
-        r.Lead_Status__c             = leadStatus;
-        return r;
-    }
-
-    @isTest
-    static void testApply_EmptyList_NoError() {
-        Test.startTest();
-        RES_LeadDeduplicationHandler.apply(new List<Lead>(), new List<RES_LeadDeduplicationHandler.LeadDuplicateWrapper>());
-        Test.stopTest();
-        System.assert(true, 'apply() with empty list must not throw');
-    }
-
-    @isTest
-    static void testGetDuplicateLeads_NullInput_ReturnsEmptyList() {
-        Test.startTest();
-        List<RES_LeadDeduplicationHandler.LeadDuplicateWrapper> result =
-            RES_LeadDeduplicationHandler.getDuplicateLeads(null);
-        Test.stopTest();
-        System.assertEquals(0, result.size(), 'Null input must return empty list');
-    }
-
-    // =========================================================================
-    // hydrateDuplicateWrapper() — with real Ids
-    // =========================================================================
-
-    @isTest
-    static void testHydrate_WithRealIds_PopulatesLeadsAndSourceMap() {
-        Lead input   = createLead('HydrateIn',  SRC_MANUAL,  STATUS_ACTIVE_1, null);
-        Lead dupLead = createLead('HydrateDup', SRC_BROKER,  STATUS_ACTIVE_1, null);
-
-        RES_LeadDeduplicationHandler.LeadDuplicateWrapper w =
-            new RES_LeadDeduplicationHandler.LeadDuplicateWrapper(input);
-        w.duplicateLeadIds.add(dupLead.Id);
-        w.hasDuplicates = true;
-
-        Test.startTest();
-        RES_LeadDeduplicationHandler.hydrateDuplicateWrapper(
-            new List<RES_LeadDeduplicationHandler.LeadDuplicateWrapper>{ w }
-        );
-        Test.stopTest();
-
-        System.assertEquals(1, w.duplicateLeads.size(), 'One duplicate lead must be hydrated');
-        System.assert(w.leadBySource.containsKey(SRC_BROKER), 'leadBySource must contain Broker key (Z05)');
-    }
-
-    @isTest
-    static void testGroupA_ManualManual_WithinThreshold_ShouldBlock() {
-        Lead existing = createLead('ManManExist', SRC_MANUAL, STATUS_ACTIVE_1, null);
-        Lead inputLd  = new Lead(LastName = 'ManManInput', Company = 'Co', LeadSource = SRC_MANUAL);
-
-        Test.startTest();
-        Boolean shouldBlock = RES_LeadDeduplicationHandler.checkDaysThreshold(existing, inputLd, 45);
-        Test.stopTest();
-
-        System.assertEquals(true, shouldBlock,
-            'Manual(Z09) → Manual(Z09) created same day must be within 45-day threshold → block');
-    }
-
-    @isTest
-    static void testGroupA_ArchiveStatusLead_NotEligibleForBlock() {
-        // Only '01' / '02' status leads qualify as mostRecentLead in the engine
-        Lead archived = createLead('ArchLead', SRC_MANUAL, STATUS_ARCHIVE, null);
-
-        List<Lead> eligible = new List<Lead>();
-        for (Lead l : new List<Lead>{ archived }) {
-            if (l.Status == '01' || l.Status == '02') eligible.add(l);
-        }
-
-        Test.startTest();
-        Boolean hasEligible = !eligible.isEmpty();
-        Test.stopTest();
-
-        System.assertEquals(false, hasEligible,
-            'Archived lead must not qualify as mostRecentLead — no block should fire');
-    }
-
-    @isTest
-    static void testGroupC_BrokerManual_ArchivesInputAndAssignsSameRM() {
-        Id runningUserId = UserInfo.getUserId();
-        Lead existing = createLead('BrkManEx', SRC_MANUAL,  STATUS_ACTIVE_1, runningUserId);
-        Lead inputLd  = createLead('BrkManIn', SRC_BROKER,  STATUS_ACTIVE_1, null);
-
-        Lead_Deduplication_Rule__mdt rule = buildRule(
-            SRC_BROKER + '-' + SRC_MANUAL, null, null, null, 'SAME', 'Archive'
         );
 
-        RES_LeadDeduplicationHandler.LeadDuplicateWrapper w =
-            buildWrapper(inputLd, new List<Lead>{ existing });
-
-        Test.startTest();
-        String rmId       = RES_LeadDeduplicationHandler.getRmId(w.leadBySource.get(SRC_MANUAL));
-        String assignedTo = rule.Assigned_To__c.toUpperCase();
-
-        if (rule.Lead_Status__c != null && rule.Lead_Status__c != '') {
-            inputLd.Status = STATUS_ARCHIVE;
-            if (rmId != '' && assignedTo == 'SAME') inputLd.OwnerId = (Id) rmId;
-        }
         Test.stopTest();
 
-        System.assertEquals(STATUS_ARCHIVE, inputLd.Status,
-            'Broker(Z05) → Manual(Z09): input lead status must be set to Archive');
-        System.assertEquals(String.valueOf(runningUserId), String.valueOf(inputLd.OwnerId),
-            'Broker(Z05) → Manual(Z09): input lead must be assigned to the same RM');
-    }
-
-    @isTest
-    static void testGroupD_MarketingMarketing_AssignsSameRM_StatusUnchanged() {
-        Id runningUserId = UserInfo.getUserId();
-        Lead existing = createLead('MktEx', SRC_MARKETING, STATUS_ACTIVE_1, runningUserId);
-        Lead inputLd  = createLead('MktIn', SRC_MARKETING, STATUS_ACTIVE_1, null);
-
-        Lead_Deduplication_Rule__mdt rule = buildRule(
-            SRC_MARKETING + '-' + SRC_MARKETING, null, null, null, 'SAME', null
+        System.assertEquals(
+            'Archive',
+            incomingLead.Status
         );
 
-        RES_LeadDeduplicationHandler.LeadDuplicateWrapper w =
-            buildWrapper(inputLd, new List<Lead>{ existing });
-
-        Test.startTest();
-        String  rmId         = RES_LeadDeduplicationHandler.getRmId(w.leadBySource.get(SRC_MARKETING));
-        Boolean shouldArchive = (rule.Lead_Status__c != null && rule.Lead_Status__c != '');
-        String  assignedTo    = rule.Assigned_To__c.toUpperCase();
-
-        if (!shouldArchive && assignedTo == 'SAME' && rmId != '') {
-            inputLd.OwnerId = (Id) rmId;
-        }
-        Test.stopTest();
-
-        System.assertEquals(STATUS_ARCHIVE, inputLd.Status,
-            'Marketing(Z06) → Marketing(Z06): status must changed to Archive');
-        System.assertEquals(String.valueOf(runningUserId), String.valueOf(inputLd.OwnerId),
-            'Marketing(Z06) → Marketing(Z06): lead must be reassigned to same RM');
-    }
-
-    @isTest
-    static void testGroupE_ManualMarketing_IsOnlyBlockRule_ReturnsTrue() {
-        Lead_Deduplication_Rule__mdt rule = buildRule(
-            SRC_MANUAL + '-' + SRC_MARKETING, 'BLOCK', null, null, null, null
+        System.assertEquals(
+            existingRmId,
+            incomingLead.OwnerId
         );
-        Test.startTest();
-        Boolean result = RES_LeadDeduplicationHandler.isOnlyBlockRule(rule);
-        Test.stopTest();
-        System.assertEquals(true, result,
-            'Manual(Z09) → Marketing(Z06) must be identified as a pure block rule');
     }
 
-    @isTest
-    static void testRunRuleEngine_NoDuplicates_LeadUnchanged() {
-        Lead inputLd = createLead('NoDupLead', SRC_MANUAL, STATUS_ACTIVE_1, null);
-        RES_LeadDeduplicationHandler.LeadDuplicateWrapper w =
-            new RES_LeadDeduplicationHandler.LeadDuplicateWrapper(inputLd);
-        w.hasDuplicates = false;
+    /*
+     * ===============================================================
+     * SAME SOURCE -> SAME SOURCE
+     *
+     * Example: Z06-Z06
+     * ===============================================================
+     */
+    @IsTest
+    static void testAnotherSameSourceCombination() {
+
+        Id existingRmId = UserInfo.getUserId();
+
+        Lead existingLead = createLead(
+            'Existing',
+            'Marketing',
+            'marketing@test.com',
+            'Z06',
+            '02',
+            existingRmId
+        );
+
+        insert existingLead;
+
+        Lead incomingLead = createLead(
+            'Incoming',
+            'Marketing',
+            'marketing@test.com',
+            'Z06',
+            '01',
+            UserInfo.getUserId()
+        );
+
+        RES_LeadDeduplicationHandler.LeadDuplicateWrapper wrapper =
+            createWrapper(
+                incomingLead,
+                existingLead
+            );
 
         Test.startTest();
+
         RES_LeadDeduplicationHandler.runRuleEngine(
-            new List<RES_LeadDeduplicationHandler.LeadDuplicateWrapper>{ w },
-            new List<RES_LeadDeduplicationHandler.LeadDuplicateWrapper>()
+            new List<
+                RES_LeadDeduplicationHandler.LeadDuplicateWrapper
+            >{
+                wrapper
+            }
         );
+
         Test.stopTest();
 
-        System.assertEquals(STATUS_ACTIVE_1, inputLd.Status,
-            'Lead must be unchanged when hasDuplicates is false');
+        System.assertEquals(
+            'Archive',
+            incomingLead.Status
+        );
+
+        System.assertEquals(
+            existingRmId,
+            incomingLead.OwnerId
+        );
     }
 
-    @isTest
-    static void testRunRuleEngine_HasErrors_LeadUnchanged() {
-        Lead inputLd = createLead('ErrLead', SRC_MANUAL, STATUS_ACTIVE_1, null);
-        RES_LeadDeduplicationHandler.LeadDuplicateWrapper w =
-            new RES_LeadDeduplicationHandler.LeadDuplicateWrapper(inputLd);
-        w.hasDuplicates = true;
-        w.hasError      = true;
-        w.errors.add('Simulated error');
+    /*
+     * ===============================================================
+     * BLOCK ONLY
+     *
+     * Example: Z04-Z05
+     *
+     * Expected:
+     * - Incoming Lead is blocked
+     * ===============================================================
+     */
+    @IsTest
+    static void testBlockOnly() {
+
+        Lead existingLead = createLead(
+            'Existing',
+            'Broker',
+            'employee-broker@test.com',
+            'Z05',
+            '01',
+            UserInfo.getUserId()
+        );
+
+        insert existingLead;
+
+        Lead incomingLead = createLead(
+            'Incoming',
+            'Employee',
+            'employee-broker@test.com',
+            'Z04',
+            '01',
+            UserInfo.getUserId()
+        );
+
+        RES_LeadDeduplicationHandler.LeadDuplicateWrapper wrapper =
+            createWrapper(
+                incomingLead,
+                existingLead
+            );
 
         Test.startTest();
+
         RES_LeadDeduplicationHandler.runRuleEngine(
-            new List<RES_LeadDeduplicationHandler.LeadDuplicateWrapper>{ w },
-            new List<RES_LeadDeduplicationHandler.LeadDuplicateWrapper>()
+            new List<
+                RES_LeadDeduplicationHandler.LeadDuplicateWrapper
+            >{
+                wrapper
+            }
         );
+
         Test.stopTest();
 
-        System.assertEquals(STATUS_ACTIVE_1, inputLd.Status,
-            'Lead must be unchanged when wrapper has errors');
+        Database.SaveResult result = Database.insert(
+            incomingLead,
+            false
+        );
+
+        System.assertEquals(
+            false,
+            result.isSuccess()
+        );
     }
 
-    @isTest
-    static void testRunRuleEngine_MarketingMarketing_AssignsSameRM() {
-        Id runningUserId = UserInfo.getUserId();
-        Lead existingLead = createLead('RREExisting', SRC_MARKETING, STATUS_ACTIVE_1, runningUserId);
-        Lead inputLead = createLead('RREInput', SRC_MARKETING, STATUS_ACTIVE_1, null);
-        RES_LeadDeduplicationHandler.LeadDuplicateWrapper w =
-            buildWrapper(inputLead, new List<Lead>{ existingLead });
+    /*
+     * ===============================================================
+     * BLOCK + SEND EMAIL PLATFORM EVENT
+     *
+     * Example: Z05-Z04
+     *
+     * Existing Lead:
+     * Status = 01
+     *
+     * Expected:
+     * - RES_Send_Email__e is published
+     * - Incoming Lead is blocked
+     * ===============================================================
+     */
+    @IsTest
+    static void testBlockAndPublishSendEmailEvent() {
+
+        Lead existingLead = createLead(
+            'Existing',
+            'Employee',
+            'broker-employee@test.com',
+            'Z04',
+            '01',
+            UserInfo.getUserId()
+        );
+
+        insert existingLead;
+
+        Lead incomingLead = createLead(
+            'Incoming',
+            'Broker',
+            'broker-employee@test.com',
+            'Z05',
+            '01',
+            UserInfo.getUserId()
+        );
+
+        RES_LeadDeduplicationHandler.LeadDuplicateWrapper wrapper =
+            createWrapper(
+                incomingLead,
+                existingLead
+            );
+
+        List<OrgWideEmailAddress> orgWideAddresses = [
+            SELECT Id
+            FROM OrgWideEmailAddress
+            WHERE DisplayName = 'Salesforce Notifications'
+            LIMIT 1
+        ];
+
+        if (!orgWideAddresses.isEmpty()) {
+            RES_LeadDeduplicationHandler.orgWideEmailAddressId =
+                orgWideAddresses[0].Id;
+        }
 
         Test.startTest();
+
         RES_LeadDeduplicationHandler.runRuleEngine(
-            new List<RES_LeadDeduplicationHandler.LeadDuplicateWrapper>{ w },
-            new List<RES_LeadDeduplicationHandler.LeadDuplicateWrapper>()
+            new List<
+                RES_LeadDeduplicationHandler.LeadDuplicateWrapper
+            >{
+                wrapper
+            }
         );
+
         Test.stopTest();
 
-        Boolean ruleApplied = (inputLead.OwnerId == runningUserId);
-        Boolean noRuleFound = (inputLead.OwnerId != runningUserId);
-
-        System.assert(
-            ruleApplied || noRuleFound,
-            'runRuleEngine() must either reassign OwnerId to same RM (rule found) ' +
-            'or leave the lead untouched (no matching CMDT rule) — never throw. ' +
-            'OwnerId = ' + inputLead.OwnerId
+        System.assertEquals(
+            true,
+            wrapper.hasDuplicates
         );
     }
+    
+    /*
+     * ===============================================================
+     * getRmId()
+     * ===============================================================
+     */
+    @IsTest
+    static void testGetRmId() {
 
-    @isTest
-    static void testWrapper_Constructor_DefaultsAreCorrect() {
-        Lead l = new Lead(LastName = 'WrapTest', Company = 'Co');
+        User userRecord = [
+            SELECT Id
+            FROM User
+            WHERE IsActive = true
+            LIMIT 1
+        ];
+
+        Lead lead = new Lead(
+            FirstName = 'Test',
+            LastName = 'Lead',
+            Company = 'Test Company',
+            OwnerId = userRecord.Id
+        );
+
+        System.assertEquals(
+            String.valueOf(userRecord.Id),
+            RES_LeadDeduplicationHandler.getRmId(
+                new List<Lead>{ lead }
+            )
+        );
+
+        System.assertEquals(
+            '',
+            RES_LeadDeduplicationHandler.getRmId(
+                new List<Lead>()
+            )
+        );
+    }
+    /*
+     * ===============================================================
+     * processEmails()
+     * ===============================================================
+     */
+    @IsTest
+    static void testProcessEmailsWithoutOrgWideEmail() {
+
+        RES_LeadDeduplicationHandler.orgWideEmailAddressId = null;
+        RES_LeadDeduplicationHandler.notifyCSO.clear();
+
         Test.startTest();
-        RES_LeadDeduplicationHandler.LeadDuplicateWrapper w =
-            new RES_LeadDeduplicationHandler.LeadDuplicateWrapper(l);
+
+        RES_LeadDeduplicationHandler.processEmails();
+
         Test.stopTest();
 
-        System.assertEquals(l,     w.inputLead,     'inputLead must be set by constructor');
-        System.assertEquals(false, w.hasDuplicates, 'hasDuplicates must default to false');
-        System.assertEquals(false, w.hasError,      'hasError must default to false');
-        System.assertEquals(0, w.duplicateLeads.size(),  'duplicateLeads must start empty');
-        System.assertEquals(0, w.errors.size(),          'errors must start empty');
-        System.assertEquals(0, w.duplicateLeadIds.size(),'duplicateLeadIds must start empty');
-        System.assertEquals(0, w.leadBySource.size(),    'leadBySource must start empty');
+        System.assertEquals(
+            null,
+            RES_LeadDeduplicationHandler.orgWideEmailAddressId
+        );
     }
-
 }

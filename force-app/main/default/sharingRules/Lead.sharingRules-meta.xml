@@ -1,17 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <SharingRules xmlns="http://soap.sforce.com/2006/04/metadata">
-    <sharingGuestRules>
-        <fullName>RES_Guest_User_Sharing_Rule</fullName>
-        <accessLevel>Read</accessLevel>
-        <label>Guest User Sharing Rule</label>
+    <sharingOwnerRules>
+        <fullName>RES_Lead_Record_Shared</fullName>
+        <accessLevel>Edit</accessLevel>
+        <label>Lead Record Shared</label>
         <sharedTo>
-            <guestUser>Employee_Referral_Portal</guestUser>
+            <group>RES_Operations_Team</group>
         </sharedTo>
-        <criteriaItems>
-            <field>LeadSource</field>
-            <operation>equals</operation>
-            <value>Referral</value>
-        </criteriaItems>
-        <includeHVUOwnedRecords>false</includeHVUOwnedRecords>
-    </sharingGuestRules>
+        <sharedFrom>
+            <group>RES_Cross_Functional_Record_Access_Group</group>
+        </sharedFrom>
+    </sharingOwnerRules>
 </SharingRules>

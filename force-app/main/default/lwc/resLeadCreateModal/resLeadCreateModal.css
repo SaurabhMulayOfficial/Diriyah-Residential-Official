@@ -76,7 +76,6 @@
 .slds-select_container {
     width: 100%;
 }
-
 .slds-select_container select {
     width: 100%;
 }
@@ -87,13 +86,7 @@
     font-size: 0.875rem;
 }
 
-/* ── Country mobile component alignment inside modal ── */
-c-res_-country-mobile {
-    display: block;
-    width: 100%;
-}
-
-/* ── Footer button order matches standard SF: Cancel | Save & New | Save ── */
+/* ── Footer button order matches standard SF: Cancel | Previous | Save & New | Save ── */
 .slds-modal__footer {
     display: flex;
     justify-content: flex-end;

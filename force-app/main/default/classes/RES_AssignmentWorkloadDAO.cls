@@ -46,7 +46,7 @@ public without sharing class RES_AssignmentWorkloadDAO extends RES_BaseDAOLayer 
         Map<String, Object> bindVars = new Map<String, Object>();
         bindVars.put('workloadIds', workloadIds);
         String soql = 'SELECT Id, RES_Active_Lead_Count__c, RES_Capacity__c, RES_User__c FROM RES_Assignment_Workload__c WHERE Id IN :workloadIds';
-        Map<Id, sObject> result = executeQueryToMap(soql, 'getWorkloadById', true, bindVars, AccessLevel.SYSTEM_MODE);
+        Map<Id, sObject> result = executeQueryToMap(soql, '', false, bindVars, AccessLevel.SYSTEM_MODE);
         Map<Id, RES_Assignment_Workload__c> workloadMap = new Map<Id, RES_Assignment_Workload__c>();
         for(Id key: result.keySet()){
             workloadMap.put(key, (RES_Assignment_Workload__c)result.get(key));
@@ -58,7 +58,7 @@ public without sharing class RES_AssignmentWorkloadDAO extends RES_BaseDAOLayer 
         Map<String, Object> bindVars = new Map<String, Object>();
         bindVars.put('userIds', userIds);
         String soql = 'SELECT Id, RES_Active_Lead_Count__c, RES_Capacity__c, RES_User__c FROM RES_Assignment_Workload__c WHERE RES_User__c IN :userIds';
-        return (List<RES_Assignment_Workload__c>) executeQuery(soql, 'getWorkloadByUserIds', true, bindVars, AccessLevel.SYSTEM_MODE);
+        return (List<RES_Assignment_Workload__c>) executeQuery(soql, '', false, bindVars, AccessLevel.SYSTEM_MODE);
     }
 
 }

@@ -1,2 +1,35 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<CustomObjectTranslation xmlns="http://soap.sforce.com/2006/04/metadata"></CustomObjectTranslation>
+<CustomObjectTranslation xmlns="http://soap.sforce.com/2006/04/metadata">
+    <recordTypes>
+        <label><!-- RES Residential Multi Buyer --></label>
+        <name>RES_Residential_Multi_Buyer</name>
+    </recordTypes>
+    <recordTypes>
+        <label><!-- RES Residential Single Buyer --></label>
+        <name>RES_Residential_Single_Buyer</name>
+    </recordTypes>
+    <validationRules>
+        <errorMessage><!-- Identification Type is mandatory when Stage is not Closed Lost. --></errorMessage>
+        <name>RES_Identification_Type_is_mandatory</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage><!-- This Opportunity is Closed Won/Lost, so cannot be edited. --></errorMessage>
+        <name>RES_Opportunity_Lock_on_Closed_WON_LOST</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage><!-- Close date must be present or future date, cannot be in the past. --></errorMessage>
+        <name>RES_Opportuynity_Close_Date</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage><!-- Please select a Reason for Lost before marking the Opportunity as Closed Lost. --></errorMessage>
+        <name>RES_Require_Reason_for_Lost</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage><!-- You do not have the required permissions to change the Opportunity Owner --></errorMessage>
+        <name>RES_Restrict_Opp_Owner_field_editing</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage><!-- Invalid Identification Number. National ID must start with 1 and be up to 10 digits. Iqama must start with 2 and be up to 10 digits. Passport must be alphanumeric and can contain max 20 characters. --></errorMessage>
+        <name>RES_Validation_Rule_on_IdentificationNum</name>
+    </validationRules>
+</CustomObjectTranslation>

@@ -1,12 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Queue xmlns="http://soap.sforce.com/2006/04/metadata">
+    <doesIncludeBosses>true</doesIncludeBosses>
     <doesSendEmailToMembers>false</doesSendEmailToMembers>
     <name>Wadi Safar Sales Senior Director</name>
-    <queueMembers>
-        <roles>
-            <role>RES_Sales_Wadi_Safar_Senior_Director</role>
-        </roles>
-    </queueMembers>
     <queueSobject>
         <sobjectType>Lead</sobjectType>
     </queueSobject>
