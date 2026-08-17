@@ -62,10 +62,10 @@ public with sharing class RES_Product2DAOLayer extends RES_BaseDAOLayer {
     public List<Product2> getProductsByIds(Set<Id> productIds) {
     if (productIds == null || productIds.isEmpty()) {
         return new List<Product2>();
-    }
+    } 
         Map<String, Object> bindVars = new Map<String, Object>();
         bindVars.put('productIds', productIds);
-        String soql = 'SELECT Id, RES_Unit_Status__c, RES_HardBlock_Start__c FROM Product2 WHERE Id IN :productIds';
+        String soql = 'SELECT Id, RES_Unit_Status__c, RES_HardBlock_Start__c, RES_Is_In_Soft_Hold_Extension__c, RES_Soft_Hold_Start__c, RES_Soft_Hold_Until__c FROM Product2 WHERE Id IN :productIds';
         return (List<Product2>) executeQuery(soql,'', false, bindVars, AccessLevel.SYSTEM_MODE);
     }
 
