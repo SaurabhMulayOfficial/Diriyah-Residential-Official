@@ -37,4 +37,18 @@ public with sharing class RES_UserDAOLayer extends RES_BaseDAOLayer {
         }
         return userMap;
     }
+    
+    public List<User> getUsersById(Set<Id> userIdSet){
+        Map<String, Object> bindVars = new Map<String, Object>();
+        bindVars.put('userIdSet', userIdSet);
+        String soql = 'SELECT Id, Name, Email ' + 
+                      'FROM User ' +
+                      'WHERE Id IN : userIdSet';
+        Map<String, User> userMap = new Map<String, User>();
+        List<User> userLst = (List<User>) executeQuery(soql, 'getUsersById', false, bindVars, AccessLevel.SYSTEM_MODE);
+        if(!userLst.isEmpty()){
+            return userLst;
+        }
+        return null;
+    }
 }
