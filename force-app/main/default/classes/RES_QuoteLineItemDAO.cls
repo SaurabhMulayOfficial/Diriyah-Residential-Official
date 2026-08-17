@@ -50,7 +50,7 @@ public with sharing class RES_QuoteLineItemDAO extends RES_BaseDAOLayer {
 
         String soql = 'SELECT Id, QuoteId, Product2Id, Quote.OpportunityId, Quantity, UnitPrice, TotalPrice ' +
                     'FROM QuoteLineItem ' +
-                    'WHERE Quote.OpportunityId IN :opportunityIds';
+                    'WHERE Quote.OpportunityId IN :opportunityIds AND Quote.RES_Product_Soft_Held__c = false';
         
         return (List<QuoteLineItem>) executeQuery(soql, '', false, bindVars, AccessLevel.SYSTEM_MODE);
     }
@@ -61,7 +61,7 @@ public with sharing class RES_QuoteLineItemDAO extends RES_BaseDAOLayer {
 
         String soql = 'SELECT Id, QuoteId, Quote.OpportunityId, Product2Id, Quantity, UnitPrice, TotalPrice ' +
                     'FROM QuoteLineItem ' +
-                    'WHERE Product2Id IN :product2Ids';
+                    'WHERE Product2Id IN :product2Ids AND Quote.RES_Product_Soft_Held__c = false';
         
         return (List<QuoteLineItem>) executeQuery(soql, '', false, bindVars, AccessLevel.SYSTEM_MODE);
     }
