@@ -99,4 +99,26 @@ public without sharing class RES_ContentVersionDAOLayer extends RES_BaseDAOLayer
             AccessLevel.SYSTEM_MODE
         );
     }
+    
+    /**
+     * Returns latest ContentVersion records for given ContentDocument Ids.
+     *
+     * @param documentIds ContentDocument Ids.
+     * @param attachmentType attachmentType.
+     * @return list of latest ContentVersion records.
+     */
+    public List<ContentVersion> getContentVersionWithAttachmentType(Set<Id> documentIds, String attachmentType) {
+        Map<String, Object> bindVars = new Map<String, Object>{
+            'documentIds' => documentIds,
+            'attachmentType' => attachmentType
+        };
+
+        String soql = 'SELECT Id ' +
+                      'FROM ContentVersion ' +
+                      'WHERE IsLatest = TRUE AND ' +
+                      'ContentDocumentId IN : documentIds AND ' +
+                      'RES_Attachment_Type__c =: attachmentType';
+
+        return (List<ContentVersion>) executeQuery(soql, '', false, bindVars, AccessLevel.SYSTEM_MODE);
+    }
 }

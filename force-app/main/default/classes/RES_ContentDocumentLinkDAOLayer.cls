@@ -57,7 +57,7 @@ public without sharing class RES_ContentDocumentLinkDAOLayer extends RES_BaseDAO
             'linkedEntityId' => linkedEntityId
         };
 
-        String soql = 'SELECT ContentDocument.LatestPublishedVersionId ' +
+        String soql = 'SELECT ContentDocument.LatestPublishedVersionId, ContentDocumentId ' +
             'FROM ContentDocumentLink ' +
             'WHERE LinkedEntityId = :linkedEntityId ' +
             'ORDER BY ContentDocument.CreatedDate DESC';
@@ -69,5 +69,23 @@ public without sharing class RES_ContentDocumentLinkDAOLayer extends RES_BaseDAO
             bindVars,
             AccessLevel.SYSTEM_MODE
         );
+    }
+    
+    /**
+     * Returns ContentDocumentLink records for a linked record Id.
+     *
+     * @param contentDocId Salesforce record Id.
+     * @return list of ContentDocumentLink records.
+     */
+    public List<ContentDocumentLink> getContentDocumentLinkByContentDocumentId(Id contentDocId) {
+        Map<String, Object> bindVars = new Map<String, Object>{
+            'contentDocId' => contentDocId
+        };
+
+        String soql = 'SELECT ContentDocument.Title, LinkedEntityId ' +
+                      'FROM ContentDocumentLink ' +
+                      'WHERE ContentDocumentId =: contentDocId';
+
+        return (List<ContentDocumentLink>) executeQuery(soql, '', false, bindVars, AccessLevel.SYSTEM_MODE);
     }
 }
