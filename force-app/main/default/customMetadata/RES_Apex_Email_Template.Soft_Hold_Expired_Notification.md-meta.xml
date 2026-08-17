@@ -4,61 +4,195 @@
     <protected>false</protected>
     <values>
         <field>Html_Body__c</field>
-        <value xsi:type="xsd:string">&lt;html&gt;
+        <value xsi:type="xsd:string">&lt;!DOCTYPE html&gt;
+&lt;html&gt;
 &lt;head&gt;
 &lt;meta charset=&quot;UTF-8&quot;&gt;
 &lt;title&gt;Unit Available for Reservation&lt;/title&gt;
 &lt;/head&gt;
-&lt;body style=&quot;font-family: Arial, sans-serif; color: #333333; line-height: 1.6;&quot;&gt;
 
-&lt;p&gt;Hello Team,&lt;/p&gt;
+&lt;body style=&quot;margin:0;padding:0;background-color:#F4F4F4;&quot;&gt;
 
-&lt;p&gt;
-The soft hold period for the following Unit has expired, and the Unit is now
-&lt;strong&gt;available for reservation&lt;/strong&gt;.
+&lt;table width=&quot;100%&quot; cellpadding=&quot;0&quot; cellspacing=&quot;0&quot; border=&quot;0&quot; bgcolor=&quot;#F4F4F4&quot;&gt;
+&lt;tr&gt;
+&lt;td align=&quot;center&quot; style=&quot;padding:30px 15px;&quot;&gt;
+
+&lt;table width=&quot;600&quot; cellpadding=&quot;0&quot; cellspacing=&quot;0&quot; border=&quot;0&quot;
+style=&quot;background:#FFFFFF;border-collapse:collapse; border-collapse:collapse;border-radius:10px;overflow:hidden;&quot;&gt;
+
+&lt;!-- Header --&gt;
+&lt;tr&gt;
+&lt;td bgcolor=&quot;#C89B5A&quot;
+style=&quot;background-color:#dbbc9a;
+padding:30px;
+text-align:center;
+font-family:Arial,Helvetica,sans-serif;&quot;&gt;
+
+&lt;h1 style=&quot;margin:0;
+color:#4A3103;
+font-size:28px;
+font-weight:bold;
+line-height:36px;&quot;&gt;
+Unit Available for Reservation
+&lt;/h1&gt;
+
+&lt;p style=&quot;margin:12px 0 0;
+color:#000000;
+font-size:15px;
+line-height:22px;&quot;&gt;
+The soft hold period for the unit has expired and it is now available for reservation.
 &lt;/p&gt;
 
-&lt;p&gt;
-This notification is being sent because the unit exists on one of your Quote.
-If you still require this unit, you can proceed with the reservation before it becomes unavailable.
+&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;!-- Body --&gt;
+&lt;tr&gt;
+&lt;td bgcolor=&quot;#FFFFFF&quot;
+style=&quot;padding:35px;
+font-family:Arial,Helvetica,sans-serif;
+color:#444444;&quot;&gt;
+
+&lt;p style=&quot;margin:0 0 20px;
+font-size:16px;
+line-height:24px;&quot;&gt;
+Hello Team,
 &lt;/p&gt;
 
-&lt;h3&gt;Unit Details&lt;/h3&gt;
+&lt;p style=&quot;margin:0 0 18px;
+font-size:15px;
+line-height:26px;&quot;&gt;
+The soft hold period for the following &lt;strong&gt;Unit&lt;/strong&gt; has expired, and the
+Unit is now &lt;strong&gt;available for reservation&lt;/strong&gt;.
+&lt;/p&gt;
 
-&lt;table cellpadding=&quot;8&quot; cellspacing=&quot;0&quot; border=&quot;1&quot;
-style=&quot;border-collapse: collapse; border: 1px solid #cccccc;&quot;&gt;
-    &lt;tr&gt;
-        &lt;td&gt;&lt;strong&gt;Unit Name&lt;/strong&gt;&lt;/td&gt;
-        &lt;td&gt;{0}&lt;/td&gt;
-    &lt;/tr&gt;
-    &lt;tr&gt;
-        &lt;td&gt;&lt;strong&gt;Unit Code&lt;/strong&gt;&lt;/td&gt;
-        &lt;td&gt;{1}&lt;/td&gt;
-    &lt;/tr&gt;
+&lt;p style=&quot;margin:0 0 30px;
+font-size:15px;
+line-height:26px;&quot;&gt;
+This notification is being sent because the unit exists on one of your
+&lt;strong&gt;Quotes&lt;/strong&gt;. If you still require this unit, you can proceed with
+the reservation before it becomes unavailable.
+&lt;/p&gt;
+
+&lt;!-- Unit Information --&gt;
+&lt;table width=&quot;100%&quot;
+cellpadding=&quot;14&quot;
+cellspacing=&quot;0&quot;
+border=&quot;0&quot;
+bgcolor=&quot;#FBF8F2&quot;
+style=&quot;background-color:#FBF8F2;
+border:1px solid #EADFC9;
+border-collapse:collapse;&quot;&gt;
+
+&lt;tr&gt;
+&lt;td width=&quot;35%&quot;
+style=&quot;font-family:Arial,Helvetica,sans-serif;
+font-size:15px;
+font-weight:bold;
+color:#444444;
+line-height:24px;&quot;&gt;
+Unit Name
+&lt;/td&gt;
+
+&lt;td style=&quot;font-family:Arial,Helvetica,sans-serif;
+font-size:15px;
+color:#444444;
+line-height:24px;&quot;&gt;
+{0}
+&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td width=&quot;35%&quot;
+style=&quot;font-family:Arial,Helvetica,sans-serif;
+font-size:15px;
+font-weight:bold;
+color:#444444;
+line-height:24px;
+border-top:1px solid #EADFC9;&quot;&gt;
+Unit Code
+&lt;/td&gt;
+
+&lt;td style=&quot;font-family:Arial,Helvetica,sans-serif;
+font-size:15px;
+color:#444444;
+line-height:24px;
+border-top:1px solid #EADFC9;&quot;&gt;
+{1}
+&lt;/td&gt;
+&lt;/tr&gt;
+
 &lt;/table&gt;
 
-&lt;br&gt;
+&lt;!-- Spacer --&gt;
+&lt;table width=&quot;100%&quot; cellpadding=&quot;0&quot; cellspacing=&quot;0&quot;&gt;
+&lt;tr&gt;
+&lt;td height=&quot;30&quot;&gt;&amp;nbsp;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/table&gt;
 
-&lt;p&gt;
+&lt;!-- Button --&gt;
+&lt;table align=&quot;center&quot; cellpadding=&quot;0&quot; cellspacing=&quot;0&quot; border=&quot;0&quot;&gt;
+&lt;tr&gt;
+
+&lt;td align=&quot;center&quot; style=&quot;border-collapse:collapse;border-radius:10px;overflow:hidden;&quot; bgcolor=&quot;#dbbc9a&quot;&gt;
 &lt;a href=&quot;{2}&quot;
-style=&quot;background-color: #e9d7c2;
-color: black;
-padding: 10px 16px;
-text-decoration: none;
-border-radius: 4px;
-display: inline-block;&quot;&gt;
+style=&quot;display:block;
+width:180px;
+line-height:46px;
+text-align:center;
+text-decoration:none;
+color:#000000;
+font-family:Arial,Helvetica,sans-serif;
+font-size:15px;
+font-weight:bold;&quot;&gt;
 View Unit
 &lt;/a&gt;
-&lt;/p&gt;
+&lt;/td&gt;
 
-&lt;p&gt;
+&lt;/tr&gt;
+&lt;/table&gt;
+
+&lt;p style=&quot;margin:35px 0 0;
+font-size:15px;
+line-height:26px;
+color:#444444;&quot;&gt;
 Please reserve the unit if it is still required for your customer.
 &lt;/p&gt;
 
-&lt;p&gt;
-Regards,&lt;br/&gt;
+&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;!-- Footer --&gt;
+&lt;tr&gt;
+&lt;td bgcolor=&quot;#F9F6EF&quot;
+style=&quot;background-color:#dbbc9a;
+padding:22px;
+text-align:center;
+border-top:1px solid #ECE4D5;
+font-family:Arial,Helvetica,sans-serif;&quot;&gt;
+
+&lt;p style=&quot;margin:0;
+color:#000000;
+font-size:14px;&quot;&gt;
+Regards,
+&lt;/p&gt;
+
+&lt;p style=&quot;margin:8px 0 0;
+color:#4A3103;
+font-size:15px;
+font-weight:bold;&quot;&gt;
 CRM System
 &lt;/p&gt;
+
+&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;/table&gt;
+
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/table&gt;
 
 &lt;/body&gt;
 &lt;/html&gt;</value>
