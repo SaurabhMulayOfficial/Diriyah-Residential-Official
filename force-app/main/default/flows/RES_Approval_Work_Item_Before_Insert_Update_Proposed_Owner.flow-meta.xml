@@ -3,6 +3,39 @@
     <apiVersion>66.0</apiVersion>
     <areMetricsLoggedToDataCloud>false</areMetricsLoggedToDataCloud>
     <assignments>
+        <name>Assign_Quote_Remarks</name>
+        <label>Assign Quote Remarks</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignmentItems>
+            <assignToReference>$Record.RES_Approval_Request_Remarks__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>fQuoteApproverBody</elementReference>
+            </value>
+        </assignmentItems>
+    </assignments>
+    <assignments>
+        <name>Assign_Remarks_Hours</name>
+        <label>Assign Remarks &amp; Hours</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignmentItems>
+            <assignToReference>$Record.RES_Soft_Hold_Extension_Hours__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>Get_Quote.RES_Extend_Soft_Hold_By_Hours__c</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>$Record.RES_Approval_Request_Remarks__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>$Record.RES_Approval_Request_Remarks__c</elementReference>
+            </value>
+        </assignmentItems>
+    </assignments>
+    <assignments>
         <name>Assign_the_Proposed_Owner</name>
         <label>Assign the Proposed Owner</label>
         <locationX>0</locationX>
@@ -26,19 +59,6 @@
             <operator>Assign</operator>
             <value>
                 <elementReference>PreviousOwnerName</elementReference>
-            </value>
-        </assignmentItems>
-    </assignments>
-    <assignments>
-        <name>Assign_Quote_Remarks</name>
-        <label>Assign Quote Remarks</label>
-        <locationX>0</locationX>
-        <locationY>0</locationY>
-        <assignmentItems>
-            <assignToReference>$Record.RES_Approval_Request_Remarks__c</assignToReference>
-            <operator>Assign</operator>
-            <value>
-                <elementReference>fQuoteApproverBody</elementReference>
             </value>
         </assignmentItems>
     </assignments>
@@ -79,7 +99,44 @@
             <label>Yes, Quote</label>
         </rules>
     </decisions>
+    <decisions>
+        <name>If_soft_Hold_Approvals</name>
+        <label>If soft Hold Approvals</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnector>
+            <targetReference>Assign_Quote_Remarks</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Yes_softHold</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>Get_Public_Group</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.AssignedToId</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <elementReference>Get_Public_Group.Id</elementReference>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Assign_Remarks_Hours</targetReference>
+            </connector>
+            <label>Yes</label>
+        </rules>
+    </decisions>
     <environments>Default</environments>
+    <formulas>
+        <name>fQuoteApproverBody</name>
+        <dataType>String</dataType>
+        <expression>&quot;Quote &apos;&quot; &amp; {!Get_Quote.Name} &amp; &quot;&apos; (&quot; &amp; {!Get_Quote.QuoteNumber} &amp; &quot;) needs your approval. Discount &quot; &amp; TEXT({!Get_Quote.Discount}) &amp; &quot;% (Amount &quot; &amp; TEXT(({!Get_Quote.Subtotal} - {!Get_Quote.GrandTotal})) &amp; &quot;). Submitted by &quot; &amp; {!Get_Quote.CreatedBy.FirstName} &amp; &quot; &quot; &amp; {!Get_Quote.CreatedBy.LastName} &amp; &quot;.&quot;</expression>
+    </formulas>
     <formulas>
         <name>PreviousOwnerName</name>
         <dataType>String</dataType>
@@ -93,11 +150,6 @@
         <name>UserName</name>
         <dataType>String</dataType>
         <expression>{!Get_Lead.Owner:User.FirstName}  + &apos; &apos; + {!Get_Lead.Owner:User.LastName}</expression>
-    </formulas>
-    <formulas>
-        <name>fQuoteApproverBody</name>
-        <dataType>String</dataType>
-        <expression>&quot;Quote &apos;&quot; &amp; {!Get_Quote.Name} &amp; &quot;&apos; (&quot; &amp; {!Get_Quote.QuoteNumber} &amp; &quot;) needs your approval. Discount &quot; &amp; TEXT({!Get_Quote.Discount}) &amp; &quot;% (Amount &quot; &amp; TEXT(({!Get_Quote.Subtotal} - {!Get_Quote.GrandTotal})) &amp; &quot;). Submitted by &quot; &amp; {!Get_Quote.CreatedBy.FirstName} &amp; &quot; &quot; &amp; {!Get_Quote.CreatedBy.LastName} &amp; &quot;.&quot;</expression>
     </formulas>
     <interviewLabel>Approval Work Item - Before Insert - Update Proposed Owner {!$Flow.CurrentDateTime}</interviewLabel>
     <label>Approval Work Item - Before Insert - Update Proposed Owner</label>
@@ -142,13 +194,34 @@
         <storeOutputAutomatically>true</storeOutputAutomatically>
     </recordLookups>
     <recordLookups>
+        <name>Get_Public_Group</name>
+        <label>Get Public Group</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>If_soft_Hold_Approvals</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>DeveloperName</field>
+            <operator>EqualTo</operator>
+            <value>
+                <stringValue>RES_Soft_Hold_Extension_Approvals</stringValue>
+            </value>
+        </filters>
+        <getFirstRecordOnly>true</getFirstRecordOnly>
+        <object>Group</object>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
+    <recordLookups>
         <name>Get_Quote</name>
         <label>Get Quote</label>
         <locationX>0</locationX>
         <locationY>0</locationY>
         <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
         <connector>
-            <targetReference>Assign_Quote_Remarks</targetReference>
+            <targetReference>Get_Public_Group</targetReference>
         </connector>
         <filterLogic>and</filterLogic>
         <filters>

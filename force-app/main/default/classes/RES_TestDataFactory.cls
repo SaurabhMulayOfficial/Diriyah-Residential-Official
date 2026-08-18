@@ -421,11 +421,35 @@ public class RES_TestDataFactory {
             WHERE Id = :cv.Id
         ];
     }
+    
+    public static ContentVersion createContentVersionWithAttachmentType(String attachmentType) {
+        ContentVersion cv = new ContentVersion();
+        cv.Title = 'TestFile';
+        cv.PathOnClient = 'TestFile.pdf';
+        cv.VersionData = Blob.valueOf('Test File Content');
+        cv.RES_Attachment_Type__c = attachmentType;
+        insert cv;
+        return [
+            SELECT Id, Title, ContentDocumentId, RES_Document_Label__c
+            FROM ContentVersion
+            WHERE Id = :cv.Id
+        ];
+    }
 
     public static ContentDocumentLink createDocLink(String accId, String cdId) {
         ContentDocumentLink cdl = new ContentDocumentLink();
         cdl.ContentDocumentId = cdId;
         cdl.LinkedEntityId = accId;
+        cdl.ShareType = 'V';
+        cdl.Visibility = 'AllUsers';
+        insert cdl;
+        return cdl;
+    }
+    
+    public static ContentDocumentLink createDocLinkForContract(String contractId, String cdId) {
+        ContentDocumentLink cdl = new ContentDocumentLink();
+        cdl.ContentDocumentId = cdId;
+        cdl.LinkedEntityId = contractId;
         cdl.ShareType = 'V';
         cdl.Visibility = 'AllUsers';
         insert cdl;
@@ -540,5 +564,63 @@ public class RES_TestDataFactory {
         );
         insert pbe;
         return pbe;
+    }
+    
+    // ═══════════════════════════════════════════════════════════════════════
+    // Contract Creation Methods
+    // ═══════════════════════════════════════════════════════════════════════
+	/**
+     * @description Creates a test Contract
+     * @param accountId - accountId
+     * @param status - status
+     * @param recordTypeId - recordTypeId
+     * @return Contract
+     */
+    public static Contract createContract(Id accountId, String status, Id recordTypeId) {
+        Contract con = new Contract(
+            AccountId = accountId,
+            Status = status,
+            RecordTypeId = recordTypeId
+        );
+        insert con;
+        return con;
+    }
+    
+    // ═══════════════════════════════════════════════════════════════════════
+    // Group Creation Methods
+    // ═══════════════════════════════════════════════════════════════════════
+	/**
+     * @description Creates a test Group
+     * @param name - name
+     * @return Group
+     */
+    public static Group createGroup(String name) {
+        Group testGroup = new Group(
+            Name = name,
+            Type = 'Regular'
+        );
+        insert testGroup;
+        return testGroup;
+    }
+    
+    // ═══════════════════════════════════════════════════════════════════════
+    // Group Member Creation Methods
+    // ═══════════════════════════════════════════════════════════════════════
+	/**
+     * @description Creates a test Group Member
+     * @param groupId - groupId
+     * @param userId - userId
+     * @return Group Member
+     */
+    public static List<GroupMember> createGroupMembers(Id groupId, Id userId) {
+        List<GroupMember> members = new List<GroupMember>{
+            new GroupMember(
+                GroupId = groupId,
+                UserOrGroupId = userId
+            )
+        };
+
+        insert members;
+        return members;
     }
 }

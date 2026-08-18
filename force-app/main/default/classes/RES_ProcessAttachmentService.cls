@@ -78,7 +78,25 @@ public with sharing class RES_ProcessAttachmentService {
         SObject record = sObjectType.newSObject();
         record.Id = recordId;
         if(action == 'Delete'){
-            record.put(fieldAPIName, false);
+            List<ContentDocumentLink> conDocLinkLst = new RES_ContentDocumentLinkDAOLayer().getContentDocumentLinkByLinkedId(recordId);
+            if(!conDocLinkLst.isEmpty()){
+                Set<Id> contentDocumentIds = new Set<Id>();
+                for(ContentDocumentLink cdlObj : conDocLinkLst){
+                    contentDocumentIds.add(cdlObj.ContentDocumentId);
+                }
+                if(!contentDocumentIds.isEmpty()){
+                    List<ContentVersion> contentVersionLst = new RES_ContentVersionDAOLayer().getContentVersionWithAttachmentType(contentDocumentIds, attachmentType);
+                    if(!contentVersionLst.isEmpty()){
+                        record.put(fieldAPIName, true);
+                    }
+                    else{
+                        record.put(fieldAPIName, false);
+                    }
+                }
+            }
+            else{
+                record.put(fieldAPIName, false);
+            }
         }else if(action == 'Update'){
             record.put(fieldAPIName, true);
         }

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-    <label>Quote Discount Approval Decision</label>
+    <label>SIMAH Signed Notification Template</label>
     <protected>false</protected>
     <values>
         <field>Html_Body__c</field>
@@ -8,112 +8,56 @@
 &lt;html&gt;
 &lt;head&gt;
 &lt;meta charset=&quot;UTF-8&quot;&gt;
-&lt;title&gt;Quote Discount Approval Update&lt;/title&gt;
+&lt;title&gt;SIMAH Form Signed&lt;/title&gt;
 &lt;/head&gt;
-
 &lt;body style=&quot;margin:0;padding:0;background-color:#F4F4F4;&quot;&gt;
-
 &lt;table width=&quot;100%&quot; cellpadding=&quot;0&quot; cellspacing=&quot;0&quot; border=&quot;0&quot; bgcolor=&quot;#F4F4F4&quot;&gt;
 &lt;tr&gt;
 &lt;td align=&quot;center&quot; style=&quot;padding:30px 15px;&quot;&gt;
-
-&lt;table width=&quot;600&quot; cellpadding=&quot;0&quot; cellspacing=&quot;0&quot; border=&quot;0&quot;
-style=&quot;width:600px;max-width:600px;background:#FFFFFF;border-collapse:collapse; border-collapse:collapse;border-radius:10px;overflow:hidden;&quot;&gt;
-
+&lt;table width=&quot;100%&quot; cellpadding=&quot;0&quot; cellspacing=&quot;0&quot; border=&quot;0&quot; style=&quot;width:1000px;max-width:1000px;background:#FFFFFF;border-collapse:collapse; border-collapse:collapse;border-radius:10px;overflow:hidden;&quot;&gt;
 &lt;!-- Header --&gt;
-&lt;tr&gt;
 &lt;td bgcolor=&quot;#C89B5A&quot;
 style=&quot;background-color:#dbbc9a;
 padding:30px;
 text-align:center;
 font-family:Arial,Helvetica,sans-serif;&quot;&gt;
-
 &lt;h1 style=&quot;margin:0;
 color:#4A3103;
 font-size:28px;
 font-weight:bold;
 line-height:36px;&quot;&gt;
-Quote Discount Approval Update
+SIMAH Form Signed
 &lt;/h1&gt;
 
 &lt;p style=&quot;margin:12px 0 0;
 color:#000000;
 font-size:15px;
 line-height:22px;&quot;&gt;
-A quote discount approval request has been updated and requires your review.
+The SIMAH form has been successfully signed. Please review the details below.
 &lt;/p&gt;
+
 &lt;/td&gt;
 &lt;/tr&gt;
-
-
 &lt;!-- Body --&gt;
 &lt;tr&gt;
-&lt;td bgcolor=&quot;#FFFFFF&quot;
-style=&quot;padding:30px;
+&lt;td bgcolor=&quot;#FFFFFF&quot; style=&quot;padding:30px;
 font-family:Arial,Helvetica,sans-serif;
-color:#444444;&quot;&gt;
-
+color:#444444;text-align:center;&quot;&gt;
 &lt;p style=&quot;margin:0 0 18px;
 font-size:16px;
-line-height:24px;&quot;&gt;
-Hello &lt;strong&gt;{0}&lt;/strong&gt;,
-&lt;/p&gt;
-
+line-height:24px;&quot;&gt; Hello &lt;strong&gt;{0}&lt;/strong&gt;, &lt;/p&gt;
 &lt;p style=&quot;margin:0 0 18px;
 font-size:15px;
-line-height:26px;&quot;&gt;
-Your discount request on Quote &lt;strong&gt;{2}&lt;/strong&gt; (&lt;strong&gt;{3}%&lt;/strong&gt;) has been
-&lt;strong&gt;{1}&lt;/strong&gt;.
-&lt;/p&gt;
-
-&lt;!-- Approver Remarks --&gt;
-&lt;table width=&quot;100%&quot;
-cellpadding=&quot;14&quot;
-cellspacing=&quot;0&quot;
-border=&quot;0&quot;
-bgcolor=&quot;#FBF8F2&quot;
-style=&quot;background-color:#FBF8F2;
-border-left:4px solid #C89B5A;
-border-collapse:collapse;
-margin:20px 0;&quot;&gt;
-
-&lt;tr&gt;
-&lt;td style=&quot;font-family:Arial,Helvetica,sans-serif;
-font-size:14px;
-font-weight:bold;
-color:#7A5A2A;
-line-height:22px;
-padding-bottom:6px;&quot;&gt;
-Approver Remarks
-&lt;/td&gt;
-&lt;/tr&gt;
-
-&lt;tr&gt;
-&lt;td style=&quot;font-family:Arial,Helvetica,sans-serif;
-font-size:14px;
-color:#555555;
-line-height:23px;&quot;&gt;
-{5}
-&lt;/td&gt;
-&lt;/tr&gt;
-
-&lt;/table&gt;
+line-height:26px;&quot;&gt; The SIMAH Form for contract &lt;strong&gt;{1}&lt;/strong&gt; has been &lt;strong&gt;{2}&lt;/strong&gt;. &lt;/p&gt;
 
 &lt;p style=&quot;margin:22px 0 25px;
 font-size:15px;
-line-height:26px;&quot;&gt;
-You can view the quote using the button below.
-&lt;/p&gt;
-
+line-height:26px;&quot;&gt; You can view the contract using the button below. &lt;/p&gt;
 &lt;!-- CTA --&gt;
 &lt;table align=&quot;center&quot; cellpadding=&quot;0&quot; cellspacing=&quot;0&quot; border=&quot;0&quot;&gt;
 &lt;tr&gt;
-&lt;td align=&quot;center&quot;
-bgcolor=&quot;#C89B5A&quot;
-style=&quot;background-color:#dbbc9a;border-radius:4px; border-collapse:collapse;border-radius:10px;overflow:hidden;&quot;&gt;
-
-&lt;a href=&quot;{4}&quot;
-style=&quot;display:block;
+&lt;td align=&quot;center&quot; bgcolor=&quot;#C89B5A&quot; style=&quot;background-color:#dbbc9a;border-radius:4px; border-collapse:collapse;border-radius:10px;overflow:hidden;&quot;&gt;
+&lt;a href=&quot;{3}&quot; style=&quot;display:block;
 padding:13px 30px;
 text-align:center;
 text-decoration:none;
@@ -121,18 +65,12 @@ color:#000000;
 font-family:Arial,Helvetica,sans-serif;
 font-size:15px;
 font-weight:bold;
-line-height:22px;&quot;&gt;
-View Quote
-&lt;/a&gt;
-
+line-height:22px;&quot;&gt; View Contract &lt;/a&gt;
 &lt;/td&gt;
 &lt;/tr&gt;
 &lt;/table&gt;
-
-
 &lt;/td&gt;
 &lt;/tr&gt;
-
 &lt;!-- Footer --&gt;
 &lt;tr&gt;
 &lt;td bgcolor=&quot;#F9F6EF&quot;
@@ -141,34 +79,29 @@ padding:22px;
 text-align:center;
 border-top:1px solid #ECE4D5;
 font-family:Arial,Helvetica,sans-serif;&quot;&gt;
-
 &lt;p style=&quot;margin:0;
 color:#000000;
 font-size:14px;&quot;&gt;
 Regards,
 &lt;/p&gt;
-
 &lt;p style=&quot;margin:8px 0 0;
 color:#4A3103;
 font-size:15px;
 font-weight:bold;&quot;&gt;
 CRM System
 &lt;/p&gt;
-
 &lt;/td&gt;
 &lt;/tr&gt;
 
 &lt;/table&gt;
-
 &lt;/td&gt;
 &lt;/tr&gt;
 &lt;/table&gt;
-
 &lt;/body&gt;
 &lt;/html&gt;</value>
     </values>
     <values>
         <field>Subject__c</field>
-        <value xsi:type="xsd:string">Quote Discount Request Update</value>
+        <value xsi:type="xsd:string">SIMAH Signed</value>
     </values>
 </CustomMetadata>
