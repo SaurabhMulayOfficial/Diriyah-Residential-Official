@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>67.0</apiVersion>
+    <areMetricsLoggedToDataCloud>false</areMetricsLoggedToDataCloud>
+    <assignments>
+        <name>Set_Acquired_True</name>
+        <label>Set Acquired True</label>
+        <locationX>176</locationX>
+        <locationY>270</locationY>
+        <assignmentItems>
+            <assignToReference>acquired</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </assignmentItems>
+    </assignments>
+    <assignments>
+        <name>Set_Acquired_False</name>
+        <label>Set Acquired False</label>
+        <locationX>320</locationX>
+        <locationY>270</locationY>
+        <assignmentItems>
+            <assignToReference>acquired</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <booleanValue>false</booleanValue>
+            </value>
+        </assignmentItems>
+    </assignments>
+    <description>DIR-869: Attempts to acquire a per-Quote submission mutex by inserting a RES_Discount_Submission_Mutex__c record whose Name is the Quote Id. The platform's built-in uniqueness on a Text Name field makes this race-proof - if another orchestration instance already holds the mutex for this Quote, this insert fails with DUPLICATE_VALUE and acquired is returned as false. Used by RES_Quote_Discount_DOA_Approval_Flow to guarantee only one instance proceeds into the approval steps, even when two near-simultaneous Quote saves both pass the entry criteria.</description>
+    <environments>Default</environments>
+    <interviewLabel>RES Autolaunched Try Acquire Submission Mutex {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>RES Autolaunched Try Acquire Submission Mutex</label>
+    <processType>AutoLaunchedFlow</processType>
+    <recordCreates>
+        <name>Acquire_Mutex</name>
+        <label>Acquire Mutex</label>
+        <locationX>176</locationX>
+        <locationY>158</locationY>
+        <connector>
+            <targetReference>Set_Acquired_True</targetReference>
+        </connector>
+        <faultConnector>
+            <targetReference>Set_Acquired_False</targetReference>
+        </faultConnector>
+        <inputAssignments>
+            <field>RES_Quote_Key__c</field>
+            <value>
+                <elementReference>quoteId</elementReference>
+            </value>
+        </inputAssignments>
+        <object>RES_Discount_Submission_Mutex__c</object>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordCreates>
+    <start>
+        <locationX>50</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Acquire_Mutex</targetReference>
+        </connector>
+    </start>
+    <status>Active</status>
+    <variables>
+        <name>quoteId</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>true</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <name>acquired</name>
+        <dataType>Boolean</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>true</isOutput>
+    </variables>
+</Flow>

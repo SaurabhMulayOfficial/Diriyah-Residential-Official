@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>RES_Discount_Submission_Lock__c</fullName>
+    <defaultValue>false</defaultValue>
+    <description>DIR-869: Internal guard against duplicate DOA orchestration launches. Revenue Cloud&apos;s repricing engine performs a rapid follow-up save right after any Discount edit, which can independently satisfy the DOA flow&apos;s entry criteria a second time and race for the record lock. Set true (before-save) the instant a submission qualifies; the orchestration&apos;s entry criteria checks PRIORVALUE() so only the first qualifying save proceeds. Reset to false only when the approval cycle concludes (Approved/Rejected/Recalled). Not exposed to users - grant read-only FLS (never editable) wherever Quote is creatable, matching the RES_System_Status_Update__c pattern, so the mandatory defaultValue doesn&apos;t block record creation.</description>
+    <label>Discount Submission Lock</label>
+    <trackHistory>false</trackHistory>
+    <type>Checkbox</type>
+</CustomField>
