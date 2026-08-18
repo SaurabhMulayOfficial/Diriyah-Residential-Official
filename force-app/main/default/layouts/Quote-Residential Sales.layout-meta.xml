@@ -317,6 +317,9 @@
         <relatedList>RelatedQuoteLineItemList</relatedList>
     </relatedLists>
     <relatedLists>
+        <relatedList>RelatedEntityHistoryList</relatedList>
+    </relatedLists>
+    <relatedLists>
         <fields>QUOTE_DOC.NAME</fields>
         <fields>QUOTE_DOC.DISCOUNT</fields>
         <fields>QUOTE_DOC.GRANDTOTAL</fields>
@@ -347,6 +350,18 @@
         <fields>CORE.USERS.FULL_NAME</fields>
         <fields>TASK.LAST_UPDATE</fields>
         <relatedList>RelatedHistoryList</relatedList>
+    </relatedLists>
+    <relatedLists>
+        <excludeButtons>MassChangeOwner</excludeButtons>
+        <fields>NAME</fields>
+        <fields>RES_Entry_Type__c</fields>
+        <fields>RES_Discount_Requested__c</fields>
+        <fields>RES_Submitted_By__c</fields>
+        <fields>RES_Approver__c</fields>
+        <fields>RES_Outcome__c</fields>
+        <fields>RES_Reason__c</fields>
+        <fields>CREATED_DATE</fields>
+        <relatedList>RES_Discount_Audit_Log__c.RES_Quote__c</relatedList>
     </relatedLists>
     <showEmailCheckbox>false</showEmailCheckbox>
     <showRunAssignmentRulesCheckbox>false</showRunAssignmentRulesCheckbox>

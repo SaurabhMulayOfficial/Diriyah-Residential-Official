@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>67.0</apiVersion>
+    <areMetricsLoggedToDataCloud>false</areMetricsLoggedToDataCloud>
+    <assignments>
+        <name>Set_Submission_Lock</name>
+        <label>Set Submission Lock</label>
+        <locationX>176</locationX>
+        <locationY>158</locationY>
+        <assignmentItems>
+            <assignToReference>$Record.RES_Discount_Submission_Lock__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </assignmentItems>
+    </assignments>
+    <description>DIR-869: Sets the Discount Submission Lock synchronously (before-save) the instant a discount submission qualifies, so RES_Quote_Discount_DOA_Approval_Flow's entry criteria (which checks PRIORVALUE of this field) can tell a genuinely new submission apart from Revenue Cloud's rapid repricing follow-up save, preventing duplicate orchestration launches that race for the record lock (UNABLE_TO_LOCK_RECORD).</description>
+    <environments>Default</environments>
+    <interviewLabel>RES Quote Before Save Discount Submission Lock {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>RES Quote Before Save Discount Submission Lock</label>
+    <processType>AutoLaunchedFlow</processType>
+    <start>
+        <locationX>50</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Set_Submission_Lock</targetReference>
+        </connector>
+        <filterFormula>AND(
+    ISPICKVAL({!$Record.Status}, &quot;Negotiating&quot;),
+    {!$Record.Discount} &gt; 0,
+    NOT({!$Record.RES_System_Status_Update__c}),
+    NOT({!$Record.RES_Discount_Submission_Lock__c}),
+    OR(ISCHANGED({!$Record.Discount}), ISCHANGED({!$Record.Status}))
+)</filterFormula>
+        <object>Quote</object>
+        <recordTriggerType>Update</recordTriggerType>
+        <triggerType>RecordBeforeSave</triggerType>
+    </start>
+    <status>Active</status>
+</Flow>

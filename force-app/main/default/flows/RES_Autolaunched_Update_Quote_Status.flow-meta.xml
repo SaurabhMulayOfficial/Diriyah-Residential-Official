@@ -36,6 +36,47 @@
     </actionCalls>
     <apiVersion>67.0</apiVersion>
     <areMetricsLoggedToDataCloud>false</areMetricsLoggedToDataCloud>
+    <subflows>
+        <name>Release_Mutex</name>
+        <label>Release Mutex</label>
+        <locationX>320</locationX>
+        <locationY>438</locationY>
+        <connector>
+            <targetReference>Check_Notify</targetReference>
+        </connector>
+        <flowName>RES_Autolaunched_Release_Submission_Mutex</flowName>
+        <inputAssignments>
+            <name>quoteId</name>
+            <value>
+                <elementReference>recordId</elementReference>
+            </value>
+        </inputAssignments>
+    </subflows>
+    <decisions>
+        <name>Check_Reset_Submission_Lock</name>
+        <label>Check Reset Submission Lock</label>
+        <locationX>176</locationX>
+        <locationY>330</locationY>
+        <defaultConnector>
+            <targetReference>Reset_System_Flag</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>No</defaultConnectorLabel>
+        <rules>
+            <name>Yes_Reset_Lock</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>resetSubmissionLock</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Reset_System_Flag_And_Submission_Lock</targetReference>
+            </connector>
+            <label>Yes, Reset Lock</label>
+        </rules>
+    </decisions>
     <decisions>
         <name>Check_Notify</name>
         <label>Check Notify</label>
@@ -67,7 +108,7 @@
         <name>Reset_System_Flag</name>
         <label>Reset System Flag</label>
         <locationX>176</locationX>
-        <locationY>330</locationY>
+        <locationY>384</locationY>
         <connector>
             <targetReference>Check_Notify</targetReference>
         </connector>
@@ -88,12 +129,42 @@
         <object>Quote</object>
     </recordUpdates>
     <recordUpdates>
+        <name>Reset_System_Flag_And_Submission_Lock</name>
+        <label>Reset System Flag And Submission Lock</label>
+        <locationX>320</locationX>
+        <locationY>384</locationY>
+        <connector>
+            <targetReference>Release_Mutex</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Id</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>recordId</elementReference>
+            </value>
+        </filters>
+        <inputAssignments>
+            <field>RES_System_Status_Update__c</field>
+            <value>
+                <booleanValue>false</booleanValue>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>RES_Discount_Submission_Lock__c</field>
+            <value>
+                <booleanValue>false</booleanValue>
+            </value>
+        </inputAssignments>
+        <object>Quote</object>
+    </recordUpdates>
+    <recordUpdates>
         <name>Update_Quote_Status</name>
         <label>Update Quote Status</label>
         <locationX>176</locationX>
         <locationY>276</locationY>
         <connector>
-            <targetReference>Reset_System_Flag</targetReference>
+            <targetReference>Check_Reset_Submission_Lock</targetReference>
         </connector>
         <filterLogic>and</filterLogic>
         <filters>
@@ -156,6 +227,13 @@
     <variables>
         <name>recordId</name>
         <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>true</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <name>resetSubmissionLock</name>
+        <dataType>Boolean</dataType>
         <isCollection>false</isCollection>
         <isInput>true</isInput>
         <isOutput>false</isOutput>

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>RES_Quote__c</fullName>
+    <deleteConstraint>Restrict</deleteConstraint>
+    <description>DIR-871: The Quote this discount audit event belongs to.</description>
+    <label>Quote</label>
+    <referenceTo>Quote</referenceTo>
+    <relationshipLabel>Discount Audit Logs</relationshipLabel>
+    <relationshipName>Discount_Audit_Logs</relationshipName>
+    <required>true</required>
+    <trackTrending>false</trackTrending>
+    <type>Lookup</type>
+</CustomField>
