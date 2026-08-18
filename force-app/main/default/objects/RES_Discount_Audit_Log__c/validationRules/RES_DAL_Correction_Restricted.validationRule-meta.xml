@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>RES_DAL_Correction_Restricted</fullName>
+    <active>true</active>
+    <description>DIR-871: A Correction entry may only be added by a System Administrator, and must include a justification in RES_Reason__c.</description>
+    <errorConditionFormula>AND(
+    ISPICKVAL(RES_Entry_Type__c, &quot;Correction&quot;),
+    OR(
+        $Profile.Name &lt;&gt; &quot;System Administrator&quot;,
+        ISBLANK(RES_Reason__c)
+    )
+)</errorConditionFormula>
+    <errorMessage>Only a System Administrator may add a Correction entry, and it must include a justification in Reason.</errorMessage>
+</ValidationRule>

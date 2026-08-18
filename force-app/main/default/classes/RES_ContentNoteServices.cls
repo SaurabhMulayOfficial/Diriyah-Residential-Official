@@ -4,7 +4,7 @@
  */
 
 public with sharing class RES_ContentNoteServices {
-    private static final String NOTE_FILE_TYPE = 'SNOTE';
+    //private static final String NOTE_FILE_TYPE = 'SNOTE';
 
     public static void preventDelete(final List<ContentDocument> recordsToDelete) {
 
@@ -13,9 +13,9 @@ public with sharing class RES_ContentNoteServices {
         }
 
         for (ContentDocument recordItem : recordsToDelete) {
-            if (recordItem.FileType == NOTE_FILE_TYPE) {
-                recordItem.addError('You are not allowed to delete Notes.');
-            }
+            //if (recordItem.FileType == NOTE_FILE_TYPE) {
+                recordItem.addError('You are not allowed to perform this action.');
+            //}
         }
     }
 
