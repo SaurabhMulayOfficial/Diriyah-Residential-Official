@@ -26,16 +26,20 @@ public class RES_SendEmailToGroupMembersTest {
         if(!contractLst.isEmpty()){
             Contract contractObj = new Contract(Id = contractLst[0].Id, RES_SIMAH_Form_Received__c = true);
             update contractObj;
-            RES_SendEmailNotificationToGroupMembers.Input inputObj = new RES_SendEmailNotificationToGroupMembers.Input();
+            
             List<Group> groupLst = [ SELECT Id, 
                                     (SELECT Id, UserOrGroupId FROM GroupMembers) 
                                      FROM Group 
                                      WHERE DeveloperName = 'RES_Finance_Team' ];
             if(!groupLst.isEmpty()){
-                inputObj.groupMembers = groupLst[0].GroupMembers;
-                inputObj.contractRecord = contractLst[0];
-                inputObj.emailTemplateName = 'RES_SIMAH_Signed_Notification_Template';
-                inputsLst.add(inputObj);
+                for(Group grp : groupLst){
+                    RES_SendEmailNotificationToGroupMembers.Input inputObj = new RES_SendEmailNotificationToGroupMembers.Input();
+                    inputObj.groupMembers = grp.GroupMembers;
+                    inputObj.contractRecord = contractLst[0];
+                    inputObj.emailTemplateName = 'RES_SIMAH_Signed_Notification_Template';
+                    inputsLst.add(inputObj);
+                }
+                
                 RES_SendEmailNotificationToGroupMembers.sendEmailNotificationToGroupMembers(inputsLst);
                 List<EmailMessage> emailLst = [ SELECT Id 
                                                 FROM EmailMessage 

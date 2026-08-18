@@ -142,6 +142,50 @@
             <label>Switch On</label>
         </rules>
     </decisions>
+    <decisions>
+        <name>Is_Finance_Queue_Retrieved</name>
+        <label>Is Finance Queue Retrieved?</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnectorLabel>No</defaultConnectorLabel>
+        <rules>
+            <name>Yes</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>Get_Finance_Queue</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Get_Finance_Queue_Members</targetReference>
+            </connector>
+            <label>Yes</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>Is_Recipient_List_Empty</name>
+        <label>Is Recipient List Empty?</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnector>
+            <targetReference>SIMAH_Signed_Email_Notification</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Not Empty</defaultConnectorLabel>
+        <rules>
+            <name>Empty</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>recipientsLst</leftValueReference>
+                <operator>IsEmpty</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <label>Empty</label>
+        </rules>
+    </decisions>
     <description>DIR-899
 The SIMAH Form is sent to every customer regardless of Project (Residential Sales). Once the client signs and returns it, RM uploads the signed SIMAH form to the deal which triggers a notification to Finance.</description>
     <environments>Default</environments>
@@ -163,7 +207,7 @@ The SIMAH Form is sent to every customer regardless of Project (Residential Sale
             <targetReference>Add_Recipients</targetReference>
         </nextValueConnector>
         <noMoreValuesConnector>
-            <targetReference>SIMAH_Signed_Email_Notification</targetReference>
+            <targetReference>Is_Recipient_List_Empty</targetReference>
         </noMoreValuesConnector>
     </loops>
     <processMetadataValues>
@@ -213,7 +257,7 @@ The SIMAH Form is sent to every customer regardless of Project (Residential Sale
         <locationY>0</locationY>
         <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
         <connector>
-            <targetReference>Get_Finance_Queue_Members</targetReference>
+            <targetReference>Is_Finance_Queue_Retrieved</targetReference>
         </connector>
         <filterLogic>and</filterLogic>
         <filters>
