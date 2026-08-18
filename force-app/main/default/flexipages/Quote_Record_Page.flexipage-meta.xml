@@ -550,115 +550,6 @@
     <flexiPageRegions>
         <itemInstances>
             <componentInstance>
-                <componentInstanceProperties>
-                    <name>parentFieldApiName</name>
-                    <value>Quote.Id</value>
-                </componentInstanceProperties>
-                <componentInstanceProperties>
-                    <name>relatedListApiName</name>
-                    <value>QuoteLineItems</value>
-                </componentInstanceProperties>
-                <componentInstanceProperties>
-                    <name>relatedListComponentOverride</name>
-                    <value>NONE</value>
-                </componentInstanceProperties>
-                <componentInstanceProperties>
-                    <name>rowsToDisplay</name>
-                    <value>10</value>
-                </componentInstanceProperties>
-                <componentInstanceProperties>
-                    <name>showActionBar</name>
-                    <value>true</value>
-                </componentInstanceProperties>
-                <componentName>force:relatedListSingleContainer</componentName>
-                <identifier>force_relatedListSingleContainer5</identifier>
-            </componentInstance>
-        </itemInstances>
-        <itemInstances>
-            <componentInstance>
-                <componentInstanceProperties>
-                    <name>parentFieldApiName</name>
-                    <value>Quote.Id</value>
-                </componentInstanceProperties>
-                <componentInstanceProperties>
-                    <name>relatedListApiName</name>
-                    <value>QuoteDocuments</value>
-                </componentInstanceProperties>
-                <componentInstanceProperties>
-                    <name>relatedListComponentOverride</name>
-                    <value>NONE</value>
-                </componentInstanceProperties>
-                <componentInstanceProperties>
-                    <name>rowsToDisplay</name>
-                    <value>10</value>
-                </componentInstanceProperties>
-                <componentInstanceProperties>
-                    <name>showActionBar</name>
-                    <value>true</value>
-                </componentInstanceProperties>
-                <componentName>force:relatedListSingleContainer</componentName>
-                <identifier>force_relatedListSingleContainer2</identifier>
-            </componentInstance>
-        </itemInstances>
-        <itemInstances>
-            <componentInstance>
-                <componentInstanceProperties>
-                    <name>parentFieldApiName</name>
-                    <value>Quote.Id</value>
-                </componentInstanceProperties>
-                <componentInstanceProperties>
-                    <name>relatedListApiName</name>
-                    <value>AttachedContentNotes</value>
-                </componentInstanceProperties>
-                <componentInstanceProperties>
-                    <name>relatedListComponentOverride</name>
-                    <value>NONE</value>
-                </componentInstanceProperties>
-                <componentInstanceProperties>
-                    <name>rowsToDisplay</name>
-                    <value>10</value>
-                </componentInstanceProperties>
-                <componentInstanceProperties>
-                    <name>showActionBar</name>
-                    <value>true</value>
-                </componentInstanceProperties>
-                <componentName>force:relatedListSingleContainer</componentName>
-                <identifier>force_relatedListSingleContainer3</identifier>
-            </componentInstance>
-        </itemInstances>
-        <itemInstances>
-            <componentInstance>
-                <componentInstanceProperties>
-                    <name>parentFieldApiName</name>
-                    <value>Quote.Id</value>
-                </componentInstanceProperties>
-                <componentInstanceProperties>
-                    <name>relatedListApiName</name>
-                    <value>AttachedContentDocuments</value>
-                </componentInstanceProperties>
-                <componentInstanceProperties>
-                    <name>relatedListComponentOverride</name>
-                    <value>NONE</value>
-                </componentInstanceProperties>
-                <componentInstanceProperties>
-                    <name>rowsToDisplay</name>
-                    <value>10</value>
-                </componentInstanceProperties>
-                <componentInstanceProperties>
-                    <name>showActionBar</name>
-                    <value>true</value>
-                </componentInstanceProperties>
-                <componentName>force:relatedListSingleContainer</componentName>
-                <identifier>force_relatedListSingleContainer4</identifier>
-            </componentInstance>
-        </itemInstances>
-        <mode>Replace</mode>
-        <name>relatedListTabContent</name>
-        <type>Facet</type>
-    </flexiPageRegions>
-    <flexiPageRegions>
-        <itemInstances>
-            <componentInstance>
                 <componentName>runtime_revenue_foundation:progressIndicator</componentName>
                 <identifier>runtime_revenue_foundation_progressIndicator</identifier>
             </componentInstance>
@@ -697,24 +588,6 @@
                 </componentInstanceProperties>
                 <componentName>flexipage:tab</componentName>
                 <identifier>detailTab</identifier>
-            </componentInstance>
-        </itemInstances>
-        <itemInstances>
-            <componentInstance>
-                <componentInstanceProperties>
-                    <name>active</name>
-                    <value>false</value>
-                </componentInstanceProperties>
-                <componentInstanceProperties>
-                    <name>body</name>
-                    <value>relatedListTabContent</value>
-                </componentInstanceProperties>
-                <componentInstanceProperties>
-                    <name>title</name>
-                    <value>Standard.Tab.relatedLists</value>
-                </componentInstanceProperties>
-                <componentName>flexipage:tab</componentName>
-                <identifier>relatedListsTab</identifier>
             </componentInstance>
         </itemInstances>
         <itemInstances>
@@ -796,6 +669,16 @@
         <itemInstances>
             <componentInstance>
                 <componentInstanceProperties>
+                    <name>hideHeader</name>
+                    <value>false</value>
+                </componentInstanceProperties>
+                <componentName>force:relatedListQuickLinksContainer</componentName>
+                <identifier>force_relatedListQuickLinksContainer</identifier>
+            </componentInstance>
+        </itemInstances>
+        <itemInstances>
+            <componentInstance>
+                <componentInstanceProperties>
                     <name>label</name>
                     <value>Tabs</value>
                 </componentInstanceProperties>
@@ -816,6 +699,43 @@
                         <leftValue>{!$Client.formFactor}</leftValue>
                         <operator>EQUAL</operator>
                         <rightValue>Large</rightValue>
+                    </criteria>
+                </visibilityRule>
+            </componentInstance>
+        </itemInstances>
+        <itemInstances>
+            <componentInstance>
+                <componentInstanceProperties>
+                    <name>componentLabel</name>
+                    <value>Work Guide</value>
+                </componentInstanceProperties>
+                <componentInstanceProperties>
+                    <name>isHiddenWhenEmpty</name>
+                    <value>false</value>
+                </componentInstanceProperties>
+                <componentInstanceProperties>
+                    <name>isRunNameDisplayed</name>
+                    <value>false</value>
+                </componentInstanceProperties>
+                <componentInstanceProperties>
+                    <name>isStageNameDisplayed</name>
+                    <value>false</value>
+                </componentInstanceProperties>
+                <componentInstanceProperties>
+                    <name>isStepNameDisplayed</name>
+                    <value>false</value>
+                </componentInstanceProperties>
+                <componentInstanceProperties>
+                    <name>prioritizationCriteria</name>
+                    <value>Last Modified Date (Descending)</value>
+                </componentInstanceProperties>
+                <componentName>interaction_orchestrator:workGuide</componentName>
+                <identifier>interaction_orchestrator_workGuide</identifier>
+                <visibilityRule>
+                    <criteria>
+                        <leftValue>{!$Client.formFactor}</leftValue>
+                        <operator>EQUAL</operator>
+                        <rightValue>Small</rightValue>
                     </criteria>
                 </visibilityRule>
             </componentInstance>
@@ -891,69 +811,6 @@
                 </componentInstanceProperties>
                 <componentName>lst:dynamicRelatedList</componentName>
                 <identifier>lst_dynamicRelatedList_discountAuditLogs</identifier>
-            </componentInstance>
-        </itemInstances>
-        <itemInstances>
-            <componentInstance>
-                <componentInstanceProperties>
-                    <name>componentLabel</name>
-                    <value>Work Guide</value>
-                </componentInstanceProperties>
-                <componentInstanceProperties>
-                    <name>isHiddenWhenEmpty</name>
-                    <value>false</value>
-                </componentInstanceProperties>
-                <componentInstanceProperties>
-                    <name>isRunNameDisplayed</name>
-                    <value>false</value>
-                </componentInstanceProperties>
-                <componentInstanceProperties>
-                    <name>isStageNameDisplayed</name>
-                    <value>false</value>
-                </componentInstanceProperties>
-                <componentInstanceProperties>
-                    <name>isStepNameDisplayed</name>
-                    <value>false</value>
-                </componentInstanceProperties>
-                <componentInstanceProperties>
-                    <name>prioritizationCriteria</name>
-                    <value>Last Modified Date (Ascending)</value>
-                </componentInstanceProperties>
-                <componentName>interaction_orchestrator:workGuide</componentName>
-                <identifier>interaction_orchestrator_workGuide</identifier>
-                <visibilityRule>
-                    <criteria>
-                        <leftValue>{!$Client.formFactor}</leftValue>
-                        <operator>EQUAL</operator>
-                        <rightValue>Small</rightValue>
-                    </criteria>
-                </visibilityRule>
-            </componentInstance>
-        </itemInstances>
-        <itemInstances>
-            <componentInstance>
-                <componentInstanceProperties>
-                    <name>parentFieldApiName</name>
-                    <value>Quote.Id</value>
-                </componentInstanceProperties>
-                <componentInstanceProperties>
-                    <name>relatedListApiName</name>
-                    <value>AttachedContentDocuments</value>
-                </componentInstanceProperties>
-                <componentInstanceProperties>
-                    <name>relatedListComponentOverride</name>
-                    <value>NONE</value>
-                </componentInstanceProperties>
-                <componentInstanceProperties>
-                    <name>rowsToDisplay</name>
-                    <value>10</value>
-                </componentInstanceProperties>
-                <componentInstanceProperties>
-                    <name>showActionBar</name>
-                    <value>true</value>
-                </componentInstanceProperties>
-                <componentName>force:relatedListSingleContainer</componentName>
-                <identifier>force_relatedListSingleContainer</identifier>
             </componentInstance>
         </itemInstances>
         <mode>Replace</mode>
