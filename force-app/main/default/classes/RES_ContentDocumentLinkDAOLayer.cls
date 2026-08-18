@@ -52,7 +52,7 @@ public without sharing class RES_ContentDocumentLinkDAOLayer extends RES_BaseDAO
      * @param linkedEntityId linked Salesforce record Id.
      * @return list of ContentDocumentLink records.
      */
-    public List<ContentDocumentLink> getContentDocumentLinkByLinkedId(Id linkedEntityId) {
+     public List<ContentDocumentLink> getContentDocumentLinkByLinkedId(Id linkedEntityId) {
         Map<String, Object> bindVars = new Map<String, Object>{
             'linkedEntityId' => linkedEntityId
         };
@@ -77,14 +77,14 @@ public without sharing class RES_ContentDocumentLinkDAOLayer extends RES_BaseDAO
      * @param contentDocId Salesforce record Id.
      * @return list of ContentDocumentLink records.
      */
-    public List<ContentDocumentLink> getContentDocumentLinkByContentDocumentId(Id contentDocId) {
+    public List<ContentDocumentLink> getContentDocumentLinkByContentDocumentId(Set<Id> contentDocIds) {
         Map<String, Object> bindVars = new Map<String, Object>{
-            'contentDocId' => contentDocId
+            'contentDocIds' => contentDocIds
         };
 
         String soql = 'SELECT ContentDocument.Title, LinkedEntityId ' +
                       'FROM ContentDocumentLink ' +
-                      'WHERE ContentDocumentId =: contentDocId';
+                      'WHERE ContentDocumentId IN : contentDocIds';
 
         return (List<ContentDocumentLink>) executeQuery(soql, '', false, bindVars, AccessLevel.SYSTEM_MODE);
     }
