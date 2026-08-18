@@ -221,7 +221,7 @@
         <inputAssignments>
             <field>RES_HardBlock_Start__c</field>
             <value>
-                <elementReference>$Flow.CurrentDateTime</elementReference>
+                <elementReference>$System.OriginDateTime</elementReference>
             </value>
         </inputAssignments>
         <inputAssignments>
