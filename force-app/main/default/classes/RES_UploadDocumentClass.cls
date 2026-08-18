@@ -193,8 +193,8 @@ public with sharing class RES_UploadDocumentClass {
         if (!Schema.sObjectType.ContentDocument.isDeletable()) {
             throw new AuraHandledException('You do not have permission to delete files.');
         }
-		
-        List<ContentDocumentLink> docLinkLst = new RES_ContentDocumentLinkDAOLayer().getContentDocumentLinkByContentDocumentId(contentDocumentId);
+        Set<Id> contentDocIds = new Set<Id>{contentDocumentId};
+        List<ContentDocumentLink> docLinkLst = new RES_ContentDocumentLinkDAOLayer().getContentDocumentLinkByContentDocumentId(contentDocIds);
         if(!docLinkLst.isEmpty()){
             for(ContentDocumentLink link : docLinkLst){
                 if(!String.valueOf(link.LinkedEntityId).startsWith('005')){
