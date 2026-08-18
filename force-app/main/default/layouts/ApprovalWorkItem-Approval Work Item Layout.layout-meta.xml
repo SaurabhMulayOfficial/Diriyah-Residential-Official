@@ -3,10 +3,10 @@
     <excludeButtons>ChangeOwnerOne</excludeButtons>
     <excludeButtons>ChangeRecordType</excludeButtons>
     <excludeButtons>Edit</excludeButtons>
-    <excludeButtons>OpenSlackRecordChannel</excludeButtons>
     <excludeButtons>OverrideApprovalWorkItem</excludeButtons>
     <excludeButtons>PrintableView</excludeButtons>
     <excludeButtons>ReviewApprovalWorkItem</excludeButtons>
+    <excludeButtons>SmartFillEnrich</excludeButtons>
     <layoutSections>
         <customLabel>false</customLabel>
         <detailHeading>false</detailHeading>
@@ -55,6 +55,10 @@
                 <behavior>Readonly</behavior>
                 <field>Comments</field>
             </layoutItems>
+            <layoutItems>
+                <behavior>Readonly</behavior>
+                <field>ApprovalSubmissionId</field>
+            </layoutItems>
         </layoutColumns>
         <style>TwoColumnsLeftToRight</style>
     </layoutSections>
@@ -86,6 +90,9 @@
         <layoutColumns/>
         <style>CustomLinks</style>
     </layoutSections>
+    <relatedLists>
+        <relatedList>RelatedEntityHistoryList</relatedList>
+    </relatedLists>
     <relatedLists>
         <fields>Name</fields>
         <fields>ActionName</fields>
