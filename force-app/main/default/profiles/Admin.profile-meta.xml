@@ -2297,17 +2297,17 @@
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
-        <editable>false</editable>
+        <editable>true</editable>
         <field>RES_Discount_Audit_Log__c.RES_Entry_Type__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
-        <editable>false</editable>
+        <editable>true</editable>
         <field>RES_Discount_Audit_Log__c.RES_Quote__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
-        <editable>false</editable>
+        <editable>true</editable>
         <field>RES_Discount_Submission_Mutex__c.RES_Quote_Key__c</field>
         <readable>true</readable>
     </fieldPermissions>
@@ -2599,12 +2599,12 @@
     <objectPermissions>
         <allowCreate>true</allowCreate>
         <allowDelete>true</allowDelete>
-        <allowEdit>false</allowEdit>
+        <allowEdit>true</allowEdit>
         <allowRead>true</allowRead>
         <modifyAllRecords>false</modifyAllRecords>
         <object>RES_Discount_Submission_Mutex__c</object>
         <viewAllRecords>false</viewAllRecords>
-    </objectPermissions>    
+    </objectPermissions>
     <recordTypeVisibilities>
         <default>true</default>
         <recordType>Quote.RES_Residential_Sales</recordType>
