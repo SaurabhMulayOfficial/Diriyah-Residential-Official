@@ -69,10 +69,16 @@
                 <fieldItem>Record.RES_Soft_Hold_Extension_Hours__c</fieldItem>
                 <identifier>RecordRES_Soft_Hold_Extension_Hours_cField</identifier>
                 <visibilityRule>
+                    <booleanFilter>1 AND 2</booleanFilter>
                     <criteria>
                         <leftValue>{!Record.RES_Soft_Hold_Extension_Hours__c}</leftValue>
                         <operator>NE</operator>
                         <rightValue>0</rightValue>
+                    </criteria>
+                    <criteria>
+                        <leftValue>{!Record.RelatedRecordObjectName}</leftValue>
+                        <operator>EQUAL</operator>
+                        <rightValue>Quote</rightValue>
                     </criteria>
                 </visibilityRule>
             </fieldInstance>
@@ -85,6 +91,13 @@
                 </fieldInstanceProperties>
                 <fieldItem>Record.RES_Existing_User__c</fieldItem>
                 <identifier>RecordRES_Existing_User_cField</identifier>
+                <visibilityRule>
+                    <criteria>
+                        <leftValue>{!Record.RelatedRecordObjectName}</leftValue>
+                        <operator>EQUAL</operator>
+                        <rightValue>Lead</rightValue>
+                    </criteria>
+                </visibilityRule>
             </fieldInstance>
         </itemInstances>
         <itemInstances>
@@ -95,6 +108,13 @@
                 </fieldInstanceProperties>
                 <fieldItem>Record.RES_Proposed_Record_Owner__c</fieldItem>
                 <identifier>RecordRES_Proposed_Record_Owner_cField</identifier>
+                <visibilityRule>
+                    <criteria>
+                        <leftValue>{!Record.RelatedRecordObjectName}</leftValue>
+                        <operator>EQUAL</operator>
+                        <rightValue>Lead</rightValue>
+                    </criteria>
+                </visibilityRule>
             </fieldInstance>
         </itemInstances>
         <itemInstances>
