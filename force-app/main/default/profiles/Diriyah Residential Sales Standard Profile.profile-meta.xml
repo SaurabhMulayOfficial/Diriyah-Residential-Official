@@ -634,7 +634,11 @@
         <field>Product2.RES_Reserved_By_Quote__c</field>
         <readable>true</readable>
     </fieldPermissions>
-
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>Quote.CalculationStatus</field>
+        <readable>true</readable>
+    </fieldPermissions>
     <fieldPermissions>
         <editable>true</editable>
         <field>Quote.RES_Extend_Soft_Hold_By_Hours__c</field>
@@ -655,7 +659,11 @@
         <field>Quote.RES_System_Status_Update__c</field>
         <readable>true</readable>
     </fieldPermissions>
-
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>Quote.ValidationResult</field>
+        <readable>true</readable>
+    </fieldPermissions>
     <fieldPermissions>
         <editable>true</editable>
         <field>Contract.RES_Product_Soft_Held__c</field>
