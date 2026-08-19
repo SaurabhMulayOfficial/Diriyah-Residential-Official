@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>RES_Entry_Type_Locked</fullName>
+    <active>true</active>
+    <description>Submission, Approval, Rejection and Recall values autoset based on type of approval entry.</description>
+    <errorConditionFormula>AND(
+NOT($Setup.RES_Config_Switch__c.RES_Validation_Rules_Off__c),
+NOT(ISPICKVAL($User.UserType, &quot;AutomatedProcess&quot;)),
+OR(
+ISPICKVAL(RES_Entry_Type__c, &quot;Submission&quot;),
+ISPICKVAL(RES_Entry_Type__c, &quot;Approval&quot;),
+ISPICKVAL(RES_Entry_Type__c, &quot;Rejection&quot;),
+ISPICKVAL(RES_Entry_Type__c, &quot;Recall&quot;)
+)
+)</errorConditionFormula>
+    <errorDisplayField>RES_Entry_Type__c</errorDisplayField>
+    <errorMessage>Only Correction is valid selection to create a Correction entry.</errorMessage>
+</ValidationRule>
