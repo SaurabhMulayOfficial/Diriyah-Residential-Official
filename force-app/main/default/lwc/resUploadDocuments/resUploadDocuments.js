@@ -423,7 +423,7 @@ export default class ResUploadDocuments extends NavigationMixin(LightningElement
         deleteFile({ contentDocumentId: this.selectedDeleteContentDocumentId })
             .then(() => {
                 this.showToast('Success', 'File deleted successfully.', 'success', 'dismissable');
-                this.publishEvent(this.objectName, this.recordId, this.selectedDeleteContentDocumentAttachmentType, 'Delete');
+                //this.publishEvent(this.objectName, this.recordId, this.selectedDeleteContentDocumentAttachmentType, 'Delete');
                 this.closeDeleteModal();
                 this.loadFiles();
             })
