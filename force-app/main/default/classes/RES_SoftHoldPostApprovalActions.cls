@@ -39,8 +39,10 @@ public with sharing class RES_SoftHoldPostApprovalActions {
                     if(softHoldExtensionDate != null && softHoldExtensionDate > DateTime.Now()){
                         Product2 p = new Product2();
                         p.Id = qli.Product2Id;
+                        p.RES_Soft_Hold_Start__c = SYSTEM.now();
                         p.RES_Soft_Hold_Until__c = softHoldExtensionDate;
                         p.RES_Is_In_Soft_Hold_Extension__c = false;
+                        p.RES_Unit_Status__c = 'Soft Hold';
                         productsToUpdate.add(p);
                     }
                     else{

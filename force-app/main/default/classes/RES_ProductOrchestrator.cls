@@ -58,6 +58,25 @@ public without sharing class RES_ProductOrchestrator {
             quotesToUpdate.add(q);
         }
 
+        List<ApprovalWorkItem> approvalWorkItems = new RES_ProcessInstanceDAOLayer().getApprovalWorkItems(quotesIds, 'Soft Hold Extension Approvals');
+        if(approvalWorkItems.size() > 0){
+            List<RES_WorkItemFlowInput> approvalWorkItemToProcess = new List<RES_WorkItemFlowInput>();
+
+            for(ApprovalWorkItem awi: approvalWorkItems){
+                RES_WorkItemFlowInput input = new RES_WorkItemFlowInput();
+                input.workitemId = awi.Id;
+                input.action = 'Reject';
+                input.comment = SYSTEM.Label.RES_Soft_Hold_Reject;
+                approvalWorkItemToProcess.add(input);
+            }
+
+            try{
+                RES_ApprovalWorkItemManagement.processWorkItems(approvalWorkItemToProcess);
+            }catch(Exception e){
+                System.debug('Approval Work Item Failed To Reject ' + e.getMessage());
+            }
+        }
+
         if(quotesToUpdate.size() > 0){
             try{
                 Database.update(quotesToUpdate, false, AccessLevel.SYSTEM_MODE);
@@ -82,6 +101,7 @@ public without sharing class RES_ProductOrchestrator {
             Long interval = (Long)softHoldWindow * 60 * 60 * 1000;
             p.RES_Soft_Hold_Until__c = BusinessHours.add(businessHourLst[0].Id, System.now(), interval);
             p.RES_Reserved_By_Quote__c = productBlockedBy.get(productId);
+            p.RES_Is_In_Soft_Hold_Extension__c = false;
             productsToUpdate.add(p);
         }
 

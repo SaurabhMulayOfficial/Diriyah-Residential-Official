@@ -1,48 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Flow xmlns="http://soap.sforce.com/2006/04/metadata">
     <actionCalls>
-        <name>Auto_Update_Existing_Approvals_to_REJECT</name>
-        <label>Auto Update Existing Approvals to REJECT</label>
-        <locationX>0</locationX>
-        <locationY>0</locationY>
-        <actionName>reviewApprovalWorkItem</actionName>
-        <actionType>reviewApprovalWorkItem</actionType>
-        <connector>
-            <targetReference>Loop_Over_Approval_Work_Item</targetReference>
-        </connector>
-        <flowTransactionModel>CurrentTransaction</flowTransactionModel>
-        <inputParameters>
-            <name>approvalWorkItemId</name>
-            <value>
-                <elementReference>Loop_Over_Approval_Work_Item.Id</elementReference>
-                <inputConfiguratorMode>Resource</inputConfiguratorMode>
-            </value>
-        </inputParameters>
-        <inputParameters>
-            <name>approvalDecision</name>
-            <value>
-                <inputConfiguratorMode>Resource</inputConfiguratorMode>
-                <stringValue>Reject</stringValue>
-            </value>
-        </inputParameters>
-        <inputParameters>
-            <name>comments</name>
-            <value>
-                <elementReference>$Label.RES_Approval_Work_Item_Reject</elementReference>
-                <inputConfiguratorMode>Resource</inputConfiguratorMode>
-            </value>
-        </inputParameters>
-        <inputParameters>
-            <name>channelType</name>
-            <value>
-                <inputConfiguratorMode>Resource</inputConfiguratorMode>
-                <stringValue>InvocableAction</stringValue>
-            </value>
-        </inputParameters>
-        <nameSegment>reviewApprovalWorkItem</nameSegment>
-        <offset>0</offset>
-    </actionCalls>
-    <actionCalls>
         <name>Send_Email_to_Notify_Unit_Availbility</name>
         <label>Send Email to Notify Unit Availbility</label>
         <locationX>0</locationX>
@@ -215,31 +173,6 @@
         </rules>
     </decisions>
     <decisions>
-        <name>If_Approval_Work_Items_Exist</name>
-        <label>If Approval Work Items Exist</label>
-        <locationX>0</locationX>
-        <locationY>0</locationY>
-        <defaultConnector>
-            <targetReference>Update_Quotes_Soft_Hold</targetReference>
-        </defaultConnector>
-        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
-        <rules>
-            <name>Yes</name>
-            <conditionLogic>and</conditionLogic>
-            <conditions>
-                <leftValueReference>Get_Appproval_Work_Items</leftValueReference>
-                <operator>IsNull</operator>
-                <rightValue>
-                    <booleanValue>false</booleanValue>
-                </rightValue>
-            </conditions>
-            <connector>
-                <targetReference>Loop_Over_Approval_Work_Item</targetReference>
-            </connector>
-            <label>Yes</label>
-        </rules>
-    </decisions>
-    <decisions>
         <name>If_Everything_Looks_Good</name>
         <label>If Everything Looks Good</label>
         <locationX>0</locationX>
@@ -322,20 +255,6 @@
     <interviewLabel>Product After Insert Update - {!$Flow.CurrentDateTime}</interviewLabel>
     <label>Product After Insert Update - Product Management Flow</label>
     <loops>
-        <name>Loop_Over_Approval_Work_Item</name>
-        <label>Loop Over Approval Work Item</label>
-        <locationX>0</locationX>
-        <locationY>0</locationY>
-        <collectionReference>Get_Appproval_Work_Items</collectionReference>
-        <iterationOrder>Asc</iterationOrder>
-        <nextValueConnector>
-            <targetReference>Auto_Update_Existing_Approvals_to_REJECT</targetReference>
-        </nextValueConnector>
-        <noMoreValuesConnector>
-            <targetReference>Update_Quotes_Soft_Hold</targetReference>
-        </noMoreValuesConnector>
-    </loops>
-    <loops>
         <name>Loop_Over_QuoteProduct</name>
         <label>Loop Over QLI</label>
         <locationX>0</locationX>
@@ -417,7 +336,7 @@
         <locationY>0</locationY>
         <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
         <connector>
-            <targetReference>If_Approval_Work_Items_Exist</targetReference>
+            <targetReference>Update_Quotes_Soft_Hold</targetReference>
         </connector>
         <filterLogic>and</filterLogic>
         <filters>
@@ -473,12 +392,6 @@
         <locationY>0</locationY>
         <inputAssignments>
             <field>RES_Soft_Hold_Extended_By_Hours__c</field>
-        </inputAssignments>
-        <inputAssignments>
-            <field>RES_Soft_Hold_Start__c</field>
-        </inputAssignments>
-        <inputAssignments>
-            <field>RES_Soft_Hold_Until__c</field>
         </inputAssignments>
         <inputAssignments>
             <field>RES_Unit_Status__c</field>
