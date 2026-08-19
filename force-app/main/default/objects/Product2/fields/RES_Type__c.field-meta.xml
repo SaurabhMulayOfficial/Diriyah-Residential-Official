@@ -3,7 +3,7 @@
     <fullName>RES_Type__c</fullName>
     <label>Residential Type</label>
     <required>false</required>
-    <trackHistory>false</trackHistory>
+    <trackHistory>true</trackHistory>
     <type>Picklist</type>
     <valueSet>
         <restricted>true</restricted>
@@ -13,6 +13,16 @@
                 <fullName>None</fullName>
                 <default>false</default>
                 <label>None</label>
+            </value>
+            <value>
+                <fullName>B</fullName>
+                <default>false</default>
+                <label>Branded</label>
+            </value>
+            <value>
+                <fullName>N</fullName>
+                <default>false</default>
+                <label>Residential</label>
             </value>
         </valueSetDefinition>
     </valueSet>

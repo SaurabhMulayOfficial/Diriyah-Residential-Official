@@ -3,7 +3,7 @@
     <fullName>RES_Area_Type__c</fullName>
     <label>Area Type</label>
     <required>false</required>
-    <trackHistory>false</trackHistory>
+    <trackHistory>true</trackHistory>
     <type>Picklist</type>
     <valueSet>
         <restricted>true</restricted>
@@ -13,6 +13,91 @@
                 <fullName>None</fullName>
                 <default>false</default>
                 <label>None</label>
+            </value>
+            <value>
+                <fullName>Z004</fullName>
+                <default>false</default>
+                <label>Number of Dedicated Parking</label>
+            </value>
+            <value>
+                <fullName>Z005</fullName>
+                <default>false</default>
+                <label>GFA (Gross Floor Area)</label>
+            </value>
+            <value>
+                <fullName>Z006</fullName>
+                <default>false</default>
+                <label>BUA (Build up Area)</label>
+            </value>
+            <value>
+                <fullName>Z007</fullName>
+                <default>false</default>
+                <label>Net Saleable Area</label>
+            </value>
+            <value>
+                <fullName>Z008</fullName>
+                <default>false</default>
+                <label>No. of Rooms</label>
+            </value>
+            <value>
+                <fullName>Z009</fullName>
+                <default>false</default>
+                <label>Plot Area</label>
+            </value>
+            <value>
+                <fullName>Z010</fullName>
+                <default>false</default>
+                <label>Extra Parking</label>
+            </value>
+            <value>
+                <fullName>Z011</fullName>
+                <default>false</default>
+                <label>No. of Bathrooms</label>
+            </value>
+            <value>
+                <fullName>Z012</fullName>
+                <default>false</default>
+                <label>No. of Powder Room</label>
+            </value>
+            <value>
+                <fullName>Z013</fullName>
+                <default>false</default>
+                <label>Internal Build Up Area</label>
+            </value>
+            <value>
+                <fullName>Z014</fullName>
+                <default>false</default>
+                <label>SCS Share %</label>
+            </value>
+            <value>
+                <fullName>Z015</fullName>
+                <default>false</default>
+                <label>Covered Balcony Area</label>
+            </value>
+            <value>
+                <fullName>Z016</fullName>
+                <default>false</default>
+                <label>Uncovered Balcony / Terrace Area</label>
+            </value>
+            <value>
+                <fullName>Z017</fullName>
+                <default>false</default>
+                <label>Courtyard Area</label>
+            </value>
+            <value>
+                <fullName>Z018</fullName>
+                <default>false</default>
+                <label>Garage Area</label>
+            </value>
+            <value>
+                <fullName>Z019</fullName>
+                <default>false</default>
+                <label>Utility Area</label>
+            </value>
+            <value>
+                <fullName>Z050</fullName>
+                <default>false</default>
+                <label>Total Saleable Area</label>
             </value>
         </valueSetDefinition>
     </valueSet>

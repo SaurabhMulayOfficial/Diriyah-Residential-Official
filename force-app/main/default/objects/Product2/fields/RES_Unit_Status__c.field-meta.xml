@@ -3,7 +3,7 @@
     <fullName>RES_Unit_Status__c</fullName>
     <label>Unit Status</label>
     <required>false</required>
-    <trackHistory>false</trackHistory>
+    <trackHistory>true</trackHistory>
     <type>Picklist</type>
     <valueSet>
         <restricted>true</restricted>
@@ -13,6 +13,26 @@
                 <fullName>Draft</fullName>
                 <default>true</default>
                 <label>Draft</label>
+            </value>
+            <value>
+                <fullName>Pending DevCo Approval</fullName>
+                <default>false</default>
+                <label>Pending DevCo Approval</label>
+            </value>
+            <value>
+                <fullName>Pending Finance Approval</fullName>
+                <default>false</default>
+                <label>Pending Finance Approval</label>
+            </value>
+            <value>
+                <fullName>Pending CSO Approval</fullName>
+                <default>false</default>
+                <label>Pending CSO Approval</label>
+            </value>
+            <value>
+                <fullName>Available</fullName>
+                <default>false</default>
+                <label>Available</label>
             </value>
             <value>
                 <fullName>Soft Hold</fullName>
@@ -25,14 +45,14 @@
                 <label>Hard Block</label>
             </value>
             <value>
-                <fullName>Available</fullName>
-                <default>false</default>
-                <label>Available</label>
-            </value>
-            <value>
                 <fullName>Sold</fullName>
                 <default>false</default>
                 <label>Sold</label>
+            </value>
+            <value>
+                <fullName>Rejected</fullName>
+                <default>false</default>
+                <label>Rejected</label>
             </value>
             <value>
                 <fullName>None</fullName>
