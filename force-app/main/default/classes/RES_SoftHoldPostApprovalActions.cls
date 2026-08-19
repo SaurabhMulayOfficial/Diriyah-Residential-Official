@@ -30,6 +30,8 @@ public with sharing class RES_SoftHoldPostApprovalActions {
         List<Product2> productsToUpdate = new List<Product2>();
         Set<Id> softHoldProducts = new Set<Id>();
 
+        List<Quote> quoteList = new List<Quote>();
+
         for(input inputObj : inputs){
             if(inputObj.action == 'Approve'){
                 QuoteLineItem qli = productToQuoteMap.get(inputObj.quote.Id);
@@ -46,6 +48,10 @@ public with sharing class RES_SoftHoldPostApprovalActions {
                         p.RES_Unit_Status__c = 'Soft Hold';
                         productsToUpdate.add(p);
                         softHoldProducts.add(p.Id);
+                        Quote q = new Quote(Id = inputObj.quote.Id);
+                        q.RES_Unit_Blocked_Start_Date__c = SYSTEM.now();
+                        q.RES_Unit_Blocked_End_Date__c = softHoldExtensionDate;
+                        quoteList.add(q);
                     }
                     else{
                         Product2 p = new Product2();
@@ -76,12 +82,12 @@ public with sharing class RES_SoftHoldPostApprovalActions {
             excludedQuote.add(qli.QuoteId);
         }
 
-        List<Quote> excQuoteList = new List<Quote>();
+        
         for(Id quoteId: excludedQuote){
             Quote q = new Quote();
             q.Id = quoteId;
             q.RES_Product_Soft_Held__c = true;
-            excQuoteList.add(q);
+            quoteList.add(q);
         }
 
         try{
@@ -89,8 +95,8 @@ public with sharing class RES_SoftHoldPostApprovalActions {
                 Database.update(productsToUpdate, false, AccessLevel.SYSTEM_MODE);
             }
 
-            if(!excQuoteList.isEmpty()){
-                Database.update(excQuoteList, false, AccessLevel.SYSTEM_MODE);
+            if(!quoteList.isEmpty()){
+                Database.update(quoteList, false, AccessLevel.SYSTEM_MODE);
             }
         }
         catch(DmlException e){
