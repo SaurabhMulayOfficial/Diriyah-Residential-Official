@@ -22,6 +22,10 @@
                 <behavior>Readonly</behavior>
                 <field>RES_Submitted_By__c</field>
             </layoutItems>
+            <layoutItems>
+                <behavior>Edit</behavior>
+                <field>RES_Correction_Justification__c</field>
+            </layoutItems>
         </layoutColumns>
         <layoutColumns>
             <layoutItems>
@@ -37,7 +41,7 @@
                 <field>RES_Outcome__c</field>
             </layoutItems>
             <layoutItems>
-                <behavior>Readonly</behavior>
+                <behavior>Required</behavior>
                 <field>RES_Reason__c</field>
             </layoutItems>
         </layoutColumns>

@@ -2296,6 +2296,11 @@
         <field>RES_Discount_Audit_Log__c.RES_Reason__c</field>
         <readable>true</readable>
     </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>RES_Discount_Audit_Log__c.RES_Correction_Justification__c</field>
+        <readable>true</readable>
+    </fieldPermissions>  
     <layoutAssignments>
         <layout>Global-Global Layout</layout>
     </layoutAssignments>
