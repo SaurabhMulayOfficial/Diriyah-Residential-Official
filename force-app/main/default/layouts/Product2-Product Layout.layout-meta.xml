@@ -145,6 +145,33 @@
         </platformActionListItems>
     </platformActionList>
     <relatedLists>
+        <relatedList>RelatedEntityHistoryList</relatedList>
+    </relatedLists>
+    <relatedLists>
+        <fields>Name</fields>
+        <fields>AttributeDefinition</fields>
+        <fields>AttributeDataType</fields>
+        <fields>AttributeCategory</fields>
+        <fields>AttributePicklist</fields>
+        <fields>Status</fields>
+        <relatedList>ProductClassificationAttributes</relatedList>
+    </relatedLists>
+    <relatedLists>
+        <fields>Name</fields>
+        <fields>AttributeDefinition</fields>
+        <fields>AttributeDefinitionDataType</fields>
+        <fields>AttributeCategory</fields>
+        <fields>AttributePicklist</fields>
+        <fields>Status</fields>
+        <relatedList>ProductAttributeDefinitions</relatedList>
+    </relatedLists>
+    <relatedLists>
+        <fields>Name</fields>
+        <fields>DefaultValue</fields>
+        <fields>Status</fields>
+        <relatedList>OverriddenProductAttributeDefinitions</relatedList>
+    </relatedLists>
+    <relatedLists>
         <relatedList>RelatedStandardPriceList</relatedList>
     </relatedLists>
     <relatedLists>
