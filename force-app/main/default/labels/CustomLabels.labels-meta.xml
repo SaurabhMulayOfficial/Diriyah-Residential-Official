@@ -483,4 +483,11 @@ Please go back and select at least one lead with status = “Qualified” to pro
         <shortDescription>Approval Work Item Reject</shortDescription>
         <value>Approval Work Item rejected: The soft hold period has expired, and the unit has therefore been marked as available.</value>
     </labels>
+    <labels>
+        <fullName>RES_Soft_Hold_Reject</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Soft Hold Reject</shortDescription>
+        <value>Approval Work Item Auto Rejected.This approval work item was rejected because the unit has been soft held by another opportunity.</value>
+    </labels>
 </CustomLabels>

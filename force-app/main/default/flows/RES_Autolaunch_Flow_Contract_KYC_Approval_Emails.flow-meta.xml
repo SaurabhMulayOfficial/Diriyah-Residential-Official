@@ -7,6 +7,9 @@
         <locationY>0</locationY>
         <actionName>RES_SendEmailInvocable</actionName>
         <actionType>apex</actionType>
+        <connector>
+            <targetReference>Send_Push_Notification_For_Quote</targetReference>
+        </connector>
         <flowTransactionModel>Automatic</flowTransactionModel>
         <inputParameters>
             <name>emailBody</name>
@@ -42,6 +45,51 @@
             </value>
         </inputParameters>
         <nameSegment>RES_SendEmailInvocable</nameSegment>
+        <offset>0</offset>
+    </actionCalls>
+    <actionCalls>
+        <name>Send_Soft_Hold_Approval_Notification</name>
+        <label>Send Soft Hold Approval Notification</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <actionName>customNotificationAction</actionName>
+        <actionType>customNotificationAction</actionType>
+        <flowTransactionModel>CurrentTransaction</flowTransactionModel>
+        <inputParameters>
+            <name>customNotifTypeId</name>
+            <value>
+                <elementReference>Get_Custom_Notification.Id</elementReference>
+                <inputConfiguratorMode>Resource</inputConfiguratorMode>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>recipientIds</name>
+            <value>
+                <elementReference>UserIds</elementReference>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>title</name>
+            <value>
+                <elementReference>ApprovalRequired</elementReference>
+                <inputConfiguratorMode>Resource</inputConfiguratorMode>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>body</name>
+            <value>
+                <elementReference>ExtensionRequestTitle</elementReference>
+                <inputConfiguratorMode>Resource</inputConfiguratorMode>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>targetId</name>
+            <value>
+                <elementReference>recordId</elementReference>
+                <inputConfiguratorMode>Resource</inputConfiguratorMode>
+            </value>
+        </inputParameters>
+        <nameSegment>customNotificationAction</nameSegment>
         <offset>0</offset>
     </actionCalls>
     <apiVersion>67.0</apiVersion>
@@ -137,6 +185,13 @@
             <operator>Add</operator>
             <value>
                 <elementReference>QuoteURL</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>sendPushNotificationQuote</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <booleanValue>true</booleanValue>
             </value>
         </assignmentItems>
         <connector>
@@ -300,7 +355,34 @@
             <label>Not Null</label>
         </rules>
     </decisions>
+    <decisions>
+        <name>Send_Push_Notification_For_Quote</name>
+        <label>Send Push Notification For Quote?</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>YesSend</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>sendPushNotificationQuote</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Get_Custom_Notification</targetReference>
+            </connector>
+            <label>YesSend</label>
+        </rules>
+    </decisions>
     <environments>Default</environments>
+    <formulas>
+        <name>ApprovalRequired</name>
+        <dataType>String</dataType>
+        <expression>&apos;Soft Hold Extension Approval Needed - &apos; + {!Get_Quote_Product.Quote.Name}</expression>
+    </formulas>
     <formulas>
         <name>ApprovalWorkItemURL</name>
         <dataType>String</dataType>
@@ -483,6 +565,27 @@
         <storeOutputAutomatically>true</storeOutputAutomatically>
     </recordLookups>
     <recordLookups>
+        <name>Get_Custom_Notification</name>
+        <label>Get Custom Notification</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Send_Soft_Hold_Approval_Notification</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>DeveloperName</field>
+            <operator>EqualTo</operator>
+            <value>
+                <stringValue>RES_Soft_Hold_Approval</stringValue>
+            </value>
+        </filters>
+        <getFirstRecordOnly>true</getFirstRecordOnly>
+        <object>CustomNotificationType</object>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
+    <recordLookups>
         <name>Get_Org_Wide_Email</name>
         <label>Get Org Wide Email</label>
         <locationX>0</locationX>
@@ -574,6 +677,11 @@
         </connector>
     </start>
     <status>Active</status>
+    <textTemplates>
+        <name>ExtensionRequestTitle</name>
+        <isViewedAsPlainText>true</isViewedAsPlainText>
+        <text>Soft Hold Extension Approval Request</text>
+    </textTemplates>
     <variables>
         <name>ApexEmailTemplateName</name>
         <dataType>String</dataType>
@@ -621,6 +729,13 @@
         <dataType>String</dataType>
         <isCollection>false</isCollection>
         <isInput>true</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <name>sendPushNotificationQuote</name>
+        <dataType>Boolean</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
         <isOutput>false</isOutput>
     </variables>
     <variables>

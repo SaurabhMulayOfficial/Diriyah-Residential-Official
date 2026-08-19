@@ -35,7 +35,7 @@
         <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
         <rules>
             <name>Yes</name>
-            <conditionLogic>and</conditionLogic>
+            <conditionLogic>(1 AND 2 AND 3 AND 4 AND 5 AND 6) AND (7 OR 8)</conditionLogic>
             <conditions>
                 <leftValueReference>Get_Quote_Product_Record</leftValueReference>
                 <operator>IsNull</operator>
@@ -48,13 +48,6 @@
                 <operator>EqualTo</operator>
                 <rightValue>
                     <booleanValue>false</booleanValue>
-                </rightValue>
-            </conditions>
-            <conditions>
-                <leftValueReference>Get_Quote_Product_Record.Product2.RES_Unit_Status__c</leftValueReference>
-                <operator>EqualTo</operator>
-                <rightValue>
-                    <stringValue>Soft Hold</stringValue>
                 </rightValue>
             </conditions>
             <conditions>
@@ -74,6 +67,27 @@
             <conditions>
                 <leftValueReference>Get_Quote_Product_Record.Quote.RES_Extend_Soft_Hold_By_Hours__c</leftValueReference>
                 <operator>EqualTo</operator>
+            </conditions>
+            <conditions>
+                <leftValueReference>Get_Quote_Product_Record.QuoteId</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <elementReference>Get_Quote_Product_Record.Product2.RES_Reserved_By_Quote__c</elementReference>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>Get_Quote_Product_Record.Product2.RES_Unit_Status__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Soft Hold</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>Get_Quote_Product_Record.Product2.RES_Unit_Status__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Available</stringValue>
+                </rightValue>
             </conditions>
             <connector>
                 <targetReference>Provide_Soft_Hour_Extension_Details</targetReference>
