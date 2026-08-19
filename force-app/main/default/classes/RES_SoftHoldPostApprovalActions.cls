@@ -28,6 +28,7 @@ public with sharing class RES_SoftHoldPostApprovalActions {
         }
 
         List<Product2> productsToUpdate = new List<Product2>();
+        Set<Id> softHoldProducts = new Set<Id>();
 
         for(input inputObj : inputs){
             if(inputObj.action == 'Approve'){
@@ -44,6 +45,7 @@ public with sharing class RES_SoftHoldPostApprovalActions {
                         p.RES_Is_In_Soft_Hold_Extension__c = false;
                         p.RES_Unit_Status__c = 'Soft Hold';
                         productsToUpdate.add(p);
+                        softHoldProducts.add(p.Id);
                     }
                     else{
                         Product2 p = new Product2();
@@ -68,9 +70,27 @@ public with sharing class RES_SoftHoldPostApprovalActions {
             }
         }
 
+        List<QuoteLineItem> excludeList = new RES_QuoteLineItemDAO().getQuoteLineItemsFiltered(quoteIds,softHoldProducts);
+        Set<Id> excludedQuote = new Set<Id>();
+        for(QuoteLineItem qli: excludeList){
+            excludedQuote.add(qli.QuoteId);
+        }
+
+        List<Quote> excQuoteList = new List<Quote>();
+        for(Id quoteId: excludedQuote){
+            Quote q = new Quote();
+            q.Id = quoteId;
+            q.RES_Product_Soft_Held__c = true;
+            excQuoteList.add(q);
+        }
+
         try{
             if(!productsToUpdate.isEmpty()){
                 Database.update(productsToUpdate, false, AccessLevel.SYSTEM_MODE);
+            }
+
+            if(!excQuoteList.isEmpty()){
+                Database.update(excQuoteList, false, AccessLevel.SYSTEM_MODE);
             }
         }
         catch(DmlException e){
