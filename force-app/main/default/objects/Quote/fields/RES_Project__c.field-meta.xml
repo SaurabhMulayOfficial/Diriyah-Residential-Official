@@ -4,7 +4,7 @@
     <label>Project</label>
     <description>DIR-1128: Project inherited from the parent Opportunity when the Quote is created (mirrors the RES_Project__c picklist on Opportunity). Uses the shared RES_Project global value set.</description>
     <required>false</required>
-    <trackHistory>false</trackHistory>
+    <trackHistory>true</trackHistory>
     <type>Picklist</type>
     <valueSet>
         <restricted>true</restricted>
