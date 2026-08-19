@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>RES_Cannot_Mark_Customer_Approved</fullName>
+    <active>true</active>
+    <errorConditionFormula>AND(
+    NOT($Setup.RES_Config_Switch__c.RES_Validation_Rules_Off__c),
+    ISCHANGED(Status),
+    ISPICKVAL(Status, &quot;Customer Approved&quot;),
+    RES_Product_Soft_Held__c = TRUE
+)</errorConditionFormula>
+    <errorMessage>Cannot mark this Quote as &apos;Customer Approved&apos; because the associated product is currently on Soft Hold by other Quote.</errorMessage>
+</ValidationRule>
