@@ -43,6 +43,7 @@ public without sharing class RES_ProductOrchestrator {
                 productBlockedBy.put(qli.Product2Id, qli.QuoteId);
             }
         }
+
         List<QuoteLineItem> allRelatedQuoteLineItems = new RES_QuoteLineItemDAO().getQuoteLineItemsByProductIds(productBlockedBy.keySet());
         Set<Id> quotesIds = new Set<Id>();
         for(QuoteLineItem qli: allRelatedQuoteLineItems){
@@ -89,6 +90,28 @@ public without sharing class RES_ProductOrchestrator {
         }
         catch(Exception e){
             System.debug('Error occurred while updating products: ' + e.getMessage());
+        }
+
+        Set<Id> blockedQuotes = new Set<Id>(productBlockedBy.values());
+        if(blockedQuotes.size() > 0){
+            List<Quote> reservedQuotes = new List<Quote>();
+
+            for(Id key: blockedQuotes){
+                Quote q = new Quote();
+                q.Id = key;
+                q.RES_Unit_Blocked_Start_Date__c = System.now();
+                Long interval = (Long)softHoldWindow * 60 * 60 * 1000;
+                q.RES_Unit_Blocked_End_Date__c = BusinessHours.add(businessHourLst[0].Id, System.now(), interval);
+                reservedQuotes.add(q);
+            }
+
+            try{
+                if(reservedQuotes.size() > 0){
+                    Database.update(reservedQuotes, false, AccessLevel.SYSTEM_MODE);
+                }
+            }catch(Exception e){
+                System.debug('Exception Updating Reserved Quotes ' + e.getMessage());
+            }
         }
     }
 }
