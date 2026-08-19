@@ -42,14 +42,18 @@ public with sharing class RES_SoftHoldPostApprovalActions {
                     if(softHoldExtensionDate != null && softHoldExtensionDate > DateTime.Now()){
                         Product2 p = new Product2();
                         p.Id = qli.Product2Id;
-                        p.RES_Soft_Hold_Start__c = SYSTEM.now();
+                        p.RES_Soft_Hold_Start__c = qli.Product2.RES_Soft_Hold_Start__c != null
+                                                    ? qli.Product2.RES_Soft_Hold_Start__c
+                                                    : System.now(); 
                         p.RES_Soft_Hold_Until__c = softHoldExtensionDate;
                         p.RES_Is_In_Soft_Hold_Extension__c = false;
                         p.RES_Unit_Status__c = 'Soft Hold';
                         productsToUpdate.add(p);
                         softHoldProducts.add(p.Id);
                         Quote q = new Quote(Id = inputObj.quote.Id);
-                        q.RES_Unit_Blocked_Start_Date__c = SYSTEM.now();
+                        q.RES_Unit_Blocked_Start_Date__c = qli.Product2.RES_Soft_Hold_Start__c != null
+                                                    ? qli.Product2.RES_Soft_Hold_Start__c
+                                                    : System.now(); 
                         q.RES_Unit_Blocked_End_Date__c = softHoldExtensionDate;
                         quoteList.add(q);
                     }
