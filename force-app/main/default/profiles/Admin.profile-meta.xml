@@ -187,6 +187,21 @@
     <custom>false</custom>
     <fieldPermissions>
         <editable>true</editable>
+        <field>RES_Review_Approval_Work_Item__e.RES_Approval_Comments__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>RES_Review_Approval_Work_Item__e.RES_Post_Review_Action__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>RES_Review_Approval_Work_Item__e.RES_QuoteId__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
         <field>RES_Payment_Plan_Version__c.RES_Active__c</field>
         <readable>true</readable>
     </fieldPermissions>
@@ -2567,6 +2582,15 @@
         <allowRead>true</allowRead>
         <modifyAllRecords>true</modifyAllRecords>
         <object>RES_Process_Attachment__e</object>
+        <viewAllRecords>true</viewAllRecords>
+    </objectPermissions>
+    <objectPermissions>
+        <allowCreate>true</allowCreate>
+        <allowDelete>true</allowDelete>
+        <allowEdit>true</allowEdit>
+        <allowRead>true</allowRead>
+        <modifyAllRecords>true</modifyAllRecords>
+        <object>RES_Review_Approval_Work_Item__e</object>
         <viewAllRecords>true</viewAllRecords>
     </objectPermissions>
     <objectPermissions>

@@ -58,33 +58,27 @@ public without sharing class RES_ProductOrchestrator {
             quotesToUpdate.add(q);
         }
 
+        // Start EVENT -----------------------
         List<ApprovalWorkItem> approvalWorkItems = new RES_ProcessInstanceDAOLayer().getApprovalWorkItems(quotesIds, 'Soft Hold Extension Approvals');
         if(approvalWorkItems.size() > 0){
-            List<RES_WorkItemFlowInput> approvalWorkItemToProcess = new List<RES_WorkItemFlowInput>();
-
+            List<RES_Review_Approval_Work_Item__e> events = new List<RES_Review_Approval_Work_Item__e>();
             for(ApprovalWorkItem awi: approvalWorkItems){
-                RES_WorkItemFlowInput input = new RES_WorkItemFlowInput();
-                input.workitemId = awi.Id;
-                input.action = 'Reject';
-                input.comment = SYSTEM.Label.RES_Soft_Hold_Reject;
-                approvalWorkItemToProcess.add(input);
+                RES_Review_Approval_Work_Item__e e = new RES_Review_Approval_Work_Item__e();
+                e.RES_Approval_Work_Item_Id__c = awi.Id;
+                e.RES_Approval_Decision__c = 'Reject';
+                e.RES_Approval_Comments__c = SYSTEM.Label.RES_Soft_Hold_Reject;
+                e.RES_QuoteId__c = awi.RelatedRecordId;
+                e.RES_Post_Review_Action__c = 'QuoteSoftHoldPostApproval';
+                events.add(e);
             }
 
             try{
-                RES_ApprovalWorkItemManagement.processWorkItems(approvalWorkItemToProcess);
+                EventBus.publish(events);
             }catch(Exception e){
                 System.debug('Approval Work Item Failed To Reject ' + e.getMessage());
             }
         }
-
-        if(quotesToUpdate.size() > 0){
-            try{
-                Database.update(quotesToUpdate, false, AccessLevel.SYSTEM_MODE);
-            }
-            catch(Exception e){
-                System.debug('Error occurred while updating quotes: ' + e.getMessage());
-            }
-        }
+        //End EVENT --------------------------
 
         Integer softHoldWindow = 8;
         String softHoldWindowLabel = SYSTEM.Label.Soft_Hold_Window;
@@ -113,21 +107,20 @@ public without sharing class RES_ProductOrchestrator {
         }
 
         Set<Id> blockedQuotes = new Set<Id>(productBlockedBy.values());
+        
         if(blockedQuotes.size() > 0){
-            List<Quote> reservedQuotes = new List<Quote>();
-
             for(Id key: blockedQuotes){
                 Quote q = new Quote();
                 q.Id = key;
                 q.RES_Unit_Blocked_Start_Date__c = System.now();
                 Long interval = (Long)softHoldWindow * 60 * 60 * 1000;
                 q.RES_Unit_Blocked_End_Date__c = BusinessHours.add(businessHourLst[0].Id, System.now(), interval);
-                reservedQuotes.add(q);
+                quotesToUpdate.add(q);
             }
 
             try{
-                if(reservedQuotes.size() > 0){
-                    Database.update(reservedQuotes, false, AccessLevel.SYSTEM_MODE);
+                if(quotesToUpdate.size() > 0){
+                    Database.update(quotesToUpdate, false, AccessLevel.SYSTEM_MODE);
                 }
             }catch(Exception e){
                 System.debug('Exception Updating Reserved Quotes ' + e.getMessage());
