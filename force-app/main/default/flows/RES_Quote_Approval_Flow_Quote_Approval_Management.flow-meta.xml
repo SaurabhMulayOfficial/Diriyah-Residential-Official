@@ -123,8 +123,9 @@
                 <value xsi:nil="true"/>
             </outputConfigParams>
             <requiresAsyncProcessing>false</requiresAsyncProcessing>
+            <requiresMultiMemberApproval>interaction.definition.mdapi.FlowAbstractParameter$FlowStageStepInputParameter@5871d319</requiresMultiMemberApproval>
             <runAsUser>false</runAsUser>
-            <shouldLock>false</shouldLock>
+            <shouldLock>true</shouldLock>
             <stepSubtype>ApprovalStep</stepSubtype>
         </stageSteps>
         <stageSteps>
