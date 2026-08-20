@@ -93,4 +93,13 @@ public with sharing class RES_QuoteLineItemDAO extends RES_BaseDAOLayer {
                             'AND Quote.Status != \'Cancelled\'';
             return (List<QuoteLineItem>) executeQuery(soql, '', false, bindVars, AccessLevel.SYSTEM_MODE);
         }
+
+        public List<QuoteLineItem> getQuoteLineItemsFiltered(Set<Id> quoteIds, Set<Id> productIds){
+            Map<String, Object> bindVars = new Map<String, Object>();
+            bindVars.put('quoteIds', quoteIds);
+            bindVars.put('productIds', productIds);
+            String soql = 'SELECT Id, QuoteId, Product2Id FROM QuoteLineItem WHERE QuoteId NOT IN :quoteIds AND Product2Id IN :productIds';
+
+            return (List<QuoteLineItem>) executeQuery(soql, '', false, bindVars, AccessLevel.SYSTEM_MODE);
+        }
 }
