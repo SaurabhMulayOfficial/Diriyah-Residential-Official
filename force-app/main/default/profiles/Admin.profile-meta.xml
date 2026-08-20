@@ -2300,6 +2300,46 @@
         <editable>false</editable>
         <field>RES_Discount_Audit_Log__c.RES_Correction_Justification__c</field>
         <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>Contract.ActivatedById</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>Contract.ActivatedDate</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>Contract.CompanySignedId</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>Contract.CompanySignedDate</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>Contract.StartDate</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <!--fieldPermissions>
+        <editable>true</editable>
+        <field>Contract.External_ID__c</field>
+        <readable>true</readable>
+    </fieldPermissions-->
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>Contract.RES_S4_Contract_Id__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>Contract.RES_S4_Sync_Date__c</field>
+        <readable>true</readable>
     </fieldPermissions>  
     <layoutAssignments>
         <layout>Global-Global Layout</layout>
