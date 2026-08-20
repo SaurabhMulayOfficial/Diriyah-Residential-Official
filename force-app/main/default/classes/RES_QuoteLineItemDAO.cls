@@ -89,4 +89,21 @@ public with sharing class RES_QuoteLineItemDAO extends RES_BaseDAOLayer {
         return (List<QuoteLineItem>) executeQuery(soql, '', false, bindVars, AccessLevel.SYSTEM_MODE);
     }
 
+    public List<QuoteLineItem> getActiveQuoteLineItemsByProductIdsExcludingOpportunities(
+        Set<Id> productIds, Set<Id> excludedOpportunityIds
+        ) {
+            if (productIds == null || productIds.isEmpty()) {
+                return new List<QuoteLineItem>();
+            }
+                Map<String, Object> bindVars = new Map<String, Object>();
+                bindVars.put('productIds', productIds);
+                bindVars.put('excludedOpportunityIds', excludedOpportunityIds);
+            String soql = 'SELECT Id, Product2Id, Quote.OpportunityId, Quote.Status ' +
+                            'FROM QuoteLineItem ' +
+                            'WHERE Product2Id IN :productIds ' +
+                            'AND Quote.OpportunityId NOT IN :excludedOpportunityIds ' +
+                            'AND Quote.Status != \'Cancelled\'';
+            return (List<QuoteLineItem>) executeQuery(soql, '', false, bindVars, AccessLevel.SYSTEM_MODE);
+        }
+
 }

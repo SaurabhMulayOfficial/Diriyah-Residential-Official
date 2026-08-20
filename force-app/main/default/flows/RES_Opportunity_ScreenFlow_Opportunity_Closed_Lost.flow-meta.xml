@@ -8,7 +8,7 @@
         <actionName>RES_OpportunityClosedLostService</actionName>
         <actionType>apex</actionType>
         <connector>
-            <targetReference>Were_Units_Released</targetReference>
+            <targetReference>Pending_Approvals_Found</targetReference>
         </connector>
         <faultConnector>
             <isGoTo>true</isGoTo>
@@ -24,6 +24,7 @@
         </inputParameters>
         <nameSegment>RES_OpportunityClosedLostService</nameSegment>
         <offset>0</offset>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
     </actionCalls>
     <apiVersion>67.0</apiVersion>
     <areMetricsLoggedToDataCloud>false</areMetricsLoggedToDataCloud>
@@ -48,6 +49,31 @@
             </conditions>
             <connector>
                 <targetReference>Update_Opportunity_as_Closed_Lost</targetReference>
+            </connector>
+            <label>Yes</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>Pending_Approvals_Found</name>
+        <label>Pending Approvals Found?</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnector>
+            <targetReference>Opportunity_Closed_Successfully_for_All_Quote</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Yes_Pending_Found</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>Release_Opportunity_Units.pendingApprovalQuotesFound</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Opportunity_Closed_Successfully</targetReference>
             </connector>
             <label>Yes</label>
         </rules>
@@ -107,31 +133,6 @@
                 <targetReference>Validate_Close_Date</targetReference>
             </connector>
             <label>Allowed Stage</label>
-        </rules>
-    </decisions>
-    <decisions>
-        <name>Were_Units_Released</name>
-        <label>Were Units Released?</label>
-        <locationX>0</locationX>
-        <locationY>0</locationY>
-        <defaultConnector>
-            <targetReference>Opportunity_Closed_Successfully_without_units</targetReference>
-        </defaultConnector>
-        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
-        <rules>
-            <name>Units_Released</name>
-            <conditionLogic>and</conditionLogic>
-            <conditions>
-                <leftValueReference>Release_Opportunity_Units</leftValueReference>
-                <operator>EqualTo</operator>
-                <rightValue>
-                    <booleanValue>true</booleanValue>
-                </rightValue>
-            </conditions>
-            <connector>
-                <targetReference>Opportunity_Closed_Successfully</targetReference>
-            </connector>
-            <label>Units Released</label>
         </rules>
     </decisions>
     <dynamicChoiceSets>
@@ -286,7 +287,7 @@
         <allowPause>false</allowPause>
         <fields>
             <name>SuccessMessage</name>
-            <fieldText>&lt;p&gt;&lt;strong&gt;Opportunity has been marked as Closed Lost.&lt;/strong&gt;&lt;/p&gt;&lt;p&gt;&lt;strong&gt;All related Units have been released successfully.&lt;/strong&gt;&lt;/p&gt;</fieldText>
+            <fieldText>&lt;p&gt;&lt;strong&gt;Opportunity has been marked as Closed Lost.&lt;/strong&gt;&lt;/p&gt;</fieldText>
             <fieldType>DisplayText</fieldType>
             <styleProperties>
                 <verticalAlignment>
@@ -302,8 +303,8 @@
         <showHeader>false</showHeader>
     </screens>
     <screens>
-        <name>Opportunity_Closed_Successfully_without_units</name>
-        <label>Opportunity Closed Successfully without units</label>
+        <name>Opportunity_Closed_Successfully_for_All_Quote</name>
+        <label>Opportunity Closed Successfully for All Quote</label>
         <locationX>0</locationX>
         <locationY>0</locationY>
         <allowBack>false</allowBack>
@@ -311,7 +312,7 @@
         <allowPause>false</allowPause>
         <fields>
             <name>Copy_1_of_SuccessMessage</name>
-            <fieldText>&lt;p&gt;&lt;strong&gt;Opportunity has been marked as Closed Lost.&lt;/strong&gt;&lt;/p&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;&lt;strong&gt;No related Units were found for this Opportunity.&lt;/strong&gt;&lt;/p&gt;&lt;p&gt;&lt;strong&gt;No Unit status updates were required.&lt;/strong&gt;&lt;/p&gt;</fieldText>
+            <fieldText>&lt;p&gt;&lt;strong&gt;Opportunity has been marked as Closed Lost.&lt;/strong&gt;&lt;/p&gt;</fieldText>
             <fieldType>DisplayText</fieldType>
             <styleProperties>
                 <verticalAlignment>
@@ -422,6 +423,22 @@
         <isCollection>false</isCollection>
         <isInput>false</isInput>
         <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <name>quoteInstance</name>
+        <dataType>SObject</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <objectType>Quote</objectType>
+    </variables>
+    <variables>
+        <name>quoteInstanceList</name>
+        <dataType>SObject</dataType>
+        <isCollection>true</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <objectType>Quote</objectType>
     </variables>
     <variables>
         <name>recordId</name>
