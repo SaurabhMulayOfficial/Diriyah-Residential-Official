@@ -70,9 +70,21 @@ public with sharing class RES_QuoteLineItemDAO extends RES_BaseDAOLayer {
         Map<String, Object> bindVars = new Map<String, Object>();
         bindVars.put('quoteIds', quoteIds);
 
-        String soql = 'SELECT Id, QuoteId, Product2.RES_Soft_Hold_Extended_By_Hours__c, Product2Id, Product2.RES_Unit_Status__c, Product2.RES_Is_In_Soft_Hold_Extension__c, Product2.RES_Soft_Hold_Until__c ' +
+        String soql = 'SELECT Id, QuoteId, Product2.RES_Soft_Hold_Start__c, Product2Id, Product2.RES_Unit_Status__c, Product2.RES_Is_In_Soft_Hold_Extension__c, Product2.RES_Soft_Hold_Until__c ' +
                     'FROM QuoteLineItem ' +
                     'WHERE QuoteId IN :quoteIds';
+        
+        return (List<QuoteLineItem>) executeQuery(soql, '', false, bindVars, AccessLevel.SYSTEM_MODE);
+    }
+
+    public List<QuoteLineItem> getQuoteLineItemsFiltered(Set<Id> quoteIds, Set<Id> productIds){
+        Map<String, Object> bindVars = new Map<String, Object>();
+        bindVars.put('quoteIds', quoteIds);
+        bindVars.put('productIds', productIds);
+
+        String soql = 'SELECT Id, QuoteId, Product2Id ' +
+                    'FROM QuoteLineItem ' +
+                    'WHERE QuoteId NOT IN :quoteIds AND Product2Id IN :productIds';
         
         return (List<QuoteLineItem>) executeQuery(soql, '', false, bindVars, AccessLevel.SYSTEM_MODE);
     }
@@ -94,12 +106,4 @@ public with sharing class RES_QuoteLineItemDAO extends RES_BaseDAOLayer {
             return (List<QuoteLineItem>) executeQuery(soql, '', false, bindVars, AccessLevel.SYSTEM_MODE);
         }
 
-        public List<QuoteLineItem> getQuoteLineItemsFiltered(Set<Id> quoteIds, Set<Id> productIds){
-            Map<String, Object> bindVars = new Map<String, Object>();
-            bindVars.put('quoteIds', quoteIds);
-            bindVars.put('productIds', productIds);
-            String soql = 'SELECT Id, QuoteId, Product2Id FROM QuoteLineItem WHERE QuoteId NOT IN :quoteIds AND Product2Id IN :productIds';
-
-            return (List<QuoteLineItem>) executeQuery(soql, '', false, bindVars, AccessLevel.SYSTEM_MODE);
-        }
 }
