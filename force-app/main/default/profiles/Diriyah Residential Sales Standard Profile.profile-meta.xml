@@ -606,6 +606,21 @@
     </layoutAssignments>
     <fieldPermissions>
         <editable>true</editable>
+        <field>RES_Review_Approval_Work_Item__e.RES_Approval_Comments__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>RES_Review_Approval_Work_Item__e.RES_Post_Review_Action__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>RES_Review_Approval_Work_Item__e.RES_QuoteId__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
         <field>Product2.RES_Soft_Hold_Start__c</field>
         <readable>true</readable>
     </fieldPermissions>
@@ -1113,6 +1128,11 @@
         <allowCreate>true</allowCreate>
         <allowRead>true</allowRead>
         <object>RES_Ownership_Reassignment_Event__e</object>
+    </objectPermissions>
+    <objectPermissions>
+        <allowCreate>true</allowCreate>
+        <allowRead>true</allowRead>
+        <object>RES_Review_Approval_Work_Item__e</object>
     </objectPermissions>
     <objectPermissions>
         <allowCreate>true</allowCreate>
