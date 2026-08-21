@@ -49,7 +49,7 @@ public without sharing class RES_ProcessInstanceDAOLayer extends RES_BaseDAOLaye
         Map<String, Object> bindVars = new Map<String, Object>();
         bindVars.put('targetIds', targetIds);
         bindVars.put('relatedObjectName', relatedObjectName);
-        String soql = 'SELECT Id, Status, RelatedRecordObjectName, RelatedRecordId ' +
+        String soql = 'SELECT Id, Status, RelatedRecordObjectName, RelatedRecordId, ApprovalSubmissionId ' +
                         'FROM ApprovalWorkItem ' +
                         'WHERE RelatedRecordId IN :targetIds ' +
                         'AND RelatedRecordObjectName = :relatedObjectName ' +
@@ -80,7 +80,7 @@ public without sharing class RES_ProcessInstanceDAOLayer extends RES_BaseDAOLaye
         bindVars.put('assignedToName', assignedToName);
 
         String soql =
-            'SELECT Id, AssignedTo.Name, Status, RelatedRecordId ' +
+            'SELECT Id, AssignedTo.Name, ApprovalSubmissionId, Status, RelatedRecordId ' +
             'FROM ApprovalWorkItem ' +
             'WHERE AssignedTo.Name = :assignedToName ' +
             'AND Status = \'Assigned\' ' +

@@ -650,7 +650,7 @@
                 <identifier>RecordRES_SPA_Signed_Date_cField</identifier>
             </fieldInstance>
         </itemInstances>
-        <name>Facet-a080a604-04df-40ac-a26d-759c18be09b2</name>
+                <name>Facet-a080a604-04df-40ac-a26d-759c18be09b2</name>
         <type>Facet</type>
     </flexiPageRegions>
     <flexiPageRegions>
@@ -700,12 +700,19 @@
             <componentInstance>
                 <componentName>resUploadDocuments</componentName>
                 <identifier>c_resUploadDocuments</identifier>
+                <visibilityRule>
+                    <criteria>
+                        <leftValue>{!Record.RES_Product_Soft_Held__c}</leftValue>
+                        <operator>EQUAL</operator>
+                        <rightValue>false</rightValue>
+                    </criteria>
+                </visibilityRule>
             </componentInstance>
         </itemInstances>
         <name>Facet-f6341754-35ab-4a3c-9fe4-185656f2777c</name>
         <type>Facet</type>
     </flexiPageRegions>
-    <flexiPageRegions>
+        <flexiPageRegions>
         <itemInstances>
             <componentInstance>
                 <componentInstanceProperties>

@@ -111,6 +111,7 @@ public with sharing class RES_OpportunityClosedLostService {
                 }
 
                 List<ApprovalWorkItem> pendingItems = (Test.isRunningTest() && mockPendingApprovalWorkItems != null) ? mockPendingApprovalWorkItems : new RES_ProcessInstanceDAOLayer().getPendingWorkItemsByTargetIds(pendingQuoteIds, 'Quote');
+                
                 if (!pendingItems.isEmpty()) {
                     output.pendingApprovalQuotesFound = true;
                     for (Quote q : quotesPendingApproval) {
@@ -118,13 +119,18 @@ public with sharing class RES_OpportunityClosedLostService {
                     }
 
                     List<RES_Review_Approval_Work_Item__e> eventsToPublish = new List<RES_Review_Approval_Work_Item__e>();
+                    Set<Id> publishIds = new Set<Id>();
                     for (ApprovalWorkItem wi : pendingItems) {
+                        if(publishIds.contains(wi.id)){
+                            continue;
+                        }
                         RES_Review_Approval_Work_Item__e eventRecord = new RES_Review_Approval_Work_Item__e();
-                        eventRecord.RES_Approval_Decision__c = 'Reject';
+                        eventRecord.RES_Approval_Decision__c = 'Cancel';
                         eventRecord.RES_Approval_Comments__c = System.Label.RES_Auto_Reject_On_Cancel_Opportunity;
-                        eventRecord.RES_Approval_Work_Item_Id__c = wi.id;
+                        eventRecord.RES_Approval_Work_Item_Id__c = wi.ApprovalSubmissionId;
                         eventRecord.RES_QuoteId__c = wi.RelatedRecordId;
                         eventRecord.RES_Post_Review_Action__c = 'QuoteCancellation';
+                        publishIds.add(wi.id);
                         eventsToPublish.add(eventRecord);
                         output.pendingWorkItemIds.add(wi.Id);
                     }
