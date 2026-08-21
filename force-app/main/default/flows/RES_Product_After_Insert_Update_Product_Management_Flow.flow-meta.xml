@@ -7,6 +7,9 @@
         <locationY>0</locationY>
         <actionName>RES_SendEmailInvocable</actionName>
         <actionType>apex</actionType>
+        <connector>
+            <targetReference>Get_Custom_Notification</targetReference>
+        </connector>
         <flowTransactionModel>Automatic</flowTransactionModel>
         <inputParameters>
             <name>emailBody</name>
@@ -44,6 +47,51 @@
         <nameSegment>RES_SendEmailInvocable</nameSegment>
         <offset>0</offset>
     </actionCalls>
+    <actionCalls>
+        <name>Send_Unit_Availability_Notifications</name>
+        <label>Send Unit Availability Notifications</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <actionName>customNotificationAction</actionName>
+        <actionType>customNotificationAction</actionType>
+        <flowTransactionModel>CurrentTransaction</flowTransactionModel>
+        <inputParameters>
+            <name>customNotifTypeId</name>
+            <value>
+                <elementReference>Get_Custom_Notification.Id</elementReference>
+                <inputConfiguratorMode>Resource</inputConfiguratorMode>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>recipientIds</name>
+            <value>
+                <elementReference>recipientIds</elementReference>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>title</name>
+            <value>
+                <inputConfiguratorMode>Resource</inputConfiguratorMode>
+                <stringValue>Unit Available for Reservation</stringValue>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>body</name>
+            <value>
+                <elementReference>NotificationBody</elementReference>
+                <inputConfiguratorMode>Resource</inputConfiguratorMode>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>targetId</name>
+            <value>
+                <elementReference>$Record.Id</elementReference>
+                <inputConfiguratorMode>Resource</inputConfiguratorMode>
+            </value>
+        </inputParameters>
+        <nameSegment>customNotificationAction</nameSegment>
+        <offset>0</offset>
+    </actionCalls>
     <apiVersion>67.0</apiVersion>
     <areMetricsLoggedToDataCloud>false</areMetricsLoggedToDataCloud>
     <assignments>
@@ -63,6 +111,13 @@
             <operator>Add</operator>
             <value>
                 <elementReference>Loop_Over_QuoteProduct.Quote.Owner:User.Email</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>recipientIds</assignToReference>
+            <operator>Add</operator>
+            <value>
+                <elementReference>Loop_Over_QuoteProduct.Quote.OwnerId</elementReference>
             </value>
         </assignmentItems>
         <connector>
@@ -177,6 +232,9 @@
         <label>If Everything Looks Good</label>
         <locationX>0</locationX>
         <locationY>0</locationY>
+        <defaultConnector>
+            <targetReference>Get_Custom_Notification</targetReference>
+        </defaultConnector>
         <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
         <rules>
             <name>Looks_Good</name>
@@ -244,7 +302,41 @@
             <label>Yes Valid</label>
         </rules>
     </decisions>
+    <decisions>
+        <name>Send_Notifications</name>
+        <label>Send Notifications</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Send</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>recipientIds</leftValueReference>
+                <operator>IsEmpty</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>Get_Custom_Notification</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Send_Unit_Availability_Notifications</targetReference>
+            </connector>
+            <label>Send</label>
+        </rules>
+    </decisions>
     <environments>Default</environments>
+    <formulas>
+        <name>NotificationBody</name>
+        <dataType>String</dataType>
+        <expression>&apos;The soft hold period for the unit: &apos; + {!$Record.Name} + &apos; has expired and it is now available for reservation.&apos;</expression>
+    </formulas>
     <formulas>
         <name>ProductURL</name>
         <dataType>String</dataType>
@@ -362,6 +454,27 @@
         </filters>
         <getFirstRecordOnly>false</getFirstRecordOnly>
         <object>ApprovalWorkItem</object>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
+    <recordLookups>
+        <name>Get_Custom_Notification</name>
+        <label>Get Custom Notification</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Send_Notifications</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>DeveloperName</field>
+            <operator>EqualTo</operator>
+            <value>
+                <stringValue>RES_Unit_Soft_Hold_Release</stringValue>
+            </value>
+        </filters>
+        <getFirstRecordOnly>true</getFirstRecordOnly>
+        <object>CustomNotificationType</object>
         <storeOutputAutomatically>true</storeOutputAutomatically>
     </recordLookups>
     <recordLookups>
@@ -490,6 +603,13 @@
     </variables>
     <variables>
         <name>QuoteOwnerEmails</name>
+        <dataType>String</dataType>
+        <isCollection>true</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <name>recipientIds</name>
         <dataType>String</dataType>
         <isCollection>true</isCollection>
         <isInput>false</isInput>
