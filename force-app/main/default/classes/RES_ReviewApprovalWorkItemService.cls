@@ -20,20 +20,19 @@ public with sharing class RES_ReviewApprovalWorkItemService {
             if(!filterByPostApprovalAction.containsKey(e.RES_Post_Review_Action__c)){
                 filterByPostApprovalAction.put(e.RES_Post_Review_Action__c, new List<RES_Review_Approval_Work_Item__e>());
             }
-
             filterByPostApprovalAction.get(e.RES_Post_Review_Action__c).add(e);
+        }
 
-            if(filterByPostApprovalAction.containsKey('QuoteSoftHoldPostApproval')){
-                List<RES_Review_Approval_Work_Item__e> postQuoteApprovalEvents = filterByPostApprovalAction.get('QuoteSoftHoldPostApproval');
-                if(postQuoteApprovalEvents!= null && postQuoteApprovalEvents.size() > 0){
-                    runQuotePostApprovals(postQuoteApprovalEvents);
-                }
+        if(filterByPostApprovalAction.containsKey('QuoteSoftHoldPostApproval')){
+            List<RES_Review_Approval_Work_Item__e> postQuoteApprovalEvents = filterByPostApprovalAction.get('QuoteSoftHoldPostApproval');
+            if(postQuoteApprovalEvents!= null && postQuoteApprovalEvents.size() > 0){
+                runQuotePostApprovals(postQuoteApprovalEvents);
             }
-            else if(filterByPostApprovalAction.containsKey('QuoteCancellation')){
-                List<RES_Review_Approval_Work_Item__e> postQuoteApprovalEvents = filterByPostApprovalAction.get('QuoteCancellation');
-                if(postQuoteApprovalEvents != null && postQuoteApprovalEvents.size() > 0){
-                    quoteCancellation(postQuoteApprovalEvents);
-                }
+        }
+        else if(filterByPostApprovalAction.containsKey('QuoteCancellation')){
+            List<RES_Review_Approval_Work_Item__e> postQuoteApprovalEvents = filterByPostApprovalAction.get('QuoteCancellation');
+            if(postQuoteApprovalEvents != null && postQuoteApprovalEvents.size() > 0){
+                quoteCancellation(postQuoteApprovalEvents);
             }
         }
     }
@@ -92,6 +91,8 @@ public with sharing class RES_ReviewApprovalWorkItemService {
     public static void updateApprovalWorkItems(List<RES_Review_Approval_Work_Item__e> events){
         List<RES_WorkItemFlowInput> workInputs = new List<RES_WorkItemFlowInput>();
         Set<Id> quoteIds = new Set<Id>();
+        System.debug('UpdateApprovalWorkItems ' + events.size() + events);
+
         for(RES_Review_Approval_Work_Item__e e: events){
             RES_WorkItemFlowInput w = new RES_WorkItemFlowInput();
             w.action = e.RES_Approval_Decision__c;
