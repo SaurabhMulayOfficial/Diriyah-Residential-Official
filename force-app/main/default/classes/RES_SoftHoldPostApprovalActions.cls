@@ -33,12 +33,13 @@ public with sharing class RES_SoftHoldPostApprovalActions {
         List<Quote> quoteList = new List<Quote>();
 
         for(input inputObj : inputs){
+            Quote q = new Quote(Id = inputObj.quote.Id);
+            
             if(inputObj.action == 'Approve'){
                 QuoteLineItem qli = productToQuoteMap.get(inputObj.quote.Id);
                 Integer extensionHours = Integer.valueOf(inputObj.quote.RES_Extend_Soft_Hold_By_Hours__c);
                 if(qli != null){
                     DateTime softHoldExtensionDate = BusinessHours.add(bhr[0].Id, qli.Product2.RES_Soft_Hold_Until__c, extensionHours * 60 * 60 * 1000);
-
                     if(softHoldExtensionDate != null && softHoldExtensionDate > DateTime.Now()){
                         Product2 p = new Product2();
                         p.Id = qli.Product2Id;
@@ -50,12 +51,13 @@ public with sharing class RES_SoftHoldPostApprovalActions {
                         p.RES_Unit_Status__c = 'Soft Hold';
                         productsToUpdate.add(p);
                         softHoldProducts.add(p.Id);
-                        Quote q = new Quote(Id = inputObj.quote.Id);
+
                         q.RES_Unit_Blocked_Start_Date__c = qli.Product2.RES_Soft_Hold_Start__c != null
                                                     ? qli.Product2.RES_Soft_Hold_Start__c
                                                     : System.now(); 
                         q.RES_Unit_Blocked_End_Date__c = softHoldExtensionDate;
-                        quoteList.add(q);
+                        q.RES_Extend_Soft_Hold_By_Hours__c = null;
+                        q.RES_Approval_Request_Remarks__c = '';
                     }
                     else{
                         Product2 p = new Product2();
@@ -63,6 +65,10 @@ public with sharing class RES_SoftHoldPostApprovalActions {
                         p.RES_Is_In_Soft_Hold_Extension__c = false;
                         p.RES_Unit_Status__c = 'Available';
                         productsToUpdate.add(p);
+
+                        q.RES_Extend_Soft_Hold_By_Hours__c = null;
+                        q.RES_Approval_Request_Remarks__c = '';
+                        
                     }
                 }
             }
@@ -76,8 +82,12 @@ public with sharing class RES_SoftHoldPostApprovalActions {
                         p.RES_Unit_Status__c = 'Available';
                     }
                     productsToUpdate.add(p);
+                    q.RES_Extend_Soft_Hold_By_Hours__c = null;
+                    q.RES_Approval_Request_Remarks__c = '';
                 }
             }
+
+            quoteList.add(q);
         }
 
         List<QuoteLineItem> excludeList = new RES_QuoteLineItemDAO().getQuoteLineItemsFiltered(quoteIds,softHoldProducts);

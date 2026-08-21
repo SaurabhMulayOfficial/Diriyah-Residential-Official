@@ -7,9 +7,6 @@
         <locationY>0</locationY>
         <actionName>RES_SoftHoldPostApprovalActions</actionName>
         <actionType>apex</actionType>
-        <connector>
-            <targetReference>Update_Quote_Assignment</targetReference>
-        </connector>
         <flowTransactionModel>Automatic</flowTransactionModel>
         <inputParameters>
             <name>action</name>
@@ -30,23 +27,6 @@
     </actionCalls>
     <apiVersion>67.0</apiVersion>
     <areMetricsLoggedToDataCloud>false</areMetricsLoggedToDataCloud>
-    <assignments>
-        <name>Update_Quote_Assignment</name>
-        <label>Update Quote Assignment</label>
-        <locationX>0</locationX>
-        <locationY>0</locationY>
-        <assignmentItems>
-            <assignToReference>Get_Quote_Record.RES_Extend_Soft_Hold_By_Hours__c</assignToReference>
-            <operator>Assign</operator>
-        </assignmentItems>
-        <assignmentItems>
-            <assignToReference>Get_Quote_Record.RES_Approval_Request_Remarks__c</assignToReference>
-            <operator>Assign</operator>
-        </assignmentItems>
-        <connector>
-            <targetReference>Update_Quote</targetReference>
-        </connector>
-    </assignments>
     <decisions>
         <name>If_quote_Exist</name>
         <label>If quote Exist</label>
@@ -112,13 +92,6 @@
         <object>Quote</object>
         <storeOutputAutomatically>true</storeOutputAutomatically>
     </recordLookups>
-    <recordUpdates>
-        <name>Update_Quote</name>
-        <label>Update Quote</label>
-        <locationX>0</locationX>
-        <locationY>0</locationY>
-        <inputReference>Get_Quote_Record</inputReference>
-    </recordUpdates>
     <start>
         <locationX>0</locationX>
         <locationY>0</locationY>
