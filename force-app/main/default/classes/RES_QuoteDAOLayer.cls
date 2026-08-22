@@ -51,4 +51,21 @@ public with sharing class RES_QuoteDAOLayer extends RES_BaseDAOLayer {
         String soql = 'SELECT Id, OpportunityId, Status FROM Quote WHERE OpportunityId IN :opportunityIds';
         return (List<Quote>) executeQuery(soql, '', false, bindVars, AccessLevel.SYSTEM_MODE);
     }
+    public List<Quote> getQuotesByContractIds(Set<Id> contractIdSet, String status) {
+        if (contractIdSet == null || contractIdSet.isEmpty()) {
+            return new List<Quote>();
+        }
+        Boolean isSyncing = true;
+        Map<String, Object> bindVars = new Map<String, Object>();
+        bindVars.put('contractIdSet', contractIdSet);
+        bindVars.put('status', status);
+        bindVars.put('isSyncing', isSyncing);
+
+        String soql = 'SELECT Id, OpportunityId, ContractId ' +
+        			  'FROM Quote ' + 
+                      'WHERE ContractId IN :contractIdSet AND ' + 
+                      'Status =: status AND ' +
+                      'IsSyncing =: isSyncing';
+        return (List<Quote>) executeQuery(soql, '', false, bindVars, AccessLevel.SYSTEM_MODE);
+    }
 }
