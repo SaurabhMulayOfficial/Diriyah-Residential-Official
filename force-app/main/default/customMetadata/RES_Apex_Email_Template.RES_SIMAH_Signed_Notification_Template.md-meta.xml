@@ -10,17 +10,25 @@
 &lt;meta charset=&quot;UTF-8&quot;&gt;
 &lt;title&gt;SIMAH Form Signed&lt;/title&gt;
 &lt;/head&gt;
+
 &lt;body style=&quot;margin:0;padding:0;background-color:#F4F4F4;&quot;&gt;
+
 &lt;table width=&quot;100%&quot; cellpadding=&quot;0&quot; cellspacing=&quot;0&quot; border=&quot;0&quot; bgcolor=&quot;#F4F4F4&quot;&gt;
 &lt;tr&gt;
 &lt;td align=&quot;center&quot; style=&quot;padding:30px 15px;&quot;&gt;
-&lt;table width=&quot;100%&quot; cellpadding=&quot;0&quot; cellspacing=&quot;0&quot; border=&quot;0&quot; style=&quot;width:1000px;max-width:1000px;background:#FFFFFF;border-collapse:collapse; border-collapse:collapse;border-radius:10px;overflow:hidden;&quot;&gt;
+
+&lt;table width=&quot;600&quot; cellpadding=&quot;0&quot; cellspacing=&quot;0&quot; border=&quot;0&quot;
+style=&quot;width:600px;max-width:600px;background:#FFFFFF;border-collapse:collapse; border-collapse:collapse;border-radius:10px;overflow:hidden;&quot;&gt;
+
 &lt;!-- Header --&gt;
+
+&lt;tr&gt;
 &lt;td bgcolor=&quot;#C89B5A&quot;
 style=&quot;background-color:#dbbc9a;
 padding:30px;
 text-align:center;
 font-family:Arial,Helvetica,sans-serif;&quot;&gt;
+
 &lt;h1 style=&quot;margin:0;
 color:#4A3103;
 font-size:28px;
@@ -38,39 +46,67 @@ The SIMAH form has been successfully signed. Please review the details below.
 
 &lt;/td&gt;
 &lt;/tr&gt;
+
+
+
+
+
 &lt;!-- Body --&gt;
 &lt;tr&gt;
-&lt;td bgcolor=&quot;#FFFFFF&quot; style=&quot;padding:30px;
+&lt;td bgcolor=&quot;#FFFFFF&quot;
+style=&quot;padding:30px;
 font-family:Arial,Helvetica,sans-serif;
-color:#444444;text-align:center;&quot;&gt;
+color:#444444;&quot;&gt;
+
 &lt;p style=&quot;margin:0 0 18px;
 font-size:16px;
-line-height:24px;&quot;&gt; Hello &lt;strong&gt;{0}&lt;/strong&gt;, &lt;/p&gt;
+line-height:24px;&quot;&gt;
+Hello &lt;strong&gt;{0}&lt;/strong&gt;,
+&lt;/p&gt;
+
 &lt;p style=&quot;margin:0 0 18px;
 font-size:15px;
-line-height:26px;&quot;&gt; The SIMAH Form for contract &lt;strong&gt;{1}&lt;/strong&gt; has been &lt;strong&gt;{2}&lt;/strong&gt;. &lt;/p&gt;
+line-height:26px;&quot;&gt;
+The SIMAH Form for contract
+&lt;strong&gt;{1}&lt;/strong&gt; has been
+&lt;strong&gt;{2}&lt;/strong&gt;.
+&lt;/p&gt;
 
 &lt;p style=&quot;margin:22px 0 25px;
 font-size:15px;
-line-height:26px;&quot;&gt; You can view the contract using the button below. &lt;/p&gt;
+line-height:26px;&quot;&gt;
+You can view the contract using the button below.
+&lt;/p&gt;
+
 &lt;!-- CTA --&gt;
 &lt;table align=&quot;center&quot; cellpadding=&quot;0&quot; cellspacing=&quot;0&quot; border=&quot;0&quot;&gt;
 &lt;tr&gt;
-&lt;td align=&quot;center&quot; bgcolor=&quot;#C89B5A&quot; style=&quot;background-color:#dbbc9a;border-radius:4px; border-collapse:collapse;border-radius:10px;overflow:hidden;&quot;&gt;
-&lt;a href=&quot;{3}&quot; style=&quot;display:block;
+&lt;td align=&quot;center&quot;
+bgcolor=&quot;#C89B5A&quot;
+style=&quot;background-color:#dbbc9a;border-radius:4px; border-collapse:collapse;border-radius:10px;overflow:hidden;&quot;&gt;
+
+&lt;a href=&quot;{3}&quot;
+style=&quot;display:block;
 padding:13px 30px;
 text-align:center;
 text-decoration:none;
 color:#000000;
+border-collapse:collapse;border-radius:10px;overflow:hidden;
 font-family:Arial,Helvetica,sans-serif;
 font-size:15px;
 font-weight:bold;
-line-height:22px;&quot;&gt; View Contract &lt;/a&gt;
+line-height:22px;&quot;&gt;
+View Contract
+&lt;/a&gt;
+
 &lt;/td&gt;
 &lt;/tr&gt;
 &lt;/table&gt;
+
+
 &lt;/td&gt;
 &lt;/tr&gt;
+
 &lt;!-- Footer --&gt;
 &lt;tr&gt;
 &lt;td bgcolor=&quot;#F9F6EF&quot;
@@ -79,24 +115,29 @@ padding:22px;
 text-align:center;
 border-top:1px solid #ECE4D5;
 font-family:Arial,Helvetica,sans-serif;&quot;&gt;
+
 &lt;p style=&quot;margin:0;
 color:#000000;
 font-size:14px;&quot;&gt;
 Regards,
 &lt;/p&gt;
+
 &lt;p style=&quot;margin:8px 0 0;
 color:#4A3103;
 font-size:15px;
 font-weight:bold;&quot;&gt;
 CRM System
 &lt;/p&gt;
+
 &lt;/td&gt;
 &lt;/tr&gt;
 
 &lt;/table&gt;
+
 &lt;/td&gt;
 &lt;/tr&gt;
 &lt;/table&gt;
+
 &lt;/body&gt;
 &lt;/html&gt;</value>
     </values>
