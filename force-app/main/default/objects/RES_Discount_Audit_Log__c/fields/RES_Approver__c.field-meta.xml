@@ -2,7 +2,7 @@
 <CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
     <fullName>RES_Approver__c</fullName>
     <deleteConstraint>SetNull</deleteConstraint>
-    <description>DIR-871: Populated on Approval/Rejection entries - who made the decision.</description>
+    <description>DIR-871/DIR-880: Who made the decision on Approval/Rejection entries; the pending/assigned approver on Submission entries.</description>
     <label>Approver</label>
     <referenceTo>User</referenceTo>
     <relationshipLabel>Discount Audit Logs Approved</relationshipLabel>

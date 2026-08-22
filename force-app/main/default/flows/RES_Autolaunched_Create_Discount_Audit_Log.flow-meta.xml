@@ -54,6 +54,12 @@
                 <elementReference>reason</elementReference>
             </value>
         </inputAssignments>
+        <inputAssignments>
+            <field>RES_Submission_Date__c</field>
+            <value>
+                <elementReference>submissionDate</elementReference>
+            </value>
+        </inputAssignments>
         <object>RES_Discount_Audit_Log__c</object>
     </recordCreates>
     <start>
@@ -113,5 +119,12 @@
         <isCollection>false</isCollection>
         <isInput>true</isInput>
         <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <name>submissionDate</name>
+        <dataType>DateTime</dataType>
+        <isCollection>false</isCollection>
+        <isInput>true</isInput>
+        <isOutput>true</isOutput>
     </variables>
 </Flow>

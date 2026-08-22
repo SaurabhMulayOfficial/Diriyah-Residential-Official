@@ -2,7 +2,7 @@
 <CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
     <fullName>RES_Submitted_By__c</fullName>
     <deleteConstraint>SetNull</deleteConstraint>
-    <description>DIR-871: Populated on Submission entries - who submitted the discount request.</description>
+    <description>DIR-871/DIR-880: Who submitted the discount request. Populated on every entry type in the discount cycle (Submission, Approval, Rejection, Recall) so the requester is always visible.</description>
     <label>Submitted By</label>
     <referenceTo>User</referenceTo>
     <relationshipLabel>Discount Audit Logs Submitted</relationshipLabel>

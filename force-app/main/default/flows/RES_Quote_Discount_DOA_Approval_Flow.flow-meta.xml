@@ -22,7 +22,7 @@
     <formulas>
         <name>fRejectBody</name>
         <dataType>String</dataType>
-        <expression>&quot;Your discount request on Quote &apos;&quot; &amp; {!$Record.Name} &amp; &quot;&apos; (&quot; &amp; {!$Record.QuoteNumber} &amp; &quot;) - &quot; &amp; TEXT({!$Record.Discount}) &amp; &quot;% (Amount &quot; &amp; TEXT(({!$Record.Subtotal} - {!$Record.GrandTotal})) &amp; &quot;) - was rejected. The Quote has been set to Rejected; please revise and resubmit.&quot;</expression>
+        <expression>&quot;Your discount request on Quote &apos;&quot; &amp; {!$Record.Name} &amp; &quot;&apos; (&quot; &amp; {!$Record.QuoteNumber} &amp; &quot;) - &quot; &amp; TEXT({!$Record.Discount}) &amp; &quot;% (Amount &quot; &amp; TEXT(({!$Record.Subtotal} - {!$Record.GrandTotal})) &amp; &quot;) - was rejected. Move the Quote back to Negotiating when you&apos;re ready to revise and resubmit.&quot;</expression>
     </formulas>
     <formulas>
         <name>fStage1Bell</name>
@@ -89,6 +89,22 @@
                     <booleanValue>false</booleanValue>
                 </rightValue>
             </entryConditions>
+            <entryConditions>
+                <conditionType>EntryCondition</conditionType>
+                <leftValueReference>Try_Acquire_Mutex.Status</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Completed</stringValue>
+                </rightValue>
+            </entryConditions>
+            <entryConditions>
+                <conditionType>EntryCondition</conditionType>
+                <leftValueReference>Try_Acquire_Mutex.Outputs.acquired</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </entryConditions>
             <exitConditionLogic>and</exitConditionLogic>
             <inputParameters>
                 <name>recordId</name>
@@ -109,6 +125,54 @@
             <stepSubtype>BackgroundStep</stepSubtype>
         </stageSteps>
         <stageSteps>
+            <name>Get_Rejection_Count</name>
+            <actionName>RES_Autolaunched_Get_Quote_Discount_Rejection_Count</actionName>
+            <actionType>stepBackground</actionType>
+            <canAssigneeEdit>false</canAssigneeEdit>
+            <debugSimulateStep>false</debugSimulateStep>
+            <entryConditionLogic>and</entryConditionLogic>
+            <entryConditions>
+                <conditionType>EntryCondition</conditionType>
+                <leftValueReference>Get_Owner_Manager.Outputs.managerId</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </entryConditions>
+            <entryConditions>
+                <conditionType>EntryCondition</conditionType>
+                <leftValueReference>Try_Acquire_Mutex.Status</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Completed</stringValue>
+                </rightValue>
+            </entryConditions>
+            <entryConditions>
+                <conditionType>EntryCondition</conditionType>
+                <leftValueReference>Try_Acquire_Mutex.Outputs.acquired</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </entryConditions>
+            <exitConditionLogic>and</exitConditionLogic>
+            <inputParameters>
+                <name>quoteId</name>
+                <value>
+                    <elementReference>$Record.Id</elementReference>
+                </value>
+            </inputParameters>
+            <label>Get Prior Rejection Count</label>
+            <outputConfigParams>
+                <name>rejectionCount</name>
+                <value xsi:nil="true"/>
+            </outputConfigParams>
+            <requiresAsyncProcessing>false</requiresAsyncProcessing>
+            <runAsUser>false</runAsUser>
+            <shouldLock>false</shouldLock>
+            <stepSubtype>BackgroundStep</stepSubtype>
+        </stageSteps>
+        <stageSteps>
             <name>Notify_Manager</name>
             <actionName>RES_Autolaunched_Send_Quote_Approval_Notification</actionName>
             <actionType>stepBackground</actionType>
@@ -121,6 +185,22 @@
                 <operator>IsNull</operator>
                 <rightValue>
                     <booleanValue>false</booleanValue>
+                </rightValue>
+            </entryConditions>
+            <entryConditions>
+                <conditionType>EntryCondition</conditionType>
+                <leftValueReference>Get_Rejection_Count.Status</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Completed</stringValue>
+                </rightValue>
+            </entryConditions>
+            <entryConditions>
+                <conditionType>EntryCondition</conditionType>
+                <leftValueReference>Get_Rejection_Count.Outputs.rejectionCount</leftValueReference>
+                <operator>LessThan</operator>
+                <rightValue>
+                    <numberValue>3.0</numberValue>
                 </rightValue>
             </entryConditions>
             <exitConditionLogic>and</exitConditionLogic>
@@ -161,6 +241,62 @@
             <stepSubtype>BackgroundStep</stepSubtype>
         </stageSteps>
         <stageSteps>
+            <name>Notify_Manager_Third_Rejection</name>
+            <actionName>RES_Autolaunched_Send_Quote_Approval_Notification</actionName>
+            <actionType>stepBackground</actionType>
+            <canAssigneeEdit>false</canAssigneeEdit>
+            <debugSimulateStep>false</debugSimulateStep>
+            <entryConditionLogic>and</entryConditionLogic>
+            <entryConditions>
+                <conditionType>EntryCondition</conditionType>
+                <leftValueReference>Get_Owner_Manager.Outputs.managerId</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue><booleanValue>false</booleanValue></rightValue>
+            </entryConditions>
+            <entryConditions>
+                <conditionType>EntryCondition</conditionType>
+                <leftValueReference>Get_Rejection_Count.Outputs.rejectionCount</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue><numberValue>3.0</numberValue></rightValue>
+            </entryConditions>
+            <exitConditionLogic>and</exitConditionLogic>
+            <inputParameters><name>recipientId</name><value><elementReference>Get_Owner_Manager.Outputs.managerId</elementReference></value></inputParameters>
+            <inputParameters><name>recordId</name><value><elementReference>$Record.Id</elementReference></value></inputParameters>
+            <inputParameters><name>title</name><value><stringValue>Quote Discount Approval Required</stringValue></value></inputParameters>
+            <inputParameters><name>bellBody</name><value><elementReference>Third_Rejection_Approval_Alert</elementReference></value></inputParameters>
+            <inputParameters><name>ApexEmailTemplateName</name><value><stringValue>Quote_Discount_Approval_Request</stringValue></value></inputParameters>
+            <label>Notify Manager - Third Rejection Warning</label>
+            <requiresAsyncProcessing>false</requiresAsyncProcessing><runAsUser>false</runAsUser><shouldLock>false</shouldLock><stepSubtype>BackgroundStep</stepSubtype>
+        </stageSteps>
+        <stageSteps>
+            <name>Notify_Manager_Four_Plus_Rejections</name>
+            <actionName>RES_Autolaunched_Send_Quote_Approval_Notification</actionName>
+            <actionType>stepBackground</actionType>
+            <canAssigneeEdit>false</canAssigneeEdit>
+            <debugSimulateStep>false</debugSimulateStep>
+            <entryConditionLogic>and</entryConditionLogic>
+            <entryConditions>
+                <conditionType>EntryCondition</conditionType>
+                <leftValueReference>Get_Owner_Manager.Outputs.managerId</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue><booleanValue>false</booleanValue></rightValue>
+            </entryConditions>
+            <entryConditions>
+                <conditionType>EntryCondition</conditionType>
+                <leftValueReference>Get_Rejection_Count.Outputs.rejectionCount</leftValueReference>
+                <operator>GreaterThan</operator>
+                <rightValue><numberValue>3.0</numberValue></rightValue>
+            </entryConditions>
+            <exitConditionLogic>and</exitConditionLogic>
+            <inputParameters><name>recipientId</name><value><elementReference>Get_Owner_Manager.Outputs.managerId</elementReference></value></inputParameters>
+            <inputParameters><name>recordId</name><value><elementReference>$Record.Id</elementReference></value></inputParameters>
+            <inputParameters><name>title</name><value><stringValue>Quote Discount Approval Required</stringValue></value></inputParameters>
+            <inputParameters><name>bellBody</name><value><elementReference>Four_Plus_Rejections_Approval_Alert</elementReference></value></inputParameters>
+            <inputParameters><name>ApexEmailTemplateName</name><value><stringValue>Quote_Discount_Approval_Request</stringValue></value></inputParameters>
+            <label>Notify Manager - Four Plus Rejections Warning</label>
+            <requiresAsyncProcessing>false</requiresAsyncProcessing><runAsUser>false</runAsUser><shouldLock>false</shouldLock><stepSubtype>BackgroundStep</stepSubtype>
+        </stageSteps>
+        <stageSteps>
             <name>Log_Submission</name>
             <actionName>RES_Autolaunched_Create_Discount_Audit_Log</actionName>
             <actionType>stepBackground</actionType>
@@ -173,6 +309,22 @@
                 <operator>IsNull</operator>
                 <rightValue>
                     <booleanValue>false</booleanValue>
+                </rightValue>
+            </entryConditions>
+            <entryConditions>
+                <conditionType>EntryCondition</conditionType>
+                <leftValueReference>Try_Acquire_Mutex.Status</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Completed</stringValue>
+                </rightValue>
+            </entryConditions>
+            <entryConditions>
+                <conditionType>EntryCondition</conditionType>
+                <leftValueReference>Try_Acquire_Mutex.Outputs.acquired</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
                 </rightValue>
             </entryConditions>
             <exitConditionLogic>and</exitConditionLogic>
@@ -200,7 +352,23 @@
                     <elementReference>$Record.OwnerId</elementReference>
                 </value>
             </inputParameters>
+            <inputParameters>
+                <name>approverId</name>
+                <value>
+                    <elementReference>Get_Owner_Manager.Outputs.managerId</elementReference>
+                </value>
+            </inputParameters>
+            <inputParameters>
+                <name>submissionDate</name>
+                <value>
+                    <elementReference>$Flow.CurrentDateTime</elementReference>
+                </value>
+            </inputParameters>
             <label>Log Submission</label>
+            <outputConfigParams>
+                <name>submissionDate</name>
+                <value xsi:nil="true"/>
+            </outputConfigParams>
             <requiresAsyncProcessing>false</requiresAsyncProcessing>
             <runAsUser>false</runAsUser>
             <shouldLock>false</shouldLock>
@@ -516,6 +684,18 @@
                     <stringValue>Approved</stringValue>
                 </value>
             </inputParameters>
+            <inputParameters>
+                <name>submittedById</name>
+                <value>
+                    <elementReference>$Record.OwnerId</elementReference>
+                </value>
+            </inputParameters>
+            <inputParameters>
+                <name>submissionDate</name>
+                <value>
+                    <elementReference>Log_Submission.Outputs.submissionDate</elementReference>
+                </value>
+            </inputParameters>
             <label>Log Approved (Manager)</label>
             <requiresAsyncProcessing>false</requiresAsyncProcessing>
             <runAsUser>false</runAsUser>
@@ -676,6 +856,18 @@
                 <name>reason</name>
                 <value>
                     <elementReference>Sales_Manager_Approval.Outputs.approvalComments</elementReference>
+                </value>
+            </inputParameters>
+            <inputParameters>
+                <name>submittedById</name>
+                <value>
+                    <elementReference>$Record.OwnerId</elementReference>
+                </value>
+            </inputParameters>
+            <inputParameters>
+                <name>submissionDate</name>
+                <value>
+                    <elementReference>Log_Submission.Outputs.submissionDate</elementReference>
                 </value>
             </inputParameters>
             <label>Log Rejected (Manager)</label>
@@ -936,6 +1128,18 @@
                     <stringValue>Approved</stringValue>
                 </value>
             </inputParameters>
+            <inputParameters>
+                <name>submittedById</name>
+                <value>
+                    <elementReference>$Record.OwnerId</elementReference>
+                </value>
+            </inputParameters>
+            <inputParameters>
+                <name>submissionDate</name>
+                <value>
+                    <elementReference>Log_Submission.Outputs.submissionDate</elementReference>
+                </value>
+            </inputParameters>
             <label>Log Approved Manager (Stage1)</label>
             <requiresAsyncProcessing>false</requiresAsyncProcessing>
             <runAsUser>false</runAsUser>
@@ -1130,6 +1334,18 @@
                     <stringValue>Approved</stringValue>
                 </value>
             </inputParameters>
+            <inputParameters>
+                <name>submittedById</name>
+                <value>
+                    <elementReference>$Record.OwnerId</elementReference>
+                </value>
+            </inputParameters>
+            <inputParameters>
+                <name>submissionDate</name>
+                <value>
+                    <elementReference>Log_Submission.Outputs.submissionDate</elementReference>
+                </value>
+            </inputParameters>
             <label>Log Approved (Finance)</label>
             <requiresAsyncProcessing>false</requiresAsyncProcessing>
             <runAsUser>false</runAsUser>
@@ -1292,6 +1508,18 @@
                     <elementReference>Finance_Approval.Outputs.approvalComments</elementReference>
                 </value>
             </inputParameters>
+            <inputParameters>
+                <name>submittedById</name>
+                <value>
+                    <elementReference>$Record.OwnerId</elementReference>
+                </value>
+            </inputParameters>
+            <inputParameters>
+                <name>submissionDate</name>
+                <value>
+                    <elementReference>Log_Submission.Outputs.submissionDate</elementReference>
+                </value>
+            </inputParameters>
             <label>Log Rejected (Finance)</label>
             <requiresAsyncProcessing>false</requiresAsyncProcessing>
             <runAsUser>false</runAsUser>
@@ -1369,6 +1597,12 @@
                     <stringValue>Recalled</stringValue>
                 </value>
             </inputParameters>
+            <inputParameters>
+                <name>submittedById</name>
+                <value>
+                    <elementReference>$Record.OwnerId</elementReference>
+                </value>
+            </inputParameters>
             <label>Log Recall</label>
             <requiresAsyncProcessing>false</requiresAsyncProcessing>
             <runAsUser>false</runAsUser>
@@ -1376,7 +1610,26 @@
             <stepSubtype>BackgroundStep</stepSubtype>
         </stageSteps>
     </orchestratedStages>
+    <processMetadataValues>
+        <name>BuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>CanvasMode</name>
+        <value>
+            <stringValue>AUTO_LAYOUT_CANVAS</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>OriginBuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
     <processType>ApprovalWorkflow</processType>
+    <runInMode>SystemModeWithoutSharing</runInMode>
     <start>
         <locationX>50</locationX>
         <locationY>0</locationY>
@@ -1395,4 +1648,16 @@
         <triggerType>RecordAfterSave</triggerType>
     </start>
     <status>Active</status>
+    <textTemplates>
+        <name>Third_Rejection_Approval_Alert</name>
+        <isViewedAsPlainText>true</isViewedAsPlainText>
+        <text>⚠️ 3 rejected discount attempts. Management review recommended.
+{!fApproverBody}</text>
+    </textTemplates>
+    <textTemplates>
+        <name>Four_Plus_Rejections_Approval_Alert</name>
+        <isViewedAsPlainText>true</isViewedAsPlainText>
+        <text>🔺❗ 3+ rejected discount attempts. Management review recommended.
+{!fApproverBody}</text>
+    </textTemplates>
 </Flow>

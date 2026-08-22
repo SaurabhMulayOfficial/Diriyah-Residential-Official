@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
     <fullName>RES_Submission_Date__c</fullName>
-    <description>DIR-871: The date/time this discount was submitted for approval. Derived from CreatedDate, populated only on Submission entries so it reads correctly in the Discount History related list.</description>
-    <formula>IF(ISPICKVAL(RES_Entry_Type__c, &quot;Submission&quot;), CreatedDate, null)</formula>
+    <description>DIR-871/DIR-880: The date/time this discount was originally submitted for approval. Set explicitly by the orchestration on every entry type (Submission, Approval, Rejection) so the full history of a discount cycle reads consistently in list views.</description>
     <label>Submission Date</label>
     <required>false</required>
     <trackTrending>false</trackTrending>
