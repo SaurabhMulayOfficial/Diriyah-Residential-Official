@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <SharingRules xmlns="http://soap.sforce.com/2006/04/metadata">
     <sharingOwnerRules>
-        <fullName>RES_Specialist_Owned_Accounts</fullName>
-        <accessLevel>Read</accessLevel>
+        <fullName>RES_Specialist_Owned_Accounts_Shared_With_Finance</fullName>
+        <accessLevel>Edit</accessLevel>
         <accountSettings>
             <caseAccessLevel>None</caseAccessLevel>
-            <contactAccessLevel>Read</contactAccessLevel>
-            <opportunityAccessLevel>Edit</opportunityAccessLevel>
+            <contactAccessLevel>Edit</contactAccessLevel>
+            <opportunityAccessLevel>None</opportunityAccessLevel>
         </accountSettings>
-        <label>Specialist Owned Accounts</label>
+        <label>Specialist Owned Accounts Shared With Finance</label>
         <sharedTo>
-            <group>RES_Operations_Team</group>
+            <group>RES_Finance_Team_Group</group>
         </sharedTo>
         <sharedFrom>
             <group>RES_Specialist_Roles_Group</group>

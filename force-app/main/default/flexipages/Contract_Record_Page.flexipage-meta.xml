@@ -7,12 +7,22 @@
                     <name>actionNames</name>
                     <valueList>
                         <valueListItems>
+                            <value>Contract.RES_Generate_SPA</value>
+                            <visibilityRule>
+                                <criteria>
+                                    <leftValue>{!Record.RES_Source_Opportunity_Stage__c}</leftValue>
+                                    <operator>CONTAINS</operator>
+                                    <rightValue>SPA</rightValue>
+                                </criteria>
+                            </visibilityRule>
+                        </valueListItems>
+                        <valueListItems>
                             <value>Activate</value>
                         </valueListItems>
                         <valueListItems>
                             <value>CustomButton.Contract.RES_Send_for_KYC_Approval</value>
                             <visibilityRule>
-                                <booleanFilter>1 AND 2 AND 3 AND 4 AND 5</booleanFilter>
+                                <booleanFilter>1 AND 2 AND 3 AND 4 AND 5 AND 6</booleanFilter>
                                 <criteria>
                                     <leftValue>{!Record.RES_URC_Signed__c}</leftValue>
                                     <operator>EQUAL</operator>
@@ -38,16 +48,15 @@
                                     <operator>EQUAL</operator>
                                     <rightValue>false</rightValue>
                                 </criteria>
+                                <criteria>
+                                    <leftValue>{!$Permission.CustomPermission.RES_KYC_Approval_Feature_Access}</leftValue>
+                                    <operator>EQUAL</operator>
+                                    <rightValue>true</rightValue>
+                                </criteria>
                             </visibilityRule>
                         </valueListItems>
                         <valueListItems>
                             <value>Delete</value>
-                        </valueListItems>
-                        <valueListItems>
-                            <value>Global.NewTask</value>
-                        </valueListItems>
-                        <valueListItems>
-                            <value>Global.NewEvent</value>
                         </valueListItems>
                     </valueList>
                 </componentInstanceProperties>
@@ -113,7 +122,7 @@
             <componentInstance>
                 <componentInstanceProperties>
                     <name>hideUpdateButton</name>
-                    <value>false</value>
+                    <value>true</value>
                 </componentInstanceProperties>
                 <componentInstanceProperties>
                     <name>variant</name>
@@ -300,16 +309,6 @@
                 </fieldInstanceProperties>
                 <fieldItem>Record.RES_S4_Sync_Date__c</fieldItem>
                 <identifier>RecordRES_S4_Sync_Date_cField</identifier>
-            </fieldInstance>
-        </itemInstances>
-        <itemInstances>
-            <fieldInstance>
-                <fieldInstanceProperties>
-                    <name>uiBehavior</name>
-                    <value>none</value>
-                </fieldInstanceProperties>
-                <fieldItem>Record.RES_SIMAH_Status__c</fieldItem>
-                <identifier>RecordRES_SIMAH_Status_cField</identifier>
             </fieldInstance>
         </itemInstances>
         <name>Facet-ca84733b-a19e-42b8-8e48-00b500cec899</name>
@@ -606,6 +605,26 @@
                 <identifier>RecordRES_KYC_Cleared_cField</identifier>
             </fieldInstance>
         </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.RES_CRF_Form_Received__c</fieldItem>
+                <identifier>RecordRES_CRF_Form_Received_cField</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.RES_SIMAH_Report_Received__c</fieldItem>
+                <identifier>RecordRES_SIMAH_Report_Received_cField</identifier>
+            </fieldInstance>
+        </itemInstances>
         <name>Facet-670c939f-ce9e-4f74-936b-9a794f8b2300</name>
         <type>Facet</type>
     </flexiPageRegions>
@@ -650,7 +669,17 @@
                 <identifier>RecordRES_SPA_Signed_Date_cField</identifier>
             </fieldInstance>
         </itemInstances>
-                <name>Facet-a080a604-04df-40ac-a26d-759c18be09b2</name>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.RES_SIMAH_Status__c</fieldItem>
+                <identifier>RecordRES_SIMAH_Status_cField2</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <name>Facet-a080a604-04df-40ac-a26d-759c18be09b2</name>
         <type>Facet</type>
     </flexiPageRegions>
     <flexiPageRegions>
@@ -712,7 +741,23 @@
         <name>Facet-f6341754-35ab-4a3c-9fe4-185656f2777c</name>
         <type>Facet</type>
     </flexiPageRegions>
-        <flexiPageRegions>
+    <flexiPageRegions>
+        <itemInstances>
+            <componentInstance>
+                <componentName>runtime_industries_clm:contractDocumentHighlight</componentName>
+                <identifier>runtime_industries_clm_contractDocumentHighlight</identifier>
+            </componentInstance>
+        </itemInstances>
+        <itemInstances>
+            <componentInstance>
+                <componentName>runtime_industries_clm:contractDocument</componentName>
+                <identifier>runtime_industries_clm_contractDocument</identifier>
+            </componentInstance>
+        </itemInstances>
+        <name>Facet-0c2cfeea-b0f4-4486-8bf7-93873b41a047</name>
+        <type>Facet</type>
+    </flexiPageRegions>
+    <flexiPageRegions>
         <itemInstances>
             <componentInstance>
                 <componentInstanceProperties>
@@ -761,6 +806,20 @@
                 </componentInstanceProperties>
                 <componentName>flexipage:tab</componentName>
                 <identifier>flexipage_tab</identifier>
+            </componentInstance>
+        </itemInstances>
+        <itemInstances>
+            <componentInstance>
+                <componentInstanceProperties>
+                    <name>body</name>
+                    <value>Facet-0c2cfeea-b0f4-4486-8bf7-93873b41a047</value>
+                </componentInstanceProperties>
+                <componentInstanceProperties>
+                    <name>title</name>
+                    <value>Contract Document</value>
+                </componentInstanceProperties>
+                <componentName>flexipage:tab</componentName>
+                <identifier>flexipage_tab2</identifier>
             </componentInstance>
         </itemInstances>
         <mode>Replace</mode>
@@ -853,6 +912,16 @@
         <itemInstances>
             <componentInstance>
                 <componentInstanceProperties>
+                    <name>hideHeader</name>
+                    <value>false</value>
+                </componentInstanceProperties>
+                <componentName>force:relatedListQuickLinksContainer</componentName>
+                <identifier>force_relatedListQuickLinksContainer</identifier>
+            </componentInstance>
+        </itemInstances>
+        <itemInstances>
+            <componentInstance>
+                <componentInstanceProperties>
                     <name>label</name>
                     <value>Tabs</value>
                 </componentInstanceProperties>
@@ -868,6 +937,106 @@
             <componentInstance>
                 <componentName>runtime_approvals:approvalTrace</componentName>
                 <identifier>runtime_approvals_approvalTrace</identifier>
+            </componentInstance>
+        </itemInstances>
+        <itemInstances>
+            <componentInstance>
+                <componentInstanceProperties>
+                    <name>componentLabel</name>
+                    <value>Work Guide</value>
+                </componentInstanceProperties>
+                <componentInstanceProperties>
+                    <name>isHiddenWhenEmpty</name>
+                    <value>false</value>
+                </componentInstanceProperties>
+                <componentInstanceProperties>
+                    <name>isRunNameDisplayed</name>
+                    <value>false</value>
+                </componentInstanceProperties>
+                <componentInstanceProperties>
+                    <name>isStageNameDisplayed</name>
+                    <value>false</value>
+                </componentInstanceProperties>
+                <componentInstanceProperties>
+                    <name>isStepNameDisplayed</name>
+                    <value>false</value>
+                </componentInstanceProperties>
+                <componentInstanceProperties>
+                    <name>prioritizationCriteria</name>
+                    <value>Last Modified Date (Ascending)</value>
+                </componentInstanceProperties>
+                <componentName>interaction_orchestrator:workGuide</componentName>
+                <identifier>interaction_orchestrator_workGuide</identifier>
+                <visibilityRule>
+                    <criteria>
+                        <leftValue>{!$Client.formFactor}</leftValue>
+                        <operator>EQUAL</operator>
+                        <rightValue>Small</rightValue>
+                    </criteria>
+                </visibilityRule>
+            </componentInstance>
+        </itemInstances>
+        <itemInstances>
+            <componentInstance>
+                <componentInstanceProperties>
+                    <name>actionNames</name>
+                    <valueList>
+                        <valueListItems>
+                            <value>New</value>
+                        </valueListItems>
+                    </valueList>
+                </componentInstanceProperties>
+                <componentInstanceProperties>
+                    <name>maxRecordsToDisplay</name>
+                    <value>10</value>
+                </componentInstanceProperties>
+                <componentInstanceProperties>
+                    <name>parentFieldApiName</name>
+                    <value>Contract.Id</value>
+                </componentInstanceProperties>
+                <componentInstanceProperties>
+                    <name>relatedListApiName</name>
+                    <value>AmendedContracts</value>
+                </componentInstanceProperties>
+                <componentInstanceProperties>
+                    <name>relatedListDisplayType</name>
+                    <value>ADVGRID</value>
+                </componentInstanceProperties>
+                <componentInstanceProperties>
+                    <name>relatedListFieldAliases</name>
+                    <valueList>
+                        <valueListItems>
+                            <value>CONTRACT.CONTRACT_NUMBER</value>
+                        </valueListItems>
+                        <valueListItems>
+                            <value>CONTRACT.STATUS</value>
+                        </valueListItems>
+                        <valueListItems>
+                            <value>CONTRACT.START_DATE</value>
+                        </valueListItems>
+                        <valueListItems>
+                            <value>CONTRACT.END_DATE</value>
+                        </valueListItems>
+                    </valueList>
+                </componentInstanceProperties>
+                <componentInstanceProperties>
+                    <name>relatedListLabel</name>
+                    <value>Amendment Contract</value>
+                </componentInstanceProperties>
+                <componentInstanceProperties>
+                    <name>showActionBar</name>
+                    <value>true</value>
+                </componentInstanceProperties>
+                <componentInstanceProperties>
+                    <name>sortFieldAlias</name>
+                    <value>__DEFAULT__</value>
+                </componentInstanceProperties>
+                <componentInstanceProperties>
+                    <name>sortFieldOrder</name>
+                    <value>Default</value>
+                </componentInstanceProperties>
+                <componentName>lst:dynamicRelatedList</componentName>
+                <identifier>lst_dynamicRelatedList</identifier>
             </componentInstance>
         </itemInstances>
         <mode>Replace</mode>
