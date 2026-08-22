@@ -7,16 +7,6 @@
                     <name>actionNames</name>
                     <valueList>
                         <valueListItems>
-                            <value>Contract.RES_Generate_SPA</value>
-                            <visibilityRule>
-                                <criteria>
-                                    <leftValue>{!Record.RES_Source_Opportunity_Stage__c}</leftValue>
-                                    <operator>CONTAINS</operator>
-                                    <rightValue>SPA</rightValue>
-                                </criteria>
-                            </visibilityRule>
-                        </valueListItems>
-                        <valueListItems>
                             <value>Activate</value>
                         </valueListItems>
                         <valueListItems>
