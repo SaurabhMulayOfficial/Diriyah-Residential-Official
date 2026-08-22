@@ -11,6 +11,9 @@ public with sharing class RES_QuoteCancellationService {
 
         Set<Id> quoteIds = new Set<Id>();
 
+        Map<Id, Quote> opportunityToQuoteMapping = new Map<Id, Quote>();
+
+
         for(input iterator: inputs){
             relatedRecordIds.add(iterator.quoteInstance.Id);
             quoteIds.add(iterator.quoteInstance.Id);
@@ -19,6 +22,9 @@ public with sharing class RES_QuoteCancellationService {
             }
             if(iterator.quoteInstance.OpportunityId != null){
                 relatedRecordIds.add(iterator.quoteInstance.OpportunityId);
+            }
+            if(iterator.quoteInstance.OpportunityId != null){
+                opportunityToQuoteMapping.put(iterator.quoteInstance.OpportunityId, iterator.quoteInstance);
             }
         }
 
@@ -40,6 +46,10 @@ public with sharing class RES_QuoteCancellationService {
                     e.RES_Post_Review_Action__c = 'ContractCancellation';
                     e.RES_recordId__c = awi.RelatedRecordId;
                 } else if (relatedRecordId.startsWith('006')) {
+                    Quote q = opportunityToQuoteMapping.get(awi.RelatedRecordId);
+                    if(q != null && q.IsSyncing == false){
+                        continue;
+                    }
                     e.RES_Post_Review_Action__c = 'OpportunityStageTransition';
                     e.RES_recordId__c = awi.RelatedRecordId;
                 } else if (relatedRecordId.startsWith('0Q0')) {
@@ -67,6 +77,7 @@ public with sharing class RES_QuoteCancellationService {
             Id quoteId = itr.quoteInstance.Id;
             Id relatedContractId = itr.quoteInstance.ContractId;
             Id relatedOpportunityId = itr.quoteInstance.OpportunityId;
+            Boolean isPrimary = itr.quoteInstance.IsSyncing;
 
             if(quoteId != null && !processedIds.contains(quoteId)){
                 Quote q = new Quote(Id = quoteId);
@@ -78,7 +89,7 @@ public with sharing class RES_QuoteCancellationService {
                 c.Status = 'Canceled';
                 recordsToUpdate.add(c);
             }
-            if(relatedOpportunityId != null && !processedIds.contains(relatedOpportunityId)){
+            if(isPrimary == true && relatedOpportunityId != null && !processedIds.contains(relatedOpportunityId)){
                 Opportunity op = new Opportunity(Id = relatedOpportunityId);
                 op.StageName = 'Proposal';
                 recordsToUpdate.add(op);

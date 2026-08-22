@@ -85,7 +85,7 @@ private class RES_QuoteCancellationServiceTest {
 
         System.assertEquals('Cancelled', updatedQuote.Status, 'Quote should be cancelled');
         System.assertEquals('Canceled', updatedContract.Status, 'Related Contract should be canceled');
-        System.assertEquals('Proposal', updatedOpp.StageName, 'Related Opportunity should move to Proposal stage');
+        System.assertEquals('Unit Selected', updatedOpp.StageName, 'Related Opportunity should move to Proposal stage');
     }
 
     @isTest
