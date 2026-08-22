@@ -95,4 +95,31 @@ public without sharing class RES_ProcessInstanceDAOLayer extends RES_BaseDAOLaye
             AccessLevel.SYSTEM_MODE
         );
     }
+
+    public List<ApprovalWorkItem> getApprovalWorkItemByRelatedRecordIds(
+        Set<Id> relatedToIds
+    ) {
+        if (relatedToIds == null || relatedToIds.isEmpty()) {
+            return new List<ApprovalWorkItem>();
+        }
+
+        Map<String, Object> bindVars = new Map<String, Object>();
+        bindVars.put('relatedToIds', relatedToIds);
+
+        String soql =
+            'SELECT Id, AssignedTo.Name, ApprovalSubmissionId, Status, RelatedRecordId ' +
+            'FROM ApprovalWorkItem ' +
+            'WHERE ' +
+            'Status = \'Assigned\' ' +
+            'AND RelatedRecordId IN :relatedToIds ' +
+            'ORDER BY CreatedDate DESC';
+
+        return (List<ApprovalWorkItem>) executeQuery(
+            soql,
+            '',
+            false,
+            bindVars,
+            AccessLevel.SYSTEM_MODE
+        );
+    }
 }

@@ -498,4 +498,22 @@ Please go back and select at least one lead with status = “Qualified” to pro
         <shortDescription>RES_Auto_Reject_On_Cancel_Opportunity</shortDescription>
         <value>Auto Reject Quote Approval on Opportunity Closed Lost</value>
     </labels>
+    <labels>
+        <fullName>RES_Quote_Cancellation</fullName>
+        <categories>Quote Cancellation</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Quote Cancellation</shortDescription>
+        <value>If you proceed with cancelling this Quote, the associated Contract will also be cancelled. Any associated Product that is currently blocked will be released, and all related approvals will be cancelled.
+
+Do you wish to proceed with the cancellation?</value>
+    </labels>
+    <labels>
+        <fullName>RES_Approvals_Auto_Cancelled</fullName>
+        <categories>Quote Cancellation</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Approvals Auto Cancelled</shortDescription>
+        <value>System: Approvals auto cancelled automatically because the Quote was cancelled.</value>
+    </labels>
 </CustomLabels>

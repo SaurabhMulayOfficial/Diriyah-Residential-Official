@@ -1,0 +1,259 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <label>Unit Change Notification</label>
+    <protected>false</protected>
+    <values>
+        <field>Html_Body__c</field>
+        <value xsi:type="xsd:string">&lt;!DOCTYPE html&gt;
+
+&lt;html&gt;
+&lt;head&gt;
+&lt;meta charset=&quot;UTF-8&quot;&gt;
+&lt;title&gt;Unit Change - Finance Action Required&lt;/title&gt;
+&lt;/head&gt;
+
+&lt;body style=&quot;margin:0;padding:0;background-color:#F4F4F4;&quot;&gt;
+
+&lt;table width=&quot;100%&quot; cellpadding=&quot;0&quot; cellspacing=&quot;0&quot; border=&quot;0&quot; bgcolor=&quot;#F4F4F4&quot;&gt;
+&lt;tr&gt;
+&lt;td align=&quot;center&quot; style=&quot;padding:30px 15px;&quot;&gt;
+
+&lt;table width=&quot;600&quot; cellpadding=&quot;0&quot; cellspacing=&quot;0&quot; border=&quot;0&quot;
+style=&quot;width:600px;max-width:600px;background:#FFFFFF;border-collapse:collapse;border-radius:10px;overflow:hidden;&quot;&gt;
+
+&lt;!-- Header --&gt;
+&lt;tr&gt;
+&lt;td bgcolor=&quot;#C89B5A&quot;
+style=&quot;background-color:#dbbc9a;
+padding:30px;
+text-align:center;
+font-family:Arial,Helvetica,sans-serif;&quot;&gt;
+
+&lt;h1 style=&quot;margin:0;
+color:#4A3103;
+font-size:28px;
+font-weight:bold;
+line-height:36px;&quot;&gt;
+Unit Change Notification
+&lt;/h1&gt;
+
+&lt;p style=&quot;margin:12px 0 0;
+color:#000000;
+font-size:15px;
+line-height:22px;&quot;&gt;
+Finance action is required following a unit change.
+&lt;/p&gt;
+
+&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;!-- Body --&gt;
+&lt;tr&gt;
+&lt;td bgcolor=&quot;#FFFFFF&quot;
+style=&quot;padding:30px;
+font-family:Arial,Helvetica,sans-serif;
+color:#444444;&quot;&gt;
+
+&lt;p style=&quot;margin:0 0 18px;
+font-size:16px;
+line-height:24px;&quot;&gt;
+Hello Finance Team,
+&lt;/p&gt;
+
+&lt;p style=&quot;margin:0 0 18px;
+font-size:15px;
+line-height:26px;&quot;&gt;
+The unit associated with Opportunity &lt;strong&gt;{0}&lt;/strong&gt; has been changed.
+&lt;/p&gt;
+
+&lt;p style=&quot;margin:0 0 18px;
+font-size:15px;
+line-height:26px;&quot;&gt;
+Please review the transaction and take the appropriate action regarding
+the &lt;strong&gt;collection or forfeiture&lt;/strong&gt; of the amount collected.
+&lt;/p&gt;
+
+&lt;!-- Opportunity Details --&gt;
+&lt;table width=&quot;100%&quot;
+cellpadding=&quot;14&quot;
+cellspacing=&quot;0&quot;
+border=&quot;0&quot;
+bgcolor=&quot;#FBF8F2&quot;
+style=&quot;background-color:#FBF8F2;
+border-left:4px solid #C89B5A;
+border-collapse:collapse;
+margin:20px 0;&quot;&gt;
+
+&lt;tr&gt;
+&lt;td style=&quot;font-family:Arial,Helvetica,sans-serif;
+font-size:14px;
+font-weight:bold;
+color:#7A5A2A;
+line-height:22px;
+padding-bottom:6px;&quot;&gt;
+Opportunity
+&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td style=&quot;font-family:Arial,Helvetica,sans-serif;
+font-size:14px;
+color:#555555;
+line-height:23px;&quot;&gt;
+&lt;strong&gt;{0}&lt;/strong&gt;
+&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;/table&gt;
+
+&lt;p style=&quot;margin:22px 0 25px;
+font-size:15px;
+line-height:26px;
+text-align:center;&quot;&gt;
+Please use the buttons below to review the related records.
+&lt;/p&gt;
+
+&lt;!-- Record Buttons --&gt;
+
+&lt;table align=&quot;center&quot; cellpadding=&quot;0&quot; cellspacing=&quot;0&quot; border=&quot;0&quot;&gt;
+
+&lt;!-- Quote + Opportunity --&gt;
+
+&lt;tr&gt;
+
+&lt;!-- Quote Button --&gt;
+&lt;td align=&quot;center&quot; style=&quot;padding:0 6px 12px 6px;&quot;&gt;
+
+&lt;table cellpadding=&quot;0&quot; cellspacing=&quot;0&quot; border=&quot;0&quot;&gt;
+&lt;tr&gt;
+&lt;td align=&quot;center&quot;
+bgcolor=&quot;#C89B5A&quot;
+style=&quot;background-color:#dbbc9a;border-radius:4px;&quot;&gt;
+
+&lt;a href=&quot;{1}&quot;
+style=&quot;display:block;
+padding:13px 25px;
+min-width:150px;
+text-align:center;
+text-decoration:none;
+color:#4A3103;
+font-family:Arial,Helvetica,sans-serif;
+font-size:15px;
+font-weight:bold;
+line-height:22px;&quot;&gt;
+View Quote
+&lt;/a&gt;
+
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/table&gt;
+
+&lt;/td&gt;
+
+&lt;!-- Opportunity Button --&gt;
+&lt;td align=&quot;center&quot; style=&quot;padding:0 6px 12px 6px;&quot;&gt;
+
+&lt;table cellpadding=&quot;0&quot; cellspacing=&quot;0&quot; border=&quot;0&quot;&gt;
+&lt;tr&gt;
+&lt;td align=&quot;center&quot;
+bgcolor=&quot;#C89B5A&quot;
+style=&quot;background-color:#dbbc9a;border-radius:4px;&quot;&gt;
+
+&lt;a href=&quot;{2}&quot;
+style=&quot;display:block;
+padding:13px 25px;
+min-width:150px;
+text-align:center;
+text-decoration:none;
+color:#4A3103;
+font-family:Arial,Helvetica,sans-serif;
+font-size:15px;
+font-weight:bold;
+line-height:22px;&quot;&gt;
+View Opportunity
+&lt;/a&gt;
+
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/table&gt;
+
+&lt;/td&gt;
+
+&lt;/tr&gt;
+
+&lt;!-- Contract --&gt;
+
+&lt;tr&gt;
+&lt;td colspan=&quot;2&quot; align=&quot;center&quot; style=&quot;padding:0 6px;&quot;&gt;
+
+&lt;table cellpadding=&quot;0&quot; cellspacing=&quot;0&quot; border=&quot;0&quot;&gt;
+&lt;tr&gt;
+&lt;td align=&quot;center&quot;
+bgcolor=&quot;#C89B5A&quot;
+style=&quot;background-color:#dbbc9a;border-radius:4px;&quot;&gt;
+
+&lt;a href=&quot;{3}&quot;
+style=&quot;display:block;
+padding:13px 35px;
+min-width:180px;
+text-align:center;
+text-decoration:none;
+color:#4A3103;
+font-family:Arial,Helvetica,sans-serif;
+font-size:15px;
+font-weight:bold;
+line-height:22px;&quot;&gt;
+View Contract
+&lt;/a&gt;
+
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/table&gt;
+
+&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;/table&gt;
+
+&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;!-- Footer --&gt;
+&lt;tr&gt;
+&lt;td bgcolor=&quot;#F9F6EF&quot;
+style=&quot;background-color:#dbbc9a;
+padding:22px;
+text-align:center;
+border-top:1px solid #ECE4D5;
+font-family:Arial,Helvetica,sans-serif;&quot;&gt;
+
+&lt;p style=&quot;margin:0;
+color:#000000;
+font-size:14px;&quot;&gt;
+Regards,
+&lt;/p&gt;
+
+&lt;p style=&quot;margin:8px 0 0;
+color:#4A3103;
+font-size:15px;
+font-weight:bold;&quot;&gt;
+CRM System
+&lt;/p&gt;
+
+&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;/table&gt;
+
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/table&gt;
+
+&lt;/body&gt;
+&lt;/html&gt;</value>
+    </values>
+    <values>
+        <field>Subject__c</field>
+        <value xsi:type="xsd:string">Finance Action Required: Unit Change</value>
+    </values>
+</CustomMetadata>
