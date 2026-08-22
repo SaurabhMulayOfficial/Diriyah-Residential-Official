@@ -78,7 +78,7 @@
         <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
         <rules>
             <name>Yes_Fee_Received</name>
-            <conditionLogic>and</conditionLogic>
+            <conditionLogic>1 AND (2 OR 3)</conditionLogic>
             <conditions>
                 <leftValueReference>Get_Quote_Record.ContractId</leftValueReference>
                 <operator>IsNull</operator>
@@ -88,6 +88,13 @@
             </conditions>
             <conditions>
                 <leftValueReference>Get_Quote_Record.Contract.RES_Fee_Transferred__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>Get_Quote_Record.Contract.RES_Down_Payment_Receipt__c</leftValueReference>
                 <operator>EqualTo</operator>
                 <rightValue>
                     <booleanValue>true</booleanValue>
