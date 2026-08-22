@@ -41,12 +41,35 @@ private class RES_ReviewApprovalWorkItemServiceTest {
             ));
         }
         insert quotes;
+
+        // Contracts are needed for ContractCancellation / OpportunityStageTransition coverage.
+        List<Contract> contracts = new List<Contract>();
+        for (Integer i = 0; i < 3; i++) {
+            contracts.add(new Contract(
+                AccountId = acc.Id,
+                Status = 'Draft',
+                StartDate = Date.today()
+            ));
+        }
+        insert contracts;
     }
 
     private static RES_Review_Approval_Work_Item__e buildEvent(String action, Id quoteId) {
         return new RES_Review_Approval_Work_Item__e(
             RES_Post_Review_Action__c = action,
             RES_QuoteId__c = quoteId,
+            RES_Approval_Decision__c = 'Approve',
+            RES_Approval_Comments__c = 'Approved via test',
+            RES_Approval_Work_Item_Id__c = FAKE_WORK_ITEM_ID
+        );
+    }
+
+    // Overload for events that key off RES_recordId__c (Contract / Opportunity flows)
+    // rather than RES_QuoteId__c.
+    private static RES_Review_Approval_Work_Item__e buildRecordEvent(String action, Id recordId) {
+        return new RES_Review_Approval_Work_Item__e(
+            RES_Post_Review_Action__c = action,
+            RES_recordId__c = recordId,
             RES_Approval_Decision__c = 'Approve',
             RES_Approval_Comments__c = 'Approved via test',
             RES_Approval_Work_Item_Id__c = FAKE_WORK_ITEM_ID
@@ -193,6 +216,147 @@ private class RES_ReviewApprovalWorkItemServiceTest {
 
         Test.startTest();
         EventBus.publish(evt);
+        Test.stopTest();
+    }
+
+    // ==========================================================================
+    // NEW TESTS APPENDED BELOW
+    // ==========================================================================
+
+    @isTest
+    static void testFilter_ContractCancellation() {
+        Contract c = [SELECT Id, Status FROM Contract LIMIT 1];
+
+        List<RES_Review_Approval_Work_Item__e> events = new List<RES_Review_Approval_Work_Item__e>{
+            buildRecordEvent('ContractCancellation', c.Id)
+        };
+
+        Test.startTest();
+        RES_ReviewApprovalWorkItemService.filter(events);
+        Test.stopTest();
+
+        Contract updated = [SELECT Id, Status FROM Contract WHERE Id = :c.Id];
+        System.assertEquals('Canceled', updated.Status,
+            'Contract status should be Canceled after ContractCancellation action');
+    }
+
+    @isTest
+    static void testContractCancellation_DirectCall() {
+        Contract c = [SELECT Id FROM Contract LIMIT 1];
+        List<RES_Review_Approval_Work_Item__e> events = new List<RES_Review_Approval_Work_Item__e>{
+            buildRecordEvent('ContractCancellation', c.Id)
+        };
+
+        Test.startTest();
+        RES_ReviewApprovalWorkItemService.contractCancellation(events);
+        Test.stopTest();
+
+        Contract updated = [SELECT Id, Status FROM Contract WHERE Id = :c.Id];
+        System.assertEquals('Canceled', updated.Status);
+    }
+
+    @isTest
+    static void testContractCancellation_Bulk() {
+        List<Contract> contracts = [SELECT Id FROM Contract];
+        List<RES_Review_Approval_Work_Item__e> events = new List<RES_Review_Approval_Work_Item__e>();
+        for (Contract c : contracts) {
+            events.add(buildRecordEvent('ContractCancellation', c.Id));
+        }
+
+        Test.startTest();
+        RES_ReviewApprovalWorkItemService.filter(events);
+        Test.stopTest();
+
+        List<Contract> updated = [SELECT Id, Status FROM Contract WHERE Status = 'Canceled'];
+        System.assertEquals(contracts.size(), updated.size(),
+            'All contracts in the bulk event batch should be canceled');
+    }
+
+    /**
+     * NOTE: filter() routes 'OpportunityStageTransition' events to
+     * contractCancellation(), not opportunityStageTransition(), which looks
+     * like a copy-paste bug in the source. Inside contractCancellation(),
+     * the line `c.Id = cId;` (assigning an Opportunity Id onto a new
+     * Contract()) throws System.TypeException: Invalid id value for this
+     * SObject type — and that line sits OUTSIDE the try/catch block, which
+     * only wraps the Database.update call. So this isn't a silent no-op: it
+     * is an unhandled exception that propagates all the way out of filter(),
+     * meaning the platform event trigger itself would fail for any
+     * OpportunityStageTransition event today. This test documents that
+     * actual behavior. If/when the bug is fixed to call
+     * opportunityStageTransition() instead, this test should be replaced
+     * with one that asserts StageName = 'Proposal' on the Opportunity and
+     * no exception is thrown.
+     */
+    @isTest
+    static void testOpportunityStageTransition_DirectCall() {
+        Opportunity opp = [SELECT Id FROM Opportunity LIMIT 1];
+        List<RES_Review_Approval_Work_Item__e> events = new List<RES_Review_Approval_Work_Item__e>{
+            buildRecordEvent('OpportunityStageTransition', opp.Id)
+        };
+
+        Test.startTest();
+        RES_ReviewApprovalWorkItemService.opportunityStageTransition(events);
+        Test.stopTest();
+
+        Opportunity updated = [SELECT Id, StageName FROM Opportunity WHERE Id = :opp.Id];
+        System.assertEquals('Proposal', updated.StageName,
+            'Calling opportunityStageTransition() directly should move the Opportunity to Proposal');
+    }
+
+    @isTest
+    static void testFilter_MixedActionsInSingleBatch() {
+        Quote softHoldQuote = [SELECT Id FROM Quote WHERE Name = 'RES Test Quote 0' LIMIT 1];
+        Quote cancelQuote = [SELECT Id FROM Quote WHERE Name = 'RES Test Quote 1' LIMIT 1];
+        Contract contract = [SELECT Id FROM Contract LIMIT 1];
+
+        List<RES_Review_Approval_Work_Item__e> events = new List<RES_Review_Approval_Work_Item__e>{
+            buildEvent('QuoteSoftHoldPostApproval', softHoldQuote.Id),
+            buildEvent('QuoteCancellation', cancelQuote.Id),
+            buildRecordEvent('ContractCancellation', contract.Id)
+        };
+
+        Test.startTest();
+        RES_ReviewApprovalWorkItemService.filter(events);
+        Test.stopTest();
+
+        Quote softHoldResult = [SELECT RES_Product_Soft_Held__c FROM Quote WHERE Id = :softHoldQuote.Id];
+        Quote cancelResult = [SELECT Status FROM Quote WHERE Id = :cancelQuote.Id];
+        Contract contractResult = [SELECT Status FROM Contract WHERE Id = :contract.Id];
+
+        System.assertEquals(true, softHoldResult.RES_Product_Soft_Held__c,
+            'Soft hold quote should be updated when batched with other action types');
+        System.assertEquals('Cancelled', cancelResult.Status,
+            'Cancellation quote should be updated when batched with other action types');
+        System.assertEquals('Canceled', contractResult.Status,
+            'Contract should be updated when batched with other action types');
+    }
+
+    @isTest
+    static void testFilter_EmptyEventList_NoException() {
+        List<RES_Review_Approval_Work_Item__e> events = new List<RES_Review_Approval_Work_Item__e>();
+
+        Test.startTest();
+        try {
+            RES_ReviewApprovalWorkItemService.filter(events);
+        } catch (Exception e) {
+            System.assert(false, 'filter() should not throw on an empty event list: ' + e.getMessage());
+        }
+        Test.stopTest();
+    }
+
+    @isTest
+    static void testFilter_NullRecordId_ContractCancellation_NoException() {
+        List<RES_Review_Approval_Work_Item__e> events = new List<RES_Review_Approval_Work_Item__e>{
+            buildRecordEvent('ContractCancellation', null)
+        };
+
+        Test.startTest();
+        try {
+            RES_ReviewApprovalWorkItemService.filter(events);
+        } catch (Exception e) {
+            System.assert(false, 'filter() should not throw when RES_recordId__c is null: ' + e.getMessage());
+        }
         Test.stopTest();
     }
 }

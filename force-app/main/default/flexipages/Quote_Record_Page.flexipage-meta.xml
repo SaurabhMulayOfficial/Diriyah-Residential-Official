@@ -25,10 +25,35 @@
                             <value>CreateOrder</value>
                         </valueListItems>
                         <valueListItems>
-                            <value>CreateContract</value>
+                            <value>Quote.RES_Request_Soft_Hold_Extension</value>
+                            <visibilityRule>
+                                <booleanFilter>1 AND 2 AND 3</booleanFilter>
+                                <criteria>
+                                    <leftValue>{!Record.Status}</leftValue>
+                                    <operator>NE</operator>
+                                    <rightValue>Cancelled</rightValue>
+                                </criteria>
+                                <criteria>
+                                    <leftValue>{!Record.Status}</leftValue>
+                                    <operator>NE</operator>
+                                    <rightValue>Expired</rightValue>
+                                </criteria>
+                                <criteria>
+                                    <leftValue>{!Record.Status}</leftValue>
+                                    <operator>NE</operator>
+                                    <rightValue>Rejected</rightValue>
+                                </criteria>
+                            </visibilityRule>
                         </valueListItems>
                         <valueListItems>
-                            <value>Quote.RES_Request_Soft_Hold_Extension</value>
+                            <value>Quote.RES_Cancel_Quote</value>
+                            <visibilityRule>
+                                <criteria>
+                                    <leftValue>{!Record.Status}</leftValue>
+                                    <operator>NE</operator>
+                                    <rightValue>Cancelled</rightValue>
+                                </criteria>
+                            </visibilityRule>
                         </valueListItems>
                     </valueList>
                 </componentInstanceProperties>
