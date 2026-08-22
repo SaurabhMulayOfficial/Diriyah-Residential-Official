@@ -120,6 +120,8 @@ public without sharing class RES_QuoteCancellationService {
                     p.RES_Is_In_Soft_Hold_Extension__c = false;
                     p.RES_Soft_Hold_Until__c = null;
                     p.RES_Soft_Hold_Start__c = null;
+                    p.RES_Reserved_By_Contract__c = null;
+                    p.RES_Reserved_By_Quote__c = null;
                     productIds.add(p.Id);
                     productToUpdate.add(p);
                 }
