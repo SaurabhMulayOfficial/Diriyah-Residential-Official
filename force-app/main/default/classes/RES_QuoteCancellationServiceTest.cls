@@ -122,7 +122,6 @@ private class RES_QuoteCancellationServiceTest {
         Test.stopTest();
 
         Product2 unchangedProduct = [SELECT Id, RES_Unit_Status__c FROM Product2 WHERE Id = :prod.Id];
-        System.assertEquals('Soft Hold', unchangedProduct.RES_Unit_Status__c,
-            'productToUpdate is built but never passed to Database.update, so RES_Unit_Status__c is expected to remain unchanged today.');
+        System.assertEquals('Available', unchangedProduct.RES_Unit_Status__c, 'Product Marked as Available');
     }
 }

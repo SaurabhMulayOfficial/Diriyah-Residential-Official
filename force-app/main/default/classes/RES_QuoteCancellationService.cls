@@ -124,6 +124,11 @@ public with sharing class RES_QuoteCancellationService {
                     productToUpdate.add(p);
                 }
             }
+            try{
+                Database.update(productToUpdate, true, AccessLevel.SYSTEM_MODE);
+            }catch(Exception e){
+                System.debug('Failed to Update Product to Available ' + e.getMessage());
+            }
         }
     }
 }
