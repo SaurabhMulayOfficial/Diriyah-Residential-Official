@@ -11,8 +11,9 @@ public with sharing class RES_OpportunityStageUpdateValidation {
         if(!inputs.isEmpty()){
             Set<Id> accountIdSet = new Set<Id>();
             List<Opportunity> opportunityLstUpdate = new List<Opportunity>();
+            List<Quote> quoteLstUpdate = new List<Quote>();
             Map<Id, Opportunity> opportunityUpdateMap = new Map<Id, Opportunity>();
-            List<Contract> contractLstInsert = new List<Contract>();
+            List<Map<String, Object>> inputsMap = new List<Map<String, Object>>();
             
             for(Input inputObj : inputs){
                 if(inputObj.accountRecord != null){
@@ -49,13 +50,13 @@ public with sharing class RES_OpportunityStageUpdateValidation {
                                                 opportunityUpdateMap.put(oppObj.Id, oppObj);
                                                 opportunityLstUpdate.add(oppObj);
                                                 
-                                                Contract contractObj = new Contract();
-                                                contractObj.AccountId = inputObj.accountRecord.Id;
-                                                contractObj.Status = 'Draft';
-                                                contractObj.SourceOpportunityId = oppObj.Id;
-                                                contractObj.RecordTypeId = contractRecordTypeId;
-                                                contractObj.SourceQuoteId = inputObj.quoteRecord.Id;
-                                                contractLstInsert.add(contractObj);
+                                                inputsMap.add(new Map<String, Object>{
+                                                    'sourceId' => (String) inputObj.quoteRecord.Id,
+                                                    'contractPriceOption' => 'NET_UNIT_PRICE_ONLY'
+                                                });
+                                                
+                                                Quote quoteObj = new Quote(Id = inputObj.quoteRecord.Id, RES_Reservation_Start_Date__c = SYSTEM.NOW());
+                                                quoteLstUpdate.add(quoteObj);
                                             }
                                         }
                                     }
@@ -67,29 +68,30 @@ public with sharing class RES_OpportunityStageUpdateValidation {
                     }
                 }
             }
-            
             if(!accountIdSet.isEmpty()){
                 updateOpportunities(accountIdSet);
             }
             if(!opportunityLstUpdate.isEmpty()){
                 Database.update(opportunityLstUpdate, false, AccessLevel.SYSTEM_MODE);
             }
-            if(!contractLstInsert.isEmpty()){
-                Database.insert(contractLstInsert, false, AccessLevel.SYSTEM_MODE);
-                setContractOnQuotes(contractLstInsert);
+            if(inputsMap.size() > 0){
+                createContractOnQuotes(inputsMap);
+            }
+            if(!quoteLstUpdate.isEmpty()){
+                Database.update(quoteLstUpdate, false, AccessLevel.SYSTEM_MODE);
             }
         }
     }
     
     private static void updateOpportunities(Set<Id> accountIdSet){
-        
+        List<Quote> quoteLstUpdate = new List<Quote>();
         List<Opportunity> opportunityLstUpdate = new List<Opportunity>();
         List<Opportunity> opportunityLst = new RES_OpportunityDAOLayer().getOpportunitiesRelatedToAccount(accountIdSet);
-        List<Contract> contractLstInsert = new List<Contract>();
         Id contractRecordTypeId = Schema.SObjectType.Contract
             .getRecordTypeInfosByDeveloperName()
             .get(System.Label.RES_Contract_Residential_Sales_RT)
             .getRecordTypeId();
+        List<Map<String, Object>> inputsMap = new List<Map<String, Object>>();
         
         if(opportunityLst != null){
             for(Opportunity opp : opportunityLst){
@@ -97,21 +99,23 @@ public with sharing class RES_OpportunityStageUpdateValidation {
                     Opportunity oppObj = new Opportunity(Id = opp.Id, StageName = 'Reservation');
                     opportunityLstUpdate.add(oppObj);
                     
-                    Contract contractObj = new Contract();
-                    contractObj.AccountId = opp.AccountId;
-                    contractObj.Status = 'Draft';
-                    contractObj.SourceOpportunityId = oppObj.Id;
-                    contractObj.RecordTypeId = contractRecordTypeId;
-                    contractObj.SourceQuoteId = opp.Quotes[0].Id;
-                    contractLstInsert.add(contractObj);
+                    inputsMap.add(new Map<String, Object>{
+                        'sourceId' => (String) opp.Quotes[0].Id,
+                        'contractPriceOption' => 'NET_UNIT_PRICE_ONLY'
+                    });
+                    
+                    Quote quoteObj = new Quote(Id = opp.Quotes[0].Id, RES_Reservation_Start_Date__c = SYSTEM.NOW());
+                    quoteLstUpdate.add(quoteObj);
                 }
             }
             if(!opportunityLstUpdate.isEmpty()){
                 Database.update(opportunityLstUpdate, false, AccessLevel.SYSTEM_MODE);
             }
-            if(!contractLstInsert.isEmpty()){
-                Database.insert(contractLstInsert, false, AccessLevel.SYSTEM_MODE);
-                setContractOnQuotes(contractLstInsert);
+            if(inputsMap.size() > 0){
+                createContractOnQuotes(inputsMap);
+            }
+            if(!quoteLstUpdate.isEmpty()){
+                Database.update(quoteLstUpdate, false, AccessLevel.SYSTEM_MODE);
             }
         }
     }
@@ -138,20 +142,30 @@ public with sharing class RES_OpportunityStageUpdateValidation {
         return false;
     }
     
-    private static void setContractOnQuotes(List<Contract> contractLst){
-        Map<Id, Id> quoteMap = new Map<Id, Id>();
-        List<Quote> quoteLstUpdate = new List<Quote>();
-        for(Contract contractObj : contractLst){
-            if(contractObj.SourceQuoteId != null){
-                Quote quoteObj = new Quote(Id = contractObj.SourceQuoteId, ContractId = contractObj.Id);
-                if(!quoteMap.containsKey(quoteObj.Id)){
-                    quoteMap.put(quoteObj.Id, quoteObj.Id);
-                    quoteLstUpdate.add(quoteObj);
-                }
+    private static void createContractOnQuotes(List<Map<String, Object>> inputsMap){
+        Invocable.Action action = Invocable.Action.createStandardAction('createContract');
+        Set<Id> contractIdSet = new Set<Id>();
+        action.setInvocations(inputsMap);
+        List<Invocable.Action.Result> results = action.invoke();
+        for(Invocable.Action.Result resultObj : results) {
+            if(resultObj.isSuccess()) {
+                Map<String, Object> outputs = resultObj.getOutputParameters();
+                Id contractId = (Id) outputs.get('contractId');
+                contractIdSet.add(contractId);
             }
         }
-        if(!quoteLstUpdate.isEmpty()){
-            Database.update(quoteLstUpdate, false, AccessLevel.SYSTEM_MODE);
+        if(!contractIdSet.isEmpty()){
+            List<Quote> quotesLst = new RES_QuoteDAOLayer().getQuotesByContractIds(contractIdSet, 'Customer Approved');
+            List<Contract> contractLstUpdate = new List<Contract>();
+            if(!quotesLst.isEmpty()){
+                for(Quote quoteObj : quotesLst){
+                    Contract contractObj = new Contract(Id = quoteObj.ContractId, SourceQuoteId = quoteObj.Id, SourceOpportunityId = quoteObj.OpportunityId);
+                    contractLstUpdate.add(contractObj);
+                }
+            }
+            if(!contractLstUpdate.isEmpty()){
+                Database.update(contractLstUpdate, false, AccessLevel.SYSTEM_MODE);
+            }
         }
     }
     
