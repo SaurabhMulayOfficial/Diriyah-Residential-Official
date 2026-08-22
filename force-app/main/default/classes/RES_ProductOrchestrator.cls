@@ -37,10 +37,17 @@ public without sharing class RES_ProductOrchestrator {
         List<QuoteLineItem> quoteLineItems = new RES_QuoteLineItemDAO().getQuoteLineItemsByOpportunity(oppIds);
 
         if(quoteLineItems.size() <= 0)return;
+        
         Map<Id, Id> productBlockedBy = new Map<Id, Id>();
+
         for(QuoteLineItem qli: quoteLineItems){
             if(!productBlockedBy.containsKey(qli.Product2Id)){
                 productBlockedBy.put(qli.Product2Id, qli.QuoteId);
+            }
+            else{
+                if(qli.Quote.IsSyncing){
+                    productBlockedBy.put(qli.Product2Id, qli.QuoteId);
+                }
             }
         }
 

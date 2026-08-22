@@ -44,15 +44,27 @@ public with sharing class RES_QuoteLineItemDAO extends RES_BaseDAOLayer {
         return 'QuoteLineItem';
     }
 
-    public List<QuoteLineItem> getQuoteLineItemsByOpportunity(Set<Id> OpportunityIds){
+    public List<QuoteLineItem> getQuoteLineItemsByOpportunity(Set<Id> opportunityIds){
+
         Map<String, Object> bindVars = new Map<String, Object>();
         bindVars.put('opportunityIds', opportunityIds);
 
-        String soql = 'SELECT Id, QuoteId, Product2Id, Quote.OpportunityId, Quantity, UnitPrice, TotalPrice ' +
+        Set<String> excludedStatuses = new Set<String>{'Expired', 'Cancelled'};
+        bindVars.put('excludedStatuses', excludedStatuses);
+
+        String soql = 'SELECT Id, QuoteId, Product2Id, Quote.OpportunityId, Quantity, UnitPrice, TotalPrice, Quote.IsSyncing ' +
                     'FROM QuoteLineItem ' +
-                    'WHERE Quote.OpportunityId IN :opportunityIds AND Quote.RES_Product_Soft_Held__c = false';
-        
-        return (List<QuoteLineItem>) executeQuery(soql, '', false, bindVars, AccessLevel.SYSTEM_MODE);
+                    'WHERE Quote.OpportunityId IN :opportunityIds ' +
+                    'AND Quote.RES_Product_Soft_Held__c = false ' +
+                    'AND Quote.Status NOT IN :excludedStatuses';
+
+        return (List<QuoteLineItem>) executeQuery(
+            soql,
+            '',
+            false,
+            bindVars,
+            AccessLevel.SYSTEM_MODE
+        );
     }
     
     public List<QuoteLineItem> getQuoteLineItemsByProductIds(Set<Id> product2Ids){
