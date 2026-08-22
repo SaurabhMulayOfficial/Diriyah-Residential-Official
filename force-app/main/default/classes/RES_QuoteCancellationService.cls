@@ -1,4 +1,4 @@
-public with sharing class RES_QuoteCancellationService {
+public without sharing class RES_QuoteCancellationService {
     public RES_QuoteCancellationService() {}
     public class input{
         @InvocableVariable(required = true)
@@ -125,7 +125,7 @@ public with sharing class RES_QuoteCancellationService {
                 }
             }
             try{
-                Database.update(productToUpdate, true, AccessLevel.SYSTEM_MODE);
+                Database.update(productToUpdate, false, AccessLevel.SYSTEM_MODE);
             }catch(Exception e){
                 System.debug('Failed to Update Product to Available ' + e.getMessage());
             }
