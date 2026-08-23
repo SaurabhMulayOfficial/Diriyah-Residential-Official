@@ -41,13 +41,8 @@ public without sharing class RES_ProductOrchestrator {
         Map<Id, Id> productBlockedBy = new Map<Id, Id>();
 
         for(QuoteLineItem qli: quoteLineItems){
-            if(!productBlockedBy.containsKey(qli.Product2Id)){
+            if(qli.Quote.IsSyncing && !productBlockedBy.containsKey(qli.Product2Id)) {
                 productBlockedBy.put(qli.Product2Id, qli.QuoteId);
-            }
-            else{
-                if(qli.Quote.IsSyncing){
-                    productBlockedBy.put(qli.Product2Id, qli.QuoteId);
-                }
             }
         }
 
