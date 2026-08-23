@@ -160,6 +160,27 @@
         </relatedContentItems>
     </relatedContent>
     <relatedLists>
+        <fields>Item</fields>
+        <fields>Name</fields>
+        <fields>Price</fields>
+        <fields>DiscountType</fields>
+        <fields>DiscountValue</fields>
+        <fields>StartDate</fields>
+        <fields>EndDate</fields>
+        <fields>AdjustmentMethod</fields>
+        <relatedList>ContractItemPrice</relatedList>
+    </relatedLists>
+    <relatedLists>
+        <fields>NAME</fields>
+        <relatedList>RES_Contract_Installments__c.RES_Contract__c</relatedList>
+    </relatedLists>
+    <relatedLists>
+        <relatedList>RelatedNoteList</relatedList>
+    </relatedLists>
+    <relatedLists>
+        <relatedList>RelatedFileList</relatedList>
+    </relatedLists>
+    <relatedLists>
         <fields>TASK.SUBJECT</fields>
         <fields>TASK.WHO_NAME</fields>
         <fields>ACTIVITY.TASK</fields>
@@ -168,9 +189,6 @@
         <fields>TASK.PRIORITY</fields>
         <fields>CORE.USERS.FULL_NAME</fields>
         <relatedList>RelatedActivityList</relatedList>
-    </relatedLists>
-    <relatedLists>
-        <relatedList>RelatedApprovalList</relatedList>
     </relatedLists>
     <relatedLists>
         <relatedList>RelatedEntityHistoryList</relatedList>
