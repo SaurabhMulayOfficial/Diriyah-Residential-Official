@@ -1,7 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Flow xmlns="http://soap.sforce.com/2006/04/metadata">
-    <apiVersion>67.0</apiVersion>
-    <areMetricsLoggedToDataCloud>false</areMetricsLoggedToDataCloud>
     <actionCalls>
         <name>Cancel_Sibling_Quote</name>
         <label>Cancel Sibling Quote</label>
@@ -25,6 +23,8 @@
         <nameSegment>RES_QuoteCancellationService</nameSegment>
         <offset>0</offset>
     </actionCalls>
+    <apiVersion>67.0</apiVersion>
+    <areMetricsLoggedToDataCloud>false</areMetricsLoggedToDataCloud>
     <assignments>
         <name>Assign_Cancellation_Reason</name>
         <label>Assign Cancellation Reason</label>
@@ -98,6 +98,11 @@
         </rules>
     </decisions>
     <environments>Default</environments>
+    <formulas>
+        <name>CurrentDateTime</name>
+        <dataType>DateTime</dataType>
+        <expression>NOW()</expression>
+    </formulas>
     <interviewLabel>RES Contract - After Insert Update - {!$Flow.CurrentDateTime}</interviewLabel>
     <label>RES Contract - After Insert Update - HardBlock Product</label>
     <loops>
@@ -235,7 +240,7 @@
         <inputAssignments>
             <field>RES_HardBlock_Start__c</field>
             <value>
-                <elementReference>$System.OriginDateTime</elementReference>
+                <elementReference>CurrentDateTime</elementReference>
             </value>
         </inputAssignments>
         <inputAssignments>
