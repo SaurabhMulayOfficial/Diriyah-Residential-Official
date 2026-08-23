@@ -45,7 +45,8 @@ private class RES_QuoteCancellationServiceTest {
         Product2 prod = new Product2(
             Name = 'RES QCS Test Unit',
             IsActive = true,
-            RES_Unit_Status__c = 'Soft Hold'
+            RES_Unit_Status__c = 'Soft Hold',
+            RES_Reserved_By_Quote__c = q.Id
         );
         insert prod;
 

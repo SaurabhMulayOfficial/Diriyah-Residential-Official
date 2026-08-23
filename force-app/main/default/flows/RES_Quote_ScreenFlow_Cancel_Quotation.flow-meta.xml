@@ -28,6 +28,22 @@
     <apiVersion>67.0</apiVersion>
     <areMetricsLoggedToDataCloud>false</areMetricsLoggedToDataCloud>
     <assignments>
+        <name>Assign_Cancellation_Reason</name>
+        <label>Assign Cancellation Reason</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignmentItems>
+            <assignToReference>Get_Quote_Record.RES_Cancellation_Reason__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>Cancellation_Reason</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Post_Confirmation_Actions</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
         <name>Merge_Fields</name>
         <label>Merge Fields</label>
         <locationX>0</locationX>
@@ -70,6 +86,28 @@
             <stringValue>{&quot;location&quot;:&quot;top&quot;,&quot;type&quot;:&quot;simple&quot;}</stringValue>
         </value>
     </customProperties>
+    <decisions>
+        <name>Check_Quote_Record_Type</name>
+        <label>Check Quote Record Type</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Residential</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>Get_Quote_Record.RecordType.DeveloperName</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>RES_Residential_Sales</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Ask</targetReference>
+            </connector>
+            <label>Residential</label>
+        </rules>
+    </decisions>
     <decisions>
         <name>If_Fee_Received_On_Contract</name>
         <label>If Fee Received On Contract</label>
@@ -209,7 +247,7 @@
         <locationY>0</locationY>
         <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
         <connector>
-            <targetReference>Ask</targetReference>
+            <targetReference>Check_Quote_Record_Type</targetReference>
         </connector>
         <filterLogic>and</filterLogic>
         <filters>
@@ -233,12 +271,27 @@
         <allowFinish>true</allowFinish>
         <allowPause>true</allowPause>
         <connector>
-            <targetReference>Post_Confirmation_Actions</targetReference>
+            <targetReference>Assign_Cancellation_Reason</targetReference>
         </connector>
         <fields>
             <name>Warning</name>
             <fieldText>&lt;p&gt;{!$Label.RES_Quote_Cancellation}&lt;/p&gt;</fieldText>
             <fieldType>DisplayText</fieldType>
+            <styleProperties>
+                <verticalAlignment>
+                    <stringValue>top</stringValue>
+                </verticalAlignment>
+                <width>
+                    <stringValue>12</stringValue>
+                </width>
+            </styleProperties>
+        </fields>
+        <fields>
+            <name>Cancellation_Reason</name>
+            <fieldText>Cancellation Reason</fieldText>
+            <fieldType>LargeTextArea</fieldType>
+            <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
+            <isRequired>true</isRequired>
             <styleProperties>
                 <verticalAlignment>
                     <stringValue>top</stringValue>
