@@ -126,26 +126,12 @@
         <connector>
             <targetReference>Check_Flow_Switch</targetReference>
         </connector>
-        <filterLogic>(1 AND 2) OR (3 AND 4)</filterLogic>
+        <filterLogic>1 OR 2</filterLogic>
         <filters>
             <field>IsSyncing</field>
             <operator>EqualTo</operator>
             <value>
                 <booleanValue>true</booleanValue>
-            </value>
-        </filters>
-        <filters>
-            <field>IsSyncing</field>
-            <operator>IsChanged</operator>
-            <value>
-                <booleanValue>true</booleanValue>
-            </value>
-        </filters>
-        <filters>
-            <field>Status</field>
-            <operator>EqualTo</operator>
-            <value>
-                <stringValue>Customer Approved</stringValue>
             </value>
         </filters>
         <filters>

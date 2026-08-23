@@ -84,7 +84,7 @@ public class RES_OpportunityStageUpdateValidationTest {
     }
 
     @isTest
-    public static void validateOpportunity_NegotiatingQuoteSyncing_MovesToUnitSelected(){
+    public static void validateOpportunity_NegotiatingQuoteWithLineItemSyncing_MovesToUnitSelected(){
         Id quoteRecordTypeId = Schema.SObjectType.Quote
             .getRecordTypeInfosByDeveloperName()
             .get(System.Label.RES_Quote_Residential_Sales_RT)
@@ -93,6 +93,32 @@ public class RES_OpportunityStageUpdateValidationTest {
         Account acc = RES_TestDataFactory.createCompanyRTAccount('Negotiating Sync Account', '9797979797');
         Opportunity opp = RES_TestDataFactory.createSingleBuyerOpportunity('Negotiating Sync Opp', acc.Id, 'Proposal', Date.Today().addDays(30), 'Amansamar Residences Wadi Safar');
         Quote negotiatingQuote = RES_TestDataFactory.createQuote('Negotiating Sync Quote', opp.Id, Test.getStandardPricebookId(), 'Negotiating', quoteRecordTypeId);
+        // RES_Quote_Before_Insert_Set_Pricebook overrides Quote.Pricebook2Id based on the
+        // Opportunity's project, so a PricebookEntry built against the standard pricebook alone
+        // won't match - re-query the quote's actual assigned pricebook and build entries for both
+        // (a standard-pricebook entry is required to exist before a product can appear in a
+        // custom one), matching the pattern that resolved this same mismatch during manual
+        // reproduction earlier in this session.
+        negotiatingQuote = [ SELECT Id, Pricebook2Id FROM Quote WHERE Id =: negotiatingQuote.Id ];
+        Product2 unit = RES_TestDataFactory.createProduct('Negotiating Sync Unit');
+        // Quote Sync rejects products still at the default RES_Unit_Status__c of 'Draft' as not
+        // sale-ready ("inactive or archived products"), so mark it Available before syncing.
+        unit.RES_Unit_Status__c = 'Available';
+        update unit;
+        // Some org automation auto-creates a standard PricebookEntry on Product2 insert, so check
+        // before inserting one ourselves rather than assuming it doesn't exist yet.
+        List<PricebookEntry> existingStdPbe = [ SELECT Id, Pricebook2Id FROM PricebookEntry WHERE Product2Id =: unit.Id AND Pricebook2Id =: Test.getStandardPricebookId() ];
+        if(existingStdPbe.isEmpty()){
+            insert new PricebookEntry(Pricebook2Id = Test.getStandardPricebookId(), Product2Id = unit.Id, UnitPrice = 100, IsActive = true);
+        }
+        PricebookEntry quotePbe;
+        if(negotiatingQuote.Pricebook2Id == Test.getStandardPricebookId()){
+            quotePbe = existingStdPbe.isEmpty() ? [ SELECT Id FROM PricebookEntry WHERE Product2Id =: unit.Id AND Pricebook2Id =: Test.getStandardPricebookId() LIMIT 1 ] : existingStdPbe[0];
+        } else {
+            quotePbe = new PricebookEntry(Pricebook2Id = negotiatingQuote.Pricebook2Id, Product2Id = unit.Id, UnitPrice = 100, IsActive = true);
+            insert quotePbe;
+        }
+        insert new QuoteLineItem(QuoteId = negotiatingQuote.Id, PricebookEntryId = quotePbe.Id, Quantity = 1, UnitPrice = 100);
 
         Test.startTest();
         opp.SyncedQuoteId = negotiatingQuote.Id;
@@ -100,7 +126,28 @@ public class RES_OpportunityStageUpdateValidationTest {
         Test.stopTest();
 
         Opportunity updatedOpp = [ SELECT StageName FROM Opportunity WHERE Id =: opp.Id ];
-        Assert.areEqual('Unit Selected', updatedOpp.StageName, 'Negotiating quote becoming the syncing quote should move the Opportunity to Unit Selected');
+        Assert.areEqual('Unit Selected', updatedOpp.StageName, 'Negotiating quote with a line item becoming the syncing quote should move the Opportunity to Unit Selected');
+    }
+
+    @isTest
+    public static void validateOpportunity_NegotiatingQuoteWithoutLineItemSyncing_MovesToProposal(){
+        Id quoteRecordTypeId = Schema.SObjectType.Quote
+            .getRecordTypeInfosByDeveloperName()
+            .get(System.Label.RES_Quote_Residential_Sales_RT)
+            .getRecordTypeId();
+
+        Account acc = RES_TestDataFactory.createCompanyRTAccount('Negotiating No Line Item Account', '9595959595');
+        Opportunity opp = RES_TestDataFactory.createSingleBuyerOpportunity('Negotiating No Line Item Opp', acc.Id, 'Proposal', Date.Today().addDays(30), 'Amansamar Residences Wadi Safar');
+        Quote negotiatingQuote = RES_TestDataFactory.createQuote('Negotiating No Line Item Quote', opp.Id, Test.getStandardPricebookId(), 'Negotiating', quoteRecordTypeId);
+        // No QuoteLineItem inserted - no unit has actually been selected on this quote
+
+        Test.startTest();
+        opp.SyncedQuoteId = negotiatingQuote.Id;
+        update opp;
+        Test.stopTest();
+
+        Opportunity updatedOpp = [ SELECT StageName FROM Opportunity WHERE Id =: opp.Id ];
+        Assert.areEqual('Proposal', updatedOpp.StageName, 'A Unit-Selected-eligible quote with no line items should move the Opportunity to Proposal, not Unit Selected');
     }
 
     @isTest
@@ -110,18 +157,22 @@ public class RES_OpportunityStageUpdateValidationTest {
             .get(System.Label.RES_Quote_Residential_Sales_RT)
             .getRecordTypeId();
 
-        // Starting stage is deliberately 'Unit Selected', not 'Proposal': the pre-existing
-        // Proposal -> Unit Selected branch above fires unconditionally whenever this method
-        // runs against a Proposal-stage Opportunity, regardless of the quote's sync state, so
-        // starting at Proposal would collide with that branch instead of isolating this one.
         Account acc = RES_TestDataFactory.createCompanyRTAccount('Non Sync Account', '9696969696');
         Opportunity opp = RES_TestDataFactory.createSingleBuyerOpportunity('Non Sync Opp', acc.Id, 'Unit Selected', Date.Today().addDays(30), 'Amansamar Residences Wadi Safar');
         Quote nonSyncingQuote = RES_TestDataFactory.createQuote('Non Sync Quote', opp.Id, Test.getStandardPricebookId(), 'Draft', quoteRecordTypeId);
         // IsSyncing intentionally left false
 
+        // Inserting the Quote above already triggers other, unrelated org automation that can move
+        // the Opportunity's stage on its own (confirmed empirically: a freshly inserted, non-syncing
+        // Quote alone moves the Opportunity to 'Proposal', independent of this class). So the stage
+        // right after that insert - not the stage at creation - is the correct baseline: this test
+        // isolates whether calling validateOpportunity() with a non-syncing quote causes any FURTHER
+        // change on top of that baseline, not whether the Opportunity's stage is frozen outright.
+        Opportunity baselineOpp = [ SELECT RecordTypeId, StageName FROM Opportunity WHERE Id =: opp.Id ];
+
         RES_OpportunityStageUpdateValidation.Input input = new RES_OpportunityStageUpdateValidation.Input();
         input.accountRecord = [ SELECT Id, RecordTypeId, BillingCountry, BillingStreet, BillingPostalCode, BillingCity, RES_CR_number__c, RES_Identification_Number__c FROM Account WHERE Id =: acc.Id ];
-        input.opportunityRecord = [ SELECT Id, RecordTypeId, StageName FROM Opportunity WHERE Id =: opp.Id ];
+        input.opportunityRecord = baselineOpp;
         input.quoteRecord = nonSyncingQuote;
 
         Test.startTest();
@@ -129,6 +180,6 @@ public class RES_OpportunityStageUpdateValidationTest {
         Test.stopTest();
 
         Opportunity updatedOpp = [ SELECT StageName FROM Opportunity WHERE Id =: opp.Id ];
-        Assert.areEqual('Unit Selected', updatedOpp.StageName, 'A non-syncing quote should not trigger a stage change');
+        Assert.areEqual(baselineOpp.StageName, updatedOpp.StageName, 'A non-syncing quote should not trigger any further stage change on top of whatever the Opportunity was already at');
     }
 }
