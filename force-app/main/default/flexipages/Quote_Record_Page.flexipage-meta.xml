@@ -293,13 +293,6 @@
                 </fieldInstanceProperties>
                 <fieldItem>Record.OwnerId</fieldItem>
                 <identifier>RecordOwnerIdField</identifier>
-                <visibilityRule>
-                    <criteria>
-                        <leftValue>{!$User.Profile.Name}</leftValue>
-                        <operator>EQUAL</operator>
-                        <rightValue>System Administrator</rightValue>
-                    </criteria>
-                </visibilityRule>
             </fieldInstance>
         </itemInstances>
         <name>Facet-bef25890-bde0-41e3-8a4d-40550ea23bfd</name>
@@ -598,6 +591,44 @@
         </itemInstances>
         <itemInstances>
             <componentInstance>
+                <componentInstanceProperties>
+                    <name>displayFields</name>
+                    <valueList>
+                        <valueListItems>
+                            <value>QuoteLineItem.Product2.Name[Product2]</value>
+                        </valueListItems>
+                        <valueListItems>
+                            <value>QuoteLineItem.UnitPrice</value>
+                        </valueListItems>
+                        <valueListItems>
+                            <value>QuoteLineItem.Quantity</value>
+                        </valueListItems>
+                        <valueListItems>
+                            <value>QuoteLineItem.Subtotal</value>
+                        </valueListItems>
+                        <valueListItems>
+                            <value>QuoteLineItem.DiscountAmount</value>
+                        </valueListItems>
+                        <valueListItems>
+                            <value>QuoteLineItem.Discount</value>
+                        </valueListItems>
+                        <valueListItems>
+                            <value>QuoteLineItem.TotalPrice</value>
+                        </valueListItems>
+                        <valueListItems>
+                            <value>QuoteLineItem.ListPrice</value>
+                        </valueListItems>
+                        <valueListItems>
+                            <value>QuoteLineItem.NetUnitPrice</value>
+                        </valueListItems>
+                        <valueListItems>
+                            <value>QuoteLineItem.NetTotalPrice</value>
+                        </valueListItems>
+                        <valueListItems>
+                            <value>QuoteLineItem.SubscriptionTerm</value>
+                        </valueListItems>
+                    </valueList>
+                </componentInstanceProperties>
                 <componentInstanceProperties>
                     <name>enableQuickAdd</name>
                     <value>true</value>
