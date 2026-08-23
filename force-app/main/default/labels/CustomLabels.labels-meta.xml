@@ -460,9 +460,9 @@ Please go back and select at least one lead with status = “Qualified” to pro
         <language>en_US</language>
         <protected>false</protected>
         <shortDescription>Soft Hold Extension Error Message</shortDescription>
-        <value>Approval cannot be submitted for this product because one or more validation checks failed:
+        <value>Approval cannot be submitted for this Unit because one or more validation checks failed:
 
-🔴 Product is already under Soft Hold Extension. 
+🔴 Unit is already under Soft Hold Extension. 
 🔴 The associated Unit is already reserved by another user.
 🔴 No Unit is associated with this Quote.
 🔴 Associated Unit is not in Soft Hold status.</value>
@@ -515,5 +515,13 @@ Do you wish to proceed with the cancellation?</value>
         <protected>false</protected>
         <shortDescription>Approvals Auto Cancelled</shortDescription>
         <value>System: Approvals auto cancelled automatically because the Quote was cancelled.</value>
+    </labels>
+    <labels>
+        <fullName>RES_Default_Cancellation_Reason</fullName>
+        <categories>Quote Cancellation</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Quote Cancellation Reason</shortDescription>
+        <value>Quote cancelled by system.</value>
     </labels>
 </CustomLabels>

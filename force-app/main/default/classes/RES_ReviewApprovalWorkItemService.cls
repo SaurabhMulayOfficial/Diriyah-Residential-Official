@@ -78,20 +78,25 @@ public with sharing class RES_ReviewApprovalWorkItemService {
     public static void quoteCancellation(List<RES_Review_Approval_Work_Item__e> events){
         updateApprovalWorkItems(events);
         Set<Id> quoteIds = new Set<Id>();
-        for(RES_Review_Approval_Work_Item__e e: events){
-            if(e.RES_QuoteId__c != null){
-                quoteIds.add(e.RES_QuoteId__c);
-            }
-        }
         List<Quote> quoteToUpdate = new List<Quote>();
-        for(Id qId: quoteIds){
+
+        for(RES_Review_Approval_Work_Item__e e: events){
+            Id qId = e.RES_QuoteId__c;
+            if(qId == null)continue;
+            if(quoteIds.contains(qId))continue;
+
+            quoteIds.add(qId);
             Quote q = new Quote();
             q.Id = qId;
             q.Status = 'Cancelled';
             q.RES_Unit_Blocked_Start_Date__c = null;
             q.RES_Unit_Blocked_End_Date__c = null;
+            q.RES_Cancellation_Reason__c = String.isBlank(e.RES_Cancellation_Reason__c)
+                                            ? System.Label.RES_Default_Cancellation_Reason
+                                            : e.RES_Cancellation_Reason__c;
             quoteToUpdate.add(q);
         }
+
         try{
             if(quoteToUpdate.size() > 0){
                 Database.update(quoteToUpdate, false, AccessLevel.SYSTEM_MODE);
