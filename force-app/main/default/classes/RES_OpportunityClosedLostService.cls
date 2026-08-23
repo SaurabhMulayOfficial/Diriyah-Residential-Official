@@ -130,6 +130,7 @@ public with sharing class RES_OpportunityClosedLostService {
                         eventRecord.RES_Approval_Work_Item_Id__c = wi.ApprovalSubmissionId;
                         eventRecord.RES_QuoteId__c = wi.RelatedRecordId;
                         eventRecord.RES_Post_Review_Action__c = 'QuoteCancellation';
+                        eventRecord.RES_Cancellation_Reason__c = System.Label.RES_Default_Cancellation_Reason;
                         publishIds.add(wi.id);
                         eventsToPublish.add(eventRecord);
                         output.pendingWorkItemIds.add(wi.Id);
