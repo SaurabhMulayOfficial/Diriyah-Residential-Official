@@ -14,24 +14,17 @@ public with sharing class RES_OpportunityStageUpdateValidation {
             List<Quote> quoteLstUpdate = new List<Quote>();
             Map<Id, Opportunity> opportunityUpdateMap = new Map<Id, Opportunity>();
             List<Map<String, Object>> inputsMap = new List<Map<String, Object>>();
+            List<Input> pendingLineItemCheckInputs = new List<Input>();
             
             for(Input inputObj : inputs){
                 if(inputObj.accountRecord != null){
                     if(inputObj.opportunityRecord != null){
-                        if(inputObj.opportunityRecord.StageName == 'Proposal' && checkOpportunityRecordTypeName(inputObj.opportunityRecord.RecordTypeId)){
-                            Opportunity oppObj = new Opportunity(Id = inputObj.opportunityRecord.Id, StageName = 'Unit Selected');
-                            if(!opportunityUpdateMap.containsKey(oppObj.Id)){
-                                opportunityUpdateMap.put(oppObj.Id, oppObj);
-                                opportunityLstUpdate.add(oppObj);
-                            }
-                        }
-                        if(inputObj.opportunityRecord.StageName == 'Unit Selected' && checkOpportunityRecordTypeName(inputObj.opportunityRecord.RecordTypeId)){
+                        if(checkOpportunityRecordTypeName(inputObj.opportunityRecord.RecordTypeId)){
                             Id recordTypeId = inputObj.accountRecord.RecordTypeId;
                             String recordType = Schema.SObjectType.Account
                                 .getRecordTypeInfosById()
                                 .get(recordTypeId)
                                 .getDeveloperName();
-                            
                             if((inputObj.accountRecord.BillingCountry != null && 
                                 inputObj.accountRecord.BillingStreet != null &&
                                 inputObj.accountRecord.BillingPostalCode != null &&
@@ -40,6 +33,7 @@ public with sharing class RES_OpportunityStageUpdateValidation {
                                 (recordType == System.Label.RES_Person_Account_RT && inputObj.accountRecord.RES_Identification_Number__c  != null))){
                                     if(inputObj.quoteRecord != null){
                                         if(inputObj.quoteRecord.Status == 'Customer Approved' && inputObj.quoteRecord.IsSyncing == true && checkQuoteRecordTypeName(inputObj.quoteRecord.RecordTypeId)){
+                                        
                                             Opportunity oppObj = new Opportunity(Id = inputObj.opportunityRecord.Id, StageName = 'Reservation');
                                             if(!opportunityUpdateMap.containsKey(oppObj.Id)){
                                                 Id contractRecordTypeId = Schema.SObjectType.Contract
@@ -62,21 +56,48 @@ public with sharing class RES_OpportunityStageUpdateValidation {
                                     }
                                 }
                         }
-                        if(inputObj.quoteRecord != null && inputObj.quoteRecord.IsSyncing == true &&
+                        if(inputObj.quoteRecord != null && inputObj.quoteRecord.Status != 'Customer Approved' && inputObj.quoteRecord.IsSyncing == true &&
                            checkOpportunityRecordTypeName(inputObj.opportunityRecord.RecordTypeId) &&
                            checkQuoteRecordTypeName(inputObj.quoteRecord.RecordTypeId)){
-                            String targetStage = mapQuoteStatusToOpportunityStage(inputObj.quoteRecord.Status);
-                            if(targetStage != null && inputObj.opportunityRecord.StageName != targetStage){
-                                Opportunity oppObj = new Opportunity(Id = inputObj.opportunityRecord.Id, StageName = targetStage);
-                                if(!opportunityUpdateMap.containsKey(oppObj.Id)){
-                                    opportunityUpdateMap.put(oppObj.Id, oppObj);
-                                    opportunityLstUpdate.add(oppObj);
+                            // 'Unit Selected' requires the Quote to actually have a selected unit (a QuoteLineItem).
+                            // That needs a query, so Unit-Selected-eligible statuses are queued and resolved in bulk
+                            // below, after this loop. Draft has no such dependency and is handled immediately.
+                            if(inputObj.quoteRecord.Status == 'Draft'){
+                                if(inputObj.opportunityRecord.StageName != 'Proposal'){
+                                    Opportunity oppObj = new Opportunity(Id = inputObj.opportunityRecord.Id, StageName = 'Proposal');
+                                    if(!opportunityUpdateMap.containsKey(oppObj.Id)){
+                                        opportunityUpdateMap.put(oppObj.Id, oppObj);
+                                        opportunityLstUpdate.add(oppObj);
+                                    }
                                 }
+                            }
+                            else if(UNIT_SELECTED_QUOTE_STATUSES.contains(inputObj.quoteRecord.Status)){
+                                pendingLineItemCheckInputs.add(inputObj);
                             }
                         }
                     }
                     else{
                         accountIdSet.add(inputObj.accountRecord.Id);
+                    }
+                }
+            }
+            if(!pendingLineItemCheckInputs.isEmpty()){
+                Set<Id> candidateQuoteIds = new Set<Id>();
+                for(Input pendingInput : pendingLineItemCheckInputs){
+                    candidateQuoteIds.add(pendingInput.quoteRecord.Id);
+                }
+                Set<Id> quoteIdsWithLineItems = new Set<Id>();
+                for(QuoteLineItem qli : new RES_QuoteLineItemDAO().getQuoteLineItemsByQuoteIds(candidateQuoteIds)){
+                    quoteIdsWithLineItems.add(qli.QuoteId);
+                }
+                for(Input pendingInput : pendingLineItemCheckInputs){
+                    String finalStage = quoteIdsWithLineItems.contains(pendingInput.quoteRecord.Id) ? 'Unit Selected' : 'Proposal';
+                    if(pendingInput.opportunityRecord.StageName != finalStage){
+                        Opportunity oppObj = new Opportunity(Id = pendingInput.opportunityRecord.Id, StageName = finalStage);
+                        if(!opportunityUpdateMap.containsKey(oppObj.Id)){
+                            opportunityUpdateMap.put(oppObj.Id, oppObj);
+                            opportunityLstUpdate.add(oppObj);
+                        }
                     }
                 }
             }
@@ -143,27 +164,14 @@ public with sharing class RES_OpportunityStageUpdateValidation {
         return false;
     }
     
+    // Statuses that move the Opportunity to 'Unit Selected' when the Quote becomes the syncing
+    // (primary) quote and has at least one QuoteLineItem. 'Customer Approved' is handled above
+    // (Reservation, gated on Account completeness, since it also creates the Contract). 'Draft'
+    // is handled inline in the main loop (-> Proposal, no line-item dependency). Cancelled/Expired
+    // are blocked from ever becoming the syncing quote by RES_Quote_Before_Save_Sync_Validation.
     private static final Set<String> UNIT_SELECTED_QUOTE_STATUSES = new Set<String>{
         'Awaiting Client Confirmation', 'Negotiating', 'Pending Approval', 'Approved', 'Rejected'
     };
-
-    /**
-    * Maps a Quote Status to the Opportunity Stage it should drive when the Quote
-    * becomes the syncing (primary) quote on its Opportunity. 'Customer Approved' is
-    * intentionally excluded here - that case is handled above, gated on Account
-    * completeness, because it also creates the Contract. Returns null for statuses
-    * that don't drive a stage change here (e.g. Cancelled/Expired, which are blocked
-    * from ever becoming the syncing quote by RES_Quote_Before_Save_Sync_Validation).
-    */
-    private static String mapQuoteStatusToOpportunityStage(String quoteStatus){
-        if(quoteStatus == 'Draft'){
-            return 'Proposal';
-        }
-        if(UNIT_SELECTED_QUOTE_STATUSES.contains(quoteStatus)){
-            return 'Unit Selected';
-        }
-        return null;
-    }
 
     private static Boolean checkQuoteRecordTypeName(Id quoteRecordTypeId){
         String recordType = Schema.SObjectType.Quote
