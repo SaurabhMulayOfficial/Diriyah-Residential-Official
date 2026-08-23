@@ -1,12 +1,22 @@
-public without sharing class RES_QuoteCancellationService {
+public with sharing class RES_QuoteCancellationService {
     public RES_QuoteCancellationService() {}
     public class input{
         @InvocableVariable(required = true)
         public Quote quoteInstance;
     }
 
+    public class QuoteCancellationReasonRequiredException extends Exception {}
+
     @InvocableMethod(label='Quote Cancellation Service' description='Cancel Quotes')
     public static void cancelQuotations(List<input> inputs){
+        for(input iterator : inputs){
+            if(String.isBlank(iterator.quoteInstance.RES_Cancellation_Reason__c)){
+                throw new QuoteCancellationReasonRequiredException(
+                    String.format(System.Label.RES_Quote_Cancellation_Reason_Required, new List<String>{ String.valueOf(iterator.quoteInstance.Id) })
+                );
+            }
+        }
+
         Set<Id> relatedRecordIds = new Set<Id>();
 
         Set<Id> quoteIds = new Set<Id>();
@@ -82,6 +92,7 @@ public without sharing class RES_QuoteCancellationService {
             if(quoteId != null && !processedIds.contains(quoteId)){
                 Quote q = new Quote(Id = quoteId);
                 q.status = 'Cancelled';
+                q.RES_Cancellation_Reason__c = itr.quoteInstance.RES_Cancellation_Reason__c;
                 recordsToUpdate.add(q);
             }
             if(relatedContractId != null && !processedIds.contains(relatedContractId)){
@@ -113,21 +124,22 @@ public without sharing class RES_QuoteCancellationService {
                 if(productIds.contains(qli.Product2Id)){
                     continue;
                 }
-                if(qli.Product2Id != null && qli.Product2.RES_Unit_Status__c != 'Available'){
+                if(qli.Product2Id != null &&
+                   qli.Product2.RES_Unit_Status__c != 'Available' &&
+                   qli.Product2.RES_Unit_Status__c != 'Hard Block' &&
+                   qli.Product2.RES_Unit_Status__c != 'Sold'){
                     Product2 p = new Product2();
                     p.Id = qli.Product2Id;
                     p.RES_Unit_Status__c = 'Available';
                     p.RES_Is_In_Soft_Hold_Extension__c = false;
                     p.RES_Soft_Hold_Until__c = null;
                     p.RES_Soft_Hold_Start__c = null;
-                    p.RES_Reserved_By_Contract__c = null;
-                    p.RES_Reserved_By_Quote__c = null;
                     productIds.add(p.Id);
                     productToUpdate.add(p);
                 }
             }
             try{
-                Database.update(productToUpdate, false, AccessLevel.SYSTEM_MODE);
+                Database.update(productToUpdate, true, AccessLevel.SYSTEM_MODE);
             }catch(Exception e){
                 System.debug('Failed to Update Product to Available ' + e.getMessage());
             }

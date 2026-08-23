@@ -73,17 +73,18 @@ private class RES_QuoteCancellationServiceTest {
         Opportunity opp = [SELECT Id FROM Opportunity LIMIT 1];
 
         RES_QuoteCancellationService.input in1 = new RES_QuoteCancellationService.input();
-        in1.quoteInstance = new Quote(Id = q.Id, ContractId = con.Id, OpportunityId = opp.Id);
+        in1.quoteInstance = new Quote(Id = q.Id, ContractId = con.Id, OpportunityId = opp.Id, RES_Cancellation_Reason__c = 'Test cancellation reason');
 
         Test.startTest();
         RES_QuoteCancellationService.cancelQuotations(new List<RES_QuoteCancellationService.input>{ in1 });
         Test.stopTest();
 
-        Quote updatedQuote = [SELECT Id, Status FROM Quote WHERE Id = :q.Id];
+        Quote updatedQuote = [SELECT Id, Status, RES_Cancellation_Reason__c FROM Quote WHERE Id = :q.Id];
         Contract updatedContract = [SELECT Id, Status FROM Contract WHERE Id = :con.Id];
         Opportunity updatedOpp = [SELECT Id, StageName FROM Opportunity WHERE Id = :opp.Id];
 
         System.assertEquals('Cancelled', updatedQuote.Status, 'Quote should be cancelled');
+        System.assertEquals('Test cancellation reason', updatedQuote.RES_Cancellation_Reason__c, 'Cancellation reason should be persisted on the Quote');
         System.assertEquals('Canceled', updatedContract.Status, 'Related Contract should be canceled');
         System.assertEquals('Unit Selected', updatedOpp.StageName, 'Related Opportunity should move to Proposal stage');
     }
@@ -93,9 +94,9 @@ private class RES_QuoteCancellationServiceTest {
         Quote q = [SELECT Id FROM Quote LIMIT 1];
         List<RES_QuoteCancellationService.input> inputs = new List<RES_QuoteCancellationService.input>();
         RES_QuoteCancellationService.input in1 = new RES_QuoteCancellationService.input();
-        in1.quoteInstance = new Quote(Id = q.Id); // ContractId/OpportunityId intentionally null
+        in1.quoteInstance = new Quote(Id = q.Id, RES_Cancellation_Reason__c = 'Test cancellation reason'); // ContractId/OpportunityId intentionally null
         inputs.add(in1);
-        
+
 
         Test.startTest();
         try {
@@ -115,7 +116,7 @@ private class RES_QuoteCancellationServiceTest {
         Product2 prod = [SELECT Id, RES_Unit_Status__c FROM Product2 LIMIT 1];
 
         RES_QuoteCancellationService.input in1 = new RES_QuoteCancellationService.input();
-        in1.quoteInstance = new Quote(Id = q.Id);
+        in1.quoteInstance = new Quote(Id = q.Id, RES_Cancellation_Reason__c = 'Test cancellation reason');
 
         Test.startTest();
         RES_QuoteCancellationService.cancelQuotations(new List<RES_QuoteCancellationService.input>{ in1 });
@@ -123,5 +124,71 @@ private class RES_QuoteCancellationServiceTest {
 
         Product2 unchangedProduct = [SELECT Id, RES_Unit_Status__c FROM Product2 WHERE Id = :prod.Id];
         System.assertEquals('Available', unchangedProduct.RES_Unit_Status__c, 'Product Marked as Available');
+    }
+
+    @isTest
+    static void testCancelQuotations_BlankReason_ThrowsException() {
+        Quote q = [SELECT Id FROM Quote LIMIT 1];
+
+        RES_QuoteCancellationService.input in1 = new RES_QuoteCancellationService.input();
+        in1.quoteInstance = new Quote(Id = q.Id); // RES_Cancellation_Reason__c intentionally left blank
+
+        Boolean exceptionThrown = false;
+        Test.startTest();
+        try {
+            RES_QuoteCancellationService.cancelQuotations(new List<RES_QuoteCancellationService.input>{ in1 });
+        } catch (RES_QuoteCancellationService.QuoteCancellationReasonRequiredException e) {
+            exceptionThrown = true;
+        }
+        Test.stopTest();
+
+        System.assert(exceptionThrown, 'cancelQuotations should throw when Cancellation Reason is blank');
+        Quote unchangedQuote = [SELECT Id, Status FROM Quote WHERE Id = :q.Id];
+        System.assertNotEquals('Cancelled', unchangedQuote.Status, 'Quote should not be cancelled when reason is missing');
+    }
+
+    @isTest
+    static void testCancelQuotations_HardBlockedUnit_NotReleasedBackToAvailable() {
+        Opportunity opp = [SELECT Id FROM Opportunity LIMIT 1];
+
+        Product2 hardBlockedProd = new Product2(
+            Name = 'RES QCS Hard Blocked Unit',
+            IsActive = true,
+            RES_Unit_Status__c = 'Hard Block'
+        );
+        insert hardBlockedProd;
+
+        PricebookEntry pbe = new PricebookEntry(
+            Pricebook2Id = Test.getStandardPricebookId(),
+            Product2Id = hardBlockedProd.Id,
+            UnitPrice = 100,
+            IsActive = true
+        );
+        insert pbe;
+
+        Quote siblingQuote = new Quote(
+            Name = 'RES QCS Sibling Quote',
+            OpportunityId = opp.Id,
+            Pricebook2Id = Test.getStandardPricebookId()
+        );
+        insert siblingQuote;
+
+        QuoteLineItem qli = new QuoteLineItem(
+            QuoteId = siblingQuote.Id,
+            PricebookEntryId = pbe.Id,
+            Quantity = 1,
+            UnitPrice = 100
+        );
+        insert qli;
+
+        RES_QuoteCancellationService.input in1 = new RES_QuoteCancellationService.input();
+        in1.quoteInstance = new Quote(Id = siblingQuote.Id, RES_Cancellation_Reason__c = 'Unit for primary quote was hard blocked');
+
+        Test.startTest();
+        RES_QuoteCancellationService.cancelQuotations(new List<RES_QuoteCancellationService.input>{ in1 });
+        Test.stopTest();
+
+        Product2 unchangedProduct = [SELECT Id, RES_Unit_Status__c FROM Product2 WHERE Id = :hardBlockedProd.Id];
+        System.assertEquals('Hard Block', unchangedProduct.RES_Unit_Status__c, 'Hard Blocked unit should not be released back to Available when a sibling quote referencing it is cancelled');
     }
 }
