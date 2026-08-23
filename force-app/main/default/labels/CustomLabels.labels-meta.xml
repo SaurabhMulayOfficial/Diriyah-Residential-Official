@@ -516,6 +516,63 @@ Do you wish to proceed with the cancellation?</value>
         <shortDescription>Approvals Auto Cancelled</shortDescription>
         <value>System: Approvals auto cancelled automatically because the Quote was cancelled.</value>
     </labels>
+  
+    <labels>
+        <fullName>RES_Quote_Sync_Error_Approval_Requires_Sync</fullName>
+        <categories>Quote Sync Validation</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Quote Sync Error Approval Requires Sync</shortDescription>
+        <value>Quote must be synced before it can be marked Customer Approved.</value>
+    </labels>
+    <labels>
+        <fullName>RES_Quote_Sync_Error_Cancelled_Expired</fullName>
+        <categories>Quote Sync Validation</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Quote Sync Error Cancelled Expired</shortDescription>
+        <value>Cancelled/Expired quote can not be synced.</value>
+    </labels>
+    <labels>
+        <fullName>RES_Quote_Sync_Error_Other_Quote_Syncing</fullName>
+        <categories>Quote Sync Validation</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Quote Sync Error Other Quote Syncing</shortDescription>
+        <value>One of the other quotes in this opportunity has reserved a unit. Please cancel that syncing quote to proceed with another proposal.</value>
+    </labels>
+    <labels>
+        <fullName>RES_Quote_Sync_Error_Query_Fault_Prefix</fullName>
+        <categories>Quote Sync Validation</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Quote Sync Error Query Fault Prefix</shortDescription>
+        <value>RES Quote Before Save Sync Validation failed while querying related records: </value>
+    </labels>
+    <labels>
+        <fullName>RES_Quote_Sync_Error_Sibling_Hard_Blocked</fullName>
+        <categories>Quote Sync Validation</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Quote Sync Error Sibling Hard Blocked</shortDescription>
+        <value>One of the other quotes in this opportunity has a hard-blocked unit. This quote cannot be synced.</value>
+    </labels>
+    <labels>
+        <fullName>RES_Quote_Cancellation_Reason_Required</fullName>
+        <categories>Quote Cancellation</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Quote Cancellation Reason Required</shortDescription>
+        <value>Cancellation Reason is required to cancel Quote {0}.</value>
+    </labels>
+    <labels>
+        <fullName>RES_Quote_HardBlock_Error_Cancel_Sibling_Prefix</fullName>
+        <categories>Quote Cancellation</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Quote HardBlock Error Cancel Sibling Prefix</shortDescription>
+        <value>While cancelling a sibling Customer Approved quote after hard block, got error: </value>
+    </labels>
     <labels>
         <fullName>RES_Default_Cancellation_Reason</fullName>
         <categories>Quote Cancellation</categories>
