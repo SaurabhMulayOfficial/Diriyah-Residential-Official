@@ -98,6 +98,9 @@ public with sharing class RES_OpportunityClosedLostService {
                     quotesPendingApproval.add(quote);
                 } else {
                     quote.Status = 'Cancelled';
+                    quote.RES_Unit_Blocked_Start_Date__c = null;
+                    quote.RES_Unit_Blocked_End_Date__c = null;
+                    quote.RES_Cancellation_Reason__c = System.Label.RES_Default_Cancellation_Reason;
                     quotesToUpdate.add(quote);
                 }
             }
