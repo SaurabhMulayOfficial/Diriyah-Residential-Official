@@ -1,39 +1,56 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Flow xmlns="http://soap.sforce.com/2006/04/metadata">
-    <apiVersion>67.0</apiVersion>
-    <areMetricsLoggedToDataCloud>false</areMetricsLoggedToDataCloud>
-    <assignments>
-        <name>AssignBulkCancelled</name>
-        <label>AssignBulkCancelled</label>
+    <actionCalls>
+        <name>Cancel_Sibling_Quote</name>
+        <label>Cancel Sibling Quote</label>
         <locationX>0</locationX>
         <locationY>0</locationY>
-        <assignmentItems>
-            <assignToReference>QuotesToUpdate</assignToReference>
-            <operator>Add</operator>
-            <value>
-                <elementReference>Loop_on_Quotes</elementReference>
-            </value>
-        </assignmentItems>
+        <actionName>RES_QuoteCancellationService</actionName>
+        <actionType>apex</actionType>
         <connector>
             <targetReference>Loop_on_Quotes</targetReference>
         </connector>
-    </assignments>
+        <faultConnector>
+            <targetReference>Error_While_Cancelling_Sibling_Quote</targetReference>
+        </faultConnector>
+        <flowTransactionModel>Automatic</flowTransactionModel>
+        <inputParameters>
+            <name>quoteInstance</name>
+            <value>
+                <elementReference>Loop_on_Quotes</elementReference>
+            </value>
+        </inputParameters>
+        <nameSegment>RES_QuoteCancellationService</nameSegment>
+        <offset>0</offset>
+    </actionCalls>
+    <apiVersion>67.0</apiVersion>
+    <areMetricsLoggedToDataCloud>false</areMetricsLoggedToDataCloud>
     <assignments>
-        <name>AssignCancelled</name>
-        <label>AssignCancelled</label>
+        <name>Assign_Cancellation_Reason</name>
+        <label>Assign Cancellation Reason</label>
         <locationX>0</locationX>
         <locationY>0</locationY>
         <assignmentItems>
-            <assignToReference>Loop_on_Quotes.Status</assignToReference>
+            <assignToReference>Loop_on_Quotes.RES_Cancellation_Reason__c</assignToReference>
             <operator>Assign</operator>
             <value>
-                <stringValue>Cancelled</stringValue>
+                <stringValue>Unit for primary quote was hard blocked</stringValue>
             </value>
         </assignmentItems>
         <connector>
-            <targetReference>AssignBulkCancelled</targetReference>
+            <targetReference>Cancel_Sibling_Quote</targetReference>
         </connector>
     </assignments>
+    <customErrors>
+        <name>Error_While_Cancelling_Sibling_Quote</name>
+        <label>Error While Cancelling Sibling Quote</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <customErrorMessages>
+            <errorMessage>{!$Label.RES_Quote_HardBlock_Error_Cancel_Sibling_Prefix}{!$Flow.FaultMessage}</errorMessage>
+            <isFieldError>false</isFieldError>
+        </customErrorMessages>
+    </customErrors>
     <customErrors>
         <name>Error_While_Update_Product</name>
         <label>Error While Update Product</label>
@@ -81,6 +98,11 @@
         </rules>
     </decisions>
     <environments>Default</environments>
+    <formulas>
+        <name>CurrentDateTime</name>
+        <dataType>DateTime</dataType>
+        <expression>NOW()</expression>
+    </formulas>
     <interviewLabel>RES Contract - After Insert Update - {!$Flow.CurrentDateTime}</interviewLabel>
     <label>RES Contract - After Insert Update - HardBlock Product</label>
     <loops>
@@ -91,11 +113,8 @@
         <collectionReference>get_Related_all_Quotes_for_Opp</collectionReference>
         <iterationOrder>Asc</iterationOrder>
         <nextValueConnector>
-            <targetReference>AssignCancelled</targetReference>
+            <targetReference>Assign_Cancellation_Reason</targetReference>
         </nextValueConnector>
-        <noMoreValuesConnector>
-            <targetReference>Update_All_Quotes</targetReference>
-        </noMoreValuesConnector>
     </loops>
     <processMetadataValues>
         <name>BuilderType</name>
@@ -181,17 +200,17 @@
                 <booleanValue>false</booleanValue>
             </value>
         </filters>
+        <filters>
+            <field>Status</field>
+            <operator>EqualTo</operator>
+            <value>
+                <stringValue>Customer Approved</stringValue>
+            </value>
+        </filters>
         <getFirstRecordOnly>false</getFirstRecordOnly>
         <object>Quote</object>
         <storeOutputAutomatically>true</storeOutputAutomatically>
     </recordLookups>
-    <recordUpdates>
-        <name>Update_All_Quotes</name>
-        <label>Update All Quotes</label>
-        <locationX>0</locationX>
-        <locationY>0</locationY>
-        <inputReference>QuotesToUpdate</inputReference>
-    </recordUpdates>
     <recordUpdates>
         <name>Update_Product_to_HardBlock</name>
         <label>Update Product to HardBlock</label>
@@ -221,7 +240,7 @@
         <inputAssignments>
             <field>RES_HardBlock_Start__c</field>
             <value>
-                <elementReference>$System.OriginDateTime</elementReference>
+                <elementReference>CurrentDateTime</elementReference>
             </value>
         </inputAssignments>
         <inputAssignments>
@@ -277,13 +296,5 @@
         <isCollection>false</isCollection>
         <isInput>false</isInput>
         <isOutput>false</isOutput>
-    </variables>
-    <variables>
-        <name>QuotesToUpdate</name>
-        <dataType>SObject</dataType>
-        <isCollection>true</isCollection>
-        <isInput>false</isInput>
-        <isOutput>false</isOutput>
-        <objectType>Quote</objectType>
     </variables>
 </Flow>

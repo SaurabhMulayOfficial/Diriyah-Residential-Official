@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>RES_Cancellation_Reason_Required</fullName>
+    <active>true</active>
+    <errorConditionFormula>AND(
+    NOT($Setup.RES_Config_Switch__c.RES_Validation_Rules_Off__c),
+    ISCHANGED(Status),
+    ISPICKVAL(Status, &quot;Cancelled&quot;),
+    ISBLANK(RES_Cancellation_Reason__c)
+)</errorConditionFormula>
+    <errorMessage>Click the Cancel Quote button to cancel the Quote. A Cancellation Reason is required.</errorMessage>
+</ValidationRule>

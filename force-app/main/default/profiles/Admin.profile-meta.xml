@@ -252,6 +252,11 @@
     </fieldPermissions>
     <fieldPermissions>
         <editable>true</editable>
+        <field>RES_Review_Approval_Work_Item__e.RES_Cancellation_Reason__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
         <field>RES_Payment_Plan_Version__c.RES_Active__c</field>
         <readable>true</readable>
     </fieldPermissions>
@@ -2089,6 +2094,11 @@
     <fieldPermissions>
         <editable>true</editable>
         <field>Quote.RES_Discount_Submission_Lock__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>Quote.RES_Cancellation_Reason__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>

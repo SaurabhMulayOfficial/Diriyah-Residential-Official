@@ -62,6 +62,18 @@ public with sharing class RES_OpportunityStageUpdateValidation {
                                     }
                                 }
                         }
+                        if(inputObj.quoteRecord != null && inputObj.quoteRecord.IsSyncing == true &&
+                           checkOpportunityRecordTypeName(inputObj.opportunityRecord.RecordTypeId) &&
+                           checkQuoteRecordTypeName(inputObj.quoteRecord.RecordTypeId)){
+                            String targetStage = mapQuoteStatusToOpportunityStage(inputObj.quoteRecord.Status);
+                            if(targetStage != null && inputObj.opportunityRecord.StageName != targetStage){
+                                Opportunity oppObj = new Opportunity(Id = inputObj.opportunityRecord.Id, StageName = targetStage);
+                                if(!opportunityUpdateMap.containsKey(oppObj.Id)){
+                                    opportunityUpdateMap.put(oppObj.Id, oppObj);
+                                    opportunityLstUpdate.add(oppObj);
+                                }
+                            }
+                        }
                     }
                     else{
                         accountIdSet.add(inputObj.accountRecord.Id);
@@ -131,6 +143,28 @@ public with sharing class RES_OpportunityStageUpdateValidation {
         return false;
     }
     
+    private static final Set<String> UNIT_SELECTED_QUOTE_STATUSES = new Set<String>{
+        'Awaiting Client Confirmation', 'Negotiating', 'Pending Approval', 'Approved', 'Rejected'
+    };
+
+    /**
+    * Maps a Quote Status to the Opportunity Stage it should drive when the Quote
+    * becomes the syncing (primary) quote on its Opportunity. 'Customer Approved' is
+    * intentionally excluded here - that case is handled above, gated on Account
+    * completeness, because it also creates the Contract. Returns null for statuses
+    * that don't drive a stage change here (e.g. Cancelled/Expired, which are blocked
+    * from ever becoming the syncing quote by RES_Quote_Before_Save_Sync_Validation).
+    */
+    private static String mapQuoteStatusToOpportunityStage(String quoteStatus){
+        if(quoteStatus == 'Draft'){
+            return 'Proposal';
+        }
+        if(UNIT_SELECTED_QUOTE_STATUSES.contains(quoteStatus)){
+            return 'Unit Selected';
+        }
+        return null;
+    }
+
     private static Boolean checkQuoteRecordTypeName(Id quoteRecordTypeId){
         String recordType = Schema.SObjectType.Quote
             .getRecordTypeInfosById()

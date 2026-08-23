@@ -108,6 +108,60 @@ public class RES_TestDataFactory {
         return u;
     }
 
+    /**
+     * @description Creates and inserts a bare user for a given Profile, with
+     *              no Role and no Permission Set assignment, and a
+     *              randomized alias/email/username so it can be called
+     *              multiple times per test method without colliding (unlike
+     *              createSystemAdminUser(), which uses a single fixed
+     *              username). Intended for test classes outside the
+     *              Lead-conversion domain (e.g. Product Approval) that only
+     *              need to pin down the Profile (for System-Administrator
+     *              bypass checks) and/or exercise "no Custom Permission
+     *              assigned" negative paths, without depending on any
+     *              Sales-specific Role/PermissionSet existing in the org.
+     * @param profileName Exact Profile Name to assign (e.g.
+     *                    'System Administrator', 'Standard User').
+     * @return Inserted User record.
+     */
+    public static User createGenericUser(String profileName) {
+        Profile prof = [
+            SELECT Id FROM Profile
+            WHERE Name = :profileName
+            LIMIT 1
+        ];
+        String uniqueSuffix = String.valueOf(Crypto.getRandomInteger()).right(5);
+        User u = new User(
+            Alias             = 'gu' + uniqueSuffix.left(4),
+            Email             = 'res.genericuser.' + uniqueSuffix + '@example.com',
+            EmailEncodingKey  = 'UTF-8',
+            FirstName         = 'Generic',
+            LastName          = 'User' + uniqueSuffix,
+            LanguageLocaleKey = 'en_US',
+            LocaleSidKey      = 'en_US',
+            ProfileId         = prof.Id,
+            TimeZoneSidKey    = 'Asia/Kolkata',
+            Username          = 'res.genericuser.' + uniqueSuffix + '@example.com.sandbox'
+        );
+        insert u;
+        return u;
+    }
+
+    /**
+     * @description Public entry point to assign an arbitrary named
+     *              Permission Set to an arbitrary user. Thin wrapper around
+     *              the private assignPermissionSet() so other domains (e.g.
+     *              Product Approval, if a Permission Set granting its
+     *              Custom Permission needs to be assigned in a future
+     *              positive-path test) can reuse the same lookup/assign
+     *              logic without duplicating it.
+     * @param userId Id of the user to assign the Permission Set to.
+     * @param psName Name of the Permission Set to assign.
+     */
+    public static void assignPermissionSetToUser(Id userId, String psName) {
+        assignPermissionSet(userId, psName);
+    }
+
     private static User buildUser(UserConfig config) {
         Profile prof = [
             SELECT Id FROM Profile

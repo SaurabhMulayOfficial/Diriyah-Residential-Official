@@ -460,9 +460,9 @@ Please go back and select at least one lead with status = “Qualified” to pro
         <language>en_US</language>
         <protected>false</protected>
         <shortDescription>Soft Hold Extension Error Message</shortDescription>
-        <value>Approval cannot be submitted for this product because one or more validation checks failed:
+        <value>Approval cannot be submitted for this Unit because one or more validation checks failed:
 
-🔴 Product is already under Soft Hold Extension. 
+🔴 Unit is already under Soft Hold Extension. 
 🔴 The associated Unit is already reserved by another user.
 🔴 No Unit is associated with this Quote.
 🔴 Associated Unit is not in Soft Hold status.</value>
@@ -518,177 +518,7 @@ Do you wish to proceed with the cancellation?</value>
         <shortDescription>Approvals Auto Cancelled</shortDescription>
         <value>System: Approvals auto cancelled automatically because the Quote was cancelled.</value>
     </labels>
-    <labels>
-        <fullName>RES_Approval_Confirmation_Message</fullName>
-        <categories>Please confirm approval for {0} selected unit(s).</categories>
-        <language>en_US</language>
-        <protected>false</protected>
-        <shortDescription>Approval Confirmation</shortDescription>
-        <value>Please confirm approval for {0} selected unit(s).</value>
-    </labels>
-    <labels>
-        <fullName>RES_Approval_Stage_Message</fullName>
-        <categories>The selected Units will be moved to the next approval stage.</categories>
-        <language>en_US</language>
-        <protected>false</protected>
-        <shortDescription>Approval Stage Message</shortDescription>
-        <value>The selected Units will be moved to the next approval stage.</value>
-    </labels>
-    <labels>
-        <fullName>RES_Auto_Submit_Comment</fullName>
-        <language>en_US</language>
-        <protected>false</protected>
-        <shortDescription>Auto Submit Comment</shortDescription>
-        <value>Product approval is required in order to Activate them.</value>
-    </labels>
-    <labels>
-        <fullName>RES_Default_Cancellation_Reason</fullName>
-        <categories>Quote Cancellation</categories>
-        <language>en_US</language>
-        <protected>false</protected>
-        <shortDescription>Quote Cancellation Reason</shortDescription>
-        <value>Quote cancelled by system.</value>
-    </labels>
-    <labels>
-        <fullName>RES_My_Converted_Lead_Roles</fullName>
-        <language>en_US</language>
-        <protected>false</protected>
-        <shortDescription>RES My Converted Lead Roles</shortDescription>
-        <value>00E9X00000HUJkQUAX;00E9X00000HUIc2UAH;00E9X00000HUPATUA5;00E9X00000HUE6HUAX;00E9X00000HUIAbUAP;00E9X00000HUBipUAH;00E9X00000HUGyPUAX;00E9X00000HU5z5UAD;00E9X00000HU6W3UAL;00E9X00000HhsjJUAR;00E9X00000HhsrNUAR;00E9X00000HUB2gUAH;00E9X00000HUIx2UAH</value>
-    </labels>
-    <labels>
-        <fullName>RES_My_Team_Converted_Lead_Roles</fullName>
-        <language>en_US</language>
-        <protected>false</protected>
-        <shortDescription>RES My Team Converted Lead Roles</shortDescription>
-        <value>00E9X00000IfldJUAR;00E9X00000Ifla5UAB;00E9X00000HU1BTUA1;00E9X00000IkVEZUA3;00E9X00000IflyHUAR;00E9X00000HUO9ZUAX;00E9X00000HUOXmUAP;00E9X00000IkYIrUAN;00E9X00000HUIVaUAP;00E9X00000HhsmXUAR;00E9X00000HU0hFUAT;00E9X00000HKkw9UAD;00E9X00000HU9kvUAD;00E9X00000HUArOUAX;00E9X00000HKG5FUAX;00E9X00000HiDUPUA3;00E9X00000HhneqUAB;00E9X00000HhhUaUAJ;00E9X00000HTvEBUA1;00E9X00000HRS8AUAX;00E9X00000HKl2bUAD;00E9X00000HhlJfUAJ;00E9X00000HUHZXUA5;00E9X00000HKl0zUAD;00E9X00000HUIdeUAH;00E9X00000IkYE1UAN;00E9X00000IflztUAB</value>
-    </labels>
-    <labels>
-        <fullName>RES_Not_Under_Blocked</fullName>
-        <categories>Unit Release</categories>
-        <language>en_US</language>
-        <protected>false</protected>
-        <shortDescription>Not Under Blocked</shortDescription>
-        <value>This unit is not currently under Soft Hold or Hard Block.</value>
-    </labels>
-    <labels>
-        <fullName>RES_Product_Already_Processed</fullName>
-        <language>en_US</language>
-        <protected>false</protected>
-        <shortDescription>RES_Product_Already_Processed</shortDescription>
-        <value>This unit has already been processed by someone else and is no longer available for this action.</value>
-    </labels>
-    <labels>
-        <fullName>RES_Product_Approval_CSO_Group</fullName>
-        <categories>RES_Product_Approval_CSO_Group</categories>
-        <language>en_US</language>
-        <protected>false</protected>
-        <shortDescription>RES_Product_Approval_CSO_Group</shortDescription>
-        <value>RES_CSO</value>
-    </labels>
-    <labels>
-        <fullName>RES_Product_Approval_DevCo_Group</fullName>
-        <categories>RES_Product_Approval_DevCo_Group</categories>
-        <language>en_US</language>
-        <protected>false</protected>
-        <shortDescription>RES_Product_Approval_DevCo_Group</shortDescription>
-        <value>RES_DevCo_Team</value>
-    </labels>
-    <labels>
-        <fullName>RES_Product_Approval_Finance_Group</fullName>
-        <categories>RES_Product_Approval_Finance_Group</categories>
-        <language>en_US</language>
-        <protected>false</protected>
-        <shortDescription>RES_Product_Approval_Finance_Group</shortDescription>
-        <value>RES_Finance_Team_Group</value>
-    </labels>
-    <labels>
-        <fullName>RES_Product_Approval_Operations_Group</fullName>
-        <categories>RES_Operations_Team (Public Group Name)</categories>
-        <language>en_US</language>
-        <protected>false</protected>
-        <shortDescription>RES_Product_Approval_Operations_Group</shortDescription>
-        <value>RES_Operations_Team</value>
-    </labels>
-    <labels>
-        <fullName>RES_Product_Approval_Success</fullName>
-        <language>en_US</language>
-        <protected>false</protected>
-        <shortDescription>RES_Product_Approval_Success</shortDescription>
-        <value>Unit approved and moved to the next stage.</value>
-    </labels>
-    <labels>
-        <fullName>RES_Product_Bulk_Approval_Success</fullName>
-        <language>en_US</language>
-        <protected>false</protected>
-        <shortDescription>RES_Product_Bulk_Approval_Success</shortDescription>
-        <value>{0} unit(s) approved and moved to the next stage.</value>
-    </labels>
-    <labels>
-        <fullName>RES_Product_Bulk_Rejection_Success</fullName>
-        <language>en_US</language>
-        <protected>false</protected>
-        <shortDescription>RES_Product_Bulk_Rejection_Success</shortDescription>
-        <value>{0} unit(s) rejected. Uploaders have been notified.</value>
-    </labels>
-    <labels>
-        <fullName>RES_Product_Inactive_Cannot_Be_Approved</fullName>
-        <language>en_US</language>
-        <protected>false</protected>
-        <shortDescription>Product Inactive Cannot Be Approved</shortDescription>
-        <value>RES_Product_Inactive_Cannot_Be_Approved</value>
-    </labels>
-    <labels>
-        <fullName>RES_Product_Invalid_Approval_State</fullName>
-        <language>en_US</language>
-        <protected>false</protected>
-        <shortDescription>RES_Product_Invalid_Approval_State</shortDescription>
-        <value>This unit is not currently awaiting approval — it may have already been processed or withdrawn.</value>
-    </labels>
-    <labels>
-        <fullName>RES_Product_No_Records_Selected</fullName>
-        <language>en_US</language>
-        <protected>false</protected>
-        <shortDescription>RES_Product_No_Records_Selected</shortDescription>
-        <value>Please select at least one unit before continuing.</value>
-    </labels>
-    <labels>
-        <fullName>RES_Product_Rejection_Reason_Required</fullName>
-        <language>en_US</language>
-        <protected>false</protected>
-        <shortDescription>RES_Product_Rejection_Reason_Required</shortDescription>
-        <value>Please enter a rejection reason before continuing.</value>
-    </labels>
-    <labels>
-        <fullName>RES_Product_Rejection_Success</fullName>
-        <language>en_US</language>
-        <protected>false</protected>
-        <shortDescription>RES_Product_Rejection_Success</shortDescription>
-        <value>Unit rejected. The uploader has been notified.</value>
-    </labels>
-    <labels>
-        <fullName>RES_Product_Unauthorized_Approval</fullName>
-        <language>en_US</language>
-        <protected>false</protected>
-        <shortDescription>RES_Product_Unauthorized_Approval</shortDescription>
-        <value>You don&apos;t have permission to approve or reject units at the {0} stage.</value>
-    </labels>
-    <labels>
-        <fullName>RES_Quote_Cancellation_Reason_Required</fullName>
-        <categories>Quote Cancellation</categories>
-        <language>en_US</language>
-        <protected>false</protected>
-        <shortDescription>Quote Cancellation Reason Required</shortDescription>
-        <value>Cancellation Reason is required to cancel Quote {0}.</value>
-    </labels>
-    <labels>
-        <fullName>RES_Quote_HardBlock_Error_Cancel_Sibling_Prefix</fullName>
-        <categories>Quote Cancellation</categories>
-        <language>en_US</language>
-        <protected>false</protected>
-        <shortDescription>Quote HardBlock Error Cancel Sibling Prefix</shortDescription>
-        <value>While cancelling a sibling Customer Approved quote after hard block, got error:</value>
-    </labels>
+  
     <labels>
         <fullName>RES_Quote_Sync_Error_Approval_Requires_Sync</fullName>
         <categories>Quote Sync Validation</categories>
@@ -719,7 +549,7 @@ Do you wish to proceed with the cancellation?</value>
         <language>en_US</language>
         <protected>false</protected>
         <shortDescription>Quote Sync Error Query Fault Prefix</shortDescription>
-        <value>RES Quote Before Save Sync Validation failed while querying related records:</value>
+        <value>RES Quote Before Save Sync Validation failed while querying related records: </value>
     </labels>
     <labels>
         <fullName>RES_Quote_Sync_Error_Sibling_Hard_Blocked</fullName>
@@ -730,19 +560,27 @@ Do you wish to proceed with the cancellation?</value>
         <value>One of the other quotes in this opportunity has a hard-blocked unit. This quote cannot be synced.</value>
     </labels>
     <labels>
-        <fullName>RES_Signed_URC_Detected</fullName>
-        <categories>Release Unit</categories>
+        <fullName>RES_Quote_Cancellation_Reason_Required</fullName>
+        <categories>Quote Cancellation</categories>
         <language>en_US</language>
         <protected>false</protected>
-        <shortDescription>Signed URC Detected</shortDescription>
-        <value>⚠️ This unit has a signed URC. Releasing the unit will revoke the URC. Do you want to continue?</value>
+        <shortDescription>Quote Cancellation Reason Required</shortDescription>
+        <value>Cancellation Reason is required to cancel Quote {0}.</value>
     </labels>
     <labels>
-        <fullName>RES_Unit_Released_Successfully</fullName>
-        <categories>Unit Release</categories>
+        <fullName>RES_Quote_HardBlock_Error_Cancel_Sibling_Prefix</fullName>
+        <categories>Quote Cancellation</categories>
         <language>en_US</language>
         <protected>false</protected>
-        <shortDescription>Unit Released Successfully</shortDescription>
-        <value>The unit has been successfully updated to Available.</value>
+        <shortDescription>Quote HardBlock Error Cancel Sibling Prefix</shortDescription>
+        <value>While cancelling a sibling Customer Approved quote after hard block, got error: </value>
+    </labels>
+    <labels>
+        <fullName>RES_Default_Cancellation_Reason</fullName>
+        <categories>Quote Cancellation</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Quote Cancellation Reason</shortDescription>
+        <value>Quote cancelled by system.</value>
     </labels>
 </CustomLabels>
