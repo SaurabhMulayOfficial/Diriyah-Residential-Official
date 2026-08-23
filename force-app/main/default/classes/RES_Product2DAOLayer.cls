@@ -37,36 +37,186 @@
  *                        AccessLevel accessLevel)
  * =============================================================================
  */
-public with sharing class RES_Product2DAOLayer extends RES_BaseDAOLayer {
+public without sharing class RES_Product2DAOLayer extends RES_BaseDAOLayer {
     protected override String getSObjectName() {
         return 'Product2';
     }
 
-    public List<Product2> getProductsByBatchId(Id batchId) {
-        if (batchId == null) {
-            return new List<Product2>();
-        }
-        Map<String, Object> bindVars = new Map<String, Object>();
-        bindVars.put('batchId', batchId);
-        String soql = 'SELECT Id, IsActive, RES_Pending_Amendment__c FROM Product2 WHERE RES_Product_Approval_Batch__c = :batchId';
-        return (List<Product2>) executeQuery(soql, '', false, bindVars, AccessLevel.SYSTEM_MODE);
-    }
-
-    public Database.QueryLocator getProductQueryLocatorByBatchId(Id batchId) {
-        Map<String, Object> bindVars = new Map<String, Object>();
-        bindVars.put('batchId', batchId);
-        String soql = 'SELECT Id, IsActive, RES_Pending_Amendment__c FROM Product2 WHERE RES_Product_Approval_Batch__c = :batchId';
-        return executeBatchQuery(soql, bindVars, AccessLevel.SYSTEM_MODE);
-    }
-
+    /**
+     * NOTE: Name and ProductCode were added below (2026-08-22) because
+     * RES_ProductApprovalNotificationService.buildProductDetails() reads
+     * these fields from the same Product2 records this method returns, for
+     * approve/reject email content. Without them, that call throws
+     * "SObject row was retrieved via SOQL without querying the requested
+     * field: Product2.Name" as soon as a notification is sent. If further
+     * fields are ever added to that email content, add them here too.
+     */
     public List<Product2> getProductsByIds(Set<Id> productIds) {
     if (productIds == null || productIds.isEmpty()) {
         return new List<Product2>();
     } 
         Map<String, Object> bindVars = new Map<String, Object>();
         bindVars.put('productIds', productIds);
-        String soql = 'SELECT Id, RES_Unit_Status__c, RES_HardBlock_Start__c, RES_Is_In_Soft_Hold_Extension__c, RES_Soft_Hold_Start__c, RES_Soft_Hold_Until__c FROM Product2 WHERE Id IN :productIds';
+        String soql = 'SELECT Id, Name, ProductCode, IsActive, RES_Unit_Status__c, RES_HardBlock_Start__c, RES_Is_In_Soft_Hold_Extension__c, RES_Soft_Hold_Start__c, RES_Soft_Hold_Until__c FROM Product2 WHERE Id IN :productIds';
         return (List<Product2>) executeQuery(soql,'', false, bindVars, AccessLevel.SYSTEM_MODE);
     }
 
+    /**
+     * Retrieves Product2 records for an approval queue.
+     *
+     * Uses keyset pagination:
+     * CreatedDate + Id
+     *
+     * This avoids OFFSET-based pagination for large inventories.
+     */
+    public List<Product2> getApprovalQueue(String status,String searchTerm,Integer pageSize,Datetime lastCreatedDate,Id lastId) {
+        if (String.isBlank(status)) {
+            return new List<Product2>();
+        }
+        Integer safePageSize = normalizePageSize(pageSize);
+        Map<String, Object> bindVars = new Map<String, Object>();
+        bindVars.put('status', status);
+        String soql =
+            'SELECT Id, ' +
+            'Name, ' +
+            'ProductCode, ' +
+            'IsActive, ' +
+            'CreatedDate, ' +
+            'CreatedById, ' +
+            'CreatedBy.Name, ' +
+            'LastModifiedDate, ' +
+            'RES_Unit_Status__c, ' +
+            'RES_Type__c, ' +
+            'RES_Area__c, ' +
+            'RES_Business_Entity__c, ' +
+            'RES_Unit_Handover_Date__c, ' +
+            'RES_Unit_Virtual_IBAN__c, ' +
+            'RES_Rejection_Comment__c ' +
+            'FROM Product2 ' +
+            'WHERE RES_Unit_Status__c = :status ' +
+            'AND IsActive = false ';
+
+        if (!String.isBlank(searchTerm)) {
+            String searchPattern ='%' + searchTerm.trim() + '%';
+            bindVars.put('searchPattern',searchPattern);
+            soql +=
+                'AND (' +
+                'Name LIKE :searchPattern ' +
+                'OR ProductCode LIKE :searchPattern ' +
+                'OR Description LIKE :searchPattern' +
+                ') ';
+        }
+
+        /*
+         * Keyset pagination.
+         */
+        if (lastCreatedDate != null && lastId != null) {
+            bindVars.put('lastCreatedDate',lastCreatedDate);
+            bindVars.put('lastId',lastId);
+            soql +=
+                'AND (' +
+                'CreatedDate < :lastCreatedDate ' +
+                'OR (' +
+                'CreatedDate = :lastCreatedDate ' +
+                'AND Id < :lastId' +
+                ')' +
+                ') ';
+        }
+
+        soql +=
+            'ORDER BY CreatedDate DESC, Id DESC ' +
+            'LIMIT ' + safePageSize;
+
+        return (List<Product2>) executeQuery(
+            soql,
+            '',
+            false,
+            bindVars,
+            AccessLevel.SYSTEM_MODE
+        );
+    }
+
+    /**
+ * Retrieves rejected Products for the Operations rejected queue.
+ *
+ * Returns only inactive Products with Rejected status.
+ *
+ * Uses keyset pagination:
+ * CreatedDate + Id
+ */
+public List<Product2> getRejectedProducts(String status,String searchTerm,Integer pageSize,Datetime lastCreatedDate,Id lastId) {
+    if (String.isBlank(status)) {
+        return new List<Product2>();
+    }
+    Integer safePageSize = normalizePageSize(pageSize);
+    Map<String, Object> bindVars = new Map<String, Object>();
+    bindVars.put('status', status);
+    String soql =
+                'SELECT ' +
+                'Id, ' +
+                'Name, ' +
+                'ProductCode, ' +
+                'Description, ' +
+                'IsActive, ' +
+                'CreatedDate, ' +
+                'CreatedById, ' +
+                'CreatedBy.Name, ' +
+                'LastModifiedDate, ' +
+                'RES_Unit_Status__c, ' +
+                'RES_Type__c, ' +
+                'RES_Area__c, ' +
+                'RES_Business_Entity__c, ' +
+                'RES_Unit_Handover_Date__c, ' +
+                'RES_Unit_Virtual_IBAN__c, ' +
+                'RES_Rejection_Comment__c ' +
+                'FROM Product2 ' +
+                'WHERE RES_Unit_Status__c = :status ' +
+                'AND IsActive = false ';
+    if (!String.isBlank(searchTerm)) {
+        String searchPattern = '%' + searchTerm.trim() + '%';
+        bindVars.put('searchPattern',searchPattern);
+        soql +=
+                'AND (' +
+                'Name LIKE :searchPattern ' +
+                'OR ProductCode LIKE :searchPattern ' +
+                'OR Description LIKE :searchPattern' +
+                ') ';
+    }
+
+    if (lastCreatedDate != null && lastId != null) {
+        bindVars.put('lastCreatedDate',lastCreatedDate);
+        bindVars.put('lastId',lastId);
+        soql +=
+                'AND (' +
+                'CreatedDate < :lastCreatedDate ' +
+                'OR (' +
+                'CreatedDate = :lastCreatedDate ' +
+                'AND Id < :lastId' +
+                ')' +
+                ') ';
+    }
+
+    soql +=
+        'ORDER BY CreatedDate DESC, Id DESC ' +
+        'LIMIT ' + safePageSize;
+
+    return (List<Product2>) executeQuery(soql,'',false,bindVars,AccessLevel.SYSTEM_MODE);
+}
+
+    /**
+     * Normalizes requested page size.
+     */
+    private Integer normalizePageSize(Integer requestedPageSize) {
+        if (
+            requestedPageSize == null ||
+            requestedPageSize <= 0
+        ) {
+            return 50;
+        }
+        if (requestedPageSize > 200) {
+            return 200;
+        }
+
+        return requestedPageSize;
+    }
 }

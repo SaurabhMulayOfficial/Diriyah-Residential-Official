@@ -5,10 +5,21 @@
  *                 lead conversion tests. Includes SLA status, project fields,
  *                 and proper account/contact creation.
  *
+ *                 createGenericUser(profile) Bare user for any Profile, no
+ *                                            Role/Permission Set - added for
+ *                                            domains outside Lead conversion
+ *                                            (e.g. Product Approval) that
+ *                                            only need Profile-level access
+ *                                            (System-Administrator-bypass
+ *                                            checks / "no Custom Permission
+ *                                            assigned" negative paths).
+ *                 assignPermissionSetToUser  Public wrapper to assign any
+ *                 (userId, psName)           named Permission Set to any user.
+ *
  * Author        : Roshan Jambhule
  * Company       : Globant Inc
  * Created Date  : June 27, 2026
- * Version       : 3.0 (ENHANCED FOR LEAD CONVERSION TESTS)
+ * Version       : 3.1 (+ generic user helpers for Product Approval tests)
  * ==============================================================================
  */
 @isTest

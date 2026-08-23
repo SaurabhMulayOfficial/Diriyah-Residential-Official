@@ -516,7 +516,6 @@ Do you wish to proceed with the cancellation?</value>
         <shortDescription>Approvals Auto Cancelled</shortDescription>
         <value>System: Approvals auto cancelled automatically because the Quote was cancelled.</value>
     </labels>
-  
     <labels>
         <fullName>RES_Quote_Sync_Error_Approval_Requires_Sync</fullName>
         <categories>Quote Sync Validation</categories>
@@ -547,7 +546,7 @@ Do you wish to proceed with the cancellation?</value>
         <language>en_US</language>
         <protected>false</protected>
         <shortDescription>Quote Sync Error Query Fault Prefix</shortDescription>
-        <value>RES Quote Before Save Sync Validation failed while querying related records: </value>
+        <value>RES Quote Before Save Sync Validation failed while querying related records:</value>
     </labels>
     <labels>
         <fullName>RES_Quote_Sync_Error_Sibling_Hard_Blocked</fullName>
@@ -571,7 +570,7 @@ Do you wish to proceed with the cancellation?</value>
         <language>en_US</language>
         <protected>false</protected>
         <shortDescription>Quote HardBlock Error Cancel Sibling Prefix</shortDescription>
-        <value>While cancelling a sibling Customer Approved quote after hard block, got error: </value>
+        <value>While cancelling a sibling Customer Approved quote after hard block, got error:</value>
     </labels>
     <labels>
         <fullName>RES_Default_Cancellation_Reason</fullName>
@@ -580,5 +579,72 @@ Do you wish to proceed with the cancellation?</value>
         <protected>false</protected>
         <shortDescription>Quote Cancellation Reason</shortDescription>
         <value>Quote cancelled by system.</value>
+    </labels>
+    <labels>
+        <fullName>RES_Product_Already_Processed</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>RES_Product_Already_Processed</shortDescription>
+        <value>This unit has already been processed by someone else and is no longer available for this action.</value>
+    </labels>
+    <labels>
+        <fullName>RES_Product_Approval_CSO_Group</fullName>
+        <categories>RES_Product_Approval_CSO_Group</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>RES_Product_Approval_CSO_Group</shortDescription>
+        <value>RES_CSO</value>
+    </labels>
+    <labels>
+        <fullName>RES_Product_Approval_DevCo_Group</fullName>
+        <categories>RES_Product_Approval_DevCo_Group</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>RES_Product_Approval_DevCo_Group</shortDescription>
+        <value>RES_DevCo_Team</value>
+    </labels>
+    <labels>
+        <fullName>RES_Product_Approval_Finance_Group</fullName>
+        <categories>RES_Product_Approval_Finance_Group</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>RES_Product_Approval_Finance_Group</shortDescription>
+        <value>RES_Finance_Team_Group</value>
+    </labels>
+    <labels>
+        <fullName>RES_Product_Approval_Operations_Group</fullName>
+        <categories>RES_Operations_Team (Public Group Name)</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>RES_Product_Approval_Operations_Group</shortDescription>
+        <value>RES_Operations_Team</value>
+    </labels>
+    <labels>
+        <fullName>RES_Product_Invalid_Approval_State</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>RES_Product_Invalid_Approval_State</shortDescription>
+        <value>This unit is not currently awaiting approval — it may have already been processed or withdrawn.</value>
+    </labels>
+    <labels>
+        <fullName>RES_Product_No_Records_Selected</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>RES_Product_No_Records_Selected</shortDescription>
+        <value>Please select at least one unit before continuing.</value>
+    </labels>
+    <labels>
+        <fullName>RES_Product_Rejection_Reason_Required</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>RES_Product_Rejection_Reason_Required</shortDescription>
+        <value>Please enter a rejection reason before continuing.</value>
+    </labels>
+    <labels>
+        <fullName>RES_Product_Unauthorized_Approval</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>RES_Product_Unauthorized_Approval</shortDescription>
+        <value>You don&apos;t have permission to approve or reject units at the {0} stage.</value>
     </labels>
 </CustomLabels>
