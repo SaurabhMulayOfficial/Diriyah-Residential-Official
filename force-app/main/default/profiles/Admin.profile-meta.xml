@@ -2065,7 +2065,11 @@
         <field>Product2.RES_Reserved_By_Quote__c</field>
         <readable>true</readable>
     </fieldPermissions>
-
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>Product2.RES_Rejection_Comment__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
     <fieldPermissions>
         <editable>true</editable>
         <field>Quote.RES_Extend_Soft_Hold_By_Hours__c</field>
