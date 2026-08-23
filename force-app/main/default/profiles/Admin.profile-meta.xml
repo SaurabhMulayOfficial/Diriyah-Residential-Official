@@ -14,20 +14,65 @@
         <name>RES_Approval_Work_Item_Visibility</name>
     </customPermissions>
     <classAccesses>
+        <apexClass>RES_ProductApprovalController</apexClass>
+        <enabled>true</enabled>
+    </classAccesses>
+    <classAccesses>
+        <apexClass>RES_ProductApprovalService</apexClass>
+        <enabled>true</enabled>
+    </classAccesses>
+    <classAccesses>
+        <apexClass>RES_ProductApprovalStateService</apexClass>
+        <enabled>true</enabled>
+    </classAccesses>
+    <classAccesses>
+        <apexClass>RES_ProductApprovalAuthorization</apexClass>
+        <enabled>true</enabled>
+    </classAccesses>
+    <classAccesses>
+        <apexClass>RES_ProductApprovalNotificationService</apexClass>
+        <enabled>true</enabled>
+    </classAccesses>
+    <classAccesses>
+        <apexClass>RES_Product2DAOLayer</apexClass>
+        <enabled>true</enabled>
+    </classAccesses>
+    <classAccesses>
+        <apexClass>RES_ProductApprovalConfigDAOLayer</apexClass>
+        <enabled>true</enabled>
+    </classAccesses>
+    <classAccesses>
+        <apexClass>RES_ApexEmailTemplateDAO</apexClass>
+        <enabled>true</enabled>
+    </classAccesses>
+    <classAccesses>
+        <apexClass>RES_GroupMemberDAOLayer</apexClass>
+        <enabled>true</enabled>
+    </classAccesses>
+    <classAccesses>
+        <apexClass>RES_EmailUtilityService</apexClass>
+        <enabled>true</enabled>
+    </classAccesses>
+    <classAccesses>
+        <apexClass>RES_EmailService</apexClass>
+        <enabled>true</enabled>
+    </classAccesses>
+    <classAccesses>
+        <apexClass>RES_ErrorLogger</apexClass>
+        <enabled>true</enabled>
+    </classAccesses>
+    <classAccesses>
         <apexClass>RES_AccountConvertedLeadController</apexClass>
         <enabled>true</enabled>
     </classAccesses>
-
     <classAccesses>
         <apexClass>RES_SoftHoldPostApprovalActions</apexClass>
         <enabled>true</enabled>
     </classAccesses>
-
     <classAccesses>
         <apexClass>RES_SendEmailInvocable</apexClass>
         <enabled>true</enabled>
     </classAccesses>
-
     <classAccesses>
         <apexClass>RES_AccountConvertedLeadControllerTest</apexClass>
         <enabled>true</enabled>

@@ -1,0 +1,405 @@
+<template>
+    <lightning-card title="Product Approval Manager" icon-name="standard:product">
+        <!-- =====================================================LOADING OVERLAY ===================================================== -->
+        <template if:true={isLoading}>
+            <div class="loading-container">
+                <lightning-spinner alternative-text="Loading approval queue" size="medium">
+                </lightning-spinner>
+            </div>
+        </template>
+        <!-- =====================================================QUEUE HEADER===================================================== -->
+        <div class="queue-header slds-p-horizontal_medium">
+            <div class="queue-header-left">
+                <div class="queue-title">
+                    {activeQueueLabel}
+                </div>
+                <div class="queue-subtitle">
+                    {activeQueueStatus}
+                </div>
+            </div>
+            <div class="queue-header-actions">
+                <lightning-button-icon icon-name="utility:refresh" alternative-text="Refresh" title="Refresh"
+                    onclick={handleRefresh} disabled={isLoading}>
+                </lightning-button-icon>
+            </div>
+        </div>
+
+        <!-- =====================================================QUEUE TABS ===================================================== -->
+        <template if:true={showQueueTabs}>
+            <div class="queue-tabs slds-p-horizontal_medium">
+                <template for:each={availableQueues} for:item="queue">
+                    <button key={queue.level} class={queue.cssClass} data-level={queue.level}
+                        onclick={handleQueueChange}>
+                        <span>{queue.queueLabel}</span>
+                    </button>
+                </template>
+                <template if:true={canViewRejected}>
+                    <button class={rejectedTabClass} onclick={handleRejectedTab}>
+                        <span>Rejected Units</span>
+                    </button>
+                </template>
+            </div>
+        </template>
+        <!-- =====================================================SEARCH / CLEAR ===================================================== -->
+        <div class="toolbar slds-p-horizontal_medium">
+            <div class="search-container">
+                <lightning-input type="search" variant="label-hidden" label="Search Products"
+                    placeholder="Search unit name, code..." value={searchTerm}
+                    onchange={handleSearchInput} onkeyup={handleSearchKeyup}>
+                </lightning-input>
+            </div>
+            <div class="toolbar-actions">
+                <lightning-button label="Clear" onclick={handleClearSearch} disabled={disableClearButton}>
+                </lightning-button>
+            </div>
+        </div>
+
+        <!-- =====================================================SELECTION BAR ===================================================== -->
+        <template if:true={hasSelection}>
+            <div class="selection-bar">
+                <div class="selection-count">
+                    <lightning-icon icon-name="utility:check" size="x-small">
+                    </lightning-icon>
+                    <span>
+                        {selectedCount} selected
+                    </span>
+                </div>
+                <div class="selection-actions">
+                    <template if:true={canApprove}>
+                        <lightning-button variant="brand" label="Approve" icon-name="utility:check"
+                            onclick={handleBulkApprove} disabled={isProcessing}>
+                        </lightning-button>
+                    </template>
+                    <template if:true={canReject}>
+                        <lightning-button variant="destructive-text" label="Reject" icon-name="utility:close"
+                            onclick={handleBulkReject} disabled={isProcessing}>
+                        </lightning-button>
+                    </template>
+                    <lightning-button label="Clear Selection" onclick={handleClearSelection} disabled={isProcessing}>
+                    </lightning-button>
+                </div>
+            </div>
+        </template>
+        <!-- =====================================================ERROR===================================================== -->
+        <template if:true={hasError}>
+            <div class="state-container error-state">
+                <lightning-icon icon-name="utility:error" variant="error" size="medium">
+                </lightning-icon>
+                <h2>
+                    Something went wrong
+                </h2>
+                <p>
+                    {errorMessage}
+                </p>
+                <lightning-button label="Try Again" variant="brand" onclick={handleRefresh}>
+                </lightning-button>
+            </div>
+        </template>
+
+        <!-- =====================================================EMPTY===================================================== -->
+        <template if:true={showEmptyState}>
+            <div class="state-container">
+                <lightning-icon icon-name="utility:success" variant="success" size="medium">
+                </lightning-icon>
+                <h2>
+                    {emptyStateTitle}
+                </h2>
+                <p>
+                    {emptyStateMessage}
+                </p>
+                <lightning-button label="Refresh" onclick={handleRefresh}>
+                </lightning-button>
+            </div>
+        </template>
+
+        <!-- =====================================================DESKTOP DATATABLE===================================================== -->
+        <template if:true={showRecords}>
+            <div class="desktop-view">
+                <lightning-datatable key-field="Id" data={products} columns={activeColumns} selected-rows={selectedProductIds}
+                    onrowselection={handleRowSelection} onrowaction={handleRowAction}
+                    hide-checkbox-column={hideCheckboxColumn} enable-infinite-loading={hasMore}
+                    onloadmore={handleLoadMore} is-loading={isLoadingMore}>
+                </lightning-datatable>
+            </div>
+
+
+            <!-- =================================================MOBILE CARD VIEW ================================================= -->
+            <div class="mobile-view">
+                <div class="mobile-select-all">
+                    <lightning-input type="checkbox" label="Select all visible" checked={allVisibleSelected}
+                        onchange={handleSelectAllMobile}>
+                    </lightning-input>
+                </div>
+                <div class="product-list">
+                    <template for:each={products} for:item="product">
+                        <article key={product.Id} class="product-card">
+                            <!-- Card Header -->
+                            <div class="product-card-header">
+                                <div class="product-selection">
+                                    <lightning-input type="checkbox" variant="label-hidden" label="Select Product"
+                                        data-id={product.Id} checked={product.selected}
+                                        onchange={handleMobileSelection}>
+                                    </lightning-input>
+                                </div>
+                                <div class="product-title">
+                                    <div class="product-name">
+                                        {product.Name}
+                                    </div>
+                                    <div class="product-code">
+                                        {product.ProductCode}
+                                    </div>
+                                </div>
+                                <template if:false={isRejectedTab}>
+                                    <div class="product-menu">
+                                        <lightning-button-menu alternative-text="Product actions" data-id={product.Id}
+                                            onselect={handleMobileAction}>
+                                            <template if:true={canApprove}>
+                                                <lightning-menu-item value="approve" label="Approve">
+                                                </lightning-menu-item>
+                                            </template>
+                                            <template if:true={canReject}>
+                                                <lightning-menu-item value="reject" label="Reject">
+                                                </lightning-menu-item>
+                                            </template>
+                                        </lightning-button-menu>
+                                    </div>
+                                </template>
+                            </div>
+                            <!-- Status -->
+                            <div class="product-status">
+                                <span class="status-label">
+                                    Status
+                                </span>
+                                <lightning-badge label={activeQueueStatus}>
+                                </lightning-badge>
+                            </div>
+
+                            <!-- Product Information -->
+                            <div class="product-details">
+                                <div class="detail-item">
+                                    <span class="detail-label">
+                                        Project
+                                    </span>
+                                    <span class="detail-value">
+                                        {product.RES_Business_Entity__c}
+                                    </span>
+                                </div>
+                                <div class="detail-item">
+                                    <span class="detail-label">
+                                        Status
+                                    </span>
+                                    <span class="detail-value">
+                                        {activeQueueStatus}
+                                    </span>
+                                </div>
+                                <div class="detail-item">
+                                    <span class="detail-label">
+                                        Typology
+                                    </span>
+                                    <span class="detail-value">
+                                        {product.RES_Type__c}
+                                    </span>
+                                </div>
+                                <div class="detail-item">
+                                    <span class="detail-label">
+                                        Area
+                                    </span>
+                                    <span class="detail-value">
+                                        {product.RES_Area__c}
+                                    </span>
+                                </div>
+                                <div class="detail-item">
+                                    <span class="detail-label">
+                                        Usage Type
+                                    </span>
+                                    <span class="detail-value">
+                                        {product.Family}
+                                    </span>
+                                </div>
+                                <div class="detail-item">
+                                    <span class="detail-label">
+                                        Business Entity
+                                    </span>
+                                    <span class="detail-value">
+                                        {product.RES_Business_Entity__c}
+                                    </span>
+                                </div>
+                                <div class="detail-item">
+                                    <span class="detail-label">
+                                        Phase Delivery Date
+                                    </span>
+                                    <lightning-formatted-date-time value={product.RES_Unit_Handover_Date__c}
+                                        year="numeric" month="short" day="2-digit">
+                                    </lightning-formatted-date-time>
+                                </div>
+                                <div class="detail-item full-width">
+                                    <span class="detail-label">
+                                        IBAN / Account Number
+                                    </span>
+                                    <span class="detail-value">
+                                        {product.RES_Unit_Virtual_IBAN__c}
+                                    </span>
+                                </div>
+                            </div>
+
+
+                            <!-- Mobile Actions -->
+                            <template if:false={isRejectedTab}>
+                                <div class="mobile-actions">
+                                    <template if:true={canApprove}>
+                                        <lightning-button variant="brand" label="Approve" icon-name="utility:check"
+                                            data-id={product.Id} onclick={handleMobileApprove} disabled={isProcessing}>
+                                        </lightning-button>
+                                    </template>
+                                    <template if:true={canReject}>
+                                        <lightning-button variant="destructive-text" label="Reject"
+                                            icon-name="utility:close" data-id={product.Id} onclick={handleMobileReject}
+                                            disabled={isProcessing}>
+                                        </lightning-button>
+                                    </template>
+                                </div>
+                            </template>
+                        </article>
+                    </template>
+                </div>
+            </div>
+        </template>
+
+
+        <!-- =====================================================LOAD MORE===================================================== -->
+        <template if:true={showLoadMore}>
+            <div class="load-more-container">
+                <lightning-button label="Load More" onclick={handleLoadMore} disabled={isLoadingMore}>
+                </lightning-button>
+            </div>
+        </template>
+    </lightning-card>
+
+
+    <!-- =========================================================APPROVAL CONFIRMATION MODAL========================================================= -->
+    <template if:true={showApprovalModal}>
+        <section role="dialog" tabindex="-1" aria-modal="true" aria-labelledby="approval-heading"
+            class="slds-modal slds-fade-in-open">
+            <div class="slds-modal__container">
+                <header class="slds-modal__header">
+                    <h2 id="approval-heading" class="slds-text-heading_medium">
+                        Confirm Approval
+                    </h2>
+                </header>
+                <div class="slds-modal__content slds-p-around_medium">
+                <p>
+                {approvalConfirmationMessage}
+                </p>
+                <p class="confirmation-note">
+                {approvalStageMessage}
+                </p>
+                </div>
+                <footer class="slds-modal__footer">
+                    <lightning-button label="Cancel" onclick={closeApprovalModal}>
+                    </lightning-button>
+                    <lightning-button class="slds-m-left_small" variant="brand" label="Confirm Approval"
+                        onclick={confirmApproval} disabled={isProcessing}>
+                    </lightning-button>
+                </footer>
+
+            </div>
+
+        </section>
+
+        <div class="slds-backdrop slds-backdrop_open"></div>
+
+    </template>
+
+
+    <!-- =========================================================REJECTION MODAL========================================================= -->
+    <template if:true={showRejectModal}>
+        <section role="dialog" tabindex="-1" aria-modal="true" aria-labelledby="reject-heading"
+            class="slds-modal slds-fade-in-open">
+            <div class="slds-modal__container">
+                <header class="slds-modal__header">
+                    <h2 id="reject-heading" class="slds-text-heading_medium">
+                        Reject Product(s)
+                    </h2>
+                </header>
+                <div class="slds-modal__content slds-p-around_medium">
+                    <p class="slds-m-bottom_medium">
+                        You are rejecting
+                        <strong>{selectedCount}</strong>
+                        Product(s).
+                    </p>
+                    <lightning-textarea label="Rejection Reason" value={rejectionComment} maxlength="1000" required
+                        message-when-value-missing="Rejection reason is required." onchange={handleRejectionComment}>
+                    </lightning-textarea>
+                    <div class="character-count">
+                        {rejectionCharacterCount}/1000
+                    </div>
+                </div>
+                <footer class="slds-modal__footer">
+                    <lightning-button label="Cancel" onclick={closeRejectModal}>
+                    </lightning-button>
+                    <lightning-button class="slds-m-left_small" variant="destructive" label="Confirm Reject"
+                        onclick={confirmReject} disabled={isProcessing}>
+                    </lightning-button>
+                </footer>
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open"></div>
+    </template>
+
+
+    <!-- =========================================================RESULT MODAL========================================================= -->
+    <template if:true={showResultModal}>
+        <section role="dialog" tabindex="-1" aria-modal="true" aria-labelledby="result-heading"
+            class="slds-modal slds-fade-in-open">
+            <div class="slds-modal__container">
+                <header class="slds-modal__header">
+                    <h2 id="result-heading" class="slds-text-heading_medium">
+                        Processing Summary
+                    </h2>
+                </header>
+                <div class="slds-modal__content slds-p-around_medium">
+                    <div class="result-summary">
+                        <div class="result-success">
+                            <span class="result-number">
+                                {resultSuccessCount}
+                            </span>
+                            <span>
+                                Successful
+                            </span>
+                        </div>
+                        <div class="result-failed">
+                            <span class="result-number">
+                                {resultFailureCount}
+                            </span>
+                            <span>
+                                Failed
+                            </span>
+                        </div>
+                    </div>
+                    <template if:true={hasFailedResults}>
+                        <div class="failure-list">
+                            <h3 class="slds-text-heading_small">
+                                Failed Records
+                            </h3>
+                            <template for:each={failedResults} for:item="failure">
+                                <div key={failure.productId} class="failure-item">
+                                    <div>
+                                        {failure.productId}
+                                    </div>
+                                    <div class="failure-message">
+                                        {failure.errorMessage}
+                                    </div>
+                                </div>
+                            </template>
+                        </div>
+                    </template>
+                </div>
+                <footer class="slds-modal__footer">
+                    <lightning-button variant="brand" label="Done" onclick={closeResultModal}>
+                    </lightning-button>
+                </footer>
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open"></div>
+    </template>
+</template>
