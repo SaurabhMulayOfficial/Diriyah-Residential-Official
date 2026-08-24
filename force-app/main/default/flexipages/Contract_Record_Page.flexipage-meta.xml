@@ -12,7 +12,7 @@
                         <valueListItems>
                             <value>CustomButton.Contract.RES_Send_for_KYC_Approval</value>
                             <visibilityRule>
-                                <booleanFilter>1 AND 2 AND 3 AND 4 AND 5</booleanFilter>
+                                <booleanFilter>1 AND 2 AND 3 AND 4 AND 5 AND 6</booleanFilter>
                                 <criteria>
                                     <leftValue>{!Record.RES_URC_Signed__c}</leftValue>
                                     <operator>EQUAL</operator>
@@ -38,16 +38,15 @@
                                     <operator>EQUAL</operator>
                                     <rightValue>false</rightValue>
                                 </criteria>
+                                <criteria>
+                                    <leftValue>{!$Permission.CustomPermission.RES_KYC_Approval_Feature_Access}</leftValue>
+                                    <operator>EQUAL</operator>
+                                    <rightValue>true</rightValue>
+                                </criteria>
                             </visibilityRule>
                         </valueListItems>
                         <valueListItems>
                             <value>Delete</value>
-                        </valueListItems>
-                        <valueListItems>
-                            <value>Global.NewTask</value>
-                        </valueListItems>
-                        <valueListItems>
-                            <value>Global.NewEvent</value>
                         </valueListItems>
                     </valueList>
                 </componentInstanceProperties>
@@ -113,7 +112,7 @@
             <componentInstance>
                 <componentInstanceProperties>
                     <name>hideUpdateButton</name>
-                    <value>false</value>
+                    <value>true</value>
                 </componentInstanceProperties>
                 <componentInstanceProperties>
                     <name>variant</name>
@@ -713,10 +712,16 @@
                 <componentName>resUploadDocuments</componentName>
                 <identifier>c_resUploadDocuments</identifier>
                 <visibilityRule>
+                    <booleanFilter>1 AND 2</booleanFilter>
                     <criteria>
                         <leftValue>{!Record.RES_Product_Soft_Held__c}</leftValue>
                         <operator>EQUAL</operator>
                         <rightValue>false</rightValue>
+                    </criteria>
+                    <criteria>
+                        <leftValue>{!Record.Status}</leftValue>
+                        <operator>NE</operator>
+                        <rightValue>Canceled</rightValue>
                     </criteria>
                 </visibilityRule>
             </componentInstance>
@@ -862,6 +867,16 @@
         <type>Facet</type>
     </flexiPageRegions>
     <flexiPageRegions>
+        <itemInstances>
+            <componentInstance>
+                <componentInstanceProperties>
+                    <name>hideHeader</name>
+                    <value>false</value>
+                </componentInstanceProperties>
+                <componentName>force:relatedListQuickLinksContainer</componentName>
+                <identifier>force_relatedListQuickLinksContainer</identifier>
+            </componentInstance>
+        </itemInstances>
         <itemInstances>
             <componentInstance>
                 <componentInstanceProperties>

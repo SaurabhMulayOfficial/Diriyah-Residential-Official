@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>RES_Prevent_Quote_Revert_CustomerApprove</fullName>
+    <active>true</active>
+    <errorConditionFormula>AND(
+  NOT($Setup.RES_Config_Switch__c.RES_Validation_Rules_Off__c),
+  $RecordType.DeveloperName = &quot;RES_Residential_Sales&quot;,
+  ISPICKVAL(PRIORVALUE(Status), &quot;Customer Approved&quot;),
+  ISCHANGED(Status),
+  
+  /* Restricts moving back to previous status values */
+  CASE(Status,
+    &quot;Draft&quot;, 1,
+    &quot;Awaiting Client Confirmation&quot;, 1,
+    &quot;Negotiating&quot;, 1,    
+    0
+  ) = 1
+)</errorConditionFormula>
+    <errorDisplayField>Status</errorDisplayField>
+    <errorMessage>Quote status cannot be reverted to a previous stage once it has been Customer Approved</errorMessage>
+</ValidationRule>

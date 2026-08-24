@@ -14,12 +14,11 @@ private class RES_ProductOrchestratorTest {
             .get('RES_Residential_Sales')
             .getRecordTypeId();
 
-
         Product2 product = new Product2(
             Name = 'Unit A101',
             IsActive = true,
             RES_Unit_Status__c = 'Available',
-            recordTypeId = recordTypeId,
+            RecordTypeId = recordTypeId,
             RES_HardBlock_Start__c = System.now()
         );
         insert product;
@@ -33,6 +32,10 @@ private class RES_ProductOrchestratorTest {
             IsActive = true
         );
         insert pbe;
+
+        // ------------------------------------------------------------
+        // Opportunity 1 + Syncing Quote
+        // ------------------------------------------------------------
 
         Opportunity opp1 = new Opportunity(
             Name = 'Test Opportunity 1',
@@ -57,6 +60,14 @@ private class RES_ProductOrchestratorTest {
             UnitPrice = 100
         );
         insert qli1;
+
+        // Make Quote 1 the synced Quote.
+        opp1.SyncedQuoteId = quote1.Id;
+        update opp1;
+
+        // ------------------------------------------------------------
+        // Opportunity 2 + Non-syncing Quote
+        // ------------------------------------------------------------
 
         Opportunity opp2 = new Opportunity(
             Name = 'Test Opportunity 2',
@@ -85,14 +96,33 @@ private class RES_ProductOrchestratorTest {
 
 
     @IsTest
-    static void testApplySoftHold() {
+    static void testApplySoftHoldWithSyncingQuote() {
 
         Opportunity opp = [
-            SELECT Id
+            SELECT Id, SyncedQuoteId
             FROM Opportunity
             WHERE Name = 'Test Opportunity 1'
             LIMIT 1
         ];
+
+        Quote syncingQuote = [
+            SELECT Id, IsSyncing
+            FROM Quote
+            WHERE Name = 'Test Quote 1'
+            LIMIT 1
+        ];
+
+        System.assertEquals(
+            syncingQuote.Id,
+            opp.SyncedQuoteId,
+            'Test Quote 1 should be the synced Quote.'
+        );
+
+        System.assertEquals(
+            true,
+            syncingQuote.IsSyncing,
+            'Test Quote 1 should be syncing.'
+        );
 
         Test.startTest();
 
@@ -102,12 +132,16 @@ private class RES_ProductOrchestratorTest {
 
         Test.stopTest();
 
+        // ------------------------------------------------------------
         // Verify Product
+        // ------------------------------------------------------------
+
         Product2 product = [
             SELECT
                 RES_Unit_Status__c,
                 RES_Soft_Hold_Start__c,
-                RES_Soft_Hold_Until__c
+                RES_Soft_Hold_Until__c,
+                RES_Reserved_By_Quote__c
             FROM Product2
             WHERE Name = 'Unit A101'
             LIMIT 1
@@ -116,7 +150,7 @@ private class RES_ProductOrchestratorTest {
         System.assertEquals(
             'Soft Hold',
             product.RES_Unit_Status__c,
-            'Product should be moved to Soft Hold.'
+            'Product should be moved to Soft Hold because the Quote is syncing.'
         );
 
         System.assertNotEquals(
@@ -131,18 +165,18 @@ private class RES_ProductOrchestratorTest {
             'Soft Hold Until should be populated.'
         );
 
-        System.assert(
-            product.RES_Soft_Hold_Until__c >
-            product.RES_Soft_Hold_Start__c,
-            'Soft Hold Until should be after Soft Hold Start.'
+        System.assertEquals(
+            syncingQuote.Id,
+            product.RES_Reserved_By_Quote__c,
+            'Product should be reserved by the syncing Quote.'
         );
 
+        // ------------------------------------------------------------
+        // Verify other Quote using same Product is soft held
+        // ------------------------------------------------------------
 
-        // Verify Quote belonging to another Opportunity
-        // using the same product.
         Quote quote2 = [
-            SELECT
-                RES_Product_Soft_Held__c
+            SELECT RES_Product_Soft_Held__c
             FROM Quote
             WHERE Name = 'Test Quote 2'
             LIMIT 1
@@ -151,7 +185,82 @@ private class RES_ProductOrchestratorTest {
         System.assertEquals(
             true,
             quote2.RES_Product_Soft_Held__c,
-            'Quote for another Opportunity using the same product should be soft held.'
+            'Other Quote using the same product should be soft held.'
+        );
+    }
+
+
+    @IsTest
+    static void testNonSyncingQuoteDoesNotSoftHoldProduct() {
+
+        Opportunity opp = [
+            SELECT Id, SyncedQuoteId
+            FROM Opportunity
+            WHERE Name = 'Test Opportunity 2'
+            LIMIT 1
+        ];
+
+        Quote quote = [
+            SELECT Id, IsSyncing
+            FROM Quote
+            WHERE Name = 'Test Quote 2'
+            LIMIT 1
+        ];
+
+        System.assertEquals(
+            null,
+            opp.SyncedQuoteId,
+            'Opportunity should not have a synced Quote.'
+        );
+
+        System.assertEquals(
+            false,
+            quote.IsSyncing,
+            'Quote should not be syncing.'
+        );
+
+        Test.startTest();
+
+        RES_ProductOrchestrator.applySoftHold(
+            new List<Opportunity>{ opp }
+        );
+
+        Test.stopTest();
+
+        // Product should NOT be soft held.
+        Product2 product = [
+            SELECT
+                RES_Unit_Status__c,
+                RES_Soft_Hold_Start__c,
+                RES_Soft_Hold_Until__c,
+                RES_Reserved_By_Quote__c
+            FROM Product2
+            WHERE Name = 'Unit A101'
+            LIMIT 1
+        ];
+
+        System.assertEquals(
+            'Available',
+            product.RES_Unit_Status__c,
+            'Product should remain Available when the Quote is not syncing.'
+        );
+
+        System.assertEquals(
+            null,
+            product.RES_Soft_Hold_Start__c,
+            'Soft Hold Start should not be populated.'
+        );
+
+        System.assertEquals(
+            null,
+            product.RES_Soft_Hold_Until__c,
+            'Soft Hold Until should not be populated.'
+        );
+
+        System.assertEquals(
+            null,
+            product.RES_Reserved_By_Quote__c,
+            'Product should not be reserved by a non-syncing Quote.'
         );
     }
 
@@ -182,7 +291,6 @@ private class RES_ProductOrchestratorTest {
 
         Test.stopTest();
 
-        // Nothing should be processed.
         System.assertEquals(
             0,
             [
@@ -213,7 +321,7 @@ private class RES_ProductOrchestratorTest {
     static void testMultipleOpportunities() {
 
         List<Opportunity> opps = [
-            SELECT Id
+            SELECT Id, SyncedQuoteId
             FROM Opportunity
             WHERE Name IN (
                 'Test Opportunity 1',
@@ -231,15 +339,19 @@ private class RES_ProductOrchestratorTest {
             SELECT
                 RES_Unit_Status__c,
                 RES_Soft_Hold_Start__c,
-                RES_Soft_Hold_Until__c
+                RES_Soft_Hold_Until__c,
+                RES_Reserved_By_Quote__c
             FROM Product2
             WHERE Name = 'Unit A101'
             LIMIT 1
         ];
 
+        // Opportunity 1 has the syncing Quote,
+        // therefore Product should be soft held.
         System.assertEquals(
             'Soft Hold',
-            product.RES_Unit_Status__c
+            product.RES_Unit_Status__c,
+            'Product should be soft held because one of the Quotes is syncing.'
         );
 
         System.assertNotEquals(
@@ -250,6 +362,11 @@ private class RES_ProductOrchestratorTest {
         System.assertNotEquals(
             null,
             product.RES_Soft_Hold_Until__c
+        );
+
+        System.assertNotEquals(
+            null,
+            product.RES_Reserved_By_Quote__c
         );
     }
 }

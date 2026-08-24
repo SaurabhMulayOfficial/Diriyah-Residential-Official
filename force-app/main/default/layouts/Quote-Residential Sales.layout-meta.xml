@@ -304,11 +304,7 @@
         <fields>QUOTE_LI.SUBTOTAL</fields>
         <fields>QUOTE_LI.DISCOUNT</fields>
         <fields>QUOTE_LI.DISC_AMOUNT</fields>
-        <fields>QUOTE_LI.PARTNER_DISC_P</fields>
-        <fields>QUOTE_LI.PARTN_UNIT_PR</fields>
         <fields>QUOTE_LI.TOTAL_PRICE</fields>
-        <fields>QUOTE_LI.SELLING_MODEL_TYPE</fields>
-        <fields>QUOTE_LI.PRICING_TERM</fields>
         <fields>QUOTE_LI.PRICING_TERM_UNIT</fields>
         <fields>QUOTE_LI.LIST_PRICE</fields>
         <fields>QUOTE_LI.N_UNITPRICE</fields>
@@ -317,17 +313,15 @@
         <relatedList>RelatedQuoteLineItemList</relatedList>
     </relatedLists>
     <relatedLists>
+        <excludeButtons>New</excludeButtons>
+        <fields>CONTRACT.CONTRACT_NUMBER</fields>
+        <fields>CONTRACT.STATUS</fields>
+        <fields>CONTRACT.START_DATE</fields>
+        <fields>CONTRACT.END_DATE</fields>
+        <relatedList>Contracts</relatedList>
+    </relatedLists>
+    <relatedLists>
         <relatedList>RelatedEntityHistoryList</relatedList>
-    </relatedLists>
-    <relatedLists>
-        <fields>QUOTE_DOC.NAME</fields>
-        <fields>QUOTE_DOC.DISCOUNT</fields>
-        <fields>QUOTE_DOC.GRANDTOTAL</fields>
-        <fields>CreatedBy</fields>
-        <relatedList>RelatedQuoteDocumentList</relatedList>
-    </relatedLists>
-    <relatedLists>
-        <relatedList>RelatedContentNoteList</relatedList>
     </relatedLists>
     <relatedLists>
         <relatedList>RelatedFileList</relatedList>
@@ -343,6 +337,9 @@
         <relatedList>RelatedActivityList</relatedList>
     </relatedLists>
     <relatedLists>
+        <relatedList>RelatedNoteList</relatedList>
+    </relatedLists>
+    <relatedLists>
         <fields>TASK.SUBJECT</fields>
         <fields>TASK.WHO_NAME</fields>
         <fields>ACTIVITY.TASK</fields>
@@ -350,18 +347,6 @@
         <fields>CORE.USERS.FULL_NAME</fields>
         <fields>TASK.LAST_UPDATE</fields>
         <relatedList>RelatedHistoryList</relatedList>
-    </relatedLists>
-    <relatedLists>
-        <excludeButtons>MassChangeOwner</excludeButtons>
-        <fields>NAME</fields>
-        <fields>RES_Entry_Type__c</fields>
-        <fields>RES_Discount_Requested__c</fields>
-        <fields>RES_Submitted_By__c</fields>
-        <fields>RES_Approver__c</fields>
-        <fields>RES_Outcome__c</fields>
-        <fields>RES_Reason__c</fields>
-        <fields>CREATED_DATE</fields>
-        <relatedList>RES_Discount_Audit_Log__c.RES_Quote__c</relatedList>
     </relatedLists>
     <showEmailCheckbox>false</showEmailCheckbox>
     <showRunAssignmentRulesCheckbox>false</showRunAssignmentRulesCheckbox>
