@@ -690,10 +690,16 @@
                 <componentName>resUploadDocuments</componentName>
                 <identifier>c_resUploadDocuments</identifier>
                 <visibilityRule>
+                    <booleanFilter>1 AND 2</booleanFilter>
                     <criteria>
                         <leftValue>{!Record.RES_Product_Soft_Held__c}</leftValue>
                         <operator>EQUAL</operator>
                         <rightValue>false</rightValue>
+                    </criteria>
+                    <criteria>
+                        <leftValue>{!Record.Status}</leftValue>
+                        <operator>NE</operator>
+                        <rightValue>Canceled</rightValue>
                     </criteria>
                 </visibilityRule>
             </componentInstance>
