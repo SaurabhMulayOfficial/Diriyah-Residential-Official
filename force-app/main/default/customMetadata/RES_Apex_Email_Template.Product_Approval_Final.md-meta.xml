@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <label>Product Approval - Final</label>
+    <protected>false</protected>
+    <values>
+        <field>Html_Body__c</field>
+        <value xsi:type="xsd:string">&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;head&gt;
+&lt;meta charset=&quot;UTF-8&quot;&gt;
+&lt;title&gt;CSO Approval Completed&lt;/title&gt;
+&lt;/head&gt;
+
+&lt;body style=&quot;margin:0;padding:0;background-color:#F5F5F5;&quot;&gt;
+
+&lt;!-- OUTER WRAPPER --&gt;
+&lt;table width=&quot;100%&quot; cellpadding=&quot;0&quot; cellspacing=&quot;0&quot; border=&quot;0&quot;
+style=&quot;width:100%;background-color:#F5F5F5;&quot;&gt;
+
+&lt;tr&gt;
+&lt;td align=&quot;center&quot; style=&quot;padding:28px 15px;&quot;&gt;
+
+&lt;!-- MAIN EMAIL CARD --&gt;
+&lt;table width=&quot;600&quot; cellpadding=&quot;0&quot; cellspacing=&quot;0&quot; border=&quot;0&quot;
+style=&quot;width:600px;max-width:600px;
+background-color:#FFFFFF;
+border-collapse:separate;
+border-spacing:0;
+border-radius:10px;
+overflow:hidden;&quot;&gt;
+
+&lt;!-- HEADER --&gt;
+&lt;tr&gt;
+&lt;td style=&quot;background-color:#DFC09A;
+padding:28px 30px 27px;
+text-align:center;
+font-family:Georgia,&apos;Times New Roman&apos;,serif;&quot;&gt;
+
+&lt;h1 style=&quot;margin:0;
+color:#5B3A0A;
+font-size:27px;
+font-weight:700;
+line-height:34px;&quot;&gt;
+CSO Approval Completed
+&lt;/h1&gt;
+
+&lt;p style=&quot;margin:10px 0 0;
+color:#171717;
+font-size:15px;
+line-height:22px;
+font-family:Arial,Helvetica,sans-serif;&quot;&gt;
+The Units have been approved by CSO and are now Available and ready for Catalog.
+&lt;/p&gt;
+
+&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;!-- BODY --&gt;
+&lt;tr&gt;
+&lt;td style=&quot;padding:30px;
+font-family:Arial,Helvetica,sans-serif;
+color:#3F3F3F;&quot;&gt;
+
+&lt;!-- GREETING --&gt;
+&lt;p style=&quot;margin:0 0 18px;
+font-size:15px;
+line-height:24px;
+color:#3F3F3F;&quot;&gt;
+Hello &lt;strong&gt;Operations Team&lt;/strong&gt;,
+&lt;/p&gt;
+
+&lt;!-- INTRODUCTION --&gt;
+&lt;p style=&quot;margin:0 0 20px;
+font-size:15px;
+line-height:26px;
+color:#3F3F3F;&quot;&gt;
+The following Units have been &lt;strong&gt;approved by CSO&lt;/strong&gt;
+and their status is now &lt;strong&gt;Available&lt;/strong&gt;.
+&lt;/p&gt;
+
+&lt;!-- APPROVED UNITS --&gt;
+&lt;table width=&quot;100%&quot; cellpadding=&quot;0&quot; cellspacing=&quot;0&quot; border=&quot;0&quot;
+style=&quot;width:100%;
+background-color:#FBF8F2;
+border:1px solid #E9DCC7;
+border-collapse:collapse;
+margin:20px 0;&quot;&gt;
+
+&lt;tr&gt;
+&lt;td style=&quot;padding:14px 16px 8px;
+font-family:Georgia,&apos;Times New Roman&apos;,serif;
+font-size:14px;
+font-weight:700;
+line-height:20px;
+color:#5B3A0A;&quot;&gt;
+Approved Units
+&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td style=&quot;padding:4px 16px 16px;
+font-family:Arial,Helvetica,sans-serif;
+font-size:14px;
+color:#3F3F3F;
+line-height:23px;&quot;&gt;
+{1}
+&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;/table&gt;
+
+&lt;!-- ACTION MESSAGE --&gt;
+&lt;p style=&quot;margin:22px 0 18px;
+font-size:15px;
+line-height:26px;
+color:#3F3F3F;&quot;&gt;
+These Units are now ready to be added to the Catalog.
+Please proceed with the required Catalog activities.
+&lt;/p&gt;
+
+&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;!-- FOOTER --&gt;
+&lt;tr&gt;
+&lt;td style=&quot;background-color:#DFC09A;
+padding:21px 22px 22px;
+text-align:center;
+border-top:1px solid #D5B789;
+font-family:Georgia,&apos;Times New Roman&apos;,serif;&quot;&gt;
+
+&lt;p style=&quot;margin:0;
+color:#3F3F3F;
+font-family:Arial,Helvetica,sans-serif;
+font-size:14px;
+line-height:20px;&quot;&gt;
+Regards,
+&lt;/p&gt;
+
+&lt;p style=&quot;margin:7px 0 0;
+color:#5B3A0A;
+font-size:15px;
+font-weight:700;
+line-height:20px;&quot;&gt;
+CRM System
+&lt;/p&gt;
+
+&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;/table&gt;
+&lt;!-- END MAIN EMAIL CARD --&gt;
+
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/table&gt;
+&lt;!-- END OUTER WRAPPER --&gt;
+
+&lt;/body&gt;
+&lt;/html&gt;</value>
+    </values>
+    <values>
+        <field>Subject__c</field>
+        <value xsi:type="xsd:string">Product Approval Completed - Units Approved</value>
+    </values>
+</CustomMetadata>

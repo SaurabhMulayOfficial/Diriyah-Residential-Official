@@ -3,6 +3,10 @@
     <description>Permission Set for Sales – Enterprise – Chief Sales Officer</description>
     <customPermissions>
         <enabled>true</enabled>
+        <name>RES_Product_CSO_Approver</name>
+    </customPermissions>
+    <customPermissions>
+        <enabled>true</enabled>
         <name>RES_Manager_Dashboard_Visibility</name>
     </customPermissions>
     <customPermissions>
@@ -348,6 +352,11 @@
     <fieldPermissions>
         <editable>false</editable>
         <field>Product2.StockKeepingUnit</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>Product2.RES_Rejection_Comment__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>

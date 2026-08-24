@@ -6,6 +6,50 @@
         <enabled>true</enabled>
     </classAccesses>
     <classAccesses>
+        <apexClass>RES_ProductApprovalController</apexClass>
+        <enabled>true</enabled>
+    </classAccesses>
+    <classAccesses>
+        <apexClass>RES_ProductApprovalControllerTest</apexClass>
+        <enabled>true</enabled>
+    </classAccesses>
+    <classAccesses>
+        <apexClass>RES_ProductApprovalService</apexClass>
+        <enabled>true</enabled>
+    </classAccesses>
+    <classAccesses>
+        <apexClass>RES_ProductApprovalServiceTest</apexClass>
+        <enabled>true</enabled>
+    </classAccesses>
+    <classAccesses>
+        <apexClass>RES_ProductApprovalStateService</apexClass>
+        <enabled>true</enabled>
+    </classAccesses>
+    <classAccesses>
+        <apexClass>RES_ProductApprovalStateServiceTest</apexClass>
+        <enabled>true</enabled>
+    </classAccesses>
+    <classAccesses>
+        <apexClass>RES_ProductApprovalNotificationService</apexClass>
+        <enabled>true</enabled>
+    </classAccesses>
+    <classAccesses>
+        <apexClass>RES_ProdApprovalNotifyServiceTest</apexClass>
+        <enabled>true</enabled>
+    </classAccesses>
+    <classAccesses>
+        <apexClass>RES_ProductApprovalAuthorization</apexClass>
+        <enabled>true</enabled>
+    </classAccesses>
+    <classAccesses>
+        <apexClass>RES_ProductApprovalAuthorizationTest</apexClass>
+        <enabled>true</enabled>
+    </classAccesses>
+    <classAccesses>
+        <apexClass>RES_ProductApprovalConfigDAOLayer</apexClass>
+        <enabled>true</enabled>
+    </classAccesses>
+    <classAccesses>
         <apexClass>RES_SoftHoldPostApprovalActions</apexClass>
         <enabled>true</enabled>
     </classAccesses>
@@ -530,7 +574,7 @@
         <application>standard__AppLauncher</application>
         <visible>false</visible>
     </applicationVisibilities>
-     <layoutAssignments>
+    <layoutAssignments>
         <layout>Global-Global Layout</layout>
     </layoutAssignments>
     <layoutAssignments>
@@ -824,7 +868,7 @@
         <editable>true</editable>
         <field>RES_Assignment_Rule__c.RES_Last_Assigned__c</field>
         <readable>true</readable>
-    </fieldPermissions> 
+    </fieldPermissions>
     <fieldPermissions>
         <editable>true</editable>
         <field>RES_Assignment_Rule__c.RES_User_Workload__c</field>
@@ -1090,7 +1134,7 @@
         <editable>false</editable>
         <field>RES_Discount_Audit_Log__c.RES_Correction_Justification__c</field>
         <readable>true</readable>
-    </fieldPermissions>     
+    </fieldPermissions>
     <recordTypeVisibilities>
         <default>true</default>
         <personAccountDefault>true</personAccountDefault>

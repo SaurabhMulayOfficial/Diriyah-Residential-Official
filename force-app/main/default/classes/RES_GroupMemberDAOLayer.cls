@@ -54,12 +54,13 @@ public with sharing class RES_GroupMemberDAOLayer extends RES_BaseDAOLayer{
 
     public Map<String, Set<String>> getGroupMembersByGroupNames(Set<String> groupNames){
         Map<String, Set<String>> result = new Map<String, Set<String>>();
+        if (groupNames == null || groupNames.isEmpty()) {
+            return result;
+            }
         Map<String, Object> bindVars = new Map<String, Object>();
         bindVars.put('groupNames', groupNames);
         String soql = 'SELECT Group.DeveloperName, UserOrGroup.Email From GroupMember WHERE Group.DeveloperName IN: groupNames';
-
         List<GroupMember> grpMemberList = (List<GroupMember>) executeQuery(soql, 'groupNames', true, bindVars, AccessLevel.SYSTEM_MODE);
-
         for(GroupMember M: grpMemberList){
             if(M.UserOrGroup.Email != null){
                 if(!result.containsKey(M.Group.DeveloperName)){

@@ -3,6 +3,10 @@
     <description>Permission Set for External Operations– Operations – Senior Manager</description>
     <customPermissions>
         <enabled>true</enabled>
+        <name>RES_Product_Operation_Visibility</name>
+    </customPermissions>
+    <customPermissions>
+        <enabled>true</enabled>
         <name>RES_Manager_Dashboard_Visibility</name>
     </customPermissions>
     <customPermissions>
@@ -1793,6 +1797,11 @@
     <fieldPermissions>
         <editable>true</editable>
         <field>Product2.RES_Virtual_Bank_Account__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>Product2.RES_Rejection_Comment__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>

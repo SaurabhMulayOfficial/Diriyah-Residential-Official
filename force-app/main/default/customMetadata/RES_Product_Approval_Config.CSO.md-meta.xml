@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <label>CSO</label>
+    <protected>false</protected>
+    <values>
+        <field>RES_Active__c</field>
+        <value xsi:type="xsd:boolean">true</value>
+    </values>
+    <values>
+        <field>RES_Approval_Level__c</field>
+        <value xsi:type="xsd:double">3.0</value>
+    </values>
+    <values>
+        <field>RES_Current_Status__c</field>
+        <value xsi:type="xsd:string">Pending CSO Approval</value>
+    </values>
+    <values>
+        <field>RES_Custom_Permission__c</field>
+        <value xsi:type="xsd:string">RES_Product_CSO_Approver</value>
+    </values>
+    <values>
+        <field>RES_Final_Level__c</field>
+        <value xsi:type="xsd:boolean">true</value>
+    </values>
+    <values>
+        <field>RES_Next_Status__c</field>
+        <value xsi:type="xsd:string">Available</value>
+    </values>
+    <values>
+        <field>RES_Notification_Group__c</field>
+        <value xsi:type="xsd:string">RES_Operations_Team</value>
+    </values>
+    <values>
+        <field>RES_Permission_Set_Developer_Name__c</field>
+        <value xsi:type="xsd:string">RES_Product_CSO_Approver</value>
+    </values>
+    <values>
+        <field>RES_Queue_Label__c</field>
+        <value xsi:type="xsd:string">CSO Team</value>
+    </values>
+</CustomMetadata>
