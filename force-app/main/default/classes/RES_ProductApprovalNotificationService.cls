@@ -42,7 +42,7 @@
  *             Operations
  * =============================================================================
  */
-public with sharing class RES_ProductApprovalNotificationService {
+public without sharing class RES_ProductApprovalNotificationService {
 
     // =========================================================================
     // CONFIGURATION
@@ -50,13 +50,6 @@ public with sharing class RES_ProductApprovalNotificationService {
 
     private static final String NEXT_TEAM_TEMPLATE = 'Product_Approval_Next_Team';
     private static final String REJECTION_TEMPLATE = 'Product_Approval_Rejection';
-
-    /*
-     * Final approval notification.
-     *
-     * If a dedicated template is not yet created, the final notification
-     * can simply be skipped until the template is configured.
-     */
     private static final String FINAL_APPROVAL_TEMPLATE = 'Product_Approval_Final';
 
     private static final String DEVCO_GROUP = System.Label.RES_Product_Approval_DevCo_Group;
@@ -66,12 +59,29 @@ public with sharing class RES_ProductApprovalNotificationService {
 
     private static final Integer MAX_EMAIL_RECIPIENTS = 150;
 
+    /*
+     * Org-Wide Email Address configuration.
+     *
+     * The Custom Label 'Org_Wide_Email' should contain the
+     * Display Name of the Org-Wide Email Address.
+     *
+     * Example:
+     * Salesforce Notifications
+     *
+     * If the label is blank or the Org-Wide Email Address
+     * cannot be found, null is returned.
+     */
+    private static final String ORG_WIDE_EMAIL_DISPLAY_NAME = System.Label.Org_Wide_Email;
+
+    private static Id cachedOrgWideEmailAddressId;
+
     // =========================================================================
     // DAO DEPENDENCIES
     // =========================================================================
 
     private static final RES_ApexEmailTemplateDAO EMAIL_TEMPLATE_DAO = new RES_ApexEmailTemplateDAO();
     private static final RES_GroupMemberDAOLayer GROUP_MEMBER_DAO = new RES_GroupMemberDAOLayer();
+    private static final RES_OrgWideAddressDAO ORG_WIDE_EMAIL_DAO = new RES_OrgWideAddressDAO();
 
     // =========================================================================
     // APPROVAL NOTIFICATION
@@ -80,15 +90,10 @@ public with sharing class RES_ProductApprovalNotificationService {
     /**
      * Sends notification to the next approval team.
      *
-     * Example:
-     *
-     * DevCo approves
-     *      ->
-     * Finance receives notification
-     *
-     * Finance approves
-     *      ->
-     * CSO receives notification
+     * Template merge fields:
+     * {0} = Next Team
+     * {1} = Approving Team
+     * {2} = Product Details
      */
     public static void notifyNextApprovalTeam(
         List<Product2> products,
@@ -111,10 +116,15 @@ public with sharing class RES_ProductApprovalNotificationService {
         }
 
         String productDetails = buildProductDetails(products);
-        String subject = buildApprovalSubject(template.Subject__c, currentTeamLabel, nextTeamLabel, productDetails);
-        String htmlBody = buildApprovalBody(template.Html_Body__c, currentTeamLabel, nextTeamLabel, productDetails);
 
-        sendEmails(recipientEmails, subject, htmlBody);
+        List<String> mergeFieldsForSubject = new List<String>{ nextTeamLabel, currentTeamLabel, productDetails };
+        List<String> mergeFieldsForBody = new List<String>{
+            escapeHtml(safeValue(nextTeamLabel)),
+            escapeHtml(safeValue(currentTeamLabel)),
+            productDetails
+        };
+
+        sendEmailsWithMergeFields(recipientEmails, template.Subject__c, template.Html_Body__c, mergeFieldsForSubject, mergeFieldsForBody);
     }
 
     // =========================================================================
@@ -124,13 +134,9 @@ public with sharing class RES_ProductApprovalNotificationService {
     /**
      * Sends notification to Operations after final approval.
      *
-     * Flow:
-     *
-     * CSO approves
-     *      ->
-     * Product becomes Approved
-     *      ->
-     * Operations is notified
+     * Template merge fields:
+     * {0} = Approving Team
+     * {1} = Product Details
      */
     public static void notifyFinalApproval(List<Product2> products, String approvingTeamLabel) {
         if (products == null || products.isEmpty() || String.isBlank(OPERATIONS_GROUP)) {
@@ -149,13 +155,10 @@ public with sharing class RES_ProductApprovalNotificationService {
 
         String productDetails = buildProductDetails(products);
 
-        String subject = replaceToken(template.Subject__c, '{0}', safeValue(approvingTeamLabel));
-        subject = replaceToken(subject, '{1}', safeValue(productDetails));
+        List<String> mergeFieldsForSubject = new List<String>{ approvingTeamLabel, productDetails };
+        List<String> mergeFieldsForBody = new List<String>{ escapeHtml(safeValue(approvingTeamLabel)), productDetails };
 
-        String htmlBody = replaceToken(template.Html_Body__c, '{0}', safeValue(approvingTeamLabel));
-        htmlBody = replaceToken(htmlBody, '{1}', safeValue(productDetails));
-
-        sendEmails(recipientEmails, subject, htmlBody);
+        sendEmailsWithMergeFields(recipientEmails, template.Subject__c, template.Html_Body__c, mergeFieldsForSubject, mergeFieldsForBody);
     }
 
     // =========================================================================
@@ -165,12 +168,10 @@ public with sharing class RES_ProductApprovalNotificationService {
     /**
      * Sends rejection notification to Operations.
      *
-     * Flow:
-     *
-     * DevCo / Finance / CSO rejects
-     *              |
-     *              v
-     *          Operations
+     * Template merge fields:
+     * {0} = Rejecting Team
+     * {1} = Product Details
+     * {2} = Rejection Reason
      */
     public static void notifyProductRejection(List<Product2> products, String rejectingTeamLabel, String rejectionReason) {
         if (products == null || products.isEmpty() || String.isBlank(OPERATIONS_GROUP)) {
@@ -188,10 +189,15 @@ public with sharing class RES_ProductApprovalNotificationService {
         }
 
         String productDetails = buildProductDetails(products);
-        String subject = buildRejectionSubject(template.Subject__c, rejectingTeamLabel, productDetails, rejectionReason);
-        String htmlBody = buildRejectionBody(template.Html_Body__c, rejectingTeamLabel, productDetails, rejectionReason);
 
-        sendEmails(recipientEmails, subject, htmlBody);
+        List<String> mergeFieldsForSubject = new List<String>{ rejectingTeamLabel, productDetails, rejectionReason };
+        List<String> mergeFieldsForBody = new List<String>{
+            escapeHtml(safeValue(rejectingTeamLabel)),
+            productDetails,
+            escapeHtml(safeValue(rejectionReason))
+        };
+
+        sendEmailsWithMergeFields(recipientEmails, template.Subject__c, template.Html_Body__c, mergeFieldsForSubject, mergeFieldsForBody);
     }
 
     // =========================================================================
@@ -200,8 +206,6 @@ public with sharing class RES_ProductApprovalNotificationService {
 
     /**
      * Resolves Public Group members to email addresses.
-     *
-     * The DAO is responsible for resolving the actual group membership.
      */
     private static Set<String> getGroupRecipientEmails(String groupDeveloperName) {
         Set<String> recipients = new Set<String>();
@@ -209,8 +213,7 @@ public with sharing class RES_ProductApprovalNotificationService {
             return recipients;
         }
 
-        Map<String, Set<String>> groupEmailMap =
-            GROUP_MEMBER_DAO.getGroupMembersByGroupNames(new Set<String>{ groupDeveloperName });
+        Map<String, Set<String>> groupEmailMap = GROUP_MEMBER_DAO.getGroupMembersByGroupNames(new Set<String>{ groupDeveloperName });
 
         if (groupEmailMap != null && groupEmailMap.containsKey(groupDeveloperName) && groupEmailMap.get(groupDeveloperName) != null) {
             recipients.addAll(groupEmailMap.get(groupDeveloperName));
@@ -239,64 +242,22 @@ public with sharing class RES_ProductApprovalNotificationService {
     }
 
     // =========================================================================
-    // APPROVAL TEMPLATE
-    // =========================================================================
-
-    /**
-     * Approval template merge fields:
-     *
-     * {0} = Next Team
-     * {1} = Approving Team
-     * {2} = Product Details
-     */
-    private static String buildApprovalSubject(String subject, String approvingTeam, String nextTeam, String productDetails) {
-        String result = safeValue(subject);
-        result = replaceToken(result, '{0}', safeValue(nextTeam));
-        result = replaceToken(result, '{1}', safeValue(approvingTeam));
-        result = replaceToken(result, '{2}', safeValue(productDetails));
-        return result;
-    }
-
-    private static String buildApprovalBody(String body, String approvingTeam, String nextTeam, String productDetails) {
-        String result = safeValue(body);
-        result = replaceToken(result, '{0}', escapeHtml(safeValue(nextTeam)));
-        result = replaceToken(result, '{1}', escapeHtml(safeValue(approvingTeam)));
-        result = replaceToken(result, '{2}', safeValue(productDetails));
-        return result;
-    }
-
-    // =========================================================================
-    // REJECTION TEMPLATE
-    // =========================================================================
-
-    /**
-     * Rejection template merge fields:
-     *
-     * {0} = Rejecting Team
-     * {1} = Product Details
-     * {2} = Rejection Reason
-     */
-    private static String buildRejectionSubject(String subject, String rejectingTeam, String productDetails, String rejectionReason) {
-        String result = safeValue(subject);
-        result = replaceToken(result, '{0}', safeValue(rejectingTeam));
-        result = replaceToken(result, '{1}', safeValue(productDetails));
-        result = replaceToken(result, '{2}', safeValue(rejectionReason));
-        return result;
-    }
-
-    private static String buildRejectionBody(String body, String rejectingTeam, String productDetails, String rejectionReason) {
-        String result = safeValue(body);
-        result = replaceToken(result, '{0}', escapeHtml(safeValue(rejectingTeam)));
-        result = replaceToken(result, '{1}', safeValue(productDetails));
-        result = replaceToken(result, '{2}', escapeHtml(safeValue(rejectionReason)));
-        return result;
-    }
-
-    // =========================================================================
     // EMAIL SENDING
     // =========================================================================
 
-    private static void sendEmails(Set<String> recipientEmails, String subject, String htmlBody) {
+    /**
+     * Sends emails with merge field replacement.
+     *
+     * This method leverages RES_EmailUtilityService.hydrateMergeFields()
+     * to replace {0}, {1}, {2} tokens in templates.
+     */
+    private static void sendEmailsWithMergeFields(
+        Set<String> recipientEmails,
+        String subjectTemplate,
+        String bodyTemplate,
+        List<String> mergeFieldsForSubject,
+        List<String> mergeFieldsForBody
+    ) {
         if (recipientEmails == null || recipientEmails.isEmpty()) {
             return;
         }
@@ -312,6 +273,8 @@ public with sharing class RES_ProductApprovalNotificationService {
             return;
         }
 
+        String mergedSubject = RES_EmailUtilityService.hydrateMergeFields(subjectTemplate, mergeFieldsForSubject);
+
         List<RES_SendEmailInvocable.inputs> invocableInputs = new List<RES_SendEmailInvocable.inputs>();
 
         for (Integer startIndex = 0; startIndex < validEmails.size(); startIndex += MAX_EMAIL_RECIPIENTS) {
@@ -324,10 +287,16 @@ public with sharing class RES_ProductApprovalNotificationService {
 
             RES_SendEmailInvocable.inputs input = new RES_SendEmailInvocable.inputs();
             input.recipients = emailBatch;
-            input.orgWideEmailAddressId = null;
-            input.emailSubject = subject;
-            input.emailBody = htmlBody;
-            input.mergeFields = new List<String>();
+
+            // Resolve Org-Wide Email Address ID from Custom Label.
+            input.orgWideEmailAddressId = getOrgWideEmailAddressId();
+
+            input.emailSubject = mergedSubject;
+            input.emailBody = bodyTemplate;
+
+            // RES_EmailUtilityService.setHtmlBody()
+            // handles merge field replacement.
+            input.mergeFields = mergeFieldsForBody;
 
             invocableInputs.add(input);
         }
@@ -368,15 +337,38 @@ public with sharing class RES_ProductApprovalNotificationService {
     }
 
     // =========================================================================
-    // COMMON HELPERS
+    // ORG-WIDE EMAIL ADDRESS
     // =========================================================================
 
-    private static String replaceToken(String content, String token, String value) {
-        if (String.isBlank(content)) {
-            return '';
+    /**
+     * Retrieves the Org-Wide Email Address ID using the
+     * Display Name configured in the Org_Wide_Email Custom Label.
+     *
+     * The actual SOQL is handled by RES_OrgWideAddressDAO.
+     */
+    private static Id getOrgWideEmailAddressId() {
+        if (cachedOrgWideEmailAddressId != null) {
+            return cachedOrgWideEmailAddressId;
         }
-        return content.replace(token, value == null ? '' : value);
+
+        if (String.isBlank(ORG_WIDE_EMAIL_DISPLAY_NAME)) {
+            return null;
+        }
+
+        try {
+            List<OrgWideEmailAddress> orgWideAddresses = ORG_WIDE_EMAIL_DAO.getOrgWideAddressByDisplayName(ORG_WIDE_EMAIL_DISPLAY_NAME);
+            if (orgWideAddresses != null && !orgWideAddresses.isEmpty()) {
+                cachedOrgWideEmailAddressId = orgWideAddresses[0].Id;
+            }
+            return cachedOrgWideEmailAddressId;
+        } catch (Exception e) {
+            return null;
+        }
     }
+
+    // =========================================================================
+    // COMMON HELPERS
+    // =========================================================================
 
     private static String safeValue(String value) {
         return String.isBlank(value) ? '' : value;

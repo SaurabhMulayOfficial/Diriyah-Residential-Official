@@ -3,6 +3,10 @@
     <description>Permission Set for Contract Amendments – Operations – Specialist</description>
     <customPermissions>
         <enabled>true</enabled>
+        <name>RES_Product_DevCo_Approver</name>
+    </customPermissions>
+    <customPermissions>
+        <enabled>true</enabled>
         <name>RES_Lead_Reassignment_Dashboard_Visibility</name>
     </customPermissions>
     <customPermissions>
@@ -1695,6 +1699,11 @@
     <fieldPermissions>
         <editable>true</editable>
         <field>Product2.RES_Virtual_Bank_Account__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>Product2.RES_Rejection_Comment__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
