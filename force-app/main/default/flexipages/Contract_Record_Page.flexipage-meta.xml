@@ -595,6 +595,16 @@
                 <identifier>RecordRES_SIMAH_Form_Received_cField</identifier>
             </fieldInstance>
         </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.RES_SIMAH_Report_Received__c</fieldItem>
+                <identifier>RecordRES_SIMAH_Report_Received_cField</identifier>
+           </fieldInstance>
+        </itemInstances>
         <name>Facet-670c939f-ce9e-4f74-936b-9a794f8b2300</name>
         <type>Facet</type>
     </flexiPageRegions>
@@ -637,6 +647,16 @@
                 </fieldInstanceProperties>
                 <fieldItem>Record.RES_SPA_Signed_Date__c</fieldItem>
                 <identifier>RecordRES_SPA_Signed_Date_cField</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.RES_SIMAH_Status__c</fieldItem>
+                <identifier>RecordRES_SIMAH_Status_cField2</identifier>
             </fieldInstance>
         </itemInstances>
         <name>Facet-a080a604-04df-40ac-a26d-759c18be09b2</name>
@@ -873,6 +893,43 @@
             <componentInstance>
                 <componentName>runtime_approvals:approvalTrace</componentName>
                 <identifier>runtime_approvals_approvalTrace</identifier>
+            </componentInstance>
+        </itemInstances>
+        <itemInstances>
+            <componentInstance>
+                <componentInstanceProperties>
+                    <name>componentLabel</name>
+                    <value>Work Guide</value>
+                </componentInstanceProperties>
+                <componentInstanceProperties>
+                    <name>isHiddenWhenEmpty</name>
+                    <value>false</value>
+                </componentInstanceProperties>
+                <componentInstanceProperties>
+                    <name>isRunNameDisplayed</name>
+                    <value>false</value>
+                </componentInstanceProperties>
+                <componentInstanceProperties>
+                    <name>isStageNameDisplayed</name>
+                    <value>false</value>
+                </componentInstanceProperties>
+                <componentInstanceProperties>
+                    <name>isStepNameDisplayed</name>
+                    <value>false</value>
+                </componentInstanceProperties>
+                <componentInstanceProperties>
+                    <name>prioritizationCriteria</name>
+                    <value>Last Modified Date (Ascending)</value>
+                </componentInstanceProperties>
+                <componentName>interaction_orchestrator:workGuide</componentName>
+                <identifier>interaction_orchestrator_workGuide</identifier>
+                <visibilityRule>
+                    <criteria>
+                        <leftValue>{!$Client.formFactor}</leftValue>
+                        <operator>EQUAL</operator>
+                        <rightValue>Small</rightValue>
+                    </criteria>
+                </visibilityRule>
             </componentInstance>
         </itemInstances>
         <mode>Replace</mode>
