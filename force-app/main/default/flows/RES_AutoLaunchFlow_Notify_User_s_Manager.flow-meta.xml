@@ -9,7 +9,7 @@
         <actionType>customNotificationAction</actionType>
         <faultConnector>
             <isGoTo>true</isGoTo>
-            <targetReference>Fault</targetReference>
+            <targetReference>Fault_Message</targetReference>
         </faultConnector>
         <flowTransactionModel>CurrentTransaction</flowTransactionModel>
         <inputParameters>
@@ -46,74 +46,6 @@
         <offset>0</offset>
     </actionCalls>
     <actionCalls>
-        <name>Send_Email_To_Manager</name>
-        <label>Send Email To Manager</label>
-        <locationX>0</locationX>
-        <locationY>0</locationY>
-        <actionName>emailSimple</actionName>
-        <actionType>emailSimple</actionType>
-        <connector>
-            <targetReference>Send_Breach_Notification</targetReference>
-        </connector>
-        <faultConnector>
-            <targetReference>Fault</targetReference>
-        </faultConnector>
-        <flowTransactionModel>CurrentTransaction</flowTransactionModel>
-        <inputParameters>
-            <name>recipientAddresses</name>
-            <value>
-                <collectionElements>
-                    <elementReference>Emails</elementReference>
-                </collectionElements>
-            </value>
-        </inputParameters>
-        <inputParameters>
-            <name>senderType</name>
-            <value>
-                <inputConfiguratorMode>Custom</inputConfiguratorMode>
-                <stringValue>OrgWideEmailAddress</stringValue>
-            </value>
-        </inputParameters>
-        <inputParameters>
-            <name>senderAddress</name>
-            <value>
-                <inputConfiguratorMode>Custom</inputConfiguratorMode>
-                <stringValue>syed.ashraf@globant.com</stringValue>
-            </value>
-        </inputParameters>
-        <inputParameters>
-            <name>composeEmailContent</name>
-            <value>
-                <stringValue>True</stringValue>
-            </value>
-        </inputParameters>
-        <inputParameters>
-            <name>emailSubject</name>
-            <value>
-                <stringValue>Lead SLA Breach: Requires Immediate Attention</stringValue>
-            </value>
-        </inputParameters>
-        <inputParameters>
-            <name>emailBody</name>
-            <value>
-                <inputConfiguratorMode>Custom</inputConfiguratorMode>
-                <stringValue>&lt;p&gt;Hello {!User.Name},&lt;/p&gt;&lt;p&gt;The following Lead had exceeded the SLA response time of 24 hours.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Lead Name:&lt;/strong&gt; &lt;a href=&quot;{!OrgBaseUrl}lightning/r/Lead/{!LeadId}/view&quot; rel=&quot;noopener noreferrer&quot; target=&quot;_blank&quot;&gt;{!LeadName}&lt;/a&gt;&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Lead Owner:&lt;/strong&gt; {!ownerName}&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Created On:&lt;/strong&gt; {!LeadRecord.CreatedDate}&lt;/p&gt;&lt;p&gt;&lt;strong&gt;SLA Target:&lt;/strong&gt; {!LeadRecord.RES_SLA_Due_Time__c}&lt;/p&gt;&lt;p&gt;Please take immediate action to follow up.&lt;/p&gt;</stringValue>
-            </value>
-        </inputParameters>
-        <inputParameters>
-            <name>sendRichBody</name>
-            <value>
-                <booleanValue>true</booleanValue>
-            </value>
-        </inputParameters>
-        <inputParameters>
-            <name>recipientId</name>
-        </inputParameters>
-        <nameSegment>emailSimple</nameSegment>
-        <offset>0</offset>
-        <versionString>2.0.1</versionString>
-    </actionCalls>
-    <actionCalls>
         <name>Send_Opportunity_Won_Notification</name>
         <label>Send Opportunity Won Notification</label>
         <locationX>0</locationX>
@@ -125,7 +57,7 @@
         </connector>
         <faultConnector>
             <isGoTo>true</isGoTo>
-            <targetReference>Fault</targetReference>
+            <targetReference>Fault_Message</targetReference>
         </faultConnector>
         <flowTransactionModel>CurrentTransaction</flowTransactionModel>
         <inputParameters>
@@ -169,8 +101,7 @@
         <actionName>emailSimple</actionName>
         <actionType>emailSimple</actionType>
         <faultConnector>
-            <isGoTo>true</isGoTo>
-            <targetReference>Fault</targetReference>
+            <targetReference>Fault_Message</targetReference>
         </faultConnector>
         <flowTransactionModel>CurrentTransaction</flowTransactionModel>
         <inputParameters>
@@ -250,8 +181,8 @@
         </connector>
     </assignments>
     <assignments>
-        <name>Fault</name>
-        <label>Fault</label>
+        <name>Fault_Message</name>
+        <label>Fault Message</label>
         <locationX>0</locationX>
         <locationY>0</locationY>
         <assignmentItems>
@@ -261,6 +192,57 @@
                 <elementReference>$Flow.FaultMessage</elementReference>
             </value>
         </assignmentItems>
+    </assignments>
+    <assignments>
+        <name>Populate_Merge_Fields</name>
+        <label>Populate Merge Fields</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignmentItems>
+            <assignToReference>mergeFields</assignToReference>
+            <operator>Add</operator>
+            <value>
+                <elementReference>userFullName</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>mergeFields</assignToReference>
+            <operator>Add</operator>
+            <value>
+                <elementReference>LeadName</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>mergeFields</assignToReference>
+            <operator>Add</operator>
+            <value>
+                <elementReference>ownerName</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>mergeFields</assignToReference>
+            <operator>Add</operator>
+            <value>
+                <elementReference>leadCreatedDate</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>mergeFields</assignToReference>
+            <operator>Add</operator>
+            <value>
+                <elementReference>slaDueDate</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>mergeFields</assignToReference>
+            <operator>Add</operator>
+            <value>
+                <elementReference>LeadLink</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>RES_Send_Email_To_Manager</targetReference>
+        </connector>
     </assignments>
     <decisions>
         <name>Check_Notification_Type</name>
@@ -313,9 +295,21 @@
     </decisions>
     <environments>Default</environments>
     <formulas>
+        <name>leadCreatedDate</name>
+        <dataType>String</dataType>
+        <expression>Text({!LeadRecord.CreatedDate})</expression>
+    </formulas>
+    <formulas>
         <name>LeadLink</name>
         <dataType>String</dataType>
-        <expression>LEFT({!$Api.Partner_Server_URL_260}, FIND(&quot;/services&quot;, {!$Api.Partner_Server_URL_260})-1)  &amp; &quot;/lightning/r/Lead/&quot; &amp;  {!LeadRecord.Id} &amp; &quot;/view&quot;</expression>
+        <expression>LEFT(
+    {!$Api.Partner_Server_URL_610},
+    FIND(&quot;/services&quot;, {!$Api.Partner_Server_URL_610})
+)
+&amp;
+&quot;/&quot;
+&amp;
+{!LeadRecord.Id}</expression>
     </formulas>
     <formulas>
         <name>oppLink</name>
@@ -331,6 +325,16 @@
         <name>OrgBaseUrl</name>
         <dataType>String</dataType>
         <expression>LEFT({!$Api.Partner_Server_URL_370}, FIND(&quot;/services&quot;, {!$Api.Partner_Server_URL_370}))</expression>
+    </formulas>
+    <formulas>
+        <name>slaDueDate</name>
+        <dataType>String</dataType>
+        <expression>Text({!LeadRecord.RES_SLA_Due_Time__c})</expression>
+    </formulas>
+    <formulas>
+        <name>userFullName</name>
+        <dataType>String</dataType>
+        <expression>{!User.FirstName} + &quot; &quot; + {!User.LastName}</expression>
     </formulas>
     <interviewLabel>RES AutoLaunchFlow - Notify User&apos;s Manager {!$Flow.CurrentDateTime}</interviewLabel>
     <label>RES AutoLaunchFlow - Notify User&apos;s Manager</label>
@@ -395,7 +399,7 @@
         <locationY>0</locationY>
         <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
         <connector>
-            <targetReference>Send_Email_To_Manager</targetReference>
+            <targetReference>Populate_Merge_Fields</targetReference>
         </connector>
         <filterLogic>and</filterLogic>
         <filters>
@@ -417,6 +421,40 @@
         </connector>
     </start>
     <status>Active</status>
+    <subflows>
+        <name>RES_Send_Email_To_Manager</name>
+        <label>RES Send Email To Manager</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Send_Breach_Notification</targetReference>
+        </connector>
+        <flowName>RES_AutolaunchFlow_Send_Emails_With_Merge_Fields</flowName>
+        <inputAssignments>
+            <name>ApexEmailTemplateAPIName</name>
+            <value>
+                <stringValue>RES_Lead_SLA_breached_Notification</stringValue>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <name>mergeFields</name>
+            <value>
+                <elementReference>mergeFields</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <name>orgWideEmailAddressDisplayName</name>
+            <value>
+                <elementReference>$Label.Org_Wide_Email</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <name>recipients</name>
+            <value>
+                <elementReference>Emails</elementReference>
+            </value>
+        </inputAssignments>
+    </subflows>
     <variables>
         <name>Emails</name>
         <dataType>String</dataType>
@@ -452,6 +490,13 @@
         <isInput>true</isInput>
         <isOutput>false</isOutput>
         <objectType>Lead</objectType>
+    </variables>
+    <variables>
+        <name>mergeFields</name>
+        <dataType>String</dataType>
+        <isCollection>true</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
     </variables>
     <variables>
         <name>NotificationType</name>
