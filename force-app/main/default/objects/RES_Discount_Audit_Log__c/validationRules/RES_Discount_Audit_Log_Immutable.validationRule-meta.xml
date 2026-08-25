@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
-    <fullName>RES_Discount_Audit_Log_Immutable</fullName>
-    <active>true</active>
-    <description>DIR-871: Discount Audit Log records are append-only. Blocks any edit after creation for every user, including System Administrators - validation rules have no profile bypass.</description>
-    <errorConditionFormula>NOT(ISNEW())</errorConditionFormula>
-    <errorMessage>Discount Audit Log records are immutable and cannot be edited once created. To correct an entry, a System Administrator must add a new Correction entry with a justification.</errorMessage>
-</ValidationRule>
