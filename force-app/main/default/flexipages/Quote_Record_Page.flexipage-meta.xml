@@ -162,6 +162,12 @@
                 </fieldInstanceProperties>
                 <fieldItem>Record.Status</fieldItem>
                 <identifier>RecordStatusField</identifier>
+                <visibilityRule>
+                    <criteria>
+                        <leftValue>{!Record.QuoteNumber}</leftValue>
+                        <operator>NE</operator>
+                    </criteria>
+                </visibilityRule>
             </fieldInstance>
         </itemInstances>
         <itemInstances>
@@ -243,6 +249,12 @@
                 </fieldInstanceProperties>
                 <fieldItem>Record.ContactId</fieldItem>
                 <identifier>RecordContactIdField</identifier>
+               <visibilityRule>
+                    <criteria>
+                        <leftValue>{!Record.QuoteNumber}</leftValue>
+                        <operator>NE</operator>
+                    </criteria>
+                </visibilityRule>
             </fieldInstance>
         </itemInstances>
         <itemInstances>
