@@ -62,16 +62,7 @@ public with sharing class RES_OpportunityStageUpdateValidation {
                             // 'Unit Selected' requires the Quote to actually have a selected unit (a QuoteLineItem).
                             // That needs a query, so Unit-Selected-eligible statuses are queued and resolved in bulk
                             // below, after this loop. Draft has no such dependency and is handled immediately.
-                            if(inputObj.quoteRecord.Status == 'Draft'){
-                                if(inputObj.opportunityRecord.StageName != 'Proposal'){
-                                    Opportunity oppObj = new Opportunity(Id = inputObj.opportunityRecord.Id, StageName = 'Proposal');
-                                    if(!opportunityUpdateMap.containsKey(oppObj.Id)){
-                                        opportunityUpdateMap.put(oppObj.Id, oppObj);
-                                        opportunityLstUpdate.add(oppObj);
-                                    }
-                                }
-                            }
-                            else if(UNIT_SELECTED_QUOTE_STATUSES.contains(inputObj.quoteRecord.Status)){
+                            if(UNIT_SELECTED_QUOTE_STATUSES.contains(inputObj.quoteRecord.Status)){
                                 pendingLineItemCheckInputs.add(inputObj);
                             }
                         }
