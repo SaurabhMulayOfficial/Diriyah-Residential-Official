@@ -1,80 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Flow xmlns="http://soap.sforce.com/2006/04/metadata">
     <actionCalls>
-        <name>Send_Email</name>
-        <label>Send Email</label>
-        <locationX>0</locationX>
-        <locationY>0</locationY>
-        <actionName>emailSimple</actionName>
-        <actionType>emailSimple</actionType>
-        <flowTransactionModel>CurrentTransaction</flowTransactionModel>
-        <inputParameters>
-            <name>recipientAddresses</name>
-            <value>
-                <collectionElements>
-                    <elementReference>managerEmail</elementReference>
-                </collectionElements>
-            </value>
-        </inputParameters>
-        <inputParameters>
-            <name>senderType</name>
-            <value>
-                <inputConfiguratorMode>Custom</inputConfiguratorMode>
-                <stringValue>OrgWideEmailAddress</stringValue>
-            </value>
-        </inputParameters>
-        <inputParameters>
-            <name>senderAddress</name>
-            <value>
-                <inputConfiguratorMode>Resource</inputConfiguratorMode>
-                <stringValue>syed.ashraf@globant.com</stringValue>
-            </value>
-        </inputParameters>
-        <inputParameters>
-            <name>composeEmailContent</name>
-            <value>
-                <stringValue>True</stringValue>
-            </value>
-        </inputParameters>
-        <inputParameters>
-            <name>emailSubject</name>
-            <value>
-                <inputConfiguratorMode>Resource</inputConfiguratorMode>
-                <stringValue>Approval Needed : Lead Owner Change for {!Get_Lead_Record.Name}</stringValue>
-            </value>
-        </inputParameters>
-        <inputParameters>
-            <name>emailBody</name>
-            <value>
-                <inputConfiguratorMode>Custom</inputConfiguratorMode>
-                <stringValue>&lt;p&gt;Hello {!managerName},&lt;/p&gt;&lt;p&gt;A request to update a lead owner has been submitted for your approval.&lt;/p&gt;&lt;ul&gt;&lt;li&gt;&lt;strong&gt;Lead Name: &lt;/strong&gt;{!Get_Lead_Record.Name}&lt;/li&gt;&lt;li&gt;&lt;strong&gt;Sub Status: &lt;/strong&gt;{!LeadSubStatusLabel}&lt;/li&gt;&lt;li&gt;&lt;strong&gt;No. of days RM is holding the lead : &lt;/strong&gt;{!Get_Lead_Record.RES_Days_Lead_Held_by_RM__c}&lt;/li&gt;&lt;li&gt;&lt;strong&gt;Current Owner : &lt;/strong&gt;{!CurrentOwnerFullName}&lt;/li&gt;&lt;li&gt;&lt;strong&gt;New Owner Requested : &lt;/strong&gt;{!NewOwnerFullName}&lt;/li&gt;&lt;/ul&gt;&lt;p&gt;Please click here to approve or reject this request: &lt;a href=&quot;{!OrgBaseUrl}lightning/r/ApprovalWorkItem/{!Get_Approval_Record.Id}/view&quot; rel=&quot;noopener noreferrer&quot; target=&quot;_blank&quot;&gt; {!Get_Approval_Record.Name}&lt;/a&gt;&lt;/p&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;Best Regards,&lt;/p&gt;&lt;p&gt;Salesforce Administrator&lt;/p&gt;</stringValue>
-            </value>
-        </inputParameters>
-        <inputParameters>
-            <name>sendRichBody</name>
-            <value>
-                <booleanValue>true</booleanValue>
-                <inputConfiguratorMode>Resource</inputConfiguratorMode>
-            </value>
-        </inputParameters>
-        <inputParameters>
-            <name>useLineBreaks</name>
-            <value>
-                <booleanValue>true</booleanValue>
-                <inputConfiguratorMode>Resource</inputConfiguratorMode>
-            </value>
-        </inputParameters>
-        <inputParameters>
-            <name>recipientId</name>
-        </inputParameters>
-        <inputParameters>
-            <name>relatedRecordId</name>
-        </inputParameters>
-        <nameSegment>emailSimple</nameSegment>
-        <offset>0</offset>
-        <versionString>3.0.1</versionString>
-    </actionCalls>
-    <actionCalls>
         <name>Send_Email_to_Current_Reviewer</name>
         <label>Send Email to Current Reviewer</label>
         <locationX>0</locationX>
@@ -166,6 +92,71 @@
             </value>
         </assignmentItems>
     </assignments>
+    <assignments>
+        <name>Populate_Merge_Fields</name>
+        <label>Populate Merge Fields</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignmentItems>
+            <assignToReference>mergeFields</assignToReference>
+            <operator>Add</operator>
+            <value>
+                <elementReference>managerName</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>mergeFields</assignToReference>
+            <operator>Add</operator>
+            <value>
+                <elementReference>Get_Lead_Record.Name</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>mergeFields</assignToReference>
+            <operator>Add</operator>
+            <value>
+                <elementReference>LeadSubStatusLabel</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>mergeFields</assignToReference>
+            <operator>Add</operator>
+            <value>
+                <elementReference>daysLeadHoldingByRM</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>mergeFields</assignToReference>
+            <operator>Add</operator>
+            <value>
+                <elementReference>CurrentOwnerFullName</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>mergeFields</assignToReference>
+            <operator>Add</operator>
+            <value>
+                <elementReference>NewOwnerFullName</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>mergeFields</assignToReference>
+            <operator>Add</operator>
+            <value>
+                <elementReference>approvalWorkItemURL</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>recipientEmails</assignToReference>
+            <operator>Add</operator>
+            <value>
+                <elementReference>managerEmail</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Send_Email_to_Manager</targetReference>
+        </connector>
+    </assignments>
     <decisions>
         <name>Check_for_Manager_email</name>
         <label>Check for Manager email</label>
@@ -205,6 +196,18 @@
     </decisions>
     <environments>Default</environments>
     <formulas>
+        <name>approvalWorkItemURL</name>
+        <dataType>String</dataType>
+        <expression>LEFT(
+    {!$Api.Partner_Server_URL_610},
+    FIND(&quot;/services&quot;, {!$Api.Partner_Server_URL_610})
+)
+&amp;
+&quot;/&quot;
+&amp;
+{!Get_Approval_Record.Id}</expression>
+    </formulas>
+    <formulas>
         <name>CurrentOwnerFullName</name>
         <dataType>String</dataType>
         <expression>TRIM(
@@ -221,6 +224,11 @@ BLANKVALUE({!Get_the_Latest_Reviewer_Approval_Record.ReviewedBy.FirstName}, &quo
 BLANKVALUE({!Get_the_Latest_Reviewer_Approval_Record.ReviewedBy.MiddleName}, &quot;&quot;) &amp; &quot; &quot; &amp;
 BLANKVALUE({!Get_the_Latest_Reviewer_Approval_Record.ReviewedBy.LastName}, &quot;&quot;)
 )</expression>
+    </formulas>
+    <formulas>
+        <name>daysLeadHoldingByRM</name>
+        <dataType>String</dataType>
+        <expression>Text({!Get_Lead_Record.RES_Days_Lead_Held_by_RM__c})</expression>
     </formulas>
     <formulas>
         <name>LeadSubStatusLabel</name>
@@ -282,7 +290,7 @@ BLANKVALUE({!Get_Lead_Record.RES_Proposed_User__r.LastName}, &quot;&quot;)
         <locationY>0</locationY>
         <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
         <connector>
-            <targetReference>Send_Email</targetReference>
+            <targetReference>Populate_Merge_Fields</targetReference>
         </connector>
         <faultConnector>
             <isGoTo>true</isGoTo>
@@ -417,6 +425,37 @@ BLANKVALUE({!Get_Lead_Record.RES_Proposed_User__r.LastName}, &quot;&quot;)
         </connector>
     </start>
     <status>Active</status>
+    <subflows>
+        <name>Send_Email_to_Manager</name>
+        <label>Send Email to Manager</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <flowName>RES_AutolaunchFlow_Send_Emails_With_Merge_Fields</flowName>
+        <inputAssignments>
+            <name>ApexEmailTemplateAPIName</name>
+            <value>
+                <stringValue>RES_Lead_Owner_Change_Request</stringValue>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <name>mergeFields</name>
+            <value>
+                <elementReference>mergeFields</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <name>orgWideEmailAddressDisplayName</name>
+            <value>
+                <elementReference>$Label.Org_Wide_Email</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <name>recipients</name>
+            <value>
+                <elementReference>recipientEmails</elementReference>
+            </value>
+        </inputAssignments>
+    </subflows>
     <textTemplates>
         <name>EmailBody</name>
         <isViewedAsPlainText>true</isViewedAsPlainText>
@@ -457,6 +496,20 @@ Salesforce Administrator</text>
         <dataType>String</dataType>
         <isCollection>false</isCollection>
         <isInput>true</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <name>mergeFields</name>
+        <dataType>String</dataType>
+        <isCollection>true</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <name>recipientEmails</name>
+        <dataType>String</dataType>
+        <isCollection>true</isCollection>
+        <isInput>false</isInput>
         <isOutput>false</isOutput>
     </variables>
     <variables>

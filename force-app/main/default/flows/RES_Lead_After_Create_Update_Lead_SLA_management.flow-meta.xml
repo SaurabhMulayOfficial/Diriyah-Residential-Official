@@ -59,72 +59,6 @@
         <offset>0</offset>
     </actionCalls>
     <actionCalls>
-        <name>Send_Email_to_Leasing_Group</name>
-        <label>Send Email to Leasing Group</label>
-        <locationX>0</locationX>
-        <locationY>0</locationY>
-        <actionName>emailSimple</actionName>
-        <actionType>emailSimple</actionType>
-        <connector>
-            <targetReference>Check_if_Lead_is_Converted_and_Flow_Switch</targetReference>
-        </connector>
-        <flowTransactionModel>CurrentTransaction</flowTransactionModel>
-        <inputParameters>
-            <name>recipientAddresses</name>
-            <value>
-                <collectionElements>
-                    <elementReference>Get_Email_of_all_members_from_Queue.emailRecipients</elementReference>
-                </collectionElements>
-            </value>
-        </inputParameters>
-        <inputParameters>
-            <name>senderType</name>
-            <value>
-                <inputConfiguratorMode>Custom</inputConfiguratorMode>
-                <stringValue>OrgWideEmailAddress</stringValue>
-            </value>
-        </inputParameters>
-        <inputParameters>
-            <name>senderAddress</name>
-            <value>
-                <inputConfiguratorMode>Custom</inputConfiguratorMode>
-                <stringValue>saurabh.mulay@globant.com</stringValue>
-            </value>
-        </inputParameters>
-        <inputParameters>
-            <name>composeEmailContent</name>
-            <value>
-                <stringValue>True</stringValue>
-            </value>
-        </inputParameters>
-        <inputParameters>
-            <name>emailSubject</name>
-            <value>
-                <inputConfiguratorMode>Custom</inputConfiguratorMode>
-                <stringValue> New Lead Referred to Leasing for Review</stringValue>
-            </value>
-        </inputParameters>
-        <inputParameters>
-            <name>emailBody</name>
-            <value>
-                <inputConfiguratorMode>Custom</inputConfiguratorMode>
-                <stringValue>&lt;p&gt;Hello,&lt;/p&gt;&lt;p&gt;The following lead has been forwarded from the Residential Sales team with interest expressed for leasing:&lt;/p&gt;&lt;p&gt;Lead Details:&lt;/p&gt;&lt;ul&gt;&lt;li&gt;&lt;strong&gt;Lead Name&lt;/strong&gt;:   &lt;a href=&quot;{!OrgBaseUrl}lightning/r/Lead/{!$Record.Id}/view&quot; rel=&quot;noopener noreferrer&quot; target=&quot;_blank&quot;&gt;{!leadFullName} &lt;/a&gt;&lt;/li&gt;&lt;li&gt;&lt;strong&gt;Contact Number:&lt;/strong&gt;{!$Record.Phone}&lt;/li&gt;&lt;li&gt;&lt;strong&gt;Email Address:&lt;/strong&gt; {!$Record.Email}&lt;/li&gt;&lt;li&gt;&lt;strong&gt;Project/Interest&lt;/strong&gt;: {!$Record.RES_Project__c}&lt;/li&gt;&lt;/ul&gt;&lt;p&gt;Please review the lead and proceed with the necessary action as per the governance process.&lt;/p&gt;</stringValue>
-            </value>
-        </inputParameters>
-        <inputParameters>
-            <name>sendRichBody</name>
-            <value>
-                <booleanValue>true</booleanValue>
-            </value>
-        </inputParameters>
-        <inputParameters>
-            <name>recipientId</name>
-        </inputParameters>
-        <nameSegment>emailSimple</nameSegment>
-        <offset>0</offset>
-        <versionString>2.0.1</versionString>
-    </actionCalls>
-    <actionCalls>
         <name>Send_Email_to_Owner_Leasing</name>
         <label>Send Email to Owner - Leasing</label>
         <locationX>0</locationX>
@@ -238,6 +172,50 @@
         </connector>
     </assignments>
     <assignments>
+        <name>Populate_Merge_Fields</name>
+        <label>Populate Merge Fields</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignmentItems>
+            <assignToReference>mergeFields</assignToReference>
+            <operator>Add</operator>
+            <value>
+                <elementReference>leadFullName</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>mergeFields</assignToReference>
+            <operator>Add</operator>
+            <value>
+                <elementReference>$Record.Phone</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>mergeFields</assignToReference>
+            <operator>Add</operator>
+            <value>
+                <elementReference>$Record.Email</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>mergeFields</assignToReference>
+            <operator>Add</operator>
+            <value>
+                <elementReference>$Record.RES_Project__c</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>mergeFields</assignToReference>
+            <operator>Add</operator>
+            <value>
+                <elementReference>leadURL</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>AutolaunchFlow_Send_Emails_With_Merge_Fields_Flow_1</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
         <name>Set_Commercial_Queue</name>
         <label>Set Commercial Queue</label>
         <locationX>0</locationX>
@@ -305,7 +283,7 @@
                 </rightValue>
             </conditions>
             <connector>
-                <targetReference>Send_Email_to_Leasing_Group</targetReference>
+                <targetReference>Populate_Merge_Fields</targetReference>
             </connector>
             <label>Email Present</label>
         </rules>
@@ -317,6 +295,7 @@
         <locationX>0</locationX>
         <locationY>0</locationY>
         <defaultConnector>
+            <isGoTo>true</isGoTo>
             <targetReference>Check_if_Lead_is_Converted_and_Flow_Switch</targetReference>
         </defaultConnector>
         <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
@@ -775,6 +754,18 @@
 )</expression>
     </formulas>
     <formulas>
+        <name>leadURL</name>
+        <dataType>String</dataType>
+        <expression>LEFT(
+    {!$Api.Partner_Server_URL_610},
+    FIND(&quot;/services&quot;, {!$Api.Partner_Server_URL_610})
+)
+&amp;
+&quot;/&quot;
+&amp;
+{!$Record.Id}</expression>
+    </formulas>
+    <formulas>
         <name>NOW</name>
         <dataType>DateTime</dataType>
         <expression>NOW()</expression>
@@ -810,6 +801,29 @@
         </value>
     </processMetadataValues>
     <processType>AutoLaunchedFlow</processType>
+    <recordCreates>
+        <description>Publish an Ownership Reassignment Event so the Automated Process user sets the lead owner to the leasing queue. This bypasses the role-based RES_Restrict_Lead_Owner_field_editing validation rule without modifying it.</description>
+        <name>Publish_Ownership_Reassignment_Event</name>
+        <label>Publish Ownership Reassignment Event</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Get_Email_of_all_members_from_Queue</targetReference>
+        </connector>
+        <inputAssignments>
+            <field>RES_LeadId__c</field>
+            <value>
+                <elementReference>$Record.Id</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>RES_OwnerId__c</field>
+            <value>
+                <elementReference>Get_Leasing_Queue.Id</elementReference>
+            </value>
+        </inputAssignments>
+        <object>RES_Ownership_Reassignment_Event__e</object>
+    </recordCreates>
     <recordDeletes>
         <name>Delete_Lead_Routing_record</name>
         <label>Delete Lead Routing record</label>
@@ -905,30 +919,6 @@
         <queriedFields>Username</queriedFields>
         <storeOutputAutomatically>true</storeOutputAutomatically>
     </recordLookups>
-    <recordCreates>
-        <description>Publish an Ownership Reassignment Event so the Automated Process user sets the lead owner to the leasing queue. This bypasses the role-based RES_Restrict_Lead_Owner_field_editing validation rule without modifying it.</description>
-        <name>Publish_Ownership_Reassignment_Event</name>
-        <label>Publish Ownership Reassignment Event</label>
-        <locationX>0</locationX>
-        <locationY>0</locationY>
-        <connector>
-            <targetReference>Get_Email_of_all_members_from_Queue</targetReference>
-        </connector>
-        <inputAssignments>
-            <field>RES_LeadId__c</field>
-            <value>
-                <elementReference>$Record.Id</elementReference>
-            </value>
-        </inputAssignments>
-        <inputAssignments>
-            <field>RES_OwnerId__c</field>
-            <value>
-                <elementReference>Get_Leasing_Queue.Id</elementReference>
-            </value>
-        </inputAssignments>
-        <object>RES_Ownership_Reassignment_Event__e</object>
-        <storeOutputAutomatically>false</storeOutputAutomatically>
-    </recordCreates>
     <recordUpdates>
         <name>SLA_breached</name>
         <label>SLA breached</label>
@@ -993,6 +983,7 @@
         <locationX>0</locationX>
         <locationY>0</locationY>
         <connector>
+            <isGoTo>true</isGoTo>
             <targetReference>Check_if_Lead_is_Converted_and_Flow_Switch</targetReference>
         </connector>
         <inputAssignments>
@@ -1098,6 +1089,40 @@
     </start>
     <status>Active</status>
     <subflows>
+        <name>AutolaunchFlow_Send_Emails_With_Merge_Fields_Flow_1</name>
+        <label>AutolaunchFlow - Send Emails With Merge Fields Flow 1</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Check_if_Lead_is_Converted_and_Flow_Switch</targetReference>
+        </connector>
+        <flowName>RES_AutolaunchFlow_Send_Emails_With_Merge_Fields</flowName>
+        <inputAssignments>
+            <name>ApexEmailTemplateAPIName</name>
+            <value>
+                <stringValue>RES_Lead_Referred_to_Leasing_Email</stringValue>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <name>mergeFields</name>
+            <value>
+                <elementReference>mergeFields</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <name>orgWideEmailAddressDisplayName</name>
+            <value>
+                <elementReference>$Label.Org_Wide_Email</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <name>recipients</name>
+            <value>
+                <elementReference>Get_Email_of_all_members_from_Queue.emailRecipients</elementReference>
+            </value>
+        </inputAssignments>
+    </subflows>
+    <subflows>
         <name>Get_Email_of_all_members_from_Queue</name>
         <label>Get Email of all members from Queue</label>
         <locationX>0</locationX>
@@ -1196,6 +1221,13 @@
         <name>leasingQueueName</name>
         <dataType>String</dataType>
         <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <name>mergeFields</name>
+        <dataType>String</dataType>
+        <isCollection>true</isCollection>
         <isInput>false</isInput>
         <isOutput>false</isOutput>
     </variables>
