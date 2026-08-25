@@ -161,7 +161,7 @@ public with sharing class RES_OpportunityStageUpdateValidation {
     // is handled inline in the main loop (-> Proposal, no line-item dependency). Cancelled/Expired
     // are blocked from ever becoming the syncing quote by RES_Quote_Before_Save_Sync_Validation.
     private static final Set<String> UNIT_SELECTED_QUOTE_STATUSES = new Set<String>{
-        'Awaiting Client Confirmation', 'Negotiating', 'Pending Approval', 'Approved', 'Rejected'
+        'Draft','Awaiting Client Confirmation', 'Negotiating', 'Pending Approval', 'Approved', 'Rejected'
     };
 
     private static Boolean checkQuoteRecordTypeName(Id quoteRecordTypeId){
