@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <label>Lead SLA breached Notification</label>
+    <protected>false</protected>
+    <values>
+        <field>Html_Body__c</field>
+        <value xsi:type="xsd:string">&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;head&gt;
+&lt;meta charset=&quot;UTF-8&quot;&gt;
+&lt;title&gt;Lead SLA Response Time Exceeded&lt;/title&gt;
+&lt;/head&gt;
+
+&lt;body style=&quot;margin:0;padding:0;background-color:#F4F4F4;&quot;&gt;
+
+&lt;table width=&quot;100%&quot; cellpadding=&quot;0&quot; cellspacing=&quot;0&quot; border=&quot;0&quot; bgcolor=&quot;#F4F4F4&quot;&gt;
+&lt;tr&gt;
+&lt;td align=&quot;center&quot; style=&quot;padding:30px 15px;&quot;&gt;
+
+&lt;table width=&quot;600&quot; cellpadding=&quot;0&quot; cellspacing=&quot;0&quot; border=&quot;0&quot;
+style=&quot;width:600px;max-width:600px;background:#FFFFFF;border-collapse:collapse;border-radius:10px;overflow:hidden;&quot;&gt;
+
+&lt;!-- Header --&gt;
+&lt;tr&gt;
+&lt;td style=&quot;background-color:#dbbc9a;padding:30px;text-align:center;
+font-family:Arial,Helvetica,sans-serif;&quot;&gt;
+
+&lt;h1 style=&quot;margin:0;color:#4A3103;font-size:28px;font-weight:bold;line-height:36px;&quot;&gt;
+Lead SLA Response Time Exceeded
+&lt;/h1&gt;
+
+&lt;p style=&quot;margin:12px 0 0;color:#000000;font-size:15px;line-height:22px;&quot;&gt;
+The following Lead has exceeded the SLA response time of 24 hours.
+&lt;/p&gt;
+
+&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;!-- Body --&gt;
+&lt;tr&gt;
+&lt;td style=&quot;padding:30px;font-family:Arial,Helvetica,sans-serif;color:#444444;&quot;&gt;
+
+&lt;p style=&quot;margin:0 0 18px;font-size:16px;line-height:24px;&quot;&gt;
+Hello &lt;strong&gt;{0}&lt;/strong&gt;,
+&lt;/p&gt;
+
+&lt;p style=&quot;margin:0 0 20px;font-size:15px;line-height:26px;&quot;&gt;
+The following Lead has exceeded the SLA response time of &lt;strong&gt;24 hours&lt;/strong&gt;.
+&lt;/p&gt;
+
+&lt;!-- Lead Details --&gt;
+&lt;table width=&quot;100%&quot; cellpadding=&quot;14&quot; cellspacing=&quot;0&quot; border=&quot;0&quot;
+style=&quot;background-color:#FBF8F2;border-left:4px solid #C89B5A;
+border-collapse:collapse;margin:20px 0;&quot;&gt;
+
+&lt;tr&gt;
+&lt;td style=&quot;font-family:Arial,Helvetica,sans-serif;
+font-size:14px;font-weight:bold;color:#7A5A2A;width:35%;&quot;&gt;
+Lead Name
+&lt;/td&gt;
+&lt;td style=&quot;font-family:Arial,Helvetica,sans-serif;
+font-size:14px;color:#555555;&quot;&gt;
+{1}
+&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td style=&quot;font-family:Arial,Helvetica,sans-serif;
+font-size:14px;font-weight:bold;color:#7A5A2A;&quot;&gt;
+Lead Owner
+&lt;/td&gt;
+&lt;td style=&quot;font-family:Arial,Helvetica,sans-serif;
+font-size:14px;color:#555555;&quot;&gt;
+{2}
+&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td style=&quot;font-family:Arial,Helvetica,sans-serif;
+font-size:14px;font-weight:bold;color:#7A5A2A;&quot;&gt;
+Created On
+&lt;/td&gt;
+&lt;td style=&quot;font-family:Arial,Helvetica,sans-serif;
+font-size:14px;color:#555555;&quot;&gt;
+{3}
+&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td style=&quot;font-family:Arial,Helvetica,sans-serif;
+font-size:14px;font-weight:bold;color:#7A5A2A;&quot;&gt;
+SLA Target
+&lt;/td&gt;
+&lt;td style=&quot;font-family:Arial,Helvetica,sans-serif;
+font-size:14px;color:#555555;&quot;&gt;
+{4}
+&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;/table&gt;
+
+&lt;!-- Button --&gt;
+&lt;table width=&quot;100%&quot; cellpadding=&quot;0&quot; cellspacing=&quot;0&quot; border=&quot;0&quot;&gt;
+&lt;tr&gt;
+&lt;td align=&quot;center&quot; style=&quot;padding:10px 0 25px;&quot;&gt;
+
+&lt;a href=&quot;{5}&quot;
+style=&quot;display:inline-block;background-color:#4A3103;
+color:#FFFFFF;text-decoration:none;font-family:Arial,Helvetica,sans-serif;
+font-size:15px;font-weight:bold;padding:14px 30px;
+border-radius:5px;&quot;&gt;
+View Lead
+&lt;/a&gt;
+
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/table&gt;
+
+&lt;p style=&quot;margin:0;font-size:15px;line-height:26px;&quot;&gt;
+Please take immediate action to follow up on this Lead.
+&lt;/p&gt;
+
+&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;!-- Footer --&gt;
+&lt;tr&gt;
+&lt;td style=&quot;background-color:#dbbc9a;padding:22px;text-align:center;
+border-top:1px solid #ECE4D5;font-family:Arial,Helvetica,sans-serif;&quot;&gt;
+
+&lt;p style=&quot;margin:0;color:#000000;font-size:14px;&quot;&gt;
+Regards,
+&lt;/p&gt;
+
+&lt;p style=&quot;margin:8px 0 0;color:#4A3103;font-size:15px;font-weight:bold;&quot;&gt;
+CRM System
+&lt;/p&gt;
+
+&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;/table&gt;
+
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/table&gt;
+
+&lt;/body&gt;
+&lt;/html&gt;</value>
+    </values>
+    <values>
+        <field>Subject__c</field>
+        <value xsi:type="xsd:string">Lead SLA Breach: Requires Immediate Attention</value>
+    </values>
+</CustomMetadata>
