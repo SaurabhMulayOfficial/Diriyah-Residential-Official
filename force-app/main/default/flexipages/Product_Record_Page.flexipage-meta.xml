@@ -80,10 +80,17 @@
             <fieldInstance>
                 <fieldInstanceProperties>
                     <name>uiBehavior</name>
-                    <value>required</value>
+                    <value>readonly</value>
                 </fieldInstanceProperties>
-                <fieldItem>Record.CurrencyIsoCode</fieldItem>
-                <identifier>RecordCurrencyIsoCodeField</identifier>
+                <fieldItem>Record.RES_HardBlock_Start__c</fieldItem>
+                <identifier>RecordRES_HardBlock_Start_cField</identifier>
+                <visibilityRule>
+                    <criteria>
+                        <leftValue>{!Record.RES_Unit_Status__c}</leftValue>
+                        <operator>EQUAL</operator>
+                        <rightValue>Hard Block</rightValue>
+                    </criteria>
+                </visibilityRule>
             </fieldInstance>
         </itemInstances>
         <itemInstances>
@@ -92,8 +99,8 @@
                     <name>uiBehavior</name>
                     <value>none</value>
                 </fieldInstanceProperties>
-                <fieldItem>Record.RES_HardBlock_Start__c</fieldItem>
-                <identifier>RecordRES_HardBlock_Start_cField</identifier>
+                <fieldItem>Record.RES_Type__c</fieldItem>
+                <identifier>RecordRES_Type_cField</identifier>
             </fieldInstance>
         </itemInstances>
         <name>Facet-9b6b8057-c9bd-4708-bdbf-0fc4a1e0a71e</name>
@@ -124,10 +131,16 @@
             <fieldInstance>
                 <fieldInstanceProperties>
                     <name>uiBehavior</name>
-                    <value>none</value>
+                    <value>readonly</value>
                 </fieldInstanceProperties>
                 <fieldItem>Record.RES_Unit_Status__c</fieldItem>
                 <identifier>RecordRES_Unit_Status_cField</identifier>
+                <visibilityRule>
+                    <criteria>
+                        <leftValue>{!Record.RES_Product_Number__c}</leftValue>
+                        <operator>NE</operator>
+                    </criteria>
+                </visibilityRule>
             </fieldInstance>
         </itemInstances>
         <itemInstances>
@@ -138,6 +151,12 @@
                 </fieldInstanceProperties>
                 <fieldItem>Record.IsActive</fieldItem>
                 <identifier>RecordIsActiveField</identifier>
+                <visibilityRule>
+                    <criteria>
+                        <leftValue>{!Record.RES_Product_Number__c}</leftValue>
+                        <operator>NE</operator>
+                    </criteria>
+                </visibilityRule>
             </fieldInstance>
         </itemInstances>
         <itemInstances>
@@ -148,6 +167,13 @@
                 </fieldInstanceProperties>
                 <fieldItem>Record.RES_Rejection_Comment__c</fieldItem>
                 <identifier>RecordRES_Rejection_Comment__cField</identifier>
+                <visibilityRule>
+                    <criteria>
+                        <leftValue>{!Record.RES_Unit_Status__c}</leftValue>
+                        <operator>EQUAL</operator>
+                        <rightValue>Rejected</rightValue>
+                    </criteria>
+                </visibilityRule>
             </fieldInstance>
         </itemInstances>
         <name>Facet-8c111148-f536-47ee-a362-e9f864031955</name>
