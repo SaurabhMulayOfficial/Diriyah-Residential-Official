@@ -13,6 +13,10 @@
         <enabled>true</enabled>
         <name>RES_Approval_Work_Item_Visibility</name>
     </customPermissions>
+    <customPermissions>
+        <enabled>true</enabled>
+        <name>RES_Cancel_Contract_Permission</name>
+    </customPermissions>
     <classAccesses>
         <apexClass>RES_ProductApprovalController</apexClass>
         <enabled>true</enabled>
@@ -2083,6 +2087,11 @@
 	</fieldPermissions>
     <fieldPermissions>
         <editable>true</editable>
+        <field>Product2.RES_Construction_Phase__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
         <field>Quote.RES_Extend_Soft_Hold_By_Hours__c</field>
         <readable>true</readable>
     </fieldPermissions>
@@ -2409,6 +2418,16 @@
     <fieldPermissions>
         <editable>true</editable>
         <field>Contract.RES_S4_Sync_Date__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>Contract.RES_REGA_Approved__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>Contract.RES_Cancellation_Reason__c</field>
         <readable>true</readable>
     </fieldPermissions>  
     <layoutAssignments>

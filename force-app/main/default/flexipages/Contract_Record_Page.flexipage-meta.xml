@@ -48,6 +48,22 @@
                         <valueListItems>
                             <value>Delete</value>
                         </valueListItems>
+                        <valueListItems>
+                            <value>Contract.RES_Cancel_Contract</value>
+                            <visibilityRule>
+                                <booleanFilter>1 AND 2</booleanFilter>
+                                <criteria>
+                                    <leftValue>{!Record.Status}</leftValue>
+                                    <operator>EQUAL</operator>
+                                    <rightValue>Activated</rightValue>
+                                </criteria>
+                                <criteria>
+                                    <leftValue>{!$Permission.CustomPermission.RES_Cancel_Contract_Permission}</leftValue>
+                                    <operator>EQUAL</operator>
+                                    <rightValue>true</rightValue>
+                                </criteria>
+                            </visibilityRule>
+                        </valueListItems>
                     </valueList>
                 </componentInstanceProperties>
                 <componentInstanceProperties>
@@ -603,7 +619,17 @@
                 </fieldInstanceProperties>
                 <fieldItem>Record.RES_SIMAH_Report_Received__c</fieldItem>
                 <identifier>RecordRES_SIMAH_Report_Received_cField</identifier>
-           </fieldInstance>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>readonly</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.RES_REGA_Approved__c</fieldItem>
+                <identifier>RecordRES_REGA_Approved_cField</identifier>
+            </fieldInstance>
         </itemInstances>
         <name>Facet-670c939f-ce9e-4f74-936b-9a794f8b2300</name>
         <type>Facet</type>

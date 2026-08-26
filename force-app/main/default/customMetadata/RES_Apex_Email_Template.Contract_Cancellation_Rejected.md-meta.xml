@@ -1,0 +1,219 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <label>Contract Cancellation Rejected</label>
+    <protected>false</protected>
+    <values>
+        <field>Html_Body__c</field>
+        <value xsi:type="xsd:string">&lt;!DOCTYPE html&gt;
+
+&lt;html&gt;
+&lt;head&gt;
+&lt;meta charset=&quot;UTF-8&quot;&gt;
+&lt;title&gt;Contract Cancellation Approval Rejected&lt;/title&gt;
+&lt;/head&gt;
+
+&lt;body style=&quot;margin:0;padding:0;background-color:#F4F4F4;&quot;&gt;
+
+&lt;table width=&quot;100%&quot; cellpadding=&quot;0&quot; cellspacing=&quot;0&quot; border=&quot;0&quot; bgcolor=&quot;#F4F4F4&quot;&gt;
+&lt;tr&gt;
+&lt;td align=&quot;center&quot; style=&quot;padding:30px 15px;&quot;&gt;
+
+&lt;table width=&quot;600&quot; cellpadding=&quot;0&quot; cellspacing=&quot;0&quot; border=&quot;0&quot;
+style=&quot;background:#FFFFFF;border-collapse:collapse;border-radius:10px;overflow:hidden;&quot;&gt;
+
+&lt;!-- Header --&gt;
+
+&lt;tr&gt;
+&lt;td bgcolor=&quot;#C89B5A&quot;
+style=&quot;background-color:#dbbc9a;
+padding:30px;
+text-align:center;
+font-family:Arial,Helvetica,sans-serif;&quot;&gt;
+
+&lt;h1 style=&quot;margin:0;
+color:#4A3103;
+font-size:28px;
+font-weight:bold;
+line-height:36px;&quot;&gt;
+Cancellation Approval Rejected
+&lt;/h1&gt;
+
+&lt;p style=&quot;margin:12px 0 0;
+color:#000000;
+font-size:15px;
+line-height:22px;&quot;&gt;
+The contract cancellation request has been rejected.
+&lt;/p&gt;
+
+&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;!-- Body --&gt;
+
+&lt;tr&gt;
+&lt;td bgcolor=&quot;#FFFFFF&quot;
+style=&quot;padding:35px;
+font-family:Arial,Helvetica,sans-serif;
+color:#444444;&quot;&gt;
+
+&lt;p style=&quot;margin:0 0 20px;
+font-size:16px;
+line-height:24px;&quot;&gt;
+Dear {0},
+&lt;/p&gt;
+
+&lt;p style=&quot;margin:0 0 18px;
+font-size:15px;
+line-height:26px;&quot;&gt;
+This is to notify you that the &lt;strong&gt;contract cancellation request has been rejected&lt;/strong&gt;.
+The contract has therefore &lt;strong&gt;not been cancelled&lt;/strong&gt;.
+&lt;/p&gt;
+
+&lt;p style=&quot;margin:0 0 30px;
+font-size:15px;
+line-height:26px;&quot;&gt;
+Please review the rejection reason and the contract details below.
+&lt;/p&gt;
+
+&lt;!-- Rejection Information --&gt;
+
+&lt;table width=&quot;100%&quot;
+cellpadding=&quot;14&quot;
+cellspacing=&quot;0&quot;
+border=&quot;0&quot;
+bgcolor=&quot;#FBF8F2&quot;
+style=&quot;background-color:#FBF8F2;
+border:1px solid #EADFC9;
+border-collapse:collapse;&quot;&gt;
+
+&lt;tr&gt;
+&lt;td width=&quot;35%&quot;
+style=&quot;font-family:Arial,Helvetica,sans-serif;
+font-size:15px;
+font-weight:bold;
+color:#444444;
+line-height:24px;&quot;&gt;
+Status
+&lt;/td&gt;
+
+&lt;td style=&quot;font-family:Arial,Helvetica,sans-serif;
+font-size:15px;
+color:#444444;
+line-height:24px;&quot;&gt;
+Cancellation Rejected
+&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td width=&quot;35%&quot;
+style=&quot;font-family:Arial,Helvetica,sans-serif;
+font-size:15px;
+font-weight:bold;
+color:#444444;
+line-height:24px;
+border-top:1px solid #EADFC9;&quot;&gt;
+Rejection Reason
+&lt;/td&gt;
+
+&lt;td style=&quot;font-family:Arial,Helvetica,sans-serif;
+font-size:15px;
+color:#444444;
+line-height:24px;
+border-top:1px solid #EADFC9;&quot;&gt;
+{1}
+&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;/table&gt;
+
+&lt;!-- Spacer --&gt;
+
+&lt;table width=&quot;100%&quot; cellpadding=&quot;0&quot; cellspacing=&quot;0&quot;&gt;
+&lt;tr&gt;
+&lt;td height=&quot;30&quot;&gt;&amp;nbsp;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/table&gt;
+
+&lt;!-- Button --&gt;
+
+&lt;table align=&quot;center&quot; cellpadding=&quot;0&quot; cellspacing=&quot;0&quot; border=&quot;0&quot;&gt;
+&lt;tr&gt;
+
+&lt;td align=&quot;center&quot;
+style=&quot;border-collapse:collapse;border-radius:10px;overflow:hidden;&quot;
+bgcolor=&quot;#dbbc9a&quot;&gt;
+
+&lt;a href=&quot;{2}&quot;
+style=&quot;display:block;
+width:180px;
+line-height:46px;
+text-align:center;
+text-decoration:none;
+color:#000000;
+font-family:Arial,Helvetica,sans-serif;
+font-size:15px;
+font-weight:bold;&quot;&gt;
+View Contract &lt;/a&gt;
+
+&lt;/td&gt;
+
+&lt;/tr&gt;
+&lt;/table&gt;
+
+&lt;p style=&quot;margin:35px 0 0;
+font-size:15px;
+line-height:26px;
+color:#444444;&quot;&gt;
+Please review the rejection details and take any necessary action.
+&lt;/p&gt;
+
+&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;!-- Footer --&gt;
+
+&lt;tr&gt;
+&lt;td bgcolor=&quot;#F9F6EF&quot;
+style=&quot;background-color:#dbbc9a;
+padding:22px;
+text-align:center;
+border-top:1px solid #ECE4D5;
+font-family:Arial,Helvetica,sans-serif;&quot;&gt;
+
+&lt;p style=&quot;margin:0;
+color:#000000;
+font-size:14px;&quot;&gt;
+Regards,
+&lt;/p&gt;
+
+&lt;p style=&quot;margin:8px 0 0;
+color:#4A3103;
+font-size:15px;
+font-weight:bold;&quot;&gt;
+CRM System
+&lt;/p&gt;
+
+&lt;p style=&quot;margin:12px 0 0;
+color:#000000;
+font-size:12px;
+line-height:18px;&quot;&gt;
+This is an automated notification from the Diriyah Sales system. Please do not reply to this address.
+&lt;/p&gt;
+
+&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;/table&gt;
+
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/table&gt;
+
+&lt;/body&gt;
+&lt;/html&gt;</value>
+    </values>
+    <values>
+        <field>Subject__c</field>
+        <value xsi:type="xsd:string">Contract Cancellation Request Rejected</value>
+    </values>
+</CustomMetadata>
