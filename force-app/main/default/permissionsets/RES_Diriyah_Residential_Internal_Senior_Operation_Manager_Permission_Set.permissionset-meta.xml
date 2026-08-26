@@ -37,6 +37,10 @@
         <enabled>true</enabled>
         <name>RES_System_Information_Visibility</name>
     </customPermissions>
+    <customPermissions>
+        <enabled>true</enabled>
+        <name>RES_Cancel_Contract_Permission</name>
+    </customPermissions>
     <fieldPermissions>
         <editable>true</editable>
         <field>RES_Payment_Plan_Version__c.RES_Active__c</field>
@@ -365,6 +369,11 @@
     <fieldPermissions>
         <editable>true</editable>
         <field>Product2.StockKeepingUnit</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>Product2.RES_Construction_Phase__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
@@ -1965,6 +1974,16 @@
     <fieldPermissions>
         <editable>false</editable>
         <field>Contract.RES_S4_Sync_Date__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>Contract.RES_REGA_Approved__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>Contract.RES_Cancellation_Reason__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <hasActivationRequired>false</hasActivationRequired>
