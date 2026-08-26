@@ -303,6 +303,11 @@
     </fieldPermissions>
     <fieldPermissions>
         <editable>true</editable>
+        <field>Quote.RES_Product_Status_Filter__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
         <field>Quote.RES_Reservation_Start_Date__c</field>
         <readable>true</readable>
     </fieldPermissions>
@@ -2066,6 +2071,11 @@
         <field>Product2.RES_Rejection_Comment__c</field>
         <readable>true</readable>
     </fieldPermissions>
+	<fieldPermissions>
+    	<editable>true</editable>
+    	<field>ProductDisqualification.RES_Unit_Status__c</field>
+    	<readable>true</readable>
+	</fieldPermissions>
     <fieldPermissions>
         <editable>true</editable>
         <field>Quote.RES_Extend_Soft_Hold_By_Hours__c</field>
@@ -2514,6 +2524,16 @@
         <allowEdit>true</allowEdit>
         <allowRead>true</allowRead>
         <modifyAllRecords>true</modifyAllRecords>
+        <object>ProductDisqualification</object>
+        <viewAllFields>false</viewAllFields>
+        <viewAllRecords>true</viewAllRecords>
+    </objectPermissions>
+    <objectPermissions>
+        <allowCreate>true</allowCreate>
+        <allowDelete>true</allowDelete>
+        <allowEdit>true</allowEdit>
+        <allowRead>true</allowRead>
+        <modifyAllRecords>true</modifyAllRecords>
         <object>RES_Lead_History__c</object>
         <viewAllFields>true</viewAllFields>
         <viewAllRecords>true</viewAllRecords>
@@ -2775,6 +2795,10 @@
     </tabVisibilities>
     <tabVisibilities>
         <tab>standard-ProductCategory</tab>
+        <visibility>DefaultOn</visibility>
+    </tabVisibilities>
+     <tabVisibilities>
+        <tab>standard-ProductDisqualification</tab>
         <visibility>DefaultOn</visibility>
     </tabVisibilities>
     <tabVisibilities>

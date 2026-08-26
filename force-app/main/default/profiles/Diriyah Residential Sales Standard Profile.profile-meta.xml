@@ -703,6 +703,11 @@
         <field>Product2.RES_Reserved_By_Quote__c</field>
         <readable>true</readable>
     </fieldPermissions>
+	<fieldPermissions>
+    	<editable>true</editable>
+    	<field>ProductDisqualification.RES_Unit_Status__c</field>
+    	<readable>true</readable>
+	</fieldPermissions>
     <fieldPermissions>
         <editable>true</editable>
         <field>Quote.CalculationStatus</field>
@@ -721,6 +726,11 @@
     <fieldPermissions>
         <editable>true</editable>
         <field>Quote.RES_Approval_Request_Remarks__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>Quote.RES_Product_Status_Filter__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
@@ -1173,6 +1183,16 @@
         <recordType>Lead.RES_Company</recordType>
         <visible>true</visible>
     </recordTypeVisibilities>
+    <objectPermissions>
+        <allowCreate>false</allowCreate>
+        <allowDelete>false</allowDelete>
+        <allowEdit>false</allowEdit>
+        <allowRead>true</allowRead>
+        <modifyAllRecords>false</modifyAllRecords>
+        <object>ProductDisqualification</object>
+        <viewAllFields>false</viewAllFields>
+        <viewAllRecords>false</viewAllRecords>
+    </objectPermissions>
     <objectPermissions>
         <allowCreate>true</allowCreate>
         <allowDelete>true</allowDelete>

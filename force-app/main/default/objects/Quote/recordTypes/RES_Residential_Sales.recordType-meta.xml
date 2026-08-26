@@ -4,6 +4,41 @@
     <active>true</active>
     <label>Residential Sales</label>
     <picklistValues>
+        <picklist>RES_Product_Status_Filter__c</picklist>
+        <values>
+            <fullName>Available</fullName>
+            <default>true</default>
+        </values>
+        <values>
+            <fullName>Draft</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Hard Block</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Pending CSO Approval</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Pending Finance Approval</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Rejected</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Soft Hold</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Sold</fullName>
+            <default>false</default>
+        </values>
+    </picklistValues>
+    <picklistValues>
         <picklist>RES_Project__c</picklist>
         <values>
             <fullName>Amansamar Residences Wadi Safar</fullName>
