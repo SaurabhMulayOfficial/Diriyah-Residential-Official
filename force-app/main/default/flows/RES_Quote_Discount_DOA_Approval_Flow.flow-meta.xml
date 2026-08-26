@@ -22,7 +22,7 @@
     <formulas>
         <name>fRejectBody</name>
         <dataType>String</dataType>
-        <expression>&quot;Your discount request on Quote &apos;&quot; &amp; {!$Record.Name} &amp; &quot;&apos; (&quot; &amp; {!$Record.QuoteNumber} &amp; &quot;) - &quot; &amp; TEXT({!$Record.Discount}) &amp; &quot;% (Amount &quot; &amp; TEXT(({!$Record.Subtotal} - {!$Record.GrandTotal})) &amp; &quot;) - was rejected. The Quote has been set to Rejected; please revise and resubmit.&quot;</expression>
+        <expression>&quot;Your discount request on Quote &apos;&quot; &amp; {!$Record.Name} &amp; &quot;&apos; (&quot; &amp; {!$Record.QuoteNumber} &amp; &quot;) - &quot; &amp; TEXT({!$Record.Discount}) &amp; &quot;% (Amount &quot; &amp; TEXT(({!$Record.Subtotal} - {!$Record.GrandTotal})) &amp; &quot;) - was rejected. Move the Quote back to Negotiating when you&apos;re ready to revise and resubmit.&quot;</expression>
     </formulas>
     <formulas>
         <name>fStage1Bell</name>
@@ -39,8 +39,8 @@
     <orchestratedStages>
         <name>Initiate_Approval</name>
         <label>Initiate Approval</label>
-        <locationX>176</locationX>
-        <locationY>158</locationY>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
         <exitConditionLogic>and</exitConditionLogic>
         <stageSteps>
             <name>Get_Owner_Manager</name>
@@ -87,6 +87,22 @@
                 <operator>IsNull</operator>
                 <rightValue>
                     <booleanValue>false</booleanValue>
+                </rightValue>
+            </entryConditions>
+            <entryConditions>
+                <conditionType>EntryCondition</conditionType>
+                <leftValueReference>Try_Acquire_Mutex.Status</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Completed</stringValue>
+                </rightValue>
+            </entryConditions>
+            <entryConditions>
+                <conditionType>EntryCondition</conditionType>
+                <leftValueReference>Try_Acquire_Mutex.Outputs.acquired</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
                 </rightValue>
             </entryConditions>
             <exitConditionLogic>and</exitConditionLogic>
@@ -155,52 +171,6 @@
                 </value>
             </inputParameters>
             <label>Notify Manager</label>
-            <requiresAsyncProcessing>false</requiresAsyncProcessing>
-            <runAsUser>false</runAsUser>
-            <shouldLock>false</shouldLock>
-            <stepSubtype>BackgroundStep</stepSubtype>
-        </stageSteps>
-        <stageSteps>
-            <name>Log_Submission</name>
-            <actionName>RES_Autolaunched_Create_Discount_Audit_Log</actionName>
-            <actionType>stepBackground</actionType>
-            <canAssigneeEdit>false</canAssigneeEdit>
-            <debugSimulateStep>false</debugSimulateStep>
-            <entryConditionLogic>and</entryConditionLogic>
-            <entryConditions>
-                <conditionType>EntryCondition</conditionType>
-                <leftValueReference>Get_Owner_Manager.Outputs.managerId</leftValueReference>
-                <operator>IsNull</operator>
-                <rightValue>
-                    <booleanValue>false</booleanValue>
-                </rightValue>
-            </entryConditions>
-            <exitConditionLogic>and</exitConditionLogic>
-            <inputParameters>
-                <name>quoteId</name>
-                <value>
-                    <elementReference>$Record.Id</elementReference>
-                </value>
-            </inputParameters>
-            <inputParameters>
-                <name>entryType</name>
-                <value>
-                    <stringValue>Submission</stringValue>
-                </value>
-            </inputParameters>
-            <inputParameters>
-                <name>discountRequested</name>
-                <value>
-                    <elementReference>$Record.Discount</elementReference>
-                </value>
-            </inputParameters>
-            <inputParameters>
-                <name>submittedById</name>
-                <value>
-                    <elementReference>$Record.OwnerId</elementReference>
-                </value>
-            </inputParameters>
-            <label>Log Submission</label>
             <requiresAsyncProcessing>false</requiresAsyncProcessing>
             <runAsUser>false</runAsUser>
             <shouldLock>false</shouldLock>
@@ -299,7 +269,6 @@
                 <value xsi:nil="true"/>
             </outputConfigParams>
             <requiresAsyncProcessing>false</requiresAsyncProcessing>
-            <requiresMultiMemberApproval>interaction.definition.mdapi.FlowAbstractParameter$FlowStageStepInputParameter@600a638e</requiresMultiMemberApproval>
             <runAsUser>false</runAsUser>
             <shouldLock>true</shouldLock>
             <stepSubtype>ApprovalStep</stepSubtype>
@@ -463,66 +432,6 @@
             <stepSubtype>BackgroundStep</stepSubtype>
         </stageSteps>
         <stageSteps>
-            <name>Log_Approved_Manager</name>
-            <actionName>RES_Autolaunched_Create_Discount_Audit_Log</actionName>
-            <actionType>stepBackground</actionType>
-            <canAssigneeEdit>false</canAssigneeEdit>
-            <debugSimulateStep>false</debugSimulateStep>
-            <entryConditionLogic>and</entryConditionLogic>
-            <entryConditions>
-                <conditionType>EntryCondition</conditionType>
-                <leftValueReference>Get_Manager_Decision.Outputs.status</leftValueReference>
-                <operator>EqualTo</operator>
-                <rightValue>
-                    <stringValue>Approved</stringValue>
-                </rightValue>
-            </entryConditions>
-            <entryConditions>
-                <conditionType>EntryCondition</conditionType>
-                <leftValueReference>$Record.Discount</leftValueReference>
-                <operator>LessThanOrEqualTo</operator>
-                <rightValue>
-                    <numberValue>10.0</numberValue>
-                </rightValue>
-            </entryConditions>
-            <exitConditionLogic>and</exitConditionLogic>
-            <inputParameters>
-                <name>quoteId</name>
-                <value>
-                    <elementReference>$Record.Id</elementReference>
-                </value>
-            </inputParameters>
-            <inputParameters>
-                <name>entryType</name>
-                <value>
-                    <stringValue>Approval</stringValue>
-                </value>
-            </inputParameters>
-            <inputParameters>
-                <name>discountRequested</name>
-                <value>
-                    <elementReference>$Record.Discount</elementReference>
-                </value>
-            </inputParameters>
-            <inputParameters>
-                <name>approverId</name>
-                <value>
-                    <elementReference>Get_Manager_Decision.Outputs.approverId</elementReference>
-                </value>
-            </inputParameters>
-            <inputParameters>
-                <name>outcome</name>
-                <value>
-                    <stringValue>Approved</stringValue>
-                </value>
-            </inputParameters>
-            <label>Log Approved (Manager)</label>
-            <requiresAsyncProcessing>false</requiresAsyncProcessing>
-            <runAsUser>false</runAsUser>
-            <shouldLock>false</shouldLock>
-            <stepSubtype>BackgroundStep</stepSubtype>
-        </stageSteps>
-        <stageSteps>
             <name>Set_Rejected_Manager</name>
             <actionName>RES_Autolaunched_Update_Quote_Status</actionName>
             <actionType>stepBackground</actionType>
@@ -627,64 +536,6 @@
             <stepSubtype>BackgroundStep</stepSubtype>
         </stageSteps>
         <stageSteps>
-            <name>Log_Rejected_Manager</name>
-            <actionName>RES_Autolaunched_Create_Discount_Audit_Log</actionName>
-            <actionType>stepBackground</actionType>
-            <canAssigneeEdit>false</canAssigneeEdit>
-            <debugSimulateStep>false</debugSimulateStep>
-            <entryConditionLogic>and</entryConditionLogic>
-            <entryConditions>
-                <conditionType>EntryCondition</conditionType>
-                <leftValueReference>Get_Manager_Decision.Outputs.status</leftValueReference>
-                <operator>EqualTo</operator>
-                <rightValue>
-                    <stringValue>Rejected</stringValue>
-                </rightValue>
-            </entryConditions>
-            <exitConditionLogic>and</exitConditionLogic>
-            <inputParameters>
-                <name>quoteId</name>
-                <value>
-                    <elementReference>$Record.Id</elementReference>
-                </value>
-            </inputParameters>
-            <inputParameters>
-                <name>entryType</name>
-                <value>
-                    <stringValue>Rejection</stringValue>
-                </value>
-            </inputParameters>
-            <inputParameters>
-                <name>discountRequested</name>
-                <value>
-                    <elementReference>$Record.Discount</elementReference>
-                </value>
-            </inputParameters>
-            <inputParameters>
-                <name>approverId</name>
-                <value>
-                    <elementReference>Get_Manager_Decision.Outputs.approverId</elementReference>
-                </value>
-            </inputParameters>
-            <inputParameters>
-                <name>outcome</name>
-                <value>
-                    <stringValue>Rejected</stringValue>
-                </value>
-            </inputParameters>
-            <inputParameters>
-                <name>reason</name>
-                <value>
-                    <elementReference>Sales_Manager_Approval.Outputs.approvalComments</elementReference>
-                </value>
-            </inputParameters>
-            <label>Log Rejected (Manager)</label>
-            <requiresAsyncProcessing>false</requiresAsyncProcessing>
-            <runAsUser>false</runAsUser>
-            <shouldLock>false</shouldLock>
-            <stepSubtype>BackgroundStep</stepSubtype>
-        </stageSteps>
-        <stageSteps>
             <name>Finance_Approval</name>
             <actionName>standard_approvals__EvaluateApproval</actionName>
             <actionType>stepApproval</actionType>
@@ -745,7 +596,6 @@
                 <value xsi:nil="true"/>
             </outputConfigParams>
             <requiresAsyncProcessing>false</requiresAsyncProcessing>
-            <requiresMultiMemberApproval>interaction.definition.mdapi.FlowAbstractParameter$FlowStageStepInputParameter@2e6ed99a</requiresMultiMemberApproval>
             <runAsUser>false</runAsUser>
             <shouldLock>true</shouldLock>
             <stepSubtype>ApprovalStep</stepSubtype>
@@ -877,66 +727,6 @@
                 </value>
             </inputParameters>
             <label>Notify Stage1 Manager</label>
-            <requiresAsyncProcessing>false</requiresAsyncProcessing>
-            <runAsUser>false</runAsUser>
-            <shouldLock>false</shouldLock>
-            <stepSubtype>BackgroundStep</stepSubtype>
-        </stageSteps>
-        <stageSteps>
-            <name>Log_Approved_Manager_Stage1</name>
-            <actionName>RES_Autolaunched_Create_Discount_Audit_Log</actionName>
-            <actionType>stepBackground</actionType>
-            <canAssigneeEdit>false</canAssigneeEdit>
-            <debugSimulateStep>false</debugSimulateStep>
-            <entryConditionLogic>and</entryConditionLogic>
-            <entryConditions>
-                <conditionType>EntryCondition</conditionType>
-                <leftValueReference>Get_Manager_Decision.Outputs.status</leftValueReference>
-                <operator>EqualTo</operator>
-                <rightValue>
-                    <stringValue>Approved</stringValue>
-                </rightValue>
-            </entryConditions>
-            <entryConditions>
-                <conditionType>EntryCondition</conditionType>
-                <leftValueReference>$Record.Discount</leftValueReference>
-                <operator>GreaterThan</operator>
-                <rightValue>
-                    <numberValue>10.0</numberValue>
-                </rightValue>
-            </entryConditions>
-            <exitConditionLogic>and</exitConditionLogic>
-            <inputParameters>
-                <name>quoteId</name>
-                <value>
-                    <elementReference>$Record.Id</elementReference>
-                </value>
-            </inputParameters>
-            <inputParameters>
-                <name>entryType</name>
-                <value>
-                    <stringValue>Approval</stringValue>
-                </value>
-            </inputParameters>
-            <inputParameters>
-                <name>discountRequested</name>
-                <value>
-                    <elementReference>$Record.Discount</elementReference>
-                </value>
-            </inputParameters>
-            <inputParameters>
-                <name>approverId</name>
-                <value>
-                    <elementReference>Get_Manager_Decision.Outputs.approverId</elementReference>
-                </value>
-            </inputParameters>
-            <inputParameters>
-                <name>outcome</name>
-                <value>
-                    <stringValue>Approved</stringValue>
-                </value>
-            </inputParameters>
-            <label>Log Approved Manager (Stage1)</label>
             <requiresAsyncProcessing>false</requiresAsyncProcessing>
             <runAsUser>false</runAsUser>
             <shouldLock>false</shouldLock>
@@ -1085,58 +875,6 @@
             <stepSubtype>BackgroundStep</stepSubtype>
         </stageSteps>
         <stageSteps>
-            <name>Log_Approved_Finance</name>
-            <actionName>RES_Autolaunched_Create_Discount_Audit_Log</actionName>
-            <actionType>stepBackground</actionType>
-            <canAssigneeEdit>false</canAssigneeEdit>
-            <debugSimulateStep>false</debugSimulateStep>
-            <entryConditionLogic>and</entryConditionLogic>
-            <entryConditions>
-                <conditionType>EntryCondition</conditionType>
-                <leftValueReference>Get_Finance_Decision.Outputs.status</leftValueReference>
-                <operator>EqualTo</operator>
-                <rightValue>
-                    <stringValue>Approved</stringValue>
-                </rightValue>
-            </entryConditions>
-            <exitConditionLogic>and</exitConditionLogic>
-            <inputParameters>
-                <name>quoteId</name>
-                <value>
-                    <elementReference>$Record.Id</elementReference>
-                </value>
-            </inputParameters>
-            <inputParameters>
-                <name>entryType</name>
-                <value>
-                    <stringValue>Approval</stringValue>
-                </value>
-            </inputParameters>
-            <inputParameters>
-                <name>discountRequested</name>
-                <value>
-                    <elementReference>$Record.Discount</elementReference>
-                </value>
-            </inputParameters>
-            <inputParameters>
-                <name>approverId</name>
-                <value>
-                    <elementReference>Get_Finance_Decision.Outputs.approverId</elementReference>
-                </value>
-            </inputParameters>
-            <inputParameters>
-                <name>outcome</name>
-                <value>
-                    <stringValue>Approved</stringValue>
-                </value>
-            </inputParameters>
-            <label>Log Approved (Finance)</label>
-            <requiresAsyncProcessing>false</requiresAsyncProcessing>
-            <runAsUser>false</runAsUser>
-            <shouldLock>false</shouldLock>
-            <stepSubtype>BackgroundStep</stepSubtype>
-        </stageSteps>
-        <stageSteps>
             <name>Set_Rejected_Finance</name>
             <actionName>RES_Autolaunched_Update_Quote_Status</actionName>
             <actionType>stepBackground</actionType>
@@ -1240,70 +978,12 @@
             <shouldLock>false</shouldLock>
             <stepSubtype>BackgroundStep</stepSubtype>
         </stageSteps>
-        <stageSteps>
-            <name>Log_Rejected_Finance</name>
-            <actionName>RES_Autolaunched_Create_Discount_Audit_Log</actionName>
-            <actionType>stepBackground</actionType>
-            <canAssigneeEdit>false</canAssigneeEdit>
-            <debugSimulateStep>false</debugSimulateStep>
-            <entryConditionLogic>and</entryConditionLogic>
-            <entryConditions>
-                <conditionType>EntryCondition</conditionType>
-                <leftValueReference>Get_Finance_Decision.Outputs.status</leftValueReference>
-                <operator>EqualTo</operator>
-                <rightValue>
-                    <stringValue>Rejected</stringValue>
-                </rightValue>
-            </entryConditions>
-            <exitConditionLogic>and</exitConditionLogic>
-            <inputParameters>
-                <name>quoteId</name>
-                <value>
-                    <elementReference>$Record.Id</elementReference>
-                </value>
-            </inputParameters>
-            <inputParameters>
-                <name>entryType</name>
-                <value>
-                    <stringValue>Rejection</stringValue>
-                </value>
-            </inputParameters>
-            <inputParameters>
-                <name>discountRequested</name>
-                <value>
-                    <elementReference>$Record.Discount</elementReference>
-                </value>
-            </inputParameters>
-            <inputParameters>
-                <name>approverId</name>
-                <value>
-                    <elementReference>Get_Finance_Decision.Outputs.approverId</elementReference>
-                </value>
-            </inputParameters>
-            <inputParameters>
-                <name>outcome</name>
-                <value>
-                    <stringValue>Rejected</stringValue>
-                </value>
-            </inputParameters>
-            <inputParameters>
-                <name>reason</name>
-                <value>
-                    <elementReference>Finance_Approval.Outputs.approvalComments</elementReference>
-                </value>
-            </inputParameters>
-            <label>Log Rejected (Finance)</label>
-            <requiresAsyncProcessing>false</requiresAsyncProcessing>
-            <runAsUser>false</runAsUser>
-            <shouldLock>false</shouldLock>
-            <stepSubtype>BackgroundStep</stepSubtype>
-        </stageSteps>
     </orchestratedStages>
     <orchestratedStages>
         <name>Recall_Stage</name>
         <label>Recall Stage</label>
-        <locationX>440</locationX>
-        <locationY>158</locationY>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
         <exitConditionLogic>and</exitConditionLogic>
         <stageSteps>
             <name>Set_Status_Negotiating</name>
@@ -1337,48 +1017,29 @@
             <shouldLock>false</shouldLock>
             <stepSubtype>BackgroundStep</stepSubtype>
         </stageSteps>
-        <stageSteps>
-            <name>Log_Recall</name>
-            <actionName>RES_Autolaunched_Create_Discount_Audit_Log</actionName>
-            <actionType>stepBackground</actionType>
-            <canAssigneeEdit>false</canAssigneeEdit>
-            <debugSimulateStep>false</debugSimulateStep>
-            <entryConditionLogic>and</entryConditionLogic>
-            <exitConditionLogic>and</exitConditionLogic>
-            <inputParameters>
-                <name>quoteId</name>
-                <value>
-                    <elementReference>$Record.Id</elementReference>
-                </value>
-            </inputParameters>
-            <inputParameters>
-                <name>entryType</name>
-                <value>
-                    <stringValue>Recall</stringValue>
-                </value>
-            </inputParameters>
-            <inputParameters>
-                <name>discountRequested</name>
-                <value>
-                    <elementReference>$Record.Discount</elementReference>
-                </value>
-            </inputParameters>
-            <inputParameters>
-                <name>outcome</name>
-                <value>
-                    <stringValue>Recalled</stringValue>
-                </value>
-            </inputParameters>
-            <label>Log Recall</label>
-            <requiresAsyncProcessing>false</requiresAsyncProcessing>
-            <runAsUser>false</runAsUser>
-            <shouldLock>false</shouldLock>
-            <stepSubtype>BackgroundStep</stepSubtype>
-        </stageSteps>
     </orchestratedStages>
+    <processMetadataValues>
+        <name>BuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>CanvasMode</name>
+        <value>
+            <stringValue>AUTO_LAYOUT_CANVAS</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>OriginBuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
     <processType>ApprovalWorkflow</processType>
+    <runInMode>SystemModeWithoutSharing</runInMode>
     <start>
-        <locationX>50</locationX>
+        <locationX>0</locationX>
         <locationY>0</locationY>
         <connector>
             <targetReference>Initiate_Approval</targetReference>
