@@ -1947,7 +1947,7 @@
     <hasActivationRequired>false</hasActivationRequired>
     <label>Diriyah Residential – External Senior Operation Manager Permission Set</label>
     <license>Salesforce</license>
-     <objectPermissions>
+    <objectPermissions>
         <allowCreate>false</allowCreate>
         <allowDelete>false</allowDelete>
         <allowEdit>false</allowEdit>
@@ -2067,7 +2067,7 @@
         <viewAllFields>false</viewAllFields>
         <viewAllRecords>false</viewAllRecords>
     </objectPermissions>
-     <objectPermissions>
+    <objectPermissions>
         <allowCreate>false</allowCreate>
         <allowDelete>false</allowDelete>
         <allowEdit>false</allowEdit>
@@ -2151,6 +2151,10 @@
         <recordType>Product2.RES_Residential_Sales</recordType>
         <visible>true</visible>
     </recordTypeVisibilities>
+    <tabSettings>
+        <tab>Product_Approval_Queue</tab>
+        <visibility>Visible</visibility>
+    </tabSettings>
     <tabSettings>
         <tab>RES_Payment_Plan_Version__c</tab>
         <visibility>Visible</visibility>
