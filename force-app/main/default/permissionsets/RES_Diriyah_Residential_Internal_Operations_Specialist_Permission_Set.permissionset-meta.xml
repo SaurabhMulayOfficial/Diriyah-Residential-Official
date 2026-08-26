@@ -1943,7 +1943,7 @@
     <hasActivationRequired>false</hasActivationRequired>
     <label>Diriyah Residential – Internal Operations Specialist Permission Set</label>
     <license>Salesforce</license>
-     <objectPermissions>
+    <objectPermissions>
         <allowCreate>false</allowCreate>
         <allowDelete>false</allowDelete>
         <allowEdit>false</allowEdit>
@@ -2177,6 +2177,10 @@
     </recordTypeVisibilities>
     <tabSettings>
         <tab>RES_Payment_Plan_Version__c</tab>
+        <visibility>Visible</visibility>
+    </tabSettings>
+    <tabSettings>
+        <tab>Product_Approval_Queue</tab>
         <visibility>Visible</visibility>
     </tabSettings>
     <tabSettings>

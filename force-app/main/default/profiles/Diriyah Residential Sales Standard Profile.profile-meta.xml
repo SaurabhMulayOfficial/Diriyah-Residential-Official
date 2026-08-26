@@ -674,6 +674,11 @@
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
+        <editable>false</editable>
+        <field>Product2.RES_Product_Number__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
         <editable>true</editable>
         <field>Product2.RES_Soft_Hold_Start__c</field>
         <readable>true</readable>
@@ -758,7 +763,6 @@
         <field>Contract.RES_Product_Soft_Held__c</field>
         <readable>true</readable>
     </fieldPermissions>
-
     <fieldPermissions>
         <editable>false</editable>
         <field>RES_Assignment_Condition__c.RES_Assignment_Config__c</field>
@@ -1364,10 +1368,6 @@
     </tabVisibilities>
     <tabVisibilities>
         <tab>Converted_Leads</tab>
-        <visibility>DefaultOff</visibility>
-    </tabVisibilities>
-    <tabVisibilities>
-        <tab>Product_Approval_Queue</tab>
         <visibility>DefaultOff</visibility>
     </tabVisibilities>
     <userLicense>Salesforce</userLicense>
