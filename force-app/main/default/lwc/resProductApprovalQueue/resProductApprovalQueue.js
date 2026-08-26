@@ -845,17 +845,12 @@ export default class ResProductApprovalQueue extends LightningElement {
 
     isSessionExpired(error) {
         const msg = error?.body?.message || error?.message || '';
-        return msg.includes('INVALID_SESSION_ID') ||
-               msg.includes('Session expired') ||
-               msg.includes('Session has expired') ||
-               error?.status === 401;
+        return msg.includes('INVALID_SESSION_ID') ||msg.includes('Session expired') || msg.includes('Session has expired') || error?.status === 401;
     }
 
     isTimeoutError(error) {
         const msg = error?.body?.message || error?.message || '';
-        return msg.toLowerCase().includes('timeout') ||
-               msg.toLowerCase().includes('timed out') ||
-               error?.status === 408;
+        return msg.toLowerCase().includes('timeout') || msg.toLowerCase().includes('timed out') || error?.status === 408;
     }
 
     delay(ms) {
@@ -881,7 +876,15 @@ export default class ResProductApprovalQueue extends LightningElement {
     get approvalStageMessage() {
         const count = this.selectedCount;
         const unitText = count === 1 ? 'Unit' : 'Units';
-            return `The selected ${unitText.toLowerCase()} will be moved to the next approval stage.`;
+        // Final approval stage - CSO
+        if (this.activeQueueLabel === 'CSO') {
+            return count === 1
+                ? 'The Unit has been approved by CSO and is now Available.'
+                : 'The Units have been approved by CSO and are now Available.';
+        }
+
+        // DevCo / Finance approval stages
+        return `The selected ${unitText.toLowerCase()} will be moved to the next approval stage.`;
     }
 
     get approvalConfirmationMessage() {
