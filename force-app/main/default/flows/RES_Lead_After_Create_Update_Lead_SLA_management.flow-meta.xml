@@ -58,71 +58,6 @@
         <nameSegment>NewTask</nameSegment>
         <offset>0</offset>
     </actionCalls>
-    <actionCalls>
-        <name>Send_Email_to_Owner_Leasing</name>
-        <label>Send Email to Owner - Leasing</label>
-        <locationX>0</locationX>
-        <locationY>0</locationY>
-        <actionName>emailSimple</actionName>
-        <actionType>emailSimple</actionType>
-        <connector>
-            <targetReference>Check_for_Type_Of_Leasing</targetReference>
-        </connector>
-        <flowTransactionModel>CurrentTransaction</flowTransactionModel>
-        <inputParameters>
-            <name>recipientAddresses</name>
-            <value>
-                <collectionElements>
-                    <elementReference>Emails</elementReference>
-                </collectionElements>
-            </value>
-        </inputParameters>
-        <inputParameters>
-            <name>senderType</name>
-            <value>
-                <inputConfiguratorMode>Custom</inputConfiguratorMode>
-                <stringValue>OrgWideEmailAddress</stringValue>
-            </value>
-        </inputParameters>
-        <inputParameters>
-            <name>senderAddress</name>
-            <value>
-                <inputConfiguratorMode>Custom</inputConfiguratorMode>
-                <stringValue>saurabh.mulay@globant.com</stringValue>
-            </value>
-        </inputParameters>
-        <inputParameters>
-            <name>composeEmailContent</name>
-            <value>
-                <stringValue>True</stringValue>
-            </value>
-        </inputParameters>
-        <inputParameters>
-            <name>emailSubject</name>
-            <value>
-                <stringValue> New Lead Referred to Leasing for Review</stringValue>
-            </value>
-        </inputParameters>
-        <inputParameters>
-            <name>emailBody</name>
-            <value>
-                <inputConfiguratorMode>Custom</inputConfiguratorMode>
-                <stringValue>&lt;p&gt;Hello {!OwnerName},&lt;/p&gt;&lt;p&gt;A new lead has been referred for leasing review and approval.&lt;/p&gt;&lt;p&gt;Lead Details:&lt;/p&gt;&lt;ul&gt;&lt;li&gt;&lt;strong&gt;Lead Name&lt;/strong&gt;:  &lt;a href=&quot;{!OrgBaseUrl}lightning/r/Lead/{!$Record.Id}/view&quot; rel=&quot;noopener noreferrer&quot; target=&quot;_blank&quot;&gt;{!LeadName} &lt;/a&gt;&lt;/li&gt;&lt;li&gt;&lt;strong&gt;Contact Number:&lt;/strong&gt;{!$Record.MobilePhone}&lt;/li&gt;&lt;li&gt;&lt;strong&gt;Email Address:&lt;/strong&gt; {!$Record.Email}&lt;/li&gt;&lt;li&gt;&lt;strong&gt;Project/Interest&lt;/strong&gt;: {!$Record.RES_Project__c}&lt;/li&gt;&lt;li&gt;&lt;strong&gt;Type of Leasing: &lt;/strong&gt;{!$Record.RES_Type_of_Leasing__c}&lt;/li&gt;&lt;/ul&gt;&lt;p&gt;Please review the lead and proceed with the necessary action as per the governance process.&lt;/p&gt;</stringValue>
-            </value>
-        </inputParameters>
-        <inputParameters>
-            <name>sendRichBody</name>
-            <value>
-                <booleanValue>true</booleanValue>
-            </value>
-        </inputParameters>
-        <inputParameters>
-            <name>recipientId</name>
-        </inputParameters>
-        <nameSegment>emailSimple</nameSegment>
-        <offset>0</offset>
-        <versionString>2.0.1</versionString>
-    </actionCalls>
     <apiVersion>66.0</apiVersion>
     <areMetricsLoggedToDataCloud>false</areMetricsLoggedToDataCloud>
     <assignments>
@@ -169,6 +104,64 @@
         </assignmentItems>
         <connector>
             <targetReference>SLA_breached</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
+        <name>Populate_Leasing_Owner_Merge_Fields</name>
+        <label>Populate Leasing Owner Merge Fields</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignmentItems>
+            <assignToReference>leasingOwnerMergeFields</assignToReference>
+            <operator>Add</operator>
+            <value>
+                <elementReference>OwnerName</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>leasingOwnerMergeFields</assignToReference>
+            <operator>Add</operator>
+            <value>
+                <elementReference>LeadName</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>leasingOwnerMergeFields</assignToReference>
+            <operator>Add</operator>
+            <value>
+                <elementReference>$Record.MobilePhone</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>leasingOwnerMergeFields</assignToReference>
+            <operator>Add</operator>
+            <value>
+                <elementReference>$Record.Email</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>leasingOwnerMergeFields</assignToReference>
+            <operator>Add</operator>
+            <value>
+                <elementReference>$Record.RES_Project__c</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>leasingOwnerMergeFields</assignToReference>
+            <operator>Add</operator>
+            <value>
+                <elementReference>$Record.RES_Type_of_Leasing__c</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>leasingOwnerMergeFields</assignToReference>
+            <operator>Add</operator>
+            <value>
+                <elementReference>leadURL</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>RES_Send_Email_to_Owner_Leasing</targetReference>
         </connector>
     </assignments>
     <assignments>
@@ -482,7 +475,7 @@
                 </rightValue>
             </conditions>
             <connector>
-                <targetReference>Send_Email_to_Owner_Leasing</targetReference>
+                <targetReference>Populate_Leasing_Owner_Merge_Fields</targetReference>
             </connector>
             <label>Owner is a User</label>
         </rules>
@@ -1182,6 +1175,40 @@
             </value>
         </inputAssignments>
     </subflows>
+    <subflows>
+        <name>RES_Send_Email_to_Owner_Leasing</name>
+        <label>Send Email to Owner - Leasing</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Check_for_Type_Of_Leasing</targetReference>
+        </connector>
+        <flowName>RES_AutolaunchFlow_Send_Emails_With_Merge_Fields</flowName>
+        <inputAssignments>
+            <name>ApexEmailTemplateAPIName</name>
+            <value>
+                <stringValue>RES_Leasing_Lead_Owner_Notification</stringValue>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <name>mergeFields</name>
+            <value>
+                <elementReference>leasingOwnerMergeFields</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <name>orgWideEmailAddressDisplayName</name>
+            <value>
+                <elementReference>$Label.Org_Wide_Email</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <name>recipients</name>
+            <value>
+                <elementReference>Emails</elementReference>
+            </value>
+        </inputAssignments>
+    </subflows>
     <variables>
         <name>Emails</name>
         <dataType>String</dataType>
@@ -1216,6 +1243,13 @@
         <value>
             <elementReference>$Record.LastName</elementReference>
         </value>
+    </variables>
+    <variables>
+        <name>leasingOwnerMergeFields</name>
+        <dataType>String</dataType>
+        <isCollection>true</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
     </variables>
     <variables>
         <name>leasingQueueName</name>
