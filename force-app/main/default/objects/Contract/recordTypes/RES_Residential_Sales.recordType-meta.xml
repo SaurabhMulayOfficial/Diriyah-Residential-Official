@@ -3,4 +3,23 @@
     <fullName>RES_Residential_Sales</fullName>
     <active>true</active>
     <label>Residential Sales</label>
+    <picklistValues>
+        <picklist>Status</picklist>
+        <values>
+            <fullName>Activated</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Canceled</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Draft</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>In Approval Process</fullName>
+            <default>false</default>
+        </values>
+    </picklistValues>
 </RecordType>
