@@ -460,9 +460,9 @@ Please go back and select at least one lead with status = “Qualified” to pro
         <language>en_US</language>
         <protected>false</protected>
         <shortDescription>Soft Hold Extension Error Message</shortDescription>
-        <value>Approval cannot be submitted for this product because one or more validation checks failed:
+        <value>Approval cannot be submitted for this Unit because one or more validation checks failed:
 
-🔴 Product is already under Soft Hold Extension. 
+🔴 Unit is already under Soft Hold Extension. 
 🔴 The associated Unit is already reserved by another user.
 🔴 No Unit is associated with this Quote.
 🔴 Associated Unit is not in Soft Hold status.</value>
@@ -488,9 +488,7 @@ Please go back and select at least one lead with status = “Qualified” to pro
         <language>en_US</language>
         <protected>false</protected>
         <shortDescription>Soft Hold Reject</shortDescription>
-        <value>Approval Work Item Auto Rejected
-
-This approval work item was rejected because the unit has been soft held by another opportunity.</value>
+        <value>Approval Work Item Auto Rejected. This approval work item was rejected because the unit has been soft held by another opportunity.</value>
     </labels>
     <labels>
         <fullName>RES_Auto_Reject_On_Cancel_Opportunity</fullName>
@@ -673,20 +671,6 @@ Do you wish to proceed with the cancellation?</value>
         <value>Product approval is required in order to Activate them.</value>
     </labels>
     <labels>
-        <fullName>RES_My_Converted_Lead_Roles</fullName>
-        <language>en_US</language>
-        <protected>false</protected>
-        <shortDescription>RES My Converted Lead Roles</shortDescription>
-        <value>00E9X00000HUJkQUAX;00E9X00000HUIc2UAH;00E9X00000HUPATUA5;00E9X00000HUE6HUAX;00E9X00000HUIAbUAP;00E9X00000HUBipUAH;00E9X00000HUGyPUAX;00E9X00000HU5z5UAD;00E9X00000HU6W3UAL;00E9X00000HhsjJUAR;00E9X00000HhsrNUAR;00E9X00000HUB2gUAH;00E9X00000HUIx2UAH</value>
-    </labels>
-    <labels>
-        <fullName>RES_My_Team_Converted_Lead_Roles</fullName>
-        <language>en_US</language>
-        <protected>false</protected>
-        <shortDescription>RES My Team Converted Lead Roles</shortDescription>
-        <value>00E9X00000IfldJUAR;00E9X00000Ifla5UAB;00E9X00000HU1BTUA1;00E9X00000IkVEZUA3;00E9X00000IflyHUAR;00E9X00000HUO9ZUAX;00E9X00000HUOXmUAP;00E9X00000IkYIrUAN;00E9X00000HUIVaUAP;00E9X00000HhsmXUAR;00E9X00000HU0hFUAT;00E9X00000HKkw9UAD;00E9X00000HU9kvUAD;00E9X00000HUArOUAX;00E9X00000HKG5FUAX;00E9X00000HiDUPUA3;00E9X00000HhneqUAB;00E9X00000HhhUaUAJ;00E9X00000HTvEBUA1;00E9X00000HRS8AUAX;00E9X00000HKl2bUAD;00E9X00000HhlJfUAJ;00E9X00000HUHZXUA5;00E9X00000HKl0zUAD;00E9X00000HUIdeUAH;00E9X00000IkYE1UAN;00E9X00000IflztUAB</value>
-    </labels>
-    <labels>
         <fullName>RES_Not_Under_Blocked</fullName>
         <categories>Unit Release</categories>
         <language>en_US</language>
@@ -744,5 +728,20 @@ Do you wish to proceed with the cancellation?</value>
         <protected>false</protected>
         <shortDescription>Unit Released Successfully</shortDescription>
         <value>The unit has been successfully updated to Available.</value>
+    </labels>
+    <labels>
+        <fullName>RES_Contract_Cancellation_Approval_Submitted</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Contract Cancellation Approval Submitted</shortDescription>
+        <value>The contract cancellation approval request has been successfully submitted and is now pending review and approval.</value>
+    </labels>
+    <labels>
+        <fullName>RES_REGA_Required</fullName>
+        <categories>REGA</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>REGA Approval Required Required</shortDescription>
+        <value>⚠️ Cancellation for off-plan unit requires REGA approval. Please attach REGA approval in the attachment section to proceed with cancellation.</value>
     </labels>
 </CustomLabels>
