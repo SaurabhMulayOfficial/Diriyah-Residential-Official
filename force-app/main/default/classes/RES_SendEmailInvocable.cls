@@ -11,7 +11,7 @@ public with sharing class RES_SendEmailInvocable {
             RES_EmailUtilityService emailService = new RES_EmailUtilityService();
             emailService.setToAddresses(input.recipients);
             emailService.setOrgWideEmailAddressId(input.orgWideEmailAddressId);
-            emailService.setSubject(input.emailSubject);
+            emailService.setSubject(input.emailSubject, input.subjectMergeFields);
             emailService.setHtmlBody(input.emailBody, input.mergeFields);
 
             emailServices.add(emailService);
@@ -39,5 +39,8 @@ public with sharing class RES_SendEmailInvocable {
 
         @InvocableVariable(required=true)
         public List<String> mergeFields;
+
+        @InvocableVariable(required=true)
+        public List<String> subjectMergeFields;
     }
 }
