@@ -63,12 +63,6 @@
         <groupingString>Signed</groupingString>
     </standardValue>
     <standardValue>
-        <fullName>Canceled</fullName>
-        <default>false</default>
-        <label>Cancelled</label>
-        <groupingString>Cancelled</groupingString>
-    </standardValue>
-    <standardValue>
         <fullName>Contract Expired</fullName>
         <default>false</default>
         <label>Contract Expired</label>
@@ -84,6 +78,12 @@
         <fullName>Pending Cancellation Approval</fullName>
         <default>false</default>
         <label>Pending Cancellation Approval</label>
-        <groupingString>Cancelled</groupingString>
+        <groupingString>Activated</groupingString>
+    </standardValue>
+    <standardValue>
+        <fullName>Canceled</fullName>
+        <default>false</default>
+        <label>Cancelled</label>
+        <groupingString>Activated</groupingString>
     </standardValue>
 </StandardValueSet>
