@@ -1,0 +1,690 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>67.0</apiVersion>
+    <areMetricsLoggedToDataCloud>false</areMetricsLoggedToDataCloud>
+    <assignments>
+        <name>Populate_Merge_Fields</name>
+        <label>Populate Merge Fields</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignmentItems>
+            <assignToReference>mergeFields</assignToReference>
+            <operator>Add</operator>
+            <value>
+                <elementReference>teamName</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>mergeFields</assignToReference>
+            <operator>Add</operator>
+            <value>
+                <elementReference>$Record.Name</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>mergeFields</assignToReference>
+            <operator>Add</operator>
+            <value>
+                <elementReference>Get_Related_Contract.ContractNumber</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>mergeFields</assignToReference>
+            <operator>Add</operator>
+            <value>
+                <elementReference>slaEndDateFormula</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>mergeFields</assignToReference>
+            <operator>Add</operator>
+            <value>
+                <elementReference>$Record.Status</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>mergeFields</assignToReference>
+            <operator>Add</operator>
+            <value>
+                <elementReference>contractURL</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>mergeFields</assignToReference>
+            <operator>Add</operator>
+            <value>
+                <elementReference>approvalWorkItemURL</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Check_Approval_Status</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
+        <name>Set_ED_Treasury_Team_Name</name>
+        <label>Set ED Treasury Team Name</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignmentItems>
+            <assignToReference>teamName</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <stringValue>ED Treasury Team</stringValue>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Send_Notification_To_ED_Treasury_Public_Group</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
+        <name>Set_Finance_Team_Name</name>
+        <label>Set Finance Team Name</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignmentItems>
+            <assignToReference>teamName</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <stringValue>Finance Team</stringValue>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Send_Notification_To_Finance_Public_Group</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
+        <name>Set_Operations_Director_Name</name>
+        <label>Set Operations Director Name</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignmentItems>
+            <assignToReference>teamName</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <stringValue>Operations Director Team</stringValue>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Send_Notification_To_Operations_Director_Public_Group</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
+        <name>Set_Pending_CBDO_Team_Name</name>
+        <label>Set Pending CBDO Team Name</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignmentItems>
+            <assignToReference>teamName</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <stringValue>CBDO Team</stringValue>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Send_Notification_To_CBDO_Public_Group</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
+        <name>Set_Pending_GCEO_Team_Name</name>
+        <label>Set Pending GCEO Team Name</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignmentItems>
+            <assignToReference>teamName</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <stringValue>GCEO Team</stringValue>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Send_Notification_To_GCEO_Public_Group</targetReference>
+        </connector>
+    </assignments>
+    <decisions>
+        <name>Check_Approval_Status</name>
+        <label>Check Approval Status</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>PendingFinanceApproval</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>Get_Related_Contract.RES_Approval_Status__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Pending Finance Approval</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Set_Finance_Team_Name</targetReference>
+            </connector>
+            <label>Pending Finance Approval</label>
+        </rules>
+        <rules>
+            <name>Pending_Operations</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>Get_Related_Contract.RES_Approval_Status__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Pending Operations</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Set_Operations_Director_Name</targetReference>
+            </connector>
+            <label>Pending Operations</label>
+        </rules>
+        <rules>
+            <name>Pending_ED_Treasury</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>Get_Related_Contract.RES_Approval_Status__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Pending ED Treasury</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Set_ED_Treasury_Team_Name</targetReference>
+            </connector>
+            <label>Pending ED Treasury</label>
+        </rules>
+        <rules>
+            <name>Pending_GCEO</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>Get_Related_Contract.RES_Approval_Status__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Pending GCEO</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Set_Pending_GCEO_Team_Name</targetReference>
+            </connector>
+            <label>Pending GCEO</label>
+        </rules>
+        <rules>
+            <name>Pending_CBDO</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>Get_Related_Contract.RES_Approval_Status__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Pending CBDO</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Set_Pending_CBDO_Team_Name</targetReference>
+            </connector>
+            <label>Pending CBDO</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>Check_If_Approval_Work_Item_Related_To_Contract</name>
+        <label>Check If Approval Work Item Related To Contract?</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Related_To_Contract</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.RelatedRecordObjectName</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Contract</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.RES_SLA_End_Date__c</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Get_Related_Contract</targetReference>
+            </connector>
+            <label>Related To Contract</label>
+        </rules>
+    </decisions>
+    <environments>Default</environments>
+    <formulas>
+        <name>approvalWorkItemURL</name>
+        <dataType>String</dataType>
+        <expression>LEFT(
+    {!$Api.Partner_Server_URL_610},
+    FIND(&quot;/services&quot;, {!$Api.Partner_Server_URL_610})
+)
+&amp;
+&quot;/&quot;
+&amp;
+{!$Record.Id}</expression>
+    </formulas>
+    <formulas>
+        <name>contractURL</name>
+        <dataType>String</dataType>
+        <expression>LEFT(
+    {!$Api.Partner_Server_URL_610},
+    FIND(&quot;/services&quot;, {!$Api.Partner_Server_URL_610})
+)
+&amp;
+&quot;/&quot;
+&amp;
+{!Get_Related_Contract.Id}</expression>
+    </formulas>
+    <formulas>
+        <name>slaEndDateFormula</name>
+        <dataType>String</dataType>
+        <expression>RIGHT(&quot;0&quot; &amp; TEXT(DAY(DATEVALUE({!$Record.RES_SLA_End_Date__c}))), 2)
+&amp; &quot;-&quot;
+&amp; CASE(
+    MONTH(DATEVALUE({!$Record.RES_SLA_End_Date__c})),
+    1, &quot;Jan&quot;,
+    2, &quot;Feb&quot;,
+    3, &quot;Mar&quot;,
+    4, &quot;Apr&quot;,
+    5, &quot;May&quot;,
+    6, &quot;Jun&quot;,
+    7, &quot;Jul&quot;,
+    8, &quot;Aug&quot;,
+    9, &quot;Sep&quot;,
+    10, &quot;Oct&quot;,
+    11, &quot;Nov&quot;,
+    12, &quot;Dec&quot;,
+    &quot;&quot;
+)
+&amp; &quot;-&quot;
+&amp; TEXT(YEAR(DATEVALUE({!$Record.RES_SLA_End_Date__c})))
+&amp; &quot; at &quot;
+&amp; IF(
+    HOUR(TIMEVALUE({!$Record.RES_SLA_End_Date__c})) = 0,
+    &quot;12&quot;,
+    IF(
+        HOUR(TIMEVALUE({!$Record.RES_SLA_End_Date__c})) &gt; 12,
+        TEXT(HOUR(TIMEVALUE({!$Record.RES_SLA_End_Date__c})) - 12),
+        TEXT(HOUR(TIMEVALUE({!$Record.RES_SLA_End_Date__c})))
+    )
+)
+&amp; &quot;:&quot;
+&amp; RIGHT(&quot;0&quot; &amp; TEXT(MINUTE(TIMEVALUE({!$Record.RES_SLA_End_Date__c}))), 2)
+&amp; &quot; &quot;
+&amp; IF(
+    HOUR(TIMEVALUE({!$Record.RES_SLA_End_Date__c})) &gt;= 12,
+    &quot;PM&quot;,
+    &quot;AM&quot;
+)</expression>
+    </formulas>
+    <interviewLabel>RES Approval Work Item Scheduled Flow - Send Email Reminder {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>RES Approval Work Item Scheduled Flow - Send Email Reminder</label>
+    <processMetadataValues>
+        <name>BuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>CanvasMode</name>
+        <value>
+            <stringValue>AUTO_LAYOUT_CANVAS</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>OriginBuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processType>AutoLaunchedFlow</processType>
+    <recordLookups>
+        <name>Get_Related_Contract</name>
+        <label>Get Related Contract</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Populate_Merge_Fields</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Id</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>$Record.RelatedRecordId</elementReference>
+            </value>
+        </filters>
+        <filters>
+            <field>RES_Approval_Status__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <stringValue>Pending Finance Approval</stringValue>
+            </value>
+        </filters>
+        <getFirstRecordOnly>true</getFirstRecordOnly>
+        <object>Contract</object>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
+    <start>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <object>ApprovalWorkItem</object>
+        <recordTriggerType>Update</recordTriggerType>
+        <scheduledPaths>
+            <name>Send_Reminder_Email</name>
+            <connector>
+                <targetReference>Check_If_Approval_Work_Item_Related_To_Contract</targetReference>
+            </connector>
+            <label>Send Reminder Email</label>
+            <offsetNumber>0</offsetNumber>
+            <offsetUnit>Minutes</offsetUnit>
+            <recordField>RES_SLA_End_Date__c</recordField>
+            <timeSource>RecordField</timeSource>
+        </scheduledPaths>
+        <triggerType>RecordAfterSave</triggerType>
+    </start>
+    <status>Active</status>
+    <subflows>
+        <name>Send_Notification_To_CBDO_Public_Group</name>
+        <label>Send Notification To CBDO Public Group</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Set_Operations_Director_Name</targetReference>
+        </connector>
+        <flowName>RES_Autolaunched_Flow_Send_Notification_To_Public_Group</flowName>
+        <inputAssignments>
+            <name>bellNotificationBody</name>
+            <value>
+                <stringValue>Action Required: Approval Work Item SLA Expired</stringValue>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <name>bellNotificationTitle</name>
+            <value>
+                <stringValue>Approval Work Item Pending Approval</stringValue>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <name>customNotificationName</name>
+            <value>
+                <stringValue>RES_Contract_Finance_Approval_Notification</stringValue>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <name>emailTemplateName</name>
+            <value>
+                <stringValue>RES_Approval_Work_Item_Pending_Approval</stringValue>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <name>mergeFields</name>
+            <value>
+                <elementReference>mergeFields</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <name>publicGroupDeveloperName</name>
+            <value>
+                <stringValue>RES_Chief_Business_Development_Officer</stringValue>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <name>recordId</name>
+            <value>
+                <elementReference>Get_Related_Contract.Id</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <name>sendBellNotification</name>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </inputAssignments>
+    </subflows>
+    <subflows>
+        <name>Send_Notification_To_ED_Treasury_Public_Group</name>
+        <label>Send Notification To ED Treasury Public Group</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Set_Operations_Director_Name</targetReference>
+        </connector>
+        <flowName>RES_Autolaunched_Flow_Send_Notification_To_Public_Group</flowName>
+        <inputAssignments>
+            <name>bellNotificationBody</name>
+            <value>
+                <stringValue>Action Required: Approval Work Item SLA Expired</stringValue>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <name>bellNotificationTitle</name>
+            <value>
+                <stringValue>Approval Work Item Pending Approval</stringValue>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <name>customNotificationName</name>
+            <value>
+                <stringValue>RES_Contract_Finance_Approval_Notification</stringValue>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <name>emailTemplateName</name>
+            <value>
+                <stringValue>RES_Approval_Work_Item_Pending_Approval</stringValue>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <name>mergeFields</name>
+            <value>
+                <elementReference>mergeFields</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <name>publicGroupDeveloperName</name>
+            <value>
+                <stringValue>RES_Executive_Director_Treasury</stringValue>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <name>recordId</name>
+            <value>
+                <elementReference>Get_Related_Contract.Id</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <name>sendBellNotification</name>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </inputAssignments>
+    </subflows>
+    <subflows>
+        <name>Send_Notification_To_Finance_Public_Group</name>
+        <label>Send Notification To Finance Public Group</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Set_Operations_Director_Name</targetReference>
+        </connector>
+        <flowName>RES_Autolaunched_Flow_Send_Notification_To_Public_Group</flowName>
+        <inputAssignments>
+            <name>bellNotificationBody</name>
+            <value>
+                <stringValue>Action Required: Approval Work Item SLA Expired</stringValue>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <name>bellNotificationTitle</name>
+            <value>
+                <stringValue>Approval Work Item Pending Approval</stringValue>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <name>customNotificationName</name>
+            <value>
+                <stringValue>RES_Contract_Finance_Approval_Notification</stringValue>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <name>emailTemplateName</name>
+            <value>
+                <stringValue>RES_Approval_Work_Item_Pending_Approval</stringValue>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <name>mergeFields</name>
+            <value>
+                <elementReference>mergeFields</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <name>publicGroupDeveloperName</name>
+            <value>
+                <stringValue>RES_Finance_Team_Group</stringValue>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <name>recordId</name>
+            <value>
+                <elementReference>Get_Related_Contract.Id</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <name>sendBellNotification</name>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </inputAssignments>
+    </subflows>
+    <subflows>
+        <name>Send_Notification_To_GCEO_Public_Group</name>
+        <label>Send Notification To GCEO Public Group</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Set_Operations_Director_Name</targetReference>
+        </connector>
+        <flowName>RES_Autolaunched_Flow_Send_Notification_To_Public_Group</flowName>
+        <inputAssignments>
+            <name>bellNotificationBody</name>
+            <value>
+                <stringValue>Action Required: Approval Work Item SLA Expired</stringValue>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <name>bellNotificationTitle</name>
+            <value>
+                <stringValue>Approval Work Item Pending Approval</stringValue>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <name>customNotificationName</name>
+            <value>
+                <stringValue>RES_Contract_Finance_Approval_Notification</stringValue>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <name>emailTemplateName</name>
+            <value>
+                <stringValue>RES_Approval_Work_Item_Pending_Approval</stringValue>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <name>mergeFields</name>
+            <value>
+                <elementReference>mergeFields</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <name>publicGroupDeveloperName</name>
+            <value>
+                <stringValue>RES_Executive_Corporate_CEO_Group</stringValue>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <name>recordId</name>
+            <value>
+                <elementReference>Get_Related_Contract.Id</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <name>sendBellNotification</name>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </inputAssignments>
+    </subflows>
+    <subflows>
+        <name>Send_Notification_To_Operations_Director_Public_Group</name>
+        <label>Send Notification To Operations Director Public Group</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <flowName>RES_Autolaunched_Flow_Send_Notification_To_Public_Group</flowName>
+        <inputAssignments>
+            <name>bellNotificationBody</name>
+            <value>
+                <stringValue>Action Required: Approval Work Item SLA Expired</stringValue>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <name>bellNotificationTitle</name>
+            <value>
+                <stringValue>Approval Work Item Pending Approval</stringValue>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <name>customNotificationName</name>
+            <value>
+                <stringValue>RES_Contract_Finance_Approval_Notification</stringValue>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <name>emailTemplateName</name>
+            <value>
+                <stringValue>RES_Approval_Work_Item_Pending_Approval</stringValue>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <name>mergeFields</name>
+            <value>
+                <elementReference>mergeFields</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <name>publicGroupDeveloperName</name>
+            <value>
+                <stringValue>RES_Operations_Director_Group</stringValue>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <name>recordId</name>
+            <value>
+                <elementReference>Get_Related_Contract.Id</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <name>sendBellNotification</name>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </inputAssignments>
+    </subflows>
+    <variables>
+        <name>mergeFields</name>
+        <dataType>String</dataType>
+        <isCollection>true</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <name>teamName</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+</Flow>
