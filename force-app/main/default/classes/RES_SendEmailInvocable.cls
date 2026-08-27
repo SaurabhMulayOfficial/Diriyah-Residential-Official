@@ -37,10 +37,10 @@ public with sharing class RES_SendEmailInvocable {
         @InvocableVariable(required=true)
         public List<String> recipients;
 
-        @InvocableVariable(required=true)
+        @InvocableVariable
         public List<String> mergeFields;
 
-        @InvocableVariable(required=true)
+        @InvocableVariable
         public List<String> subjectMergeFields;
     }
 }
