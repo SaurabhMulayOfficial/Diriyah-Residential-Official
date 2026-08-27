@@ -114,6 +114,27 @@
         </rules>
     </decisions>
     <environments>Default</environments>
+    <formulas>
+        <name>username</name>
+        <dataType>String</dataType>
+        <expression>IF(
+    CONTAINS(UPPER({!$Organization.Name}), &quot;DEV&quot;),
+    &quot;system.admin@globant.com.diriyah.dev&quot;,
+    IF(
+        CONTAINS(UPPER({!$Organization.Name}), &quot;QA&quot;),
+        &quot;system.admin@globant.com.diriyah.qa&quot;,
+        IF(
+            CONTAINS(UPPER({!$Organization.Name}), &quot;UAT&quot;),
+            &quot;system.admin@globant.com.diriyah.uat&quot;,
+            IF(
+                CONTAINS(UPPER({!$Organization.Name}), &quot;PROD&quot;),
+                &quot;system.admin@globant.com.diriyah&quot;,
+                &quot;&quot;
+            )
+        )
+    )
+)</expression>
+    </formulas>
     <interviewLabel>RES Contract - Operations Director Approval Process {!$Flow.CurrentDateTime}</interviewLabel>
     <label>RES Contract - Operations Director Approval Process</label>
     <orchestratedStages>
@@ -324,7 +345,7 @@
             <actionType>stepBackground</actionType>
             <assignees>
                 <assignee>
-                    <stringValue>system.admin@globant.com.diriyah.dev</stringValue>
+                    <elementReference>username</elementReference>
                 </assignee>
                 <assigneeType>User</assigneeType>
             </assignees>
@@ -887,15 +908,5 @@
         <isCollection>false</isCollection>
         <isInput>true</isInput>
         <isOutput>false</isOutput>
-    </variables>
-    <variables>
-        <name>username</name>
-        <dataType>String</dataType>
-        <isCollection>false</isCollection>
-        <isInput>false</isInput>
-        <isOutput>false</isOutput>
-        <value>
-            <stringValue>nikhil.takawale@globant.com.diriyah.dev</stringValue>
-        </value>
     </variables>
 </Flow>
