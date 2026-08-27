@@ -317,16 +317,6 @@
                 <identifier>RecordRES_S4_Sync_Date_cField</identifier>
             </fieldInstance>
         </itemInstances>
-        <itemInstances>
-            <fieldInstance>
-                <fieldInstanceProperties>
-                    <name>uiBehavior</name>
-                    <value>none</value>
-                </fieldInstanceProperties>
-                <fieldItem>Record.RES_SIMAH_Status__c</fieldItem>
-                <identifier>RecordRES_SIMAH_Status_cField</identifier>
-            </fieldInstance>
-        </itemInstances>
         <name>Facet-ca84733b-a19e-42b8-8e48-00b500cec899</name>
         <type>Facet</type>
     </flexiPageRegions>
@@ -679,10 +669,10 @@
             <fieldInstance>
                 <fieldInstanceProperties>
                     <name>uiBehavior</name>
-                    <value>none</value>
+                    <value>readonly</value>
                 </fieldInstanceProperties>
                 <fieldItem>Record.RES_SIMAH_Status__c</fieldItem>
-                <identifier>RecordRES_SIMAH_Status_cField2</identifier>
+                <identifier>RecordRES_SIMAH_Status_cField</identifier>
             </fieldInstance>
         </itemInstances>
         <name>Facet-a080a604-04df-40ac-a26d-759c18be09b2</name>
