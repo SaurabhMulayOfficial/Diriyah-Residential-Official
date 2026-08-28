@@ -1,0 +1,299 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>67.0</apiVersion>
+    <areMetricsLoggedToDataCloud>false</areMetricsLoggedToDataCloud>
+    <assignments>
+        <name>Set_Merge_Fields</name>
+        <label>Set Merge Fields</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignmentItems>
+            <assignToReference>mergeFields</assignToReference>
+            <operator>Add</operator>
+            <value>
+                <stringValue>CBDO Team</stringValue>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>mergeFields</assignToReference>
+            <operator>Add</operator>
+            <value>
+                <elementReference>contractURL</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>mergeFields</assignToReference>
+            <operator>Add</operator>
+            <value>
+                <elementReference>approvalWorkItemURL</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Send_Notification_To_Public_Group</targetReference>
+        </connector>
+    </assignments>
+    <decisions>
+        <name>Check_Assigned_To_On_Work_Item</name>
+        <label>Check Assigned To On Work Item</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Assigned_to_CBDO</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.AssignedToId</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <elementReference>Get_CBDO_Public_Group.Id</elementReference>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Get_Related_Contract</targetReference>
+            </connector>
+            <label>Assigned to CBDO</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>Is_Group_Retrieved</name>
+        <label>Is Group Retrieved?</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Retrieved</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>Get_CBDO_Public_Group</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Check_Assigned_To_On_Work_Item</targetReference>
+            </connector>
+            <label>Retrieved</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>Is_Work_Item_Related_To_Contract</name>
+        <label>Is Work Item Related To Contract?</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Related_To_Contract</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.RelatedRecordObjectName</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Contract</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Get_CBDO_Public_Group</targetReference>
+            </connector>
+            <label>Related To Contract</label>
+        </rules>
+    </decisions>
+    <environments>Default</environments>
+    <formulas>
+        <name>approvalWorkItemURL</name>
+        <dataType>String</dataType>
+        <expression>LEFT(
+    {!$Api.Partner_Server_URL_610},
+    FIND(&quot;/services&quot;, {!$Api.Partner_Server_URL_610})
+)
+&amp;
+&quot;/&quot;
+&amp;
+{!$Record.Id}</expression>
+    </formulas>
+    <formulas>
+        <name>bellNotificationBody</name>
+        <dataType>String</dataType>
+        <expression>&quot;Contract &quot; &amp; {!Get_Related_Contract.ContractNumber} &amp; &quot; requires your approval.&quot;</expression>
+    </formulas>
+    <formulas>
+        <name>contractURL</name>
+        <dataType>String</dataType>
+        <expression>LEFT(
+    {!$Api.Partner_Server_URL_610},
+    FIND(&quot;/services&quot;, {!$Api.Partner_Server_URL_610})
+)
+&amp;
+&quot;/&quot;
+&amp;
+{!Get_Related_Contract.Id}</expression>
+    </formulas>
+    <interviewLabel>RES Approval Work Item - After Update {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>RES Approval Work Item - After Update - Is Work Item Reassigned</label>
+    <processMetadataValues>
+        <name>BuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>CanvasMode</name>
+        <value>
+            <stringValue>AUTO_LAYOUT_CANVAS</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>OriginBuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processType>AutoLaunchedFlow</processType>
+    <recordLookups>
+        <name>Get_CBDO_Public_Group</name>
+        <label>Get CBDO Public Group</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Is_Group_Retrieved</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>DeveloperName</field>
+            <operator>EqualTo</operator>
+            <value>
+                <stringValue>RES_Chief_Business_Development_Officer</stringValue>
+            </value>
+        </filters>
+        <getFirstRecordOnly>true</getFirstRecordOnly>
+        <object>Group</object>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
+    <recordLookups>
+        <name>Get_Related_Contract</name>
+        <label>Get Related Contract</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Update_Contract_Approval_Status</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Id</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>$Record.RelatedRecordId</elementReference>
+            </value>
+        </filters>
+        <getFirstRecordOnly>true</getFirstRecordOnly>
+        <object>Contract</object>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
+    <recordUpdates>
+        <name>Update_Contract_Approval_Status</name>
+        <label>Update Contract Approval Status</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Set_Merge_Fields</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Id</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>Get_Related_Contract.Id</elementReference>
+            </value>
+        </filters>
+        <inputAssignments>
+            <field>RES_Approval_Status__c</field>
+            <value>
+                <stringValue>Pending CBDO</stringValue>
+            </value>
+        </inputAssignments>
+        <object>Contract</object>
+    </recordUpdates>
+    <start>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Is_Work_Item_Related_To_Contract</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>AssignedToId</field>
+            <operator>IsChanged</operator>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </filters>
+        <object>ApprovalWorkItem</object>
+        <recordTriggerType>Update</recordTriggerType>
+        <triggerType>RecordAfterSave</triggerType>
+    </start>
+    <status>Active</status>
+    <subflows>
+        <name>Send_Notification_To_Public_Group</name>
+        <label>Send Notification To Public Group</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <flowName>RES_Autolaunched_Flow_Send_Notification_To_Public_Group</flowName>
+        <inputAssignments>
+            <name>bellNotificationBody</name>
+            <value>
+                <elementReference>bellNotificationBody</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <name>bellNotificationTitle</name>
+            <value>
+                <stringValue>Contract CBDO Approval Required</stringValue>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <name>customNotificationName</name>
+            <value>
+                <stringValue>RES_Contract_Finance_Approval_Notification</stringValue>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <name>emailTemplateName</name>
+            <value>
+                <stringValue>RES_CBDO_Approval_Email_Template</stringValue>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <name>mergeFields</name>
+            <value>
+                <elementReference>mergeFields</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <name>publicGroupDeveloperName</name>
+            <value>
+                <stringValue>RES_Chief_Business_Development_Officer</stringValue>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <name>recordId</name>
+            <value>
+                <elementReference>$Record.RelatedRecordId</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <name>sendBellNotification</name>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </inputAssignments>
+    </subflows>
+    <variables>
+        <name>mergeFields</name>
+        <dataType>String</dataType>
+        <isCollection>true</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+</Flow>

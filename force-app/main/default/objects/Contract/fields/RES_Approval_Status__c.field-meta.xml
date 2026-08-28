@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>RES_Approval_Status__c</fullName>
+    <label>Approval Status</label>
+    <required>false</required>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackHistory>false</trackHistory>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>Pending Finance Approval</fullName>
+                <default>false</default>
+                <label>Pending Finance Approval</label>
+            </value>
+            <value>
+                <fullName>Finance Approved</fullName>
+                <default>false</default>
+                <label>Finance Approved</label>
+            </value>
+            <value>
+                <fullName>Finance Rejected</fullName>
+                <default>false</default>
+                <label>Finance Rejected</label>
+            </value>
+            <value>
+                <fullName>Pending Operations</fullName>
+                <default>false</default>
+                <label>Pending Operations</label>
+            </value>
+            <value>
+                <fullName>Pending ED Treasury</fullName>
+                <default>false</default>
+                <label>Pending ED Treasury</label>
+            </value>
+            <value>
+                <fullName>Pending GCEO</fullName>
+                <default>false</default>
+                <label>Pending GCEO</label>
+            </value>
+            <value>
+                <fullName>Pending CBDO</fullName>
+                <default>false</default>
+                <label>Pending CBDO</label>
+            </value>
+            <value>
+                <fullName>Approved</fullName>
+                <default>false</default>
+                <label>Approved</label>
+            </value>
+            <value>
+                <fullName>Rejected</fullName>
+                <default>false</default>
+                <label>Rejected</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>
