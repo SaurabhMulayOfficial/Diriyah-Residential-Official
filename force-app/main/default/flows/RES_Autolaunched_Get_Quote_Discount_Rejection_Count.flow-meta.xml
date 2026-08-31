@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <actionCalls>
+        <name>Get_Rejection_Count</name>
+        <label>Get Rejection Count</label>
+        <locationX>176</locationX>
+        <locationY>158</locationY>
+        <actionName>RES_QuoteApprovalWorkItemService</actionName>
+        <actionType>apex</actionType>
+        <flowTransactionModel>Automatic</flowTransactionModel>
+        <inputParameters>
+            <name>quoteId</name>
+            <value>
+                <elementReference>quoteId</elementReference>
+            </value>
+        </inputParameters>
+        <nameSegment>RES_QuoteApprovalWorkItemService</nameSegment>
+        <offset>0</offset>
+        <outputParameters>
+            <assignToReference>rejectionCount</assignToReference>
+            <name>rejectionCount</name>
+        </outputParameters>
+    </actionCalls>
+    <apiVersion>67.0</apiVersion>
+    <description>DIR-869: Returns prior rejected discount-approval attempts for a Quote, counted from the standard ApprovalWorkItem object (Status = Rejected) rather than a custom audit log.</description>
+    <environments>Default</environments>
+    <interviewLabel>RES Get Quote Discount Rejection Count {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>RES Autolaunched Get Quote Discount Rejection Count</label>
+    <processType>AutoLaunchedFlow</processType>
+    <start>
+        <locationX>50</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Get_Rejection_Count</targetReference>
+        </connector>
+    </start>
+    <status>Active</status>
+    <variables>
+        <name>quoteId</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>true</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <name>rejectionCount</name>
+        <dataType>Number</dataType>
+        <scale>0</scale>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>true</isOutput>
+    </variables>
+</Flow>

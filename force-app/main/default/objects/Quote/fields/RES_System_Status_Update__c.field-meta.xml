@@ -1,11 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
     <fullName>RES_System_Status_Update__c</fullName>
-    <label>System Status Update</label>
-    <description>DIR-763: Internal bypass flag. Set true by the DOA automation when it sets a system-controlled status (Pending Approval/Approved/Rejected) so the status-lock validation rule allows the automated change, then reset to false. Not exposed to users.</description>
     <defaultValue>false</defaultValue>
-    <externalId>false</externalId>
-    <trackTrending>false</trackTrending>
-    <trackHistory>true</trackHistory>
+    <description>DIR-763: Internal bypass flag. Set true by the DOA automation when it sets a system-controlled status (Pending Approval/Approved/Rejected) so the status-lock validation rule allows the automated change, then reset to false. Not exposed to users.</description>
+    <label>System Status Update</label>
+    <trackHistory>false</trackHistory>
     <type>Checkbox</type>
 </CustomField>

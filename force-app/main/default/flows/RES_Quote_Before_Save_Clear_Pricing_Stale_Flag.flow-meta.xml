@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>67.0</apiVersion>
+    <areMetricsLoggedToDataCloud>false</areMetricsLoggedToDataCloud>
+    <assignments>
+        <name>Clear_Pricing_Stale_Flag</name>
+        <label>Clear Pricing Stale Flag</label>
+        <locationX>176</locationX>
+        <locationY>158</locationY>
+        <assignmentItems>
+            <assignToReference>$Record.RES_Pricing_Stale__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <booleanValue>false</booleanValue>
+            </value>
+        </assignmentItems>
+    </assignments>
+    <description>DIR-869: Before-save fast field update - clears RES_Pricing_Stale__c the moment a Quote is genuinely repriced, which hides the pricing-stale warning banner on the Quote page. 2026-08-28 CORRECTION: originally keyed off ISCHANGED(LastPricedDate), but live testing proved LastPricedDate is never actually populated by Reprice All in this org (confirmed via QuoteHistory - it stayed null through a full reprice cycle that did visibly correct TotalPrice). Re-keyed off CalculationStatus instead, confirmed via the same QuoteHistory trace to reliably cycle CompletedWithPricing -&gt; Saving -&gt; CompletedWithPricing exactly when Reprice All runs, and to NOT change at all during the plain rejection-revert DML (6+ minute gap with zero CalculationStatus activity observed between a rejection and the next real reprice in testing). Deliberately a $Record assignment only, no separate Update DML, so it runs inside Reprice All&apos;s own save (whatever context invokes it, privileged or not) with zero risk of the CANNOT_EXECUTE_FLOW_TRIGGER block seen elsewhere in this project when a Flow/Apex issues its own separate DML back onto Quote pricing fields - this only ever edits the in-memory record already being saved. Only handles the &quot;user clicked Reprice All&quot; recovery path; the &quot;user entered a new discount instead&quot; path is handled separately in RES_Quote_Line_Item_After_Update_Sync_Header_Discount.</description>
+    <environments>Default</environments>
+    <interviewLabel>RES Quote Before Save Clear Pricing Stale Flag {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>RES Quote Before Save Clear Pricing Stale Flag</label>
+    <processType>AutoLaunchedFlow</processType>
+    <start>
+        <locationX>50</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Clear_Pricing_Stale_Flag</targetReference>
+        </connector>
+        <filterFormula>AND(
+    {!$Record.RES_Pricing_Stale__c},
+    ISCHANGED({!$Record.CalculationStatus}),
+    ISPICKVAL({!$Record.CalculationStatus}, &quot;CompletedWithPricing&quot;)
+)</filterFormula>
+        <object>Quote</object>
+        <recordTriggerType>Update</recordTriggerType>
+        <triggerType>RecordBeforeSave</triggerType>
+    </start>
+    <status>Active</status>
+</Flow>

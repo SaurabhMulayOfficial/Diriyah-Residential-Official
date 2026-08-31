@@ -75,6 +75,26 @@
             <stepSubtype>BackgroundStep</stepSubtype>
         </stageSteps>
         <stageSteps>
+            <name>Reset_Submission_Requested</name>
+            <actionName>RES_Autolaunched_Reset_Discount_Submission_Flag</actionName>
+            <actionType>stepBackground</actionType>
+            <canAssigneeEdit>false</canAssigneeEdit>
+            <debugSimulateStep>false</debugSimulateStep>
+            <entryConditionLogic>and</entryConditionLogic>
+            <exitConditionLogic>and</exitConditionLogic>
+            <inputParameters>
+                <name>recordId</name>
+                <value>
+                    <elementReference>$Record.Id</elementReference>
+                </value>
+            </inputParameters>
+            <label>Reset Submission Requested</label>
+            <requiresAsyncProcessing>false</requiresAsyncProcessing>
+            <runAsUser>false</runAsUser>
+            <shouldLock>false</shouldLock>
+            <stepSubtype>BackgroundStep</stepSubtype>
+        </stageSteps>
+        <stageSteps>
             <name>Set_Pending_Approval</name>
             <actionName>RES_Autolaunched_Update_Quote_Status</actionName>
             <actionType>stepBackground</actionType>
@@ -125,8 +145,8 @@
             <stepSubtype>BackgroundStep</stepSubtype>
         </stageSteps>
         <stageSteps>
-            <name>Notify_Manager</name>
-            <actionName>RES_Autolaunched_Send_Quote_Approval_Notification</actionName>
+            <name>Try_Acquire_Mutex</name>
+            <actionName>RES_Autolaunched_Try_Acquire_Submission_Mutex</actionName>
             <actionType>stepBackground</actionType>
             <canAssigneeEdit>false</canAssigneeEdit>
             <debugSimulateStep>false</debugSimulateStep>
@@ -137,6 +157,94 @@
                 <operator>IsNull</operator>
                 <rightValue>
                     <booleanValue>false</booleanValue>
+                </rightValue>
+            </entryConditions>
+            <exitConditionLogic>and</exitConditionLogic>
+            <inputParameters>
+                <name>quoteId</name>
+                <value>
+                    <elementReference>$Record.Id</elementReference>
+                </value>
+            </inputParameters>
+            <label>Try Acquire Mutex</label>
+            <outputConfigParams>
+                <name>acquired</name>
+                <value xsi:nil="true"/>
+            </outputConfigParams>
+            <requiresAsyncProcessing>false</requiresAsyncProcessing>
+            <runAsUser>false</runAsUser>
+            <shouldLock>false</shouldLock>
+            <stepSubtype>BackgroundStep</stepSubtype>
+        </stageSteps>
+        <stageSteps>
+            <name>Get_Rejection_Count</name>
+            <actionName>RES_Autolaunched_Get_Quote_Discount_Rejection_Count</actionName>
+            <actionType>stepBackground</actionType>
+            <canAssigneeEdit>false</canAssigneeEdit>
+            <debugSimulateStep>false</debugSimulateStep>
+            <entryConditionLogic>and</entryConditionLogic>
+            <entryConditions>
+                <conditionType>EntryCondition</conditionType>
+                <leftValueReference>Get_Owner_Manager.Outputs.managerId</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </entryConditions>
+            <entryConditions>
+                <conditionType>EntryCondition</conditionType>
+                <leftValueReference>Try_Acquire_Mutex.Status</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Completed</stringValue>
+                </rightValue>
+            </entryConditions>
+            <entryConditions>
+                <conditionType>EntryCondition</conditionType>
+                <leftValueReference>Try_Acquire_Mutex.Outputs.acquired</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </entryConditions>
+            <exitConditionLogic>and</exitConditionLogic>
+            <inputParameters>
+                <name>quoteId</name>
+                <value>
+                    <elementReference>$Record.Id</elementReference>
+                </value>
+            </inputParameters>
+            <label>Get Prior Rejection Count</label>
+            <outputConfigParams>
+                <name>rejectionCount</name>
+                <value xsi:nil="true"/>
+            </outputConfigParams>
+            <requiresAsyncProcessing>false</requiresAsyncProcessing>
+            <runAsUser>false</runAsUser>
+            <shouldLock>false</shouldLock>
+            <stepSubtype>BackgroundStep</stepSubtype>
+        </stageSteps>
+        <stageSteps>
+            <name>Notify_Manager</name>
+            <actionName>RES_Autolaunched_Send_Quote_Approval_Notification</actionName>
+            <actionType>stepBackground</actionType>
+            <canAssigneeEdit>false</canAssigneeEdit>
+            <debugSimulateStep>false</debugSimulateStep>
+            <entryConditionLogic>and</entryConditionLogic>
+            <entryConditions>
+                <conditionType>EntryCondition</conditionType>
+                <leftValueReference>Get_Rejection_Count.Status</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Completed</stringValue>
+                </rightValue>
+            </entryConditions>
+            <entryConditions>
+                <conditionType>EntryCondition</conditionType>
+                <leftValueReference>Get_Rejection_Count.Outputs.rejectionCount</leftValueReference>
+                <operator>LessThan</operator>
+                <rightValue>
+                    <numberValue>3.0</numberValue>
                 </rightValue>
             </entryConditions>
             <exitConditionLogic>and</exitConditionLogic>
@@ -177,32 +285,120 @@
             <stepSubtype>BackgroundStep</stepSubtype>
         </stageSteps>
         <stageSteps>
-            <name>Try_Acquire_Mutex</name>
-            <actionName>RES_Autolaunched_Try_Acquire_Submission_Mutex</actionName>
+            <name>Notify_Manager_Third_Rejection</name>
+            <actionName>RES_Autolaunched_Send_Quote_Approval_Notification</actionName>
             <actionType>stepBackground</actionType>
             <canAssigneeEdit>false</canAssigneeEdit>
             <debugSimulateStep>false</debugSimulateStep>
             <entryConditionLogic>and</entryConditionLogic>
             <entryConditions>
                 <conditionType>EntryCondition</conditionType>
-                <leftValueReference>Get_Owner_Manager.Outputs.managerId</leftValueReference>
-                <operator>IsNull</operator>
+                <leftValueReference>Get_Rejection_Count.Status</leftValueReference>
+                <operator>EqualTo</operator>
                 <rightValue>
-                    <booleanValue>false</booleanValue>
+                    <stringValue>Completed</stringValue>
+                </rightValue>
+            </entryConditions>
+            <entryConditions>
+                <conditionType>EntryCondition</conditionType>
+                <leftValueReference>Get_Rejection_Count.Outputs.rejectionCount</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <numberValue>3.0</numberValue>
                 </rightValue>
             </entryConditions>
             <exitConditionLogic>and</exitConditionLogic>
             <inputParameters>
-                <name>quoteId</name>
+                <name>recipientId</name>
+                <value>
+                    <elementReference>Get_Owner_Manager.Outputs.managerId</elementReference>
+                </value>
+            </inputParameters>
+            <inputParameters>
+                <name>recordId</name>
                 <value>
                     <elementReference>$Record.Id</elementReference>
                 </value>
             </inputParameters>
-            <label>Try Acquire Mutex</label>
-            <outputConfigParams>
-                <name>acquired</name>
-                <value xsi:nil="true"/>
-            </outputConfigParams>
+            <inputParameters>
+                <name>title</name>
+                <value>
+                    <stringValue>Quote Discount Approval Required</stringValue>
+                </value>
+            </inputParameters>
+            <inputParameters>
+                <name>bellBody</name>
+                <value>
+                    <elementReference>Third_Rejection_Approval_Alert</elementReference>
+                </value>
+            </inputParameters>
+            <inputParameters>
+                <name>ApexEmailTemplateName</name>
+                <value>
+                    <stringValue>Quote_Discount_Approval_Request</stringValue>
+                </value>
+            </inputParameters>
+            <label>Notify Manager - Third Rejection Warning</label>
+            <requiresAsyncProcessing>false</requiresAsyncProcessing>
+            <runAsUser>false</runAsUser>
+            <shouldLock>false</shouldLock>
+            <stepSubtype>BackgroundStep</stepSubtype>
+        </stageSteps>
+        <stageSteps>
+            <name>Notify_Manager_Four_Plus_Rejections</name>
+            <actionName>RES_Autolaunched_Send_Quote_Approval_Notification</actionName>
+            <actionType>stepBackground</actionType>
+            <canAssigneeEdit>false</canAssigneeEdit>
+            <debugSimulateStep>false</debugSimulateStep>
+            <entryConditionLogic>and</entryConditionLogic>
+            <entryConditions>
+                <conditionType>EntryCondition</conditionType>
+                <leftValueReference>Get_Rejection_Count.Status</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Completed</stringValue>
+                </rightValue>
+            </entryConditions>
+            <entryConditions>
+                <conditionType>EntryCondition</conditionType>
+                <leftValueReference>Get_Rejection_Count.Outputs.rejectionCount</leftValueReference>
+                <operator>GreaterThan</operator>
+                <rightValue>
+                    <numberValue>3.0</numberValue>
+                </rightValue>
+            </entryConditions>
+            <exitConditionLogic>and</exitConditionLogic>
+            <inputParameters>
+                <name>recipientId</name>
+                <value>
+                    <elementReference>Get_Owner_Manager.Outputs.managerId</elementReference>
+                </value>
+            </inputParameters>
+            <inputParameters>
+                <name>recordId</name>
+                <value>
+                    <elementReference>$Record.Id</elementReference>
+                </value>
+            </inputParameters>
+            <inputParameters>
+                <name>title</name>
+                <value>
+                    <stringValue>Quote Discount Approval Required</stringValue>
+                </value>
+            </inputParameters>
+            <inputParameters>
+                <name>bellBody</name>
+                <value>
+                    <elementReference>Four_Plus_Rejections_Approval_Alert</elementReference>
+                </value>
+            </inputParameters>
+            <inputParameters>
+                <name>ApexEmailTemplateName</name>
+                <value>
+                    <stringValue>Quote_Discount_Approval_Request</stringValue>
+                </value>
+            </inputParameters>
+            <label>Notify Manager - Four Plus Rejections Warning</label>
             <requiresAsyncProcessing>false</requiresAsyncProcessing>
             <runAsUser>false</runAsUser>
             <shouldLock>false</shouldLock>
@@ -466,6 +662,42 @@
                 </value>
             </inputParameters>
             <label>Set Rejected (Manager)</label>
+            <requiresAsyncProcessing>false</requiresAsyncProcessing>
+            <runAsUser>false</runAsUser>
+            <shouldLock>false</shouldLock>
+            <stepSubtype>BackgroundStep</stepSubtype>
+        </stageSteps>
+        <stageSteps>
+            <name>Revert_Discount_Manager_Rejection</name>
+            <actionName>RES_Autolaunched_Revert_Quote_Discount_On_Rejection</actionName>
+            <actionType>stepBackground</actionType>
+            <canAssigneeEdit>false</canAssigneeEdit>
+            <debugSimulateStep>false</debugSimulateStep>
+            <entryConditionLogic>and</entryConditionLogic>
+            <entryConditions>
+                <conditionType>EntryCondition</conditionType>
+                <leftValueReference>Get_Manager_Decision.Outputs.status</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Rejected</stringValue>
+                </rightValue>
+            </entryConditions>
+            <entryConditions>
+                <conditionType>EntryCondition</conditionType>
+                <leftValueReference>Set_Rejected_Manager.Status</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Completed</stringValue>
+                </rightValue>
+            </entryConditions>
+            <exitConditionLogic>and</exitConditionLogic>
+            <inputParameters>
+                <name>recordId</name>
+                <value>
+                    <elementReference>$Record.Id</elementReference>
+                </value>
+            </inputParameters>
+            <label>Revert Discount (Manager Rejection)</label>
             <requiresAsyncProcessing>false</requiresAsyncProcessing>
             <runAsUser>false</runAsUser>
             <shouldLock>false</shouldLock>
@@ -915,6 +1147,42 @@
             <stepSubtype>BackgroundStep</stepSubtype>
         </stageSteps>
         <stageSteps>
+            <name>Revert_Discount_Finance_Rejection</name>
+            <actionName>RES_Autolaunched_Revert_Quote_Discount_On_Rejection</actionName>
+            <actionType>stepBackground</actionType>
+            <canAssigneeEdit>false</canAssigneeEdit>
+            <debugSimulateStep>false</debugSimulateStep>
+            <entryConditionLogic>and</entryConditionLogic>
+            <entryConditions>
+                <conditionType>EntryCondition</conditionType>
+                <leftValueReference>Get_Finance_Decision.Outputs.status</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Rejected</stringValue>
+                </rightValue>
+            </entryConditions>
+            <entryConditions>
+                <conditionType>EntryCondition</conditionType>
+                <leftValueReference>Set_Rejected_Finance.Status</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Completed</stringValue>
+                </rightValue>
+            </entryConditions>
+            <exitConditionLogic>and</exitConditionLogic>
+            <inputParameters>
+                <name>recordId</name>
+                <value>
+                    <elementReference>$Record.Id</elementReference>
+                </value>
+            </inputParameters>
+            <label>Revert Discount (Finance Rejection)</label>
+            <requiresAsyncProcessing>false</requiresAsyncProcessing>
+            <runAsUser>false</runAsUser>
+            <shouldLock>false</shouldLock>
+            <stepSubtype>BackgroundStep</stepSubtype>
+        </stageSteps>
+        <stageSteps>
             <name>Notify_Reject_Finance</name>
             <actionName>RES_Autolaunched_Send_Quote_Approval_Notification</actionName>
             <actionType>stepBackground</actionType>
@@ -1044,7 +1312,7 @@
         <connector>
             <targetReference>Initiate_Approval</targetReference>
         </connector>
-        <filterFormula>AND(ISPICKVAL({!$Record.Status}, &quot;Negotiating&quot;), {!$Record.Discount} &gt; 0, NOT({!$Record.RES_System_Status_Update__c}), NOT(PRIORVALUE({!$Record.RES_Discount_Submission_Lock__c})), OR(ISCHANGED({!$Record.Discount}), ISCHANGED({!$Record.Status})))</filterFormula>
+        <filterFormula>AND(ISPICKVAL({!$Record.Status}, &quot;Negotiating&quot;), {!$Record.Discount} &gt; 0, NOT({!$Record.RES_System_Status_Update__c}), NOT(PRIORVALUE({!$Record.RES_Discount_Submission_Lock__c})), {!$Record.RES_Discount_Submission_Requested__c}, ISCHANGED({!$Record.RES_Discount_Submission_Requested__c}))</filterFormula>
         <object>Quote</object>
         <recordTriggerType>Update</recordTriggerType>
         <scheduledPaths>
@@ -1056,4 +1324,16 @@
         <triggerType>RecordAfterSave</triggerType>
     </start>
     <status>Active</status>
+    <textTemplates>
+        <name>Four_Plus_Rejections_Approval_Alert</name>
+        <isViewedAsPlainText>true</isViewedAsPlainText>
+        <text>🔺❗ 3+ rejected discount attempts. Management review recommended.
+{!fApproverBody}</text>
+    </textTemplates>
+    <textTemplates>
+        <name>Third_Rejection_Approval_Alert</name>
+        <isViewedAsPlainText>true</isViewedAsPlainText>
+        <text>⚠️ 3 rejected discount attempts. Management review recommended.
+{!fApproverBody}</text>
+    </textTemplates>
 </Flow>

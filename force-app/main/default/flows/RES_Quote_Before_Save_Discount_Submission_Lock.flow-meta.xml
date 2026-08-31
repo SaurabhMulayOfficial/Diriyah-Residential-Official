@@ -15,7 +15,7 @@
             </value>
         </assignmentItems>
     </assignments>
-    <description>DIR-869: Sets the Discount Submission Lock synchronously (before-save) the instant a discount submission qualifies, so RES_Quote_Discount_DOA_Approval_Flow's entry criteria (which checks PRIORVALUE of this field) can tell a genuinely new submission apart from Revenue Cloud's rapid repricing follow-up save, preventing duplicate orchestration launches that race for the record lock (UNABLE_TO_LOCK_RECORD).</description>
+    <description>DIR-869: Sets the Discount Submission Lock synchronously (before-save) the instant a "Submit for Discount Approval" click qualifies (RES_Discount_Submission_Requested__c flips to true), so RES_Quote_Discount_DOA_Approval_Flow's entry criteria (which checks PRIORVALUE of this field) can tell a genuinely new submission apart from Revenue Cloud's rapid repricing follow-up save, preventing duplicate orchestration launches that race for the record lock (UNABLE_TO_LOCK_RECORD). Deliberately keyed off the submission-requested flag, not raw Discount/Status changes, since applying a discount on the line item no longer auto-submits - it only moves the Quote to Negotiating and waits for the explicit button click.</description>
     <environments>Default</environments>
     <interviewLabel>RES Quote Before Save Discount Submission Lock {!$Flow.CurrentDateTime}</interviewLabel>
     <label>RES Quote Before Save Discount Submission Lock</label>
@@ -31,7 +31,8 @@
     {!$Record.Discount} &gt; 0,
     NOT({!$Record.RES_System_Status_Update__c}),
     NOT({!$Record.RES_Discount_Submission_Lock__c}),
-    OR(ISCHANGED({!$Record.Discount}), ISCHANGED({!$Record.Status}))
+    {!$Record.RES_Discount_Submission_Requested__c},
+    ISCHANGED({!$Record.RES_Discount_Submission_Requested__c})
 )</filterFormula>
         <object>Quote</object>
         <recordTriggerType>Update</recordTriggerType>

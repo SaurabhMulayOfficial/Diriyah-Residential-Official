@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>RES_Discount_Submission_Comment__c</fullName>
+    <description>DIR-869: Justification comment captured from the RM/Specialist on the &quot;Submit for Discount Approval&quot; screen flow. Read by the DOA orchestration and written onto the newly-created Approval Work Item&apos;s RES_Approval_Request_Remarks__c so the approver sees it; that field is later overwritten with the approver&apos;s own decision comment, with the original submission comment preserved via field history.</description>
+    <label>Discount Submission Comment</label>
+    <length>32768</length>
+    <trackHistory>true</trackHistory>
+    <type>LongTextArea</type>
+    <visibleLines>4</visibleLines>
+</CustomField>

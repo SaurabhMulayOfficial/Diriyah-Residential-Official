@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>RES_Pricing_Stale__c</fullName>
+    <defaultValue>false</defaultValue>
+    <description>DIR-869: System flag - true when this Quote&apos;s displayed totals (NetUnitPrice/TotalPrice/NetTotalPrice) may no longer match its current discount state and a Reprice All is needed. Set true only by RES_Autolaunched_Revert_Quote_Discount_On_Rejection when a rejected discount is reverted. Cleared (false) by RES_Quote_Before_Save_Clear_Pricing_Stale_Flag when the Quote is actually repriced (LastPricedDate changes), and by RES_Quote_Line_Item_After_Update_Sync_Header_Discount when a new discount is entered on the root line item. Drives the pricing-stale warning banner on the Quote page (visibility rule on this field) - not used in any validation/blocking logic.</description>
+    <label>Pricing Stale</label>
+    <trackHistory>false</trackHistory>
+    <type>Checkbox</type>
+</CustomField>

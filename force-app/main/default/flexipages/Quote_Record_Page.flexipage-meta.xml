@@ -25,34 +25,19 @@
                             <value>CreateOrder</value>
                         </valueListItems>
                         <valueListItems>
-                            <value>Quote.RES_Request_Soft_Hold_Extension</value>
-                            <visibilityRule>
-                                <booleanFilter>1 AND 2 AND 3</booleanFilter>
-                                <criteria>
-                                    <leftValue>{!Record.Status}</leftValue>
-                                    <operator>NE</operator>
-                                    <rightValue>Cancelled</rightValue>
-                                </criteria>
-                                <criteria>
-                                    <leftValue>{!Record.Status}</leftValue>
-                                    <operator>NE</operator>
-                                    <rightValue>Expired</rightValue>
-                                </criteria>
-                                <criteria>
-                                    <leftValue>{!Record.Status}</leftValue>
-                                    <operator>NE</operator>
-                                    <rightValue>Rejected</rightValue>
-                                </criteria>
-                            </visibilityRule>
+                            <value>CreateContract</value>
                         </valueListItems>
                         <valueListItems>
-                            <value>Quote.RES_Cancel_Quote</value>
+                            <value>Quote.RES_Request_Soft_Hold_Extension</value>
+                        </valueListItems>
+                        <valueListItems>
+                            <value>Quote.RES_Submit_For_Discount_Approval</value>
                             <visibilityRule>
                                 <booleanFilter>1 AND (2 OR 3)</booleanFilter>
                                 <criteria>
                                     <leftValue>{!Record.Status}</leftValue>
-                                    <operator>NE</operator>
-                                    <rightValue>Cancelled</rightValue>
+                                    <operator>EQUAL</operator>
+                                    <rightValue>Negotiating</rightValue>
                                 </criteria>
                                 <criteria>
                                     <leftValue>{!$Permission.CustomPermission.RES_Cancel_Quote_Permission}</leftValue>
@@ -115,6 +100,31 @@
                 <visibilityRule>
                     <criteria>
                         <leftValue>{!Record.RES_Product_Soft_Held__c}</leftValue>
+                        <operator>EQUAL</operator>
+                        <rightValue>true</rightValue>
+                    </criteria>
+                </visibilityRule>
+            </componentInstance>
+        </itemInstances>
+        <itemInstances>
+            <componentInstance>
+                <componentInstanceProperties>
+                    <name>body</name>
+                    <value>{!$Label.RES_PricingStaleBannerMessage}</value>
+                </componentInstanceProperties>
+                <componentInstanceProperties>
+                    <name>header</name>
+                    <value>{!$Label.RES_PricingStaleBannerTitle}</value>
+                </componentInstanceProperties>
+                <componentInstanceProperties>
+                    <name>variant</name>
+                    <value>warning</value>
+                </componentInstanceProperties>
+                <componentName>productSoftHoldBanner</componentName>
+                <identifier>c_pricingStaleBanner</identifier>
+                <visibilityRule>
+                    <criteria>
+                        <leftValue>{!Record.RES_Pricing_Stale__c}</leftValue>
                         <operator>EQUAL</operator>
                         <rightValue>true</rightValue>
                     </criteria>
@@ -191,9 +201,8 @@
                 <identifier>RecordRES_Cancellation_Reason_cField</identifier>
                 <visibilityRule>
                     <criteria>
-                        <leftValue>{!Record.Status}</leftValue>
-                        <operator>EQUAL</operator>
-                        <rightValue>Cancelled</rightValue>
+                        <leftValue>{!Record.QuoteNumber}</leftValue>
+                        <operator>NE</operator>
                     </criteria>
                 </visibilityRule>
             </fieldInstance>
@@ -316,6 +325,13 @@
                 </fieldInstanceProperties>
                 <fieldItem>Record.OwnerId</fieldItem>
                 <identifier>RecordOwnerIdField</identifier>
+                <visibilityRule>
+                    <criteria>
+                        <leftValue>{!$User.Profile.Name}</leftValue>
+                        <operator>EQUAL</operator>
+                        <rightValue>System Administrator</rightValue>
+                    </criteria>
+                </visibilityRule>
             </fieldInstance>
         </itemInstances>
         <name>Facet-bef25890-bde0-41e3-8a4d-40550ea23bfd</name>
@@ -614,44 +630,6 @@
         </itemInstances>
         <itemInstances>
             <componentInstance>
-                <componentInstanceProperties>
-                    <name>displayFields</name>
-                    <valueList>
-                        <valueListItems>
-                            <value>QuoteLineItem.Product2.Name[Product2]</value>
-                        </valueListItems>
-                        <valueListItems>
-                            <value>QuoteLineItem.UnitPrice</value>
-                        </valueListItems>
-                        <valueListItems>
-                            <value>QuoteLineItem.Quantity</value>
-                        </valueListItems>
-                        <valueListItems>
-                            <value>QuoteLineItem.Subtotal</value>
-                        </valueListItems>
-                        <valueListItems>
-                            <value>QuoteLineItem.DiscountAmount</value>
-                        </valueListItems>
-                        <valueListItems>
-                            <value>QuoteLineItem.Discount</value>
-                        </valueListItems>
-                        <valueListItems>
-                            <value>QuoteLineItem.TotalPrice</value>
-                        </valueListItems>
-                        <valueListItems>
-                            <value>QuoteLineItem.ListPrice</value>
-                        </valueListItems>
-                        <valueListItems>
-                            <value>QuoteLineItem.NetUnitPrice</value>
-                        </valueListItems>
-                        <valueListItems>
-                            <value>QuoteLineItem.NetTotalPrice</value>
-                        </valueListItems>
-                        <valueListItems>
-                            <value>QuoteLineItem.SubscriptionTerm</value>
-                        </valueListItems>
-                    </valueList>
-                </componentInstanceProperties>
                 <componentInstanceProperties>
                     <name>enableQuickAdd</name>
                     <value>true</value>

@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Package xmlns="http://soap.sforce.com/2006/04/metadata">
+    <!--
+        DIR-869 cleanup: this specific field/flow's SOURCE removal was already committed
+        to this branch and confirmed deleted from the Dev sandbox. Included here only so
+        any other org that independently has these gets cleaned up too.
+    -->
+    <types>
+        <members>ApprovalWorkItem.RES_Discount_Approval_Comments__c</members>
+        <name>CustomField</name>
+    </types>
+    <types>
+        <members>RES_Approval_Work_Item_After_Create_Seed_Discount_Comments</members>
+        <members>RES_Quote_After_Save_Sync_Applied_Discount</members>
+        <members>RES_Quote_After_Save_Sync_Line_Item_And_Reprice</members>
+        <name>Flow</name>
+    </types>
+
+    <!--
+        DAL (Discount Audit Log) cleanup: this feature's SOURCE removal was committed to
+        develop across several "DAL Destructive changes" commits (f46e568, 111d96d, ddf256f,
+        336c1c9 / PR #562), but none of those commits included an actual destructiveChanges
+        manifest - so no org ever had this metadata actually deleted from it. QA still has
+        the full orphaned set, and RES_QuoteDiscountApprovalService (which references the
+        now-source-deleted RES_DiscountAuditLogDAO) is currently breaking QA's org-wide Apex
+        compile ("Invalid type: RES_DiscountAuditLogDAO"), cascading into 31 unrelated test
+        failures on PR 578. This needs to be run as an actual destructive deploy against QA
+        (and any other org - UAT/Preprod/Prod - that still has this orphaned set).
+    -->
+    <types>
+        <members>RES_DiscountAuditLogDAO</members>
+        <members>RES_DiscountAuditLogDAOTest</members>
+        <members>RES_DiscountAuditLogSecurityHandler</members>
+        <members>RES_DiscountAuditLogSecurityHandlerTest</members>
+        <members>RES_QuoteDiscountApprovalService</members>
+        <members>RES_QuoteDiscountRejectionCounterTest</members>
+        <name>ApexClass</name>
+    </types>
+    <types>
+        <members>RES_DiscountAuditLogPreventDelete</members>
+        <name>ApexTrigger</name>
+    </types>
+    <types>
+        <members>Discount_Audit_Log_Record_Page</members>
+        <name>FlexiPage</name>
+    </types>
+    <types>
+        <members>RES_Autolaunched_Create_Discount_Audit_Log</members>
+        <members>RES_Autolaunched_Get_Quote_Discount_Rejection_Count</members>
+        <name>Flow</name>
+    </types>
+    <types>
+        <members>RES_Discount_Audit_Log__c-Discount Audit Log Layout</members>
+        <name>Layout</name>
+    </types>
+    <!--
+        Deleting the CustomObject removes its child fields/layouts/validationRules/listViews
+        automatically - they're listed explicitly below only for a complete, auditable record
+        matching exactly what the original (never-executed) commits intended to remove.
+    -->
+    <types>
+        <members>RES_Discount_Audit_Log__c</members>
+        <name>CustomObject</name>
+    </types>
+    <types>
+        <members>RES_Discount_Audit_Log__c.RES_Approver__c</members>
+        <members>RES_Discount_Audit_Log__c.RES_Correction_Justification__c</members>
+        <members>RES_Discount_Audit_Log__c.RES_Discount_Requested__c</members>
+        <members>RES_Discount_Audit_Log__c.RES_Entry_Type__c</members>
+        <members>RES_Discount_Audit_Log__c.RES_Outcome_Date__c</members>
+        <members>RES_Discount_Audit_Log__c.RES_Outcome__c</members>
+        <members>RES_Discount_Audit_Log__c.RES_Quote__c</members>
+        <members>RES_Discount_Audit_Log__c.RES_Reason__c</members>
+        <members>RES_Discount_Audit_Log__c.RES_Submission_Date__c</members>
+        <members>RES_Discount_Audit_Log__c.RES_Submitted_By__c</members>
+        <name>CustomField</name>
+    </types>
+    <types>
+        <members>RES_Discount_Audit_Log__c.RES_Discount_Audit_Log_Compact_Layout</members>
+        <name>CompactLayout</name>
+    </types>
+    <types>
+        <members>RES_Discount_Audit_Log__c.All</members>
+        <name>ListView</name>
+    </types>
+    <types>
+        <members>RES_Discount_Audit_Log__c.RES_Discount_Audit_Log_Immutable</members>
+        <members>RES_Discount_Audit_Log__c.RES_Entry_Type_Locked</members>
+        <name>ValidationRule</name>
+    </types>
+</Package>

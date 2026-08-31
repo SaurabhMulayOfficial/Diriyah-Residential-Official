@@ -432,6 +432,22 @@ Please go back and select at least one lead with status = “Qualified” to pro
         <value>RES_Residential_Sales</value>
     </labels>
     <labels>
+        <fullName>RES_PricingStaleBannerTitle</fullName>
+        <categories>Discount Approval</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>PricingStaleBannerTitle</shortDescription>
+        <value>⚠️ Price Out of Date</value>
+    </labels>
+    <labels>
+        <fullName>RES_PricingStaleBannerMessage</fullName>
+        <categories>Discount Approval</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>PricingStaleBannerMessage</shortDescription>
+        <value>This quote&apos;s discount was rejected and reverted - the totals shown still reflect with the old discount. Click Reprice All/Update Discount in Quote Line Item to update the totals.</value>
+    </labels>
+    <labels>
         <fullName>RES_ProductSoftHoldMessage</fullName>
         <categories>Product Soft Hold</categories>
         <language>en_US</language>
