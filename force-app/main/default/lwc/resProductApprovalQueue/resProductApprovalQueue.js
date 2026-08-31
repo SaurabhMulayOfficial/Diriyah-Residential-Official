@@ -4,6 +4,7 @@ import getApprovalQueue from '@salesforce/apex/RES_ProductApprovalController.get
 import approveProducts from '@salesforce/apex/RES_ProductApprovalController.approveProducts';
 import rejectProducts from '@salesforce/apex/RES_ProductApprovalController.rejectProducts';
 import getRejectedProducts from '@salesforce/apex/RES_ProductApprovalController.getRejectedProducts';
+import submitForApproval from '@salesforce/apex/RES_ProductApprovalController.submitForApproval';
 import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 
 const PAGE_SIZE = 50;
@@ -79,21 +80,7 @@ const BASE_COLUMNS = [
     }
 ];
 
-const ACTION_COLUMN = {
-    type: 'action',
-    typeAttributes: {
-        rowActions: [
-            {
-                label: 'Approve',
-                name: 'approve'
-            },
-            {
-                label: 'Reject',
-                name: 'reject'
-            }
-        ]
-    }
-};
+// ACTION_COLUMN removed - using bulk selection actions instead of row-level dropdowns
 
 const REJECTION_COMMENT_COLUMN = {
     label: 'Rejected Comment',
@@ -102,7 +89,8 @@ const REJECTION_COMMENT_COLUMN = {
     wrapText: true
 };
 
-const COLUMNS = [...BASE_COLUMNS, ACTION_COLUMN];
+// Removed ACTION_COLUMN - using bulk selection actions only
+const COLUMNS = [...BASE_COLUMNS];
 const REJECTED_COLUMNS = [...BASE_COLUMNS, REJECTION_COMMENT_COLUMN];
 
 export default class ResProductApprovalQueue extends LightningElement {
@@ -133,6 +121,7 @@ export default class ResProductApprovalQueue extends LightningElement {
     showApprovalModal = false;
     showRejectModal = false;
     showResultModal = false;
+    showSubmitForApprovalModal = false;
     rejectionComment = '';
     resultSuccessCount = 0;
     resultFailureCount = 0;
@@ -166,26 +155,22 @@ export default class ResProductApprovalQueue extends LightningElement {
         }
 
         /*
-         * Default to first approval queue
-         * when available.
+         * IMPORTANT: Default to Draft & Rejected tab FIRST
+         * when available (Operations user priority).
+         * Otherwise, default to first approval queue.
          */
-        if (this.availableQueues.length) {
+        if (this.canViewRejected) {
+            this.activateRejectedTab();
+        } else if (this.availableQueues.length) {
             this.setActiveQueue(this.availableQueues[0]);
             await this.loadQueue(true);
-        } else {
-            /*
-             * Operations user may have
-             * Rejected tab access even if
-             * no approval queue is available.
-             */
-            this.activateRejectedTab();
-            }
-        } catch (error) {
-            this.handleError(error);
-        } finally {
-            this.isLoading = false;
         }
+    } catch (error) {
+        this.handleError(error);
+    } finally {
+        this.isLoading = false;
     }
+}
 
         setActiveQueue(queue) {
         this.activeQueueLevel = Number(queue.level);
@@ -312,8 +297,8 @@ export default class ResProductApprovalQueue extends LightningElement {
     activateRejectedTab() {
         this.isRejectedTab = true;
         this.activeQueueLevel = null;
-        this.activeQueueLabel ='Rejected Products';
-        this.activeQueueStatus ='Rejected';
+        this.activeQueueLabel = 'Draft & Rejected Units';
+        this.activeQueueStatus = 'Draft / Rejected';
         this.searchTerm = '';
         this.resetPagination();
         this.clearSelection();
@@ -728,6 +713,72 @@ export default class ResProductApprovalQueue extends LightningElement {
     }
 
     // ============================================================
+    // SUBMIT FOR APPROVAL (Operations -> DevCo)
+    // ============================================================
+
+    handleBulkSubmitForApproval() {
+        if (!this.hasSelection) {
+            return;
+        }
+        this.openSubmitForApprovalModal();
+    }
+
+    openSubmitForApprovalModal() {
+        this.showSubmitForApprovalModal = true;
+    }
+
+    closeSubmitForApprovalModal() {
+        if (!this.isProcessing) {
+            this.showSubmitForApprovalModal = false;
+        }
+    }
+
+    async confirmSubmitForApproval() {
+        if (!this.hasSelection) {
+            return;
+        }
+
+        this.isProcessing = true;
+        let retryCount = 0;
+
+        while (retryCount <= MAX_RETRIES) {
+            try {
+                const response = await submitForApproval({
+                    productIds: this.selectedProductIds
+                });
+
+                this.showResult(response);
+                this.showSubmitForApprovalModal = false;
+                this.clearSelection();
+                await this.loadQueue(true);
+                return; // Success!
+
+            } catch (error) {
+                // Check if this is a timeout error that can be retried
+                if (this.isTimeoutError(error) && retryCount < MAX_RETRIES) {
+                    retryCount++;
+                    this.showToast(
+                        'Retrying',
+                        `Request timed out. Retry ${retryCount}/${MAX_RETRIES}...`,
+                        'info'
+                    );
+                    await this.delay(RETRY_DELAY);
+                } else {
+                    // Not a timeout or max retries reached
+                    this.handleError(error);
+                    break;
+                }
+            } finally {
+                if (retryCount > MAX_RETRIES || retryCount === 0) {
+                    this.isProcessing = false;
+                }
+            }
+        }
+
+        this.isProcessing = false;
+    }
+
+    // ============================================================
     // PAGINATION
     // ============================================================
     handleLoadMore() {
@@ -845,12 +896,17 @@ export default class ResProductApprovalQueue extends LightningElement {
 
     isSessionExpired(error) {
         const msg = error?.body?.message || error?.message || '';
-        return msg.includes('INVALID_SESSION_ID') ||msg.includes('Session expired') || msg.includes('Session has expired') || error?.status === 401;
+        return msg.includes('INVALID_SESSION_ID') ||
+               msg.includes('Session expired') ||
+               msg.includes('Session has expired') ||
+               error?.status === 401;
     }
 
     isTimeoutError(error) {
         const msg = error?.body?.message || error?.message || '';
-        return msg.toLowerCase().includes('timeout') || msg.toLowerCase().includes('timed out') || error?.status === 408;
+        return msg.toLowerCase().includes('timeout') ||
+               msg.toLowerCase().includes('timed out') ||
+               error?.status === 408;
     }
 
     delay(ms) {
@@ -876,15 +932,7 @@ export default class ResProductApprovalQueue extends LightningElement {
     get approvalStageMessage() {
         const count = this.selectedCount;
         const unitText = count === 1 ? 'Unit' : 'Units';
-        // Final approval stage - CSO
-        if (this.activeQueueLabel === 'CSO') {
-            return count === 1
-                ? 'The Unit has been approved by CSO and is now Available.'
-                : 'The Units have been approved by CSO and are now Available.';
-        }
-
-        // DevCo / Finance approval stages
-        return `The selected ${unitText.toLowerCase()} will be moved to the next approval stage.`;
+            return `The selected ${unitText.toLowerCase()} will be moved to the next approval stage.`;
     }
 
     get approvalConfirmationMessage() {
@@ -894,13 +942,13 @@ export default class ResProductApprovalQueue extends LightningElement {
     }
     get emptyStateTitle() {
         return this.isRejectedTab
-            ? 'No Rejected Products'
+            ? 'No Draft or Rejected Units'
             : 'No Products Pending Approval';
         }
 
     get emptyStateMessage() {
         return this.isRejectedTab
-            ? 'There are currently no rejected Products.'
+            ? 'There are currently no Draft or Rejected Units.'
             : 'There are currently no Products waiting for approval in this queue.';
         }
 
@@ -981,6 +1029,18 @@ export default class ResProductApprovalQueue extends LightningElement {
         return queue?.canReject === true;
     }
 
+    get hasAnyActions() {
+        return this.canApprove || this.canReject;
+    }
+
+    /**
+     * Hide checkboxes when user has no actions available.
+     * Show checkboxes only when user can approve, reject, or submit for approval.
+     */
+    get hideCheckboxColumn() {
+        return !this.canApprove && !this.canReject && !this.canSubmitForApproval;
+    }
+
     get disableClearButton() {
         return !this.searchTerm;
     }
@@ -1007,5 +1067,22 @@ export default class ResProductApprovalQueue extends LightningElement {
         return (
             this.failedResults.length > 0
         );
+    }
+
+    get canSubmitForApproval() {
+        return (
+            this.isRejectedTab &&
+            this.canViewRejected
+        );
+    }
+
+    get submitForApprovalConfirmationMessage() {
+        const count = this.selectedCount;
+        const unitText = count === 1 ? 'Unit' : 'Units';
+        return `Are you sure you want to submit ${count} ${unitText} for approval?`;
+    }
+
+    get submitForApprovalNote() {
+        return 'The selected units will be moved to "Pending DevCo Approval" and the DevCo team will be notified.';
     }
 }

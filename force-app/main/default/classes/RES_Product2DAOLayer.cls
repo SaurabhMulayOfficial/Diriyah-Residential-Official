@@ -139,7 +139,8 @@ public without sharing class RES_Product2DAOLayer extends RES_BaseDAOLayer {
     /**
  * Retrieves rejected Products for the Operations rejected queue.
  *
- * Returns only inactive Products with Rejected status.
+ * Returns only inactive Products with Rejected OR Draft status.
+ * Supports comma-separated status values (e.g., "Draft,Rejected").
  *
  * Uses keyset pagination:
  * CreatedDate + Id
@@ -150,7 +151,17 @@ public List<Product2> getRejectedProducts(String status,String searchTerm,Intege
     }
     Integer safePageSize = normalizePageSize(pageSize);
     Map<String, Object> bindVars = new Map<String, Object>();
-    bindVars.put('status', status);
+
+    // Support multiple statuses separated by comma (e.g., "Draft,Rejected")
+    List<String> statuses = status.split(',');
+    List<String> trimmedStatuses = new List<String>();
+    for (String s : statuses) {
+        if (!String.isBlank(s)) {
+            trimmedStatuses.add(s.trim());
+        }
+    }
+    bindVars.put('statuses', trimmedStatuses);
+
     String soql =
                 'SELECT ' +
                 'Id, ' +
@@ -168,9 +179,10 @@ public List<Product2> getRejectedProducts(String status,String searchTerm,Intege
                 'RES_Business_Entity__c, ' +
                 'RES_Unit_Handover_Date__c, ' +
                 'RES_Unit_Virtual_IBAN__c, ' +
-                'RES_Rejection_Comment__c ' +
+                'RES_Rejection_Comment__c, ' +
+                'Family ' +
                 'FROM Product2 ' +
-                'WHERE RES_Unit_Status__c = :status ' +
+                'WHERE RES_Unit_Status__c IN :statuses ' +
                 'AND IsActive = false ';
     if (!String.isBlank(searchTerm)) {
         String searchPattern = '%' + searchTerm.trim() + '%';

@@ -108,7 +108,8 @@ public with sharing class RES_ProductApprovalAuthorization {
      *
      * Rules:
      *      1. System Administrator can view all queues.
-     *      2. Other users can view only the queue for which
+     *      2. Operations users (RES_Product_Operation_Visibility) can view all queues.
+     *      3. Other users can view only the queue for which
      *         they have the configured Custom Permission.
      *
      * @param config Approval configuration.
@@ -126,12 +127,18 @@ public with sharing class RES_ProductApprovalAuthorization {
             return true;
         }
         /*
-        * Non-admin users can view only the
+        * Operations users can view all queues (read-only for approval tabs).
+        */
+        if (hasCustomPermission('RES_Product_Operation_Visibility')) {
+            return true;
+        }
+        /*
+        * Other users can view only the
         * approval queue for which they have
         * the configured Custom Permission.
         */
-    return canActOnConfig(config);
-}
+        return canActOnConfig(config);
+    }
 
     /**
      * Determines whether current user can approve.
@@ -196,6 +203,30 @@ public with sharing class RES_ProductApprovalAuthorization {
      *         'RES_Product_Operation_Visibility' Custom Permission.
      */
     public static Boolean canResubmit() {
+        /*
+        * System Administrator has full approval
+        * administration access.
+        */
+        if (isSystemAdministrator()) {
+            return true;
+        }
+        return hasCustomPermission(
+            'RES_Product_Operation_Visibility'
+        );
+    }
+
+    /**
+     * Determines whether current user can submit Draft or Rejected products
+     * for approval (moving them to "Pending DevCo Approval").
+     *
+     * System Administrator has full access.
+     * Other users require Operations Custom Permission
+     * ('RES_Product_Operation_Visibility').
+     *
+     * @return true if current user is a System Administrator or holds the
+     *         'RES_Product_Operation_Visibility' Custom Permission.
+     */
+    public static Boolean canSubmitForApproval() {
         /*
         * System Administrator has full approval
         * administration access.

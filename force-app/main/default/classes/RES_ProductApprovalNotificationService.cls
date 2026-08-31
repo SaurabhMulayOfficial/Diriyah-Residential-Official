@@ -48,9 +48,9 @@ public without sharing class RES_ProductApprovalNotificationService {
     // CONFIGURATION
     // =========================================================================
 
-    private static final String NEXT_TEAM_TEMPLATE = 'Product_Approval_Next_Team';
-    private static final String REJECTION_TEMPLATE = 'Product_Approval_Rejection';
-    private static final String FINAL_APPROVAL_TEMPLATE = 'Product_Approval_Final';
+    private static final String APPROVAL_TEMPLATE = 'Product_Approval_Notification';
+    private static final String FINAL_APPROVAL_TEMPLATE = 'Product_Final_Approval_Notification';
+    private static final String REJECTION_TEMPLATE = 'Product_Rejection_Notification';
 
     private static final String DEVCO_GROUP = System.Label.RES_Product_Approval_DevCo_Group;
     private static final String FINANCE_GROUP = System.Label.RES_Product_Approval_Finance_Group;
@@ -91,9 +91,11 @@ public without sharing class RES_ProductApprovalNotificationService {
      * Sends notification to the next approval team.
      *
      * Template merge fields:
-     * {0} = Next Team
-     * {1} = Approving Team
-     * {2} = Product Details
+     * {0} = Recipient Team Name
+     * {1} = Sender Team Name
+     * {2} = Action Verb (e.g., "submitted", "forwarded")
+     * {3} = Unit Count
+     * {4} = Full URL to Product Approval Queue
      */
     public static void notifyNextApprovalTeam(
         List<Product2> products,
@@ -110,18 +112,21 @@ public without sharing class RES_ProductApprovalNotificationService {
             return;
         }
 
-        RES_Apex_Email_Template__mdt template = getEmailTemplate(NEXT_TEAM_TEMPLATE);
+        RES_Apex_Email_Template__mdt template = getEmailTemplate(APPROVAL_TEMPLATE);
         if (template == null) {
             return;
         }
 
-        String productDetails = buildProductDetails(products);
+        String unitCount = String.valueOf(products.size());
+        String approvalQueueUrl = getApprovalQueueUrl();
 
-        List<String> mergeFieldsForSubject = new List<String>{ nextTeamLabel, currentTeamLabel, productDetails };
+        List<String> mergeFieldsForSubject = new List<String>{ unitCount };
         List<String> mergeFieldsForBody = new List<String>{
             escapeHtml(safeValue(nextTeamLabel)),
             escapeHtml(safeValue(currentTeamLabel)),
-            productDetails
+            'forwarded',
+            unitCount,
+            approvalQueueUrl
         };
 
         sendEmailsWithMergeFields(recipientEmails, template.Subject__c, template.Html_Body__c, mergeFieldsForSubject, mergeFieldsForBody);
@@ -133,10 +138,13 @@ public without sharing class RES_ProductApprovalNotificationService {
 
     /**
      * Sends notification to Operations after final approval.
+     * Uses special final approval template to celebrate completion.
      *
      * Template merge fields:
-     * {0} = Approving Team
-     * {1} = Product Details
+     * {0} = Recipient Team Name (Operations)
+     * {1} = Approving Team Name (CSO Team)
+     * {2} = Unit Count
+     * {3} = Full URL to Product Approval Queue
      */
     public static void notifyFinalApproval(List<Product2> products, String approvingTeamLabel) {
         if (products == null || products.isEmpty() || String.isBlank(OPERATIONS_GROUP)) {
@@ -153,10 +161,16 @@ public without sharing class RES_ProductApprovalNotificationService {
             return;
         }
 
-        String productDetails = buildProductDetails(products);
+        String unitCount = String.valueOf(products.size());
+        String approvalQueueUrl = getApprovalQueueUrl();
 
-        List<String> mergeFieldsForSubject = new List<String>{ approvingTeamLabel, productDetails };
-        List<String> mergeFieldsForBody = new List<String>{ escapeHtml(safeValue(approvingTeamLabel)), productDetails };
+        List<String> mergeFieldsForSubject = new List<String>{ unitCount };
+        List<String> mergeFieldsForBody = new List<String>{
+            'Operations Team',
+            escapeHtml(safeValue(approvingTeamLabel)),
+            unitCount,
+            approvalQueueUrl
+        };
 
         sendEmailsWithMergeFields(recipientEmails, template.Subject__c, template.Html_Body__c, mergeFieldsForSubject, mergeFieldsForBody);
     }
@@ -169,9 +183,11 @@ public without sharing class RES_ProductApprovalNotificationService {
      * Sends rejection notification to Operations.
      *
      * Template merge fields:
-     * {0} = Rejecting Team
-     * {1} = Product Details
-     * {2} = Rejection Reason
+     * {0} = Recipient Team Name (Operations)
+     * {1} = Rejecting Team Name
+     * {2} = Unit Count
+     * {3} = Rejection Reason
+     * {4} = Full URL to Product Approval Queue
      */
     public static void notifyProductRejection(List<Product2> products, String rejectingTeamLabel, String rejectionReason) {
         if (products == null || products.isEmpty() || String.isBlank(OPERATIONS_GROUP)) {
@@ -188,13 +204,16 @@ public without sharing class RES_ProductApprovalNotificationService {
             return;
         }
 
-        String productDetails = buildProductDetails(products);
+        String unitCount = String.valueOf(products.size());
+        String approvalQueueUrl = getApprovalQueueUrl();
 
-        List<String> mergeFieldsForSubject = new List<String>{ rejectingTeamLabel, productDetails, rejectionReason };
+        List<String> mergeFieldsForSubject = new List<String>{ unitCount };
         List<String> mergeFieldsForBody = new List<String>{
+            'Operations Team',
             escapeHtml(safeValue(rejectingTeamLabel)),
-            productDetails,
-            escapeHtml(safeValue(rejectionReason))
+            unitCount,
+            escapeHtml(safeValue(rejectionReason)),
+            approvalQueueUrl
         };
 
         sendEmailsWithMergeFields(recipientEmails, template.Subject__c, template.Html_Body__c, mergeFieldsForSubject, mergeFieldsForBody);
@@ -307,33 +326,16 @@ public without sharing class RES_ProductApprovalNotificationService {
     }
 
     // =========================================================================
-    // PRODUCT DETAILS
+    // APPROVAL QUEUE URL
     // =========================================================================
 
-    private static String buildProductDetails(List<Product2> products) {
-        if (products == null || products.isEmpty()) {
-            return '';
-        }
-
-        List<String> details = new List<String>();
-        for (Product2 productRecord : products) {
-            if (productRecord == null || productRecord.Id == null) {
-                continue;
-            }
-
-            String detail = '<strong>' + escapeHtml(productRecord.Name) + '</strong>';
-            if (!String.isBlank(productRecord.ProductCode)) {
-                detail += ' (' + escapeHtml(productRecord.ProductCode) + ')';
-            }
-
-            details.add('<li>' + detail + '</li>');
-        }
-
-        if (details.isEmpty()) {
-            return '';
-        }
-
-        return '<ul>' + String.join(details, '') + '</ul>';
+    /**
+     * Returns the full URL to the Product Approval Queue Lightning page.
+     * Uses the current Salesforce instance base URL.
+     */
+    private static String getApprovalQueueUrl() {
+        String baseUrl = URL.getOrgDomainUrl().toExternalForm();
+        return baseUrl + '/lightning/n/Product_Approval_Queue';
     }
 
     // =========================================================================

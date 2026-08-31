@@ -64,8 +64,9 @@ public without sharing class RES_ProductApprovalService {
      * Setup > Public Groups screenshots on 2026-08-22.
      */
     private static final Map<String, String> NEXT_STATUS_TO_NOTIFY_GROUP = new Map<String, String>{
+        'Pending DevCo Approval' => 'RES_DevCo_Team',
         'Pending Finance Approval' => 'RES_Finance_Team_Group',
-        'Pending CSO Approval' => 'RES_CSO'
+        'Pending CSO Approval' => 'RES_CSO_Team'
     };
 
     /**
@@ -267,9 +268,20 @@ public without sharing class RES_ProductApprovalService {
             }
 
             /*
-             * Only update the required field.
+             * Create Product update.
+             * Set IsActive = true when reaching final approval (Available status).
              */
-            Product2 updateProduct = new Product2(Id = product.Id, RES_Unit_Status__c = nextStatus, RES_Rejection_Comment__c = null);
+            Product2 updateProduct = new Product2(
+                Id = product.Id,
+                RES_Unit_Status__c = nextStatus,
+                RES_Rejection_Comment__c = null
+            );
+
+            // Set IsActive = true for final approval
+            if (RES_ProductApprovalStateService.isFinalApproval(config)) {
+                updateProduct.IsActive = true;
+            }
+
             recordsToUpdate.add(updateProduct);
             nextStatusByProductId.put(product.Id, nextStatus);
             currentStatusByProductId.put(product.Id, currentStatus);
@@ -503,6 +515,7 @@ public without sharing class RES_ProductApprovalService {
             Product2 updateProduct = new Product2(
                 Id = product.Id,
                 RES_Unit_Status__c = STATUS_DRAFT,
+                IsActive = true,
                 RES_Rejection_Comment__c = null
             );
             recordsToUpdate.add(updateProduct);
@@ -774,7 +787,9 @@ public without sharing class RES_ProductApprovalService {
             return result;
         }
 
-        List<Product2> products = productDAO.getRejectedProducts(STATUS_REJECTED, searchTerm, pageSize, lastCreatedDate, lastId);
+        // Query both Draft AND Rejected products for Operations team
+        String combinedStatuses = STATUS_DRAFT + ',' + STATUS_REJECTED;
+        List<Product2> products = productDAO.getRejectedProducts(combinedStatuses, searchTerm, pageSize, lastCreatedDate, lastId);
         result.products = products;
         Integer safePageSize = normalizePageSize(pageSize);
         result.hasMore = products.size() == safePageSize;
@@ -783,6 +798,129 @@ public without sharing class RES_ProductApprovalService {
             result.nextCreatedDate = lastProduct.CreatedDate;
             result.nextId = lastProduct.Id;
         }
+        return result;
+    }
+
+    // ============================================================
+    // SUBMIT FOR APPROVAL (Operations -> DevCo)
+    // ============================================================
+
+    /**
+     * Submits Draft or Rejected Products for approval by moving them to
+     * "Pending DevCo Approval" status. Restricted to Operations users
+     * (RES_Product_Operation_Visibility permission).
+     *
+     * This method:
+     * 1. Validates that the user has Operations permissions
+     * 2. Ensures products are in Draft or Rejected status
+     * 3. Moves products to "Pending DevCo Approval"
+     * 4. Clears rejection comments
+     * 5. Sends email notification to DevCo team
+     *
+     * @param productIds Ids of the Product2 records to submit for approval.
+     * @return BulkApprovalResult with per-record success/failure detail.
+     */
+    public static BulkApprovalResult submitForApproval(Set<Id> productIds) {
+        BulkApprovalResult result = new BulkApprovalResult();
+        if (productIds == null || productIds.isEmpty()) {
+            result.errorMessage = System.Label.RES_Product_No_Records_Selected;
+            return result;
+        }
+
+        if (!RES_ProductApprovalAuthorization.canSubmitForApproval()) {
+            result.errorMessage = System.Label.RES_Product_Unauthorized_Approval;
+            return result;
+        }
+
+        Set<Id> cleanIds = new Set<Id>(productIds);
+        cleanIds.remove(null);
+        if (cleanIds.isEmpty()) {
+            result.errorMessage = System.Label.RES_Product_No_Records_Selected;
+            return result;
+        }
+
+        List<Product2> products = productDAO.getProductsByIds(cleanIds);
+        List<Product2> recordsToUpdate = new List<Product2>();
+        Set<Id> foundIds = new Set<Id>();
+        Map<Id, Product2> productsById = new Map<Id, Product2>(products);
+
+        for (Product2 product : products) {
+            if (product == null || product.Id == null) {
+                continue;
+            }
+            foundIds.add(product.Id);
+
+            String currentStatus = product.RES_Unit_Status__c;
+
+            // Only Draft or Rejected products can be submitted
+            if (currentStatus != STATUS_DRAFT && currentStatus != STATUS_REJECTED) {
+                result.failedCount++;
+                result.items.add(createFailureResult(product.Id, 'Only Draft or Rejected products can be submitted for approval.'));
+                continue;
+            }
+
+            Product2 updateProduct = new Product2(
+                Id = product.Id,
+                RES_Unit_Status__c = 'Pending DevCo Approval',
+                RES_Rejection_Comment__c = null
+            );
+            recordsToUpdate.add(updateProduct);
+        }
+
+        // Handle products that weren't found
+        for (Id requestedId : cleanIds) {
+            if (!foundIds.contains(requestedId)) {
+                result.failedCount++;
+                result.items.add(createFailureResult(requestedId, System.Label.RES_Product_Already_Processed));
+            }
+        }
+
+        if (recordsToUpdate.isEmpty()) {
+            return result;
+        }
+
+        // Perform DML
+        Database.SaveResult[] saveResults = Database.update(recordsToUpdate, false, AccessLevel.SYSTEM_MODE);
+        List<Id> successfulProductIds = new List<Id>();
+
+        for (Integer index = 0; index < saveResults.size(); index++) {
+            Database.SaveResult saveResult = saveResults[index];
+            Product2 updateProduct = recordsToUpdate[index];
+            if (saveResult.isSuccess()) {
+                result.successCount++;
+                result.items.add(createSuccessResult(updateProduct.Id, 'Pending DevCo Approval'));
+                successfulProductIds.add(updateProduct.Id);
+            } else {
+                result.failedCount++;
+                result.items.add(createFailureResult(updateProduct.Id, buildDatabaseErrorMessage(saveResult)));
+            }
+        }
+
+        // Send email notification to DevCo team for successfully submitted products
+        try {
+            if (!successfulProductIds.isEmpty()) {
+                List<Product2> successfulProducts = new List<Product2>();
+                for (Id productId : successfulProductIds) {
+                    Product2 fullProduct = productsById.get(productId);
+                    if (fullProduct != null) {
+                        successfulProducts.add(fullProduct);
+                    }
+                }
+
+                String devCoGroupName = NEXT_STATUS_TO_NOTIFY_GROUP.get('Pending DevCo Approval');
+                if (!String.isBlank(devCoGroupName)) {
+                    RES_ProductApprovalNotificationService.notifyNextApprovalTeam(
+                        successfulProducts,
+                        'Operations Team',
+                        'DevCo Team',
+                        devCoGroupName
+                    );
+                }
+            }
+        } catch (Exception notifyEx) {
+            System.debug('RES_NOTIFY: submitForApproval - notification dispatch threw: ' + notifyEx.getMessage());
+        }
+
         return result;
     }
 

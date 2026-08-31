@@ -137,4 +137,20 @@ public with sharing class RES_ProductApprovalController {
             throw createAuraException(ex);
         }
     }
+
+    /**
+     * Submits Draft or Rejected Products for approval (Operations -> DevCo).
+     * Moves products from Draft/Rejected to "Pending DevCo Approval" and
+     * notifies the DevCo team.
+     */
+    @AuraEnabled
+    public static RES_ProductApprovalService.BulkApprovalResult submitForApproval(List<Id> productIds) {
+        try {
+            maybeThrowForTest();
+            Set<Id> ids = productIds == null ? new Set<Id>() : new Set<Id>(productIds);
+            return RES_ProductApprovalService.submitForApproval(ids);
+        } catch (Exception ex) {
+            throw createAuraException(ex);
+        }
+    }
 }
