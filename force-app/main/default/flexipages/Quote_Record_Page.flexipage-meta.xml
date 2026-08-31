@@ -33,7 +33,6 @@
                         <valueListItems>
                             <value>Quote.RES_Submit_For_Discount_Approval</value>
                             <visibilityRule>
-                                <booleanFilter>1 AND (2 OR 3)</booleanFilter>
                                 <criteria>
                                     <leftValue>{!Record.Status}</leftValue>
                                     <operator>EQUAL</operator>
