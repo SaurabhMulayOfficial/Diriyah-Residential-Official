@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>RES_Validate_Product_Primary_Image</fullName>
+    <active>true</active>
+    <errorConditionFormula>AND(
+    NOT($Setup.RES_Config_Switch__c.RES_Validation_Rules_Off__c),
+    RES_Want_this_as_product_Image__c = TRUE,
+    NOT(CONTAINS(&quot;jpg:jpeg:png&quot;, LOWER(RIGHT(PathOnClient, 3)))),
+    NOT(CONTAINS(&quot;jpeg&quot;, LOWER(RIGHT(PathOnClient, 4))))
+)</errorConditionFormula>
+    <errorDisplayField>RES_Want_this_as_product_Image__c</errorDisplayField>
+    <errorMessage>Only image files (.jpg, .jpeg, or .png) can be set as the Product Image</errorMessage>
+</ValidationRule>
