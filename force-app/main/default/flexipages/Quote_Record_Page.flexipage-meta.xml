@@ -33,10 +33,21 @@
                         <valueListItems>
                             <value>Quote.RES_Submit_For_Discount_Approval</value>
                             <visibilityRule>
+                                <booleanFilter>1 AND (2 OR 3)</booleanFilter>
                                 <criteria>
                                     <leftValue>{!Record.Status}</leftValue>
                                     <operator>EQUAL</operator>
                                     <rightValue>Negotiating</rightValue>
+                                </criteria>
+                                <criteria>
+                                    <leftValue>{!$Permission.CustomPermission.RES_Cancel_Quote_Permission}</leftValue>
+                                    <operator>EQUAL</operator>
+                                    <rightValue>true</rightValue>
+                                </criteria>
+                                <criteria>
+                                    <leftValue>{!Record.Opportunity.StageName}</leftValue>
+                                    <operator>NE</operator>
+                                    <rightValue>Closed Won</rightValue>
                                 </criteria>
                             </visibilityRule>
                         </valueListItems>
@@ -236,17 +247,7 @@
                 <identifier>RecordRES_Unit_Blocked_End_Date_cField</identifier>
             </fieldInstance>
         </itemInstances>
-        <itemInstances>
-            <fieldInstance>
-                <fieldInstanceProperties>
-                    <name>uiBehavior</name>
-                    <value>none</value>
-                </fieldInstanceProperties>
-                <fieldItem>Record.RES_Product_Status_Filter__c</fieldItem>
-                <identifier>RecordRES_Product_Status_Filter_cField</identifier>
-            </fieldInstance>
-        </itemInstances>
-        <name>Facet-ce86b423-4276-4d2e-8f41-ebc73e1833a9</name>
+                <name>Facet-ce86b423-4276-4d2e-8f41-ebc73e1833a9</name>
         <type>Facet</type>
     </flexiPageRegions>
     <flexiPageRegions>

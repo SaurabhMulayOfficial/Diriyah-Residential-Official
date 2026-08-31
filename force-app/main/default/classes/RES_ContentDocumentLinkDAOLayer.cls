@@ -74,7 +74,7 @@ public without sharing class RES_ContentDocumentLinkDAOLayer extends RES_BaseDAO
     /**
      * Returns ContentDocumentLink records for a linked record Id.
      *
-     * @param contentDocId Salesforce record Id.
+     * @param contentDocIds Salesforce record Ids.
      * @return list of ContentDocumentLink records.
      */
     public List<ContentDocumentLink> getContentDocumentLinkByContentDocumentId(Set<Id> contentDocIds) {
@@ -87,5 +87,47 @@ public without sharing class RES_ContentDocumentLinkDAOLayer extends RES_BaseDAO
                       'WHERE ContentDocumentId IN : contentDocIds';
 
         return (List<ContentDocumentLink>) executeQuery(soql, '', false, bindVars, AccessLevel.SYSTEM_MODE);
+    }
+
+    /**
+     * Returns ContentDocumentLink records with ContentDocumentId and LinkedEntityId for document Ids.
+     *
+     * @param documentIds Set of ContentDocument Ids.
+     * @return list of ContentDocumentLink records.
+     */
+    public List<ContentDocumentLink> getLinksByContentDocumentIds(Set<Id> documentIds) {
+        if (documentIds == null || documentIds.isEmpty()) {
+            return new List<ContentDocumentLink>();
+        }
+        Map<String, Object> bindVars = new Map<String, Object>{
+            'documentIds' => documentIds
+        };
+
+        String soql = 'SELECT ContentDocumentId, LinkedEntityId ' +
+                      'FROM ContentDocumentLink ' +
+                      'WHERE ContentDocumentId IN :documentIds AND LinkedEntityId != NULL';
+
+        return (List<ContentDocumentLink>) executeQuery(soql, '', false, bindVars, AccessLevel.USER_MODE);
+    }
+
+    /**
+     * Returns ContentDocumentLink records linked to specific entity Ids.
+     *
+     * @param targetProductIds Set of target Product record Ids.
+     * @return list of ContentDocumentLink records.
+     */
+    public List<ContentDocumentLink> getLinksByLinkedEntityIds(Set<Id> targetProductIds) {
+        if (targetProductIds == null || targetProductIds.isEmpty()) {
+            return new List<ContentDocumentLink>();
+        }
+        Map<String, Object> bindVars = new Map<String, Object>{
+            'targetProductIds' => targetProductIds
+        };
+
+        String soql = 'SELECT ContentDocumentId ' +
+                      'FROM ContentDocumentLink ' +
+                      'WHERE LinkedEntityId IN :targetProductIds';
+
+        return (List<ContentDocumentLink>) executeQuery(soql, '', false, bindVars, AccessLevel.USER_MODE);
     }
 }
