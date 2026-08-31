@@ -39,6 +39,17 @@
                                     <operator>EQUAL</operator>
                                     <rightValue>Negotiating</rightValue>
                                 </criteria>
+                            </visibilityRule>
+                        </valueListItems>
+                        <valueListItems>
+                            <value>Quote.RES_Cancel_Quote</value>
+                            <visibilityRule>
+                                <booleanFilter>1 AND (2 OR 3)</booleanFilter>
+                                <criteria>
+                                    <leftValue>{!Record.Status}</leftValue>
+                                    <operator>NE</operator>
+                                    <rightValue>Cancelled</rightValue>
+                                </criteria>
                                 <criteria>
                                     <leftValue>{!$Permission.CustomPermission.RES_Cancel_Quote_Permission}</leftValue>
                                     <operator>EQUAL</operator>
@@ -247,7 +258,7 @@
                 <identifier>RecordRES_Unit_Blocked_End_Date_cField</identifier>
             </fieldInstance>
         </itemInstances>
-                <name>Facet-ce86b423-4276-4d2e-8f41-ebc73e1833a9</name>
+        <name>Facet-ce86b423-4276-4d2e-8f41-ebc73e1833a9</name>
         <type>Facet</type>
     </flexiPageRegions>
     <flexiPageRegions>
