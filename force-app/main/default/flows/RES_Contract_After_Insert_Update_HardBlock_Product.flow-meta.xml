@@ -92,9 +92,31 @@
                 </rightValue>
             </conditions>
             <connector>
-                <targetReference>get_QuoteQuotelines_for_Contract</targetReference>
+                <targetReference>Is_Primary_Quote</targetReference>
             </connector>
             <label>Present</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>Is_Primary_Quote</name>
+        <label>Is Primary Quote</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Yes</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.SourceQuote.IsSyncing</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>get_QuoteQuotelines_for_Contract</targetReference>
+            </connector>
+            <label>Yes</label>
         </rules>
     </decisions>
     <environments>Default</environments>
