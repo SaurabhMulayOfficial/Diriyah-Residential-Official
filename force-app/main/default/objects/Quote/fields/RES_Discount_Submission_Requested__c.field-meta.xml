@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>RES_Discount_Submission_Requested__c</fullName>
+    <defaultValue>false</defaultValue>
+    <description>DIR-869: Set true by the &quot;Submit for Discount Approval&quot; screen flow when the RM/Specialist explicitly submits. This, not a raw Discount/Status change, is what launches the DOA orchestration. Reset to false by the orchestration&apos;s own first step (flagged via RES_System_Status_Update__c) so the next submission can re-trigger it. Not exposed to users directly - only the submission screen flow sets it.</description>
+    <label>Discount Submission Requested</label>
+    <trackHistory>false</trackHistory>
+    <type>Checkbox</type>
+</CustomField>
