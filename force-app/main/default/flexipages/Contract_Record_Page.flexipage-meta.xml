@@ -49,6 +49,27 @@
                             <value>Delete</value>
                         </valueListItems>
                         <valueListItems>
+                            <value>CustomButton.Contract.RES_Submit_For_Finance_Approval</value>
+                            <visibilityRule>
+                                <booleanFilter>1 AND (2 OR 3)</booleanFilter>
+                                <criteria>
+                                    <leftValue>{!Record.RES_Source_Opportunity_Stage__c}</leftValue>
+                                    <operator>EQUAL</operator>
+                                    <rightValue>SPA</rightValue>
+                                </criteria>
+                                <criteria>
+                                    <leftValue>{!Record.RES_Approval_Status__c}</leftValue>
+                                    <operator>EQUAL</operator>
+                                    <rightValue>Finance Rejected</rightValue>
+                                </criteria>
+                                <criteria>
+                                    <leftValue>{!Record.RES_Is_Approval_Status_Blank__c}</leftValue>
+                                    <operator>EQUAL</operator>
+                                    <rightValue>true</rightValue>
+                                </criteria>
+                            </visibilityRule>
+                        </valueListItems>
+                        <valueListItems>
                             <value>Contract.RES_Cancel_Contract</value>
                             <visibilityRule>
                                 <booleanFilter>1 AND 2</booleanFilter>
@@ -61,6 +82,27 @@
                                     <leftValue>{!$Permission.CustomPermission.RES_Cancel_Contract_Permission}</leftValue>
                                     <operator>EQUAL</operator>
                                     <rightValue>true</rightValue>
+                                </criteria>
+                            </visibilityRule>
+                        </valueListItems>
+                        <valueListItems>
+                            <value>CustomButton.Contract.RES_Submit_For_Approval</value>
+                            <visibilityRule>
+                                <booleanFilter>1 AND (2 OR 3)</booleanFilter>
+                                <criteria>
+                                    <leftValue>{!Record.RES_SPA_Signed__c}</leftValue>
+                                    <operator>EQUAL</operator>
+                                    <rightValue>true</rightValue>
+                                </criteria>
+                                <criteria>
+                                    <leftValue>{!Record.RES_Approval_Status__c}</leftValue>
+                                    <operator>EQUAL</operator>
+                                    <rightValue>Finance Approved</rightValue>
+                                </criteria>
+                                <criteria>
+                                    <leftValue>{!Record.RES_Approval_Status__c}</leftValue>
+                                    <operator>EQUAL</operator>
+                                    <rightValue>Rejected</rightValue>
                                 </criteria>
                             </visibilityRule>
                         </valueListItems>
@@ -233,6 +275,16 @@
                 <identifier>RecordRES_S4_Contract_Id_cField</identifier>
             </fieldInstance>
         </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>readonly</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.RES_Approval_Status__c</fieldItem>
+                <identifier>RecordRES_Approval_Status__cField</identifier>
+            </fieldInstance>
+        </itemInstances>
         <name>Facet-39f21a7a-f81d-4f9c-9557-59f60566f503</name>
         <type>Facet</type>
     </flexiPageRegions>
@@ -315,6 +367,26 @@
                 </fieldInstanceProperties>
                 <fieldItem>Record.RES_S4_Sync_Date__c</fieldItem>
                 <identifier>RecordRES_S4_Sync_Date_cField</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.RES_SIMAH_Status__c</fieldItem>
+                <identifier>RecordRES_SIMAH_Status_cField</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.RES_External_ID__c</fieldItem>
+                <identifier>RecordRES_External_ID_cField</identifier>
             </fieldInstance>
         </itemInstances>
         <name>Facet-ca84733b-a19e-42b8-8e48-00b500cec899</name>
