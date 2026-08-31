@@ -28,11 +28,94 @@
             </value>
         </assignmentItems>
     </assignments>
-    <description>DIR-869: Attempts to acquire a per-Quote submission mutex by inserting a RES_Discount_Submission_Mutex__c record whose Name is the Quote Id. The platform's built-in uniqueness on a Text Name field makes this race-proof - if another orchestration instance already holds the mutex for this Quote, this insert fails with DUPLICATE_VALUE and acquired is returned as false. Used by RES_Quote_Discount_DOA_Approval_Flow to guarantee only one instance proceeds into the approval steps, even when two near-simultaneous Quote saves both pass the entry criteria.</description>
+    <description>DIR-869: Attempts to acquire a per-Quote submission mutex by inserting a RES_Discount_Submission_Mutex__c record whose Name is the Quote Id. The platform's built-in uniqueness on a Text Name field makes this race-proof - if another orchestration instance already holds the mutex for this Quote, this insert fails with DUPLICATE_VALUE and acquired is returned as false. Used by RES_Quote_Discount_DOA_Approval_Flow to guarantee only one instance proceeds into the approval steps, even when two near-simultaneous Quote saves both pass the entry criteria. Before attempting to acquire, reclaims any existing mutex row older than 15 minutes - a healthy run always clears this stage within seconds, so a mutex that old means the orchestration instance holding it died (error/discontinued) without releasing it via RES_Autolaunched_Release_Submission_Mutex, and without this self-healing check that Quote's discount workflow would be permanently deadlocked.</description>
     <environments>Default</environments>
     <interviewLabel>RES Autolaunched Try Acquire Submission Mutex {!$Flow.CurrentDateTime}</interviewLabel>
     <label>RES Autolaunched Try Acquire Submission Mutex</label>
     <processType>AutoLaunchedFlow</processType>
+    <formulas>
+        <name>Stale_Mutex_Cutoff</name>
+        <dataType>DateTime</dataType>
+        <expression>NOW() - 0.0104166667</expression>
+    </formulas>
+    <recordLookups>
+        <name>Get_Existing_Mutex</name>
+        <label>Get Existing Mutex</label>
+        <locationX>50</locationX>
+        <locationY>50</locationY>
+        <assignNullValuesIfNoRecordsFound>true</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Check_Existing_Mutex</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>RES_Quote_Key__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>quoteId</elementReference>
+            </value>
+        </filters>
+        <getFirstRecordOnly>true</getFirstRecordOnly>
+        <object>RES_Discount_Submission_Mutex__c</object>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
+    <decisions>
+        <name>Check_Existing_Mutex</name>
+        <label>Check Existing Mutex</label>
+        <locationX>50</locationX>
+        <locationY>150</locationY>
+        <defaultConnectorLabel>Held And Fresh</defaultConnectorLabel>
+        <defaultConnector>
+            <targetReference>Set_Acquired_False</targetReference>
+        </defaultConnector>
+        <rules>
+            <name>Not_Held</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>Get_Existing_Mutex.Id</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Acquire_Mutex</targetReference>
+            </connector>
+            <label>Not Held</label>
+        </rules>
+        <rules>
+            <name>Held_But_Stale</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>Get_Existing_Mutex.Id</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>Get_Existing_Mutex.CreatedDate</leftValueReference>
+                <operator>LessThan</operator>
+                <rightValue>
+                    <elementReference>Stale_Mutex_Cutoff</elementReference>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Reclaim_Stale_Mutex</targetReference>
+            </connector>
+            <label>Held But Stale</label>
+        </rules>
+    </decisions>
+    <recordDeletes>
+        <name>Reclaim_Stale_Mutex</name>
+        <label>Reclaim Stale Mutex</label>
+        <locationX>50</locationX>
+        <locationY>260</locationY>
+        <connector>
+            <targetReference>Acquire_Mutex</targetReference>
+        </connector>
+        <inputReference>Get_Existing_Mutex</inputReference>
+    </recordDeletes>
     <recordCreates>
         <name>Acquire_Mutex</name>
         <label>Acquire Mutex</label>
@@ -57,7 +140,7 @@
         <locationX>50</locationX>
         <locationY>0</locationY>
         <connector>
-            <targetReference>Acquire_Mutex</targetReference>
+            <targetReference>Get_Existing_Mutex</targetReference>
         </connector>
     </start>
     <status>Active</status>

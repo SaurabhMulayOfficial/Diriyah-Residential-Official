@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Layout xmlns="http://soap.sforce.com/2006/04/metadata">
+    <excludeButtons>OpenSlackRecordChannel</excludeButtons>
     <layoutSections>
         <customLabel>false</customLabel>
         <detailHeading>false</detailHeading>
@@ -19,23 +20,11 @@
                 <field>QuoteId</field>
             </layoutItems>
             <layoutItems>
-                <behavior>Readonly</behavior>
-                <field>ListPrice</field>
-            </layoutItems>
-            <layoutItems>
-                <behavior>Required</behavior>
-                <field>UnitPrice</field>
-            </layoutItems>
-            <layoutItems>
                 <behavior>Required</behavior>
                 <field>Quantity</field>
             </layoutItems>
         </layoutColumns>
         <layoutColumns>
-            <layoutItems>
-                <behavior>Readonly</behavior>
-                <field>Subtotal</field>
-            </layoutItems>
             <layoutItems>
                 <behavior>Edit</behavior>
                 <field>Discount</field>
@@ -45,8 +34,16 @@
                 <field>TotalPrice</field>
             </layoutItems>
             <layoutItems>
+                <behavior>Readonly</behavior>
+                <field>ListPrice</field>
+            </layoutItems>
+            <layoutItems>
+                <behavior>Required</behavior>
+                <field>UnitPrice</field>
+            </layoutItems>
+            <layoutItems>
                 <behavior>Edit</behavior>
-                <field>Description</field>
+                <field>NetUnitPrice</field>
             </layoutItems>
         </layoutColumns>
         <style>TwoColumnsTopToBottom</style>
@@ -84,11 +81,74 @@
     <multilineLayoutFields>ListPrice</multilineLayoutFields>
     <multilineLayoutFields>UnitPrice</multilineLayoutFields>
     <multilineLayoutFields>Quantity</multilineLayoutFields>
-    <multilineLayoutFields>Subtotal</multilineLayoutFields>
     <multilineLayoutFields>Discount</multilineLayoutFields>
     <multilineLayoutFields>TotalPrice</multilineLayoutFields>
     <multilineLayoutFields>QuoteId</multilineLayoutFields>
+    <relatedLists>
+        <relatedList>RelatedEntityHistoryList</relatedList>
+    </relatedLists>
+    <relatedLists>
+        <fields>Name</fields>
+        <fields>AdjustmentSource</fields>
+        <fields>AdjustmentType</fields>
+        <fields>AdjustmentValue</fields>
+        <fields>TotalAmount</fields>
+        <fields>Priority</fields>
+        <relatedList>QuoteLinePriceAdjustment</relatedList>
+    </relatedLists>
+    <relatedLists>
+        <fields>RTEL.NAME</fields>
+        <fields>RTEL.ERROR_MESSAGE</fields>
+        <fields>RTEL.RELATED_RECORD</fields>
+        <relatedList>RevenueTransactionErrorLogs</relatedList>
+    </relatedLists>
+    <relatedLists>
+        <fields>Name</fields>
+        <fields>Contract</fields>
+        <fields>Quantity</fields>
+        <fields>TotalPrice</fields>
+        <fields>Product2</fields>
+        <fields>Status</fields>
+        <relatedList>SalesContractLine</relatedList>
+    </relatedLists>
+    <relatedLists>
+        <fields>AssociatedQuoteLine</fields>
+        <fields>AssociatedQuoteLineRole</fields>
+        <fields>AssociatedQuoteLinePricing</fields>
+        <relatedList>AssociatedQuoteLineItems</relatedList>
+    </relatedLists>
+    <relatedLists>
+        <fields>Product2</fields>
+        <fields>Quantity</fields>
+        <fields>UnitPrice</fields>
+        <fields>TotalPrice</fields>
+        <relatedList>RelatedOrderItemList</relatedList>
+    </relatedLists>
+    <relatedLists>
+        <fields>Name</fields>
+        <fields>ReferenceNumber</fields>
+        <fields>ReferenceDate</fields>
+        <fields>Quantity</fields>
+        <fields>UnitPrice</fields>
+        <fields>TotalLineAmount</fields>
+        <fields>NetUnitPrice</fields>
+        <fields>TotalPrice</fields>
+        <relatedList>QuoteLineDetail</relatedList>
+    </relatedLists>
+    <relatedLists>
+        <fields>AttributeName</fields>
+        <fields>AttributeValue</fields>
+        <fields>AttributeDefinition</fields>
+        <fields>AttributePicklistValue</fields>
+        <relatedList>QuoteLineItemAttribute</relatedList>
+    </relatedLists>
     <showEmailCheckbox>false</showEmailCheckbox>
     <showRunAssignmentRulesCheckbox>false</showRunAssignmentRulesCheckbox>
     <showSubmitAndAttachButton>false</showSubmitAndAttachButton>
+    <summaryLayout>
+        <masterLabel>00hWz000001ywMC</masterLabel>
+        <sizeX>4</sizeX>
+        <sizeY>0</sizeY>
+        <summaryLayoutStyle>Default</summaryLayoutStyle>
+    </summaryLayout>
 </Layout>

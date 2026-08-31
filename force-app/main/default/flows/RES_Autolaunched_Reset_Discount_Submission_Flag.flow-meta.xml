@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>67.0</apiVersion>
+    <areMetricsLoggedToDataCloud>false</areMetricsLoggedToDataCloud>
+    <description>DIR-869: Resets RES_Discount_Submission_Requested__c to false on the Quote once the DOA orchestration has picked up a submission, so the "Submit for Discount Approval" screen flow can trigger the next one later.</description>
+    <environments>Default</environments>
+    <interviewLabel>RES Autolaunched Reset Discount Submission Flag {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>RES Autolaunched Reset Discount Submission Flag</label>
+    <processType>AutoLaunchedFlow</processType>
+    <recordUpdates>
+        <name>Reset_Flag</name>
+        <label>Reset Flag</label>
+        <locationX>176</locationX>
+        <locationY>158</locationY>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Id</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>recordId</elementReference>
+            </value>
+        </filters>
+        <inputAssignments>
+            <field>RES_Discount_Submission_Requested__c</field>
+            <value>
+                <booleanValue>false</booleanValue>
+            </value>
+        </inputAssignments>
+        <object>Quote</object>
+    </recordUpdates>
+    <start>
+        <locationX>50</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Reset_Flag</targetReference>
+        </connector>
+    </start>
+    <status>Active</status>
+    <variables>
+        <name>recordId</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>true</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+</Flow>

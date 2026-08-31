@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>67.0</apiVersion>
+    <areMetricsLoggedToDataCloud>false</areMetricsLoggedToDataCloud>
+    <decisions>
+        <name>Check_Flag</name>
+        <label>Check Flag</label>
+        <locationX>176</locationX>
+        <locationY>48</locationY>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Flag_is_Disabled</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Setup.RES_Config_Switch__c.RES_Flows_Off__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Check_Discount_Applied</targetReference>
+            </connector>
+            <label>Flag is Disabled</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>Check_Discount_Applied</name>
+        <label>Check Discount Applied</label>
+        <locationX>176</locationX>
+        <locationY>156</locationY>
+        <defaultConnectorLabel>No Discount / Unchanged</defaultConnectorLabel>
+        <rules>
+            <name>Discount_Applied_Or_Changed</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>Has_A_Discount</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>Is_New_Or_Discount_Changed</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Sync_Quote_Discount_And_Negotiating</targetReference>
+            </connector>
+            <label>Discount Applied or Changed</label>
+        </rules>
+    </decisions>
+    <environments>Default</environments>
+    <formulas>
+        <name>Has_A_Discount</name>
+        <dataType>Boolean</dataType>
+        <expression>OR({!$Record.Discount} &gt; 0, {!$Record.DiscountAmount} &gt; 0)</expression>
+    </formulas>
+    <formulas>
+        <name>Is_New_Or_Discount_Changed</name>
+        <dataType>Boolean</dataType>
+        <expression>OR(ISNEW(), ISCHANGED({!$Record.Discount}), ISCHANGED({!$Record.DiscountAmount}))</expression>
+    </formulas>
+    <interviewLabel>Quote Line Item - After Save - Sync Discount {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>Quote Line Item - After Save - Sync Discount</label>
+    <processMetadataValues>
+        <name>BuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>CanvasMode</name>
+        <value>
+            <stringValue>AUTO_LAYOUT_CANVAS</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>OriginBuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processType>AutoLaunchedFlow</processType>
+    <recordUpdates>
+        <name>Sync_Quote_Discount_And_Negotiating</name>
+        <label>Sync Quote Discount And Negotiating</label>
+        <locationX>176</locationX>
+        <locationY>264</locationY>
+        <inputAssignments>
+            <field>Status</field>
+            <value>
+                <stringValue>Negotiating</stringValue>
+            </value>
+        </inputAssignments>
+        <inputReference>$Record.Quote</inputReference>
+    </recordUpdates>
+    <start>
+        <locationX>50</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Check_Flag</targetReference>
+        </connector>
+        <object>QuoteLineItem</object>
+        <recordTriggerType>CreateAndUpdate</recordTriggerType>
+        <triggerType>RecordAfterSave</triggerType>
+    </start>
+    <status>Active</status>
+</Flow>

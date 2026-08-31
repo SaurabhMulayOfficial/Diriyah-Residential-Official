@@ -25,33 +25,18 @@
                             <value>CreateOrder</value>
                         </valueListItems>
                         <valueListItems>
-                            <value>Quote.RES_Request_Soft_Hold_Extension</value>
-                            <visibilityRule>
-                                <booleanFilter>1 AND 2 AND 3</booleanFilter>
-                                <criteria>
-                                    <leftValue>{!Record.Status}</leftValue>
-                                    <operator>NE</operator>
-                                    <rightValue>Cancelled</rightValue>
-                                </criteria>
-                                <criteria>
-                                    <leftValue>{!Record.Status}</leftValue>
-                                    <operator>NE</operator>
-                                    <rightValue>Expired</rightValue>
-                                </criteria>
-                                <criteria>
-                                    <leftValue>{!Record.Status}</leftValue>
-                                    <operator>NE</operator>
-                                    <rightValue>Rejected</rightValue>
-                                </criteria>
-                            </visibilityRule>
+                            <value>CreateContract</value>
                         </valueListItems>
                         <valueListItems>
-                            <value>Quote.RES_Cancel_Quote</value>
+                            <value>Quote.RES_Request_Soft_Hold_Extension</value>
+                        </valueListItems>
+                        <valueListItems>
+                            <value>Quote.RES_Submit_For_Discount_Approval</value>
                             <visibilityRule>
                                 <criteria>
                                     <leftValue>{!Record.Status}</leftValue>
-                                    <operator>NE</operator>
-                                    <rightValue>Cancelled</rightValue>
+                                    <operator>EQUAL</operator>
+                                    <rightValue>Negotiating</rightValue>
                                 </criteria>
                             </visibilityRule>
                         </valueListItems>
@@ -110,6 +95,31 @@
                 </visibilityRule>
             </componentInstance>
         </itemInstances>
+        <itemInstances>
+            <componentInstance>
+                <componentInstanceProperties>
+                    <name>body</name>
+                    <value>{!$Label.RES_PricingStaleBannerMessage}</value>
+                </componentInstanceProperties>
+                <componentInstanceProperties>
+                    <name>header</name>
+                    <value>{!$Label.RES_PricingStaleBannerTitle}</value>
+                </componentInstanceProperties>
+                <componentInstanceProperties>
+                    <name>variant</name>
+                    <value>warning</value>
+                </componentInstanceProperties>
+                <componentName>productSoftHoldBanner</componentName>
+                <identifier>c_pricingStaleBanner</identifier>
+                <visibilityRule>
+                    <criteria>
+                        <leftValue>{!Record.RES_Pricing_Stale__c}</leftValue>
+                        <operator>EQUAL</operator>
+                        <rightValue>true</rightValue>
+                    </criteria>
+                </visibilityRule>
+            </componentInstance>
+        </itemInstances>
         <mode>Replace</mode>
         <name>header</name>
         <type>Region</type>
@@ -162,21 +172,10 @@
                 </fieldInstanceProperties>
                 <fieldItem>Record.Status</fieldItem>
                 <identifier>RecordStatusField</identifier>
-            </fieldInstance>
-        </itemInstances>
-        <itemInstances>
-            <fieldInstance>
-                <fieldInstanceProperties>
-                    <name>uiBehavior</name>
-                    <value>readonly</value>
-                </fieldInstanceProperties>
-                <fieldItem>Record.RES_Cancellation_Reason__c</fieldItem>
-                <identifier>RecordRES_Cancellation_Reason_cField</identifier>
                 <visibilityRule>
                     <criteria>
-                        <leftValue>{!Record.Status}</leftValue>
-                        <operator>EQUAL</operator>
-                        <rightValue>Cancelled</rightValue>
+                        <leftValue>{!Record.QuoteNumber}</leftValue>
+                        <operator>NE</operator>
                     </criteria>
                 </visibilityRule>
             </fieldInstance>
@@ -221,6 +220,16 @@
                 <identifier>RecordRES_Unit_Blocked_End_Date_cField</identifier>
             </fieldInstance>
         </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.RES_Product_Status_Filter__c</fieldItem>
+                <identifier>RecordRES_Product_Status_Filter_cField</identifier>
+            </fieldInstance>
+        </itemInstances>
         <name>Facet-ce86b423-4276-4d2e-8f41-ebc73e1833a9</name>
         <type>Facet</type>
     </flexiPageRegions>
@@ -243,6 +252,12 @@
                 </fieldInstanceProperties>
                 <fieldItem>Record.ContactId</fieldItem>
                 <identifier>RecordContactIdField</identifier>
+                <visibilityRule>
+                    <criteria>
+                        <leftValue>{!Record.QuoteNumber}</leftValue>
+                        <operator>NE</operator>
+                    </criteria>
+                </visibilityRule>
             </fieldInstance>
         </itemInstances>
         <itemInstances>
@@ -293,6 +308,13 @@
                 </fieldInstanceProperties>
                 <fieldItem>Record.OwnerId</fieldItem>
                 <identifier>RecordOwnerIdField</identifier>
+                <visibilityRule>
+                    <criteria>
+                        <leftValue>{!$User.Profile.Name}</leftValue>
+                        <operator>EQUAL</operator>
+                        <rightValue>System Administrator</rightValue>
+                    </criteria>
+                </visibilityRule>
             </fieldInstance>
         </itemInstances>
         <name>Facet-bef25890-bde0-41e3-8a4d-40550ea23bfd</name>
@@ -592,44 +614,6 @@
         <itemInstances>
             <componentInstance>
                 <componentInstanceProperties>
-                    <name>displayFields</name>
-                    <valueList>
-                        <valueListItems>
-                            <value>QuoteLineItem.Product2.Name[Product2]</value>
-                        </valueListItems>
-                        <valueListItems>
-                            <value>QuoteLineItem.UnitPrice</value>
-                        </valueListItems>
-                        <valueListItems>
-                            <value>QuoteLineItem.Quantity</value>
-                        </valueListItems>
-                        <valueListItems>
-                            <value>QuoteLineItem.Subtotal</value>
-                        </valueListItems>
-                        <valueListItems>
-                            <value>QuoteLineItem.DiscountAmount</value>
-                        </valueListItems>
-                        <valueListItems>
-                            <value>QuoteLineItem.Discount</value>
-                        </valueListItems>
-                        <valueListItems>
-                            <value>QuoteLineItem.TotalPrice</value>
-                        </valueListItems>
-                        <valueListItems>
-                            <value>QuoteLineItem.ListPrice</value>
-                        </valueListItems>
-                        <valueListItems>
-                            <value>QuoteLineItem.NetUnitPrice</value>
-                        </valueListItems>
-                        <valueListItems>
-                            <value>QuoteLineItem.NetTotalPrice</value>
-                        </valueListItems>
-                        <valueListItems>
-                            <value>QuoteLineItem.SubscriptionTerm</value>
-                        </valueListItems>
-                    </valueList>
-                </componentInstanceProperties>
-                <componentInstanceProperties>
                     <name>enableQuickAdd</name>
                     <value>true</value>
                 </componentInstanceProperties>
@@ -809,177 +793,6 @@
                         <leftValue>{!$Client.formFactor}</leftValue>
                         <operator>EQUAL</operator>
                         <rightValue>Small</rightValue>
-                    </criteria>
-                </visibilityRule>
-            </componentInstance>
-        </itemInstances>
-        <itemInstances>
-            <componentInstance>
-                <componentInstanceProperties>
-                    <name>actionNames</name>
-                    <valueList>
-                        <valueListItems>
-                            <value>New</value>
-                        </valueListItems>
-                    </valueList>
-                </componentInstanceProperties>
-                <componentInstanceProperties>
-                    <name>maxRecordsToDisplay</name>
-                    <value>5</value>
-                </componentInstanceProperties>
-                <componentInstanceProperties>
-                    <name>parentFieldApiName</name>
-                    <value>Quote.Id</value>
-                </componentInstanceProperties>
-                <componentInstanceProperties>
-                    <name>relatedListApiName</name>
-                    <value>Discount_Audit_Logs__r</value>
-                </componentInstanceProperties>
-                <componentInstanceProperties>
-                    <name>relatedListDisplayType</name>
-                    <value>ADVGRID</value>
-                </componentInstanceProperties>
-                <componentInstanceProperties>
-                    <name>relatedListFieldAliases</name>
-                    <valueList>
-                        <valueListItems>
-                            <value>NAME</value>
-                        </valueListItems>
-                        <valueListItems>
-                            <value>RES_Entry_Type__c</value>
-                        </valueListItems>
-                        <valueListItems>
-                            <value>RES_Discount_Requested__c</value>
-                        </valueListItems>
-                        <valueListItems>
-                            <value>RES_Submitted_By__c</value>
-                        </valueListItems>
-                        <valueListItems>
-                            <value>RES_Submission_Date__c</value>
-                        </valueListItems>
-                        <valueListItems>
-                            <value>RES_Approver__c</value>
-                        </valueListItems>
-                        <valueListItems>
-                            <value>RES_Outcome__c</value>
-                        </valueListItems>
-                        <valueListItems>
-                            <value>RES_Outcome_Date__c</value>
-                        </valueListItems>
-                        <valueListItems>
-                            <value>RES_Reason__c</value>
-                        </valueListItems>
-                        <valueListItems>
-                            <value>CREATED_DATE</value>
-                        </valueListItems>
-                    </valueList>
-                </componentInstanceProperties>
-                <componentInstanceProperties>
-                    <name>relatedListLabel</name>
-                    <value>Discount Audit Logs</value>
-                </componentInstanceProperties>
-                <componentInstanceProperties>
-                    <name>showActionBar</name>
-                    <value>true</value>
-                </componentInstanceProperties>
-                <componentInstanceProperties>
-                    <name>sortFieldAlias</name>
-                    <value>__DEFAULT__</value>
-                </componentInstanceProperties>
-                <componentInstanceProperties>
-                    <name>sortFieldOrder</name>
-                    <value>Default</value>
-                </componentInstanceProperties>
-                <componentName>lst:dynamicRelatedList</componentName>
-                <identifier>lst_dynamicRelatedList_discountAuditLogs</identifier>
-                <visibilityRule>
-                    <criteria>
-                        <leftValue>{!$User.Profile.Name}</leftValue>
-                        <operator>EQUAL</operator>
-                        <rightValue>System Administrator</rightValue>
-                    </criteria>
-                </visibilityRule>
-            </componentInstance>
-        </itemInstances>
-        <itemInstances>
-            <componentInstance>
-                <componentInstanceProperties>
-                    <name>actionNames</name>
-                </componentInstanceProperties>
-                <componentInstanceProperties>
-                    <name>maxRecordsToDisplay</name>
-                    <value>10</value>
-                </componentInstanceProperties>
-                <componentInstanceProperties>
-                    <name>parentFieldApiName</name>
-                    <value>Quote.Id</value>
-                </componentInstanceProperties>
-                <componentInstanceProperties>
-                    <name>relatedListApiName</name>
-                    <value>Discount_Audit_Logs__r</value>
-                </componentInstanceProperties>
-                <componentInstanceProperties>
-                    <name>relatedListDisplayType</name>
-                    <value>ADVGRID</value>
-                </componentInstanceProperties>
-                <componentInstanceProperties>
-                    <name>relatedListFieldAliases</name>
-                    <valueList>
-                        <valueListItems>
-                            <value>NAME</value>
-                        </valueListItems>
-                        <valueListItems>
-                            <value>RES_Entry_Type__c</value>
-                        </valueListItems>
-                        <valueListItems>
-                            <value>RES_Discount_Requested__c</value>
-                        </valueListItems>
-                        <valueListItems>
-                            <value>RES_Submitted_By__c</value>
-                        </valueListItems>
-                        <valueListItems>
-                            <value>RES_Submission_Date__c</value>
-                        </valueListItems>
-                        <valueListItems>
-                            <value>RES_Approver__c</value>
-                        </valueListItems>
-                        <valueListItems>
-                            <value>RES_Outcome__c</value>
-                        </valueListItems>
-                        <valueListItems>
-                            <value>RES_Outcome_Date__c</value>
-                        </valueListItems>
-                        <valueListItems>
-                            <value>RES_Reason__c</value>
-                        </valueListItems>
-                        <valueListItems>
-                            <value>CREATED_DATE</value>
-                        </valueListItems>
-                    </valueList>
-                </componentInstanceProperties>
-                <componentInstanceProperties>
-                    <name>relatedListLabel</name>
-                    <value>Discount Audit Logs</value>
-                </componentInstanceProperties>
-                <componentInstanceProperties>
-                    <name>showActionBar</name>
-                    <value>true</value>
-                </componentInstanceProperties>
-                <componentInstanceProperties>
-                    <name>sortFieldAlias</name>
-                    <value>__DEFAULT__</value>
-                </componentInstanceProperties>
-                <componentInstanceProperties>
-                    <name>sortFieldOrder</name>
-                    <value>Default</value>
-                </componentInstanceProperties>
-                <componentName>lst:dynamicRelatedList</componentName>
-                <identifier>lst_dynamicRelatedList</identifier>
-                <visibilityRule>
-                    <criteria>
-                        <leftValue>{!$User.Profile.Name}</leftValue>
-                        <operator>NE</operator>
-                        <rightValue>System Administrator</rightValue>
                     </criteria>
                 </visibilityRule>
             </componentInstance>

@@ -2,11 +2,24 @@
 <Flow xmlns="http://soap.sforce.com/2006/04/metadata">
     <apiVersion>67.0</apiVersion>
     <areMetricsLoggedToDataCloud>false</areMetricsLoggedToDataCloud>
-    <description>DIR-869: Sets RES_Approval_Request_Remarks__c on the latest ApprovalWorkItem for a record and a given approval-condition (step) name. Used two ways: (1) pre-fill with Quote/discount context when the work item is created, so the approver sees it without opening the record; (2) overwrite with the approver's own decision comment once they decide (ApprovalWorkItem.Comments itself is a platform-locked standard field that can&apos;t be written outside the native approval screen, so this custom field carries the same information instead).</description>
+    <description>DIR-869: NOT CURRENTLY CALLED (deactivated 2026-08-27) - kept for reference only. Would overwrite RES_Approval_Request_Remarks__c on the latest ApprovalWorkItem with a decision comment. Was called from RES_Quote_Discount_DOA_Approval_Flow's Overwrite_Manager_Work_Item_Comments / Overwrite_Finance_Work_Item_Comments steps, which have been removed: the architect confirmed the submitter's original comment in RES_Approval_Request_Remarks__c should be preserved unmodified throughout the approval process, since the approver's own decision comment is already shown separately in the native, platform-populated ApprovalWorkItem.Comments field once they act - no automation needed for that side.</description>
     <environments>Default</environments>
     <interviewLabel>RES Set Approval Work Item Comments {!$Flow.CurrentDateTime}</interviewLabel>
     <label>RES Autolaunched Set Approval Work Item Comments</label>
     <processType>AutoLaunchedFlow</processType>
+    <assignments>
+        <name>Handle_Update_Fault</name>
+        <label>Handle Update Fault</label>
+        <locationX>320</locationX>
+        <locationY>384</locationY>
+        <assignmentItems>
+            <assignToReference>comments</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>comments</elementReference>
+            </value>
+        </assignmentItems>
+    </assignments>
     <recordLookups>
         <name>Get_Latest_Work_Item</name>
         <label>Get Latest Work Item</label>
@@ -72,6 +85,9 @@
                 <elementReference>Get_Latest_Work_Item.Id</elementReference>
             </value>
         </filters>
+        <faultConnector>
+            <targetReference>Handle_Update_Fault</targetReference>
+        </faultConnector>
         <inputAssignments>
             <field>RES_Approval_Request_Remarks__c</field>
             <value>

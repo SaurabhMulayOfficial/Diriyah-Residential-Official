@@ -11,7 +11,7 @@
             <assignToReference>$Record.RES_Approval_Request_Remarks__c</assignToReference>
             <operator>Assign</operator>
             <value>
-                <elementReference>fQuoteApproverBody</elementReference>
+                <elementReference>Get_Quote.RES_Discount_Submission_Comment__c</elementReference>
             </value>
         </assignmentItems>
     </assignments>
@@ -132,11 +132,6 @@
         </rules>
     </decisions>
     <environments>Default</environments>
-    <formulas>
-        <name>fQuoteApproverBody</name>
-        <dataType>String</dataType>
-        <expression>&quot;Quote &apos;&quot; &amp; {!Get_Quote.Name} &amp; &quot;&apos; (&quot; &amp; {!Get_Quote.QuoteNumber} &amp; &quot;) needs your approval. Discount &quot; &amp; TEXT({!Get_Quote.Discount}) &amp; &quot;% (Amount &quot; &amp; TEXT(({!Get_Quote.Subtotal} - {!Get_Quote.GrandTotal})) &amp; &quot;). Submitted by &quot; &amp; {!Get_Quote.CreatedBy.FirstName} &amp; &quot; &quot; &amp; {!Get_Quote.CreatedBy.LastName} &amp; &quot;.&quot;</expression>
-    </formulas>
     <formulas>
         <name>PreviousOwnerName</name>
         <dataType>String</dataType>

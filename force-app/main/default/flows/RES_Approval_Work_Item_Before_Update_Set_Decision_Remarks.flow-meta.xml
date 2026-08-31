@@ -15,7 +15,7 @@
             </value>
         </assignmentItems>
     </assignments>
-    <description>DIR-869: RES_Approval_Request_Remarks__c and Comments are kept on separate paths by design - the field name means it&apos;s for the approval REQUEST (context about what&apos;s being asked, e.g. the bell-notification text set on insert), not the decision. Comments is the approver&apos;s own decision remark, written only by the native approval screen - never touched by automation. Once the approver decides (Status becomes Approved/Rejected), this clears Remarks back to blank so field history tracking on it shows a clean request-then-resolved story instead of overlapping with Comments&apos; own separate history.</description>
+    <description>DIR-869: DEACTIVATED 2026-08-27 per architect direction - the submitter's comment in RES_Approval_Request_Remarks__c must be preserved unmodified for the life of the ApprovalWorkItem, not cleared on decision. Originally cleared Remarks back to blank whenever Status became Approved/Rejected, on the theory that Remarks was request-context only and the approver's own decision remark belongs solely in the native, automation-untouched Comments field. Kept for reference only - do not reactivate without re-confirming with the architect.</description>
     <environments>Default</environments>
     <formulas>
         <name>fEmptyString</name>
@@ -42,5 +42,5 @@
         <recordTriggerType>Update</recordTriggerType>
         <triggerType>RecordBeforeSave</triggerType>
     </start>
-    <status>Active</status>
+    <status>Draft</status>
 </Flow>

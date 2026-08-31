@@ -147,6 +147,23 @@
                 <identifier>RecordRES_Approval_Request_Remarks_cField</identifier>
             </fieldInstance>
         </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.RES_SLA_End_Date__c</fieldItem>
+                <identifier>RecordRES_SLA_End_Date__cField</identifier>
+                <visibilityRule>
+                    <criteria>
+                        <leftValue>{!Record.RelatedRecordObjectName}</leftValue>
+                        <operator>NE</operator>
+                        <rightValue>Quote</rightValue>
+                    </criteria>
+                </visibilityRule>
+            </fieldInstance>
+        </itemInstances>
         <name>Facet-4a6defc2-2bcd-4600-8b99-a36749c1390f</name>
         <type>Facet</type>
     </flexiPageRegions>
