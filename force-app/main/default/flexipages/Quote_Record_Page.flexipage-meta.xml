@@ -186,6 +186,22 @@
                     <name>uiBehavior</name>
                     <value>readonly</value>
                 </fieldInstanceProperties>
+                <fieldItem>Record.RES_Cancellation_Reason__c</fieldItem>
+                <identifier>RecordRES_Cancellation_Reason_cField</identifier>
+                <visibilityRule>
+                    <criteria>
+                        <leftValue>{!Record.QuoteNumber}</leftValue>
+                        <operator>NE</operator>
+                    </criteria>
+                </visibilityRule>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>readonly</value>
+                </fieldInstanceProperties>
                 <fieldItem>Record.RES_Reservation_Start_Date__c</fieldItem>
                 <identifier>RecordRES_Reservation_Start_Date_cField</identifier>
             </fieldInstance>
@@ -253,6 +269,7 @@
                 <fieldItem>Record.ContactId</fieldItem>
                 <identifier>RecordContactIdField</identifier>
                 <visibilityRule>
+               <visibilityRule>
                     <criteria>
                         <leftValue>{!Record.QuoteNumber}</leftValue>
                         <operator>NE</operator>
@@ -795,6 +812,32 @@
                         <rightValue>Small</rightValue>
                     </criteria>
                 </visibilityRule>
+            </componentInstance>
+        </itemInstances>
+        <itemInstances>
+            <componentInstance>
+                <componentInstanceProperties>
+                    <name>parentFieldApiName</name>
+                    <value>Quote.Id</value>
+                </componentInstanceProperties>
+                <componentInstanceProperties>
+                    <name>relatedListApiName</name>
+                    <value>Histories</value>
+                </componentInstanceProperties>
+                <componentInstanceProperties>
+                    <name>relatedListComponentOverride</name>
+                    <value>NONE</value>
+                </componentInstanceProperties>
+                <componentInstanceProperties>
+                    <name>rowsToDisplay</name>
+                    <value>10</value>
+                </componentInstanceProperties>
+                <componentInstanceProperties>
+                    <name>showActionBar</name>
+                    <value>true</value>
+                </componentInstanceProperties>
+                <componentName>force:relatedListSingleContainer</componentName>
+                <identifier>force_relatedListSingleContainer_quoteHistories</identifier>
             </componentInstance>
         </itemInstances>
         <mode>Replace</mode>

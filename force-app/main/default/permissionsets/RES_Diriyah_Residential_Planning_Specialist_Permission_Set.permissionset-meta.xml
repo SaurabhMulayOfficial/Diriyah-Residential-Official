@@ -348,6 +348,11 @@
         <field>Product2.StockKeepingUnit</field>
         <readable>true</readable>
     </fieldPermissions>
+     <fieldPermissions>
+         <editable>false</editable>
+         <field>Product2.RES_Construction_Phase__c</field>
+         <readable>true</readable>
+     </fieldPermissions>
     <fieldPermissions>
         <editable>true</editable>
         <field>ContentVersion.RES_Attachment_Type__c</field>
@@ -754,12 +759,12 @@
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
-        <editable>true</editable>
+        <editable>false</editable>
         <field>Contract.CompanySignedId</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
-        <editable>true</editable>
+        <editable>false</editable>
         <field>Contract.CompanySignedDate</field>
         <readable>true</readable>
     </fieldPermissions>
@@ -774,7 +779,7 @@
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
-        <editable>true</editable>
+        <editable>false</editable>
         <field>Contract.StartDate</field>
         <readable>true</readable>
     </fieldPermissions>
@@ -784,12 +789,12 @@
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
-        <editable>true</editable>
+        <editable>false</editable>
         <field>Contract.CustomerSignedId</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
-        <editable>true</editable>
+        <editable>false</editable>
         <field>Contract.CustomerSignedDate</field>
         <readable>true</readable>
     </fieldPermissions>
@@ -1956,11 +1961,11 @@
         <field>Contract.ActivatedById</field>
         <readable>true</readable>
     </fieldPermissions>
-    <!--fieldPermissions>
+    <fieldPermissions>
         <editable>false</editable>
-        <field>Contract.External_ID__c</field>
+        <field>Contract.RES_External_ID__c</field>
         <readable>true</readable>
-    </fieldPermissions-->
+    </fieldPermissions>
     <fieldPermissions>
         <editable>false</editable>
         <field>Contract.RES_S4_Contract_Id__c</field>
@@ -1969,6 +1974,26 @@
     <fieldPermissions>
         <editable>false</editable>
         <field>Contract.RES_S4_Sync_Date__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>Contract.RES_Approval_Status__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>Contract.RES_Is_Approval_Status_Blank__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>Contract.RES_Source_Opportunity_Stage__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>ApprovalWorkItem.RES_SLA_End_Date__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <hasActivationRequired>false</hasActivationRequired>

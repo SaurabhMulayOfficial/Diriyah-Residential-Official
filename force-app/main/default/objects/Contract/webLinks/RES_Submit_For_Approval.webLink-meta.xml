@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<WebLink xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>RES_Submit_For_Approval</fullName>
+    <availability>online</availability>
+    <displayType>button</displayType>
+    <encodingKey>UTF-8</encodingKey>
+    <linkType>url</linkType>
+    <masterLabel>Submit For Approval</masterLabel>
+    <openType>replace</openType>
+    <protected>false</protected>
+    <url>/flow/RES_Contract_Operations_Director_Approval_Process?recordId={!Contract.Id}&amp;submitter={!$User.Id}&amp;contractNumber={!Contract.ContractNumber}&amp;retURL={!Contract.Id}</url>
+</WebLink>

@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <label>Approval Item Rejected</label>
+    <protected>false</protected>
+    <values>
+        <field>Html_Body__c</field>
+        <value xsi:type="xsd:string">&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;head&gt;
+&lt;meta charset=&quot;UTF-8&quot;&gt;
+&lt;title&gt;Approval Request Rejected&lt;/title&gt;
+&lt;/head&gt;
+
+&lt;body style=&quot;margin:0;padding:0;background-color:#F4F4F4;&quot;&gt;
+
+&lt;table width=&quot;100%&quot; cellpadding=&quot;0&quot; cellspacing=&quot;0&quot; border=&quot;0&quot; bgcolor=&quot;#F4F4F4&quot;&gt;
+&lt;tr&gt;
+&lt;td align=&quot;center&quot; style=&quot;padding:30px 15px;&quot;&gt;
+
+&lt;table width=&quot;600&quot; cellpadding=&quot;0&quot; cellspacing=&quot;0&quot; border=&quot;0&quot;
+style=&quot;width:600px;max-width:600px;background:#FFFFFF;border-collapse:collapse; border-collapse:collapse;border-radius:10px;overflow:hidden;&quot;&gt;
+
+&lt;!-- Header --&gt;
+
+&lt;tr&gt;
+&lt;td bgcolor=&quot;#C89B5A&quot;
+style=&quot;background-color:#dbbc9a;
+padding:30px;
+text-align:center;
+font-family:Arial,Helvetica,sans-serif;&quot;&gt;
+
+&lt;h1 style=&quot;margin:0;
+color:#4A3103;
+font-size:28px;
+font-weight:bold;
+line-height:36px;&quot;&gt;
+Approval Request Rejected
+&lt;/h1&gt;
+
+&lt;p style=&quot;margin:12px 0 0;
+color:#000000;
+font-size:15px;
+line-height:22px;&quot;&gt;
+The approval request has been rejected. Please review the details below.
+&lt;/p&gt;
+
+&lt;/td&gt;
+&lt;/tr&gt;
+
+
+
+
+
+&lt;!-- Body --&gt;
+&lt;tr&gt;
+&lt;td bgcolor=&quot;#FFFFFF&quot;
+style=&quot;padding:30px;
+font-family:Arial,Helvetica,sans-serif;
+color:#444444;&quot;&gt;
+
+&lt;p style=&quot;margin:0 0 18px;
+font-size:16px;
+line-height:24px;&quot;&gt;
+Hello &lt;strong&gt;{0}&lt;/strong&gt;,
+&lt;/p&gt;
+
+&lt;p style=&quot;margin:0 0 18px;
+font-size:15px;
+line-height:26px;&quot;&gt;
+Your approval request for Contract &lt;strong&gt;{1}&lt;/strong&gt; has been rejected by the &lt;strong&gt;{2}.&lt;/strong&gt;
+&lt;/p&gt;
+
+&lt;p style=&quot;margin:5px 0 25px;
+font-size:15px;
+line-height:26px;&quot;&gt;
+You can view the contract using the button below.
+&lt;/p&gt;
+
+&lt;!-- CTA --&gt;
+&lt;table align=&quot;center&quot; cellpadding=&quot;0&quot; cellspacing=&quot;0&quot; border=&quot;0&quot;&gt;
+&lt;tr&gt;
+
+&lt;td align=&quot;center&quot; bgcolor=&quot;#E9D7C2&quot;&gt;
+&lt;a href=&quot;{3}&quot;
+style=&quot;display:block;
+width:180px;
+line-height:46px;
+text-align:center;
+text-decoration:none;
+color:#4A3103;
+font-family:Arial,Helvetica,sans-serif;
+font-size:15px;
+font-weight:bold;&quot;&gt;
+View Contract
+&lt;/a&gt;
+&lt;/td&gt;
+
+&lt;/tr&gt;
+&lt;/table&gt;
+
+
+&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;!-- Footer --&gt;
+&lt;tr&gt;
+&lt;td bgcolor=&quot;#F9F6EF&quot;
+style=&quot;background-color:#dbbc9a;
+padding:22px;
+text-align:center;
+border-top:1px solid #ECE4D5;
+font-family:Arial,Helvetica,sans-serif;&quot;&gt;
+
+&lt;p style=&quot;margin:0;
+color:#000000;
+font-size:14px;&quot;&gt;
+Regards,
+&lt;/p&gt;
+
+&lt;p style=&quot;margin:8px 0 0;
+color:#4A3103;
+font-size:15px;
+font-weight:bold;&quot;&gt;
+CRM System
+&lt;/p&gt;
+
+&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;/table&gt;
+
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/table&gt;
+
+&lt;/body&gt;
+&lt;/html&gt;</value>
+    </values>
+    <values>
+        <field>Subject__c</field>
+        <value xsi:type="xsd:string">Approval Request Rejected</value>
+    </values>
+</CustomMetadata>

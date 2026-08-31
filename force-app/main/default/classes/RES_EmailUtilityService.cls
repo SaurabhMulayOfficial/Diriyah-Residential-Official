@@ -86,6 +86,13 @@ public class RES_EmailUtilityService {
         email.setSubject(subject);
     }
 
+    public virtual void setSubject(String subject, List<String> mergeFields){
+        if(mergeFields != null && mergeFields.size() > 0){
+            subject = hydrateMergeFields(subject, mergeFields);
+        }
+        email.setSubject(subject);
+    }
+
     public virtual void setOrgWideEmailAddressId(Id orgWideEmailAddressId) {
         email.setOrgWideEmailAddressId(orgWideEmailAddressId);
     }
