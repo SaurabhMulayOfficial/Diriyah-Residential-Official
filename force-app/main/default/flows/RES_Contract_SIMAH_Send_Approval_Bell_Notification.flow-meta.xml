@@ -7,6 +7,9 @@
         <locationY>0</locationY>
         <actionName>customNotificationAction</actionName>
         <actionType>customNotificationAction</actionType>
+        <connector>
+            <targetReference>Populate_Merge_Fields</targetReference>
+        </connector>
         <flowTransactionModel>CurrentTransaction</flowTransactionModel>
         <inputParameters>
             <name>customNotifTypeId</name>
@@ -63,6 +66,57 @@
             <targetReference>Loop_On_Members</targetReference>
         </connector>
     </assignments>
+    <assignments>
+        <name>Populate_Merge_Fields</name>
+        <label>Populate Merge Fields</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignmentItems>
+            <assignToReference>mergeFields</assignToReference>
+            <operator>Add</operator>
+            <value>
+                <stringValue>Sales Operations Team</stringValue>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>mergeFields</assignToReference>
+            <operator>Add</operator>
+            <value>
+                <elementReference>Get_Approval_Work_Item.Name</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>mergeFields</assignToReference>
+            <operator>Add</operator>
+            <value>
+                <elementReference>contractNumber</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>mergeFields</assignToReference>
+            <operator>Add</operator>
+            <value>
+                <elementReference>Get_Approval_Work_Item.Status</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>mergeFields</assignToReference>
+            <operator>Add</operator>
+            <value>
+                <elementReference>contractURL</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>mergeFields</assignToReference>
+            <operator>Add</operator>
+            <value>
+                <elementReference>approvalWorkItemURL</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Send_Notification_To_Public_Group</targetReference>
+        </connector>
+    </assignments>
     <decisions>
         <name>Is_Group_Retrieved</name>
         <label>Is Group Retrieved</label>
@@ -109,6 +163,30 @@
     </decisions>
     <environments>Default</environments>
     <formulas>
+        <name>approvalWorkItemURL</name>
+        <dataType>String</dataType>
+        <expression>LEFT(
+    {!$Api.Partner_Server_URL_610},
+    FIND(&quot;/services&quot;, {!$Api.Partner_Server_URL_610})
+)
+&amp;
+&quot;/&quot;
+&amp;
+{!Get_Approval_Work_Item.Id}</expression>
+    </formulas>
+    <formulas>
+        <name>contractURL</name>
+        <dataType>String</dataType>
+        <expression>LEFT(
+    {!$Api.Partner_Server_URL_610},
+    FIND(&quot;/services&quot;, {!$Api.Partner_Server_URL_610})
+)
+&amp;
+&quot;/&quot;
+&amp;
+{!contractRecordId}</expression>
+    </formulas>
+    <formulas>
         <name>notificationBody</name>
         <dataType>String</dataType>
         <expression>&quot;Approval Required: SIMAH Report for &quot; &amp; {!contractNumber} &amp; &quot; has been uploaded and requires your review.&quot;</expression>
@@ -149,13 +227,41 @@
     </processMetadataValues>
     <processType>AutoLaunchedFlow</processType>
     <recordLookups>
+        <name>Get_Approval_Work_Item</name>
+        <label>Get Approval Work Item</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Get_Public_Group</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Status</field>
+            <operator>EqualTo</operator>
+            <value>
+                <stringValue>Assigned</stringValue>
+            </value>
+        </filters>
+        <filters>
+            <field>RelatedRecordId</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>contractRecordId</elementReference>
+            </value>
+        </filters>
+        <getFirstRecordOnly>true</getFirstRecordOnly>
+        <object>ApprovalWorkItem</object>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
+    <recordLookups>
         <name>Get_Custom_Notification</name>
         <label>Get Custom Notification</label>
         <locationX>0</locationX>
         <locationY>0</locationY>
         <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
         <connector>
-            <targetReference>Get_Public_Group</targetReference>
+            <targetReference>Get_Approval_Work_Item</targetReference>
         </connector>
         <filterLogic>and</filterLogic>
         <filters>
@@ -219,6 +325,43 @@
         </connector>
     </start>
     <status>Active</status>
+    <subflows>
+        <name>Send_Notification_To_Public_Group</name>
+        <label>Send Notification To Public Group</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <flowName>RES_Autolaunched_Flow_Send_Notification_To_Public_Group</flowName>
+        <inputAssignments>
+            <name>emailTemplateName</name>
+            <value>
+                <stringValue>RES_Sales_Ops_Work_Item_Pending_Approval</stringValue>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <name>mergeFields</name>
+            <value>
+                <elementReference>mergeFields</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <name>publicGroupDeveloperName</name>
+            <value>
+                <stringValue>RES_Sales_Operations_Team</stringValue>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <name>recordId</name>
+            <value>
+                <elementReference>contractRecordId</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <name>sendBellNotification</name>
+            <value>
+                <booleanValue>false</booleanValue>
+            </value>
+        </inputAssignments>
+    </subflows>
     <variables>
         <name>contractNumber</name>
         <dataType>String</dataType>
@@ -231,6 +374,13 @@
         <dataType>String</dataType>
         <isCollection>false</isCollection>
         <isInput>true</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <name>mergeFields</name>
+        <dataType>String</dataType>
+        <isCollection>true</isCollection>
+        <isInput>false</isInput>
         <isOutput>false</isOutput>
     </variables>
     <variables>
