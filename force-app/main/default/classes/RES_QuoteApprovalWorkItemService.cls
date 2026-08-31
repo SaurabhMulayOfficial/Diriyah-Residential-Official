@@ -1,6 +1,9 @@
 /**
  * Business logic for Quote Discount approval orchestration, backed by the
  * standard ApprovalWorkItem object rather than a custom audit log.
+ * Querying is delegated to RES_ApprovalWorkItemDAOLayer per the project's
+ * DAO-layer convention (see RES_QuoteDAOLayer et al.) - this class holds
+ * only the orchestration/aggregation logic, no inline SOQL.
  */
 public with sharing class RES_QuoteApprovalWorkItemService {
     /**
@@ -13,15 +16,7 @@ public with sharing class RES_QuoteApprovalWorkItemService {
             return countsByQuoteId;
         }
 
-        for (AggregateResult result : [
-            SELECT RelatedRecordId quoteId, COUNT(Id) rejectionCount
-            FROM ApprovalWorkItem
-            WHERE RelatedRecordId IN :quoteIds
-            AND RelatedRecordObjectName = 'Quote'
-            AND Status = 'Rejected'
-            WITH SYSTEM_MODE
-            GROUP BY RelatedRecordId
-        ]) {
+        for (AggregateResult result : new RES_ApprovalWorkItemDAOLayer().getRejectionCountsByQuoteIds(quoteIds)) {
             countsByQuoteId.put(
                 (Id) result.get('quoteId'),
                 (Integer) result.get('rejectionCount')
