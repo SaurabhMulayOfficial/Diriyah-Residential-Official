@@ -9,16 +9,27 @@ public class RES_OpportunityStageUpdateValidationTest {
             .getRecordTypeInfosByDeveloperName()
             .get(System.Label.RES_Quote_Residential_Sales_RT)
             .getRecordTypeId();
-        Quote quoteObj = RES_TestDataFactory.createQuote('Test Quote', singleOpportunity.Id, Test.getStandardPricebookId(), 'Customer Approved', quoteRecordTypeId);
+        // Created at Draft and synced first, then separately moved to Customer Approved - matches
+        // the real sequence (a quote is always synced well before reaching Customer Approved) and
+        // avoids DIR-869's RES_Customer_Approved_Quote_Locked rule blocking a same-transaction
+        // insert-at-Customer-Approved-then-sync, which is not a real scenario, only a test shortcut.
+        Quote quoteObj = RES_TestDataFactory.createQuote('Test Quote', singleOpportunity.Id, Test.getStandardPricebookId(), 'Draft', quoteRecordTypeId);
         singleOpportunity.SyncedQuoteId = quoteObj.Id;
         update singleOpportunity;
+        update new Quote(Id = quoteObj.Id, Status = 'Customer Approved');
         
         Account diriyahAccount = RES_TestDataFactory.createCompanyRTAccount('Diriyah', '3434343434');
         Opportunity diriyahOpportunity = RES_TestDataFactory.createSingleBuyerOpportunity('Diriyah', diriyahAccount.Id, 'Unit Selected', Date.Today().addDays(30), 'Amansamar Residences Wadi Safar');
         diriyahOpportunity.Pricebook2Id = Test.getStandardPricebookId();
         update diriyahOpportunity;
-        Quote diriyahQuote = RES_TestDataFactory.createQuote('Test Quote', diriyahOpportunity.Id, Test.getStandardPricebookId(), 'Customer Approved', quoteRecordTypeId);
+        // Created at Draft with its line item added first, then separately moved to Customer
+        // Approved - a real quote always has its line items in place before approval, and
+        // RES_Customer_Approved_QLI_Locked blocks inserting a line item once already approved.
+        Quote diriyahQuote = RES_TestDataFactory.createQuote('Test Quote', diriyahOpportunity.Id, Test.getStandardPricebookId(), 'Draft', quoteRecordTypeId);
         QuoteLineItem qli = RES_TestDataFactory.createQuoteLineItem(diriyahQuote.Id, 1, 100);
+        diriyahOpportunity.SyncedQuoteId = diriyahQuote.Id;
+        update diriyahOpportunity;
+        update new Quote(Id = diriyahQuote.Id, Status = 'Customer Approved');
         Test.stopTest();
     }
     
