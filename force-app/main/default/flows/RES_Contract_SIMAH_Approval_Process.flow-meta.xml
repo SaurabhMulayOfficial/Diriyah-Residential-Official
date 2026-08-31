@@ -7,10 +7,7 @@
         <label>Approved Or Rejected?</label>
         <locationX>0</locationX>
         <locationY>0</locationY>
-        <defaultConnector>
-            <targetReference>Rejection_Stage</targetReference>
-        </defaultConnector>
-        <defaultConnectorLabel>Rejected</defaultConnectorLabel>
+        <defaultConnectorLabel>Default</defaultConnectorLabel>
         <rules>
             <name>Approved</name>
             <conditionLogic>and</conditionLogic>
@@ -25,6 +22,21 @@
                 <targetReference>Approval_Stage</targetReference>
             </connector>
             <label>Approved</label>
+        </rules>
+        <rules>
+            <name>Rejected</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>Step1.Outputs.approvalDecision</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Reject</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Rejection_Stage</targetReference>
+            </connector>
+            <label>Rejected</label>
         </rules>
     </decisions>
     <description>DIR-1439
@@ -58,6 +70,40 @@ Finance manually verifies the client on the external SIMAH portal (outside Sales
             <shouldLock>false</shouldLock>
             <stepSubtype>BackgroundStep</stepSubtype>
         </stageSteps>
+        <stageSteps>
+            <name>Send_Approved_Notification_To_Submitter</name>
+            <actionName>RES_Contract_SIMAH_Approval_Process_Send_Notification_To_Submitter</actionName>
+            <actionType>stepBackground</actionType>
+            <canAssigneeEdit>false</canAssigneeEdit>
+            <debugSimulateStep>false</debugSimulateStep>
+            <entryConditionLogic>and</entryConditionLogic>
+            <entryConditions>
+                <conditionType>EntryCondition</conditionType>
+                <leftValueReference>Update_SIMAH_Status_To_Approved.Status</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Completed</stringValue>
+                </rightValue>
+            </entryConditions>
+            <exitConditionLogic>and</exitConditionLogic>
+            <inputParameters>
+                <name>approvalOutcome</name>
+                <value>
+                    <stringValue>Approved</stringValue>
+                </value>
+            </inputParameters>
+            <inputParameters>
+                <name>recordId</name>
+                <value>
+                    <elementReference>$Record.Id</elementReference>
+                </value>
+            </inputParameters>
+            <label>Send Approved Notification To Submitter</label>
+            <requiresAsyncProcessing>false</requiresAsyncProcessing>
+            <runAsUser>false</runAsUser>
+            <shouldLock>false</shouldLock>
+            <stepSubtype>BackgroundStep</stepSubtype>
+        </stageSteps>
     </orchestratedStages>
     <orchestratedStages>
         <name>Rejection_Stage</name>
@@ -80,6 +126,40 @@ Finance manually verifies the client on the external SIMAH portal (outside Sales
                 </value>
             </inputParameters>
             <label>Update SIMAH Status To Rejected</label>
+            <requiresAsyncProcessing>false</requiresAsyncProcessing>
+            <runAsUser>false</runAsUser>
+            <shouldLock>false</shouldLock>
+            <stepSubtype>BackgroundStep</stepSubtype>
+        </stageSteps>
+        <stageSteps>
+            <name>Send_Rejected_Notification_To_Submitter</name>
+            <actionName>RES_Contract_SIMAH_Approval_Process_Send_Notification_To_Submitter</actionName>
+            <actionType>stepBackground</actionType>
+            <canAssigneeEdit>false</canAssigneeEdit>
+            <debugSimulateStep>false</debugSimulateStep>
+            <entryConditionLogic>and</entryConditionLogic>
+            <entryConditions>
+                <conditionType>EntryCondition</conditionType>
+                <leftValueReference>Update_SIMAH_Status_To_Rejected.Status</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Completed</stringValue>
+                </rightValue>
+            </entryConditions>
+            <exitConditionLogic>and</exitConditionLogic>
+            <inputParameters>
+                <name>approvalOutcome</name>
+                <value>
+                    <stringValue>Rejected</stringValue>
+                </value>
+            </inputParameters>
+            <inputParameters>
+                <name>recordId</name>
+                <value>
+                    <elementReference>$Record.Id</elementReference>
+                </value>
+            </inputParameters>
+            <label>Send Rejected Notification To Submitter</label>
             <requiresAsyncProcessing>false</requiresAsyncProcessing>
             <runAsUser>false</runAsUser>
             <shouldLock>false</shouldLock>

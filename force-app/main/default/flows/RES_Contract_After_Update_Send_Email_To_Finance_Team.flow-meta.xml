@@ -73,7 +73,7 @@
         <inputParameters>
             <name>groupMembers</name>
             <value>
-                <elementReference>Get_Finance_Queue_Members</elementReference>
+                <elementReference>Get_Finance_Public_Group_Members</elementReference>
                 <inputConfiguratorMode>Resource</inputConfiguratorMode>
             </value>
         </inputParameters>
@@ -115,7 +115,7 @@
                 </rightValue>
             </conditions>
             <connector>
-                <targetReference>Get_Finance_Queue</targetReference>
+                <targetReference>Get_Finance_Public_Group</targetReference>
             </connector>
             <label>Residential Sales RT</label>
         </rules>
@@ -143,8 +143,8 @@
         </rules>
     </decisions>
     <decisions>
-        <name>Is_Finance_Queue_Retrieved</name>
-        <label>Is Finance Queue Retrieved?</label>
+        <name>Is_Finance_Public_Group_Retrieved</name>
+        <label>Is Finance Public Group Retrieved?</label>
         <locationX>0</locationX>
         <locationY>0</locationY>
         <defaultConnectorLabel>No</defaultConnectorLabel>
@@ -152,14 +152,14 @@
             <name>Yes</name>
             <conditionLogic>and</conditionLogic>
             <conditions>
-                <leftValueReference>Get_Finance_Queue</leftValueReference>
+                <leftValueReference>Get_Finance_Public_Group</leftValueReference>
                 <operator>IsNull</operator>
                 <rightValue>
                     <booleanValue>false</booleanValue>
                 </rightValue>
             </conditions>
             <connector>
-                <targetReference>Get_Finance_Queue_Members</targetReference>
+                <targetReference>Get_Finance_Public_Group_Members</targetReference>
             </connector>
             <label>Yes</label>
         </rules>
@@ -201,7 +201,7 @@ The SIMAH Form is sent to every customer regardless of Project (Residential Sale
         <label>Loop On Members</label>
         <locationX>0</locationX>
         <locationY>0</locationY>
-        <collectionReference>Get_Finance_Queue_Members</collectionReference>
+        <collectionReference>Get_Finance_Public_Group_Members</collectionReference>
         <iterationOrder>Asc</iterationOrder>
         <nextValueConnector>
             <targetReference>Add_Recipients</targetReference>
@@ -251,13 +251,13 @@ The SIMAH Form is sent to every customer regardless of Project (Residential Sale
         <storeOutputAutomatically>true</storeOutputAutomatically>
     </recordLookups>
     <recordLookups>
-        <name>Get_Finance_Queue</name>
-        <label>Get Finance Queue</label>
+        <name>Get_Finance_Public_Group</name>
+        <label>Get Finance Public Group</label>
         <locationX>0</locationX>
         <locationY>0</locationY>
         <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
         <connector>
-            <targetReference>Is_Finance_Queue_Retrieved</targetReference>
+            <targetReference>Is_Finance_Public_Group_Retrieved</targetReference>
         </connector>
         <filterLogic>and</filterLogic>
         <filters>
@@ -272,8 +272,8 @@ The SIMAH Form is sent to every customer regardless of Project (Residential Sale
         <storeOutputAutomatically>true</storeOutputAutomatically>
     </recordLookups>
     <recordLookups>
-        <name>Get_Finance_Queue_Members</name>
-        <label>Get Finance Queue Members</label>
+        <name>Get_Finance_Public_Group_Members</name>
+        <label>Get Finance Public Group Members</label>
         <locationX>0</locationX>
         <locationY>0</locationY>
         <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
@@ -285,7 +285,7 @@ The SIMAH Form is sent to every customer regardless of Project (Residential Sale
             <field>GroupId</field>
             <operator>EqualTo</operator>
             <value>
-                <elementReference>Get_Finance_Queue.Id</elementReference>
+                <elementReference>Get_Finance_Public_Group.Id</elementReference>
             </value>
         </filters>
         <getFirstRecordOnly>false</getFirstRecordOnly>
@@ -371,7 +371,7 @@ The SIMAH Form is sent to every customer regardless of Project (Residential Sale
         <isInput>true</isInput>
         <isOutput>false</isOutput>
         <value>
-            <stringValue>RES_Finance_Team</stringValue>
+            <stringValue>RES_Finance_Team_Group</stringValue>
         </value>
     </variables>
     <variables>
