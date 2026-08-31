@@ -27,15 +27,17 @@
         <!-- =====================================================QUEUE TABS ===================================================== -->
         <template if:true={showQueueTabs}>
             <div class="queue-tabs slds-p-horizontal_medium">
+                <!-- Draft & Rejected Units Tab FIRST -->
+                <template if:true={canViewRejected}>
+                    <button class={rejectedTabClass} onclick={handleRejectedTab}>
+                        <span>Draft & Rejected Units</span>
+                    </button>
+                </template>
+                <!-- Other Approval Queue Tabs -->
                 <template for:each={availableQueues} for:item="queue">
                     <button key={queue.level} class={queue.cssClass} data-level={queue.level}
                         onclick={handleQueueChange}>
                         <span>{queue.queueLabel}</span>
-                    </button>
-                </template>
-                <template if:true={canViewRejected}>
-                    <button class={rejectedTabClass} onclick={handleRejectedTab}>
-                        <span>Rejected Units</span>
                     </button>
                 </template>
             </div>
@@ -73,6 +75,11 @@
                     <template if:true={canReject}>
                         <lightning-button variant="destructive-text" label="Reject" icon-name="utility:close"
                             onclick={handleBulkReject} disabled={isProcessing}>
+                        </lightning-button>
+                    </template>
+                    <template if:true={canSubmitForApproval}>
+                        <lightning-button variant="brand" label="Submit for Approval" icon-name="utility:forward"
+                            onclick={handleBulkSubmitForApproval} disabled={isProcessing}>
                         </lightning-button>
                     </template>
                     <lightning-button label="Clear Selection" onclick={handleClearSelection} disabled={isProcessing}>
@@ -116,7 +123,7 @@
         <template if:true={showRecords}>
             <div class="desktop-view">
                 <lightning-datatable key-field="Id" data={products} columns={activeColumns} selected-rows={selectedProductIds}
-                    onrowselection={handleRowSelection} onrowaction={handleRowAction}
+                    onrowselection={handleRowSelection}
                     hide-checkbox-column={hideCheckboxColumn} enable-infinite-loading={hasMore}
                     onloadmore={handleLoadMore} is-loading={isLoadingMore}>
                 </lightning-datatable>
@@ -124,22 +131,26 @@
 
             <!-- =================================================MOBILE CARD VIEW ================================================= -->
             <div class="mobile-view">
-                <div class="mobile-select-all">
-                    <lightning-input type="checkbox" label="Select all visible" checked={allVisibleSelected}
-                        onchange={handleSelectAllMobile}>
-                    </lightning-input>
-                </div>
+                <template if:false={hideCheckboxColumn}>
+                    <div class="mobile-select-all">
+                        <lightning-input type="checkbox" label="Select all visible" checked={allVisibleSelected}
+                            onchange={handleSelectAllMobile}>
+                        </lightning-input>
+                    </div>
+                </template>
                 <div class="product-list">
                     <template for:each={products} for:item="product">
                         <article key={product.Id} class="product-card">
                             <!-- Card Header -->
                             <div class="product-card-header">
-                                <div class="product-selection">
-                                    <lightning-input type="checkbox" variant="label-hidden" label="Select Product"
-                                        data-id={product.Id} checked={product.selected}
-                                        onchange={handleMobileSelection}>
-                                    </lightning-input>
-                                </div>
+                                <template if:false={hideCheckboxColumn}>
+                                    <div class="product-selection">
+                                        <lightning-input type="checkbox" variant="label-hidden" label="Select Product"
+                                            data-id={product.Id} checked={product.selected}
+                                            onchange={handleMobileSelection}>
+                                        </lightning-input>
+                                    </div>
+                                </template>
                                 <div class="product-title">
                                     <div class="product-name">
                                         {product.Name}
@@ -148,21 +159,6 @@
                                         {product.ProductCode}
                                     </div>
                                 </div>
-                                <template if:false={isRejectedTab}>
-                                    <div class="product-menu">
-                                        <lightning-button-menu alternative-text="Product actions" data-id={product.Id}
-                                            onselect={handleMobileAction}>
-                                            <template if:true={canApprove}>
-                                                <lightning-menu-item value="approve" label="Approve">
-                                                </lightning-menu-item>
-                                            </template>
-                                            <template if:true={canReject}>
-                                                <lightning-menu-item value="reject" label="Reject">
-                                                </lightning-menu-item>
-                                            </template>
-                                        </lightning-button-menu>
-                                    </div>
-                                </template>
                             </div>
                             <!-- Status -->
                             <div class="product-status">
@@ -240,23 +236,6 @@
                                     </span>
                                 </div>
                             </div>
-
-                            <!-- Mobile Actions -->
-                            <template if:false={isRejectedTab}>
-                                <div class="mobile-actions">
-                                    <template if:true={canApprove}>
-                                        <lightning-button variant="brand" label="Approve" icon-name="utility:check"
-                                            data-id={product.Id} onclick={handleMobileApprove} disabled={isProcessing}>
-                                        </lightning-button>
-                                    </template>
-                                    <template if:true={canReject}>
-                                        <lightning-button variant="destructive-text" label="Reject"
-                                            icon-name="utility:close" data-id={product.Id} onclick={handleMobileReject}
-                                            disabled={isProcessing}>
-                                        </lightning-button>
-                                    </template>
-                                </div>
-                            </template>
                         </article>
                     </template>
                 </div>
@@ -337,6 +316,35 @@
         <div class="slds-backdrop slds-backdrop_open"></div>
     </template>
 
+    <!-- =========================================================SUBMIT FOR APPROVAL MODAL========================================================= -->
+    <template if:true={showSubmitForApprovalModal}>
+        <section role="dialog" tabindex="-1" aria-modal="true" aria-labelledby="submit-heading"
+            class="slds-modal slds-fade-in-open">
+            <div class="slds-modal__container">
+                <header class="slds-modal__header">
+                    <h2 id="submit-heading" class="slds-text-heading_medium">
+                        Submit for Approval
+                    </h2>
+                </header>
+                <div class="slds-modal__content slds-p-around_medium">
+                    <p>
+                        {submitForApprovalConfirmationMessage}
+                    </p>
+                    <p class="confirmation-note">
+                        {submitForApprovalNote}
+                    </p>
+                </div>
+                <footer class="slds-modal__footer">
+                    <lightning-button label="Cancel" onclick={closeSubmitForApprovalModal}>
+                    </lightning-button>
+                    <lightning-button class="slds-m-left_small" variant="brand" label="Submit for Approval"
+                        onclick={confirmSubmitForApproval} disabled={isProcessing}>
+                    </lightning-button>
+                </footer>
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open"></div>
+    </template>
 
     <!-- =========================================================RESULT MODAL========================================================= -->
     <template if:true={showResultModal}>

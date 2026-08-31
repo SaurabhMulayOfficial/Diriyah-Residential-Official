@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <label>Product Final Approval Notification</label>
+    <protected>false</protected>
+    <values>
+        <field>Html_Body__c</field>
+        <value xsi:type="xsd:string">&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;head&gt;
+&lt;meta charset=&quot;UTF-8&quot;&gt;
+&lt;/head&gt;
+&lt;body style=&quot;margin:0;padding:0;background-color:#F4F4F4;&quot;&gt;
+&lt;table width=&quot;100%&quot; cellpadding=&quot;0&quot; cellspacing=&quot;0&quot; border=&quot;0&quot; bgcolor=&quot;#F4F4F4&quot;&gt;
+&lt;tr&gt;
+&lt;td align=&quot;center&quot; style=&quot;padding:30px 15px;&quot;&gt;
+&lt;table width=&quot;600&quot; cellpadding=&quot;0&quot; cellspacing=&quot;0&quot; border=&quot;0&quot; style=&quot;background:#FFFFFF;border-collapse:collapse;border-radius:10px;overflow:hidden;&quot;&gt;
+
+&lt;!-- Header --&gt;
+&lt;tr&gt;
+&lt;td style=&quot;background-color:#dbbc91;padding:30px;text-align:center;font-family:Arial,Helvetica,sans-serif;&quot;&gt;
+&lt;h1 style=&quot;margin:0;color:#4A3103;font-size:32px;font-weight:bold;line-height:40px;&quot;&gt;Final Approval Complete!&lt;/h1&gt;
+&lt;p style=&quot;margin:12px 0 0;color:#000000;font-size:16px;line-height:22px;font-weight:600;&quot;&gt;Units Are Now Available for Sale&lt;/p&gt;
+&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;!-- Body --&gt;
+&lt;tr&gt;
+&lt;td bgcolor=&quot;#FFFFFF&quot; style=&quot;padding:35px;font-family:Arial,Helvetica,sans-serif;color:#444444;&quot;&gt;
+
+&lt;p style=&quot;margin:0 0 20px;font-size:16px;line-height:24px;&quot;&gt;
+Dear &lt;strong&gt;{0}&lt;/strong&gt;,
+&lt;/p&gt;
+
+&lt;p style=&quot;margin:0 0 25px;font-size:15px;line-height:26px;&quot;&gt;
+Great news! The &lt;strong&gt;{1}&lt;/strong&gt; has given &lt;strong&gt;final approval&lt;/strong&gt; for &lt;strong&gt;{2} units&lt;/strong&gt;.
+&lt;/p&gt;
+
+&lt;!-- Success Badge --&gt;
+&lt;table width=&quot;100%&quot; cellpadding=&quot;15&quot; cellspacing=&quot;0&quot; border=&quot;0&quot; style=&quot;background-color:#E8F5E9;border:2px solid #2E7D4F;border-radius:8px;margin-bottom:25px;&quot;&gt;
+&lt;tr&gt;
+&lt;td style=&quot;text-align:center;font-family:Arial,Helvetica,sans-serif;&quot;&gt;
+&lt;div style=&quot;font-size:18px;font-weight:bold;color:#2E7D4F;margin-bottom:8px;&quot;&gt;🎉 Approval Process Complete&lt;/div&gt;
+&lt;div style=&quot;font-size:14px;color:#1B5E20;&quot;&gt;All units have passed through DevCo → Finance → CSO approval&lt;/div&gt;
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/table&gt;
+
+&lt;!-- Unit Count Box --&gt;
+&lt;table width=&quot;100%&quot; cellpadding=&quot;20&quot; cellspacing=&quot;0&quot; border=&quot;0&quot; bgcolor=&quot;#FBF8F2&quot; style=&quot;background-color:#FBF8F2;border:1px solid #EADFC9;border-collapse:collapse;margin-bottom:25px;&quot;&gt;
+&lt;tr&gt;
+&lt;td style=&quot;text-align:center;font-family:Arial,Helvetica,sans-serif;&quot;&gt;
+&lt;div style=&quot;font-size:48px;font-weight:bold;color:#2E7D4F;margin:0 0 10px;&quot;&gt;{2}&lt;/div&gt;
+&lt;div style=&quot;font-size:16px;color:#444444;font-weight:600;&quot;&gt;Units Now Available&lt;/div&gt;
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/table&gt;
+
+&lt;p style=&quot;margin:0;font-size:14px;line-height:24px;color:#666;text-align:center;&quot;&gt;
+Congratulations on completing the approval workflow!
+&lt;/p&gt;
+
+&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;!-- Footer --&gt;
+&lt;tr&gt;
+&lt;td style=&quot;background-color:#dbbc91;padding:22px;text-align:center;border-top:1px solid #ECE4D5;font-family:Arial,Helvetica,sans-serif;&quot;&gt;
+&lt;p style=&quot;margin:0;color:#000000;font-size:14px;&quot;&gt;Regards,&lt;/p&gt;
+&lt;p style=&quot;margin:8px 0 0;color:#4A3103;font-size:15px;font-weight:bold;&quot;&gt;Diriyah Product Approval System&lt;/p&gt;
+&lt;p style=&quot;margin:12px 0 0;color:#000000;font-size:12px;line-height:18px;&quot;&gt;This is an automated notification from the Diriyah Sales system. Please do not reply to this address.&lt;/p&gt;
+&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;/table&gt;
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/table&gt;
+&lt;/body&gt;
+&lt;/html&gt;</value>
+    </values>
+    <values>
+        <field>Subject__c</field>
+        <value xsi:type="xsd:string">Product Approval Completed - Units Approved</value>
+    </values>
+</CustomMetadata>

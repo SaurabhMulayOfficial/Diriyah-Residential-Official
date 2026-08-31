@@ -86,6 +86,7 @@ public with sharing class RES_ProductApprovalStateService {
     public static Boolean canReject(String status) {
         return (
             status == 'Draft' ||
+            status == 'Pending DevCo Approval' ||
             status == 'Pending Finance Approval' ||
             status == 'Pending CSO Approval'
         );
