@@ -159,7 +159,11 @@ public with sharing class RES_LeadServices {
         }
         l.RES_SLA_Start_Time__c = SYSTEM.now();
         l.RES_SLA_Status__c = 'Running';
-        l.RES_SLA_Due_Time__c = BusinessHours.add(bh.Id,SYSTEM.now(), slaInHours * 60 * 60 * 1000);
+
+        Long randomMs = 60000L + (Long)(Math.random() * 1740001);
+        Long expectedTime = (Long)slaInHours * 60L * 60L * 1000L;
+        Long diff = expectedTime - randomMs;    
+        l.RES_SLA_Due_Time__c = BusinessHours.add(bh.Id,SYSTEM.now(), diff);
     }
 
 
