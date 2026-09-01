@@ -126,7 +126,7 @@
         <connector>
             <targetReference>Check_Flow_Switch</targetReference>
         </connector>
-        <filterLogic>1 OR 2</filterLogic>
+        <filterLogic>1 AND (2 OR 3)</filterLogic>
         <filters>
             <field>IsSyncing</field>
             <operator>EqualTo</operator>
@@ -136,6 +136,13 @@
         </filters>
         <filters>
             <field>Status</field>
+            <operator>IsChanged</operator>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </filters>
+        <filters>
+            <field>IsSyncing</field>
             <operator>IsChanged</operator>
             <value>
                 <booleanValue>true</booleanValue>
