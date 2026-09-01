@@ -17,6 +17,22 @@
         </sharedFrom>
     </sharingOwnerRules>
     <sharingOwnerRules>
+        <fullName>RES_Specialist_Owned_Accounts_Shared_With_ED_Treasury</fullName>
+        <accessLevel>Read</accessLevel>
+        <accountSettings>
+            <caseAccessLevel>None</caseAccessLevel>
+            <contactAccessLevel>Read</contactAccessLevel>
+            <opportunityAccessLevel>None</opportunityAccessLevel>
+        </accountSettings>
+        <label>Specialist Owned Accounts Shared With ED Treasury</label>
+        <sharedTo>
+            <group>RES_Executive_Director_Treasury</group>
+        </sharedTo>
+        <sharedFrom>
+            <group>RES_Specialist_Roles_Group</group>
+        </sharedFrom>
+    </sharingOwnerRules>
+    <sharingOwnerRules>
         <fullName>RES_Specialist_Owned_Accounts_Shared_With_Finance</fullName>
         <accessLevel>Edit</accessLevel>
         <accountSettings>
