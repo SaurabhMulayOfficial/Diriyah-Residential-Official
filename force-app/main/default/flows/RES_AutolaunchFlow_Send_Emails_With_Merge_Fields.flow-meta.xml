@@ -12,7 +12,6 @@
             <name>customNotifTypeId</name>
             <value>
                 <elementReference>CustomNotificationId</elementReference>
-                <inputConfiguratorMode>Resource</inputConfiguratorMode>
             </value>
         </inputParameters>
         <inputParameters>
@@ -25,28 +24,24 @@
             <name>senderId</name>
             <value>
                 <elementReference>$User.Id</elementReference>
-                <inputConfiguratorMode>Resource</inputConfiguratorMode>
             </value>
         </inputParameters>
         <inputParameters>
             <name>title</name>
             <value>
                 <elementReference>NotificationTitle</elementReference>
-                <inputConfiguratorMode>Resource</inputConfiguratorMode>
             </value>
         </inputParameters>
         <inputParameters>
             <name>body</name>
             <value>
                 <elementReference>NotificationBody</elementReference>
-                <inputConfiguratorMode>Resource</inputConfiguratorMode>
             </value>
         </inputParameters>
         <inputParameters>
             <name>targetId</name>
             <value>
                 <elementReference>targetId</elementReference>
-                <inputConfiguratorMode>Resource</inputConfiguratorMode>
             </value>
         </inputParameters>
         <nameSegment>customNotificationAction</nameSegment>
@@ -64,14 +59,12 @@
             <name>emailBody</name>
             <value>
                 <elementReference>Get_Apex_Email_Template.Html_Body__c</elementReference>
-                <inputConfiguratorMode>Resource</inputConfiguratorMode>
             </value>
         </inputParameters>
         <inputParameters>
             <name>emailSubject</name>
             <value>
                 <elementReference>Get_Apex_Email_Template.Subject__c</elementReference>
-                <inputConfiguratorMode>Resource</inputConfiguratorMode>
             </value>
         </inputParameters>
         <inputParameters>
@@ -84,13 +77,18 @@
             <name>orgWideEmailAddressId</name>
             <value>
                 <elementReference>Get_Org_Wide_Email_Adress.Id</elementReference>
-                <inputConfiguratorMode>Resource</inputConfiguratorMode>
             </value>
         </inputParameters>
         <inputParameters>
             <name>recipients</name>
             <value>
                 <elementReference>recipients</elementReference>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>subjectMergeFields</name>
+            <value>
+                <elementReference>subjectMergeFields</elementReference>
             </value>
         </inputParameters>
         <nameSegment>RES_SendEmailInvocable</nameSegment>
@@ -440,6 +438,13 @@
     <variables>
         <description>Not Mandatory If GroupId Mentioned.</description>
         <name>recipients</name>
+        <dataType>String</dataType>
+        <isCollection>true</isCollection>
+        <isInput>true</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <name>subjectMergeFields</name>
         <dataType>String</dataType>
         <isCollection>true</isCollection>
         <isInput>true</isInput>
