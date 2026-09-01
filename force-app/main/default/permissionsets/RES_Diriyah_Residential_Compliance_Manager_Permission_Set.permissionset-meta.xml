@@ -1919,6 +1919,11 @@
         <field>Contract.ActivatedDate</field>
         <readable>true</readable>
     </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>Contract.RES_CRF_Form_Received__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
     <hasActivationRequired>false</hasActivationRequired>
     <label>Diriyah Residential – Compliance Manager Permission Set</label>
     <license>Salesforce</license>

@@ -19,7 +19,6 @@
             <name>opportunityId</name>
             <value>
                 <elementReference>recordId</elementReference>
-                <inputConfiguratorMode>Resource</inputConfiguratorMode>
             </value>
         </inputParameters>
         <nameSegment>RES_OpportunityClosedLostService</nameSegment>
@@ -28,6 +27,259 @@
     </actionCalls>
     <apiVersion>67.0</apiVersion>
     <areMetricsLoggedToDataCloud>false</areMetricsLoggedToDataCloud>
+    <decisions>
+        <name>Check_Document</name>
+        <label>Check Document</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Customer_refuses_to_sign_the_SPA</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>Get_Contract_for_Quote_On_SPA.RES_SPA_Signed__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Initiate_AC4_Customer_Refuses_SPA</targetReference>
+            </connector>
+            <label>Customer refuses to sign the SPA</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>Check_Existing_Approval_On_Contract</name>
+        <label>Check Existing Approval On Contract</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnector>
+            <targetReference>Documents_Check</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>No Active Approval</defaultConnectorLabel>
+        <rules>
+            <name>Approval_Already_In_Progress</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>Get_Existing_Contract_Approval</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Screen_Approval_Already_In_Progress</targetReference>
+            </connector>
+            <label>Approval Already In Progress</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>Check_Existing_SPA_Approval</name>
+        <label>Check Existing SPA Approval</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnector>
+            <targetReference>Check_Document</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>No Active Approval</defaultConnectorLabel>
+        <rules>
+            <name>SPA_Approval_Already_In_Progress</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>Get_Existing_SPA_Contract_Approval</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Screen_Approval_Already_In_Progress</targetReference>
+            </connector>
+            <label>SPA Approval Already In Progress</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>Documents_Check</name>
+        <label>Documents Check</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Fee_True_URC_False_CRF_True</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>Get_Primary_Quote_Opportunity.Contract.RES_Fee_Transferred__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>Get_Primary_Quote_Opportunity.Contract.RES_URC_Signed__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>Get_Primary_Quote_Opportunity.Contract.RES_CRF_Form_Received__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>GetOpportunity.StageName</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Reservation</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Initiate_Finance_CSO_Approval_1</targetReference>
+            </connector>
+            <label>Fee True, URC False, CRF True</label>
+        </rules>
+        <rules>
+            <name>Fee_True_URC_False_CRF_False</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>Get_Primary_Quote_Opportunity.Contract.RES_Fee_Transferred__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>Get_Primary_Quote_Opportunity.Contract.RES_URC_Signed__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>Get_Primary_Quote_Opportunity.Contract.RES_CRF_Form_Received__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>GetOpportunity.StageName</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Reservation</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>CRF_Required_Fee_Paid_URC_Not_Signed</targetReference>
+            </connector>
+            <label>Fee True, URC False, CRF False</label>
+        </rules>
+        <rules>
+            <name>Fee_True_URC_True_CRF_True</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>Get_Primary_Quote_Opportunity.Contract.RES_Fee_Transferred__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>Get_Primary_Quote_Opportunity.Contract.RES_URC_Signed__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>Get_Primary_Quote_Opportunity.Contract.RES_CRF_Form_Received__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>GetOpportunity.StageName</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Reservation</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Initiate_Finance_CSO_Approva_2</targetReference>
+            </connector>
+            <label>Fee True, URC True, CRF True</label>
+        </rules>
+        <rules>
+            <name>Fee_True_URC_True_CRF_False</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>Get_Primary_Quote_Opportunity.Contract.RES_Fee_Transferred__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>Get_Primary_Quote_Opportunity.Contract.RES_URC_Signed__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>Get_Primary_Quote_Opportunity.Contract.RES_CRF_Form_Received__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>GetOpportunity.StageName</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Reservation</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <isGoTo>true</isGoTo>
+                <targetReference>CRF_Required_Fee_Paid_URC_Not_Signed</targetReference>
+            </connector>
+            <label>Fee True, URC True, CRF False</label>
+        </rules>
+        <rules>
+            <name>URC_not_signed_and_Fee_not_paid</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>Get_Primary_Quote_Opportunity.Contract.RES_Fee_Transferred__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>Get_Primary_Quote_Opportunity.Contract.RES_URC_Signed__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>GetOpportunity.StageName</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Reservation</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Initiate_Finance_CSO_Approva_3</targetReference>
+            </connector>
+            <label>URC not signed and Fee not paid</label>
+        </rules>
+    </decisions>
     <decisions>
         <name>Is_Reason_Provided</name>
         <label>Is Reason Provided ?</label>
@@ -48,7 +300,7 @@
                 </rightValue>
             </conditions>
             <connector>
-                <targetReference>Update_Opportunity_as_Closed_Lost</targetReference>
+                <targetReference>Stage_Check</targetReference>
             </connector>
             <label>Yes</label>
         </rules>
@@ -76,6 +328,79 @@
                 <targetReference>Opportunity_Closed_Successfully</targetReference>
             </connector>
             <label>Yes</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>Stage_Check</name>
+        <label>Stage Check</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Proposal_Unit_Selected</name>
+            <conditionLogic>or</conditionLogic>
+            <conditions>
+                <leftValueReference>GetOpportunity.StageName</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Proposal</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>GetOpportunity.StageName</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Unit Selected</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Update_Opportunity_as_Closed_Lost</targetReference>
+            </connector>
+            <label>Proposal/Unit Selected</label>
+        </rules>
+        <rules>
+            <name>Reservation</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>GetOpportunity.StageName</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Reservation</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>GetOpportunity.SyncedQuote.IsSyncing</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Get_Primary_Quote_Opportunity</targetReference>
+            </connector>
+            <label>Reservation</label>
+        </rules>
+        <rules>
+            <name>SPA</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>GetOpportunity.StageName</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>SPA</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>GetOpportunity.SyncedQuote.IsSyncing</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Get_Contract_for_Quote_On_SPA</targetReference>
+            </connector>
+            <label>SPA</label>
         </rules>
     </decisions>
     <decisions>
@@ -129,6 +454,20 @@
                     <stringValue>Unit Selected</stringValue>
                 </rightValue>
             </conditions>
+            <conditions>
+                <leftValueReference>GetOpportunity.StageName</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Reservation</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>GetOpportunity.StageName</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>SPA</stringValue>
+                </rightValue>
+            </conditions>
             <connector>
                 <targetReference>Validate_Close_Date</targetReference>
             </connector>
@@ -166,6 +505,122 @@
     </processMetadataValues>
     <processType>Flow</processType>
     <recordLookups>
+        <name>Get_Contract_for_Quote_On_SPA</name>
+        <label>Get Contract for Quote On SPA</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Get_Existing_SPA_Contract_Approval</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>SourceOpportunityId</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>GetOpportunity.Id</elementReference>
+            </value>
+        </filters>
+        <filters>
+            <field>SourceQuoteId</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>GetOpportunity.SyncedQuoteId</elementReference>
+            </value>
+        </filters>
+        <getFirstRecordOnly>true</getFirstRecordOnly>
+        <object>Contract</object>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
+    <recordLookups>
+        <name>Get_Existing_Contract_Approval</name>
+        <label>Get Existing Contract Approval</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Check_Existing_Approval_On_Contract</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>RelatedRecordId</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>Get_Primary_Quote_Opportunity.ContractId</elementReference>
+            </value>
+        </filters>
+        <filters>
+            <field>Status</field>
+            <operator>EqualTo</operator>
+            <value>
+                <stringValue>Assigned</stringValue>
+            </value>
+        </filters>
+        <getFirstRecordOnly>true</getFirstRecordOnly>
+        <object>ApprovalWorkItem</object>
+        <queriedFields>Id</queriedFields>
+        <queriedFields>Status</queriedFields>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
+    <recordLookups>
+        <name>Get_Existing_SPA_Contract_Approval</name>
+        <label>Get Existing SPA Contract Approval</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Check_Existing_SPA_Approval</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>RelatedRecordId</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>Get_Contract_for_Quote_On_SPA.Id</elementReference>
+            </value>
+        </filters>
+        <filters>
+            <field>Status</field>
+            <operator>EqualTo</operator>
+            <value>
+                <stringValue>Assigned</stringValue>
+            </value>
+        </filters>
+        <getFirstRecordOnly>true</getFirstRecordOnly>
+        <object>ApprovalWorkItem</object>
+        <queriedFields>Id</queriedFields>
+        <queriedFields>Status</queriedFields>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
+    <recordLookups>
+        <name>Get_Primary_Quote_Opportunity</name>
+        <label>Get Primary Quote Opportunity</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Get_Existing_Contract_Approval</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>OpportunityId</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>GetOpportunity.Id</elementReference>
+            </value>
+        </filters>
+        <filters>
+            <field>IsSyncing</field>
+            <operator>EqualTo</operator>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </filters>
+        <getFirstRecordOnly>true</getFirstRecordOnly>
+        <object>Quote</object>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
+    <recordLookups>
         <name>GetOpportunity</name>
         <label>GetOpportunity</label>
         <locationX>0</locationX>
@@ -186,6 +641,213 @@
         <object>Opportunity</object>
         <storeOutputAutomatically>true</storeOutputAutomatically>
     </recordLookups>
+    <recordUpdates>
+        <name>Initiate_AC4_Customer_Refuses_SPA</name>
+        <label>Initiate AC4 Customer Refuses SPA</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Case_4_Refund_Approval_Submitted</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>RES_SPA_Signed__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <booleanValue>false</booleanValue>
+            </value>
+        </filters>
+        <filters>
+            <field>Id</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>Get_Contract_for_Quote_On_SPA.Id</elementReference>
+            </value>
+        </filters>
+        <inputAssignments>
+            <field>RES_Close_Lost_Reason_from_Opportunity__c</field>
+            <value>
+                <elementReference>Reason_for_lost</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>RES_Product_Approval_Stage__c</field>
+            <value>
+                <stringValue>Customer refuses to sign the SPA</stringValue>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Status</field>
+            <value>
+                <stringValue>Pending Cancellation Approval</stringValue>
+            </value>
+        </inputAssignments>
+        <object>Contract</object>
+    </recordUpdates>
+    <recordUpdates>
+        <name>Initiate_Finance_CSO_Approva_2</name>
+        <label>Initiate Finance CSO Approva 2</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Case_2_Refund_Approval_Submitted</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>RES_CRF_Form_Received__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </filters>
+        <filters>
+            <field>RES_Fee_Transferred__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </filters>
+        <filters>
+            <field>RES_URC_Signed__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </filters>
+        <filters>
+            <field>Id</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>Get_Primary_Quote_Opportunity.ContractId</elementReference>
+            </value>
+        </filters>
+        <inputAssignments>
+            <field>RES_Close_Lost_Reason_from_Opportunity__c</field>
+            <value>
+                <elementReference>Reason_for_lost</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>RES_Product_Approval_Stage__c</field>
+            <value>
+                <stringValue>Fee paid + URC signed</stringValue>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Status</field>
+            <value>
+                <stringValue>Pending Cancellation Approval</stringValue>
+            </value>
+        </inputAssignments>
+        <object>Contract</object>
+    </recordUpdates>
+    <recordUpdates>
+        <name>Initiate_Finance_CSO_Approva_3</name>
+        <label>Initiate Finance CSO Approva 3</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Case_3_Refund_Approval_Submitted</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>RES_Fee_Transferred__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <booleanValue>false</booleanValue>
+            </value>
+        </filters>
+        <filters>
+            <field>RES_URC_Signed__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <booleanValue>false</booleanValue>
+            </value>
+        </filters>
+        <filters>
+            <field>Id</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>Get_Primary_Quote_Opportunity.ContractId</elementReference>
+            </value>
+        </filters>
+        <inputAssignments>
+            <field>RES_Close_Lost_Reason_from_Opportunity__c</field>
+            <value>
+                <elementReference>Reason_for_lost</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>RES_Product_Approval_Stage__c</field>
+            <value>
+                <stringValue>Fee not paid + URC not signed</stringValue>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Status</field>
+            <value>
+                <stringValue>Pending Cancellation Approval</stringValue>
+            </value>
+        </inputAssignments>
+        <object>Contract</object>
+    </recordUpdates>
+    <recordUpdates>
+        <name>Initiate_Finance_CSO_Approval_1</name>
+        <label>Initiate Finance CSO Approval 1</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Case_1_Refund_Approval_Submitted</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>RES_CRF_Form_Received__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </filters>
+        <filters>
+            <field>RES_Fee_Transferred__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </filters>
+        <filters>
+            <field>RES_URC_Signed__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <booleanValue>false</booleanValue>
+            </value>
+        </filters>
+        <filters>
+            <field>Id</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>Get_Primary_Quote_Opportunity.ContractId</elementReference>
+            </value>
+        </filters>
+        <inputAssignments>
+            <field>RES_Close_Lost_Reason_from_Opportunity__c</field>
+            <value>
+                <elementReference>Reason_for_lost</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>RES_Product_Approval_Stage__c</field>
+            <value>
+                <stringValue>Fee paid + URC not signed</stringValue>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Status</field>
+            <value>
+                <stringValue>Pending Cancellation Approval</stringValue>
+            </value>
+        </inputAssignments>
+        <object>Contract</object>
+    </recordUpdates>
     <recordUpdates>
         <name>Update_Opportunity_as_Closed_Lost</name>
         <label>Update Opportunity as Closed Lost</label>
@@ -228,6 +890,126 @@
     </recordUpdates>
     <runInMode>DefaultMode</runInMode>
     <screens>
+        <name>Case_1_Refund_Approval_Submitted</name>
+        <label>Case 1 — Refund Approval Submitted</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <allowBack>false</allowBack>
+        <allowFinish>true</allowFinish>
+        <allowPause>false</allowPause>
+        <fields>
+            <name>RefundApprovalSubmittedCase1</name>
+            <fieldText>&lt;p&gt;&lt;strong&gt;Fee has been paid and URC has not been signed.&lt;/strong&gt;&lt;/p&gt;&lt;p&gt;The required refund approval has been initiated and is currently pending.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Approval flow: &lt;/strong&gt;&lt;span style=&quot;background-color: rgb(255, 255, 255);&quot;&gt;CSO → Finance&lt;/span&gt;&lt;/p&gt;&lt;p&gt;Once the required approvals are completed:&lt;/p&gt;&lt;ul&gt;&lt;li&gt;The Opportunity will be marked as &lt;strong&gt;Closed Lost&lt;/strong&gt;.&lt;/li&gt;&lt;li&gt;The Unit will be marked as &lt;strong&gt;Available&lt;/strong&gt;.&lt;/li&gt;&lt;li&gt;Finance will process the &lt;strong&gt;Full Fee Refund&lt;/strong&gt;.&lt;/li&gt;&lt;/ul&gt;&lt;p&gt;&lt;strong&gt;No further action is required from you at this time.&lt;/strong&gt;&lt;/p&gt;</fieldText>
+            <fieldType>DisplayText</fieldType>
+            <styleProperties>
+                <verticalAlignment>
+                    <stringValue>top</stringValue>
+                </verticalAlignment>
+                <width>
+                    <stringValue>12</stringValue>
+                </width>
+            </styleProperties>
+        </fields>
+        <showFooter>true</showFooter>
+        <showHeader>true</showHeader>
+    </screens>
+    <screens>
+        <name>Case_2_Refund_Approval_Submitted</name>
+        <label>Case 2 — Refund Approval Submitted</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <allowBack>false</allowBack>
+        <allowFinish>true</allowFinish>
+        <allowPause>false</allowPause>
+        <fields>
+            <name>RefundApprovalSubmittedCase2</name>
+            <fieldText>&lt;p&gt;&lt;strong&gt;Fee has been paid and URC has been signed.&lt;/strong&gt;&lt;/p&gt;&lt;p&gt;&lt;strong&gt;The required refund approval has been initiated and is currently pending.&lt;/strong&gt;&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Approval flow:&lt;/strong&gt; &lt;span style=&quot;background-color: rgb(255, 255, 255);&quot;&gt;CSO → Finance&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;The &lt;strong&gt;Reservation Amount will be retained&lt;/strong&gt;.&lt;/p&gt;&lt;p&gt;After approval:&lt;/p&gt;&lt;ul&gt;&lt;li&gt;If the amount paid is greater than the Reservation Amount, Finance will refund only the &lt;strong&gt;excess amount&lt;/strong&gt;.&lt;/li&gt;&lt;li&gt;If the amount paid is less than or equal to the Reservation Amount, &lt;strong&gt;no refund will be processed&lt;/strong&gt;.&lt;/li&gt;&lt;li&gt;The Opportunity will be marked as &lt;strong&gt;Closed Lost&lt;/strong&gt;.&lt;/li&gt;&lt;li&gt;The Unit will be marked as &lt;strong&gt;Available&lt;/strong&gt;.&lt;/li&gt;&lt;/ul&gt;&lt;p&gt;&lt;strong&gt;No further action is required from you at this time.&lt;/strong&gt;&lt;/p&gt;</fieldText>
+            <fieldType>DisplayText</fieldType>
+            <styleProperties>
+                <verticalAlignment>
+                    <stringValue>top</stringValue>
+                </verticalAlignment>
+                <width>
+                    <stringValue>12</stringValue>
+                </width>
+            </styleProperties>
+        </fields>
+        <showFooter>true</showFooter>
+        <showHeader>true</showHeader>
+    </screens>
+    <screens>
+        <name>Case_3_Refund_Approval_Submitted</name>
+        <label>Case 3 — Refund Approval Submitted</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <allowBack>false</allowBack>
+        <allowFinish>true</allowFinish>
+        <allowPause>false</allowPause>
+        <fields>
+            <name>RefundApprovalSubmittedCase3</name>
+            <fieldText>&lt;p&gt;&lt;strong&gt;Fee has not been paid and URC has not been signed.&lt;/strong&gt;&lt;/p&gt;&lt;p&gt;&lt;strong&gt;The Opportunity closure request has been submitted for the required approval.&lt;/strong&gt;&lt;/p&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Approval flow:&lt;/strong&gt; CSO&lt;/p&gt;&lt;p&gt;Once the CSO approval is completed:&lt;/p&gt;&lt;ul&gt;&lt;li&gt;The Opportunity will be marked as &lt;strong&gt;Closed Lost&lt;/strong&gt;.&lt;/li&gt;&lt;li&gt;The Unit will be marked as &lt;strong&gt;Available&lt;/strong&gt;.&lt;/li&gt;&lt;/ul&gt;&lt;p&gt;No refund processing is required for this scenario.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;No further action is required from you at this time.&lt;/strong&gt;&lt;/p&gt;</fieldText>
+            <fieldType>DisplayText</fieldType>
+            <styleProperties>
+                <verticalAlignment>
+                    <stringValue>top</stringValue>
+                </verticalAlignment>
+                <width>
+                    <stringValue>12</stringValue>
+                </width>
+            </styleProperties>
+        </fields>
+        <showFooter>true</showFooter>
+        <showHeader>true</showHeader>
+    </screens>
+    <screens>
+        <name>Case_4_Refund_Approval_Submitted</name>
+        <label>Case 4 — Refund Approval Submitted</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <allowBack>false</allowBack>
+        <allowFinish>true</allowFinish>
+        <allowPause>false</allowPause>
+        <fields>
+            <name>RefundApprovalSubmittedCase4</name>
+            <fieldText>&lt;p&gt;&lt;strong&gt;Customer refuses to sign the SPA.&lt;/strong&gt;&lt;/p&gt;&lt;p&gt;&lt;strong&gt;The required refund approval has been initiated and is currently pending.&lt;/strong&gt;&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Approval flow:&lt;/strong&gt; Operations → CSO → Fin AR → EDT → CFO&lt;/p&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;Once all required approvals are completed:&lt;/p&gt;&lt;ul&gt;&lt;li&gt;The Opportunity will be marked as &lt;strong&gt;Closed Lost&lt;/strong&gt;.&lt;/li&gt;&lt;li&gt;The Unit will be marked as &lt;strong&gt;Available&lt;/strong&gt;.&lt;/li&gt;&lt;li&gt;Finance will process the &lt;strong&gt;Full Fee Refund&lt;/strong&gt;.&lt;/li&gt;&lt;/ul&gt;&lt;p&gt;&lt;strong&gt;No further action is required from you at this time.&lt;/strong&gt;&lt;/p&gt;</fieldText>
+            <fieldType>DisplayText</fieldType>
+            <styleProperties>
+                <verticalAlignment>
+                    <stringValue>top</stringValue>
+                </verticalAlignment>
+                <width>
+                    <stringValue>12</stringValue>
+                </width>
+            </styleProperties>
+        </fields>
+        <showFooter>true</showFooter>
+        <showHeader>true</showHeader>
+    </screens>
+    <screens>
+        <name>CRF_Required_Fee_Paid_URC_Not_Signed</name>
+        <label>CRF Required - Fee Paid, URC Not Signed</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <allowBack>false</allowBack>
+        <allowFinish>true</allowFinish>
+        <allowPause>false</allowPause>
+        <fields>
+            <name>CRF_Required_Fee_Paid_URC_Not_SignedScreen</name>
+            <fieldText>&lt;p&gt;&lt;strong style=&quot;font-size: 18px;&quot;&gt;Customer Refund Form (CRF) Required&lt;/strong&gt;&lt;/p&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;The Customer Refund Form (CRF) has not been received for this Contract.&lt;/p&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;&lt;strong&gt;What This Means:&lt;/strong&gt;&lt;/p&gt;&lt;p&gt;The closure and refund approval process cannot proceed without this document.&lt;/p&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Next Steps:&lt;/strong&gt;&lt;/p&gt;&lt;ol&gt;&lt;li&gt;Ensure the customer has completed and signed the CRF form&lt;/li&gt;&lt;li&gt;Have the Relationship Manager (RM) attach the CRF document to the Contract&lt;/li&gt;&lt;li&gt;Update the &quot;RES_CRF_Form_Received&quot; field to TRUE&lt;/li&gt;&lt;li&gt;Retry the Closed Lost process&lt;/li&gt;&lt;/ol&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;&lt;strong&gt;No approval request has been submitted at this time.&lt;/strong&gt;&lt;/p&gt;</fieldText>
+            <fieldType>DisplayText</fieldType>
+            <styleProperties>
+                <verticalAlignment>
+                    <stringValue>top</stringValue>
+                </verticalAlignment>
+                <width>
+                    <stringValue>12</stringValue>
+                </width>
+            </styleProperties>
+        </fields>
+        <showFooter>true</showFooter>
+        <showHeader>true</showHeader>
+    </screens>
+    <screens>
         <name>GotErrorException</name>
         <label>GotErrorException</label>
         <locationX>0</locationX>
@@ -237,7 +1019,7 @@
         <allowPause>false</allowPause>
         <fields>
             <name>ErrorMessagae</name>
-            <fieldText>&lt;p&gt;Got Exception:-{!$Flow.FaultMessage}&lt;/p&gt;</fieldText>
+            <fieldText>&lt;p&gt;&lt;strong style=&quot;font-size: 18px;&quot;&gt;An Error Occurred&lt;/strong&gt;&lt;/p&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;We encountered an unexpected error while processing your request.&lt;/p&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;&lt;strong&gt;What This Means:&lt;/strong&gt;&lt;/p&gt;&lt;p&gt;The system was unable to complete the Closed Lost process due to a technical issue. No changes have been made to the Opportunity.&lt;/p&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Next Steps:&lt;/strong&gt;&lt;/p&gt;&lt;ol&gt;&lt;li&gt;Take a screenshot of this message&lt;/li&gt;&lt;li&gt;Contact your system administrator with the following details:&lt;/li&gt;&lt;/ol&gt;&lt;ul&gt;&lt;li&gt;Opportunity ID: {!recordId}&lt;/li&gt;&lt;li&gt;Error Time: {!$Flow.CurrentDateTime}&lt;/li&gt;&lt;li&gt;Error Details: {!$Flow.FaultMessage}&lt;/li&gt;&lt;/ul&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;Your administrator will investigate and help resolve this issue.&lt;/p&gt;</fieldText>
             <fieldType>DisplayText</fieldType>
             <styleProperties>
                 <verticalAlignment>
@@ -262,7 +1044,7 @@
         <allowPause>false</allowPause>
         <fields>
             <name>Closeloss</name>
-            <fieldText>&lt;p&gt;&lt;strong&gt;&quot;Close Date&quot; must be today or a future date.&lt;/strong&gt;&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Please update the Opportunity Close Date before closing it as Lost.&lt;/strong&gt;&lt;/p&gt;</fieldText>
+            <fieldText>&lt;p&gt;&lt;strong style=&quot;font-size: 18px;&quot;&gt;Invalid Close Date&lt;/strong&gt;&lt;/p&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;The Opportunity Close Date is set to &lt;strong&gt;{!GetOpportunity.CloseDate}&lt;/strong&gt;, which is in the past.&lt;/p&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;&lt;strong&gt;System Requirement:&lt;/strong&gt;&lt;/p&gt;&lt;p&gt;The Close Date must be today or a future date when marking an Opportunity as Closed Lost.&lt;/p&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Action Required:&lt;/strong&gt;&lt;/p&gt;&lt;ol&gt;&lt;li&gt;Update the Opportunity Close Date to today or later&lt;/li&gt;&lt;li&gt;Retry the Closed Lost process&lt;/li&gt;&lt;/ol&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Current Close Date:&lt;/strong&gt; {!GetOpportunity.CloseDate}&lt;/p&gt;</fieldText>
             <fieldType>DisplayText</fieldType>
             <styleProperties>
                 <verticalAlignment>
@@ -287,7 +1069,7 @@
         <allowPause>false</allowPause>
         <fields>
             <name>SuccessMessage</name>
-            <fieldText>&lt;p&gt;&lt;strong&gt;Opportunity has been marked as Closed Lost.&lt;/strong&gt;&lt;/p&gt;</fieldText>
+            <fieldText>&lt;p&gt;&lt;strong style=&quot;font-size: 18px;&quot;&gt;Approval Process Initiated&lt;/strong&gt;&lt;/p&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;The closure and refund approval request has been successfully submitted and is currently pending approval.&lt;/p&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;&lt;strong&gt;What Happens Next:&lt;/strong&gt;&lt;/p&gt;&lt;p&gt;Once all required approvals are completed:&lt;/p&gt;&lt;ul&gt;&lt;li&gt;The Opportunity will be marked as &lt;strong&gt;Closed Lost&lt;/strong&gt;&lt;/li&gt;&lt;li&gt;The related Quote will be marked as &lt;strong&gt;Cancelled&lt;/strong&gt;&lt;/li&gt;&lt;li&gt;The related Contract will be marked as &lt;strong&gt;Cancelled&lt;/strong&gt;&lt;/li&gt;&lt;li&gt;The Units will be released and marked as &lt;strong&gt;Available&lt;/strong&gt;&lt;/li&gt;&lt;li&gt;Refund processing will be initiated (if applicable)&lt;/li&gt;&lt;/ul&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;&lt;strong&gt;No further action is required from you at this time.&lt;/strong&gt;&lt;/p&gt;</fieldText>
             <fieldType>DisplayText</fieldType>
             <styleProperties>
                 <verticalAlignment>
@@ -312,7 +1094,7 @@
         <allowPause>false</allowPause>
         <fields>
             <name>Copy_1_of_SuccessMessage</name>
-            <fieldText>&lt;p&gt;&lt;strong&gt;Opportunity has been marked as Closed Lost.&lt;/strong&gt;&lt;/p&gt;</fieldText>
+            <fieldText>&lt;p&gt;&lt;strong style=&quot;font-size: 18px;&quot;&gt;Opportunity Closed Successfully&lt;/strong&gt;&lt;/p&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;The Opportunity has been successfully marked as Closed Lost.&lt;/p&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Completed Actions:&lt;/strong&gt;&lt;/p&gt;&lt;ul&gt;&lt;li&gt;Opportunity status updated to &lt;strong&gt;&quot;Closed Lost&quot;&lt;/strong&gt;&lt;/li&gt;&lt;li&gt;Associated Units have been released and marked as &lt;strong&gt;Available&lt;/strong&gt;&lt;/li&gt;&lt;li&gt;Reason for Loss recorded: &lt;strong&gt;{!Reason_for_lost}&lt;/strong&gt;&lt;/li&gt;&lt;/ul&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;The Opportunity closure process is complete.&lt;/p&gt;</fieldText>
             <fieldType>DisplayText</fieldType>
             <styleProperties>
                 <verticalAlignment>
@@ -385,6 +1167,31 @@
         <showHeader>false</showHeader>
     </screens>
     <screens>
+        <name>Screen_Approval_Already_In_Progress</name>
+        <label>Screen - Approval Already In Progress</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <allowBack>false</allowBack>
+        <allowFinish>true</allowFinish>
+        <allowPause>false</allowPause>
+        <fields>
+            <name>ApprovalAlreadyInProgressMessage</name>
+            <fieldText>&lt;p&gt;&lt;strong style=&quot;font-size: 18px;&quot;&gt;Approval Process Already In Progress&lt;/strong&gt;&lt;/p&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;An approval is currently pending for this Contract.&lt;/p&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;&lt;strong&gt;What This Means:&lt;/strong&gt;&lt;/p&gt;&lt;p&gt;A closure and refund approval request has already been submitted and is awaiting approval. You cannot submit a new approval until the current one is completed.&lt;/p&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Current Approval Status:&lt;/strong&gt;&lt;/p&gt;&lt;ul&gt;&lt;li&gt;Status: &lt;strong&gt;Pending&lt;/strong&gt;&lt;/li&gt;&lt;/ul&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Next Steps:&lt;/strong&gt;&lt;/p&gt;&lt;ol&gt;&lt;li&gt;Check the &quot;Approval Work Items&quot; related list on the Contract&lt;/li&gt;&lt;li&gt;Contact the assigned approver if you need to expedite the approval&lt;/li&gt;&lt;li&gt;Wait for the current approval to be completed before retrying&lt;/li&gt;&lt;/ol&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;&lt;strong&gt;No new approval request has been submitted.&lt;/strong&gt;&lt;/p&gt;</fieldText>
+            <fieldType>DisplayText</fieldType>
+            <styleProperties>
+                <verticalAlignment>
+                    <stringValue>top</stringValue>
+                </verticalAlignment>
+                <width>
+                    <stringValue>12</stringValue>
+                </width>
+            </styleProperties>
+        </fields>
+        <nextOrFinishButtonLabel>Close</nextOrFinishButtonLabel>
+        <showFooter>true</showFooter>
+        <showHeader>false</showHeader>
+    </screens>
+    <screens>
         <name>Screen_Invalid_Stage</name>
         <label>Screen - Invalid Stage</label>
         <locationX>0</locationX>
@@ -394,7 +1201,7 @@
         <allowPause>false</allowPause>
         <fields>
             <name>CannotCloseOpportunity</name>
-            <fieldText>&lt;p&gt;&lt;strong&gt;This Opportunity can only be marked as &quot;Closed Lost&quot; when it is in Proposal or Unit Selected stage.&lt;/strong&gt;&lt;/p&gt;</fieldText>
+            <fieldText>&lt;p&gt;&lt;strong style=&quot;font-size: 18px;&quot;&gt;Cannot Close Opportunity as Lost&lt;/strong&gt;&lt;/p&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;This Opportunity is currently in the &lt;strong&gt;&quot;{!GetOpportunity.StageName}&quot;&lt;/strong&gt; stage.&lt;/p&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;&lt;strong&gt;System Rule:&lt;/strong&gt;&lt;/p&gt;&lt;p&gt;Opportunities that are already in &lt;strong&gt;&quot;Closed Won&quot;&lt;/strong&gt; or &lt;strong&gt;&quot;Closed Lost&quot;&lt;/strong&gt; stage cannot be changed to Closed Lost again.&lt;/p&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Next Steps:&lt;/strong&gt;&lt;/p&gt;&lt;p&gt;If you need to modify this Opportunity, please contact your administrator.&lt;/p&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Current Stage:&lt;/strong&gt; {!GetOpportunity.StageName}&lt;/p&gt;</fieldText>
             <fieldType>DisplayText</fieldType>
             <styleProperties>
                 <verticalAlignment>
@@ -423,6 +1230,14 @@
         <isCollection>false</isCollection>
         <isInput>false</isInput>
         <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <name>currentItem_Filter_Quotes</name>
+        <dataType>SObject</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <objectType>Quote</objectType>
     </variables>
     <variables>
         <name>quoteInstance</name>
