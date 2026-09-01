@@ -148,7 +148,7 @@
         <connector>
             <targetReference>Are_Recipients_Found</targetReference>
         </connector>
-        <filterLogic>or</filterLogic>
+        <filterLogic>(1 OR 2) AND 3</filterLogic>
         <filters>
             <field>Id</field>
             <operator>EqualTo</operator>
@@ -161,6 +161,13 @@
             <operator>In</operator>
             <value>
                 <elementReference>colRoleIDs</elementReference>
+            </value>
+        </filters>
+        <filters>
+            <field>IsActive</field>
+            <operator>EqualTo</operator>
+            <value>
+                <booleanValue>true</booleanValue>
             </value>
         </filters>
         <getFirstRecordOnly>false</getFirstRecordOnly>
