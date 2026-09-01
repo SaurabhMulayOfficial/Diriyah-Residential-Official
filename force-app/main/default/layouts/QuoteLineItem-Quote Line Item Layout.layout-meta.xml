@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Layout xmlns="http://soap.sforce.com/2006/04/metadata">
-    <excludeButtons>OpenSlackRecordChannel</excludeButtons>
     <layoutSections>
         <customLabel>false</customLabel>
         <detailHeading>false</detailHeading>
@@ -23,12 +22,16 @@
                 <behavior>Required</behavior>
                 <field>Quantity</field>
             </layoutItems>
-        </layoutColumns>
-        <layoutColumns>
+            <layoutItems>
+                <behavior>Edit</behavior>
+                <field>DiscountAmount</field>
+            </layoutItems>
             <layoutItems>
                 <behavior>Edit</behavior>
                 <field>Discount</field>
             </layoutItems>
+        </layoutColumns>
+        <layoutColumns>
             <layoutItems>
                 <behavior>Readonly</behavior>
                 <field>TotalPrice</field>
@@ -101,6 +104,21 @@
         <fields>RTEL.ERROR_MESSAGE</fields>
         <fields>RTEL.RELATED_RECORD</fields>
         <relatedList>RevenueTransactionErrorLogs</relatedList>
+    </relatedLists>
+    <relatedLists>
+        <fields>Name</fields>
+        <fields>Contract</fields>
+        <fields>Quantity</fields>
+        <fields>TotalPrice</fields>
+        <fields>Product2</fields>
+        <fields>Status</fields>
+        <relatedList>SalesContractLine</relatedList>
+    </relatedLists>
+    <relatedLists>
+        <fields>AssociatedQuoteLine</fields>
+        <fields>AssociatedQuoteLineRole</fields>
+        <fields>AssociatedQuoteLinePricing</fields>
+        <relatedList>AssociatedQuoteLineItems</relatedList>
     </relatedLists>
     <relatedLists>
         <fields>Product2</fields>
