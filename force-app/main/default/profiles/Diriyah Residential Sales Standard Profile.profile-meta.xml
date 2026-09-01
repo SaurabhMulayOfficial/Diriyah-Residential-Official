@@ -767,7 +767,12 @@
         <editable>true</editable>
         <field>Quote.RES_Discount_Submission_Lock__c</field>
         <readable>true</readable>
-    </fieldPermissions>     
+    </fieldPermissions>  
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>Contract.RES_Close_Lost_Reason_from_Opportunity__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
     <fieldPermissions>
         <editable>true</editable>
         <field>Contract.RES_Product_Soft_Held__c</field>

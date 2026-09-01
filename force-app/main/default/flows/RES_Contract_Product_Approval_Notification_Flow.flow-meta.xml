@@ -415,10 +415,6 @@
                 <elementReference>Get_Contract.Id</elementReference>
             </value>
         </filters>
-        <filters>
-            <field>RES_Contract_Previous_Status__c</field>
-            <operator>NotEqualTo</operator>
-        </filters>
         <inputAssignments>
             <field>RES_Product_Approval_Stage__c</field>
         </inputAssignments>
