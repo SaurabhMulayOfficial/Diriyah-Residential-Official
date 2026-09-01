@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>67.0</apiVersion>
+    <areMetricsLoggedToDataCloud>false</areMetricsLoggedToDataCloud>
+    <assignments>
+        <name>Assign_Discount</name>
+        <label>Assign Discount</label>
+        <locationX>176</locationX>
+        <locationY>264</locationY>
+        <assignmentItems>
+            <assignToReference>discount</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>Get_Quote.Discount</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Assign_Discount_Amount</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
+        <name>Assign_Discount_Amount</name>
+        <label>Assign Discount Amount</label>
+        <locationX>176</locationX>
+        <locationY>384</locationY>
+        <assignmentItems>
+            <assignToReference>discountAmount</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>Get_Quote.AppliedDiscountAmount</elementReference>
+            </value>
+        </assignmentItems>
+    </assignments>
+    <description>DIR-1612: Snapshots a Quote's Discount % and Discount Amount at the moment it enters Sales Manager approval, so the DOA orchestration can detect if either value drifts after the Sales Manager's decision (before Finance approval or final sign-off) and force a fresh approval cycle instead of acting on a stale decision.</description>
+    <environments>Default</environments>
+    <interviewLabel>RES Autolaunched Capture Quote Discount {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>RES Autolaunched Capture Quote Discount</label>
+    <processType>AutoLaunchedFlow</processType>
+    <recordLookups>
+        <name>Get_Quote</name>
+        <label>Get Quote</label>
+        <locationX>176</locationX>
+        <locationY>144</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Assign_Discount</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Id</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>recordId</elementReference>
+            </value>
+        </filters>
+        <getFirstRecordOnly>true</getFirstRecordOnly>
+        <object>Quote</object>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
+    <start>
+        <locationX>50</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Get_Quote</targetReference>
+        </connector>
+    </start>
+    <status>Active</status>
+    <variables>
+        <name>discount</name>
+        <dataType>Number</dataType>
+        <scale>2</scale>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>true</isOutput>
+    </variables>
+    <variables>
+        <name>discountAmount</name>
+        <dataType>Number</dataType>
+        <scale>2</scale>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>true</isOutput>
+    </variables>
+    <variables>
+        <name>recordId</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>true</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+</Flow>

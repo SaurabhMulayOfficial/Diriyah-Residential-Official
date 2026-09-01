@@ -2,7 +2,7 @@
 <Flow xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
     <apiVersion>67.0</apiVersion>
     <areMetricsLoggedToDataCloud>false</areMetricsLoggedToDataCloud>
-    <description>DIR-869 DOA-Routed Discount Approval. Auto-submits when a Quote in Negotiating has Discount changed ( &gt; 0 ). Sets Pending Approval, notifies the manager (bell + email), routes: Discount &lt;= 10% -&gt; Sales Manager only; &gt; 10% -&gt; Sales Manager then RES_Finance_Team queue. Branches on the queried ApprovalWorkItem status (orchestration can&apos;t gate on an approval step&apos;s approvalDecision output). Final approve -&gt; Approved; any reject -&gt; Rejected + notify initiator; Recall -&gt; Negotiating.</description>
+    <description>DIR-869 DOA-Routed Discount Approval. Auto-submits when a Quote in Negotiating has Discount changed ( &gt; 0 ). Sets Pending Approval, notifies the manager (bell + email), routes: Discount &lt;= 10% -&gt; Sales Manager only; &gt; 10% -&gt; Sales Manager then RES_Finance_Team queue. Branches on the queried ApprovalWorkItem status (orchestration can&apos;t gate on an approval step&apos;s approvalDecision output). Final approve -&gt; Approved; any reject -&gt; Rejected + notify initiator; Recall -&gt; Negotiating. DIR-1612: Capture_Submitted_Discount snapshots Discount/AppliedDiscountAmount at submission time; if either drifts after the Manager&apos;s decision (e.g. discount raised above 10% right after a &lt;=10% approval), Set_Approved_Manager/Finance_Approval are blocked and Restart_Discount_Percent_Changed / Restart_Discount_Amount_Changed instead send the Quote back to Negotiating with the submission lock cleared, forcing a fresh submission and a fresh Manager approval on the real, current numbers.</description>
     <environments>Default</environments>
     <formulas>
         <name>fApprovedBody</name>
@@ -169,6 +169,50 @@
             <label>Try Acquire Mutex</label>
             <outputConfigParams>
                 <name>acquired</name>
+                <value xsi:nil="true"/>
+            </outputConfigParams>
+            <requiresAsyncProcessing>false</requiresAsyncProcessing>
+            <runAsUser>false</runAsUser>
+            <shouldLock>false</shouldLock>
+            <stepSubtype>BackgroundStep</stepSubtype>
+        </stageSteps>
+        <stageSteps>
+            <name>Capture_Submitted_Discount</name>
+            <actionName>RES_Autolaunched_Capture_Quote_Discount</actionName>
+            <actionType>stepBackground</actionType>
+            <canAssigneeEdit>false</canAssigneeEdit>
+            <debugSimulateStep>false</debugSimulateStep>
+            <entryConditionLogic>and</entryConditionLogic>
+            <entryConditions>
+                <conditionType>EntryCondition</conditionType>
+                <leftValueReference>Set_Pending_Approval.Status</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Completed</stringValue>
+                </rightValue>
+            </entryConditions>
+            <entryConditions>
+                <conditionType>EntryCondition</conditionType>
+                <leftValueReference>Try_Acquire_Mutex.Outputs.acquired</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </entryConditions>
+            <exitConditionLogic>and</exitConditionLogic>
+            <inputParameters>
+                <name>recordId</name>
+                <value>
+                    <elementReference>$Record.Id</elementReference>
+                </value>
+            </inputParameters>
+            <label>Capture Submitted Discount</label>
+            <outputConfigParams>
+                <name>discount</name>
+                <value xsi:nil="true"/>
+            </outputConfigParams>
+            <outputConfigParams>
+                <name>discountAmount</name>
                 <value xsi:nil="true"/>
             </outputConfigParams>
             <requiresAsyncProcessing>false</requiresAsyncProcessing>
@@ -530,6 +574,22 @@
                     <numberValue>10.0</numberValue>
                 </rightValue>
             </entryConditions>
+            <entryConditions>
+                <conditionType>EntryCondition</conditionType>
+                <leftValueReference>Capture_Submitted_Discount.Outputs.discount</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <elementReference>$Record.Discount</elementReference>
+                </rightValue>
+            </entryConditions>
+            <entryConditions>
+                <conditionType>EntryCondition</conditionType>
+                <leftValueReference>Capture_Submitted_Discount.Outputs.discountAmount</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <elementReference>$Record.AppliedDiscountAmount</elementReference>
+                </rightValue>
+            </entryConditions>
             <exitConditionLogic>and</exitConditionLogic>
             <inputParameters>
                 <name>recordId</name>
@@ -768,6 +828,104 @@
             <stepSubtype>BackgroundStep</stepSubtype>
         </stageSteps>
         <stageSteps>
+            <name>Restart_Discount_Percent_Changed</name>
+            <actionName>RES_Autolaunched_Update_Quote_Status</actionName>
+            <actionType>stepBackground</actionType>
+            <canAssigneeEdit>false</canAssigneeEdit>
+            <debugSimulateStep>false</debugSimulateStep>
+            <description>DIR-1612: If the Discount % was changed after the Sales Manager already made a decision (e.g. increased above 10% after a &lt;=10% approval), don&apos;t let Finance or final sign-off proceed on a decision the Manager never actually saw - send the quote back to Negotiating so it needs a fresh submission and a fresh Manager approval.</description>
+            <entryConditionLogic>and</entryConditionLogic>
+            <entryConditions>
+                <conditionType>EntryCondition</conditionType>
+                <leftValueReference>Get_Manager_Decision.Outputs.status</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Approved</stringValue>
+                </rightValue>
+            </entryConditions>
+            <entryConditions>
+                <conditionType>EntryCondition</conditionType>
+                <leftValueReference>Capture_Submitted_Discount.Outputs.discount</leftValueReference>
+                <operator>NotEqualTo</operator>
+                <rightValue>
+                    <elementReference>$Record.Discount</elementReference>
+                </rightValue>
+            </entryConditions>
+            <exitConditionLogic>and</exitConditionLogic>
+            <inputParameters>
+                <name>recordId</name>
+                <value>
+                    <elementReference>$Record.Id</elementReference>
+                </value>
+            </inputParameters>
+            <inputParameters>
+                <name>newStatus</name>
+                <value>
+                    <stringValue>Negotiating</stringValue>
+                </value>
+            </inputParameters>
+            <inputParameters>
+                <name>resetSubmissionLock</name>
+                <value>
+                    <booleanValue>true</booleanValue>
+                </value>
+            </inputParameters>
+            <label>Restart - Discount % Changed After Manager Decision</label>
+            <requiresAsyncProcessing>false</requiresAsyncProcessing>
+            <runAsUser>false</runAsUser>
+            <shouldLock>false</shouldLock>
+            <stepSubtype>BackgroundStep</stepSubtype>
+        </stageSteps>
+        <stageSteps>
+            <name>Restart_Discount_Amount_Changed</name>
+            <actionName>RES_Autolaunched_Update_Quote_Status</actionName>
+            <actionType>stepBackground</actionType>
+            <canAssigneeEdit>false</canAssigneeEdit>
+            <debugSimulateStep>false</debugSimulateStep>
+            <description>DIR-1612: Same guard as Restart_Discount_Percent_Changed, for the Discount Amount field.</description>
+            <entryConditionLogic>and</entryConditionLogic>
+            <entryConditions>
+                <conditionType>EntryCondition</conditionType>
+                <leftValueReference>Get_Manager_Decision.Outputs.status</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Approved</stringValue>
+                </rightValue>
+            </entryConditions>
+            <entryConditions>
+                <conditionType>EntryCondition</conditionType>
+                <leftValueReference>Capture_Submitted_Discount.Outputs.discountAmount</leftValueReference>
+                <operator>NotEqualTo</operator>
+                <rightValue>
+                    <elementReference>$Record.AppliedDiscountAmount</elementReference>
+                </rightValue>
+            </entryConditions>
+            <exitConditionLogic>and</exitConditionLogic>
+            <inputParameters>
+                <name>recordId</name>
+                <value>
+                    <elementReference>$Record.Id</elementReference>
+                </value>
+            </inputParameters>
+            <inputParameters>
+                <name>newStatus</name>
+                <value>
+                    <stringValue>Negotiating</stringValue>
+                </value>
+            </inputParameters>
+            <inputParameters>
+                <name>resetSubmissionLock</name>
+                <value>
+                    <booleanValue>true</booleanValue>
+                </value>
+            </inputParameters>
+            <label>Restart - Discount Amount Changed After Manager Decision</label>
+            <requiresAsyncProcessing>false</requiresAsyncProcessing>
+            <runAsUser>false</runAsUser>
+            <shouldLock>false</shouldLock>
+            <stepSubtype>BackgroundStep</stepSubtype>
+        </stageSteps>
+        <stageSteps>
             <name>Finance_Approval</name>
             <actionName>standard_approvals__EvaluateApproval</actionName>
             <actionType>stepApproval</actionType>
@@ -794,6 +952,22 @@
                 <operator>GreaterThan</operator>
                 <rightValue>
                     <numberValue>10.0</numberValue>
+                </rightValue>
+            </entryConditions>
+            <entryConditions>
+                <conditionType>EntryCondition</conditionType>
+                <leftValueReference>Capture_Submitted_Discount.Outputs.discount</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <elementReference>$Record.Discount</elementReference>
+                </rightValue>
+            </entryConditions>
+            <entryConditions>
+                <conditionType>EntryCondition</conditionType>
+                <leftValueReference>Capture_Submitted_Discount.Outputs.discountAmount</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <elementReference>$Record.AppliedDiscountAmount</elementReference>
                 </rightValue>
             </entryConditions>
             <exitConditionLogic>and</exitConditionLogic>
