@@ -131,6 +131,7 @@ public without sharing class RES_QuoteCancellationService {
                     p.Id = qli.Product2Id;
                     p.RES_Unit_Status__c = 'Available';
                     p.RES_Is_In_Soft_Hold_Extension__c = false;
+                    p.RES_HardBlock_Start__c = null;
                     p.RES_Soft_Hold_Until__c = null;
                     p.RES_Soft_Hold_Start__c = null;
                     p.RES_Reserved_By_Contract__c = null;
