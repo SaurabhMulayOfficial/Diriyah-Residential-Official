@@ -40,6 +40,80 @@
         </rules>
     </decisions>
     <decisions>
+        <name>Check_CBDO_Approval</name>
+        <label>Check CBDO Approval?</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>CBDO_Approved</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>CBDO_Approval_Step.Outputs.approvalDecision</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Approve</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>CBDO_Approved_Stage</targetReference>
+            </connector>
+            <label>CBDO Approved</label>
+        </rules>
+        <rules>
+            <name>CBDO_Rejected</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>CBDO_Approval_Step.Outputs.approvalDecision</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Reject</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>CBDO_Rejected_Stage</targetReference>
+            </connector>
+            <label>CBDO Rejected</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>Check_Contract_Value</name>
+        <label>Check Contract Value</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Greater_than_100M</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>totalContractValue</leftValueReference>
+                <operator>GreaterThan</operator>
+                <rightValue>
+                    <numberValue>1.0E8</numberValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>GCEO_Approval_Stage</targetReference>
+            </connector>
+            <label>Greater than 100M</label>
+        </rules>
+        <rules>
+            <name>Less_than_or_equal_to_100M</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>totalContractValue</leftValueReference>
+                <operator>LessThanOrEqualTo</operator>
+                <rightValue>
+                    <numberValue>1.0E8</numberValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>CBDO_Approval_Stage</targetReference>
+            </connector>
+            <label>Less than or equal to 100M</label>
+        </rules>
+    </decisions>
+    <decisions>
         <name>Check_ED_Approval</name>
         <label>Check ED Approval?</label>
         <locationX>0</locationX>
@@ -56,7 +130,7 @@
                 </rightValue>
             </conditions>
             <connector>
-                <targetReference>Update_Contract_Status_After_ED_Approved</targetReference>
+                <targetReference>Check_Contract_Value</targetReference>
             </connector>
             <label>ED Approved</label>
         </rules>
@@ -114,29 +188,327 @@
         </rules>
     </decisions>
     <environments>Default</environments>
-    <formulas>
-        <name>username</name>
-        <dataType>String</dataType>
-        <expression>IF(
-    CONTAINS(UPPER({!$Organization.Name}), &quot;DEV&quot;),
-    &quot;system.admin@globant.com.diriyah.dev&quot;,
-    IF(
-        CONTAINS(UPPER({!$Organization.Name}), &quot;QA&quot;),
-        &quot;system.admin@globant.com.diriyah.qa&quot;,
-        IF(
-            CONTAINS(UPPER({!$Organization.Name}), &quot;UAT&quot;),
-            &quot;system.admin@globant.com.diriyah.uat&quot;,
-            IF(
-                CONTAINS(UPPER({!$Organization.Name}), &quot;PROD&quot;),
-                &quot;system.admin@globant.com.diriyah&quot;,
-                &quot;&quot;
-            )
-        )
-    )
-)</expression>
-    </formulas>
     <interviewLabel>RES Contract - Operations Director Approval Process {!$Flow.CurrentDateTime}</interviewLabel>
     <label>RES Contract - Operations Director Approval Process</label>
+    <orchestratedStages>
+        <name>CBDO_Approval_Stage</name>
+        <label>CBDO Approval Stage</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Check_CBDO_Approval</targetReference>
+        </connector>
+        <exitConditionLogic>and</exitConditionLogic>
+        <stageSteps>
+            <name>Update_Contract_Approval_Status_To_Pending_CBDO</name>
+            <actionName>RES_Autolaunched_Flow_Update_Contract_Approval_Status</actionName>
+            <actionType>stepBackground</actionType>
+            <canAssigneeEdit>false</canAssigneeEdit>
+            <debugSimulateStep>false</debugSimulateStep>
+            <entryConditionLogic>and</entryConditionLogic>
+            <exitConditionLogic>and</exitConditionLogic>
+            <inputParameters>
+                <name>approvalStatus</name>
+                <value>
+                    <stringValue>Pending CBDO</stringValue>
+                </value>
+            </inputParameters>
+            <inputParameters>
+                <name>contractNumber</name>
+                <value>
+                    <elementReference>contractNumber</elementReference>
+                </value>
+            </inputParameters>
+            <inputParameters>
+                <name>recordId</name>
+                <value>
+                    <elementReference>recordId</elementReference>
+                </value>
+            </inputParameters>
+            <inputParameters>
+                <name>submitterId</name>
+                <value>
+                    <elementReference>submitter</elementReference>
+                </value>
+            </inputParameters>
+            <inputParameters>
+                <name>teamName</name>
+                <value>
+                    <stringValue>ED Treasury Team</stringValue>
+                </value>
+            </inputParameters>
+            <label>Update Contract Approval Status To Pending CBDO</label>
+            <requiresAsyncProcessing>false</requiresAsyncProcessing>
+            <runAsUser>false</runAsUser>
+            <shouldLock>false</shouldLock>
+            <stepSubtype>BackgroundStep</stepSubtype>
+        </stageSteps>
+        <stageSteps>
+            <name>Send_Notification_To_CBDO_Team</name>
+            <actionName>RES_Contract_Send_Notification_To_CBDO_Team</actionName>
+            <actionType>stepBackground</actionType>
+            <canAssigneeEdit>false</canAssigneeEdit>
+            <debugSimulateStep>false</debugSimulateStep>
+            <entryConditionLogic>and</entryConditionLogic>
+            <entryConditions>
+                <conditionType>EntryCondition</conditionType>
+                <leftValueReference>Update_Contract_Approval_Status_To_Pending_CBDO.Status</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Completed</stringValue>
+                </rightValue>
+            </entryConditions>
+            <exitConditionLogic>and</exitConditionLogic>
+            <inputParameters>
+                <name>contractNumber</name>
+                <value>
+                    <elementReference>contractNumber</elementReference>
+                </value>
+            </inputParameters>
+            <inputParameters>
+                <name>recordId</name>
+                <value>
+                    <elementReference>recordId</elementReference>
+                </value>
+            </inputParameters>
+            <label>Send Notification To CBDO Team</label>
+            <requiresAsyncProcessing>false</requiresAsyncProcessing>
+            <runAsUser>false</runAsUser>
+            <shouldLock>false</shouldLock>
+            <stepSubtype>BackgroundStep</stepSubtype>
+        </stageSteps>
+        <stageSteps>
+            <name>CBDO_Approval_Step</name>
+            <actionName>standard_approvals__EvaluateApproval</actionName>
+            <actionType>stepApproval</actionType>
+            <assignees>
+                <assignee>
+                    <stringValue>RES_Chief_Business_Development_Officer</stringValue>
+                </assignee>
+                <assigneeType>Group</assigneeType>
+            </assignees>
+            <canAssigneeEdit>false</canAssigneeEdit>
+            <debugSimulateStep>false</debugSimulateStep>
+            <entryConditionLogic>and</entryConditionLogic>
+            <entryConditions>
+                <conditionType>EntryCondition</conditionType>
+                <leftValueReference>Update_Contract_Approval_Status_To_Pending_CBDO.Status</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Completed</stringValue>
+                </rightValue>
+            </entryConditions>
+            <exitConditionLogic>and</exitConditionLogic>
+            <inputParameters>
+                <name>ActionInput__RecordId</name>
+                <value>
+                    <elementReference>recordId</elementReference>
+                </value>
+            </inputParameters>
+            <inputParameters>
+                <name>ActionInput__CustomEmailSubject</name>
+            </inputParameters>
+            <inputParameters>
+                <name>ActionInput__CustomEmailBody</name>
+            </inputParameters>
+            <inputParameters>
+                <name>ActionInput__ApprovalChainName</name>
+            </inputParameters>
+            <inputParameters>
+                <name>ActionInput__CanUseSmartApproval</name>
+            </inputParameters>
+            <inputParameters>
+                <name>ActionInput__CanUseRuleBasedAutoApprovals</name>
+            </inputParameters>
+            <inputParameters>
+                <name>ActionInput__ApprovalSkipConditions</name>
+            </inputParameters>
+            <inputParameters>
+                <name>ActionInput__ApprovalOverrideDecision</name>
+            </inputParameters>
+            <label>CBDO Approval Step</label>
+            <outputConfigParams>
+                <name>approvalComments</name>
+                <value xsi:nil="true"/>
+            </outputConfigParams>
+            <outputConfigParams>
+                <name>approvalDecision</name>
+                <value xsi:nil="true"/>
+            </outputConfigParams>
+            <requiresAsyncProcessing>false</requiresAsyncProcessing>
+            <runAsUser>false</runAsUser>
+            <shouldLock>true</shouldLock>
+            <stepSubtype>ApprovalStep</stepSubtype>
+        </stageSteps>
+        <stageSteps>
+            <name>Copy_2_of_Set_SLA_End_Date_On_Approval_Work_Item</name>
+            <actionName>RES_Autolaunched_Flow_Set_SLA_End_Date_On_Approval_Work_Item</actionName>
+            <actionType>stepBackground</actionType>
+            <canAssigneeEdit>false</canAssigneeEdit>
+            <debugSimulateStep>false</debugSimulateStep>
+            <entryConditionLogic>and</entryConditionLogic>
+            <entryConditions>
+                <conditionType>EntryCondition</conditionType>
+                <leftValueReference>Update_Contract_Approval_Status_To_Pending_CBDO.Status</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Completed</stringValue>
+                </rightValue>
+            </entryConditions>
+            <exitConditionLogic>and</exitConditionLogic>
+            <inputParameters>
+                <name>businessHours</name>
+                <value>
+                    <numberValue>8.0</numberValue>
+                </value>
+            </inputParameters>
+            <inputParameters>
+                <name>contractId</name>
+                <value>
+                    <elementReference>recordId</elementReference>
+                </value>
+            </inputParameters>
+            <inputParameters>
+                <name>numberOfBusinessDays</name>
+                <value>
+                    <numberValue>2.0</numberValue>
+                </value>
+            </inputParameters>
+            <label>Set SLA End Date On Approval Work Item</label>
+            <requiresAsyncProcessing>false</requiresAsyncProcessing>
+            <runAsUser>false</runAsUser>
+            <shouldLock>false</shouldLock>
+            <stepSubtype>BackgroundStep</stepSubtype>
+        </stageSteps>
+    </orchestratedStages>
+    <orchestratedStages>
+        <name>CBDO_Approved_Stage</name>
+        <label>CBDO Approved Stage</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <exitConditionLogic>and</exitConditionLogic>
+        <stageSteps>
+            <name>Copy_1_of_Update_Contract_Approval_Status_To_Approved</name>
+            <actionName>RES_Autolaunched_Flow_Update_Contract_Approval_Status</actionName>
+            <actionType>stepBackground</actionType>
+            <canAssigneeEdit>false</canAssigneeEdit>
+            <debugSimulateStep>false</debugSimulateStep>
+            <entryConditionLogic>and</entryConditionLogic>
+            <exitConditionLogic>and</exitConditionLogic>
+            <inputParameters>
+                <name>approvalStatus</name>
+                <value>
+                    <stringValue>Approved</stringValue>
+                </value>
+            </inputParameters>
+            <inputParameters>
+                <name>contractNumber</name>
+                <value>
+                    <elementReference>contractNumber</elementReference>
+                </value>
+            </inputParameters>
+            <inputParameters>
+                <name>recordId</name>
+                <value>
+                    <elementReference>recordId</elementReference>
+                </value>
+            </inputParameters>
+            <inputParameters>
+                <name>submitterId</name>
+                <value>
+                    <elementReference>submitter</elementReference>
+                </value>
+            </inputParameters>
+            <inputParameters>
+                <name>teamName</name>
+                <value>
+                    <stringValue>CBDO Team</stringValue>
+                </value>
+            </inputParameters>
+            <label>Update Contract Approval Status To Approved</label>
+            <requiresAsyncProcessing>false</requiresAsyncProcessing>
+            <runAsUser>false</runAsUser>
+            <shouldLock>false</shouldLock>
+            <stepSubtype>BackgroundStep</stepSubtype>
+        </stageSteps>
+        <stageSteps>
+            <name>Copy_1_of_Activate_Contract</name>
+            <actionName>RES_Autolaunched_Flow_Activate_Contract</actionName>
+            <actionType>stepBackground</actionType>
+            <assignees>
+                <assignee>
+                    <elementReference>$Label.RES_Admin_Username</elementReference>
+                </assignee>
+                <assigneeType>User</assigneeType>
+            </assignees>
+            <canAssigneeEdit>false</canAssigneeEdit>
+            <debugSimulateStep>false</debugSimulateStep>
+            <entryConditionLogic>and</entryConditionLogic>
+            <exitConditionLogic>and</exitConditionLogic>
+            <inputParameters>
+                <name>recordId</name>
+                <value>
+                    <elementReference>recordId</elementReference>
+                </value>
+            </inputParameters>
+            <label>Activate Contract</label>
+            <requiresAsyncProcessing>false</requiresAsyncProcessing>
+            <runAsUser>true</runAsUser>
+            <shouldLock>false</shouldLock>
+            <stepSubtype>BackgroundStep</stepSubtype>
+        </stageSteps>
+    </orchestratedStages>
+    <orchestratedStages>
+        <name>CBDO_Rejected_Stage</name>
+        <label>CBDO Rejected Stage</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <exitConditionLogic>and</exitConditionLogic>
+        <stageSteps>
+            <name>Copy_1_of_Update_Contract_Approval_Status_To_Rejected</name>
+            <actionName>RES_Autolaunched_Flow_Update_Contract_Approval_Status</actionName>
+            <actionType>stepBackground</actionType>
+            <canAssigneeEdit>false</canAssigneeEdit>
+            <debugSimulateStep>false</debugSimulateStep>
+            <entryConditionLogic>and</entryConditionLogic>
+            <exitConditionLogic>and</exitConditionLogic>
+            <inputParameters>
+                <name>approvalStatus</name>
+                <value>
+                    <stringValue>Rejected</stringValue>
+                </value>
+            </inputParameters>
+            <inputParameters>
+                <name>contractNumber</name>
+                <value>
+                    <elementReference>contractNumber</elementReference>
+                </value>
+            </inputParameters>
+            <inputParameters>
+                <name>recordId</name>
+                <value>
+                    <elementReference>recordId</elementReference>
+                </value>
+            </inputParameters>
+            <inputParameters>
+                <name>submitterId</name>
+                <value>
+                    <elementReference>submitter</elementReference>
+                </value>
+            </inputParameters>
+            <inputParameters>
+                <name>teamName</name>
+                <value>
+                    <stringValue>CBDO Team</stringValue>
+                </value>
+            </inputParameters>
+            <label>Update Contract Approval Status To Rejected</label>
+            <requiresAsyncProcessing>false</requiresAsyncProcessing>
+            <runAsUser>false</runAsUser>
+            <shouldLock>false</shouldLock>
+            <stepSubtype>BackgroundStep</stepSubtype>
+        </stageSteps>
+    </orchestratedStages>
     <orchestratedStages>
         <name>ED_Approval_Stage</name>
         <label>ED Approval Stage</label>
@@ -185,6 +557,40 @@
                 </value>
             </inputParameters>
             <label>Update Approval Status To Pending ED Treasury</label>
+            <requiresAsyncProcessing>false</requiresAsyncProcessing>
+            <runAsUser>false</runAsUser>
+            <shouldLock>false</shouldLock>
+            <stepSubtype>BackgroundStep</stepSubtype>
+        </stageSteps>
+        <stageSteps>
+            <name>Send_Notification_To_ED_Treasury_Team</name>
+            <actionName>RES_Contract_Send_Notification_To_ED_Treasury_Team</actionName>
+            <actionType>stepBackground</actionType>
+            <canAssigneeEdit>false</canAssigneeEdit>
+            <debugSimulateStep>false</debugSimulateStep>
+            <entryConditionLogic>and</entryConditionLogic>
+            <entryConditions>
+                <conditionType>EntryCondition</conditionType>
+                <leftValueReference>Copy_1_of_Update_Approval_Status_To_Pending_ED_Treasury.Status</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Completed</stringValue>
+                </rightValue>
+            </entryConditions>
+            <exitConditionLogic>and</exitConditionLogic>
+            <inputParameters>
+                <name>contractNumber</name>
+                <value>
+                    <elementReference>contractNumber</elementReference>
+                </value>
+            </inputParameters>
+            <inputParameters>
+                <name>recordId</name>
+                <value>
+                    <elementReference>recordId</elementReference>
+                </value>
+            </inputParameters>
+            <label>Send Notification To ED Treasury Team</label>
             <requiresAsyncProcessing>false</requiresAsyncProcessing>
             <runAsUser>false</runAsUser>
             <shouldLock>false</shouldLock>
@@ -290,6 +696,197 @@
         </stageSteps>
     </orchestratedStages>
     <orchestratedStages>
+        <name>GCEO_Approval_Stage</name>
+        <label>GCEO Approval Stage</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Check_GCEO_Approval</targetReference>
+        </connector>
+        <exitConditionLogic>and</exitConditionLogic>
+        <stageSteps>
+            <name>Update_Contract_Approval_Status_To_Pending_GCEO</name>
+            <actionName>RES_Autolaunched_Flow_Update_Contract_Approval_Status</actionName>
+            <actionType>stepBackground</actionType>
+            <canAssigneeEdit>false</canAssigneeEdit>
+            <debugSimulateStep>false</debugSimulateStep>
+            <entryConditionLogic>and</entryConditionLogic>
+            <exitConditionLogic>and</exitConditionLogic>
+            <inputParameters>
+                <name>approvalStatus</name>
+                <value>
+                    <stringValue>Pending GCEO</stringValue>
+                </value>
+            </inputParameters>
+            <inputParameters>
+                <name>contractNumber</name>
+                <value>
+                    <elementReference>contractNumber</elementReference>
+                </value>
+            </inputParameters>
+            <inputParameters>
+                <name>recordId</name>
+                <value>
+                    <elementReference>recordId</elementReference>
+                </value>
+            </inputParameters>
+            <inputParameters>
+                <name>submitterId</name>
+                <value>
+                    <elementReference>submitter</elementReference>
+                </value>
+            </inputParameters>
+            <inputParameters>
+                <name>teamName</name>
+                <value>
+                    <stringValue>ED Treasury Team</stringValue>
+                </value>
+            </inputParameters>
+            <label>Update Contract Approval Status To Pending GCEO</label>
+            <requiresAsyncProcessing>false</requiresAsyncProcessing>
+            <runAsUser>false</runAsUser>
+            <shouldLock>false</shouldLock>
+            <stepSubtype>BackgroundStep</stepSubtype>
+        </stageSteps>
+        <stageSteps>
+            <name>Send_Notification_To_GCEO_Team</name>
+            <actionName>RES_Contract_Send_Notification_To_GCEO_Team</actionName>
+            <actionType>stepBackground</actionType>
+            <canAssigneeEdit>false</canAssigneeEdit>
+            <debugSimulateStep>false</debugSimulateStep>
+            <entryConditionLogic>and</entryConditionLogic>
+            <entryConditions>
+                <conditionType>EntryCondition</conditionType>
+                <leftValueReference>Update_Contract_Approval_Status_To_Pending_GCEO.Status</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Completed</stringValue>
+                </rightValue>
+            </entryConditions>
+            <exitConditionLogic>and</exitConditionLogic>
+            <inputParameters>
+                <name>contractNumber</name>
+                <value>
+                    <elementReference>contractNumber</elementReference>
+                </value>
+            </inputParameters>
+            <inputParameters>
+                <name>recordId</name>
+                <value>
+                    <elementReference>recordId</elementReference>
+                </value>
+            </inputParameters>
+            <label>Send Notification To GCEO Team</label>
+            <requiresAsyncProcessing>false</requiresAsyncProcessing>
+            <runAsUser>false</runAsUser>
+            <shouldLock>false</shouldLock>
+            <stepSubtype>BackgroundStep</stepSubtype>
+        </stageSteps>
+        <stageSteps>
+            <name>GCEO_Approval_Step</name>
+            <actionName>standard_approvals__EvaluateApproval</actionName>
+            <actionType>stepApproval</actionType>
+            <assignees>
+                <assignee>
+                    <stringValue>RES_Executive_Corporate_CEO_Group</stringValue>
+                </assignee>
+                <assigneeType>Group</assigneeType>
+            </assignees>
+            <canAssigneeEdit>false</canAssigneeEdit>
+            <debugSimulateStep>false</debugSimulateStep>
+            <entryConditionLogic>and</entryConditionLogic>
+            <entryConditions>
+                <conditionType>EntryCondition</conditionType>
+                <leftValueReference>Update_Contract_Approval_Status_To_Pending_GCEO.Status</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Completed</stringValue>
+                </rightValue>
+            </entryConditions>
+            <exitConditionLogic>and</exitConditionLogic>
+            <inputParameters>
+                <name>ActionInput__RecordId</name>
+                <value>
+                    <elementReference>recordId</elementReference>
+                </value>
+            </inputParameters>
+            <inputParameters>
+                <name>ActionInput__CustomEmailSubject</name>
+            </inputParameters>
+            <inputParameters>
+                <name>ActionInput__CustomEmailBody</name>
+            </inputParameters>
+            <inputParameters>
+                <name>ActionInput__ApprovalChainName</name>
+            </inputParameters>
+            <inputParameters>
+                <name>ActionInput__CanUseSmartApproval</name>
+            </inputParameters>
+            <inputParameters>
+                <name>ActionInput__CanUseRuleBasedAutoApprovals</name>
+            </inputParameters>
+            <inputParameters>
+                <name>ActionInput__ApprovalSkipConditions</name>
+            </inputParameters>
+            <inputParameters>
+                <name>ActionInput__ApprovalOverrideDecision</name>
+            </inputParameters>
+            <label>GCEO Approval Step</label>
+            <outputConfigParams>
+                <name>approvalComments</name>
+                <value xsi:nil="true"/>
+            </outputConfigParams>
+            <outputConfigParams>
+                <name>approvalDecision</name>
+                <value xsi:nil="true"/>
+            </outputConfigParams>
+            <requiresAsyncProcessing>false</requiresAsyncProcessing>
+            <runAsUser>false</runAsUser>
+            <shouldLock>true</shouldLock>
+            <stepSubtype>ApprovalStep</stepSubtype>
+        </stageSteps>
+        <stageSteps>
+            <name>Copy_1_of_Set_SLA_End_Date_On_Approval_Work_Item</name>
+            <actionName>RES_Autolaunched_Flow_Set_SLA_End_Date_On_Approval_Work_Item</actionName>
+            <actionType>stepBackground</actionType>
+            <canAssigneeEdit>false</canAssigneeEdit>
+            <debugSimulateStep>false</debugSimulateStep>
+            <entryConditionLogic>and</entryConditionLogic>
+            <entryConditions>
+                <conditionType>EntryCondition</conditionType>
+                <leftValueReference>Update_Contract_Approval_Status_To_Pending_GCEO.Status</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Completed</stringValue>
+                </rightValue>
+            </entryConditions>
+            <exitConditionLogic>and</exitConditionLogic>
+            <inputParameters>
+                <name>businessHours</name>
+                <value>
+                    <numberValue>8.0</numberValue>
+                </value>
+            </inputParameters>
+            <inputParameters>
+                <name>contractId</name>
+                <value>
+                    <elementReference>recordId</elementReference>
+                </value>
+            </inputParameters>
+            <inputParameters>
+                <name>numberOfBusinessDays</name>
+                <value>
+                    <numberValue>2.0</numberValue>
+                </value>
+            </inputParameters>
+            <label>Set SLA End Date On Approval Work Item</label>
+            <requiresAsyncProcessing>false</requiresAsyncProcessing>
+            <runAsUser>false</runAsUser>
+            <shouldLock>false</shouldLock>
+            <stepSubtype>BackgroundStep</stepSubtype>
+        </stageSteps>
+    </orchestratedStages>
+    <orchestratedStages>
         <name>GCEO_Approved_Stage</name>
         <label>GCEO Approved Stage</label>
         <locationX>0</locationX>
@@ -345,7 +942,7 @@
             <actionType>stepBackground</actionType>
             <assignees>
                 <assignee>
-                    <elementReference>username</elementReference>
+                    <elementReference>$Label.RES_Admin_Username</elementReference>
                 </assignee>
                 <assigneeType>User</assigneeType>
             </assignees>
@@ -639,163 +1236,6 @@
         </stageSteps>
     </orchestratedStages>
     <orchestratedStages>
-        <name>Update_Contract_Status_After_ED_Approved</name>
-        <label>Update Contract Status After ED Approved</label>
-        <locationX>0</locationX>
-        <locationY>0</locationY>
-        <connector>
-            <targetReference>Check_GCEO_Approval</targetReference>
-        </connector>
-        <exitConditionLogic>and</exitConditionLogic>
-        <stageSteps>
-            <name>Update_Contract_Approval_Status_To_Pending_GCEO</name>
-            <actionName>RES_Autolaunched_Flow_Update_Contract_Approval_Status</actionName>
-            <actionType>stepBackground</actionType>
-            <canAssigneeEdit>false</canAssigneeEdit>
-            <debugSimulateStep>false</debugSimulateStep>
-            <entryConditionLogic>and</entryConditionLogic>
-            <exitConditionLogic>and</exitConditionLogic>
-            <inputParameters>
-                <name>approvalStatus</name>
-                <value>
-                    <stringValue>Pending GCEO</stringValue>
-                </value>
-            </inputParameters>
-            <inputParameters>
-                <name>contractNumber</name>
-                <value>
-                    <elementReference>contractNumber</elementReference>
-                </value>
-            </inputParameters>
-            <inputParameters>
-                <name>recordId</name>
-                <value>
-                    <elementReference>recordId</elementReference>
-                </value>
-            </inputParameters>
-            <inputParameters>
-                <name>submitterId</name>
-                <value>
-                    <elementReference>submitter</elementReference>
-                </value>
-            </inputParameters>
-            <inputParameters>
-                <name>teamName</name>
-                <value>
-                    <stringValue>ED Treasury Team</stringValue>
-                </value>
-            </inputParameters>
-            <label>Update Contract Approval Status To Pending GCEO</label>
-            <requiresAsyncProcessing>false</requiresAsyncProcessing>
-            <runAsUser>false</runAsUser>
-            <shouldLock>false</shouldLock>
-            <stepSubtype>BackgroundStep</stepSubtype>
-        </stageSteps>
-        <stageSteps>
-            <name>GCEO_Approval_Step</name>
-            <actionName>standard_approvals__EvaluateApproval</actionName>
-            <actionType>stepApproval</actionType>
-            <assignees>
-                <assignee>
-                    <stringValue>RES_Executive_Corporate_CEO_Group</stringValue>
-                </assignee>
-                <assigneeType>Group</assigneeType>
-            </assignees>
-            <canAssigneeEdit>false</canAssigneeEdit>
-            <debugSimulateStep>false</debugSimulateStep>
-            <entryConditionLogic>and</entryConditionLogic>
-            <entryConditions>
-                <conditionType>EntryCondition</conditionType>
-                <leftValueReference>Update_Contract_Approval_Status_To_Pending_GCEO.Status</leftValueReference>
-                <operator>EqualTo</operator>
-                <rightValue>
-                    <stringValue>Completed</stringValue>
-                </rightValue>
-            </entryConditions>
-            <exitConditionLogic>and</exitConditionLogic>
-            <inputParameters>
-                <name>ActionInput__RecordId</name>
-                <value>
-                    <elementReference>recordId</elementReference>
-                </value>
-            </inputParameters>
-            <inputParameters>
-                <name>ActionInput__CustomEmailSubject</name>
-            </inputParameters>
-            <inputParameters>
-                <name>ActionInput__CustomEmailBody</name>
-            </inputParameters>
-            <inputParameters>
-                <name>ActionInput__ApprovalChainName</name>
-            </inputParameters>
-            <inputParameters>
-                <name>ActionInput__CanUseSmartApproval</name>
-            </inputParameters>
-            <inputParameters>
-                <name>ActionInput__CanUseRuleBasedAutoApprovals</name>
-            </inputParameters>
-            <inputParameters>
-                <name>ActionInput__ApprovalSkipConditions</name>
-            </inputParameters>
-            <inputParameters>
-                <name>ActionInput__ApprovalOverrideDecision</name>
-            </inputParameters>
-            <label>GCEO Approval Step</label>
-            <outputConfigParams>
-                <name>approvalComments</name>
-                <value xsi:nil="true"/>
-            </outputConfigParams>
-            <outputConfigParams>
-                <name>approvalDecision</name>
-                <value xsi:nil="true"/>
-            </outputConfigParams>
-            <requiresAsyncProcessing>false</requiresAsyncProcessing>
-            <runAsUser>false</runAsUser>
-            <shouldLock>true</shouldLock>
-            <stepSubtype>ApprovalStep</stepSubtype>
-        </stageSteps>
-        <stageSteps>
-            <name>Copy_1_of_Set_SLA_End_Date_On_Approval_Work_Item</name>
-            <actionName>RES_Autolaunched_Flow_Set_SLA_End_Date_On_Approval_Work_Item</actionName>
-            <actionType>stepBackground</actionType>
-            <canAssigneeEdit>false</canAssigneeEdit>
-            <debugSimulateStep>false</debugSimulateStep>
-            <entryConditionLogic>and</entryConditionLogic>
-            <entryConditions>
-                <conditionType>EntryCondition</conditionType>
-                <leftValueReference>Update_Contract_Approval_Status_To_Pending_GCEO.Status</leftValueReference>
-                <operator>EqualTo</operator>
-                <rightValue>
-                    <stringValue>Completed</stringValue>
-                </rightValue>
-            </entryConditions>
-            <exitConditionLogic>and</exitConditionLogic>
-            <inputParameters>
-                <name>businessHours</name>
-                <value>
-                    <numberValue>8.0</numberValue>
-                </value>
-            </inputParameters>
-            <inputParameters>
-                <name>contractId</name>
-                <value>
-                    <elementReference>recordId</elementReference>
-                </value>
-            </inputParameters>
-            <inputParameters>
-                <name>numberOfBusinessDays</name>
-                <value>
-                    <numberValue>2.0</numberValue>
-                </value>
-            </inputParameters>
-            <label>Set SLA End Date On Approval Work Item</label>
-            <requiresAsyncProcessing>false</requiresAsyncProcessing>
-            <runAsUser>false</runAsUser>
-            <shouldLock>false</shouldLock>
-            <stepSubtype>BackgroundStep</stepSubtype>
-        </stageSteps>
-    </orchestratedStages>
-    <orchestratedStages>
         <name>Update_Contract_Status_After_ED_Rejected</name>
         <label>Update Contract Status After ED Rejected</label>
         <locationX>0</locationX>
@@ -908,5 +1348,13 @@
         <isCollection>false</isCollection>
         <isInput>true</isInput>
         <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <name>totalContractValue</name>
+        <dataType>Number</dataType>
+        <isCollection>false</isCollection>
+        <isInput>true</isInput>
+        <isOutput>false</isOutput>
+        <scale>2</scale>
     </variables>
 </Flow>

@@ -8,5 +8,5 @@
     <masterLabel>Submit For Approval</masterLabel>
     <openType>replace</openType>
     <protected>false</protected>
-    <url>/flow/RES_Contract_Operations_Director_Approval_Process?recordId={!Contract.Id}&amp;submitter={!$User.Id}&amp;contractNumber={!Contract.ContractNumber}&amp;retURL={!Contract.Id}</url>
+    <url>/flow/RES_Contract_Operations_Director_Approval_Process?recordId={!Contract.Id}&amp;submitter={!$User.Id}&amp;contractNumber={!Contract.ContractNumber}&amp;totalContractValue={!VALUE(TEXT(Contract.RES_Total_Contract_Value__c))}&amp;retURL={!Contract.Id}</url>
 </WebLink>

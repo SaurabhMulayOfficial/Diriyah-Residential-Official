@@ -63,6 +63,22 @@
         </connector>
     </assignments>
     <assignments>
+        <name>Set_CBDO_Team_Name</name>
+        <label>Set CBDO Team Name</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignmentItems>
+            <assignToReference>teamName</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <stringValue>CBDO Team</stringValue>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Update_Approval_Status_To_Approved</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
         <name>Set_Merge_Fields</name>
         <label>Set Merge Fields</label>
         <locationX>0</locationX>
@@ -112,7 +128,7 @@
             </value>
         </assignmentItems>
         <connector>
-            <targetReference>Is_Template_Retrieved</targetReference>
+            <targetReference>Update_Contract_Status</targetReference>
         </connector>
     </assignments>
     <assignments>
@@ -129,22 +145,6 @@
         </assignmentItems>
         <connector>
             <targetReference>Get_Approved_Email_Template</targetReference>
-        </connector>
-    </assignments>
-    <assignments>
-        <name>Set_Team_Name</name>
-        <label>Set Team Name</label>
-        <locationX>0</locationX>
-        <locationY>0</locationY>
-        <assignmentItems>
-            <assignToReference>teamName</assignToReference>
-            <operator>Assign</operator>
-            <value>
-                <stringValue>CBDO Team</stringValue>
-            </value>
-        </assignmentItems>
-        <connector>
-            <targetReference>Update_Contract</targetReference>
         </connector>
     </assignments>
     <decisions>
@@ -183,6 +183,22 @@
                 <targetReference>Set_Approved_Email_Template</targetReference>
             </connector>
             <label>Pending ED Treasury</label>
+        </rules>
+        <rules>
+            <name>Pending_CBDO</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>approvalStatus</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Pending CBDO</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <isGoTo>true</isGoTo>
+                <targetReference>Set_Approved_Email_Template</targetReference>
+            </connector>
+            <label>Pending CBDO</label>
         </rules>
         <rules>
             <name>Pending_GCEO</name>
@@ -249,8 +265,8 @@
         </rules>
     </decisions>
     <decisions>
-        <name>Check_Approval_Status_On_Contract</name>
-        <label>Check Approval Status On Contract</label>
+        <name>Check_Contract_Approval_Status</name>
+        <label>Check Contract Approval Status</label>
         <locationX>0</locationX>
         <locationY>0</locationY>
         <defaultConnector>
@@ -258,19 +274,19 @@
         </defaultConnector>
         <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
         <rules>
-            <name>Pending_CBDO</name>
+            <name>StatusApproved</name>
             <conditionLogic>and</conditionLogic>
             <conditions>
-                <leftValueReference>Get_Contract.RES_Approval_Status__c</leftValueReference>
+                <leftValueReference>approvalStatus</leftValueReference>
                 <operator>EqualTo</operator>
                 <rightValue>
-                    <stringValue>Pending CBDO</stringValue>
+                    <stringValue>Approved</stringValue>
                 </rightValue>
             </conditions>
             <connector>
-                <targetReference>Is_CBDO_Approved_Or_Rejected</targetReference>
+                <targetReference>Get_Contract</targetReference>
             </connector>
-            <label>Pending CBDO</label>
+            <label>Approved</label>
         </rules>
     </decisions>
     <decisions>
@@ -310,41 +326,35 @@
         </rules>
     </decisions>
     <decisions>
-        <name>Is_CBDO_Approved_Or_Rejected</name>
-        <label>Is CBDO Approved Or Rejected?</label>
+        <name>Is_Status_Pending_CBDO</name>
+        <label>Is Status Pending CBDO?</label>
         <locationX>0</locationX>
         <locationY>0</locationY>
+        <defaultConnector>
+            <targetReference>Update_Approval_Status_To_Approved</targetReference>
+        </defaultConnector>
         <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
         <rules>
-            <name>CBDO_Approved</name>
+            <name>Pending_CBDO_Status</name>
             <conditionLogic>and</conditionLogic>
             <conditions>
-                <leftValueReference>approvalStatus</leftValueReference>
+                <leftValueReference>Get_Contract.RES_Approval_Status__c</leftValueReference>
                 <operator>EqualTo</operator>
                 <rightValue>
-                    <stringValue>Approved</stringValue>
+                    <stringValue>Pending CBDO</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>teamName</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>GCEO Team</stringValue>
                 </rightValue>
             </conditions>
             <connector>
-                <targetReference>Set_Team_Name</targetReference>
+                <targetReference>Set_CBDO_Team_Name</targetReference>
             </connector>
-            <label>CBDO Approved</label>
-        </rules>
-        <rules>
-            <name>CBDO_Rejected</name>
-            <conditionLogic>and</conditionLogic>
-            <conditions>
-                <leftValueReference>approvalStatus</leftValueReference>
-                <operator>EqualTo</operator>
-                <rightValue>
-                    <stringValue>Rejected</stringValue>
-                </rightValue>
-            </conditions>
-            <connector>
-                <isGoTo>true</isGoTo>
-                <targetReference>Set_Team_Name</targetReference>
-            </connector>
-            <label>CBDO Rejected</label>
+            <label>Pending CBDO</label>
         </rules>
     </decisions>
     <decisions>
@@ -431,7 +441,7 @@
         <locationY>0</locationY>
         <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
         <connector>
-            <targetReference>Check_Approval_Status_On_Contract</targetReference>
+            <targetReference>Is_Status_Pending_CBDO</targetReference>
         </connector>
         <filterLogic>and</filterLogic>
         <filters>
@@ -509,8 +519,8 @@
         <storeOutputAutomatically>true</storeOutputAutomatically>
     </recordLookups>
     <recordUpdates>
-        <name>Update_Contract</name>
-        <label>Update Contract</label>
+        <name>Update_Approval_Status_To_Approved</name>
+        <label>Update Approval Status To Approved</label>
         <locationX>0</locationX>
         <locationY>0</locationY>
         <connector>
@@ -532,11 +542,65 @@
         </inputAssignments>
         <object>Contract</object>
     </recordUpdates>
+    <recordUpdates>
+        <name>Update_Contract</name>
+        <label>Update Contract</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Get_Org_Wide_Email</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Id</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>recordId</elementReference>
+            </value>
+        </filters>
+        <inputAssignments>
+            <field>RES_Approval_Status__c</field>
+            <value>
+                <elementReference>approvalStatus</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Status</field>
+            <value>
+                <stringValue>In Approval Process</stringValue>
+            </value>
+        </inputAssignments>
+        <object>Contract</object>
+    </recordUpdates>
+    <recordUpdates>
+        <name>Update_Contract_Status</name>
+        <label>Update Contract Status</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Is_Template_Retrieved</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Id</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>recordId</elementReference>
+            </value>
+        </filters>
+        <inputAssignments>
+            <field>Status</field>
+            <value>
+                <stringValue>Draft</stringValue>
+            </value>
+        </inputAssignments>
+        <object>Contract</object>
+    </recordUpdates>
     <start>
         <locationX>0</locationX>
         <locationY>0</locationY>
         <connector>
-            <targetReference>Get_Contract</targetReference>
+            <targetReference>Check_Contract_Approval_Status</targetReference>
         </connector>
     </start>
     <status>Active</status>

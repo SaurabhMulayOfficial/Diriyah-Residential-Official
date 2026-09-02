@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>RES_Total_Contract_Value__c</fullName>
+    <label>Total Contract Value</label>
+    <summarizedField>ContractItemPrice.Price</summarizedField>
+    <summaryForeignKey>ContractItemPrice.ContractId</summaryForeignKey>
+    <summaryOperation>sum</summaryOperation>
+    <trackHistory>false</trackHistory>
+    <type>Summary</type>
+</CustomField>
