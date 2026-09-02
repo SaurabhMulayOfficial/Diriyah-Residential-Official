@@ -25,9 +25,6 @@
                             <value>CreateOrder</value>
                         </valueListItems>
                         <valueListItems>
-                            <value>CreateContract</value>
-                        </valueListItems>
-                        <valueListItems>
                             <value>Quote.RES_Request_Soft_Hold_Extension</value>
                         </valueListItems>
                         <valueListItems>
@@ -647,6 +644,23 @@
                 <componentInstanceProperties>
                     <name>enableSidepanel</name>
                     <value>true</value>
+                </componentInstanceProperties>
+                <componentInstanceProperties>
+                    <name>sidepanelDetailFields</name>
+                    <valueList>
+                        <valueListItems>
+                            <value>Product2.Name</value>
+                        </valueListItems>
+                        <valueListItems>
+                            <value>Product2.RES_Product_Number__c</value>
+                        </valueListItems>
+                        <valueListItems>
+                            <value>Product2.RES_Unit_Status__c</value>
+                        </valueListItems>
+                        <valueListItems>
+                            <value>Product2.Type</value>
+                        </valueListItems>
+                    </valueList>
                 </componentInstanceProperties>
                 <componentName>runtime_revenue_foundation:transactionLineTable</componentName>
                 <identifier>runtime_revenue_foundation_transactionLineTable</identifier>
