@@ -22,12 +22,37 @@
                 </rightValue>
             </conditions>
             <connector>
-                <targetReference>Comment_Screen</targetReference>
+                <targetReference>Get_Quote_For_Manager_Check</targetReference>
             </connector>
             <label>Has Access</label>
         </rules>
     </decisions>
-    <description>DIR-869: "Submit for Discount Approval" quick action screen. Enforces access (RES_Can_Submit_Discount_Approval custom permission) internally, captures an optional justification comment from the RM/Specialist, then flags the Quote for the DOA orchestration to pick up.</description>
+    <decisions>
+        <name>Check_Manager_Present</name>
+        <label>Check Manager Present</label>
+        <locationX>176</locationX>
+        <locationY>102</locationY>
+        <defaultConnector>
+            <targetReference>Comment_Screen</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Manager Present</defaultConnectorLabel>
+        <rules>
+            <name>Manager_Missing</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>Get_Quote_Owner.ManagerId</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Manager_Missing_Screen</targetReference>
+            </connector>
+            <label>Manager Missing</label>
+        </rules>
+    </decisions>
+    <description>DIR-869: "Submit for Discount Approval" quick action screen. Enforces access (RES_Can_Submit_Discount_Approval custom permission) internally, captures an optional justification comment from the RM/Specialist, then flags the Quote for the DOA orchestration to pick up. DIR-1612: Reset_Flag_First and Submit_Quote both route DML faults (e.g. ENTITY_IS_LOCKED when the quote already has a discount approval in progress) to Pending_Approval_Screen instead of surfacing the raw platform error to the user. DIR-1612: Get_Quote_For_Manager_Check/Check_Manager_Present block submission up front with Manager_Missing_Screen when the Quote Owner has no Manager set, instead of letting the DOA orchestration silently stall at Initiate_Approval with no feedback to anyone.</description>
     <environments>Default</environments>
     <interviewLabel>Submit for Discount Approval {!$Flow.CurrentDateTime}</interviewLabel>
     <label>Submit for Discount Approval</label>
@@ -50,6 +75,48 @@
             <stringValue>LightningFlowBuilder</stringValue>
         </value>
     </processMetadataValues>
+    <recordLookups>
+        <name>Get_Quote_For_Manager_Check</name>
+        <label>Get Quote For Manager Check</label>
+        <locationX>176</locationX>
+        <locationY>75</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Get_Quote_Owner</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Id</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>recordId</elementReference>
+            </value>
+        </filters>
+        <getFirstRecordOnly>true</getFirstRecordOnly>
+        <object>Quote</object>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
+    <recordLookups>
+        <name>Get_Quote_Owner</name>
+        <label>Get Quote Owner</label>
+        <locationX>176</locationX>
+        <locationY>89</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Check_Manager_Present</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Id</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>Get_Quote_For_Manager_Check.OwnerId</elementReference>
+            </value>
+        </filters>
+        <getFirstRecordOnly>true</getFirstRecordOnly>
+        <object>User</object>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
     <recordUpdates>
         <name>Reset_Flag_First</name>
         <label>Reset Flag First</label>
@@ -58,6 +125,9 @@
         <connector>
             <targetReference>Submit_Quote</targetReference>
         </connector>
+        <faultConnector>
+            <targetReference>Pending_Approval_Screen</targetReference>
+        </faultConnector>
         <filterLogic>and</filterLogic>
         <filters>
             <field>Id</field>
@@ -79,6 +149,9 @@
         <label>Submit Quote</label>
         <locationX>176</locationX>
         <locationY>264</locationY>
+        <faultConnector>
+            <targetReference>Pending_Approval_Screen</targetReference>
+        </faultConnector>
         <filterLogic>and</filterLogic>
         <filters>
             <field>Id</field>
@@ -117,6 +190,38 @@
             <fieldText>Comments (optional)</fieldText>
             <fieldType>LargeTextArea</fieldType>
             <isRequired>false</isRequired>
+        </fields>
+        <showFooter>true</showFooter>
+        <showHeader>true</showHeader>
+    </screens>
+    <screens>
+        <name>Pending_Approval_Screen</name>
+        <label>Approval In Progress</label>
+        <locationX>440</locationX>
+        <locationY>264</locationY>
+        <allowBack>false</allowBack>
+        <allowFinish>true</allowFinish>
+        <allowPause>false</allowPause>
+        <fields>
+            <name>Pending_Approval_Message</name>
+            <fieldText>&lt;p&gt;This quote already has a discount approval in progress and can&apos;t be resubmitted right now. Please wait for the current approval to finish, then try again.&lt;/p&gt;&lt;p&gt;If this keeps happening, contact your administrator with this detail: {!$Flow.FaultMessage}&lt;/p&gt;</fieldText>
+            <fieldType>DisplayText</fieldType>
+        </fields>
+        <showFooter>true</showFooter>
+        <showHeader>true</showHeader>
+    </screens>
+    <screens>
+        <name>Manager_Missing_Screen</name>
+        <label>Manager Not Set</label>
+        <locationX>704</locationX>
+        <locationY>102</locationY>
+        <allowBack>false</allowBack>
+        <allowFinish>true</allowFinish>
+        <allowPause>false</allowPause>
+        <fields>
+            <name>Manager_Missing_Message</name>
+            <fieldText>&lt;p&gt;Your manager is not set on your user record, so this quote can&apos;t be submitted for discount approval right now.&lt;/p&gt;&lt;p&gt;Contact your administrator to set your manager, then try again.&lt;/p&gt;</fieldText>
+            <fieldType>DisplayText</fieldType>
         </fields>
         <showFooter>true</showFooter>
         <showHeader>true</showHeader>
