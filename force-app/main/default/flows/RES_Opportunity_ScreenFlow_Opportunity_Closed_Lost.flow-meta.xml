@@ -279,6 +279,35 @@
             </connector>
             <label>URC not signed and Fee not paid</label>
         </rules>
+        <rules>
+            <name>Fee_False_URC_True</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>Get_Primary_Quote_Opportunity.Contract.RES_Fee_Transferred__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>Get_Primary_Quote_Opportunity.Contract.RES_URC_Signed__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>GetOpportunity.StageName</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Reservation</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Initiate_CSO_Approval_URC_Signed_Fee_Not_Paid</targetReference>
+            </connector>
+            <label>Fee False, URC True</label>
+        </rules>
     </decisions>
     <decisions>
         <name>Is_Reason_Provided</name>
@@ -649,9 +678,6 @@
         <connector>
             <targetReference>Case_4_Refund_Approval_Submitted</targetReference>
         </connector>
-        <faultConnector>
-            <targetReference>Exception_Handling</targetReference>
-        </faultConnector>
         <filterLogic>and</filterLogic>
         <filters>
             <field>RES_SPA_Signed__c</field>
@@ -679,10 +705,48 @@
                 <stringValue>Customer refuses to sign the SPA</stringValue>
             </value>
         </inputAssignments>
-        <inputAssignments>
-            <field>Status</field>
+        <object>Contract</object>
+    </recordUpdates>
+    <recordUpdates>
+        <name>Initiate_CSO_Approval_URC_Signed_Fee_Not_Paid</name>
+        <label>Initiate CSO Approval - URC Signed Fee Not Paid</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Case_5_URC_Signed_Fee_Not_Paid_Approval</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>RES_Fee_Transferred__c</field>
+            <operator>EqualTo</operator>
             <value>
-                <stringValue>Pending Cancellation Approval</stringValue>
+                <booleanValue>false</booleanValue>
+            </value>
+        </filters>
+        <filters>
+            <field>RES_URC_Signed__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </filters>
+        <filters>
+            <field>Id</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>Get_Primary_Quote_Opportunity.ContractId</elementReference>
+            </value>
+        </filters>
+        <inputAssignments>
+            <field>RES_Close_Lost_Reason_from_Opportunity__c</field>
+            <value>
+                <elementReference>Reason_for_lost</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>RES_Product_Approval_Stage__c</field>
+            <value>
+                <stringValue>URC signed + Fee not paid</stringValue>
             </value>
         </inputAssignments>
         <object>Contract</object>
@@ -736,12 +800,6 @@
                 <stringValue>Fee paid + URC signed</stringValue>
             </value>
         </inputAssignments>
-        <inputAssignments>
-            <field>Status</field>
-            <value>
-                <stringValue>Pending Cancellation Approval</stringValue>
-            </value>
-        </inputAssignments>
         <object>Contract</object>
     </recordUpdates>
     <recordUpdates>
@@ -784,12 +842,6 @@
             <field>RES_Product_Approval_Stage__c</field>
             <value>
                 <stringValue>Fee not paid + URC not signed</stringValue>
-            </value>
-        </inputAssignments>
-        <inputAssignments>
-            <field>Status</field>
-            <value>
-                <stringValue>Pending Cancellation Approval</stringValue>
             </value>
         </inputAssignments>
         <object>Contract</object>
@@ -843,12 +895,6 @@
                 <stringValue>Fee paid + URC not signed</stringValue>
             </value>
         </inputAssignments>
-        <inputAssignments>
-            <field>Status</field>
-            <value>
-                <stringValue>Pending Cancellation Approval</stringValue>
-            </value>
-        </inputAssignments>
         <object>Contract</object>
     </recordUpdates>
     <recordUpdates>
@@ -891,7 +937,7 @@
         </inputAssignments>
         <object>Opportunity</object>
     </recordUpdates>
-    <runInMode>SystemModeWithoutSharing</runInMode>
+    <runInMode>DefaultMode</runInMode>
     <screens>
         <name>Case_1_Refund_Approval_Submitted</name>
         <label>Case 1 — Refund Approval Submitted</label>
@@ -902,7 +948,7 @@
         <allowPause>false</allowPause>
         <fields>
             <name>RefundApprovalSubmittedCase1</name>
-            <fieldText>&lt;p&gt;&lt;strong&gt;Fee has been paid and URC has not been signed.&lt;/strong&gt;&lt;/p&gt;&lt;p&gt;The required refund approval has been initiated and is currently pending.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Approval flow: &lt;/strong&gt;&lt;span style=&quot;background-color: rgb(255, 255, 255);&quot;&gt;CSO → Finance&lt;/span&gt;&lt;/p&gt;&lt;p&gt;Once the required approvals are completed:&lt;/p&gt;&lt;ul&gt;&lt;li&gt;The Opportunity will be marked as &lt;strong&gt;Closed Lost&lt;/strong&gt;.&lt;/li&gt;&lt;li&gt;The Unit will be marked as &lt;strong&gt;Available&lt;/strong&gt;.&lt;/li&gt;&lt;li&gt;Finance will process the &lt;strong&gt;Full Fee Refund&lt;/strong&gt;.&lt;/li&gt;&lt;/ul&gt;&lt;p&gt;&lt;strong&gt;No further action is required from you at this time.&lt;/strong&gt;&lt;/p&gt;</fieldText>
+            <fieldText>&lt;p&gt;&lt;strong&gt;Fee has been paid and URC has not been signed.&lt;/strong&gt;&lt;/p&gt;&lt;p&gt;The required refund approval has been initiated and is currently pending.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Approval flow:&lt;/strong&gt; &lt;span style=&quot;background-color: rgb(255, 255, 255);&quot;&gt;Finance&lt;/span&gt; → CSO&lt;/p&gt;&lt;p&gt;Once the required approvals are completed:&lt;/p&gt;&lt;ul&gt;&lt;li&gt;The Opportunity will be marked as &lt;strong&gt;Closed Lost&lt;/strong&gt;.&lt;/li&gt;&lt;li&gt;The Unit will be marked as &lt;strong&gt;Available&lt;/strong&gt;.&lt;/li&gt;&lt;li&gt;Finance will process the &lt;strong&gt;Full Fee Refund&lt;/strong&gt;.&lt;/li&gt;&lt;/ul&gt;&lt;p&gt;&lt;strong&gt;No further action is required from you at this time.&lt;/strong&gt;&lt;/p&gt;</fieldText>
             <fieldType>DisplayText</fieldType>
             <styleProperties>
                 <verticalAlignment>
@@ -926,7 +972,7 @@
         <allowPause>false</allowPause>
         <fields>
             <name>RefundApprovalSubmittedCase2</name>
-            <fieldText>&lt;p&gt;&lt;strong&gt;Fee has been paid and URC has been signed.&lt;/strong&gt;&lt;/p&gt;&lt;p&gt;&lt;strong&gt;The required refund approval has been initiated and is currently pending.&lt;/strong&gt;&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Approval flow:&lt;/strong&gt; &lt;span style=&quot;background-color: rgb(255, 255, 255);&quot;&gt;CSO → Finance&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;The &lt;strong&gt;Reservation Amount will be retained&lt;/strong&gt;.&lt;/p&gt;&lt;p&gt;After approval:&lt;/p&gt;&lt;ul&gt;&lt;li&gt;If the amount paid is greater than the Reservation Amount, Finance will refund only the &lt;strong&gt;excess amount&lt;/strong&gt;.&lt;/li&gt;&lt;li&gt;If the amount paid is less than or equal to the Reservation Amount, &lt;strong&gt;no refund will be processed&lt;/strong&gt;.&lt;/li&gt;&lt;li&gt;The Opportunity will be marked as &lt;strong&gt;Closed Lost&lt;/strong&gt;.&lt;/li&gt;&lt;li&gt;The Unit will be marked as &lt;strong&gt;Available&lt;/strong&gt;.&lt;/li&gt;&lt;/ul&gt;&lt;p&gt;&lt;strong&gt;No further action is required from you at this time.&lt;/strong&gt;&lt;/p&gt;</fieldText>
+            <fieldText>&lt;p&gt;&lt;strong&gt;Fee has been paid and URC has been signed.&lt;/strong&gt;&lt;/p&gt;&lt;p&gt;&lt;strong&gt;The required refund approval has been initiated and is currently pending.&lt;/strong&gt;&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Approval flow:&lt;/strong&gt; &lt;span style=&quot;background-color: rgb(255, 255, 255);&quot;&gt;Finance&lt;/span&gt; → CSO&lt;/p&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;The &lt;strong&gt;Reservation Amount will be retained&lt;/strong&gt;.&lt;/p&gt;&lt;p&gt;After approval:&lt;/p&gt;&lt;ul&gt;&lt;li&gt;If the amount paid is greater than the Reservation Amount, Finance will refund only the &lt;strong&gt;excess amount&lt;/strong&gt;.&lt;/li&gt;&lt;li&gt;If the amount paid is less than or equal to the Reservation Amount, &lt;strong&gt;no refund will be processed&lt;/strong&gt;.&lt;/li&gt;&lt;li&gt;The Opportunity will be marked as &lt;strong&gt;Closed Lost&lt;/strong&gt;.&lt;/li&gt;&lt;li&gt;The Unit will be marked as &lt;strong&gt;Available&lt;/strong&gt;.&lt;/li&gt;&lt;/ul&gt;&lt;p&gt;&lt;strong&gt;No further action is required from you at this time.&lt;/strong&gt;&lt;/p&gt;</fieldText>
             <fieldType>DisplayText</fieldType>
             <styleProperties>
                 <verticalAlignment>
@@ -950,7 +996,7 @@
         <allowPause>false</allowPause>
         <fields>
             <name>RefundApprovalSubmittedCase3</name>
-            <fieldText>&lt;p&gt;&lt;strong&gt;Fee has not been paid and URC has not been signed.&lt;/strong&gt;&lt;/p&gt;&lt;p&gt;&lt;strong&gt;The Opportunity closure request has been submitted for the required approval.&lt;/strong&gt;&lt;/p&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Approval flow:&lt;/strong&gt; CSO&lt;/p&gt;&lt;p&gt;Once the CSO approval is completed:&lt;/p&gt;&lt;ul&gt;&lt;li&gt;The Opportunity will be marked as &lt;strong&gt;Closed Lost&lt;/strong&gt;.&lt;/li&gt;&lt;li&gt;The Unit will be marked as &lt;strong&gt;Available&lt;/strong&gt;.&lt;/li&gt;&lt;/ul&gt;&lt;p&gt;No refund processing is required for this scenario.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;No further action is required from you at this time.&lt;/strong&gt;&lt;/p&gt;</fieldText>
+            <fieldText>&lt;p&gt;&lt;strong&gt;Fee has not been paid and URC has not been signed.&lt;/strong&gt;&lt;/p&gt;&lt;p&gt;&lt;strong&gt;The Opportunity closure request has been submitted for the required approval.&lt;/strong&gt;&lt;/p&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Approval flow:&lt;/strong&gt; CSO only&lt;/p&gt;&lt;p&gt;Once the CSO approval is completed:&lt;/p&gt;&lt;ul&gt;&lt;li&gt;The Opportunity will be marked as &lt;strong&gt;Closed Lost&lt;/strong&gt;.&lt;/li&gt;&lt;li&gt;The Unit will be marked as &lt;strong&gt;Available&lt;/strong&gt;.&lt;/li&gt;&lt;/ul&gt;&lt;p&gt;No refund processing is required for this scenario.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;No further action is required from you at this time.&lt;/strong&gt;&lt;/p&gt;</fieldText>
             <fieldType>DisplayText</fieldType>
             <styleProperties>
                 <verticalAlignment>
@@ -989,6 +1035,30 @@
         <showHeader>true</showHeader>
     </screens>
     <screens>
+        <name>Case_5_URC_Signed_Fee_Not_Paid_Approval</name>
+        <label>Case 5 — URC Signed Fee Not Paid Approval Submitted</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <allowBack>false</allowBack>
+        <allowFinish>true</allowFinish>
+        <allowPause>false</allowPause>
+        <fields>
+            <name>RefundApprovalSubmittedCase5</name>
+            <fieldText>&lt;p&gt;&lt;strong&gt;URC has been signed but Fee has not been paid.&lt;/strong&gt;&lt;/p&gt;&lt;p&gt;&lt;strong&gt;The Opportunity closure request has been submitted for the required approval.&lt;/strong&gt;&lt;/p&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Approval flow:&lt;/strong&gt; CSO only&lt;/p&gt;&lt;p&gt;Once the CSO approval is completed:&lt;/p&gt;&lt;ul&gt;&lt;li&gt;The Opportunity will be marked as &lt;strong&gt;Closed Lost&lt;/strong&gt;.&lt;/li&gt;&lt;li&gt;The Unit will be marked as &lt;strong&gt;Available&lt;/strong&gt;.&lt;/li&gt;&lt;/ul&gt;&lt;p&gt;No refund processing is required for this scenario as no fee was paid.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;No further action is required from you at this time.&lt;/strong&gt;&lt;/p&gt;</fieldText>
+            <fieldType>DisplayText</fieldType>
+            <styleProperties>
+                <verticalAlignment>
+                    <stringValue>top</stringValue>
+                </verticalAlignment>
+                <width>
+                    <stringValue>12</stringValue>
+                </width>
+            </styleProperties>
+        </fields>
+        <showFooter>true</showFooter>
+        <showHeader>true</showHeader>
+    </screens>
+    <screens>
         <name>CRF_Required_Fee_Paid_URC_Not_Signed</name>
         <label>CRF Required - Fee Paid, URC Not Signed</label>
         <locationX>0</locationX>
@@ -1011,30 +1081,6 @@
         </fields>
         <showFooter>true</showFooter>
         <showHeader>true</showHeader>
-    </screens>
-    <screens>
-        <name>Exception_Handling</name>
-        <label>Exception Handling</label>
-        <locationX>0</locationX>
-        <locationY>0</locationY>
-        <allowBack>true</allowBack>
-        <allowFinish>true</allowFinish>
-        <allowPause>true</allowPause>
-        <fields>
-            <name>exception</name>
-            <fieldText>&lt;p&gt;Exception while update Contract: {!$Flow.FaultMessage}&lt;/p&gt;</fieldText>
-            <fieldType>DisplayText</fieldType>
-            <styleProperties>
-                <verticalAlignment>
-                    <stringValue>top</stringValue>
-                </verticalAlignment>
-                <width>
-                    <stringValue>12</stringValue>
-                </width>
-            </styleProperties>
-        </fields>
-        <showFooter>true</showFooter>
-        <showHeader>false</showHeader>
     </screens>
     <screens>
         <name>GotErrorException</name>
