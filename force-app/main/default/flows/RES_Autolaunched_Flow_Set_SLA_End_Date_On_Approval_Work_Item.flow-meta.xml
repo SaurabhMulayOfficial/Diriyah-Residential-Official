@@ -7,14 +7,10 @@
         <locationY>0</locationY>
         <actionName>RES_SetSLAEndDateTimeOnApprovalItem</actionName>
         <actionType>apex</actionType>
+        <connector>
+            <targetReference>Update_SLA_End_Date</targetReference>
+        </connector>
         <flowTransactionModel>Automatic</flowTransactionModel>
-        <inputParameters>
-            <name>approvalWorkItemRecord</name>
-            <value>
-                <elementReference>Get_Approval_Work_Item</elementReference>
-                <inputConfiguratorMode>Resource</inputConfiguratorMode>
-            </value>
-        </inputParameters>
         <inputParameters>
             <name>businessHours</name>
             <value>
@@ -31,6 +27,10 @@
         </inputParameters>
         <nameSegment>RES_SetSLAEndDateTimeOnApprovalItem</nameSegment>
         <offset>0</offset>
+        <outputParameters>
+            <assignToReference>slaEndDate</assignToReference>
+            <name>slaEndDate</name>
+        </outputParameters>
     </actionCalls>
     <apiVersion>67.0</apiVersion>
     <areMetricsLoggedToDataCloud>false</areMetricsLoggedToDataCloud>
@@ -84,6 +84,27 @@
         <object>ApprovalWorkItem</object>
         <storeOutputAutomatically>true</storeOutputAutomatically>
     </recordLookups>
+    <recordUpdates>
+        <name>Update_SLA_End_Date</name>
+        <label>Update SLA End Date</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Id</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>Get_Approval_Work_Item.Id</elementReference>
+            </value>
+        </filters>
+        <inputAssignments>
+            <field>RES_SLA_End_Date__c</field>
+            <value>
+                <elementReference>slaEndDate</elementReference>
+            </value>
+        </inputAssignments>
+        <object>ApprovalWorkItem</object>
+    </recordUpdates>
     <start>
         <locationX>0</locationX>
         <locationY>0</locationY>
@@ -114,5 +135,12 @@
         <isInput>true</isInput>
         <isOutput>false</isOutput>
         <scale>2</scale>
+    </variables>
+    <variables>
+        <name>slaEndDate</name>
+        <dataType>DateTime</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
     </variables>
 </Flow>
