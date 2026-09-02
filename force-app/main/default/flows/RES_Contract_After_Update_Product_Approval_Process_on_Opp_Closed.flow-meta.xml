@@ -25,6 +25,20 @@
                     <stringValue>Reservation</stringValue>
                 </rightValue>
             </conditions>
+            <conditions>
+                <leftValueReference>$Record.RES_Product_Approval_Stage__c</leftValueReference>
+                <operator>IsChanged</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Status</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Pending Cancellation Approval</stringValue>
+                </rightValue>
+            </conditions>
             <connector>
                 <targetReference>CSO_to_Finance_AC1</targetReference>
             </connector>
@@ -45,6 +59,20 @@
                 <operator>EqualTo</operator>
                 <rightValue>
                     <stringValue>Reservation</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.RES_Product_Approval_Stage__c</leftValueReference>
+                <operator>IsChanged</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Status</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Pending Cancellation Approval</stringValue>
                 </rightValue>
             </conditions>
             <connector>
@@ -69,6 +97,20 @@
                     <stringValue>Reservation</stringValue>
                 </rightValue>
             </conditions>
+            <conditions>
+                <leftValueReference>$Record.RES_Product_Approval_Stage__c</leftValueReference>
+                <operator>IsChanged</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Status</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Pending Cancellation Approval</stringValue>
+                </rightValue>
+            </conditions>
             <connector>
                 <targetReference>CSO_Approval_Process_AC3</targetReference>
             </connector>
@@ -82,6 +124,20 @@
                 <operator>EqualTo</operator>
                 <rightValue>
                     <stringValue>Customer refuses to sign the SPA</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.RES_Product_Approval_Stage__c</leftValueReference>
+                <operator>IsChanged</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Status</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Pending Cancellation Approval</stringValue>
                 </rightValue>
             </conditions>
             <connector>
@@ -960,7 +1016,7 @@
             <actionType>stepApproval</actionType>
             <assignees>
                 <assignee>
-                    <stringValue>RES_Operations_Team</stringValue>
+                    <stringValue>RES_Operations_Group</stringValue>
                 </assignee>
                 <assigneeType>Group</assigneeType>
             </assignees>
