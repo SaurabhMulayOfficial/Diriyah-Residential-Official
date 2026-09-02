@@ -649,6 +649,9 @@
         <connector>
             <targetReference>Case_4_Refund_Approval_Submitted</targetReference>
         </connector>
+        <faultConnector>
+            <targetReference>Exception_Handling</targetReference>
+        </faultConnector>
         <filterLogic>and</filterLogic>
         <filters>
             <field>RES_SPA_Signed__c</field>
@@ -888,7 +891,7 @@
         </inputAssignments>
         <object>Opportunity</object>
     </recordUpdates>
-    <runInMode>DefaultMode</runInMode>
+    <runInMode>SystemModeWithoutSharing</runInMode>
     <screens>
         <name>Case_1_Refund_Approval_Submitted</name>
         <label>Case 1 — Refund Approval Submitted</label>
@@ -1008,6 +1011,30 @@
         </fields>
         <showFooter>true</showFooter>
         <showHeader>true</showHeader>
+    </screens>
+    <screens>
+        <name>Exception_Handling</name>
+        <label>Exception Handling</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <allowBack>true</allowBack>
+        <allowFinish>true</allowFinish>
+        <allowPause>true</allowPause>
+        <fields>
+            <name>exception</name>
+            <fieldText>&lt;p&gt;Exception while update Contract: {!$Flow.FaultMessage}&lt;/p&gt;</fieldText>
+            <fieldType>DisplayText</fieldType>
+            <styleProperties>
+                <verticalAlignment>
+                    <stringValue>top</stringValue>
+                </verticalAlignment>
+                <width>
+                    <stringValue>12</stringValue>
+                </width>
+            </styleProperties>
+        </fields>
+        <showFooter>true</showFooter>
+        <showHeader>false</showHeader>
     </screens>
     <screens>
         <name>GotErrorException</name>
