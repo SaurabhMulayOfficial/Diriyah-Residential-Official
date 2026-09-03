@@ -37,6 +37,13 @@
                 <stringValue>Closed Won</stringValue>
             </value>
         </assignmentItems>
+        <assignmentItems>
+            <assignToReference>updateUnitStatusToSold</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </assignmentItems>
         <connector>
             <targetReference>Update_Opportunity_Stage</targetReference>
         </connector>
@@ -246,6 +253,28 @@
             <label>Yes</label>
         </rules>
     </decisions>
+    <decisions>
+        <name>Update_Unit_Status_To_Sold</name>
+        <label>Update Unit Status To Sold?</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Mark_as_sold</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>updateUnitStatusToSold</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Get_Contract_Item_Price</targetReference>
+            </connector>
+            <label>Mark as sold</label>
+        </rules>
+    </decisions>
     <description>DIR-1145 Opportunity Stage Transition</description>
     <environments>Default</environments>
     <interviewLabel>RES Contract - After Update - Update Opportunity Stage {!$Flow.CurrentDateTime}</interviewLabel>
@@ -443,7 +472,7 @@
         <locationX>0</locationX>
         <locationY>0</locationY>
         <connector>
-            <targetReference>Get_Contract_Item_Price</targetReference>
+            <targetReference>Update_Unit_Status_To_Sold</targetReference>
         </connector>
         <inputReference>opportunityRecord</inputReference>
     </recordUpdates>
@@ -550,5 +579,15 @@
         <isCollection>false</isCollection>
         <isInput>false</isInput>
         <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <name>updateUnitStatusToSold</name>
+        <dataType>Boolean</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <value>
+            <booleanValue>false</booleanValue>
+        </value>
     </variables>
 </Flow>
