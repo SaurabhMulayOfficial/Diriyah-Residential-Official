@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <PermissionSet xmlns="http://soap.sforce.com/2006/04/metadata">
     <description>Permission Set for External Operations– Operations – Senior Manager</description>
+    <classAccesses>
+        <apexClass>RES_BulkFolderUploaderController</apexClass>
+        <enabled>true</enabled>
+    </classAccesses>
     <customPermissions>
         <enabled>true</enabled>
         <name>RES_Product_Operation_Visibility</name>
