@@ -204,6 +204,13 @@
                     <booleanValue>false</booleanValue>
                 </rightValue>
             </conditions>
+            <conditions>
+                <leftValueReference>$Record.Opportunity.Id</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <elementReference>Get_Sibling_Product.RES_Reserved_By_Quote__r.OpportunityId</elementReference>
+                </rightValue>
+            </conditions>
             <connector>
                 <targetReference>Error_Sibling_Quote_Unit_Hard_Blocked</targetReference>
             </connector>
