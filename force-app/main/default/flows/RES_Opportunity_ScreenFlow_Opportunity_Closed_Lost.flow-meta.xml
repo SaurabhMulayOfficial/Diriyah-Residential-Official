@@ -308,6 +308,35 @@
             </connector>
             <label>Fee False, URC True</label>
         </rules>
+        <rules>
+            <name>Down_Payment_Receipt_CRF_True</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>Get_Primary_Quote_Opportunity.Contract.RES_Down_Payment_Receipt__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>Get_Primary_Quote_Opportunity.Contract.RES_CRF_Form_Received__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>GetOpportunity.StageName</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Reservation</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Initiate_Finance_CSO_Approval_DPR_CRF</targetReference>
+            </connector>
+            <label>Down Payment Receipt + CRF</label>
+        </rules>
     </decisions>
     <decisions>
         <name>Is_Reason_Provided</name>
@@ -705,6 +734,12 @@
                 <stringValue>Customer refuses to sign the SPA</stringValue>
             </value>
         </inputAssignments>
+        <inputAssignments>
+            <field>Status</field>
+            <value>
+                <stringValue>Pending Cancellation Approval</stringValue>
+            </value>
+        </inputAssignments>
         <object>Contract</object>
     </recordUpdates>
     <recordUpdates>
@@ -747,6 +782,12 @@
             <field>RES_Product_Approval_Stage__c</field>
             <value>
                 <stringValue>URC signed + Fee not paid</stringValue>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Status</field>
+            <value>
+                <stringValue>Pending Cancellation Approval</stringValue>
             </value>
         </inputAssignments>
         <object>Contract</object>
@@ -800,6 +841,12 @@
                 <stringValue>Fee paid + URC signed</stringValue>
             </value>
         </inputAssignments>
+        <inputAssignments>
+            <field>Status</field>
+            <value>
+                <stringValue>Pending Cancellation Approval</stringValue>
+            </value>
+        </inputAssignments>
         <object>Contract</object>
     </recordUpdates>
     <recordUpdates>
@@ -842,6 +889,12 @@
             <field>RES_Product_Approval_Stage__c</field>
             <value>
                 <stringValue>Fee not paid + URC not signed</stringValue>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Status</field>
+            <value>
+                <stringValue>Pending Cancellation Approval</stringValue>
             </value>
         </inputAssignments>
         <object>Contract</object>
@@ -893,6 +946,62 @@
             <field>RES_Product_Approval_Stage__c</field>
             <value>
                 <stringValue>Fee paid + URC not signed</stringValue>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Status</field>
+            <value>
+                <stringValue>Pending Cancellation Approval</stringValue>
+            </value>
+        </inputAssignments>
+        <object>Contract</object>
+    </recordUpdates>
+    <recordUpdates>
+        <name>Initiate_Finance_CSO_Approval_DPR_CRF</name>
+        <label>Initiate Finance CSO Approval - Down Payment Receipt + CRF</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Case_6_Down_Payment_Receipt_CRF_Approval</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>RES_Down_Payment_Receipt__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </filters>
+        <filters>
+            <field>RES_CRF_Form_Received__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </filters>
+        <filters>
+            <field>Id</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>Get_Primary_Quote_Opportunity.ContractId</elementReference>
+            </value>
+        </filters>
+        <inputAssignments>
+            <field>RES_Close_Lost_Reason_from_Opportunity__c</field>
+            <value>
+                <elementReference>Reason_for_lost</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>RES_Product_Approval_Stage__c</field>
+            <value>
+                <stringValue>Down Payment Receipt + CRF</stringValue>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Status</field>
+            <value>
+                <stringValue>Pending Cancellation Approval</stringValue>
             </value>
         </inputAssignments>
         <object>Contract</object>
@@ -1045,6 +1154,30 @@
         <fields>
             <name>RefundApprovalSubmittedCase5</name>
             <fieldText>&lt;p&gt;&lt;strong&gt;URC has been signed but Fee has not been paid.&lt;/strong&gt;&lt;/p&gt;&lt;p&gt;&lt;strong&gt;The Opportunity closure request has been submitted for the required approval.&lt;/strong&gt;&lt;/p&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Approval flow:&lt;/strong&gt; CSO only&lt;/p&gt;&lt;p&gt;Once the CSO approval is completed:&lt;/p&gt;&lt;ul&gt;&lt;li&gt;The Opportunity will be marked as &lt;strong&gt;Closed Lost&lt;/strong&gt;.&lt;/li&gt;&lt;li&gt;The Unit will be marked as &lt;strong&gt;Available&lt;/strong&gt;.&lt;/li&gt;&lt;/ul&gt;&lt;p&gt;No refund processing is required for this scenario as no fee was paid.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;No further action is required from you at this time.&lt;/strong&gt;&lt;/p&gt;</fieldText>
+            <fieldType>DisplayText</fieldType>
+            <styleProperties>
+                <verticalAlignment>
+                    <stringValue>top</stringValue>
+                </verticalAlignment>
+                <width>
+                    <stringValue>12</stringValue>
+                </width>
+            </styleProperties>
+        </fields>
+        <showFooter>true</showFooter>
+        <showHeader>true</showHeader>
+    </screens>
+    <screens>
+        <name>Case_6_Down_Payment_Receipt_CRF_Approval</name>
+        <label>Case 6 — Down Payment Receipt + CRF Approval Submitted</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <allowBack>false</allowBack>
+        <allowFinish>true</allowFinish>
+        <allowPause>false</allowPause>
+        <fields>
+            <name>RefundApprovalSubmittedCase6</name>
+            <fieldText>&lt;p&gt;&lt;strong&gt;Down Payment Receipt has been uploaded and CRF form has been received.&lt;/strong&gt;&lt;/p&gt;&lt;p&gt;&lt;strong&gt;The required refund approval has been initiated and is currently pending.&lt;/strong&gt;&lt;/p&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Approval flow:&lt;/strong&gt; &lt;span style=&quot;background-color: rgb(255, 255, 255);&quot;&gt;Finance&lt;/span&gt; → CSO&lt;/p&gt;&lt;p&gt;Once all required approvals are completed:&lt;/p&gt;&lt;ul&gt;&lt;li&gt;The Opportunity will be marked as &lt;strong&gt;Closed Lost&lt;/strong&gt;.&lt;/li&gt;&lt;li&gt;The Unit will be marked as &lt;strong&gt;Available&lt;/strong&gt;.&lt;/li&gt;&lt;li&gt;Finance will process the &lt;strong&gt;Full Fee Refund&lt;/strong&gt;.&lt;/li&gt;&lt;/ul&gt;&lt;p&gt;&lt;strong&gt;No further action is required from you at this time.&lt;/strong&gt;&lt;/p&gt;</fieldText>
             <fieldType>DisplayText</fieldType>
             <styleProperties>
                 <verticalAlignment>

@@ -68,11 +68,6 @@
                 <label>Service Charges Not Accepted</label>
             </value>
             <value>
-                <fullName>Unit Change</fullName>
-                <default>false</default>
-                <label>Unit Change</label>
-            </value>
-            <value>
                 <fullName>Budget</fullName>
                 <default>false</default>
                 <isActive>false</isActive>
@@ -89,6 +84,12 @@
                 <default>false</default>
                 <isActive>false</isActive>
                 <label>Customer Budget</label>
+            </value>
+            <value>
+                <fullName>Unit Change</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Unit Change</label>
             </value>
             <value>
                 <fullName>Unresponsive Customer</fullName>
@@ -140,10 +141,6 @@
         <valueSettings>
             <controllingFieldValue>Closed Lost</controllingFieldValue>
             <valueName>Service Charges Not Accepted</valueName>
-        </valueSettings>
-        <valueSettings>
-            <controllingFieldValue>Closed Lost</controllingFieldValue>
-            <valueName>Unit Change</valueName>
         </valueSettings>
     </valueSet>
 </CustomField>
