@@ -34,6 +34,12 @@
 {!recordId} &amp;
 &quot;/view&quot;</expression>
     </formulas>
+    <formulas>
+        <name>fGreetingName</name>
+        <dataType>String</dataType>
+        <description>DIR-1612: "Team" for a queue recipient (multiple people); the actual recipient's name for an individual recipient (e.g. the Sales Manager), instead of the previous hardcoded "Team" greeting used for both.</description>
+        <expression>IF(ISBLANK({!recipientQueueName}), BLANKVALUE({!Get_Recipient_User.Name}, &quot;Team&quot;), &quot;Team&quot;)</expression>
+    </formulas>
     <assignments>
         <name>Add_Bell_Recipient</name>
         <label>Add Bell Recipient</label>
@@ -149,6 +155,13 @@
             <operator>Add</operator>
             <value>
                 <elementReference>fQuoteURL</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>mergeFields</assignToReference>
+            <operator>Add</operator>
+            <value>
+                <elementReference>fGreetingName</elementReference>
             </value>
         </assignmentItems>
         <connector>

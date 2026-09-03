@@ -638,6 +638,22 @@
                     <numberValue>10.0</numberValue>
                 </rightValue>
             </entryConditions>
+            <entryConditions>
+                <conditionType>EntryCondition</conditionType>
+                <leftValueReference>Capture_Submitted_Discount.Outputs.discount</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <elementReference>$Record.Discount</elementReference>
+                </rightValue>
+            </entryConditions>
+            <entryConditions>
+                <conditionType>EntryCondition</conditionType>
+                <leftValueReference>Capture_Submitted_Discount.Outputs.discountAmount</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <elementReference>$Record.AppliedDiscountAmount</elementReference>
+                </rightValue>
+            </entryConditions>
             <exitConditionLogic>and</exitConditionLogic>
             <inputParameters>
                 <name>recipientId</name>
@@ -1029,6 +1045,22 @@
                     <numberValue>10.0</numberValue>
                 </rightValue>
             </entryConditions>
+            <entryConditions>
+                <conditionType>EntryCondition</conditionType>
+                <leftValueReference>Capture_Submitted_Discount.Outputs.discount</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <elementReference>$Record.Discount</elementReference>
+                </rightValue>
+            </entryConditions>
+            <entryConditions>
+                <conditionType>EntryCondition</conditionType>
+                <leftValueReference>Capture_Submitted_Discount.Outputs.discountAmount</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <elementReference>$Record.AppliedDiscountAmount</elementReference>
+                </rightValue>
+            </entryConditions>
             <exitConditionLogic>and</exitConditionLogic>
             <inputParameters>
                 <name>recipientQueueName</name>
@@ -1087,6 +1119,22 @@
                 <operator>GreaterThan</operator>
                 <rightValue>
                     <numberValue>10.0</numberValue>
+                </rightValue>
+            </entryConditions>
+            <entryConditions>
+                <conditionType>EntryCondition</conditionType>
+                <leftValueReference>Capture_Submitted_Discount.Outputs.discount</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <elementReference>$Record.Discount</elementReference>
+                </rightValue>
+            </entryConditions>
+            <entryConditions>
+                <conditionType>EntryCondition</conditionType>
+                <leftValueReference>Capture_Submitted_Discount.Outputs.discountAmount</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <elementReference>$Record.AppliedDiscountAmount</elementReference>
                 </rightValue>
             </entryConditions>
             <exitConditionLogic>and</exitConditionLogic>
