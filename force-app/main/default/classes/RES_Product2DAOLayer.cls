@@ -43,6 +43,28 @@ public without sharing class RES_Product2DAOLayer extends RES_BaseDAOLayer {
     }
 
     /**
+     * Retrieves all Product2 records having a non-null ProductCode.
+     * Used for matching uploaded folder file names with Product Codes across the org.
+     */
+    public List<Product2> getAllProductsWithCode() {
+        String soql = 'SELECT Id, ProductCode FROM Product2 WHERE ProductCode != NULL';
+        return (List<Product2>) executeQuery(soql, '', false, new Map<String, Object>(), AccessLevel.USER_MODE);
+    }
+
+    /**
+     * Retrieves Product2 records matching a specific set of ProductCodes.
+     */
+    public List<Product2> getProductsByProductCodes(Set<String> productCodes) {
+        if (productCodes == null || productCodes.isEmpty()) {
+            return new List<Product2>();
+        }
+        Map<String, Object> bindVars = new Map<String, Object>();
+        bindVars.put('productCodes', productCodes);
+        String soql = 'SELECT Id, ProductCode FROM Product2 WHERE ProductCode IN :productCodes';
+        return (List<Product2>) executeQuery(soql, '', false, bindVars, AccessLevel.USER_MODE);
+    }
+
+    /**
      * NOTE: Name and ProductCode were added below (2026-08-22) because
      * RES_ProductApprovalNotificationService.buildProductDetails() reads
      * these fields from the same Product2 records this method returns, for
@@ -52,9 +74,9 @@ public without sharing class RES_Product2DAOLayer extends RES_BaseDAOLayer {
      * fields are ever added to that email content, add them here too.
      */
     public List<Product2> getProductsByIds(Set<Id> productIds) {
-    if (productIds == null || productIds.isEmpty()) {
-        return new List<Product2>();
-    } 
+        if (productIds == null || productIds.isEmpty()) {
+            return new List<Product2>();
+        } 
         Map<String, Object> bindVars = new Map<String, Object>();
         bindVars.put('productIds', productIds);
         String soql = 'SELECT Id, Name, ProductCode, IsActive, RES_Unit_Status__c, RES_HardBlock_Start__c, RES_Is_In_Soft_Hold_Extension__c, RES_Soft_Hold_Start__c, RES_Soft_Hold_Until__c FROM Product2 WHERE Id IN :productIds';
@@ -137,83 +159,83 @@ public without sharing class RES_Product2DAOLayer extends RES_BaseDAOLayer {
     }
 
     /**
- * Retrieves rejected Products for the Operations rejected queue.
- *
- * Returns only inactive Products with Rejected OR Draft status.
- * Supports comma-separated status values (e.g., "Draft,Rejected").
- *
- * Uses keyset pagination:
- * CreatedDate + Id
- */
-public List<Product2> getRejectedProducts(String status,String searchTerm,Integer pageSize,Datetime lastCreatedDate,Id lastId) {
-    if (String.isBlank(status)) {
-        return new List<Product2>();
-    }
-    Integer safePageSize = normalizePageSize(pageSize);
-    Map<String, Object> bindVars = new Map<String, Object>();
-
-    // Support multiple statuses separated by comma (e.g., "Draft,Rejected")
-    List<String> statuses = status.split(',');
-    List<String> trimmedStatuses = new List<String>();
-    for (String s : statuses) {
-        if (!String.isBlank(s)) {
-            trimmedStatuses.add(s.trim());
+     * Retrieves rejected Products for the Operations rejected queue.
+     *
+     * Returns only inactive Products with Rejected OR Draft status.
+     * Supports comma-separated status values (e.g., "Draft,Rejected").
+     *
+     * Uses keyset pagination:
+     * CreatedDate + Id
+     */
+    public List<Product2> getRejectedProducts(String status,String searchTerm,Integer pageSize,Datetime lastCreatedDate,Id lastId) {
+        if (String.isBlank(status)) {
+            return new List<Product2>();
         }
-    }
-    bindVars.put('statuses', trimmedStatuses);
+        Integer safePageSize = normalizePageSize(pageSize);
+        Map<String, Object> bindVars = new Map<String, Object>();
 
-    String soql =
-                'SELECT ' +
-                'Id, ' +
-                'Name, ' +
-                'ProductCode, ' +
-                'Description, ' +
-                'IsActive, ' +
-                'CreatedDate, ' +
-                'CreatedById, ' +
-                'CreatedBy.Name, ' +
-                'LastModifiedDate, ' +
-                'RES_Unit_Status__c, ' +
-                'RES_Type__c, ' +
-                'RES_Area__c, ' +
-                'RES_Business_Entity__c, ' +
-                'RES_Unit_Handover_Date__c, ' +
-                'RES_Unit_Virtual_IBAN__c, ' +
-                'RES_Rejection_Comment__c, ' +
-                'Family ' +
-                'FROM Product2 ' +
-                'WHERE RES_Unit_Status__c IN :statuses ' +
-                'AND IsActive = false ';
-    if (!String.isBlank(searchTerm)) {
-        String searchPattern = '%' + searchTerm.trim() + '%';
-        bindVars.put('searchPattern',searchPattern);
+        // Support multiple statuses separated by comma (e.g., "Draft,Rejected")
+        List<String> statuses = status.split(',');
+        List<String> trimmedStatuses = new List<String>();
+        for (String s : statuses) {
+            if (!String.isBlank(s)) {
+                trimmedStatuses.add(s.trim());
+            }
+        }
+        bindVars.put('statuses', trimmedStatuses);
+
+        String soql =
+                    'SELECT ' +
+                    'Id, ' +
+                    'Name, ' +
+                    'ProductCode, ' +
+                    'Description, ' +
+                    'IsActive, ' +
+                    'CreatedDate, ' +
+                    'CreatedById, ' +
+                    'CreatedBy.Name, ' +
+                    'LastModifiedDate, ' +
+                    'RES_Unit_Status__c, ' +
+                    'RES_Type__c, ' +
+                    'RES_Area__c, ' +
+                    'RES_Business_Entity__c, ' +
+                    'RES_Unit_Handover_Date__c, ' +
+                    'RES_Unit_Virtual_IBAN__c, ' +
+                    'RES_Rejection_Comment__c, ' +
+                    'Family ' +
+                    'FROM Product2 ' +
+                    'WHERE RES_Unit_Status__c IN :statuses ' +
+                    'AND IsActive = false ';
+        if (!String.isBlank(searchTerm)) {
+            String searchPattern = '%' + searchTerm.trim() + '%';
+            bindVars.put('searchPattern',searchPattern);
+            soql +=
+                    'AND (' +
+                    'Name LIKE :searchPattern ' +
+                    'OR ProductCode LIKE :searchPattern ' +
+                    'OR Description LIKE :searchPattern' +
+                    ') ';
+        }
+
+        if (lastCreatedDate != null && lastId != null) {
+            bindVars.put('lastCreatedDate',lastCreatedDate);
+            bindVars.put('lastId',lastId);
+            soql +=
+                    'AND (' +
+                    'CreatedDate < :lastCreatedDate ' +
+                    'OR (' +
+                    'CreatedDate = :lastCreatedDate ' +
+                    'AND Id < :lastId' +
+                    ')' +
+                    ') ';
+        }
+
         soql +=
-                'AND (' +
-                'Name LIKE :searchPattern ' +
-                'OR ProductCode LIKE :searchPattern ' +
-                'OR Description LIKE :searchPattern' +
-                ') ';
+            'ORDER BY CreatedDate DESC, Id DESC ' +
+            'LIMIT ' + safePageSize;
+
+        return (List<Product2>) executeQuery(soql,'',false,bindVars,AccessLevel.SYSTEM_MODE);
     }
-
-    if (lastCreatedDate != null && lastId != null) {
-        bindVars.put('lastCreatedDate',lastCreatedDate);
-        bindVars.put('lastId',lastId);
-        soql +=
-                'AND (' +
-                'CreatedDate < :lastCreatedDate ' +
-                'OR (' +
-                'CreatedDate = :lastCreatedDate ' +
-                'AND Id < :lastId' +
-                ')' +
-                ') ';
-    }
-
-    soql +=
-        'ORDER BY CreatedDate DESC, Id DESC ' +
-        'LIMIT ' + safePageSize;
-
-    return (List<Product2>) executeQuery(soql,'',false,bindVars,AccessLevel.SYSTEM_MODE);
-}
 
     /**
      * Normalizes requested page size.

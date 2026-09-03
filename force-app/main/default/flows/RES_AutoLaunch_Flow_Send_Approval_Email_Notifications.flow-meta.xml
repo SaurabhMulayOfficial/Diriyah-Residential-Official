@@ -7,10 +7,6 @@
         <locationY>0</locationY>
         <actionName>customNotificationAction</actionName>
         <actionType>customNotificationAction</actionType>
-        <faultConnector>
-            <isGoTo>true</isGoTo>
-            <targetReference>Fault_Message</targetReference>
-        </faultConnector>
         <flowTransactionModel>CurrentTransaction</flowTransactionModel>
         <inputParameters>
             <name>customNotifTypeId</name>
@@ -49,115 +45,6 @@
         <nameSegment>customNotificationAction</nameSegment>
         <offset>0</offset>
     </actionCalls>
-    <actionCalls>
-        <name>Send_Approval_Notification</name>
-        <label>Send Approval Notification</label>
-        <locationX>0</locationX>
-        <locationY>0</locationY>
-        <actionName>emailSimple</actionName>
-        <actionType>emailSimple</actionType>
-        <faultConnector>
-            <isGoTo>true</isGoTo>
-            <targetReference>Fault_Message</targetReference>
-        </faultConnector>
-        <flowTransactionModel>CurrentTransaction</flowTransactionModel>
-        <inputParameters>
-            <name>recipientAddresses</name>
-            <value>
-                <collectionElements>
-                    <elementReference>Emails</elementReference>
-                </collectionElements>
-            </value>
-        </inputParameters>
-        <inputParameters>
-            <name>senderType</name>
-            <value>
-                <inputConfiguratorMode>Custom</inputConfiguratorMode>
-                <stringValue>DefaultWorkflowUser</stringValue>
-            </value>
-        </inputParameters>
-        <inputParameters>
-            <name>composeEmailContent</name>
-            <value>
-                <stringValue>True</stringValue>
-            </value>
-        </inputParameters>
-        <inputParameters>
-            <name>emailSubject</name>
-            <value>
-                <stringValue>Your Approval Request Has been Approved</stringValue>
-            </value>
-        </inputParameters>
-        <inputParameters>
-            <name>emailBody</name>
-            <value>
-                <inputConfiguratorMode>Custom</inputConfiguratorMode>
-                <stringValue>{!Subject},
-
-Your request for reassigning the lead owner for lead {!LeadInstance.DIR_Lead_Id__c} has been approved and now the owner has changed to {!ProposedOwnerName}.</stringValue>
-            </value>
-        </inputParameters>
-        <inputParameters>
-            <name>sendRichBody</name>
-        </inputParameters>
-        <inputParameters>
-            <name>recipientId</name>
-        </inputParameters>
-        <nameSegment>emailSimple</nameSegment>
-        <offset>0</offset>
-        <versionString>2.0.1</versionString>
-    </actionCalls>
-    <actionCalls>
-        <name>Send_Reject_Notification</name>
-        <label>Send Reject Notification</label>
-        <locationX>0</locationX>
-        <locationY>0</locationY>
-        <actionName>emailSimple</actionName>
-        <actionType>emailSimple</actionType>
-        <faultConnector>
-            <targetReference>Fault_Message</targetReference>
-        </faultConnector>
-        <flowTransactionModel>CurrentTransaction</flowTransactionModel>
-        <inputParameters>
-            <name>recipientAddresses</name>
-            <value>
-                <collectionElements>
-                    <elementReference>Emails</elementReference>
-                </collectionElements>
-            </value>
-        </inputParameters>
-        <inputParameters>
-            <name>senderType</name>
-            <value>
-                <inputConfiguratorMode>Custom</inputConfiguratorMode>
-                <stringValue>DefaultWorkflowUser</stringValue>
-            </value>
-        </inputParameters>
-        <inputParameters>
-            <name>composeEmailContent</name>
-            <value>
-                <stringValue>True</stringValue>
-            </value>
-        </inputParameters>
-        <inputParameters>
-            <name>emailSubject</name>
-            <value>
-                <stringValue>Your Approval Request Has been Rejected</stringValue>
-            </value>
-        </inputParameters>
-        <inputParameters>
-            <name>emailBody</name>
-            <value>
-                <inputConfiguratorMode>Custom</inputConfiguratorMode>
-                <stringValue>{!Subject} ,
-
-Your request for reassigning the lead owner for lead {!LeadInstance.DIR_Lead_Id__c} has been rejected.</stringValue>
-            </value>
-        </inputParameters>
-        <nameSegment>emailSimple</nameSegment>
-        <offset>0</offset>
-        <versionString>2.0.1</versionString>
-    </actionCalls>
     <apiVersion>66.0</apiVersion>
     <areMetricsLoggedToDataCloud>false</areMetricsLoggedToDataCloud>
     <assignments>
@@ -177,17 +64,71 @@ Your request for reassigning the lead owner for lead {!LeadInstance.DIR_Lead_Id_
         </connector>
     </assignments>
     <assignments>
-        <name>Fault_Message</name>
-        <label>Fault Message</label>
+        <name>populate_Approval_Merge_Fields</name>
+        <label>populate Approval Merge Fields</label>
         <locationX>0</locationX>
         <locationY>0</locationY>
         <assignmentItems>
-            <assignToReference>fault</assignToReference>
-            <operator>Assign</operator>
+            <assignToReference>approvalMergeFields</assignToReference>
+            <operator>Add</operator>
             <value>
-                <elementReference>$Flow.FaultMessage</elementReference>
+                <elementReference>NameOfSubmitter</elementReference>
             </value>
         </assignmentItems>
+        <assignmentItems>
+            <assignToReference>approvalMergeFields</assignToReference>
+            <operator>Add</operator>
+            <value>
+                <elementReference>LeadInstance.DIR_Lead_Id__c</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>approvalMergeFields</assignToReference>
+            <operator>Add</operator>
+            <value>
+                <elementReference>ProposedOwnerName</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>approvalMergeFields</assignToReference>
+            <operator>Add</operator>
+            <value>
+                <elementReference>leadURL</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>RES_Send_Approval_Notification</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
+        <name>Populate_Reject_Merge_Fields</name>
+        <label>Populate Reject Merge Fields</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignmentItems>
+            <assignToReference>rejectMergeFields</assignToReference>
+            <operator>Add</operator>
+            <value>
+                <elementReference>NameOfSubmitter</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>rejectMergeFields</assignToReference>
+            <operator>Add</operator>
+            <value>
+                <elementReference>LeadInstance.DIR_Lead_Id__c</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>rejectMergeFields</assignToReference>
+            <operator>Add</operator>
+            <value>
+                <elementReference>leadURL</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>RES_Send_Reject_Notification</targetReference>
+        </connector>
     </assignments>
     <assignments>
         <name>recipientIds</name>
@@ -222,7 +163,7 @@ Your request for reassigning the lead owner for lead {!LeadInstance.DIR_Lead_Id_
                 </rightValue>
             </conditions>
             <connector>
-                <targetReference>Send_Approval_Notification</targetReference>
+                <targetReference>populate_Approval_Merge_Fields</targetReference>
             </connector>
             <label>If action is Approve</label>
         </rules>
@@ -237,7 +178,7 @@ Your request for reassigning the lead owner for lead {!LeadInstance.DIR_Lead_Id_
                 </rightValue>
             </conditions>
             <connector>
-                <targetReference>Send_Reject_Notification</targetReference>
+                <targetReference>Populate_Reject_Merge_Fields</targetReference>
             </connector>
             <label>Reject Notification</label>
         </rules>
@@ -258,6 +199,18 @@ Your request for reassigning the lead owner for lead {!LeadInstance.DIR_Lead_Id_
         </rules>
     </decisions>
     <environments>Default</environments>
+    <formulas>
+        <name>leadURL</name>
+        <dataType>String</dataType>
+        <expression>LEFT(
+    {!$Api.Partner_Server_URL_610},
+    FIND(&quot;/services&quot;, {!$Api.Partner_Server_URL_610})
+)
+&amp;
+&quot;/&quot;
+&amp;
+{!LeadInstance.Id}</expression>
+    </formulas>
     <formulas>
         <name>Name</name>
         <dataType>String</dataType>
@@ -318,6 +271,68 @@ Your request for reassigning the lead owner for lead {!LeadInstance.DIR_Lead_Id_
         </connector>
     </start>
     <status>Active</status>
+    <subflows>
+        <name>RES_Send_Approval_Notification</name>
+        <label>Send Approval Notification</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <flowName>RES_AutolaunchFlow_Send_Emails_With_Merge_Fields</flowName>
+        <inputAssignments>
+            <name>ApexEmailTemplateAPIName</name>
+            <value>
+                <stringValue>RES_LeadOwnerChange_Approve_Notification</stringValue>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <name>mergeFields</name>
+            <value>
+                <elementReference>approvalMergeFields</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <name>orgWideEmailAddressDisplayName</name>
+            <value>
+                <elementReference>$Label.Org_Wide_Email</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <name>recipients</name>
+            <value>
+                <elementReference>Emails</elementReference>
+            </value>
+        </inputAssignments>
+    </subflows>
+    <subflows>
+        <name>RES_Send_Reject_Notification</name>
+        <label>Send Reject Notification</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <flowName>RES_AutolaunchFlow_Send_Emails_With_Merge_Fields</flowName>
+        <inputAssignments>
+            <name>ApexEmailTemplateAPIName</name>
+            <value>
+                <stringValue>RES_LeadOwnerChange_Reject_Notification</stringValue>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <name>mergeFields</name>
+            <value>
+                <elementReference>rejectMergeFields</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <name>orgWideEmailAddressDisplayName</name>
+            <value>
+                <elementReference>$Label.Org_Wide_Email</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <name>recipients</name>
+            <value>
+                <elementReference>Emails</elementReference>
+            </value>
+        </inputAssignments>
+    </subflows>
     <textTemplates>
         <name>NotificationBody</name>
         <isViewedAsPlainText>true</isViewedAsPlainText>
@@ -328,6 +343,13 @@ Your request for reassigning the lead owner for lead {!LeadInstance.DIR_Lead_Id_
         <dataType>String</dataType>
         <isCollection>false</isCollection>
         <isInput>true</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <name>approvalMergeFields</name>
+        <dataType>String</dataType>
+        <isCollection>true</isCollection>
+        <isInput>false</isInput>
         <isOutput>false</isOutput>
     </variables>
     <variables>
@@ -382,6 +404,13 @@ Your request for reassigning the lead owner for lead {!LeadInstance.DIR_Lead_Id_
     </variables>
     <variables>
         <name>recipientId_collection</name>
+        <dataType>String</dataType>
+        <isCollection>true</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <name>rejectMergeFields</name>
         <dataType>String</dataType>
         <isCollection>true</isCollection>
         <isInput>false</isInput>

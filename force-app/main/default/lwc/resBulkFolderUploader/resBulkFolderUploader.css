@@ -1,0 +1,81 @@
+:host {
+    display: block;
+}
+
+/* Rounded Card Shell matching Org Home Page UI */
+.custom-rounded-card {
+    border-radius: 16px !important;
+    background-color: #ffffff;
+    border: 1px solid #e0e0e0;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03);
+    overflow: hidden;
+}
+
+/* Header title matching light style of Today's Events (regular weight 400, #181818 color) */
+.custom-card-title {
+    font-size: 0.9375rem;
+    font-weight: 400 !important;
+    color: #181818;
+    letter-spacing: -0.01em;
+}
+
+/* Tight label styling */
+.custom-form-label {
+    white-space: nowrap;
+    font-weight: 400;
+    font-size: 0.8125rem;
+    color: #555555;
+    display: block;
+}
+
+/* Pill Button matching View Calendar / View All style */
+.custom-choose-btn {
+    font-size: 0.8125rem !important;
+    font-weight: 700 !important;
+    color: #743A29 !important;
+    background-color: #ffffff !important;
+    border: 1px solid #743A29 !important;
+    border-radius: 20px !important;
+    padding: 0.25rem 1rem !important;
+    height: 32px !important;
+    line-height: 1.25 !important;
+    transition: all 0.2s ease-in-out;
+}
+
+.custom-choose-btn:hover {
+    background-color: #fdf8f6 !important;
+    border-color: #5c2e20 !important;
+    color: #5c2e20 !important;
+}
+
+/* Status indicator text */
+.custom-folder-status {
+    color: #666666;
+    font-size: 0.8125rem;
+    max-width: 260px;
+    display: inline-block;
+    vertical-align: middle;
+}
+
+/* Selection Summary Container */
+.custom-summary-box {
+    border-radius: 12px;
+    background-color: #f8f9fa;
+    border: 1px solid #e9ecef;
+}
+
+/* Action button styling */
+.custom-attach-btn button {
+    border-radius: 18px !important;
+    background-color: #743A29 !important;
+    border-color: #743A29 !important;
+}
+
+.custom-attach-btn button:hover {
+    background-color: #5c2e20 !important;
+    border-color: #5c2e20 !important;
+}
+
+.slds-hide {
+    display: none !important;
+}

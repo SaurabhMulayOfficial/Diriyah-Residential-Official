@@ -1,0 +1,78 @@
+<template>
+    <article class="slds-card custom-rounded-card">
+        <!-- Header matching standard rounded Home Page card typography -->
+        <div class="slds-card__header slds-grid slds-p-top_medium slds-p-horizontal_medium slds-p-bottom_x-small">
+            <header class="slds-media slds-media_center slds-has-flexi-truncate">
+                <div class="slds-media__figure">
+                    <lightning-icon icon-name="standard:folder" size="small"></lightning-icon>
+                </div>
+                <div class="slds-media__body">
+                    <h2 class="slds-card__header-title">
+                        <span class="custom-card-title slds-truncate">
+                            Upload Product Documents / Folders
+                        </span>
+                    </h2>
+                </div>
+            </header>
+        </div>
+
+        <!-- Card Body with Tight Vertical Spacing -->
+        <div class="slds-card__body slds-card__body_inner slds-p-horizontal_medium slds-p-bottom_medium slds-p-top_none">
+            <div class="slds-form-element slds-m-top_none">
+                <!-- Single line label directly above control -->
+                <label class="custom-form-label slds-form-element__label slds-m-bottom_x-small" for="folderInput">
+                    Select Folder to Attach
+                </label>
+                
+                <!-- Left-aligned control container without center gaps -->
+                <div class="slds-form-element__control slds-grid slds-grid_vertical-align-center">
+                    <input 
+                        type="file" 
+                        data-id="folderInput" 
+                        webkitdirectory 
+                        directory 
+                        multiple 
+                        onchange={handleFileSelection} 
+                        class="slds-hide"/>
+                    
+                    <button 
+                        type="button" 
+                        class="slds-button slds-button_neutral custom-choose-btn" 
+                        onclick={triggerFolderSelect}>
+                        Choose folder
+                    </button>
+                    
+                    <span class="slds-m-left_small slds-text-body_small custom-folder-status slds-truncate">
+                        {folderLabelText}
+                    </span>
+                </div>
+            </div>
+
+            <!-- Selection Summary Box -->
+            <template if:true={hasFiles}>
+                <div class="slds-m-top_small slds-p-around_small custom-summary-box">
+                    <div class="slds-media slds-media_center">
+                        <div class="slds-media__figure">
+                            <lightning-icon icon-name="utility:file" size="small" variant="brand"></lightning-icon>
+                        </div>
+                        <div class="slds-media__body">
+                            <p class="slds-text-body_small slds-text-color_regular">
+                                <strong>{selectedFilesCount}</strong> file(s) ready for auto-linking by Product Code.
+                            </p>
+                        </div>
+                        <div class="slds-media__figure slds-media__figure_reverse">
+                            <lightning-button 
+                                variant="brand" 
+                                label="Attach Files to Product" 
+                                icon-name="utility:upload"
+                                class="custom-attach-btn"
+                                onclick={processAndUpload} 
+                                is-loading={isLoading}>
+                            </lightning-button>
+                        </div>
+                    </div>
+                </div>
+            </template>
+        </div>
+    </article>
+</template>
