@@ -104,6 +104,9 @@
         <label>Documents Check</label>
         <locationX>0</locationX>
         <locationY>0</locationY>
+        <defaultConnector>
+            <targetReference>Scenario_Not_Covered_Contact_Admin</targetReference>
+        </defaultConnector>
         <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
         <rules>
             <name>Fee_True_URC_False_CRF_True</name>
@@ -307,6 +310,35 @@
                 <targetReference>Initiate_CSO_Approval_URC_Signed_Fee_Not_Paid</targetReference>
             </connector>
             <label>Fee False, URC True</label>
+        </rules>
+        <rules>
+            <name>Down_Payment_Receipt_CRF_False</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>Get_Primary_Quote_Opportunity.Contract.RES_Down_Payment_Receipt__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>Get_Primary_Quote_Opportunity.Contract.RES_CRF_Form_Received__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>GetOpportunity.StageName</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Reservation</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>CRF_Required_Down_Payment_Receipt</targetReference>
+            </connector>
+            <label>Down Payment Receipt, CRF False</label>
         </rules>
         <rules>
             <name>Down_Payment_Receipt_CRF_True</name>
@@ -707,6 +739,9 @@
         <connector>
             <targetReference>Case_4_Refund_Approval_Submitted</targetReference>
         </connector>
+        <faultConnector>
+            <targetReference>Contract_Update_Failed_Error</targetReference>
+        </faultConnector>
         <filterLogic>and</filterLogic>
         <filters>
             <field>RES_SPA_Signed__c</field>
@@ -750,6 +785,9 @@
         <connector>
             <targetReference>Case_5_URC_Signed_Fee_Not_Paid_Approval</targetReference>
         </connector>
+        <faultConnector>
+            <targetReference>Contract_Update_Failed_Error</targetReference>
+        </faultConnector>
         <filterLogic>and</filterLogic>
         <filters>
             <field>RES_Fee_Transferred__c</field>
@@ -800,6 +838,9 @@
         <connector>
             <targetReference>Case_2_Refund_Approval_Submitted</targetReference>
         </connector>
+        <faultConnector>
+            <targetReference>Contract_Update_Failed_Error</targetReference>
+        </faultConnector>
         <filterLogic>and</filterLogic>
         <filters>
             <field>RES_CRF_Form_Received__c</field>
@@ -857,6 +898,9 @@
         <connector>
             <targetReference>Case_3_Refund_Approval_Submitted</targetReference>
         </connector>
+        <faultConnector>
+            <targetReference>Contract_Update_Failed_Error</targetReference>
+        </faultConnector>
         <filterLogic>and</filterLogic>
         <filters>
             <field>RES_Fee_Transferred__c</field>
@@ -907,6 +951,9 @@
         <connector>
             <targetReference>Case_1_Refund_Approval_Submitted</targetReference>
         </connector>
+        <faultConnector>
+            <targetReference>Contract_Update_Failed_Error</targetReference>
+        </faultConnector>
         <filterLogic>and</filterLogic>
         <filters>
             <field>RES_CRF_Form_Received__c</field>
@@ -964,6 +1011,9 @@
         <connector>
             <targetReference>Case_6_Down_Payment_Receipt_CRF_Approval</targetReference>
         </connector>
+        <faultConnector>
+            <targetReference>Contract_Update_Failed_Error</targetReference>
+        </faultConnector>
         <filterLogic>and</filterLogic>
         <filters>
             <field>RES_Down_Payment_Receipt__c</field>
@@ -1192,6 +1242,56 @@
         <showHeader>true</showHeader>
     </screens>
     <screens>
+        <name>Contract_Update_Failed_Error</name>
+        <label>Contract Update Failed</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <allowBack>false</allowBack>
+        <allowFinish>true</allowFinish>
+        <allowPause>false</allowPause>
+        <fields>
+            <name>ContractUpdateFailedMessage</name>
+            <fieldText>&lt;p&gt;&lt;strong style=&quot;font-size: 18px;&quot;&gt;Contract Update Failed&lt;/strong&gt;&lt;/p&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;The system encountered an error while updating the Contract record to initiate the approval process.&lt;/p&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Error Details:&lt;/strong&gt;&lt;/p&gt;&lt;ul&gt;&lt;li&gt;Opportunity ID: {!recordId}&lt;/li&gt;&lt;li&gt;Error Time: {!$Flow.CurrentDateTime}&lt;/li&gt;&lt;li&gt;Error Message: {!$Flow.FaultMessage}&lt;/li&gt;&lt;/ul&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;&lt;strong&gt;What This Means:&lt;/strong&gt;&lt;/p&gt;&lt;p&gt;The Contract could not be updated with the approval stage. This may be due to:&lt;/p&gt;&lt;ul&gt;&lt;li&gt;Field-level security restrictions&lt;/li&gt;&lt;li&gt;Validation rules on the Contract object&lt;/li&gt;&lt;li&gt;Missing required fields&lt;/li&gt;&lt;li&gt;Record locking or edit conflicts&lt;/li&gt;&lt;li&gt;Workflow or Process Builder conflicts&lt;/li&gt;&lt;/ul&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Next Steps:&lt;/strong&gt;&lt;/p&gt;&lt;ol&gt;&lt;li&gt;Take a screenshot of this error message&lt;/li&gt;&lt;li&gt;Contact your system administrator&lt;/li&gt;&lt;li&gt;Provide the Opportunity ID and error details above&lt;/li&gt;&lt;li&gt;Administrator will review Contract validation rules and field security&lt;/li&gt;&lt;li&gt;Do not attempt to retry until the issue is resolved&lt;/li&gt;&lt;/ol&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;&lt;strong&gt;No changes have been made to the Opportunity or Contract.&lt;/strong&gt;&lt;/p&gt;</fieldText>
+            <fieldType>DisplayText</fieldType>
+            <styleProperties>
+                <verticalAlignment>
+                    <stringValue>top</stringValue>
+                </verticalAlignment>
+                <width>
+                    <stringValue>12</stringValue>
+                </width>
+            </styleProperties>
+        </fields>
+        <nextOrFinishButtonLabel>Close</nextOrFinishButtonLabel>
+        <showFooter>true</showFooter>
+        <showHeader>false</showHeader>
+    </screens>
+    <screens>
+        <name>CRF_Required_Down_Payment_Receipt</name>
+        <label>CRF Required - Down Payment Receipt Uploaded</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <allowBack>false</allowBack>
+        <allowFinish>true</allowFinish>
+        <allowPause>false</allowPause>
+        <fields>
+            <name>CRF_Required_DPR_Screen</name>
+            <fieldText>&lt;p&gt;&lt;strong style=&quot;font-size: 18px;&quot;&gt;Customer Refund Form (CRF) Required&lt;/strong&gt;&lt;/p&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;The Down Payment Receipt has been uploaded, but the Customer Refund Form (CRF) has not been received for this Contract.&lt;/p&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;&lt;strong&gt;What This Means:&lt;/strong&gt;&lt;/p&gt;&lt;p&gt;The closure and refund approval process cannot proceed without the CRF document.&lt;/p&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Next Steps:&lt;/strong&gt;&lt;/p&gt;&lt;ol&gt;&lt;li&gt;Ensure the customer has completed and signed the CRF form&lt;/li&gt;&lt;li&gt;Have the Relationship Manager (RM) attach the CRF document to the Contract&lt;/li&gt;&lt;li&gt;Update the &quot;RES_CRF_Form_Received&quot; field to TRUE&lt;/li&gt;&lt;li&gt;Retry the Closed Lost process&lt;/li&gt;&lt;/ol&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;&lt;strong&gt;No approval request has been submitted at this time.&lt;/strong&gt;&lt;/p&gt;</fieldText>
+            <fieldType>DisplayText</fieldType>
+            <styleProperties>
+                <verticalAlignment>
+                    <stringValue>top</stringValue>
+                </verticalAlignment>
+                <width>
+                    <stringValue>12</stringValue>
+                </width>
+            </styleProperties>
+        </fields>
+        <nextOrFinishButtonLabel>Close</nextOrFinishButtonLabel>
+        <showFooter>true</showFooter>
+        <showHeader>false</showHeader>
+    </screens>
+    <screens>
         <name>CRF_Required_Fee_Paid_URC_Not_Signed</name>
         <label>CRF Required - Fee Paid, URC Not Signed</label>
         <locationX>0</locationX>
@@ -1373,6 +1473,31 @@
         <showHeader>false</showHeader>
     </screens>
     <screens>
+        <name>Scenario_Not_Covered_Contact_Admin</name>
+        <label>Scenario Not Covered - Contact Administrator</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <allowBack>false</allowBack>
+        <allowFinish>true</allowFinish>
+        <allowPause>false</allowPause>
+        <fields>
+            <name>ScenarioNotCoveredMessage</name>
+            <fieldText>&lt;p&gt;&lt;strong style=&quot;font-size: 18px;&quot;&gt;Scenario Not Covered&lt;/strong&gt;&lt;/p&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;The current combination of document statuses and opportunity stage does not match any of the predefined closure scenarios.&lt;/p&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Current Status:&lt;/strong&gt;&lt;/p&gt;&lt;ul&gt;&lt;li&gt;Opportunity ID: {!recordId}&lt;/li&gt;&lt;li&gt;Stage: {!GetOpportunity.StageName}&lt;/li&gt;&lt;/ul&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;&lt;strong&gt;What This Means:&lt;/strong&gt;&lt;/p&gt;&lt;p&gt;This scenario may require special handling or the system configuration may need to be updated.&lt;/p&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Next Steps:&lt;/strong&gt;&lt;/p&gt;&lt;ol&gt;&lt;li&gt;Contact your system administrator&lt;/li&gt;&lt;li&gt;Provide the Opportunity ID and current stage&lt;/li&gt;&lt;li&gt;Verify the contract document statuses (Fee Transferred, URC Signed, CRF Received, Down Payment Receipt)&lt;/li&gt;&lt;li&gt;Administrator will review and provide guidance&lt;/li&gt;&lt;/ol&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;&lt;strong&gt;No changes have been made to the Opportunity.&lt;/strong&gt;&lt;/p&gt;</fieldText>
+            <fieldType>DisplayText</fieldType>
+            <styleProperties>
+                <verticalAlignment>
+                    <stringValue>top</stringValue>
+                </verticalAlignment>
+                <width>
+                    <stringValue>12</stringValue>
+                </width>
+            </styleProperties>
+        </fields>
+        <nextOrFinishButtonLabel>Close</nextOrFinishButtonLabel>
+        <showFooter>true</showFooter>
+        <showHeader>false</showHeader>
+    </screens>
+    <screens>
         <name>Screen_Approval_Already_In_Progress</name>
         <label>Screen - Approval Already In Progress</label>
         <locationX>0</locationX>
@@ -1382,7 +1507,7 @@
         <allowPause>false</allowPause>
         <fields>
             <name>ApprovalAlreadyInProgressMessage</name>
-            <fieldText>&lt;p&gt;&lt;strong style=&quot;font-size: 18px;&quot;&gt;Approval Process Already In Progress&lt;/strong&gt;&lt;/p&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;An approval is currently pending for this Contract.&lt;/p&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;&lt;strong&gt;What This Means:&lt;/strong&gt;&lt;/p&gt;&lt;p&gt;A closure and refund approval request has already been submitted and is awaiting approval. You cannot submit a new approval until the current one is completed.&lt;/p&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Current Approval Status:&lt;/strong&gt;&lt;/p&gt;&lt;ul&gt;&lt;li&gt;Status: &lt;strong&gt;Pending&lt;/strong&gt;&lt;/li&gt;&lt;/ul&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Next Steps:&lt;/strong&gt;&lt;/p&gt;&lt;ol&gt;&lt;li&gt;Check the &quot;Approval Work Items&quot; related list on the Contract&lt;/li&gt;&lt;li&gt;Contact the assigned approver if you need to expedite the approval&lt;/li&gt;&lt;li&gt;Wait for the current approval to be completed before retrying&lt;/li&gt;&lt;/ol&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;&lt;strong&gt;No new approval request has been submitted.&lt;/strong&gt;&lt;/p&gt;</fieldText>
+            <fieldText>&lt;p&gt;&lt;strong style=&quot;font-size: 18px;&quot;&gt;Approval Process Already In Progress&lt;/strong&gt;&lt;/p&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;An approval is currently pending for this Contract.&lt;/p&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;&lt;strong&gt;What This Means:&lt;/strong&gt;&lt;/p&gt;&lt;p&gt;An approval request has already been submitted and is awaiting approval. You cannot submit a new approval until the current one is completed.&lt;/p&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Current Approval Status:&lt;/strong&gt;&lt;/p&gt;&lt;ul&gt;&lt;li&gt;Status: &lt;strong&gt;Pending&lt;/strong&gt;&lt;/li&gt;&lt;/ul&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Next Steps:&lt;/strong&gt;&lt;/p&gt;&lt;ol&gt;&lt;li&gt;Check the &quot;Approval Work Items&quot; related list on the Contract&lt;/li&gt;&lt;li&gt;Contact the assigned approver if you need to expedite the approval&lt;/li&gt;&lt;li&gt;Wait for the current approval to be completed before retrying&lt;/li&gt;&lt;/ol&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;&lt;strong&gt;No new approval request has been submitted.&lt;/strong&gt;&lt;/p&gt;</fieldText>
             <fieldType>DisplayText</fieldType>
             <styleProperties>
                 <verticalAlignment>
