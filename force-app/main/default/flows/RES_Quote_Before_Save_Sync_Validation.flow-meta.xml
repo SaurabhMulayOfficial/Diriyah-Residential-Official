@@ -3,6 +3,16 @@
     <apiVersion>67.0</apiVersion>
     <areMetricsLoggedToDataCloud>false</areMetricsLoggedToDataCloud>
     <customErrors>
+        <name>Error_Approval_Requires_Sync</name>
+        <label>Error Approval Requires Sync</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <customErrorMessages>
+            <errorMessage>{!$Label.RES_Quote_Sync_Error_Approval_Requires_Sync}</errorMessage>
+            <isFieldError>false</isFieldError>
+        </customErrorMessages>
+    </customErrors>
+    <customErrors>
         <name>Error_Cancelled_Expired_Quote_Cannot_Sync</name>
         <label>Error Cancelled Expired Quote Cannot Sync</label>
         <locationX>0</locationX>
@@ -23,16 +33,6 @@
         </customErrorMessages>
     </customErrors>
     <customErrors>
-        <name>Error_Sibling_Quote_Unit_Hard_Blocked</name>
-        <label>Error Sibling Quote Unit Hard Blocked</label>
-        <locationX>0</locationX>
-        <locationY>0</locationY>
-        <customErrorMessages>
-            <errorMessage>{!$Label.RES_Quote_Sync_Error_Sibling_Hard_Blocked}</errorMessage>
-            <isFieldError>false</isFieldError>
-        </customErrorMessages>
-    </customErrors>
-    <customErrors>
         <name>Error_Query_Fault</name>
         <label>Error Query Fault</label>
         <locationX>0</locationX>
@@ -43,15 +43,54 @@
         </customErrorMessages>
     </customErrors>
     <customErrors>
-        <name>Error_Approval_Requires_Sync</name>
-        <label>Error Approval Requires Sync</label>
+        <name>Error_Sibling_Quote_Unit_Hard_Blocked</name>
+        <label>Error Sibling Quote Unit Hard Blocked</label>
         <locationX>0</locationX>
         <locationY>0</locationY>
         <customErrorMessages>
-            <errorMessage>{!$Label.RES_Quote_Sync_Error_Approval_Requires_Sync}</errorMessage>
+            <errorMessage>{!$Label.RES_Quote_Sync_Error_Sibling_Hard_Blocked}</errorMessage>
             <isFieldError>false</isFieldError>
         </customErrorMessages>
     </customErrors>
+    <decisions>
+        <name>Check_Approval_Requires_Sync</name>
+        <label>Check Approval Requires Sync</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnector>
+            <targetReference>Check_Status_Cancelled_Or_Expired</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Not Approving, or Already Syncing</defaultConnectorLabel>
+        <rules>
+            <name>Approving_Without_Sync</name>
+            <conditionLogic>1 AND (2 OR 3)</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.Status</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Customer Approved</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.IsSyncing</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.LineItemCount</leftValueReference>
+                <operator>LessThanOrEqualTo</operator>
+                <rightValue>
+                    <numberValue>0.0</numberValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Error_Approval_Requires_Sync</targetReference>
+            </connector>
+            <label>Approving Without Sync</label>
+        </rules>
+    </decisions>
     <decisions>
         <name>Check_Flow_Switch</name>
         <label>Check Flow Switch</label>
@@ -72,6 +111,31 @@
                 <targetReference>Check_Quote_Record_Type</targetReference>
             </connector>
             <label>Switch On</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>Check_Other_Syncing_Quote_Found</name>
+        <label>Check Other Syncing Quote Found</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnector>
+            <targetReference>Get_Sibling_Quotes</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Not Found</defaultConnectorLabel>
+        <rules>
+            <name>Found</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>Get_Other_Syncing_Quotes_On_Opportunity</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Error_Other_Quote_Already_Syncing</targetReference>
+            </connector>
+            <label>Found</label>
         </rules>
     </decisions>
     <decisions>
@@ -97,35 +161,53 @@
         </rules>
     </decisions>
     <decisions>
-        <name>Check_Approval_Requires_Sync</name>
-        <label>Check Approval Requires Sync</label>
+        <name>Check_Sibling_Line_Item_Found</name>
+        <label>Check Sibling Line Item Found</label>
         <locationX>0</locationX>
         <locationY>0</locationY>
-        <defaultConnectorLabel>Not Approving, or Already Syncing</defaultConnectorLabel>
         <defaultConnector>
-            <targetReference>Check_Status_Cancelled_Or_Expired</targetReference>
+            <targetReference>Loop_Sibling_Quotes</targetReference>
         </defaultConnector>
+        <defaultConnectorLabel>No Line Item</defaultConnectorLabel>
         <rules>
-            <name>Approving_Without_Sync</name>
+            <name>Line_Item_Found</name>
             <conditionLogic>and</conditionLogic>
             <conditions>
-                <leftValueReference>$Record.Status</leftValueReference>
-                <operator>EqualTo</operator>
-                <rightValue>
-                    <stringValue>Customer Approved</stringValue>
-                </rightValue>
-            </conditions>
-            <conditions>
-                <leftValueReference>$Record.IsSyncing</leftValueReference>
-                <operator>EqualTo</operator>
+                <leftValueReference>Get_Sibling_Quote_Line_Item</leftValueReference>
+                <operator>IsNull</operator>
                 <rightValue>
                     <booleanValue>false</booleanValue>
                 </rightValue>
             </conditions>
             <connector>
-                <targetReference>Error_Approval_Requires_Sync</targetReference>
+                <targetReference>Get_Sibling_Product</targetReference>
             </connector>
-            <label>Approving Without Sync</label>
+            <label>Line Item Found</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>Check_Sibling_Product_Hard_Blocked</name>
+        <label>Check Sibling Product Hard Blocked</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnector>
+            <targetReference>Loop_Sibling_Quotes</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Not Hard Blocked</defaultConnectorLabel>
+        <rules>
+            <name>Hard_Blocked</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>Get_Sibling_Product</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Error_Sibling_Quote_Unit_Hard_Blocked</targetReference>
+            </connector>
+            <label>Hard Blocked</label>
         </rules>
     </decisions>
     <decisions>
@@ -133,10 +215,10 @@
         <label>Check Status Cancelled Or Expired</label>
         <locationX>0</locationX>
         <locationY>0</locationY>
-        <defaultConnectorLabel>Not Cancelled or Expired</defaultConnectorLabel>
         <defaultConnector>
             <targetReference>Get_Other_Syncing_Quotes_On_Opportunity</targetReference>
         </defaultConnector>
+        <defaultConnectorLabel>Not Cancelled or Expired</defaultConnectorLabel>
         <rules>
             <name>Cancelled_Or_Expired</name>
             <conditionLogic>1 OR 2</conditionLogic>
@@ -160,85 +242,21 @@
             <label>Cancelled or Expired</label>
         </rules>
     </decisions>
-    <decisions>
-        <name>Check_Other_Syncing_Quote_Found</name>
-        <label>Check Other Syncing Quote Found</label>
-        <locationX>0</locationX>
-        <locationY>0</locationY>
-        <defaultConnectorLabel>Not Found</defaultConnectorLabel>
-        <defaultConnector>
-            <targetReference>Get_Sibling_Quotes</targetReference>
-        </defaultConnector>
-        <rules>
-            <name>Found</name>
-            <conditionLogic>and</conditionLogic>
-            <conditions>
-                <leftValueReference>Get_Other_Syncing_Quotes_On_Opportunity</leftValueReference>
-                <operator>IsNull</operator>
-                <rightValue>
-                    <booleanValue>false</booleanValue>
-                </rightValue>
-            </conditions>
-            <connector>
-                <targetReference>Error_Other_Quote_Already_Syncing</targetReference>
-            </connector>
-            <label>Found</label>
-        </rules>
-    </decisions>
-    <decisions>
-        <name>Check_Sibling_Line_Item_Found</name>
-        <label>Check Sibling Line Item Found</label>
-        <locationX>0</locationX>
-        <locationY>0</locationY>
-        <defaultConnectorLabel>No Line Item</defaultConnectorLabel>
-        <defaultConnector>
-            <targetReference>Loop_Sibling_Quotes</targetReference>
-        </defaultConnector>
-        <rules>
-            <name>Line_Item_Found</name>
-            <conditionLogic>and</conditionLogic>
-            <conditions>
-                <leftValueReference>Get_Sibling_Quote_Line_Item</leftValueReference>
-                <operator>IsNull</operator>
-                <rightValue>
-                    <booleanValue>false</booleanValue>
-                </rightValue>
-            </conditions>
-            <connector>
-                <targetReference>Get_Sibling_Product</targetReference>
-            </connector>
-            <label>Line Item Found</label>
-        </rules>
-    </decisions>
-    <decisions>
-        <name>Check_Sibling_Product_Hard_Blocked</name>
-        <label>Check Sibling Product Hard Blocked</label>
-        <locationX>0</locationX>
-        <locationY>0</locationY>
-        <defaultConnectorLabel>Not Hard Blocked</defaultConnectorLabel>
-        <defaultConnector>
-            <targetReference>Loop_Sibling_Quotes</targetReference>
-        </defaultConnector>
-        <rules>
-            <name>Hard_Blocked</name>
-            <conditionLogic>and</conditionLogic>
-            <conditions>
-                <leftValueReference>Get_Sibling_Product</leftValueReference>
-                <operator>IsNull</operator>
-                <rightValue>
-                    <booleanValue>false</booleanValue>
-                </rightValue>
-            </conditions>
-            <connector>
-                <targetReference>Error_Sibling_Quote_Unit_Hard_Blocked</targetReference>
-            </connector>
-            <label>Hard Blocked</label>
-        </rules>
-    </decisions>
+    <description>Blocks a Quote from becoming the syncing (primary) quote on its Opportunity when: (1) its Status is Cancelled or Expired, (2) another Quote on the same Opportunity is already syncing, or (3) another Quote on the same Opportunity already has a Hard Blocked unit on one of its line items. RM must cancel the currently syncing/hard-blocked quote before syncing another. Also blocks a Quote&apos;s Status from being set to Customer Approved unless it is already the syncing quote. Runs before-save so the record is never committed with an invalid sync/approval state.</description>
     <environments>Default</environments>
     <interviewLabel>RES Quote Before Save Sync Validation {!$Flow.CurrentDateTime}</interviewLabel>
     <label>RES Quote Before Save Sync Validation</label>
-    <description>Blocks a Quote from becoming the syncing (primary) quote on its Opportunity when: (1) its Status is Cancelled or Expired, (2) another Quote on the same Opportunity is already syncing, or (3) another Quote on the same Opportunity already has a Hard Blocked unit on one of its line items. RM must cancel the currently syncing/hard-blocked quote before syncing another. Also blocks a Quote's Status from being set to Customer Approved unless it is already the syncing quote. Runs before-save so the record is never committed with an invalid sync/approval state.</description>
+    <loops>
+        <name>Loop_Sibling_Quotes</name>
+        <label>Loop Sibling Quotes</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <collectionReference>Get_Sibling_Quotes</collectionReference>
+        <iterationOrder>Asc</iterationOrder>
+        <nextValueConnector>
+            <targetReference>Get_Sibling_Quote_Line_Item</targetReference>
+        </nextValueConnector>
+    </loops>
     <processMetadataValues>
         <name>BuilderType</name>
         <value>
@@ -257,17 +275,6 @@
             <stringValue>LightningFlowBuilder</stringValue>
         </value>
     </processMetadataValues>
-    <loops>
-        <name>Loop_Sibling_Quotes</name>
-        <label>Loop Sibling Quotes</label>
-        <locationX>0</locationX>
-        <locationY>0</locationY>
-        <collectionReference>Get_Sibling_Quotes</collectionReference>
-        <iterationOrder>Asc</iterationOrder>
-        <nextValueConnector>
-            <targetReference>Get_Sibling_Quote_Line_Item</targetReference>
-        </nextValueConnector>
-    </loops>
     <processType>AutoLaunchedFlow</processType>
     <recordLookups>
         <name>Get_Other_Syncing_Quotes_On_Opportunity</name>
@@ -279,6 +286,7 @@
             <targetReference>Check_Other_Syncing_Quote_Found</targetReference>
         </connector>
         <faultConnector>
+            <isGoTo>true</isGoTo>
             <targetReference>Error_Query_Fault</targetReference>
         </faultConnector>
         <filterLogic>and</filterLogic>
@@ -305,68 +313,6 @@
         </filters>
         <getFirstRecordOnly>true</getFirstRecordOnly>
         <object>Quote</object>
-        <storeOutputAutomatically>true</storeOutputAutomatically>
-    </recordLookups>
-    <recordLookups>
-        <name>Get_Sibling_Quotes</name>
-        <label>Get Sibling Quotes</label>
-        <locationX>0</locationX>
-        <locationY>0</locationY>
-        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
-        <connector>
-            <targetReference>Loop_Sibling_Quotes</targetReference>
-        </connector>
-        <faultConnector>
-            <targetReference>Error_Query_Fault</targetReference>
-        </faultConnector>
-        <filterLogic>and</filterLogic>
-        <filters>
-            <field>OpportunityId</field>
-            <operator>EqualTo</operator>
-            <value>
-                <elementReference>$Record.OpportunityId</elementReference>
-            </value>
-        </filters>
-        <filters>
-            <field>Id</field>
-            <operator>NotEqualTo</operator>
-            <value>
-                <elementReference>$Record.Id</elementReference>
-            </value>
-        </filters>
-        <getFirstRecordOnly>false</getFirstRecordOnly>
-        <object>Quote</object>
-        <storeOutputAutomatically>true</storeOutputAutomatically>
-    </recordLookups>
-    <recordLookups>
-        <name>Get_Sibling_Quote_Line_Item</name>
-        <label>Get Sibling Quote Line Item</label>
-        <locationX>0</locationX>
-        <locationY>0</locationY>
-        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
-        <connector>
-            <targetReference>Check_Sibling_Line_Item_Found</targetReference>
-        </connector>
-        <faultConnector>
-            <targetReference>Error_Query_Fault</targetReference>
-        </faultConnector>
-        <filterLogic>and</filterLogic>
-        <filters>
-            <field>QuoteId</field>
-            <operator>EqualTo</operator>
-            <value>
-                <elementReference>Loop_Sibling_Quotes.Id</elementReference>
-            </value>
-        </filters>
-        <filters>
-            <field>Product2Id</field>
-            <operator>IsNull</operator>
-            <value>
-                <booleanValue>false</booleanValue>
-            </value>
-        </filters>
-        <getFirstRecordOnly>true</getFirstRecordOnly>
-        <object>QuoteLineItem</object>
         <storeOutputAutomatically>true</storeOutputAutomatically>
     </recordLookups>
     <recordLookups>
@@ -398,6 +344,70 @@
         </filters>
         <getFirstRecordOnly>true</getFirstRecordOnly>
         <object>Product2</object>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
+    <recordLookups>
+        <name>Get_Sibling_Quote_Line_Item</name>
+        <label>Get Sibling Quote Line Item</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Check_Sibling_Line_Item_Found</targetReference>
+        </connector>
+        <faultConnector>
+            <isGoTo>true</isGoTo>
+            <targetReference>Error_Query_Fault</targetReference>
+        </faultConnector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>QuoteId</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>Loop_Sibling_Quotes.Id</elementReference>
+            </value>
+        </filters>
+        <filters>
+            <field>Product2Id</field>
+            <operator>IsNull</operator>
+            <value>
+                <booleanValue>false</booleanValue>
+            </value>
+        </filters>
+        <getFirstRecordOnly>true</getFirstRecordOnly>
+        <object>QuoteLineItem</object>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
+    <recordLookups>
+        <name>Get_Sibling_Quotes</name>
+        <label>Get Sibling Quotes</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Loop_Sibling_Quotes</targetReference>
+        </connector>
+        <faultConnector>
+            <isGoTo>true</isGoTo>
+            <targetReference>Error_Query_Fault</targetReference>
+        </faultConnector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>OpportunityId</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>$Record.OpportunityId</elementReference>
+            </value>
+        </filters>
+        <filters>
+            <field>Id</field>
+            <operator>NotEqualTo</operator>
+            <value>
+                <elementReference>$Record.Id</elementReference>
+            </value>
+        </filters>
+        <getFirstRecordOnly>false</getFirstRecordOnly>
+        <object>Quote</object>
         <storeOutputAutomatically>true</storeOutputAutomatically>
     </recordLookups>
     <start>
