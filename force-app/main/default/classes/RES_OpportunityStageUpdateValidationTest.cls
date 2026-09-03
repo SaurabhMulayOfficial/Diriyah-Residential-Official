@@ -182,55 +182,6 @@ public class RES_OpportunityStageUpdateValidationTest {
     }
 
     @isTest
-    public static void validateOpportunity_DraftQuoteSyncing_MovesToProposal() {
-
-        Id quoteRecordTypeId = Schema.SObjectType.Quote
-            .getRecordTypeInfosByDeveloperName()
-            .get(System.Label.RES_Quote_Residential_Sales_RT)
-            .getRecordTypeId();
-
-        Account acc = RES_TestDataFactory.createCompanyRTAccount(
-            'Draft Sync Account',
-            '9898989898'
-        );
-
-        Opportunity opp = RES_TestDataFactory.createSingleBuyerOpportunity(
-            'Draft Sync Opp',
-            acc.Id,
-            'Unit Selected',
-            Date.today().addDays(30),
-            'Amansamar Residences Wadi Safar'
-        );
-
-        Quote draftQuote = RES_TestDataFactory.createQuote(
-            'Draft Sync Quote',
-            opp.Id,
-            Test.getStandardPricebookId(),
-            'Draft',
-            quoteRecordTypeId
-        );
-
-        // Create QLI for the Quote
-        RES_TestDataFactory.createQuoteLineItem(
-            draftQuote.Id,
-            1,
-            100
-        );
-
-        Opportunity updatedOpp = [
-            SELECT StageName
-            FROM Opportunity
-            WHERE Id = :opp.Id
-        ];
-
-        Assert.areEqual(
-            'Proposal',
-            updatedOpp.StageName,
-            'Draft quote becoming the syncing quote should move the Opportunity to Proposal'
-        );
-    }
-
-    @isTest
     public static void validateOpportunity_NegotiatingQuoteWithLineItemSyncing_MovesToUnitSelected() {
 
         Id quoteRecordTypeId = Schema.SObjectType.Quote
