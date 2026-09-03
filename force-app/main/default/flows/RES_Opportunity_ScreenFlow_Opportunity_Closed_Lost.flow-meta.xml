@@ -734,6 +734,12 @@
                 <stringValue>Customer refuses to sign the SPA</stringValue>
             </value>
         </inputAssignments>
+        <inputAssignments>
+            <field>Status</field>
+            <value>
+                <stringValue>Pending Cancellation Approval</stringValue>
+            </value>
+        </inputAssignments>
         <object>Contract</object>
     </recordUpdates>
     <recordUpdates>
@@ -776,6 +782,12 @@
             <field>RES_Product_Approval_Stage__c</field>
             <value>
                 <stringValue>URC signed + Fee not paid</stringValue>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Status</field>
+            <value>
+                <stringValue>Pending Cancellation Approval</stringValue>
             </value>
         </inputAssignments>
         <object>Contract</object>
@@ -829,6 +841,12 @@
                 <stringValue>Fee paid + URC signed</stringValue>
             </value>
         </inputAssignments>
+        <inputAssignments>
+            <field>Status</field>
+            <value>
+                <stringValue>Pending Cancellation Approval</stringValue>
+            </value>
+        </inputAssignments>
         <object>Contract</object>
     </recordUpdates>
     <recordUpdates>
@@ -871,6 +889,12 @@
             <field>RES_Product_Approval_Stage__c</field>
             <value>
                 <stringValue>Fee not paid + URC not signed</stringValue>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Status</field>
+            <value>
+                <stringValue>Pending Cancellation Approval</stringValue>
             </value>
         </inputAssignments>
         <object>Contract</object>
@@ -924,6 +948,12 @@
                 <stringValue>Fee paid + URC not signed</stringValue>
             </value>
         </inputAssignments>
+        <inputAssignments>
+            <field>Status</field>
+            <value>
+                <stringValue>Pending Cancellation Approval</stringValue>
+            </value>
+        </inputAssignments>
         <object>Contract</object>
     </recordUpdates>
     <recordUpdates>
@@ -966,6 +996,12 @@
             <field>RES_Product_Approval_Stage__c</field>
             <value>
                 <stringValue>Down Payment Receipt + CRF</stringValue>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Status</field>
+            <value>
+                <stringValue>Pending Cancellation Approval</stringValue>
             </value>
         </inputAssignments>
         <object>Contract</object>
