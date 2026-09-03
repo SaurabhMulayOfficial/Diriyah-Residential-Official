@@ -17,6 +17,10 @@
         <enabled>true</enabled>
         <name>RES_System_Information_Visibility</name>
     </customPermissions>
+    <customPermissions>
+        <enabled>true</enabled>
+        <name>RES_Hide_Dashboards</name>
+    </customPermissions>
     <fieldPermissions>
         <editable>false</editable>
         <field>ProductCatalog.RES_BP_Number__c</field>
@@ -1989,14 +1993,6 @@
     </tabSettings>
     <tabSettings>
         <tab>standard-Event</tab>
-        <visibility>Visible</visibility>
-    </tabSettings>
-    <tabSettings>
-        <tab>standard-Lead</tab>
-        <visibility>Visible</visibility>
-    </tabSettings>
-    <tabSettings>
-        <tab>standard-Opportunity</tab>
         <visibility>Visible</visibility>
     </tabSettings>
     <tabSettings>
