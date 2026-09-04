@@ -740,6 +740,7 @@
             <targetReference>Case_4_Refund_Approval_Submitted</targetReference>
         </connector>
         <faultConnector>
+            <isGoTo>true</isGoTo>
             <targetReference>Contract_Update_Failed_Error</targetReference>
         </faultConnector>
         <filterLogic>and</filterLogic>
@@ -786,6 +787,7 @@
             <targetReference>Case_5_URC_Signed_Fee_Not_Paid_Approval</targetReference>
         </connector>
         <faultConnector>
+            <isGoTo>true</isGoTo>
             <targetReference>Contract_Update_Failed_Error</targetReference>
         </faultConnector>
         <filterLogic>and</filterLogic>
@@ -899,6 +901,7 @@
             <targetReference>Case_3_Refund_Approval_Submitted</targetReference>
         </connector>
         <faultConnector>
+            <isGoTo>true</isGoTo>
             <targetReference>Contract_Update_Failed_Error</targetReference>
         </faultConnector>
         <filterLogic>and</filterLogic>
@@ -952,6 +955,7 @@
             <targetReference>Case_1_Refund_Approval_Submitted</targetReference>
         </connector>
         <faultConnector>
+            <isGoTo>true</isGoTo>
             <targetReference>Contract_Update_Failed_Error</targetReference>
         </faultConnector>
         <filterLogic>and</filterLogic>
@@ -1012,6 +1016,7 @@
             <targetReference>Case_6_Down_Payment_Receipt_CRF_Approval</targetReference>
         </connector>
         <faultConnector>
+            <isGoTo>true</isGoTo>
             <targetReference>Contract_Update_Failed_Error</targetReference>
         </faultConnector>
         <filterLogic>and</filterLogic>
@@ -1096,7 +1101,7 @@
         </inputAssignments>
         <object>Opportunity</object>
     </recordUpdates>
-    <runInMode>DefaultMode</runInMode>
+    <runInMode>SystemModeWithoutSharing</runInMode>
     <screens>
         <name>Case_1_Refund_Approval_Submitted</name>
         <label>Case 1 — Refund Approval Submitted</label>
