@@ -356,13 +356,6 @@
                 <elementReference>$Record.RelatedRecordId</elementReference>
             </value>
         </filters>
-        <filters>
-            <field>RES_Approval_Status__c</field>
-            <operator>EqualTo</operator>
-            <value>
-                <stringValue>Pending Finance Approval</stringValue>
-            </value>
-        </filters>
         <getFirstRecordOnly>true</getFirstRecordOnly>
         <object>Contract</object>
         <storeOutputAutomatically>true</storeOutputAutomatically>
