@@ -126,7 +126,7 @@ public without sharing class RES_QuoteCancellationService {
                 if(productIds.contains(qli.Product2Id)){
                     continue;
                 }
-                if(qli.Product2Id != null && qli.Product2.RES_Unit_Status__c != 'Available' && qli.Product2.RES_Reserved_By_Quote__c == qli.QuoteId && qli.Product2.RES_Unit_Status__c != 'Sold'){
+                if(qli.Product2Id != null && qli.Product2.RES_Unit_Status__c != 'Available' && qli.Product2.RES_Reserved_By_Quote__c == qli.QuoteId){
                     Product2 p = new Product2();
                     p.Id = qli.Product2Id;
                     p.RES_Unit_Status__c = 'Available';
