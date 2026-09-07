@@ -117,6 +117,13 @@
                     <numberValue>1.0</numberValue>
                 </rightValue>
             </conditions>
+            <conditions>
+                <leftValueReference>$Record.LeadSource</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Z06</stringValue>
+                </rightValue>
+            </conditions>
             <connector>
                 <targetReference>Next_Reassignment_Date_NOW_30_days</targetReference>
             </connector>
