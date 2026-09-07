@@ -1,5 +1,5 @@
 /**
- * @description Test class for RES_BulkFolderUploaderController covering global dynamic ProductCode matching.
+ * @description Test class for RES_BulkFolderUploaderController covering sequential chunking and global dynamic ProductCode matching.
  */
 @isTest
 private class RES_BulkFolderUploaderControllerTest {
@@ -27,93 +27,85 @@ private class RES_BulkFolderUploaderControllerTest {
     }
 
     /**
-     * @description Validates successful file upload and automatic linking across multiple products using exact and prefix matching.
+     * @description Tests uploading a single-chunk file that successfully matches PROD001 and creates a ContentDocumentLink.
      */
     @isTest
-    static void testUploadAndAttachFilesToProductSuccess() {
+    static void testSaveFileChunkSingleChunkSuccess() {
         Product2 prod1 = [SELECT Id, ProductCode FROM Product2 WHERE ProductCode = 'PROD001' LIMIT 1];
+
+        String fileName = 'PROD001.pdf';
+        String base64Data = EncodingUtil.base64Encode(Blob.valueOf('Test Content PDF Single Chunk'));
+
+        Test.startTest();
+        String docId = RES_BulkFolderUploaderController.saveFileChunk(fileName, base64Data, null);
+        Test.stopTest();
+
+        System.assert(String.isNotBlank(docId), 'ContentDocumentId should be returned on successful chunk upload.');
+
+        // Verify ContentDocumentLink created for PROD001
+        List<ContentDocumentLink> links = [
+            SELECT Id, LinkedEntityId, ContentDocumentId 
+            FROM ContentDocumentLink 
+            WHERE LinkedEntityId = :prod1.Id
+        ];
+        System.assertEquals(1, links.size(), 'One ContentDocumentLink should be linked to PROD001.');
+        System.assertEquals(docId, links[0].ContentDocumentId, 'Linked ContentDocumentId must match returned document ID.');
+    }
+
+    /**
+     * @description Tests uploading a multi-chunk file (First chunk creates doc & links product; second chunk appends new version under same ContentDocumentId).
+     */
+    @isTest
+    static void testSaveFileChunkMultiChunkSuccess() {
         Product2 prod2 = [SELECT Id, ProductCode FROM Product2 WHERE ProductCode = 'PROD002' LIMIT 1];
 
-        List<RES_BulkFolderUploaderController.FilePayload> payloads = new List<RES_BulkFolderUploaderController.FilePayload>();
-
-        // File 1: Exact match for PROD001
-        RES_BulkFolderUploaderController.FilePayload file1 = new RES_BulkFolderUploaderController.FilePayload();
-        file1.fileName = 'PROD001.pdf';
-        file1.base64Data = EncodingUtil.base64Encode(Blob.valueOf('Test Content PDF 1'));
-        payloads.add(file1);
-
-        // File 2: Variant prefix match for PROD001 ("PROD001-v2.pdf" starts with "PROD001")
-        RES_BulkFolderUploaderController.FilePayload file2 = new RES_BulkFolderUploaderController.FilePayload();
-        file2.fileName = 'PROD001-v2.pdf';
-        file2.base64Data = EncodingUtil.base64Encode(Blob.valueOf('Test Content PDF 2'));
-        payloads.add(file2);
-
-        // File 3: Match for PROD002
-        RES_BulkFolderUploaderController.FilePayload file3 = new RES_BulkFolderUploaderController.FilePayload();
-        file3.fileName = 'PROD002_Manual.png';
-        file3.base64Data = EncodingUtil.base64Encode(Blob.valueOf('Test Content PNG'));
-        payloads.add(file3);
+        String fileName = 'PROD002_Manual.png';
+        String chunk1 = EncodingUtil.base64Encode(Blob.valueOf('Chunk 1 Data'));
+        String chunk2 = EncodingUtil.base64Encode(Blob.valueOf('Chunk 2 Data'));
 
         Test.startTest();
-        String resultMsg = RES_BulkFolderUploaderController.uploadAndAttachFilesToProduct(payloads);
+        // Chunk 1 Call
+        String docId = RES_BulkFolderUploaderController.saveFileChunk(fileName, chunk1, null);
+        
+        // Chunk 2 Call passing returned docId
+        String secondChunkDocId = RES_BulkFolderUploaderController.saveFileChunk(fileName, chunk2, docId);
         Test.stopTest();
 
-        // Verify return message
-        System.assertEquals('3 file(s) successfully attached across matched Product records.', resultMsg, 'Result message should confirm 3 files attached.');
+        System.assertEquals(docId, secondChunkDocId, 'Document ID should remain identical across chunk iterations.');
 
-        // Verify 2 ContentDocumentLinks created for PROD001
-        List<ContentDocumentLink> linksProd1 = [
-            SELECT Id FROM ContentDocumentLink WHERE LinkedEntityId = :prod1.Id
+        // Verify total ContentVersions created under this ContentDocumentId
+        List<ContentVersion> cvList = [
+            SELECT Id, ContentDocumentId 
+            FROM ContentVersion 
+            WHERE ContentDocumentId = :docId
         ];
-        System.assertEquals(2, linksProd1.size(), 'Two ContentDocumentLinks should be linked to PROD001.');
+        System.assertEquals(2, cvList.size(), 'Two ContentVersion records should exist under the same ContentDocumentId.');
 
-        // Verify 1 ContentDocumentLink created for PROD002
-        List<ContentDocumentLink> linksProd2 = [
+        // Verify ContentDocumentLink created for PROD002
+        List<ContentDocumentLink> links = [
             SELECT Id FROM ContentDocumentLink WHERE LinkedEntityId = :prod2.Id
         ];
-        System.assertEquals(1, linksProd2.size(), 'One ContentDocumentLink should be linked to PROD002.');
+        System.assertEquals(1, links.size(), 'Exactly one ContentDocumentLink should be created for PROD002.');
     }
 
     /**
-     * @description Validates exception handling when uploaded filenames do not match any existing ProductCode.
+     * @description Validates exception handling when uploaded filename does not match any existing ProductCode.
      */
     @isTest
-    static void testUploadWithUnmatchedProductCodes() {
-        List<RES_BulkFolderUploaderController.FilePayload> payloads = new List<RES_BulkFolderUploaderController.FilePayload>();
-
-        RES_BulkFolderUploaderController.FilePayload file1 = new RES_BulkFolderUploaderController.FilePayload();
-        file1.fileName = 'UNKNOWN_CODE_DOC.pdf';
-        file1.base64Data = EncodingUtil.base64Encode(Blob.valueOf('Unmatched Sample Data'));
-        payloads.add(file1);
+    static void testSaveFileChunkUnmatchedProductCode() {
+        String fileName = 'UNKNOWN_CODE_DOC.pdf';
+        String base64Data = EncodingUtil.base64Encode(Blob.valueOf('Unmatched Sample Data'));
 
         Boolean exceptionThrown = false;
 
         Test.startTest();
         try {
-            RES_BulkFolderUploaderController.uploadAndAttachFilesToProduct(payloads);
+            RES_BulkFolderUploaderController.saveFileChunk(fileName, base64Data, null);
         } catch (AuraHandledException e) {
             exceptionThrown = true;
         }
         Test.stopTest();
 
-        System.assert(exceptionThrown, 'Expected AuraHandledException should be thrown when no file names match product codes.');
-    }
-
-    /**
-     * @description Validates exception handling when filePayloads list is empty or null.
-     */
-    @isTest
-    static void testUploadWithEmptyPayloads() {
-        Boolean exceptionThrown = false;
-
-        Test.startTest();
-        try {
-            RES_BulkFolderUploaderController.uploadAndAttachFilesToProduct(new List<RES_BulkFolderUploaderController.FilePayload>());
-        } catch (AuraHandledException e) {
-            exceptionThrown = true;
-        }
-        Test.stopTest();
-
-        System.assert(exceptionThrown, 'Expected AuraHandledException should be thrown for empty file payload list.');
+        System.assert(exceptionThrown, 'Expected AuraHandledException should be thrown when filename does not match any Product Code.');
     }
 }

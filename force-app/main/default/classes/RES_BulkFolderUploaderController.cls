@@ -1,100 +1,84 @@
 /**
- * @description Controller for global bulk folder document upload and dynamic ProductCode matching.
+ * @description Controller for global bulk folder document upload and dynamic ProductCode matching using ContentDocument chunking.
  */
 public with sharing class RES_BulkFolderUploaderController {
 
-    public class FilePayload {
-        @AuraEnabled public String fileName { get; set; }
-        @AuraEnabled public String base64Data { get; set; }
+    /**
+     * @description Saves base64 chunks sequentially by adding new ContentVersions under the same ContentDocumentId.
+     * @param fileName File name with extension.
+     * @param base64Data Base64 data chunk.
+     * @param documentId ContentDocumentId generated from the first chunk.
+     * @return ContentDocumentId string for subsequent chunk iterations.
+     */
+    @AuraEnabled
+    public static String saveFileChunk(String fileName, String base64Data, String documentId) {
+        Blob chunkBlob = EncodingUtil.base64Decode(base64Data);
+        String cleanFileName = fileName.substringBeforeLast('.');
+
+        ContentVersion cv = new ContentVersion();
+        cv.Title = cleanFileName;
+        cv.PathOnClient = fileName;
+        cv.VersionData = chunkBlob;
+        cv.IsMajorVersion = true;
+
+        if (String.isNotBlank(documentId)) {
+            // Append chunk as new major version under the established ContentDocumentId
+            cv.ContentDocumentId = (Id) documentId;
+        }
+
+        if (Schema.sObjectType.ContentVersion.isCreateable()) {
+            insert as user cv;
+        }
+
+        // Retrieve ContentDocumentId for first chunk
+        if (String.isBlank(documentId)) {
+            ContentVersion insertedCv = [
+                SELECT Id, ContentDocumentId 
+                FROM ContentVersion 
+                WHERE Id = :cv.Id 
+                LIMIT 1
+            ];
+            documentId = insertedCv.ContentDocumentId;
+
+            // Link ContentDocument to matched Product record on first chunk creation
+            linkContentToMatchedProduct(documentId, cleanFileName);
+        }
+
+        return documentId;
     }
 
     /**
-     * @description Accepts file payloads, extracts potential product codes, matches Products via DAO layer, and links files.
-     * @param filePayloads List of uploaded file base64 payloads.
-     * @return Success summary message string.
+     * @description Prefix match helper: Matches Product Code via DAO and creates ContentDocumentLink.
      */
-    @AuraEnabled
-    public static String uploadAndAttachFilesToProduct(List<FilePayload> filePayloads) {
-        if (filePayloads == null || filePayloads.isEmpty()) {
-            throw new AuraHandledException('No files were provided for upload.');
-        }
-
-        // 1. Pre-query all ProductCodes using updated DAO layer
+    private static void linkContentToMatchedProduct(Id contentDocumentId, String cleanFileName) {
         List<Product2> allProducts = new RES_Product2DAOLayer().getAllProductsWithCode();
 
         if (allProducts.isEmpty()) {
             throw new AuraHandledException('No Products with ProductCode found in the org.');
         }
 
-        // Map ProductCode (uppercase) -> Product2 Id
         Map<String, Id> codeToProductIdMap = new Map<String, Id>();
         for (Product2 p : allProducts) {
             codeToProductIdMap.put(p.ProductCode.toUpperCase(), p.Id);
         }
 
-        // 2. Insert ContentVersion records for files matching product codes
-        List<ContentVersion> cvToInsert = new List<ContentVersion>();
-        List<Id> targetProductIds = new List<Id>();
+        String matchedProductCode = findMatchingProductCode(cleanFileName, codeToProductIdMap.keySet());
 
-        for (FilePayload payload : filePayloads) {
-            String cleanFileName = payload.fileName.substringBeforeLast('.');
-            String matchedProductCode = findMatchingProductCode(cleanFileName, codeToProductIdMap.keySet());
-
-            if (String.isNotBlank(matchedProductCode)) {
-                Id productId = codeToProductIdMap.get(matchedProductCode);
-
-                ContentVersion cv = new ContentVersion();
-                cv.Title = cleanFileName;
-                cv.PathOnClient = payload.fileName;
-                cv.VersionData = EncodingUtil.base64Decode(payload.base64Data);
-                cv.IsMajorVersion = true;
-                
-                cvToInsert.add(cv);
-                targetProductIds.add(productId);
-            }
+        if (String.isBlank(matchedProductCode)) {
+            throw new AuraHandledException('File ' + cleanFileName + ' does not match any existing Product Code.');
         }
 
-        if (cvToInsert.isEmpty()) {
-            throw new AuraHandledException('None of the uploaded files matched an existing Product Code.');
+        Id productId = codeToProductIdMap.get(matchedProductCode);
+
+        ContentDocumentLink cdl = new ContentDocumentLink();
+        cdl.ContentDocumentId = contentDocumentId;
+        cdl.LinkedEntityId = productId;
+        cdl.ShareType = 'V';
+        cdl.Visibility = 'AllUsers';
+
+        if (Schema.sObjectType.ContentDocumentLink.isCreateable()) {
+            insert as user cdl;
         }
-
-        // 3. Bulk Insert ContentVersions
-        if (Schema.sObjectType.ContentVersion.isCreateable()) {
-            insert as user cvToInsert;
-        }
-
-        // 4. Query inserted ContentVersions via DAO Layer
-        Set<Id> insertedCvIds = new Map<Id, ContentVersion>(cvToInsert).keySet();
-        List<ContentVersion> insertedCvList = new RES_ContentVersionDAOLayer().getContentVersionById(insertedCvIds);
-
-        // Map ContentVersion Id to generated ContentDocumentId
-        Map<Id, Id> cvIdToDocIdMap = new Map<Id, Id>();
-        for (ContentVersion cv : insertedCvList) {
-            cvIdToDocIdMap.put(cv.Id, cv.ContentDocumentId);
-        }
-
-        // 5. Build ContentDocumentLinks matching indexed Product IDs
-        List<ContentDocumentLink> cdlToInsert = new List<ContentDocumentLink>();
-        for (Integer i = 0; i < cvToInsert.size(); i++) {
-            ContentVersion cv = cvToInsert[i];
-            Id productId = targetProductIds[i];
-            Id docId = cvIdToDocIdMap.get(cv.Id);
-
-            if (docId != null && productId != null) {
-                ContentDocumentLink cdl = new ContentDocumentLink();
-                cdl.ContentDocumentId = docId;
-                cdl.LinkedEntityId = productId;
-                cdl.ShareType = 'V';
-                cdl.Visibility = 'AllUsers';
-                cdlToInsert.add(cdl);
-            }
-        }
-
-        if (!cdlToInsert.isEmpty() && Schema.sObjectType.ContentDocumentLink.isCreateable()) {
-            insert as user cdlToInsert;
-        }
-
-        return cdlToInsert.size() + ' file(s) successfully attached across matched Product records.';
     }
 
     /**
