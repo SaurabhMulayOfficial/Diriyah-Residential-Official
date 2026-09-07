@@ -116,7 +116,12 @@
         <editable>false</editable>
         <field>QuoteLineItem.Discount</field>
         <readable>true</readable>
-    </fieldPermissions>     
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>QuoteLineItem.RES_Discount_Type__c</field>
+        <readable>true</readable>
+    </fieldPermissions>         
     <fieldPermissions>
         <editable>true</editable>
         <field>ProductCatalog.RES_BP_Number__c</field>
