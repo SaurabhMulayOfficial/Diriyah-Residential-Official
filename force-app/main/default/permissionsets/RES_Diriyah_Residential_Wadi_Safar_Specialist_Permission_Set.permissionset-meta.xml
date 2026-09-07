@@ -24,7 +24,12 @@ Sales – Wadi Safar – Specialist II</description>
         <editable>true</editable>
         <field>Quote.RES_Discount_Submission_Requested__c</field>
         <readable>true</readable>
-    </fieldPermissions>    
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>QuoteLineItem.RES_Discount_Type__c</field>
+        <readable>true</readable>
+    </fieldPermissions>       
     <fieldPermissions>
         <editable>false</editable>
         <field>RES_Payment_Plan_Version__c.RES_Active__c</field>
