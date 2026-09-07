@@ -277,6 +277,13 @@
                     <stringValue>Reservation</stringValue>
                 </rightValue>
             </conditions>
+            <conditions>
+                <leftValueReference>Get_Primary_Quote_Opportunity.Contract.RES_Down_Payment_Receipt__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
             <connector>
                 <targetReference>Initiate_Finance_CSO_Approva_3</targetReference>
             </connector>
@@ -306,10 +313,103 @@
                     <stringValue>Reservation</stringValue>
                 </rightValue>
             </conditions>
+            <conditions>
+                <leftValueReference>Get_Primary_Quote_Opportunity.Contract.RES_Down_Payment_Receipt__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
             <connector>
                 <targetReference>Initiate_CSO_Approval_URC_Signed_Fee_Not_Paid</targetReference>
             </connector>
             <label>Fee False, URC True</label>
+        </rules>
+        <rules>
+            <name>URC_True_Down_Payment_True_CRF_False</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>Get_Primary_Quote_Opportunity.Contract.RES_Fee_Transferred__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>Get_Primary_Quote_Opportunity.Contract.RES_URC_Signed__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>Get_Primary_Quote_Opportunity.Contract.RES_Down_Payment_Receipt__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>Get_Primary_Quote_Opportunity.Contract.RES_CRF_Form_Received__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>GetOpportunity.StageName</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Reservation</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>CRF_Required_Down_Payment_Receipt</targetReference>
+            </connector>
+            <label>URC Signed + Down Payment Receipt, CRF False</label>
+        </rules>
+        <rules>
+            <name>URC_True_Down_Payment_True_CRF_True</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>Get_Primary_Quote_Opportunity.Contract.RES_Fee_Transferred__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>Get_Primary_Quote_Opportunity.Contract.RES_URC_Signed__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>Get_Primary_Quote_Opportunity.Contract.RES_Down_Payment_Receipt__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>Get_Primary_Quote_Opportunity.Contract.RES_CRF_Form_Received__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>GetOpportunity.StageName</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Reservation</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Initiate_Finance_CSO_Approval_DPR_CRF</targetReference>
+            </connector>
+            <label>URC Signed + Down Payment Receipt + CRF</label>
         </rules>
         <rules>
             <name>Down_Payment_Receipt_CRF_False</name>
@@ -834,7 +934,7 @@
     </recordUpdates>
     <recordUpdates>
         <name>Initiate_Finance_CSO_Approva_2</name>
-        <label>Initiate Finance CSO Approva 2</label>
+        <label>Initiate CSO Finance Approval 2</label>
         <locationX>0</locationX>
         <locationY>0</locationY>
         <connector>
@@ -894,7 +994,7 @@
     </recordUpdates>
     <recordUpdates>
         <name>Initiate_Finance_CSO_Approva_3</name>
-        <label>Initiate Finance CSO Approva 3</label>
+        <label>Initiate CSO Only Approval 3</label>
         <locationX>0</locationX>
         <locationY>0</locationY>
         <connector>
@@ -948,7 +1048,7 @@
     </recordUpdates>
     <recordUpdates>
         <name>Initiate_Finance_CSO_Approval_1</name>
-        <label>Initiate Finance CSO Approval 1</label>
+        <label>Initiate CSO Finance Approval 1</label>
         <locationX>0</locationX>
         <locationY>0</locationY>
         <connector>
@@ -1009,7 +1109,7 @@
     </recordUpdates>
     <recordUpdates>
         <name>Initiate_Finance_CSO_Approval_DPR_CRF</name>
-        <label>Initiate Finance CSO Approval - Down Payment Receipt + CRF</label>
+        <label>Initiate CSO Finance Approval - Down Payment Receipt + CRF</label>
         <locationX>0</locationX>
         <locationY>0</locationY>
         <connector>
@@ -1112,7 +1212,7 @@
         <allowPause>false</allowPause>
         <fields>
             <name>RefundApprovalSubmittedCase1</name>
-            <fieldText>&lt;p&gt;&lt;strong&gt;Fee has been paid and URC has not been signed.&lt;/strong&gt;&lt;/p&gt;&lt;p&gt;The required refund approval has been initiated and is currently pending.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Approval flow:&lt;/strong&gt; &lt;span style=&quot;background-color: rgb(255, 255, 255);&quot;&gt;Finance&lt;/span&gt; → CSO&lt;/p&gt;&lt;p&gt;Once the required approvals are completed:&lt;/p&gt;&lt;ul&gt;&lt;li&gt;The Opportunity will be marked as &lt;strong&gt;Closed Lost&lt;/strong&gt;.&lt;/li&gt;&lt;li&gt;The Unit will be marked as &lt;strong&gt;Available&lt;/strong&gt;.&lt;/li&gt;&lt;li&gt;Finance will process the &lt;strong&gt;Full Fee Refund&lt;/strong&gt;.&lt;/li&gt;&lt;/ul&gt;&lt;p&gt;&lt;strong&gt;No further action is required from you at this time.&lt;/strong&gt;&lt;/p&gt;</fieldText>
+            <fieldText>&lt;p&gt;&lt;strong&gt;Fee has been paid and URC has not been signed.&lt;/strong&gt;&lt;/p&gt;&lt;p&gt;The required refund approval has been initiated and is currently pending.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Approval flow:&lt;/strong&gt; CSO → Finance&lt;/p&gt;&lt;p&gt;Once the required approvals are completed:&lt;/p&gt;&lt;ul&gt;&lt;li&gt;The Opportunity will be marked as &lt;strong&gt;Closed Lost&lt;/strong&gt;.&lt;/li&gt;&lt;li&gt;The Unit will be marked as &lt;strong&gt;Available&lt;/strong&gt;.&lt;/li&gt;&lt;li&gt;Finance will process the &lt;strong&gt;Full Fee Refund&lt;/strong&gt;.&lt;/li&gt;&lt;/ul&gt;&lt;p&gt;&lt;strong&gt;No further action is required from you at this time.&lt;/strong&gt;&lt;/p&gt;</fieldText>
             <fieldType>DisplayText</fieldType>
             <styleProperties>
                 <verticalAlignment>
@@ -1136,7 +1236,7 @@
         <allowPause>false</allowPause>
         <fields>
             <name>RefundApprovalSubmittedCase2</name>
-            <fieldText>&lt;p&gt;&lt;strong&gt;Fee has been paid and URC has been signed.&lt;/strong&gt;&lt;/p&gt;&lt;p&gt;&lt;strong&gt;The required refund approval has been initiated and is currently pending.&lt;/strong&gt;&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Approval flow:&lt;/strong&gt; &lt;span style=&quot;background-color: rgb(255, 255, 255);&quot;&gt;Finance&lt;/span&gt; → CSO&lt;/p&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;The &lt;strong&gt;Reservation Amount will be retained&lt;/strong&gt;.&lt;/p&gt;&lt;p&gt;After approval:&lt;/p&gt;&lt;ul&gt;&lt;li&gt;If the amount paid is greater than the Reservation Amount, Finance will refund only the &lt;strong&gt;excess amount&lt;/strong&gt;.&lt;/li&gt;&lt;li&gt;If the amount paid is less than or equal to the Reservation Amount, &lt;strong&gt;no refund will be processed&lt;/strong&gt;.&lt;/li&gt;&lt;li&gt;The Opportunity will be marked as &lt;strong&gt;Closed Lost&lt;/strong&gt;.&lt;/li&gt;&lt;li&gt;The Unit will be marked as &lt;strong&gt;Available&lt;/strong&gt;.&lt;/li&gt;&lt;/ul&gt;&lt;p&gt;&lt;strong&gt;No further action is required from you at this time.&lt;/strong&gt;&lt;/p&gt;</fieldText>
+            <fieldText>&lt;p&gt;&lt;strong&gt;Fee has been paid and URC has been signed.&lt;/strong&gt;&lt;/p&gt;&lt;p&gt;&lt;strong&gt;The required refund approval has been initiated and is currently pending.&lt;/strong&gt;&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Approval flow:&lt;/strong&gt; CSO → Finance&lt;/p&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;The &lt;strong&gt;Reservation Amount will be retained&lt;/strong&gt;.&lt;/p&gt;&lt;p&gt;After approval:&lt;/p&gt;&lt;ul&gt;&lt;li&gt;If the amount paid is greater than the Reservation Amount, Finance will refund only the &lt;strong&gt;excess amount&lt;/strong&gt;.&lt;/li&gt;&lt;li&gt;If the amount paid is less than or equal to the Reservation Amount, &lt;strong&gt;no refund will be processed&lt;/strong&gt;.&lt;/li&gt;&lt;li&gt;The Opportunity will be marked as &lt;strong&gt;Closed Lost&lt;/strong&gt;.&lt;/li&gt;&lt;li&gt;The Unit will be marked as &lt;strong&gt;Available&lt;/strong&gt;.&lt;/li&gt;&lt;/ul&gt;&lt;p&gt;&lt;strong&gt;No further action is required from you at this time.&lt;/strong&gt;&lt;/p&gt;</fieldText>
             <fieldType>DisplayText</fieldType>
             <styleProperties>
                 <verticalAlignment>
@@ -1232,7 +1332,7 @@
         <allowPause>false</allowPause>
         <fields>
             <name>RefundApprovalSubmittedCase6</name>
-            <fieldText>&lt;p&gt;&lt;strong&gt;Down Payment Receipt has been uploaded and CRF form has been received.&lt;/strong&gt;&lt;/p&gt;&lt;p&gt;&lt;strong&gt;The required refund approval has been initiated and is currently pending.&lt;/strong&gt;&lt;/p&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Approval flow:&lt;/strong&gt; &lt;span style=&quot;background-color: rgb(255, 255, 255);&quot;&gt;Finance&lt;/span&gt; → CSO&lt;/p&gt;&lt;p&gt;Once all required approvals are completed:&lt;/p&gt;&lt;ul&gt;&lt;li&gt;The Opportunity will be marked as &lt;strong&gt;Closed Lost&lt;/strong&gt;.&lt;/li&gt;&lt;li&gt;The Unit will be marked as &lt;strong&gt;Available&lt;/strong&gt;.&lt;/li&gt;&lt;li&gt;Finance will process the &lt;strong&gt;Full Fee Refund&lt;/strong&gt;.&lt;/li&gt;&lt;/ul&gt;&lt;p&gt;&lt;strong&gt;No further action is required from you at this time.&lt;/strong&gt;&lt;/p&gt;</fieldText>
+            <fieldText>&lt;p&gt;&lt;strong&gt;Down Payment Receipt has been uploaded and CRF form has been received.&lt;/strong&gt;&lt;/p&gt;&lt;p&gt;&lt;strong&gt;The required refund approval has been initiated and is currently pending.&lt;/strong&gt;&lt;/p&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Approval flow:&lt;/strong&gt; CSO → Finance&lt;/p&gt;&lt;p&gt;Once all required approvals are completed:&lt;/p&gt;&lt;ul&gt;&lt;li&gt;The Opportunity will be marked as &lt;strong&gt;Closed Lost&lt;/strong&gt;.&lt;/li&gt;&lt;li&gt;The Unit will be marked as &lt;strong&gt;Available&lt;/strong&gt;.&lt;/li&gt;&lt;li&gt;Finance will process the &lt;strong&gt;Full Fee Refund&lt;/strong&gt;.&lt;/li&gt;&lt;/ul&gt;&lt;p&gt;&lt;strong&gt;No further action is required from you at this time.&lt;/strong&gt;&lt;/p&gt;</fieldText>
             <fieldType>DisplayText</fieldType>
             <styleProperties>
                 <verticalAlignment>
