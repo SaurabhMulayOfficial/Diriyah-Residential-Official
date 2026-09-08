@@ -37,10 +37,10 @@
             <name>Customer_refuses_to_sign_the_SPA</name>
             <conditionLogic>and</conditionLogic>
             <conditions>
-                <leftValueReference>Get_Contract_for_Quote_On_SPA.RES_SPA_Signed__c</leftValueReference>
-                <operator>EqualTo</operator>
+                <leftValueReference>Get_Contract_for_Quote_On_SPA.Status</leftValueReference>
+                <operator>NotEqualTo</operator>
                 <rightValue>
-                    <booleanValue>false</booleanValue>
+                    <stringValue>Activated</stringValue>
                 </rightValue>
             </conditions>
             <connector>
@@ -407,6 +407,7 @@
                 </rightValue>
             </conditions>
             <connector>
+                <isGoTo>true</isGoTo>
                 <targetReference>Initiate_Finance_CSO_Approval_DPR_CRF</targetReference>
             </connector>
             <label>URC Signed + Down Payment Receipt + CRF</label>
@@ -844,13 +845,6 @@
             <targetReference>Contract_Update_Failed_Error</targetReference>
         </faultConnector>
         <filterLogic>and</filterLogic>
-        <filters>
-            <field>RES_SPA_Signed__c</field>
-            <operator>EqualTo</operator>
-            <value>
-                <booleanValue>false</booleanValue>
-            </value>
-        </filters>
         <filters>
             <field>Id</field>
             <operator>EqualTo</operator>
