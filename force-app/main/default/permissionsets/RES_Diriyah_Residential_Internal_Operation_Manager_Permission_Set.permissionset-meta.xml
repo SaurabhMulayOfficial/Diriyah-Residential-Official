@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version='1.0' encoding='UTF-8'?>
 <PermissionSet xmlns="http://soap.sforce.com/2006/04/metadata">
     <description>Permission Set for Internal Operations – Operations – Manager</description>
     <classAccesses>
@@ -2231,10 +2231,6 @@
         <visibility>Visible</visibility>
     </tabSettings>
     <tabSettings>
-        <tab>RES_Payment_Plan_Version__c</tab>
-        <visibility>Visible</visibility>
-    </tabSettings>
-    <tabSettings>
         <tab>standard-Quote</tab>
         <visibility>Visible</visibility>
     </tabSettings>
@@ -2295,14 +2291,10 @@
         <visibility>Visible</visibility>
     </tabSettings>
     <tabSettings>
-        <tab>RES_Installment__c</tab>
+        <tab>standard-Home</tab>
         <visibility>Visible</visibility>
     </tabSettings>
-    <tabSettings>
-        <tab>RES_Payment_Plan__c</tab>
-        <visibility>Visible</visibility>
-    </tabSettings>
-    <userPermissions>
+<userPermissions>
         <enabled>true</enabled>
         <name>ApiEnabled</name>
     </userPermissions>

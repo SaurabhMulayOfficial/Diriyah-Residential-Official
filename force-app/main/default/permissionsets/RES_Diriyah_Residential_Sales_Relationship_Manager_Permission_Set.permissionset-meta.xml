@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version='1.0' encoding='UTF-8'?>
 <PermissionSet xmlns="http://soap.sforce.com/2006/04/metadata">
     <description>Permission Set for Residential Sales Relationship Manager (Diriyah)</description>
     <customPermissions>
@@ -2184,10 +2184,6 @@
         <visible>true</visible>
     </recordTypeVisibilities>
      <tabSettings>
-        <tab>RES_Payment_Plan_Version__c</tab>
-        <visibility>Visible</visibility>
-    </tabSettings>
-    <tabSettings>
         <tab>standard-Quote</tab>
         <visibility>Visible</visibility>
     </tabSettings>
@@ -2213,10 +2209,6 @@
     </tabSettings>
     <tabSettings>
         <tab>standard-Contact</tab>
-        <visibility>Visible</visibility>
-    </tabSettings>
-    <tabSettings>
-        <tab>standard-Event</tab>
         <visibility>Visible</visibility>
     </tabSettings>
     <tabSettings>
@@ -2248,14 +2240,10 @@
         <visibility>Visible</visibility>
     </tabSettings>
     <tabSettings>
-        <tab>RES_Installment__c</tab>
-        <visibility>Visible</visibility>
-    </tabSettings>
-    <tabSettings>
-        <tab>RES_Payment_Plan__c</tab>
-        <visibility>Visible</visibility>
-    </tabSettings>
-    <userPermissions>
+<tab>standard-Home</tab>
+<visibility>Visible</visibility>
+</tabSettings>
+<userPermissions>
         <enabled>true</enabled>
         <name>ApiEnabled</name>
     </userPermissions>
