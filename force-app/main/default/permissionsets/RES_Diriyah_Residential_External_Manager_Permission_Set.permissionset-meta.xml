@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version='1.0' encoding='UTF-8'?>
 <PermissionSet xmlns="http://soap.sforce.com/2006/04/metadata">
     <description>Permission Set for Sales – External – Manager</description>
     <customPermissions>
@@ -9,7 +9,7 @@
         <enabled>true</enabled>
         <name>RES_Update_Owner_Visibility</name>
     </customPermissions>
-     <customPermissions>
+    <customPermissions>
         <enabled>true</enabled>
         <name>RES_Approval_Work_Item_Visibility</name>
     </customPermissions>
@@ -2195,10 +2195,6 @@
         <visible>true</visible>
     </recordTypeVisibilities>
     <tabSettings>
-        <tab>RES_Payment_Plan_Version__c</tab>
-        <visibility>Visible</visibility>
-    </tabSettings>
-    <tabSettings>
         <tab>standard-Quote</tab>
         <visibility>Visible</visibility>
     </tabSettings>
@@ -2227,10 +2223,6 @@
         <visibility>Visible</visibility>
     </tabSettings>
     <tabSettings>
-        <tab>standard-Event</tab>
-        <visibility>Visible</visibility>
-    </tabSettings>
-    <tabSettings>
         <tab>standard-Lead</tab>
         <visibility>Visible</visibility>
     </tabSettings>
@@ -2255,18 +2247,10 @@
         <visibility>Visible</visibility>
     </tabSettings>
     <tabSettings>
-        <tab>standard-ApprovalWorkItem</tab>
-        <visibility>Visible</visibility>
-    </tabSettings>
-    <tabSettings>
-        <tab>RES_Installment__c</tab>
-        <visibility>Visible</visibility>
-    </tabSettings>
-    <tabSettings>
-        <tab>RES_Payment_Plan__c</tab>
-        <visibility>Visible</visibility>
-    </tabSettings>
-    <userPermissions>
+<tab>standard-Home</tab>
+<visibility>Visible</visibility>
+</tabSettings>
+<userPermissions>
         <enabled>true</enabled>
         <name>ApiEnabled</name>
     </userPermissions>

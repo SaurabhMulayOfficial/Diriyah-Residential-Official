@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version='1.0' encoding='UTF-8'?>
 <PermissionSet xmlns="http://soap.sforce.com/2006/04/metadata">
     <description>Permission Set for 
 Sales – Planning – Senior Manager</description>
@@ -10,7 +10,7 @@ Sales – Planning – Senior Manager</description>
         <enabled>true</enabled>
         <name>RES_Update_Owner_Visibility</name>
     </customPermissions>
-     <customPermissions>
+    <customPermissions>
         <enabled>true</enabled>
         <name>RES_Approval_Work_Item_Visibility</name>
     </customPermissions>
@@ -2153,10 +2153,6 @@ Sales – Planning – Senior Manager</description>
         <visible>true</visible>
     </recordTypeVisibilities>
     <tabSettings>
-        <tab>RES_Payment_Plan_Version__c</tab>
-        <visibility>Visible</visibility>
-    </tabSettings>
-    <tabSettings>
         <tab>standard-Quote</tab>
         <visibility>Visible</visibility>
     </tabSettings>
@@ -2209,18 +2205,10 @@ Sales – Planning – Senior Manager</description>
         <visibility>Visible</visibility>
     </tabSettings>
     <tabSettings>
-        <tab>standard-ApprovalWorkItem</tab>
-        <visibility>Visible</visibility>
-    </tabSettings>
-    <tabSettings>
-        <tab>RES_Installment__c</tab>
-        <visibility>Visible</visibility>
-    </tabSettings>
-    <tabSettings>
-        <tab>RES_Payment_Plan__c</tab>
-        <visibility>Visible</visibility>
-    </tabSettings>
-    <userPermissions>
+<tab>standard-Home</tab>
+<visibility>Visible</visibility>
+</tabSettings>
+<userPermissions>
         <enabled>true</enabled>
         <name>EditTask</name>
     </userPermissions>
