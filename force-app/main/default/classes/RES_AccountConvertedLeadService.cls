@@ -58,18 +58,7 @@ public without sharing class RES_AccountConvertedLeadService {
     }
 
     private static Account getAccountDetails(Id accountId) {
-        List<Account> accounts = [
-            SELECT Id, IsPersonAccount
-            FROM Account
-            WHERE Id = :accountId
-            LIMIT 1
-        ];
-
-        if (accounts.isEmpty()) {
-            return null;
-        }
-
-        return accounts[0];
+        return new RES_AccountDAOLayer().getAccountById(accountId);
     }
 
     private static List<ConvertedLeadRow> buildConvertedLeadRows(List<Lead> leads) {

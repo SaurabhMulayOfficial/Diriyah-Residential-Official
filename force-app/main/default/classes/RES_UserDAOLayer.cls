@@ -97,4 +97,20 @@ public with sharing class RES_UserDAOLayer extends RES_BaseDAOLayer {
         String soql ='SELECT Id, ProfileId, Profile.Name FROM User WHERE Id = :userId LIMIT 1';
         return (List<User>) executeQuery(soql,'',false,bindVars,AccessLevel.SYSTEM_MODE);
     }
+
+    /**
+     * @description Retrieves active Users whose ManagerId is in the given set of manager Ids.
+     *              Used to walk a management chain (e.g. building "my team" ownership sets).
+     * @param managerIds The set of manager User Ids to match against.
+     * @return List<User> the matching active direct reports.
+     */
+    public List<User> getActiveUsersByManagerIds(Set<Id> managerIds) {
+        if (managerIds == null || managerIds.isEmpty()) {
+            return new List<User>();
+        }
+        Map<String, Object> bindVars = new Map<String, Object>();
+        bindVars.put('managerIds', managerIds);
+        String soql = 'SELECT Id FROM User WHERE IsActive = true AND ManagerId IN :managerIds';
+        return (List<User>) executeQuery(soql, '', false, bindVars, AccessLevel.SYSTEM_MODE);
+    }
 }

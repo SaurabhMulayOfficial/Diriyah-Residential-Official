@@ -173,12 +173,7 @@ public without sharing class RES_ConvertedLeadService {
         while (!managerIds.isEmpty()) {
             Set<Id> childUserIds = new Set<Id>();
 
-            for (User usr : [
-                SELECT Id
-                FROM User
-                WHERE IsActive = true
-                AND ManagerId IN :managerIds
-            ]) {
+            for (User usr : new RES_UserDAOLayer().getActiveUsersByManagerIds(managerIds)) {
                 childUserIds.add(usr.Id);
             }
 
