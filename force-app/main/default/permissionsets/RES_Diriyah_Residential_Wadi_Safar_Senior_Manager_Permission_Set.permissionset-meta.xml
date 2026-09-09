@@ -1,4 +1,4 @@
-<?xml version='1.0' encoding='UTF-8'?>
+<?xml version="1.0" encoding="UTF-8"?>
 <PermissionSet xmlns="http://soap.sforce.com/2006/04/metadata">
     <description>Permission Set for Sales – Wadi Safar – Senior Manager</description>
     <customPermissions>
@@ -896,7 +896,6 @@
         <field>Contact.RES_Marital_Status__c</field>
         <readable>true</readable>
     </fieldPermissions>
-
     <fieldPermissions>
         <editable>true</editable>
         <field>Contact.RES_Status__c</field>
@@ -957,7 +956,6 @@
         <field>Lead.RES_Plot_Size_sqm__c</field>
         <readable>true</readable>
     </fieldPermissions>
-
     <fieldPermissions>
         <editable>true</editable>
         <field>Lead.RES_Project_Type__c</field>
@@ -1153,7 +1151,6 @@
         <field>Lead.RES_Budget_Range__c</field>
         <readable>true</readable>
     </fieldPermissions>
-
     <fieldPermissions>
         <editable>false</editable>
         <field>Lead.RES_CAPTCHA_TCs__c</field>
@@ -1254,7 +1251,6 @@
         <field>Contact.DIR_Country__c</field>
         <readable>true</readable>
     </fieldPermissions>
-
     <fieldPermissions>
         <editable>true</editable>
         <field>Lead.RES_Identification_Number__c</field>
@@ -2033,7 +2029,59 @@
         <recordType>Product2.RES_Residential_Sales</recordType>
         <visible>true</visible>
     </recordTypeVisibilities>
-    <tabSettings><tab>standard-Home</tab><visibility>Visible</visibility></tabSettings><tabSettings><tab>standard-Lead</tab><visibility>Visible</visibility></tabSettings><tabSettings><tab>standard-Account</tab><visibility>Visible</visibility></tabSettings><tabSettings><tab>standard-Contact</tab><visibility>Visible</visibility></tabSettings><tabSettings><tab>standard-Opportunity</tab><visibility>Visible</visibility></tabSettings><tabSettings><tab>standard-Quote</tab><visibility>Visible</visibility></tabSettings><tabSettings><tab>standard-Contract</tab><visibility>Visible</visibility></tabSettings><tabSettings><tab>standard-ApprovalWorkItem</tab><visibility>Available</visibility></tabSettings><tabSettings><tab>standard-report</tab><visibility>Visible</visibility></tabSettings><tabSettings><tab>standard-Dashboard</tab><visibility>Visible</visibility></tabSettings><tabSettings><tab>standard-Task</tab><visibility>Visible</visibility></tabSettings><tabSettings><tab>Product_Approval_Queue</tab><visibility>Available</visibility></tabSettings><tabSettings><tab>standard-Event</tab><visibility>Available</visibility></tabSettings><userPermissions>
+    <tabSettings>
+        <tab>standard-Home</tab>
+        <visibility>Visible</visibility>
+    </tabSettings>
+    <tabSettings>
+        <tab>standard-Lead</tab>
+        <visibility>Visible</visibility>
+    </tabSettings>
+    <tabSettings>
+        <tab>standard-Account</tab>
+        <visibility>Visible</visibility>
+    </tabSettings>
+    <tabSettings>
+        <tab>standard-Contact</tab>
+        <visibility>Visible</visibility>
+    </tabSettings>
+    <tabSettings>
+        <tab>standard-Opportunity</tab>
+        <visibility>Visible</visibility>
+    </tabSettings>
+    <tabSettings>
+        <tab>standard-Quote</tab>
+        <visibility>Visible</visibility>
+    </tabSettings>
+    <tabSettings>
+        <tab>standard-Contract</tab>
+        <visibility>Visible</visibility>
+    </tabSettings>
+    <tabSettings>
+        <tab>standard-ApprovalWorkItem</tab>
+        <visibility>Available</visibility>
+    </tabSettings>
+    <tabSettings>
+        <tab>standard-report</tab>
+        <visibility>Visible</visibility>
+    </tabSettings>
+    <tabSettings>
+        <tab>standard-Dashboard</tab>
+        <visibility>Visible</visibility>
+    </tabSettings>
+    <tabSettings>
+        <tab>standard-Task</tab>
+        <visibility>Visible</visibility>
+    </tabSettings>
+    <tabSettings>
+        <tab>Product_Approval_Queue</tab>
+        <visibility>Available</visibility>
+    </tabSettings>
+    <tabSettings>
+        <tab>standard-Event</tab>
+        <visibility>Available</visibility>
+    </tabSettings>
+    <userPermissions>
         <enabled>true</enabled>
         <name>EditTask</name>
     </userPermissions>
@@ -2066,7 +2114,7 @@
         <name>ConvertLeads</name>
     </userPermissions>
     <userPermissions>
-        <enabled>false</enabled> 
+        <enabled>false</enabled>
         <name>ExportReport</name>
     </userPermissions>
 </PermissionSet>

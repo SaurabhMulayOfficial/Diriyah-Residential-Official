@@ -1,4 +1,4 @@
-<?xml version='1.0' encoding='UTF-8'?>
+<?xml version="1.0" encoding="UTF-8"?>
 <PermissionSet xmlns="http://soap.sforce.com/2006/04/metadata">
     <customPermissions>
         <enabled>true</enabled>
@@ -2108,7 +2108,59 @@
         <recordType>Quote.RES_Residential_Sales</recordType>
         <visible>true</visible>
     </recordTypeVisibilities>
-    <tabSettings><tab>standard-Home</tab><visibility>Visible</visibility></tabSettings><tabSettings><tab>standard-Lead</tab><visibility>Available</visibility></tabSettings><tabSettings><tab>standard-Account</tab><visibility>Visible</visibility></tabSettings><tabSettings><tab>standard-Contact</tab><visibility>Visible</visibility></tabSettings><tabSettings><tab>standard-Opportunity</tab><visibility>Available</visibility></tabSettings><tabSettings><tab>standard-Quote</tab><visibility>Visible</visibility></tabSettings><tabSettings><tab>standard-Contract</tab><visibility>Visible</visibility></tabSettings><tabSettings><tab>standard-ApprovalWorkItem</tab><visibility>Visible</visibility></tabSettings><tabSettings><tab>standard-report</tab><visibility>Visible</visibility></tabSettings><tabSettings><tab>standard-Dashboard</tab><visibility>Visible</visibility></tabSettings><tabSettings><tab>standard-Task</tab><visibility>Available</visibility></tabSettings><tabSettings><tab>Product_Approval_Queue</tab><visibility>Visible</visibility></tabSettings><tabSettings><tab>standard-Event</tab><visibility>Available</visibility></tabSettings><userPermissions>
+    <tabSettings>
+        <tab>standard-Home</tab>
+        <visibility>Visible</visibility>
+    </tabSettings>
+    <tabSettings>
+        <tab>standard-Lead</tab>
+        <visibility>Available</visibility>
+    </tabSettings>
+    <tabSettings>
+        <tab>standard-Account</tab>
+        <visibility>Visible</visibility>
+    </tabSettings>
+    <tabSettings>
+        <tab>standard-Contact</tab>
+        <visibility>Visible</visibility>
+    </tabSettings>
+    <tabSettings>
+        <tab>standard-Opportunity</tab>
+        <visibility>Available</visibility>
+    </tabSettings>
+    <tabSettings>
+        <tab>standard-Quote</tab>
+        <visibility>Visible</visibility>
+    </tabSettings>
+    <tabSettings>
+        <tab>standard-Contract</tab>
+        <visibility>Visible</visibility>
+    </tabSettings>
+    <tabSettings>
+        <tab>standard-ApprovalWorkItem</tab>
+        <visibility>Visible</visibility>
+    </tabSettings>
+    <tabSettings>
+        <tab>standard-report</tab>
+        <visibility>Visible</visibility>
+    </tabSettings>
+    <tabSettings>
+        <tab>standard-Dashboard</tab>
+        <visibility>Visible</visibility>
+    </tabSettings>
+    <tabSettings>
+        <tab>standard-Task</tab>
+        <visibility>Available</visibility>
+    </tabSettings>
+    <tabSettings>
+        <tab>Product_Approval_Queue</tab>
+        <visibility>Visible</visibility>
+    </tabSettings>
+    <tabSettings>
+        <tab>standard-Event</tab>
+        <visibility>Available</visibility>
+    </tabSettings>
+    <userPermissions>
         <enabled>true</enabled>
         <name>ApiEnabled</name>
     </userPermissions>
