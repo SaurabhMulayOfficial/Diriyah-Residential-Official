@@ -1,4 +1,4 @@
-<?xml version='1.0' encoding='UTF-8'?>
+<?xml version="1.0" encoding="UTF-8"?>
 <PermissionSet xmlns="http://soap.sforce.com/2006/04/metadata">
     <description>Permission Set for Finance – Corporate – CFO</description>
     <customPermissions>
@@ -154,7 +154,7 @@
         <field>ProductCategory.RES_Valid_To_Date__c</field>
         <readable>true</readable>
     </fieldPermissions>
-     <fieldPermissions>
+    <fieldPermissions>
         <editable>false</editable>
         <field>Product2.AvailabilityDate</field>
         <readable>true</readable>
@@ -809,7 +809,6 @@
         <field>Contact.RES_Marital_Status__c</field>
         <readable>true</readable>
     </fieldPermissions>
-
     <fieldPermissions>
         <editable>false</editable>
         <field>Contact.RES_Status__c</field>
@@ -855,7 +854,6 @@
         <field>Lead.RES_Plot_Size_sqm__c</field>
         <readable>true</readable>
     </fieldPermissions>
-    
     <fieldPermissions>
         <editable>false</editable>
         <field>Lead.RES_Project_Type__c</field>
@@ -1036,7 +1034,6 @@
         <field>Lead.RES_Budget_Range__c</field>
         <readable>true</readable>
     </fieldPermissions>
-
     <fieldPermissions>
         <editable>false</editable>
         <field>Lead.RES_CAPTCHA_TCs__c</field>
@@ -1092,7 +1089,6 @@
         <field>Lead.RES_Date_of_Expiry__c</field>
         <readable>true</readable>
     </fieldPermissions>
-
     <fieldPermissions>
         <editable>false</editable>
         <field>Lead.RES_End_Date__c</field>
@@ -1168,8 +1164,6 @@
         <field>Lead.RES_Lead_Status__c</field>
         <readable>true</readable>
     </fieldPermissions>
-
-
     <fieldPermissions>
         <editable>false</editable>
         <field>Lead.RES_Marketing_Area__c</field>
@@ -1365,17 +1359,17 @@
         <field>Lead.Website</field>
         <readable>true</readable>
     </fieldPermissions>
-         <fieldPermissions>
+    <fieldPermissions>
         <editable>false</editable>
         <field>Lead.RES_SLA_Met_Time__c</field>
         <readable>true</readable>
-     </fieldPermissions>
-     <fieldPermissions>
+    </fieldPermissions>
+    <fieldPermissions>
         <editable>false</editable>
         <field>Lead.RES_Lead_Response_Time__c</field>
         <readable>true</readable>
-     </fieldPermissions>
-     <fieldPermissions>
+    </fieldPermissions>
+    <fieldPermissions>
         <editable>false</editable>
         <field>Lead.RES_Lead_Response_Time_Hours__c</field>
         <readable>true</readable>
@@ -1400,7 +1394,6 @@
         <field>Opportunity.RES_Deal_Age_Days__c</field>
         <readable>true</readable>
     </fieldPermissions>
-    
     <fieldPermissions>
         <editable>false</editable>
         <field>Opportunity.AccountId</field>
@@ -1411,7 +1404,6 @@
         <field>Opportunity.Amount</field>
         <readable>true</readable>
     </fieldPermissions>
-    
     <fieldPermissions>
         <editable>false</editable>
         <field>Opportunity.CampaignId</field>
@@ -1427,7 +1419,6 @@
         <field>Opportunity.Description</field>
         <readable>true</readable>
     </fieldPermissions>
-    
     <fieldPermissions>
         <editable>false</editable>
         <field>Opportunity.ExpectedRevenue</field>
@@ -1443,7 +1434,6 @@
         <field>Opportunity.LeadSource</field>
         <readable>true</readable>
     </fieldPermissions>
-    
     <fieldPermissions>
         <editable>false</editable>
         <field>Opportunity.NextStep</field>
@@ -1459,7 +1449,6 @@
         <field>Opportunity.RES_Area_Of_Interest__c</field>
         <readable>true</readable>
     </fieldPermissions>
-    
     <fieldPermissions>
         <editable>false</editable>
         <field>Opportunity.RES_Cityscape_Year__c</field>
@@ -1470,11 +1459,6 @@
         <field>Opportunity.RES_Customer_Interest__c</field>
         <readable>true</readable>
     </fieldPermissions>
-    
-    
-
-    
-    
     <fieldPermissions>
         <editable>false</editable>
         <field>Opportunity.RES_Preferences__c</field>
@@ -1490,7 +1474,6 @@
         <field>Opportunity.RES_Reason_for_Lost__c</field>
         <readable>true</readable>
     </fieldPermissions>
-    
     <fieldPermissions>
         <editable>false</editable>
         <field>Opportunity.TotalOpportunityQuantity</field>
@@ -1630,8 +1613,8 @@
         <editable>false</editable>
         <field>QuoteLineItem.RES_Discount_Type__c</field>
         <readable>true</readable>
-    </fieldPermissions>    
-     <fieldPermissions>
+    </fieldPermissions>
+    <fieldPermissions>
         <editable>false</editable>
         <field>RES_Contract_Installments__c.RES_Payment_Number__c</field>
         <readable>true</readable>
@@ -1709,7 +1692,7 @@
     <hasActivationRequired>false</hasActivationRequired>
     <label>Diriyah Residential – CFO Permission Set</label>
     <license>Salesforce</license>
-     <objectPermissions>
+    <objectPermissions>
         <allowCreate>false</allowCreate>
         <allowDelete>false</allowDelete>
         <allowEdit>false</allowEdit>
@@ -1890,6 +1873,26 @@
         <visibility>Visible</visibility>
     </tabSettings>
     <tabSettings>
+        <tab>standard-OmniSupervisor</tab>
+        <visibility>Visible</visibility>
+    </tabSettings>
+    <tabSettings>
+        <tab>RES_Installment__c</tab>
+        <visibility>Visible</visibility>
+    </tabSettings>
+    <tabSettings>
+        <tab>RES_Payment_Plan__c</tab>
+        <visibility>Visible</visibility>
+    </tabSettings>
+    <tabSettings>
+        <tab>standard-Home</tab>
+        <visibility>Visible</visibility>
+    </tabSettings>
+    <tabSettings>
+        <tab>standard-Lead</tab>
+        <visibility>Available</visibility>
+    </tabSettings>
+    <tabSettings>
         <tab>standard-Account</tab>
         <visibility>Visible</visibility>
     </tabSettings>
@@ -1898,19 +1901,19 @@
         <visibility>Visible</visibility>
     </tabSettings>
     <tabSettings>
-        <tab>standard-Event</tab>
-        <visibility>Visible</visibility>
-    </tabSettings>
-    <tabSettings>
-        <tab>standard-Lead</tab>
-        <visibility>Visible</visibility>
-    </tabSettings>
-    <tabSettings>
         <tab>standard-Opportunity</tab>
+        <visibility>Available</visibility>
+    </tabSettings>
+    <tabSettings>
+        <tab>standard-Quote</tab>
         <visibility>Visible</visibility>
     </tabSettings>
     <tabSettings>
-        <tab>standard-OmniSupervisor</tab>
+        <tab>standard-Contract</tab>
+        <visibility>Visible</visibility>
+    </tabSettings>
+    <tabSettings>
+        <tab>standard-ApprovalWorkItem</tab>
         <visibility>Visible</visibility>
     </tabSettings>
     <tabSettings>
@@ -1923,37 +1926,17 @@
     </tabSettings>
     <tabSettings>
         <tab>standard-Task</tab>
-        <visibility>Visible</visibility>
-    </tabSettings>
-    <tabSettings>
-        <tab>RES_Installment__c</tab>
-        <visibility>Visible</visibility>
-    </tabSettings>
-    <tabSettings>
-        <tab>RES_Payment_Plan__c</tab>
-        <visibility>Visible</visibility>
+        <visibility>Available</visibility>
     </tabSettings>
     <tabSettings>
         <tab>Product_Approval_Queue</tab>
         <visibility>Visible</visibility>
     </tabSettings>
     <tabSettings>
-<tab>standard-Home</tab>
-<visibility>Visible</visibility>
-</tabSettings>
-<tabSettings>
-<tab>standard-Quote</tab>
-<visibility>Visible</visibility>
-</tabSettings>
-<tabSettings>
-<tab>standard-Contract</tab>
-<visibility>Visible</visibility>
-</tabSettings>
-<tabSettings>
-<tab>standard-ApprovalWorkItem</tab>
-<visibility>Visible</visibility>
-</tabSettings>
-<userPermissions>
+        <tab>standard-Event</tab>
+        <visibility>Available</visibility>
+    </tabSettings>
+    <userPermissions>
         <enabled>true</enabled>
         <name>ApiEnabled</name>
     </userPermissions>
@@ -1982,7 +1965,7 @@
         <name>EditTask</name>
     </userPermissions>
     <userPermissions>
-        <enabled>false</enabled> 
+        <enabled>false</enabled>
         <name>ExportReport</name>
     </userPermissions>
 </PermissionSet>
