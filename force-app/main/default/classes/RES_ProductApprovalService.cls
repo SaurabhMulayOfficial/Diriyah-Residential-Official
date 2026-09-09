@@ -10,21 +10,7 @@
  * Controller
  *      -> Service   (this class: business logic, authorization, state, DML)
  *      -> DAO       (query-only, no business rules)
- *
- * Notes:
- *      - This class performs DML in SYSTEM_MODE (via the DAO layer). Object
- *        and field level security is NOT enforced by the platform here;
- *        access is instead enforced explicitly via
- *        RES_ProductApprovalAuthorization (Custom Permission driven). Any
- *        new field added to the update payloads in this class must be
- *        reviewed for authorization impact.
- *      - All bulk operations (approve/reject/resubmit) support PARTIAL
- *        SUCCESS: a failure on one record never blocks the others.
- *      - Approval/rejection email notifications (via
- *        RES_ProductApprovalNotificationService) are fired ONLY for records
- *        that actually succeeded their DML, and are wrapped in try/catch so
- *        a notification failure can NEVER cause an otherwise-successful
- *        approval/rejection to be reported as failed.
+ *     -> CMDT      (approval configuration, no business rules)
  * ==============================================================================
  */
 public without sharing class RES_ProductApprovalService {
@@ -36,33 +22,6 @@ public without sharing class RES_ProductApprovalService {
     private static RES_Product2DAOLayer productDAO = new RES_Product2DAOLayer();
     private static RES_ProductApprovalConfigDAOLayer configDAO = new RES_ProductApprovalConfigDAOLayer();
 
-    /*
-     * -------------------------------------------------------------------------
-     * NOTIFICATION ROUTING (TODO: move to CMDT)
-     * -------------------------------------------------------------------------
-     *
-     * RES_Product_Approval_Config__mdt has no field yet mapping a stage to
-     * the Public Group DeveloperName that should be notified when a Product
-     * enters/leaves that stage. Until such a field is added, that mapping
-     * lives here, keyed by the NEXT status a Product is moving into.
-     *
-     * Confirmed routing (2026-08-22, verified via Setup > Public Groups):
-     *      Draft                    -> Pending Finance Approval -> RES_Finance_Team_Group
-     *      Pending Finance Approval -> Pending CSO Approval     -> RES_CSO
-     *      Pending CSO Approval     -> (final approval)         -> Operations notification service
-     *
-     * NOTE: 'RES_Finance_Team' (no _Group suffix) is a Queue's underlying
-     * Group record (Type='Queue', used for Order routing), NOT the intended
-     * Public Group. Queues and Public Groups both live in the Group table
-     * in Salesforce, so a DeveloperName typo here fails silently (zero
-     * recipients resolved) rather than throwing - always verify the target
-     * is Setup > Public Groups, not Setup > Queues.
-     *
-     * NOTE: 'POC_Chief_Sales_Officer_Approvals' is a DIFFERENT, separately
-     * existing Public Group ("Chief Sales Officer Approvals") - not the
-     * "CSO" group (DeveloperName RES_CSO) intended here. Confirmed against
-     * Setup > Public Groups screenshots on 2026-08-22.
-     */
     private static final Map<String, String> NEXT_STATUS_TO_NOTIFY_GROUP = new Map<String, String>{
         'Pending DevCo Approval' => 'RES_DevCo_Team',
         'Pending Finance Approval' => 'RES_Finance_Team_Group',
@@ -79,9 +38,6 @@ public without sharing class RES_ProductApprovalService {
         return configDAO.getActiveConfigs();
     }
 
-    // ============================================================
-    // USER ACCESS
-    // ============================================================
 
     /**
      * Returns the approval queues (and the actions within each) that the
@@ -124,10 +80,6 @@ public without sharing class RES_ProductApprovalService {
         result.steps.sort();
         return result;
     }
-
-    // ============================================================
-    // APPROVAL QUEUE
-    // ============================================================
 
     /**
      * Retrieves the Product2 records that are in the queue for the requested
@@ -185,15 +137,8 @@ public without sharing class RES_ProductApprovalService {
         return result;
     }
 
-    // ============================================================
-    // APPROVE
-    // ============================================================
 
     /**
-     * Approves the given Products, moving each to the next configured
-     * status for its current status, provided the running user is
-     * authorized for that stage and the record's current state still
-     * permits approval.
      *
      * Partial success is supported: each Product is evaluated
      * independently and a failure on one never blocks the others.
@@ -295,12 +240,6 @@ public without sharing class RES_ProductApprovalService {
             result.items.add(createFailureResult(productId, validationErrors.get(productId)));
         }
 
-        /*
-         * Requested ids that did not resolve to an existing/accessible
-         * Product record (e.g. deleted, invalid Id, or filtered out by the
-         * DAO's SYSTEM_MODE query) are reported back as failures instead of
-         * being silently dropped.
-         */
         for (Id requestedId : cleanIds) {
             if (!foundIds.contains(requestedId)) {
                 result.failedCount++;
@@ -344,15 +283,7 @@ public without sharing class RES_ProductApprovalService {
         return result;
     }
 
-    // ============================================================
-    // REJECT
-    // ============================================================
-
     /**
-     * Rejects the given Products, moving each to the Rejected status and
-     * recording the supplied rejection comment, provided the running user
-     * is authorized for the record's current stage and the record's state
-     * still permits rejection.
      *
      * Partial success is supported.
      *
@@ -467,10 +398,6 @@ public without sharing class RES_ProductApprovalService {
         return result;
     }
 
-    // ============================================================
-    // RESUBMIT
-    // ============================================================
-
     /**
      * Moves the given Products from Rejected back to Draft, clearing the
      * rejection comment. Restricted to users with Operations resubmit
@@ -547,16 +474,9 @@ public without sharing class RES_ProductApprovalService {
         return result;
     }
 
-    // ============================================================
-    // PRIVATE HELPERS
-    // ============================================================
-
     /**
      * Groups successfully-approved products by their originating status and
      * fires one RES_ProductApprovalNotificationService.notifyNextApprovalTeam()
-     * call per group - either to the next stage's group (looked up via
-     * NEXT_STATUS_TO_NOTIFY_GROUP), or via notifyFinalApproval() when the
-     * originating config is the final approval level.
      *
      * @param successfulProductIds  Ids that succeeded their status-update DML.
      * @param productsById          Full Product2 records (Name/ProductCode
@@ -622,9 +542,6 @@ public without sharing class RES_ProductApprovalService {
 
     /**
      * Groups successfully-rejected products by their originating status and
-     * fires one RES_ProductApprovalNotificationService.notifyProductRejection()
-     * call per group, so the rejecting team's label is correct even if a
-     * single bulk rejection spans multiple stages.
      *
      * @param successfulProductIds     Ids that succeeded the reject DML.
      * @param productsById             Full Product2 records keyed by Id.
@@ -684,13 +601,6 @@ public without sharing class RES_ProductApprovalService {
         }
 
         for (RES_Product_Approval_Config__mdt config : configs) {
-            /*
-             * NOTE: intValue() is used instead of a String round-trip
-             * (Integer.valueOf(String.valueOf(...))) because the latter
-             * throws a NumberFormatException if RES_Approval_Level__c ever
-             * holds a decimal value (e.g. 1.5). intValue() truncates safely
-             * and never throws for a non-null Decimal.
-             */
             if (config != null && config.RES_Approval_Level__c != null && config.RES_Approval_Level__c.intValue() == approvalLevel) {
                 return config;
             }
@@ -769,8 +679,6 @@ public without sharing class RES_ProductApprovalService {
     /**
      * Retrieves rejected Products for Operations users.
      *
-     * Server-side authorization is mandatory.
-     *
      * @param searchTerm      Optional free-text filter.
      * @param pageSize        Optional page size (normalized as per
      *                        normalizePageSize()).
@@ -801,21 +709,10 @@ public without sharing class RES_ProductApprovalService {
         return result;
     }
 
-    // ============================================================
-    // SUBMIT FOR APPROVAL (Operations -> DevCo)
-    // ============================================================
-
     /**
      * Submits Draft or Rejected Products for approval by moving them to
      * "Pending DevCo Approval" status. Restricted to Operations users
      * (RES_Product_Operation_Visibility permission).
-     *
-     * This method:
-     * 1. Validates that the user has Operations permissions
-     * 2. Ensures products are in Draft or Rejected status
-     * 3. Moves products to "Pending DevCo Approval"
-     * 4. Clears rejection comments
-     * 5. Sends email notification to DevCo team
      *
      * @param productIds Ids of the Product2 records to submit for approval.
      * @return BulkApprovalResult with per-record success/failure detail.
@@ -923,10 +820,6 @@ public without sharing class RES_ProductApprovalService {
 
         return result;
     }
-
-    // ============================================================
-    // WRAPPERS
-    // ============================================================
 
     /**
      * Wrapper describing the approval queues/actions visible to the
