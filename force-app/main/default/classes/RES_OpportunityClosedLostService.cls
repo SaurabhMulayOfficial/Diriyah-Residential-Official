@@ -89,13 +89,6 @@ public with sharing class RES_OpportunityClosedLostService {
             // Add quote IDs collected BEFORE status modification
             relatedRecordIds.addAll(quoteIdsForApprovalCheck);
 
-            // Track pending approval quotes for output
-            if (!quotesPendingApproval.isEmpty()) {
-                for (Quote q : quotesPendingApproval) {
-                    output.pendingApprovalQuoteIds.add(q.Id);
-                }
-            }
-
             // Add contract IDs that may have pending approvals
             for (Contract contract : contracts) {
                 relatedRecordIds.add(contract.Id);
@@ -108,6 +101,24 @@ public with sharing class RES_OpportunityClosedLostService {
 
                 if (!pendingItems.isEmpty()) {
                     output.pendingApprovalQuotesFound = true;
+
+                    // Collect quote IDs that have actual work items
+                    Set<Id> quotesWithWorkItems = new Set<Id>();
+                    for (ApprovalWorkItem wi : pendingItems) {
+                        String relatedRecordId = String.valueOf(wi.RelatedRecordId);
+                        if (relatedRecordId.startsWith('0Q0')) {
+                            quotesWithWorkItems.add(wi.RelatedRecordId);
+                        }
+                    }
+
+                    // Only add quotes to output if they have work items
+                    if (!quotesPendingApproval.isEmpty()) {
+                        for (Quote q : quotesPendingApproval) {
+                            if (quotesWithWorkItems.contains(q.Id)) {
+                                output.pendingApprovalQuoteIds.add(q.Id);
+                            }
+                        }
+                    }
 
                     List<RES_Review_Approval_Work_Item__e> eventsToPublish = new List<RES_Review_Approval_Work_Item__e>();
                     Set<Id> approvalSubmissionIds = new Set<Id>();
