@@ -28,4 +28,15 @@
         </criteriaItems>
         <includeRecordsOwnedByAll>true</includeRecordsOwnedByAll>
     </sharingCriteriaRules>
+    <sharingOwnerRules>
+        <fullName>RES_All_Opportunities_Shared_With_Finance</fullName>
+        <accessLevel>Read</accessLevel>
+        <label>All Opportunities Shared With Finance</label>
+        <sharedTo>
+            <group>RES_Finance_Team_Group</group>
+        </sharedTo>
+        <sharedFrom>
+            <allInternalUsers></allInternalUsers>
+        </sharedFrom>
+    </sharingOwnerRules>
 </SharingRules>
