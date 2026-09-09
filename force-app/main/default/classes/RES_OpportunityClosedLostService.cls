@@ -1,42 +1,9 @@
 /**
- * ==============================================================================
- * Class Name    : RES_OpportunityClosedLostService
- * Description   : Flow-invocable service to process Closed Lost Opportunities.
+ * Flow-invocable service to cancel Quotes, Contracts and release Units when Opportunity is Closed Lost.
+ * Handles pending approval quotes, guards against releasing units held by other opportunities.
  *
- *                 Cancels all Quotes related to the Opportunity (excluding those
- *                 currently Pending Approval, which the invoking Flow must
- *                 reject via its own Override Approval Work Item logic before
- *                 those Quotes can be cancelled) and releases associated Units
- *                 by changing their status from Soft Hold or Hard Block to
- *                 Available.
- *
- *                 The service also clears the applicable Soft Hold and
- *                 Hard Block date fields from the Unit.
- *
- *                 Quote Line Items are retrieved to identify the Products/Units
- *                 associated with the Opportunity.
- *
- *                 Units already in Available or Sold status are not released.
- *
- *                 A Product still actively referenced by a non-Cancelled Quote
- *                 on a DIFFERENT Opportunity (e.g., the same Unit quoted to a
- *                 backup buyer) is never released here — it is excluded from
- *                 the release step so it remains correctly held for that other,
- *                 still-live Quote.
- *
- *                 Pending approval work items and their parent process
- *                 instances are identified and returned to the Flow for it to
- *                 action directly — this service does NOT reject them itself.
- *
- *                 The service performs database updates in System Mode and
- *                 returns the Unit release / pending-approval identification
- *                 result to the invoking Flow.
- *
- * Author        : Roshan Jambhule
- * Company       : Globant Inc
- * Created Date  : Aug 13, 2026
- * Version       : 1.2
- * ==============================================================================
+ * Author: Roshan Jambhule | Globant Inc
+ * Version: 1.4 | Sept 09, 2026 - Added contract cancellation logic (DIR-XXXX)
  */
 public with sharing class RES_OpportunityClosedLostService {
 
@@ -55,7 +22,6 @@ public with sharing class RES_OpportunityClosedLostService {
             return new List<Output>{ output };
         }
         try {
-            // 1. Collect Opportunity Ids
             Set<Id> opportunityIds = new Set<Id>();
             for (Input inputRec : inputs) {
                 if (inputRec != null && inputRec.opportunityId != null) {
@@ -66,8 +32,7 @@ public with sharing class RES_OpportunityClosedLostService {
                 return new List<Output>{ output };
             }
 
-            // 2. Query Quote Line Items first (needed to identify related products)
-            List<QuoteLineItem> quoteLineItems = new RES_QuoteLineItemDAO().getQuoteLineItemsByOpportunity(opportunityIds);
+            List<QuoteLineItem> quoteLineItems = new RES_QuoteLineItemDAO().getAllQuoteLineItemsByOpportunityIncludingSoftHeld(opportunityIds);
             Set<Id> productIds = new Set<Id>();
             for (QuoteLineItem qli : quoteLineItems) {
                 if (qli.Product2Id != null) {
@@ -80,12 +45,6 @@ public with sharing class RES_OpportunityClosedLostService {
                 products = new RES_Product2DAOLayer().getProductsByIds(productIds);
             }
 
-            // 3. Query Quotes and split into buckets:
-            //    - already Cancelled: skip
-            //    - Pending Approval: DO NOT touch here — identify and report only,
-            //      the Flow is responsible for rejecting these before this Quote
-            //      can ever be cancelled (in a later run, once unlocked)
-            //    - everything else: direct cancel, as before
             List<Quote> quotes = new RES_QuoteDAOLayer().getQuotesByOpportunityIds(opportunityIds);
             List<Quote> quotesPendingApproval = new List<Quote>();
             List<Quote> quotesToUpdate = new List<Quote>();
@@ -105,8 +64,16 @@ public with sharing class RES_OpportunityClosedLostService {
                 }
             }
 
-            // 3a. For Quotes stuck mid-approval, identify their pending work items
-            //     and report the Ids back to Flow — no action taken here.
+            // Cancel related contracts
+            List<Contract> contracts = new RES_ContractDAOLayer().getContractsByOpportunityIds(opportunityIds);
+            List<Contract> contractsToUpdate = new List<Contract>();
+            for (Contract contract : contracts) {
+                if (contract.Status != 'Canceled') {
+                    contract.Status = 'Canceled';
+                    contractsToUpdate.add(contract);
+                }
+            }
+
             if (!quotesPendingApproval.isEmpty()) {
                 Set<Id> pendingQuoteIds = new Set<Id>();
                 for (Quote q : quotesPendingApproval) {
@@ -146,11 +113,6 @@ public with sharing class RES_OpportunityClosedLostService {
                 }
             }
 
-            // 3b. Guard against releasing Units still actively quoted on OTHER
-            //     Opportunities. A Product can legitimately appear on multiple
-            //     Quotes across different Opportunities (e.g., backup buyer
-            //     scenarios) — only release it if no other non-Cancelled Quote
-            //     elsewhere still references it.
             Set<Id> productIdsStillHeldElsewhere = new Set<Id>();
             if (!productIds.isEmpty()) {
                 List<QuoteLineItem> conflictingQLIs =
@@ -162,13 +124,11 @@ public with sharing class RES_OpportunityClosedLostService {
                 }
             }
 
-            // 4. Release Units — unrelated to Quote approval state, always attempted
-            //    (except Units still held elsewhere per the guard above)
             if (!products.isEmpty()) {
                 List<Product2> productsToUpdate = new List<Product2>();
                 for (Product2 product : products) {
                     if (productIdsStillHeldElsewhere.contains(product.Id)) {
-                        continue; // still actively quoted on another, non-Cancelled Quote elsewhere
+                        continue;
                     }
                     Boolean isChanged = false;
                     if (
@@ -179,6 +139,8 @@ public with sharing class RES_OpportunityClosedLostService {
                         product.RES_Is_In_Soft_Hold_Extension__c = false;
                         product.RES_Soft_Hold_Start__c = null;
                         product.RES_Soft_Hold_Until__c = null;
+                        product.RES_Reserved_By_Contract__c = null;
+                        product.RES_Reserved_By_Quote__c = null;
                         isChanged = true;
                     }
                     if (product.RES_HardBlock_Start__c != null) {
@@ -211,12 +173,6 @@ public with sharing class RES_OpportunityClosedLostService {
                 }
             }
 
-            // 5. Cancel Quotes LAST — only the direct-cancel bucket.
-            //    Pending-approval Quotes are intentionally excluded here; they
-            //    remain untouched until the Flow rejects their work item and
-            //    this action is invoked again (or a follow-up Update Records
-            //    element in the same Flow run sets Status = Cancelled after
-            //    the Override action succeeds).
             if (!quotesToUpdate.isEmpty()) {
                 Database.SaveResult[] quoteResults =
                     Database.update(quotesToUpdate, false, AccessLevel.SYSTEM_MODE);
@@ -227,6 +183,24 @@ public with sharing class RES_OpportunityClosedLostService {
                                 LoggingLevel.ERROR,
                                 'Quote cancellation failed. Quote Id: '
                                 + quotesToUpdate[i].Id
+                                + ' | Error: '
+                                + error.getMessage()
+                            );
+                        }
+                    }
+                }
+            }
+
+            if (!contractsToUpdate.isEmpty()) {
+                Database.SaveResult[] contractResults =
+                    Database.update(contractsToUpdate, false, AccessLevel.SYSTEM_MODE);
+                for (Integer i = 0; i < contractResults.size(); i++) {
+                    if (!contractResults[i].isSuccess()) {
+                        for (Database.Error error : contractResults[i].getErrors()) {
+                            System.debug(
+                                LoggingLevel.ERROR,
+                                'Contract cancellation failed. Contract Id: '
+                                + contractsToUpdate[i].Id
                                 + ' | Error: '
                                 + error.getMessage()
                             );
