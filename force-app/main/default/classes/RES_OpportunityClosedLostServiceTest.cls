@@ -446,8 +446,24 @@ static void testBulkProcessing() {
 
     @IsTest
     static void testContractsCancelledWhenOpportunityClosedLost() {
-        Product2 product = [SELECT Id, RES_Unit_Status__c FROM Product2 LIMIT 1];
         Id standardPricebookId = Test.getStandardPricebookId();
+
+        // Create a dedicated product for this test to avoid conflicts with setup data
+        Product2 product = new Product2(
+            Name = 'Unit Contract Test',
+            IsActive = true,
+            RES_Unit_Status__c = 'Hard Block',
+            RES_HardBlock_Start__c = System.now()
+        );
+        insert product;
+
+        PricebookEntry pbe = new PricebookEntry(
+            Pricebook2Id = standardPricebookId,
+            Product2Id = product.Id,
+            UnitPrice = 100,
+            IsActive = true
+        );
+        insert pbe;
 
         Account testAcc = new Account(Name = 'Test Account for Contract');
         insert testAcc;
@@ -469,7 +485,6 @@ static void testBulkProcessing() {
         );
         insert testQuote;
 
-        PricebookEntry pbe = [SELECT Id FROM PricebookEntry WHERE Product2Id = :product.Id LIMIT 1];
         insert new QuoteLineItem(
             QuoteId = testQuote.Id,
             PricebookEntryId = pbe.Id,
