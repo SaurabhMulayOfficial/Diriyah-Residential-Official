@@ -8,15 +8,6 @@
  *      - No business logic.
  *      - Delegates to RES_ProductApprovalService.
  *
- * Testability note:
- *      forceExceptionForTests / forcedExceptionMessage below exist ONLY to
- *      let tests exercise the catch/createAuraException() error-handling
- *      path. RES_ProductApprovalService never throws for any legitimate
- *      input (every expected failure is returned as an error message on the
- *      result wrapper instead), so without this seam the catch blocks in
- *      this class would be permanently untestable dead code from a coverage
- *      standpoint. Both fields are @TestVisible (not settable from
- *      production/LWC code) and default to producing no behavior change.
  */
 public with sharing class RES_ProductApprovalController {
 
@@ -25,11 +16,6 @@ public with sharing class RES_ProductApprovalController {
     @TestVisible
     private static String forcedExceptionMessage;
 
-    /**
-     * Throws a test-only exception when forceExceptionForTests has been
-     * set by a test. No-op otherwise. forcedExceptionMessage may be left
-     * null to exercise createAuraException()'s blank-message fallback.
-     */
     private static void maybeThrowForTest() {
         if (forceExceptionForTests) {
             throw new ForcedTestException(forcedExceptionMessage);
@@ -109,14 +95,6 @@ public with sharing class RES_ProductApprovalController {
     /**
      * Converts an exception into an LWC-safe exception.
      *
-     * NOTE: AuraHandledException.getMessage() always returns the literal
-     * string "Script-thrown exception" unless setMessage() is called
-     * explicitly after construction - passing the message to the
-     * constructor alone is NOT sufficient for it to be retrievable via
-     * getMessage() (a well-documented Salesforce platform quirk). Without
-     * this explicit setMessage() call, every custom error message this
-     * method builds would be silently discarded before ever reaching the
-     * LWC's catch block.
      */
     private static AuraHandledException createAuraException(Exception ex) {
         String message = ex != null && !String.isBlank(ex.getMessage()) ? ex.getMessage() : 'An unexpected error occurred.';
@@ -140,8 +118,6 @@ public with sharing class RES_ProductApprovalController {
 
     /**
      * Submits Draft or Rejected Products for approval (Operations -> DevCo).
-     * Moves products from Draft/Rejected to "Pending DevCo Approval" and
-     * notifies the DevCo team.
      */
     @AuraEnabled
     public static RES_ProductApprovalService.BulkApprovalResult submitForApproval(List<Id> productIds) {

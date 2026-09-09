@@ -14,22 +14,10 @@
  */
 public with sharing class RES_ProductApprovalAuthorization {
 
-    /*
-     * Cached System Administrator flag.
-     * Prevents repeated User queries within the same transaction.
-     * NOTE: this is a per-transaction (static) cache. Each test method
-     * runs in its own transaction, so it does not leak between tests.
-     */
     private static Boolean systemAdministrator;
-    /*
-     * User DAO dependency.
-     * All User data access must go through the DAO layer.
-     */
     private static final RES_UserDAOLayer USER_DAO = new RES_UserDAOLayer();
 
     /**
-     * Checks whether current user has a Custom Permission.
-     * Custom Permission DeveloperName is supplied by CMDT.
      * @param customPermissionDeveloperName
      *        Custom Permission DeveloperName.
      * @return true if current user has the permission; false if the
@@ -52,8 +40,6 @@ public with sharing class RES_ProductApprovalAuthorization {
     }
 
     /**
-     * Determines whether current user can act on a
-     * particular approval configuration.
      * @param config Approval configuration.
      * @return true only if config is non-null, active, has a configured
      *         Custom Permission DeveloperName, and the current user holds
@@ -73,12 +59,6 @@ public with sharing class RES_ProductApprovalAuthorization {
     }
 
     /**
-     * Determines whether current user is a
-     * System Administrator.
-     * The result is cached for the current transaction
-     * to avoid repeated User queries.
-     * System Administrator receives full access to
-     * Product Approval queues and actions.
      *
      * @return true if current user's Profile.Name is exactly
      *         'System Administrator'; false if the user/profile cannot be
@@ -106,12 +86,6 @@ public with sharing class RES_ProductApprovalAuthorization {
     /**
      * Determines whether current user can view a queue.
      *
-     * Rules:
-     *      1. System Administrator can view all queues.
-     *      2. Operations users (RES_Product_Operation_Visibility) can view all queues.
-     *      3. Other users can view only the queue for which
-     *         they have the configured Custom Permission.
-     *
      * @param config Approval configuration.
      * @return true if current user can view the queue; false if config is
      *         null and the user is not a System Administrator.
@@ -132,20 +106,10 @@ public with sharing class RES_ProductApprovalAuthorization {
         if (hasCustomPermission('RES_Product_Operation_Visibility')) {
             return true;
         }
-        /*
-        * Other users can view only the
-        * approval queue for which they have
-        * the configured Custom Permission.
-        */
         return canActOnConfig(config);
     }
 
     /**
-     * Determines whether current user can approve.
-     *
-     * System Administrator has full approval authority.
-     * Other users require the Custom Permission configured
-     * for the respective approval stage.
      *
      * @param config Approval configuration.
      * @return true if current user can approve; false if config is null
@@ -167,11 +131,6 @@ public with sharing class RES_ProductApprovalAuthorization {
     }
 
     /**
-     * Determines whether current user can reject.
-     *
-     * System Administrator has full rejection authority.
-     * Other users require the Custom Permission configured
-     * for the respective approval stage.
      *
      * @param config Approval configuration.
      * @return true if current user can reject; false if config is null
@@ -191,13 +150,7 @@ public with sharing class RES_ProductApprovalAuthorization {
         return canActOnConfig(config);
     }
 
-    /**
-     * Determines whether current user can resubmit
-     * a rejected Product.
-     *
-     * System Administrator has full access.
-     * Other users require Operations Custom Permission
-     * ('RES_Product_Operation_Visibility').
+    /**x
      *
      * @return true if current user is a System Administrator or holds the
      *         'RES_Product_Operation_Visibility' Custom Permission.
@@ -216,12 +169,6 @@ public with sharing class RES_ProductApprovalAuthorization {
     }
 
     /**
-     * Determines whether current user can submit Draft or Rejected products
-     * for approval (moving them to "Pending DevCo Approval").
-     *
-     * System Administrator has full access.
-     * Other users require Operations Custom Permission
-     * ('RES_Product_Operation_Visibility').
      *
      * @return true if current user is a System Administrator or holds the
      *         'RES_Product_Operation_Visibility' Custom Permission.
