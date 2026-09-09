@@ -97,8 +97,30 @@ public Without sharing class RES_QuoteLineItemDAO extends RES_BaseDAOLayer {
         String soql = 'SELECT Id, QuoteId, Product2Id ' +
                     'FROM QuoteLineItem ' +
                     'WHERE QuoteId NOT IN :quoteIds AND Product2Id IN :productIds';
-        
+
         return (List<QuoteLineItem>) executeQuery(soql, '', false, bindVars, AccessLevel.SYSTEM_MODE);
+    }
+
+    // Used for Opportunity Closed Lost to retrieve ALL products including soft held
+    public List<QuoteLineItem> getAllQuoteLineItemsByOpportunityIncludingSoftHeld(Set<Id> opportunityIds){
+        Map<String, Object> bindVars = new Map<String, Object>();
+        bindVars.put('opportunityIds', opportunityIds);
+
+        Set<String> excludedStatuses = new Set<String>{'Expired', 'Cancelled'};
+        bindVars.put('excludedStatuses', excludedStatuses);
+
+        String soql = 'SELECT Id, QuoteId, Product2Id, Quote.OpportunityId, Quantity, UnitPrice, TotalPrice, Quote.IsSyncing ' +
+                    'FROM QuoteLineItem ' +
+                    'WHERE Quote.OpportunityId IN :opportunityIds ' +
+                    'AND Quote.Status NOT IN :excludedStatuses';
+
+        return (List<QuoteLineItem>) executeQuery(
+            soql,
+            '',
+            false,
+            bindVars,
+            AccessLevel.SYSTEM_MODE
+        );
     }
 
     public List<QuoteLineItem> getActiveQuoteLineItemsByProductIdsExcludingOpportunities(
