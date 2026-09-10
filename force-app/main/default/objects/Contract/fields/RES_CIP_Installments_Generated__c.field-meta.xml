@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>RES_CIP_Installments_Generated__c</fullName>
+    <label>CIP Installments Generated</label>
+    <description>Set to true by RES_Contract_AfterSave_Generate_Installment_CIP once the Installment Contract Item Price rows have been created for this contract. Guard flag - the flow skips contracts where this is already true.</description>
+    <defaultValue>false</defaultValue>
+    <externalId>false</externalId>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Checkbox</type>
+</CustomField>

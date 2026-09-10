@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>RES_Price_Option__c</fullName>
+    <label>Price Option</label>
+    <description>Drives which AttributeBasedAdjustment condition is matched when this specific parent/child component relationship is selected as a bundle option (see RES_ResidentialBundlePricingHook). Lives on the relationship record - not on the child Product2 - because the same child product can be reused as a component under multiple bundles, each needing its own price option value.</description>
+    <externalId>false</externalId>
+    <length>255</length>
+    <required>false</required>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Text</type>
+    <unique>false</unique>
+</CustomField>

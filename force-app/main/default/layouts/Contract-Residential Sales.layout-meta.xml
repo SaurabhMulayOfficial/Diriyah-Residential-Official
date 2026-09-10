@@ -160,14 +160,13 @@
         </relatedContentItems>
     </relatedContent>
     <relatedLists>
-        <fields>Item</fields>
         <fields>Name</fields>
+        <fields>Item</fields>
+        <fields>RES_CIP_Type__c</fields>
         <fields>Price</fields>
-        <fields>DiscountType</fields>
-        <fields>DiscountValue</fields>
-        <fields>StartDate</fields>
-        <fields>EndDate</fields>
-        <fields>AdjustmentMethod</fields>
+        <fields>RES_Installment_Percentage__c</fields>
+        <fields>RES_Discount_Type__c</fields>
+        <fields>RES_Discount_Amount__c</fields>
         <relatedList>ContractItemPrice</relatedList>
     </relatedLists>
     <relatedLists>
