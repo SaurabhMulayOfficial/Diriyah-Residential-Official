@@ -183,11 +183,16 @@ public with sharing class RES_OpportunityClosedLostService {
 
                 List<Product2> productsToUpdate = new List<Product2>();
                 for (Product2 product : products) {
-                    // Skip if product is held by ANOTHER opportunity BUT release if it's reserved by a quote from THIS opportunity
-                    if (productIdsStillHeldElsewhere.contains(product.Id) &&
-                        product.RES_Reserved_By_Quote__c != null &&
-                        !opportunityQuoteIds.contains(product.RES_Reserved_By_Quote__c)) {
-                        continue;
+                    // Don't release if product is held by ANOTHER opportunity
+                    // UNLESS it's specifically reserved by a quote from THIS opportunity (override)
+                    if (productIdsStillHeldElsewhere.contains(product.Id)) {
+                        // Check if it's reserved by a quote from THIS opportunity
+                        if (product.RES_Reserved_By_Quote__c == null ||
+                            !opportunityQuoteIds.contains(product.RES_Reserved_By_Quote__c)) {
+                            // Not reserved by this opportunity, so skip release
+                            continue;
+                        }
+                        // If Reserved_By_Quote__c IS from this opportunity, fall through and release
                     }
                     Boolean isChanged = false;
                     if (
