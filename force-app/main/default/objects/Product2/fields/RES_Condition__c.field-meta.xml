@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>RES_Condition__c</fullName>
+    <label>Condition</label>
+    <required>false</required>
+    <trackHistory>false</trackHistory>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>Z037</fullName>
+                <default>false</default>
+                <label>Soft Finish</label>
+            </value>
+            <value>
+                <fullName>Z038</fullName>
+                <default>false</default>
+                <label>Shell</label>
+            </value>
+            <value>
+                <fullName>Z039</fullName>
+                <default>false</default>
+                <label>Core</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>
