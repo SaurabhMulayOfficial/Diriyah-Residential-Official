@@ -3,7 +3,7 @@
  * Handles pending approval quotes, guards against releasing units held by other opportunities.
  *
  * Author: Roshan Jambhule | Globant Inc
- * Version: 1.4 | Sept 09, 2026 - Added contract cancellation logic (DIR-XXXX)
+ * Version: 1.5 | Sept 09, 2026 - Enhanced approval work item handling for both Quotes and Contracts (DIR-XXXX)
  */
 public with sharing class RES_OpportunityClosedLostService {
 
@@ -48,7 +48,16 @@ public with sharing class RES_OpportunityClosedLostService {
             List<Quote> quotes = new RES_QuoteDAOLayer().getQuotesByOpportunityIds(opportunityIds);
             List<Quote> quotesPendingApproval = new List<Quote>();
             List<Quote> quotesToUpdate = new List<Quote>();
+            Set<Id> quoteIdsForApprovalCheck = new Set<Id>();
 
+            // First pass: Collect quote IDs for approval work item check BEFORE modifying status
+            for (Quote quote : quotes) {
+                if (quote.Status != 'Cancelled') {
+                    quoteIdsForApprovalCheck.add(quote.Id);
+                }
+            }
+
+            // Second pass: Categorize quotes and prepare for cancellation
             for (Quote quote : quotes) {
                 if (quote.Status == 'Cancelled') {
                     continue;
@@ -74,37 +83,76 @@ public with sharing class RES_OpportunityClosedLostService {
                 }
             }
 
-            if (!quotesPendingApproval.isEmpty()) {
-                Set<Id> pendingQuoteIds = new Set<Id>();
-                for (Quote q : quotesPendingApproval) {
-                    pendingQuoteIds.add(q.Id);
-                }
+            // Handle approval work items for both Quotes and Contracts
+            Set<Id> relatedRecordIds = new Set<Id>();
 
-                List<ApprovalWorkItem> pendingItems = (Test.isRunningTest() && mockPendingApprovalWorkItems != null) ? mockPendingApprovalWorkItems : new RES_ProcessInstanceDAOLayer().getPendingWorkItemsByTargetIds(pendingQuoteIds, 'Quote');
-                
+            // Add quote IDs collected BEFORE status modification
+            relatedRecordIds.addAll(quoteIdsForApprovalCheck);
+
+            // Add contract IDs that may have pending approvals
+            for (Contract contract : contracts) {
+                relatedRecordIds.add(contract.Id);
+            }
+
+            if (!relatedRecordIds.isEmpty()) {
+                List<ApprovalWorkItem> pendingItems = (Test.isRunningTest() && mockPendingApprovalWorkItems != null)
+                    ? mockPendingApprovalWorkItems
+                    : new RES_ProcessInstanceDAOLayer().getApprovalWorkItemByRelatedRecordIds(relatedRecordIds);
+
                 if (!pendingItems.isEmpty()) {
                     output.pendingApprovalQuotesFound = true;
-                    for (Quote q : quotesPendingApproval) {
-                        output.pendingApprovalQuoteIds.add(q.Id);
+
+                    // Collect quote IDs that have actual work items
+                    Set<Id> quotesWithWorkItems = new Set<Id>();
+                    for (ApprovalWorkItem wi : pendingItems) {
+                        String relatedRecordId = String.valueOf(wi.RelatedRecordId);
+                        if (relatedRecordId.startsWith('0Q0')) {
+                            quotesWithWorkItems.add(wi.RelatedRecordId);
+                        }
+                    }
+
+                    // Only add quotes to output if they have work items
+                    if (!quotesPendingApproval.isEmpty()) {
+                        for (Quote q : quotesPendingApproval) {
+                            if (quotesWithWorkItems.contains(q.Id)) {
+                                output.pendingApprovalQuoteIds.add(q.Id);
+                            }
+                        }
                     }
 
                     List<RES_Review_Approval_Work_Item__e> eventsToPublish = new List<RES_Review_Approval_Work_Item__e>();
-                    Set<Id> publishIds = new Set<Id>();
+                    Set<Id> approvalSubmissionIds = new Set<Id>();
+
                     for (ApprovalWorkItem wi : pendingItems) {
-                        if(publishIds.contains(wi.id)){
+                        // Skip if already processed
+                        if (approvalSubmissionIds.contains(wi.ApprovalSubmissionId)) {
                             continue;
                         }
+
                         RES_Review_Approval_Work_Item__e eventRecord = new RES_Review_Approval_Work_Item__e();
                         eventRecord.RES_Approval_Decision__c = 'Cancel';
                         eventRecord.RES_Approval_Comments__c = System.Label.RES_Auto_Reject_On_Cancel_Opportunity;
                         eventRecord.RES_Approval_Work_Item_Id__c = wi.ApprovalSubmissionId;
-                        eventRecord.RES_QuoteId__c = wi.RelatedRecordId;
-                        eventRecord.RES_Post_Review_Action__c = 'QuoteCancellation';
-                        eventRecord.RES_Cancellation_Reason__c = System.Label.RES_Default_Cancellation_Reason;
-                        publishIds.add(wi.id);
+
+                        // Determine object type and set appropriate action (reusing QuoteCancellationService pattern)
+                        String relatedRecordId = String.valueOf(wi.RelatedRecordId);
+
+                        if (relatedRecordId.startsWith('800')) {
+                            // Contract approval
+                            eventRecord.RES_Post_Review_Action__c = 'ContractCancellation';
+                            eventRecord.RES_recordId__c = wi.RelatedRecordId;
+                        } else if (relatedRecordId.startsWith('0Q0')) {
+                            // Quote approval
+                            eventRecord.RES_Post_Review_Action__c = 'QuoteCancellation';
+                            eventRecord.RES_QuoteId__c = wi.RelatedRecordId;
+                            eventRecord.RES_Cancellation_Reason__c = System.Label.RES_Default_Cancellation_Reason;
+                        }
+
+                        approvalSubmissionIds.add(wi.ApprovalSubmissionId);
                         eventsToPublish.add(eventRecord);
                         output.pendingWorkItemIds.add(wi.Id);
                     }
+
                     try {
                         EventBus.publish(eventsToPublish);
                     } catch (Exception e) {

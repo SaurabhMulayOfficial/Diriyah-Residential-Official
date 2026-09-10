@@ -435,7 +435,105 @@ static void testBulkProcessing() {
         );
         Test.stopTest();
 
+        // Product should be released since the only other quote referencing it is cancelled
         Product2 result = [SELECT RES_Unit_Status__c FROM Product2 WHERE Id = :product.Id];
+        System.assertEquals(
+            'Available',
+            result.RES_Unit_Status__c,
+            'Product should be released — the only other quote is cancelled.'
+        );
+    }
+
+    @IsTest
+    static void testContractsCancelledWhenOpportunityClosedLost() {
+        Id standardPricebookId = Test.getStandardPricebookId();
+
+        // Create a dedicated product for this test to avoid conflicts with setup data
+        Product2 product = new Product2(
+            Name = 'Unit Contract Test',
+            IsActive = true,
+            RES_Unit_Status__c = 'Hard Block',
+            RES_HardBlock_Start__c = System.now()
+        );
+        insert product;
+
+        PricebookEntry pbe = new PricebookEntry(
+            Pricebook2Id = standardPricebookId,
+            Product2Id = product.Id,
+            UnitPrice = 100,
+            IsActive = true
+        );
+        insert pbe;
+
+        Account testAcc = new Account(Name = 'Test Account for Contract');
+        insert testAcc;
+
+        Opportunity testOpp = new Opportunity(
+            Name = 'Test Opportunity With Contract',
+            AccountId = testAcc.Id,
+            StageName = 'Proposal',
+            CloseDate = Date.today(),
+            Pricebook2Id = standardPricebookId
+        );
+        insert testOpp;
+
+        Quote testQuote = new Quote(
+            Name = 'Test Quote With Contract',
+            OpportunityId = testOpp.Id,
+            Pricebook2Id = standardPricebookId,
+            Status = 'Draft'
+        );
+        insert testQuote;
+
+        insert new QuoteLineItem(
+            QuoteId = testQuote.Id,
+            PricebookEntryId = pbe.Id,
+            Quantity = 1,
+            UnitPrice = 100
+        );
+
+        // Create a contract linked to this opportunity
+        Contract testContract = new Contract(
+            AccountId = testAcc.Id,
+            SourceOpportunityId = testOpp.Id,
+            Status = 'Draft',
+            StartDate = Date.today(),
+            ContractTerm = 12
+        );
+        insert testContract;
+
+        RES_OpportunityClosedLostService.Input input = new RES_OpportunityClosedLostService.Input();
+        input.opportunityId = testOpp.Id;
+
+        Test.startTest();
+        RES_OpportunityClosedLostService.releaseUnits(
+            new List<RES_OpportunityClosedLostService.Input>{ input }
+        );
+        Test.stopTest();
+
+        // Verify contract is cancelled
+        Contract resultContract = [SELECT Status FROM Contract WHERE Id = :testContract.Id];
+        System.assertEquals(
+            'Canceled',
+            resultContract.Status,
+            'Contract should be cancelled when opportunity is closed lost.'
+        );
+
+        // Verify quote is cancelled
+        Quote resultQuote = [SELECT Status FROM Quote WHERE Id = :testQuote.Id];
+        System.assertEquals(
+            'Cancelled',
+            resultQuote.Status,
+            'Quote should be cancelled when opportunity is closed lost.'
+        );
+
+        // Verify product is released
+        Product2 resultProduct = [SELECT RES_Unit_Status__c FROM Product2 WHERE Id = :product.Id];
+        System.assertEquals(
+            'Available',
+            resultProduct.RES_Unit_Status__c,
+            'Product should be released when opportunity is closed lost.'
+        );
     }
 
 
