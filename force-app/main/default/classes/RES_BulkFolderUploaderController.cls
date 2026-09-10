@@ -1,6 +1,11 @@
 /**
- * @description Controller for global bulk folder document upload and dynamic ProductCode matching using ContentDocument chunking.
+ * @class name         : RES_BulkFolderUploaderController
+ * @description        : Controller for global bulk folder document upload and dynamic ProductCode matching using ContentDocument chunking.
+ * @created date       : 01/09/2026
+ * @last modified Date : 09/09/2026
+ * @author             : Nitin Marathe
  */
+
 public with sharing class RES_BulkFolderUploaderController {
 
     /**
@@ -10,6 +15,7 @@ public with sharing class RES_BulkFolderUploaderController {
      * @param documentId ContentDocumentId generated from the first chunk.
      * @return ContentDocumentId string for subsequent chunk iterations.
      */
+
     @AuraEnabled
     public static String saveFileChunk(String fileName, String base64Data, String documentId) {
         Blob chunkBlob = EncodingUtil.base64Decode(base64Data);
@@ -27,18 +33,18 @@ public with sharing class RES_BulkFolderUploaderController {
         }
 
         if (Schema.sObjectType.ContentVersion.isCreateable()) {
-            insert as user cv;
+            Database.insert(new List<ContentVersion>{ cv }, AccessLevel.USER_MODE);
         }
 
-        // Retrieve ContentDocumentId for first chunk
+        // On initial chunk, retrieve the system-generated ContentDocumentId via DAO layer
         if (String.isBlank(documentId)) {
-            ContentVersion insertedCv = [
-                SELECT Id, ContentDocumentId 
-                FROM ContentVersion 
-                WHERE Id = :cv.Id 
-                LIMIT 1
-            ];
-            documentId = insertedCv.ContentDocumentId;
+            List<ContentVersion> insertedCvList = new RES_ContentVersionDAOLayer().getContentVersionById(new Set<Id>{ cv.Id });
+            
+            if (insertedCvList.isEmpty() || insertedCvList[0].ContentDocumentId == null) {
+                throw new AuraHandledException('Failed to generate ContentDocumentId for uploaded file.');
+            }
+
+            documentId = insertedCvList[0].ContentDocumentId;
 
             // Link ContentDocument to matched Product record on first chunk creation
             linkContentToMatchedProduct(documentId, cleanFileName);
@@ -50,6 +56,7 @@ public with sharing class RES_BulkFolderUploaderController {
     /**
      * @description Prefix match helper: Matches Product Code via DAO and creates ContentDocumentLink.
      */
+
     private static void linkContentToMatchedProduct(Id contentDocumentId, String cleanFileName) {
         List<Product2> allProducts = new RES_Product2DAOLayer().getAllProductsWithCode();
 
@@ -77,13 +84,14 @@ public with sharing class RES_BulkFolderUploaderController {
         cdl.Visibility = 'AllUsers';
 
         if (Schema.sObjectType.ContentDocumentLink.isCreateable()) {
-            insert as user cdl;
+            Database.insert(new List<ContentDocumentLink>{ cdl }, AccessLevel.USER_MODE);
         }
     }
 
     /**
      * @description Prefix match helper: finds the longest product code matching the start of the filename.
      */
+    
     private static String findMatchingProductCode(String fileName, Set<String> productCodes) {
         String upperFileName = fileName.toUpperCase();
         String bestMatch = null;
