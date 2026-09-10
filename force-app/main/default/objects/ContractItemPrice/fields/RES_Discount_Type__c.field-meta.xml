@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>RES_Discount_Type__c</fullName>
+    <label>Discount Type</label>
+    <description>Business discount type carried forward from the source Quote Line Item (QuoteLineItem.RES_Discount_Type__c). Populated on the Unit CIP row only, by RES_Quote_AfterSave_Sync_Contract. The standard DiscountType field only accepts AdjustmentPercentage/AdjustmentAmount, so the business category lives here.</description>
+    <required>false</required>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>Trade Discount</fullName>
+                <default>false</default>
+                <label>Trade Discount</label>
+            </value>
+            <value>
+                <fullName>Early Settlement</fullName>
+                <default>false</default>
+                <label>Early Settlement</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

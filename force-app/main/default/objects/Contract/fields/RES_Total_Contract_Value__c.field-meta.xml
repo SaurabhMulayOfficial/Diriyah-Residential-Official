@@ -3,6 +3,16 @@
     <fullName>RES_Total_Contract_Value__c</fullName>
     <label>Total Contract Value</label>
     <summarizedField>ContractItemPrice.Price</summarizedField>
+    <summaryFilterItems>
+        <field>ContractItemPrice.RES_CIP_Type__c</field>
+        <operation>notEqual</operation>
+        <value>Payment Plan</value>
+    </summaryFilterItems>
+    <summaryFilterItems>
+        <field>ContractItemPrice.RES_CIP_Type__c</field>
+        <operation>notEqual</operation>
+        <value>Installment</value>
+    </summaryFilterItems>
     <summaryForeignKey>ContractItemPrice.ContractId</summaryForeignKey>
     <summaryOperation>sum</summaryOperation>
     <trackHistory>false</trackHistory>
