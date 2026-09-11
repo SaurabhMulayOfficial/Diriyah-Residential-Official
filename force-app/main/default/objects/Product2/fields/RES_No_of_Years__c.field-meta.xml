@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>RES_No_of_Years__c</fullName>
+    <externalId>false</externalId>
+    <label>No of Years</label>
+    <description>Number of years covered by the payment plan. Used on the Residential Payment Plan record type. Editable by Operations and Admin; read-only for other users via FLS.</description>
+    <inlineHelpText>Number of years the payment plan spans.</inlineHelpText>
+    <precision>3</precision>
+    <scale>0</scale>
+    <required>false</required>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Number</type>
+    <unique>false</unique>
+</CustomField>

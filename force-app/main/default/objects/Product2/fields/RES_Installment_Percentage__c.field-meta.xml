@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>RES_Installment_Percentage__c</fullName>
+    <externalId>false</externalId>
+    <label>Installment Percentage</label>
+    <description>Template installment percentage for this installment product. Mirrors QuoteLineItem / ProductRelatedComponent RES_Installment_Percentage__c. Per-plan authoritative value is held on ProductRelatedComponent.</description>
+    <inlineHelpText>Template installment percentage. The value applied to a deal is taken from the plan's ProductRelatedComponent.</inlineHelpText>
+    <precision>5</precision>
+    <scale>2</scale>
+    <required>false</required>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Percent</type>
+</CustomField>

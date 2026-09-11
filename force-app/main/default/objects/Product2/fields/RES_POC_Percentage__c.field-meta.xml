@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>RES_POC_Percentage__c</fullName>
+    <externalId>false</externalId>
+    <label>POC %</label>
+    <description>Percentage of Completion trigger for this installment. Used on the Residential Installment record type.</description>
+    <inlineHelpText>Percentage of construction completion that triggers this installment.</inlineHelpText>
+    <precision>5</precision>
+    <scale>2</scale>
+    <required>false</required>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Percent</type>
+</CustomField>

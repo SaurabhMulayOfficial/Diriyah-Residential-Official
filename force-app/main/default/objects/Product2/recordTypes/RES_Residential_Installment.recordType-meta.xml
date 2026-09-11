@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<RecordType xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>RES_Residential_Installment</fullName>
+    <active>true</active>
+    <label>Residential Installment</label>
+    <description>Single installment line belonging to a Residential Payment Plan (DIR-642). Modelled as a Product2 component.</description>
+    <picklistValues>
+        <picklist>Family</picklist>
+        <values>
+            <fullName>None</fullName>
+            <default>false</default>
+        </values>
+    </picklistValues>
+    <picklistValues>
+        <picklist>QuantityUnitOfMeasure</picklist>
+        <values>
+            <fullName>Each</fullName>
+            <default>false</default>
+        </values>
+    </picklistValues>
+    <picklistValues>
+        <picklist>RES_CIP_Type__c</picklist>
+        <values>
+            <fullName>Installment</fullName>
+            <default>true</default>
+        </values>
+        <values>
+            <fullName>Unit</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Payment Plan</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Service Charge</fullName>
+            <default>false</default>
+        </values>
+    </picklistValues>
+</RecordType>
