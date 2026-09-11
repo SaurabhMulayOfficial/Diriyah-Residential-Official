@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>RES_Layout__c</fullName>
+    <fieldManageability>DeveloperControlled</fieldManageability>
+    <label>Layout</label>
+    <referenceTo>RES_Ingestion_Layout__mdt</referenceTo>
+    <relationshipName>Target_Field_Maps</relationshipName>
+    <required>false</required>
+    <type>MetadataRelationship</type>
+    <unique>false</unique>
+</CustomField>
