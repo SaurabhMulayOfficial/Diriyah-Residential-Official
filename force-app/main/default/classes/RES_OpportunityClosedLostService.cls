@@ -4,6 +4,9 @@
  *
  * Author: Roshan Jambhule | Globant Inc
  * Version: 1.5 | Sept 09, 2026 - Enhanced approval work item handling for both Quotes and Contracts (DIR-XXXX)
+ * Version: 1.6 | Sept 10, 2026 - Fixed product release logic for Unit Selected stage - now releases products
+ *                                 reserved by quotes from this opportunity even if other opportunities have
+ *                                 QLIs referencing the same product
  */
 public with sharing class RES_OpportunityClosedLostService {
 
@@ -173,10 +176,23 @@ public with sharing class RES_OpportunityClosedLostService {
             }
 
             if (!products.isEmpty()) {
+                Set<Id> opportunityQuoteIds = new Set<Id>();
+                for (Quote q : quotes) {
+                    opportunityQuoteIds.add(q.Id);
+                }
+
                 List<Product2> productsToUpdate = new List<Product2>();
                 for (Product2 product : products) {
+                    // Don't release if product is held by ANOTHER opportunity
+                    // UNLESS it's specifically reserved by a quote from THIS opportunity (override)
                     if (productIdsStillHeldElsewhere.contains(product.Id)) {
-                        continue;
+                        // Check if it's reserved by a quote from THIS opportunity
+                        if (product.RES_Reserved_By_Quote__c == null ||
+                            !opportunityQuoteIds.contains(product.RES_Reserved_By_Quote__c)) {
+                            // Not reserved by this opportunity, so skip release
+                            continue;
+                        }
+                        // If Reserved_By_Quote__c IS from this opportunity, fall through and release
                     }
                     Boolean isChanged = false;
                     if (
