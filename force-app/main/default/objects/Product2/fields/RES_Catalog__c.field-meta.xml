@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>RES_Catalog__c</fullName>
+    <label>Catalog</label>
+    <description>Catalog this payment plan / installment product is associated with. Added per DIR-642 solution design.</description>
+    <deleteConstraint>SetNull</deleteConstraint>
+    <referenceTo>ProductCatalog</referenceTo>
+    <relationshipLabel>Products</relationshipLabel>
+    <relationshipName>Catalog_Products</relationshipName>
+    <required>false</required>
+    <trackHistory>false</trackHistory>
+    <type>Lookup</type>
+</CustomField>

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>RES_Installment_Amount__c</fullName>
+    <externalId>false</externalId>
+    <label>Installment Amount</label>
+    <description>Indicative amount for this installment. Template value on the Residential Installment record type; mirrors QuoteLineItem.RES_Installment_Amount__c.</description>
+    <inlineHelpText>Indicative amount for this installment.</inlineHelpText>
+    <precision>18</precision>
+    <scale>2</scale>
+    <required>false</required>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Currency</type>
+</CustomField>
