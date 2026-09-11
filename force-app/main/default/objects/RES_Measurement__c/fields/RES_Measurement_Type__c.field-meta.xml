@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>RES_Measurement_Type__c</fullName>
+    <label>Measurement Type</label>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>Z001</fullName>
+                <default>false</default>
+                <label>NLA (Net Leasable Area)</label>
+            </value>
+            <value>
+                <fullName>Z002</fullName>
+                <default>false</default>
+                <label>Common Area</label>
+            </value>
+            <value>
+                <fullName>Z003</fullName>
+                <default>false</default>
+                <label>GLA (Gross Leasing Area)</label>
+            </value>
+            <value>
+                <fullName>Z004</fullName>
+                <default>false</default>
+                <label>Number of Dedicated Parking</label>
+            </value>
+            <value>
+                <fullName>Z005</fullName>
+                <default>false</default>
+                <label>GFA (Gross Floor Area)</label>
+            </value>
+            <value>
+                <fullName>Z006</fullName>
+                <default>false</default>
+                <label>BUA (Build up Area)</label>
+            </value>
+            <value>
+                <fullName>Z007</fullName>
+                <default>false</default>
+                <label>Net Saleable Area</label>
+            </value>
+            <value>
+                <fullName>Z008</fullName>
+                <default>false</default>
+                <label>No. of rooms</label>
+            </value>
+            <value>
+                <fullName>Z009</fullName>
+                <default>false</default>
+                <label>Plot Area</label>
+            </value>
+            <value>
+                <fullName>Z010</fullName>
+                <default>false</default>
+                <label>Extra Parking</label>
+            </value>
+            <value>
+                <fullName>Z011</fullName>
+                <default>false</default>
+                <label>No. of Bathrooms</label>
+            </value>
+            <value>
+                <fullName>Z012</fullName>
+                <default>false</default>
+                <label>No. of Powder Rooms</label>
+            </value>
+            <value>
+                <fullName>Z013</fullName>
+                <default>false</default>
+                <label>Internal Buildup Area</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>
