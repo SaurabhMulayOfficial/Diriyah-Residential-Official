@@ -8,7 +8,7 @@
  *                                 reserved by quotes from this opportunity even if other opportunities have
  *                                 QLIs referencing the same product
  */
-public with sharing class RES_OpportunityClosedLostService {
+public without sharing class RES_OpportunityClosedLostService {
 
     @TestVisible
     private static List<ApprovalWorkItem> mockPendingApprovalWorkItems = null;
