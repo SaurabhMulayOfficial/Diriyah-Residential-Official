@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>RES_Swift__c</fullName>
+    <label>Swift</label>
+    <required>false</required>
+    <trackHistory>false</trackHistory>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>BSFRSARI</fullName>
+                <default>false</default>
+                <label>BSFRSARI</label>
+            </value>
+            <value>
+                <fullName>ARNBSARI</fullName>
+                <default>false</default>
+                <label>ARNBSARI</label>
+            </value>
+            <value>
+                <fullName>RJHISARI</fullName>
+                <default>false</default>
+                <label>RJHISARI</label>
+            </value>
+            <value>
+                <fullName>SABBSARI</fullName>
+                <default>false</default>
+                <label>SABBSARI</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

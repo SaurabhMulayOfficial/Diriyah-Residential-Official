@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>RES_Bank_Name_EN__c</fullName>
+    <label>Bank Name (EN)</label>
+    <required>false</required>
+    <trackHistory>false</trackHistory>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>Banque Saudi Fransi</fullName>
+                <default>false</default>
+                <label>Banque Saudi Fransi</label>
+            </value>
+            <value>
+                <fullName>Arab National Bank</fullName>
+                <default>false</default>
+                <label>Arab National Bank</label>
+            </value>
+            <value>
+                <fullName>AlRajhi Bank</fullName>
+                <default>false</default>
+                <label>AlRajhi Bank</label>
+            </value>
+            <value>
+                <fullName>Saudi Awwal Bank</fullName>
+                <default>false</default>
+                <label>Saudi Awwal Bank</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>
