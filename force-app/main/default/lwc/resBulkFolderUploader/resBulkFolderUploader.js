@@ -1,138 +1,102 @@
-import { LightningElement, track } from 'lwc';
-import saveFileChunk from '@salesforce/apex/RES_BulkFolderUploaderController.saveFileChunk';
+import { LightningElement, api, track } from 'lwc';
+import processUploadedFiles from '@salesforce/apex/RES_BulkFolderUploaderController.processUploadedFiles';
 import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 
-// 1.5 MB binary chunk size (~2 MB base64 payload per Apex call)
-const CHUNK_SIZE = 1500 * 1024; 
-
 export default class ResBulkFolderUploader extends LightningElement {
-    @track fileDataList = [];
-    selectedFilesCount = 0;
-    folderLabelText = 'No folder chosen';
-    isLoading = false;
+    @api recordId;
+    @track uploadedFiles = [];
 
-    get hasFiles() {
-        return this.selectedFilesCount > 0;
+    isUploading = false;
+    showSuccessMessage = false;
+    successMessageText = 'Files uploaded and linked successfully.';
+    successMessageTimer;
+
+    acceptedFormats = [
+        '.pdf',
+        '.doc',
+        '.docx',
+        '.xls',
+        '.xlsx',
+        '.ppt',
+        '.pptx',
+        '.jpg',
+        '.jpeg',
+        '.png',
+        '.zip'
+    ];
+
+    get acceptedFormatsString() {
+        return this.acceptedFormats.join(',');
     }
 
-    triggerFolderSelect() {
-        const fileInput = this.template.querySelector('[data-id="folderInput"]');
-        if (fileInput) {
-            fileInput.click();
-        }
-    }
-
-    handleFileSelection(event) {
-        const files = Array.from(event.target.files || []);
-        this.fileDataList = [];
-
-        if (files.length === 0) {
-            this.selectedFilesCount = 0;
-            this.folderLabelText = 'No folder chosen';
+    async handleUploadFinished(event) {
+        const files = event.detail.files || [];
+        if (!files.length) {
             return;
         }
 
-        const samplePath = files[0].webkitRelativePath;
-        if (samplePath && samplePath.includes('/')) {
-            this.folderLabelText = samplePath.split('/')[0];
-        } else {
-            this.folderLabelText = `${files.length} file(s) selected`;
+        this.showSuccessMessage = false;
+
+        if (this.successMessageTimer) {
+            clearTimeout(this.successMessageTimer);
+            this.successMessageTimer = null;
         }
 
-        // Filter out hidden OS system files
-        this.fileDataList = files.filter(file => !file.name.startsWith('.'));
-        this.selectedFilesCount = this.fileDataList.length;
-    }
+        this.isUploading = true;
 
-    async processAndUpload() {
-        if (this.fileDataList.length === 0) return;
-        this.isLoading = true;
+        try {
+            this.uploadedFiles = files.map(file => ({
+                name: file.name,
+                documentId: file.documentId
+            }));
 
-        let successCount = 0;
-        let failCount = 0;
+            const result = await processUploadedFiles({
+                uploadedFilesJson: JSON.stringify(this.uploadedFiles)
+            });
 
-        for (const file of this.fileDataList) {
-            try {
-                await this.uploadSingleFile(file);
-                successCount++;
-            } catch (error) {
-                console.error(`Error uploading ${file.name}:`, error);
-                failCount++;
+            this.isUploading = false;
+
+            if (result.failedCount > 0) {
+                this.showToast(
+                    'Warning',
+                    `${result.successCount} file(s) linked successfully. ${result.failedCount} file(s) failed.`,
+                    'warning'
+                );
+                return;
             }
+
+            this.showSuccessMessage = true;
+
+            this.successMessageTimer = setTimeout(() => {
+                this.showSuccessMessage = false;
+                this.successMessageTimer = null;
+            }, 2000);
+        } catch (error) {
+            this.isUploading = false;
+            this.showSuccessMessage = false;
+            console.error('File processing error:', error);
+            this.showToast('Error', this.getErrorMessage(error), 'error');
         }
-
-        this.isLoading = false;
-
-        if (successCount > 0) {
-            const msg = failCount > 0 
-                ? `${successCount} file(s) uploaded successfully, ${failCount} failed.`
-                : `${successCount} file(s) successfully attached across matched Product records.`;
-            this.showToast(failCount > 0 ? 'Warning' : 'Success', msg, failCount > 0 ? 'warning' : 'success');
-        } else {
-            this.showToast('Error', 'Failed to upload files or match Product Codes.', 'error');
-        }
-
-        this.resetForm();
     }
 
-    uploadSingleFile(file) {
-        return new Promise((resolve, reject) => {
-            const reader = new FileReader();
-
-            reader.onload = async () => {
-                const arrayBuffer = reader.result;
-                const totalBytes = arrayBuffer.byteLength;
-                let startPosition = 0;
-                let documentId = null;
-
-                try {
-                    while (startPosition < totalBytes) {
-                        const endPosition = Math.min(startPosition + CHUNK_SIZE, totalBytes);
-                        const slice = arrayBuffer.slice(startPosition, endPosition);
-                        const base64Chunk = this.arrayBufferToBase64(slice);
-
-                        // Call Apex controller with chunk + optional documentId
-                        documentId = await saveFileChunk({
-                            fileName: file.name,
-                            base64Data: base64Chunk,
-                            documentId: documentId
-                        });
-
-                        startPosition = endPosition;
-                    }
-                    resolve(documentId);
-                } catch (err) {
-                    reject(err);
-                }
-            };
-
-            reader.onerror = (err) => reject(err);
-            reader.readAsArrayBuffer(file);
-        });
-    }
-
-    arrayBufferToBase64(buffer) {
-        let binary = '';
-        const bytes = new Uint8Array(buffer);
-        const len = bytes.byteLength;
-        for (let i = 0; i < len; i++) {
-            binary += String.fromCharCode(bytes[i]);
+    getErrorMessage(error) {
+        if (error?.body?.message) {
+            return error.body.message;
         }
-        return window.btoa(binary);
-    }
-
-    resetForm() {
-        this.fileDataList = [];
-        this.selectedFilesCount = 0;
-        this.folderLabelText = 'No folder chosen';
-
-        const fileInput = this.template.querySelector('[data-id="folderInput"]');
-        if (fileInput) {
-            fileInput.value = '';
+        if (error?.message) {
+            return error.message;
         }
+        return 'An unexpected error occurred while processing the uploaded files.';
     }
 
     showToast(title, message, variant) {
         this.dispatchEvent(new ShowToastEvent({ title, message, variant }));
+    }
+
+    disconnectedCallback() {
+        if (this.successMessageTimer) {
+            clearTimeout(this.successMessageTimer);
+            this.successMessageTimer = null;
+        }
     }
 }
