@@ -1,0 +1,160 @@
+<template>
+    <lightning-card title="Product Inventory Importer" icon-name="custom:custom63">
+        <div class="slds-m-around_medium">
+
+            <!-- Displayed when feature is disabled -->
+            <template if:false={isFeatureEnabled}>
+                <div class="slds-notify slds-notify_alert slds-alert_warning" role="alert">
+                    <lightning-icon icon-name="utility:warning" size="small" class="slds-m-right_x-small"></lightning-icon>
+                    <h2>This feature is currently unavailable, please contact your System Admin for further assistance.</h2>
+                </div>
+            </template>
+
+            <!-- Displayed when feature is enabled -->
+            <template if:true={isFeatureEnabled}>
+
+                <!-- Step 1: operation -->
+                <lightning-combobox
+                    label="Operation"
+                    placeholder="Select an operation"
+                    options={operationOptions}
+                    value={selectedOperation}
+                    onchange={handleOperationChange}
+                    required>
+                </lightning-combobox>
+
+                <!-- Step 2: inventory type, sourced from Ingestion Layout metadata -->
+                <lightning-combobox
+                    label="Inventory type"
+                    placeholder="Select an inventory type"
+                    options={layoutOptions}
+                    value={selectedLayout}
+                    onchange={handleLayoutChange}
+                    disabled={isLayoutDisabled}
+                    required>
+                </lightning-combobox>
+
+                <!-- Step 3: file selector -->
+                <div class="slds-form-element slds-m-top_medium">
+                    <span class="slds-form-element__label">Unit Extract</span>
+                    <div class="slds-form-element__control">
+                        <div class="slds-file-selector slds-file-selector_files">
+                            <div class="slds-file-selector__dropzone">
+                                <input
+                                    type="file"
+                                    class="slds-file-selector__input slds-assistive-text"
+                                    accept=".csv,.tsv,.txt"
+                                    id="unitExtract"
+                                    disabled={isFileDisabled}
+                                    onchange={handleFileSelected} />
+                                <label class="slds-file-selector__body" for="unitExtract">
+                                    <span class="slds-file-selector__button slds-button slds-button_neutral">
+                                        <lightning-icon icon-name="utility:upload" size="xx-small"
+                                            class="slds-m-right_xx-small"></lightning-icon>
+                                        Upload File
+                                    </span>
+                                    <span class="slds-file-selector__text slds-medium-show">Or drop file</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <template if:true={isFileDisabled}>
+                        <p class="slds-text-body_small slds-text-color_weak slds-m-top_xx-small">
+                            Select an operation and inventory type first.
+                        </p>
+                    </template>
+                </div>
+
+                <template if:true={fileName}>
+                    <p class="slds-m-top_small"><strong>Selected file:</strong> {fileName}</p>
+                </template>
+
+                <div class="slds-m-top_medium">
+                    <lightning-button
+                        variant="brand"
+                        label="Run Import"
+                        icon-name="utility:play"
+                        disabled={isRunDisabled}
+                        onclick={runBatchJob}>
+                    </lightning-button>
+                </div>
+
+                <template if:true={isLoading}>
+                    <div class="slds-m-top_medium slds-is-relative slds-p-vertical_large">
+                        <lightning-spinner alternative-text="Working..." size="small"></lightning-spinner>
+                    </div>
+                </template>
+
+                <!-- Stage 1: parse and staging results -->
+                <template if:true={hasUploadResult}>
+                    <div class="slds-box slds-box_x-small slds-m-top_medium">
+                        <h3 class="slds-text-heading_small slds-m-bottom_x-small">Staging</h3>
+                        <dl class="slds-dl_horizontal">
+                            <dt class="slds-dl_horizontal__label">Operation</dt>
+                            <dd class="slds-dl_horizontal__detail">{uploadResult.operation}</dd>
+
+                            <dt class="slds-dl_horizontal__label">Inventory type</dt>
+                            <dd class="slds-dl_horizontal__detail">{uploadResult.layoutLabel}</dd>
+
+                            <dt class="slds-dl_horizontal__label">Rows staged</dt>
+                            <dd class="slds-dl_horizontal__detail">{uploadResult.rowsInserted}</dd>
+
+                            <dt class="slds-dl_horizontal__label">Rows skipped</dt>
+                            <dd class="slds-dl_horizontal__detail">{uploadResult.rowsSkipped}</dd>
+
+                            <dt class="slds-dl_horizontal__label">Rows rejected</dt>
+                            <dd class="slds-dl_horizontal__detail">{uploadResult.rowsFailed}</dd>
+
+                            <dt class="slds-dl_horizontal__label">Rows failing validation</dt>
+                            <dd class="slds-dl_horizontal__detail">{uploadResult.rowsInvalid}</dd>
+
+                            <dt class="slds-dl_horizontal__label">Batch Id</dt>
+                            <dd class="slds-dl_horizontal__detail">{uploadResult.batchId}</dd>
+
+                            <dt class="slds-dl_horizontal__label">Batch job</dt>
+                            <dd class="slds-dl_horizontal__detail">{uploadResult.jobId}</dd>
+                        </dl>
+                    </div>
+                </template>
+
+                <!-- Parse warnings -->
+                <template if:true={hasParseErrors}>
+                    <div class="slds-box slds-box_x-small slds-m-top_small slds-theme_warning">
+                        <h3 class="slds-text-heading_small slds-m-bottom_x-small">Parse warnings</h3>
+                        <ul class="slds-list_dotted">
+                            <template for:each={parseErrors} for:item="err">
+                                <li key={err.key}>{err.message}</li>
+                            </template>
+                        </ul>
+                    </div>
+                </template>
+
+                <!-- Stage 2: batch progress -->
+                <template if:true={hasJobStatus}>
+                    <div class={jobThemeClass} role="alert">
+                        <p>
+                            Batch status: <strong>{jobStatus.status}</strong>
+                            &nbsp;&middot;&nbsp; chunks {jobStatus.itemsProcessed}/{jobStatus.totalItems}
+                        </p>
+                        <p class="slds-m-top_x-small">
+                            Staging rows &mdash;
+                            completed: <strong>{jobStatus.stagingCompleted}</strong>,
+                            errored: <strong>{jobStatus.stagingErrored}</strong>,
+                            pending: <strong>{jobStatus.stagingPending}</strong>
+                        </p>
+                        <template if:true={jobStatus.extendedStatus}>
+                            <p class="slds-m-top_x-small">{jobStatus.extendedStatus}</p>
+                        </template>
+                        <template if:true={jobHadErrors}>
+                            <p class="slds-m-top_x-small">
+                                Some rows reported an error. Review and correct them, then upload again.
+                            </p>
+                        </template>
+                    </div>
+                </template>
+
+            </template>
+
+        </div>
+    </lightning-card>
+</template>

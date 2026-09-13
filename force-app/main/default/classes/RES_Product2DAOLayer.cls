@@ -65,6 +65,21 @@ public without sharing class RES_Product2DAOLayer extends RES_BaseDAOLayer {
     }
 
     /**
+     * Retrieves Product2 records matching a set of RES_Product_External_ID__c values.
+     * Used by RES_UnifiedIngestionEngine to find products already created by a prior
+     * ingestion run, keyed on the SAP-sourced external id rather than ProductCode.
+     */
+    public List<Product2> getProductsByExternalIds(Set<String> externalIds) {
+        if (externalIds == null || externalIds.isEmpty()) {
+            return new List<Product2>();
+        }
+        Map<String, Object> bindVars = new Map<String, Object>();
+        bindVars.put('externalIds', externalIds);
+        String soql = 'SELECT Id, RES_Product_External_ID__c, IsActive FROM Product2 WHERE RES_Product_External_ID__c IN :externalIds';
+        return (List<Product2>) executeQuery(soql, '', false, bindVars, AccessLevel.USER_MODE);
+    }
+
+    /**
      * NOTE: Name and ProductCode were added below (2026-08-22) because
      * RES_ProductApprovalNotificationService.buildProductDetails() reads
      * these fields from the same Product2 records this method returns, for
