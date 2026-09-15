@@ -240,6 +240,26 @@
     <custom>false</custom>
     <fieldPermissions>
         <editable>true</editable>
+        <field>OrderItemRelationship.AssociatedOrderItemPricing</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>OrderItemRelationship.AssociatedOrderItemRole</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>OrderItemRelationship.AssociatedQuantScaleMethod</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>OrderItemRelationship.MainOrderItemRole</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
         <field>OrderItem.AdjustedLineAmount</field>
         <readable>true</readable>
     </fieldPermissions>
