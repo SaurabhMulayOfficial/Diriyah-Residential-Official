@@ -1,0 +1,45 @@
+.slds-modal__container {
+    max-width: 60rem;
+    width: 95%;
+}
+
+.slds-modal__content {
+    max-height: calc(100vh - 300px);
+    overflow-y: auto;
+}
+
+.slds-hide {
+    display: none !important;
+}
+
+/* White text with brown/orange background - matches Save button style */
+.slds-page-header {
+    background-color: #a65336 !important; /* Brown/Orange background */
+    padding: 1rem 1.5rem !important;
+    border-radius: 0.5rem !important; /* Rounded corners like button */
+    margin-bottom: 1rem !important;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1) !important; /* Subtle shadow */
+}
+
+.slds-page-header__title {
+    color: #ffffff !important; /* White text */
+    font-weight: 600;
+}
+
+/* Add bottom padding for better spacing */
+.footer-actions {
+    padding-bottom: 1.5rem;
+}
+
+/* Make Save Changes button match header card style */
+.slds-button_brand {
+    background-color: #a65336 !important; /* Same brown/orange as header */
+    color: #ffffff !important; /* White text like header */
+    border: none !important;
+    font-weight: 600 !important;
+}
+
+.slds-button_brand:hover {
+    background-color: #8a4429 !important; /* Darker on hover */
+    color: #ffffff !important; /* Keep white text on hover */
+}

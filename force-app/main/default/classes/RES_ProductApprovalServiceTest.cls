@@ -526,4 +526,151 @@ private class RES_ProductApprovalServiceTest {
         }
         Test.stopTest();
     }
+
+    // ============================================================
+    // Update Field Clearing Tests (DIR-859)
+    // ============================================================
+
+    /**
+     * Test that when a product with RES_Update_Requested__c = true
+     * is approved and moves to Available, both update fields are cleared.
+     */
+    @isTest
+    static void testApproveProducts_withUpdateFlag_clearsUpdateFields() {
+        // Get existing approval config
+        List<RES_Product_Approval_Config__mdt> configs = [
+            SELECT Id, RES_Approval_Level__c, RES_Current_Status__c, RES_Next_Status__c
+            FROM RES_Product_Approval_Config__mdt
+            WHERE RES_Next_Status__c = 'Available'
+            LIMIT 1
+        ];
+
+        if (configs.isEmpty()) {
+            return; // Skip if no final-approval config exists
+        }
+
+        // Create product with update flag and comments
+        Product2 updateProduct = new Product2(
+            Name = 'Updated Product Test',
+            IsActive = false,
+            RES_Unit_Status__c = configs[0].RES_Current_Status__c,
+            RES_Update_Requested__c = true,
+            RES_Update_Comments__c = 'Test update comments'
+        );
+        insert updateProduct;
+
+        User admin = RES_TestDataFactory.createGenericUser('System Administrator');
+
+        Test.startTest();
+        System.runAs(admin) {
+            RES_ProductApprovalService.approveProducts(new Set<Id>{ updateProduct.Id });
+        }
+        Test.stopTest();
+
+        // Verify: Update fields should be cleared after approval
+        Product2 refreshed = [
+            SELECT Id, RES_Update_Requested__c, RES_Update_Comments__c, IsActive
+            FROM Product2
+            WHERE Id = :updateProduct.Id
+        ];
+
+        System.assertEquals(false, refreshed.RES_Update_Requested__c,
+            'RES_Update_Requested__c should be cleared after approval');
+        System.assertEquals(null, refreshed.RES_Update_Comments__c,
+            'RES_Update_Comments__c should be cleared after approval');
+        System.assertEquals(true, refreshed.IsActive,
+            'Product should be activated after final approval');
+    }
+
+    /**
+     * Test that when a product with RES_Update_Requested__c = true
+     * is approved at DevCo level (re-approval flow), it goes directly
+     * to Available and update fields are cleared.
+     */
+    @isTest
+    static void testApproveProducts_reApprovalFlow_goesDirectlyToAvailable() {
+        // Create product at Pending DevCo Approval with update flag
+        Product2 reApprovalProduct = new Product2(
+            Name = 'Re-Approval Product Test',
+            IsActive = false,
+            RES_Unit_Status__c = 'Pending DevCo Approval',
+            RES_Update_Requested__c = true,
+            RES_Update_Comments__c = 'Unit updated after initial approval'
+        );
+        insert reApprovalProduct;
+
+        User admin = RES_TestDataFactory.createGenericUser('System Administrator');
+
+        Test.startTest();
+        System.runAs(admin) {
+            RES_ProductApprovalService.approveProducts(new Set<Id>{ reApprovalProduct.Id });
+        }
+        Test.stopTest();
+
+        // Verify: Product should go directly to Available and update fields cleared
+        Product2 refreshed = [
+            SELECT Id, RES_Unit_Status__c, RES_Update_Requested__c,
+                   RES_Update_Comments__c, IsActive
+            FROM Product2
+            WHERE Id = :reApprovalProduct.Id
+        ];
+
+        System.assertEquals('Available', refreshed.RES_Unit_Status__c,
+            'Re-approval should go directly to Available status');
+        System.assertEquals(false, refreshed.RES_Update_Requested__c,
+            'RES_Update_Requested__c should be cleared after re-approval');
+        System.assertEquals(null, refreshed.RES_Update_Comments__c,
+            'RES_Update_Comments__c should be cleared after re-approval');
+        System.assertEquals(true, refreshed.IsActive,
+            'Product should be activated after re-approval');
+    }
+
+    /**
+     * Test that normal products (without update flag) are not affected
+     * by the update field clearing logic.
+     */
+    @isTest
+    static void testApproveProducts_withoutUpdateFlag_noFieldsCleared() {
+        // Get existing approval config
+        List<RES_Product_Approval_Config__mdt> configs = [
+            SELECT Id, RES_Approval_Level__c, RES_Current_Status__c
+            FROM RES_Product_Approval_Config__mdt
+            WHERE RES_Approval_Level__c = 1
+            LIMIT 1
+        ];
+
+        if (configs.isEmpty()) {
+            return; // Skip if no config exists
+        }
+
+        // Create normal product without update flag
+        Product2 normalProduct = new Product2(
+            Name = 'Normal Product Test',
+            IsActive = false,
+            RES_Unit_Status__c = configs[0].RES_Current_Status__c,
+            RES_Update_Requested__c = false,
+            RES_Update_Comments__c = null
+        );
+        insert normalProduct;
+
+        User admin = RES_TestDataFactory.createGenericUser('System Administrator');
+
+        Test.startTest();
+        System.runAs(admin) {
+            RES_ProductApprovalService.approveProducts(new Set<Id>{ normalProduct.Id });
+        }
+        Test.stopTest();
+
+        // Verify: Update fields remain unchanged for normal products
+        Product2 refreshed = [
+            SELECT Id, RES_Update_Requested__c, RES_Update_Comments__c
+            FROM Product2
+            WHERE Id = :normalProduct.Id
+        ];
+
+        System.assertEquals(false, refreshed.RES_Update_Requested__c,
+            'Normal product update flag should remain false');
+        System.assertEquals(null, refreshed.RES_Update_Comments__c,
+            'Normal product comments should remain null');
+    }
 }
