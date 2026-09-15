@@ -58,7 +58,7 @@ public with sharing class RES_QuoteDAOLayer extends RES_BaseDAOLayer {
         Map<String, Object> bindVars = new Map<String, Object>();
         bindVars.put('quoteIds', quoteIds);
 
-        String soql = 'SELECT Id, Status FROM Quote WHERE Id IN :quoteIds';
+        String soql = 'SELECT Id, Status, RES_Product__c FROM Quote WHERE Id IN :quoteIds';
         return new Map<Id, Quote>((List<Quote>) executeQuery(soql, '', false, bindVars, AccessLevel.SYSTEM_MODE));
     }
     public List<Quote> getQuotesByContractIds(Set<Id> contractIdSet, String status) {

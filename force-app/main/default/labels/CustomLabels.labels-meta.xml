@@ -760,4 +760,108 @@ Do you wish to proceed with the cancellation?</value>
         <shortDescription>REGA Approval Required Required</shortDescription>
         <value>⚠️ Cancellation for off-plan unit requires REGA approval. Please attach REGA approval in the attachment section to proceed with cancellation.</value>
     </labels>
+    <labels>
+        <fullName>RES_Product_Update_Comments_Min_Length</fullName>
+        <categories>Units Update Approval</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Error when comments too short</shortDescription>
+        <value>Update comments must be at least {0} characters.</value>
+    </labels>
+    <labels>
+        <fullName>RES_Product_Update_Comments_Required</fullName>
+        <categories>Units Update Approval</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Error when comments are missing</shortDescription>
+        <value>Please provide reason for update in comments field.</value>
+    </labels>
+    <labels>
+        <fullName>RES_Product_Update_Confirm_Title</fullName>
+        <categories>Units Update Approval</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Confirmation dialog title</shortDescription>
+        <value>Confirm Update</value>
+    </labels>
+    <labels>
+        <fullName>RES_Product_Update_Error_Generic</fullName>
+        <categories>Units Update Approval</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Generic error message</shortDescription>
+        <value>An error occurred while updating the unit. Please try again.</value>
+    </labels>
+    <labels>
+        <fullName>RES_Product_Update_Modal_Title</fullName>
+        <categories>Units Update Approval</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Modal header title</shortDescription>
+        <value>Update Unit</value>
+    </labels>
+    <labels>
+        <fullName>RES_Product_Update_Status_Active_Info</fullName>
+        <categories>Units Update Approval</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Info text for Active status</shortDescription>
+        <value>This unit is Active and available for sale.</value>
+    </labels>
+    <labels>
+        <fullName>RES_Product_Update_Status_Hold_Info</fullName>
+        <categories>Units Update Approval</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Info text for Hold status</shortDescription>
+        <value>This unit is currently on hold.</value>
+    </labels>
+    <labels>
+        <fullName>RES_Product_Update_Success</fullName>
+        <categories>Units Update Approval</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Success message after unit update</shortDescription>
+        <value>Unit updated successfully and moved to Draft for re-approval.</value>
+    </labels>
+    <labels>
+        <fullName>RES_Product_Update_Warning_Active</fullName>
+        <categories>Units Update Approval</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Warning shown when updating Active units</shortDescription>
+        <value>Units being updated are already available for sale. After update, they will be moved to Draft status for re-approval.</value>
+    </labels>
+    <labels>
+        <fullName>RES_Product_Update_Warning_Hold</fullName>
+        <categories>Units Update Approval</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Warning shown when updating Hold units</shortDescription>
+        <value>Units being updated are currently on hold. After update, they will be moved to Draft status for re-approval.</value>
+    </labels>
+    <labels>
+        <fullName>RES_Unit_Price_Updated</fullName>
+        <categories>Units Update Approval</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Unit Updated Title</shortDescription>
+        <value>Unit Price Updated</value>
+    </labels>
+    <labels>
+        <fullName>RES_Unit_Updated_Body</fullName>
+        <categories>Units Update Approval</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Unit Updated Body</shortDescription>
+        <value>Unit for this quote has been updated. Please hold and wait for this unit to be approved and be activated again to proceed with the quote.</value>
+    </labels>
+    <labels>
+        <fullName>Update_Unit_Title</fullName>
+        <categories>Units Update Approval</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Update Unit Title</shortDescription>
+        <value>Unit Price Updated</value>
+    </labels>
 </CustomLabels>

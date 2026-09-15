@@ -43,14 +43,10 @@
  * =============================================================================
  */
 public without sharing class RES_ProductApprovalNotificationService {
-
-    // =========================================================================
-    // CONFIGURATION
-    // =========================================================================
-
     private static final String APPROVAL_TEMPLATE = 'Product_Approval_Notification';
     private static final String FINAL_APPROVAL_TEMPLATE = 'Product_Final_Approval_Notification';
     private static final String REJECTION_TEMPLATE = 'Product_Rejection_Notification';
+    private static final String UPDATE_NOTIFICATION_TEMPLATE = 'Product_Update_Notification';
 
     private static final String DEVCO_GROUP = System.Label.RES_Product_Approval_DevCo_Group;
     private static final String FINANCE_GROUP = System.Label.RES_Product_Approval_Finance_Group;
@@ -61,32 +57,14 @@ public without sharing class RES_ProductApprovalNotificationService {
 
     /*
      * Org-Wide Email Address configuration.
-     *
-     * The Custom Label 'Org_Wide_Email' should contain the
-     * Display Name of the Org-Wide Email Address.
-     *
-     * Example:
-     * Salesforce Notifications
-     *
-     * If the label is blank or the Org-Wide Email Address
-     * cannot be found, null is returned.
      */
     private static final String ORG_WIDE_EMAIL_DISPLAY_NAME = System.Label.Org_Wide_Email;
 
     private static Id cachedOrgWideEmailAddressId;
 
-    // =========================================================================
-    // DAO DEPENDENCIES
-    // =========================================================================
-
     private static final RES_ApexEmailTemplateDAO EMAIL_TEMPLATE_DAO = new RES_ApexEmailTemplateDAO();
     private static final RES_GroupMemberDAOLayer GROUP_MEMBER_DAO = new RES_GroupMemberDAOLayer();
     private static final RES_OrgWideAddressDAO ORG_WIDE_EMAIL_DAO = new RES_OrgWideAddressDAO();
-
-    // =========================================================================
-    // APPROVAL NOTIFICATION
-    // =========================================================================
-
     /**
      * Sends notification to the next approval team.
      *
@@ -97,12 +75,7 @@ public without sharing class RES_ProductApprovalNotificationService {
      * {3} = Unit Count
      * {4} = Full URL to Product Approval Queue
      */
-    public static void notifyNextApprovalTeam(
-        List<Product2> products,
-        String currentTeamLabel,
-        String nextTeamLabel,
-        String nextTeamGroupDeveloperName
-    ) {
+    public static void notifyNextApprovalTeam(List<Product2> products, String currentTeamLabel, String nextTeamLabel, String nextTeamGroupDeveloperName) {
         if (products == null || products.isEmpty() || String.isBlank(nextTeamGroupDeveloperName)) {
             return;
         }
@@ -131,11 +104,6 @@ public without sharing class RES_ProductApprovalNotificationService {
 
         sendEmailsWithMergeFields(recipientEmails, template.Subject__c, template.Html_Body__c, mergeFieldsForSubject, mergeFieldsForBody);
     }
-
-    // =========================================================================
-    // FINAL APPROVAL NOTIFICATION
-    // =========================================================================
-
     /**
      * Sends notification to Operations after final approval.
      * Uses special final approval template to celebrate completion.
@@ -175,10 +143,6 @@ public without sharing class RES_ProductApprovalNotificationService {
         sendEmailsWithMergeFields(recipientEmails, template.Subject__c, template.Html_Body__c, mergeFieldsForSubject, mergeFieldsForBody);
     }
 
-    // =========================================================================
-    // REJECTION NOTIFICATION
-    // =========================================================================
-
     /**
      * Sends rejection notification to Operations.
      *
@@ -213,6 +177,52 @@ public without sharing class RES_ProductApprovalNotificationService {
             escapeHtml(safeValue(rejectingTeamLabel)),
             unitCount,
             escapeHtml(safeValue(rejectionReason)),
+            approvalQueueUrl
+        };
+
+        sendEmailsWithMergeFields(recipientEmails, template.Subject__c, template.Html_Body__c, mergeFieldsForSubject, mergeFieldsForBody);
+    }
+
+    // =========================================================================
+    // PRODUCT UPDATE NOTIFICATION
+    // =========================================================================
+
+    /**
+     * Sends notification to Operations when products are updated and moved to Draft.
+     *
+     * Template merge fields:
+     * {0} = Unit Count (for subject)
+     * {1} = Unit Count (for body)
+     * {2} = Full URL to Draft & Rejected Queue
+     */
+    public static void notifyProductUpdate(List<Product2> products) {
+        if (products == null || products.isEmpty() || String.isBlank(OPERATIONS_GROUP)) {
+            return;
+        }
+
+        Set<String> recipientEmails = getGroupRecipientEmails(OPERATIONS_GROUP);
+        if (recipientEmails.isEmpty()) {
+            return;
+        }
+
+        RES_Apex_Email_Template__mdt template = getEmailTemplate(UPDATE_NOTIFICATION_TEMPLATE);
+        if (template == null) {
+            // Fallback to approval template if update template doesn't exist
+            template = getEmailTemplate(APPROVAL_TEMPLATE);
+            if (template == null) {
+                return;
+            }
+        }
+
+        String unitCount = String.valueOf(products.size());
+        String approvalQueueUrl = getApprovalQueueUrl();
+
+        List<String> mergeFieldsForSubject = new List<String>{ unitCount };
+        List<String> mergeFieldsForBody = new List<String>{
+            'Operations Team',
+            'System',
+            'updated',
+            unitCount,
             approvalQueueUrl
         };
 

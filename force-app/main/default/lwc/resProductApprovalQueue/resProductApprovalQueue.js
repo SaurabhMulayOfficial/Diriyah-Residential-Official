@@ -50,7 +50,7 @@ const BASE_COLUMNS = [
     },
     {
         label: 'Area',
-        fieldName: 'RES_Area__c',
+        fieldName: 'RES_Net_Saleable_Area__c',
         type: 'number'
     },
     {
@@ -77,6 +77,12 @@ const BASE_COLUMNS = [
         label: 'IBAN / Account Number',
         fieldName: 'RES_Unit_Virtual_IBAN__c',
         type: 'text'
+    },
+    {
+        label: 'Update Comments',
+        fieldName: 'RES_Update_Comments__c',
+        type: 'text',
+        wrapText: true
     }
 ];
 
@@ -932,7 +938,19 @@ export default class ResProductApprovalQueue extends LightningElement {
     get approvalStageMessage() {
         const count = this.selectedCount;
         const unitText = count === 1 ? 'Unit' : 'Units';
+
+        // Check if any selected product is an update (has RES_Update_Requested__c = true)
+        const hasUpdates = this.selectedProductIds.some(productId => {
+            const product = this.products.find(p => p.Id === productId);
+            return product?.RES_Update_Requested__c === true;
+        });
+
+        // Different message for updates vs new products
+        if (hasUpdates) {
+            return `The selected ${unitText.toLowerCase()} will be approved and made available for sale.`;
+        } else {
             return `The selected ${unitText.toLowerCase()} will be moved to the next approval stage.`;
+        }
     }
 
     get approvalConfirmationMessage() {

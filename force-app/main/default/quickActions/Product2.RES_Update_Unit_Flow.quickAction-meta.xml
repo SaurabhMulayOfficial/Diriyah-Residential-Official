@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<QuickAction xmlns="http://soap.sforce.com/2006/04/metadata">
+    <description>Opens a flow to update residential unit details. Available for Active, Soft Hold, and Hard Hold units.</description>
+    <label>Update Unit</label>
+    <optionsCreateFeedItem>false</optionsCreateFeedItem>
+    <targetObject>Product2</targetObject>
+    <type>Flow</type>
+    <flow>RES_Update_Residential_Unit</flow>
+</QuickAction>

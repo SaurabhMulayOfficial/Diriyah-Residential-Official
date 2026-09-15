@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>RES_Update_Requested__c</fullName>
+    <defaultValue>false</defaultValue>
+    <description>Indicates that this unit was updated after initial approval and requires re-approval. Set to true when an Active/Hold unit is amended.</description>
+    <externalId>false</externalId>
+    <label>Update Requested</label>
+    <trackHistory>true</trackHistory>
+    <type>Checkbox</type>
+</CustomField>

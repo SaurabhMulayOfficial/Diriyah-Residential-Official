@@ -198,7 +198,6 @@ public without sharing class RES_ProductApprovalService {
 
             /*
              * Re-check current Product state.
-             *
              * This protects against stale UI/concurrent approval.
              */
             if (!RES_ProductApprovalStateService.canApprove(product, config)) {
@@ -213,6 +212,20 @@ public without sharing class RES_ProductApprovalService {
             }
 
             /*
+             * RE-APPROVAL LOGIC (DIR-859):
+             * If product has RES_Update_Requested__c = true (indicating it was
+             * amended after initial approval) and is being approved by DevCo,
+             * set status directly to 'Available' instead of following the normal
+             * sequential approval flow.
+             */
+            Boolean isReApproval = product.RES_Update_Requested__c == true;
+            Boolean isDevCoApproval = currentStatus == 'Pending DevCo Approval';
+
+            if (isReApproval && isDevCoApproval) {
+                nextStatus = 'Available'; // Fixed: Use 'Available' not 'Active'
+            }
+
+            /*
              * Create Product update.
              * Set IsActive = true when reaching final approval (Available status).
              */
@@ -222,9 +235,13 @@ public without sharing class RES_ProductApprovalService {
                 RES_Rejection_Comment__c = null
             );
 
-            // Set IsActive = true for final approval
-            if (RES_ProductApprovalStateService.isFinalApproval(config)) {
+            // Set IsActive = true for final approval OR re-approval
+            if (RES_ProductApprovalStateService.isFinalApproval(config) ||
+                (isReApproval && isDevCoApproval)) {
                 updateProduct.IsActive = true;
+                // Clear the update requested flag and comments after successful re-approval
+                updateProduct.RES_Update_Requested__c = false;
+                updateProduct.RES_Update_Comments__c = null;
             }
 
             recordsToUpdate.add(updateProduct);

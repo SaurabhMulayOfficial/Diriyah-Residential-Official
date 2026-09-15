@@ -94,8 +94,49 @@ public without sharing class RES_Product2DAOLayer extends RES_BaseDAOLayer {
     } 
         Map<String, Object> bindVars = new Map<String, Object>();
         bindVars.put('productIds', productIds);
-        String soql = 'SELECT Id, Name, ProductCode, IsActive, RES_Unit_Status__c, RES_HardBlock_Start__c, RES_Is_In_Soft_Hold_Extension__c, RES_Soft_Hold_Start__c, RES_Soft_Hold_Until__c, RES_Reserved_By_Contract__c, RES_Reserved_By_Quote__c FROM Product2 WHERE Id IN :productIds';
+        String soql = 'SELECT Id, Name, ProductCode, IsActive, RES_Unit_Status__c, RES_HardBlock_Start__c, RES_Is_In_Soft_Hold_Extension__c, RES_Soft_Hold_Start__c, RES_Soft_Hold_Until__c, RES_Reserved_By_Contract__c, RES_Reserved_By_Quote__c, RES_Update_Comments__c, RES_Update_Requested__c FROM Product2 WHERE Id IN :productIds';
         return (List<Product2>) executeQuery(soql,'', false, bindVars, AccessLevel.SYSTEM_MODE);
+    }
+
+    /**
+     * Retrieves Product2 records by Ids including RecordType information.
+     * Used when Record Type filtering is required (e.g., Residential Sales products).
+     *
+     * @param productIds Set of Product2 Ids to retrieve
+     * @return List of Product2 records with Id and RecordType.DeveloperName
+     */
+    public List<Product2> getProductsWithRecordTypeByIds(Set<Id> productIds) {
+        try {
+            // Validate input
+            if (productIds == null || productIds.isEmpty()) {
+                System.debug(LoggingLevel.WARN, 'getProductsWithRecordTypeByIds called with empty productIds');
+                return new List<Product2>();
+            }
+
+            Map<String, Object> bindVars = new Map<String, Object>();
+            bindVars.put('productIds', productIds);
+
+            String soql =
+                'SELECT Id, RecordType.DeveloperName ' +
+                'FROM Product2 ' +
+                'WHERE Id IN :productIds';
+
+            List<Product2> results = (List<Product2>) executeQuery(
+                soql,
+                '', // No cache suffix - dynamic query
+                false, // No caching
+                bindVars,
+                AccessLevel.SYSTEM_MODE
+            );
+
+            // Return empty list instead of null for safer handling
+            return results != null ? results : new List<Product2>();
+
+        } catch (Exception e) {
+            System.debug(LoggingLevel.ERROR, 'Error in getProductsWithRecordTypeByIds: ' + e.getMessage());
+            System.debug(LoggingLevel.ERROR, 'Stack Trace: ' + e.getStackTraceString());
+            return new List<Product2>();
+        }
     }
 
     /**
@@ -143,6 +184,8 @@ public without sharing class RES_Product2DAOLayer extends RES_BaseDAOLayer {
             'RES_Unit_Handover_Date__c, ' +
             'RES_Unit_Virtual_IBAN__c, ' +
             'RES_Rejection_Comment__c, ' +
+            'RES_Update_Comments__c, ' +
+            'RES_Update_Requested__c, ' +
             'Family ' +
             'FROM Product2 ' +
             'WHERE RES_Unit_Status__c IN :statuses ' +
@@ -232,6 +275,8 @@ public List<Product2> getRejectedProducts(String status,String searchTerm,Intege
                 'RES_Unit_Handover_Date__c, ' +
                 'RES_Unit_Virtual_IBAN__c, ' +
                 'RES_Rejection_Comment__c, ' +
+                'RES_Update_Comments__c, ' +
+                'RES_Update_Requested__c, ' +
                 'Family ' +
                 'FROM Product2 ' +
                 'WHERE RES_Unit_Status__c IN :statuses ' +

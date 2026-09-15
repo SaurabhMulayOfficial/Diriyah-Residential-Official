@@ -20,6 +20,10 @@
         <enabled>true</enabled>
         <name>RES_Hide_Dashboards</name>
     </customPermissions>
+    <customPermissions>
+        <enabled>true</enabled>
+        <name>RES_Product_Operation_Visibility</name>
+    </customPermissions>
     <description>Permission Set for DevCo for DevCo product approver Users</description>
     <fieldPermissions>
         <editable>false</editable>
@@ -39,6 +43,11 @@
     <fieldPermissions>
         <editable>false</editable>
         <field>Product2.RES_Sequence__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>Product2.RES_Update_Comments__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>

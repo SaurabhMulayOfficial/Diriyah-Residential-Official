@@ -1,0 +1,158 @@
+<template>
+    <!-- Main Update Modal -->
+    <template if:true={showModal}>
+        <!-- Simplified for Quick Action - no nested modal styling -->
+        <div class="slds-p-around_small">
+            <!-- Modal Header -->
+            <div class="slds-page-header slds-m-bottom_medium">
+                <div class="slds-page-header__row">
+                    <div class="slds-page-header__col-title">
+                        <div class="slds-media">
+                            <div class="slds-media__body">
+                                <h1 class="slds-page-header__title slds-truncate slds-text-color_brand" title={modalTitle}>
+                                    {modalTitle}
+                                </h1>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Modal Body -->
+            <div class="slds-p-around_small" id="modal-content-id">
+                    <!-- Status Warning Message -->
+                    <template if:true={statusMessage}>
+                        <div class="slds-scoped-notification slds-media slds-media_center slds-theme_warning slds-m-bottom_medium" role="status">
+                            <div class="slds-media__figure">
+                                <lightning-icon icon-name="utility:warning" size="small" variant="inverse"></lightning-icon>
+                            </div>
+                            <div class="slds-media__body">
+                                <p>{statusMessage}</p>
+                            </div>
+                        </div>
+                    </template>
+
+                    <!-- Update Form -->
+                    <lightning-record-edit-form record-id={recordId}
+                                                object-api-name="Product2"
+                                                onsuccess={handleSuccess}
+                                                onerror={handleError}>
+
+                        <div class="slds-grid slds-wrap slds-gutters_small">
+                            <!-- Row 1 -->
+                            <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
+                                <lightning-input-field field-name={nameField}></lightning-input-field>
+                            </div>
+                            <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
+                                <lightning-input-field field-name={productCodeField}></lightning-input-field>
+                            </div>
+
+                            <!-- Row 2 -->
+                            <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
+                                <lightning-input-field field-name={businessEntityField}></lightning-input-field>
+                            </div>
+                            <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
+                                <lightning-input-field field-name={typeField}></lightning-input-field>
+                            </div>
+
+                            <!-- Row 3 -->
+                            <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
+                                <lightning-input-field field-name={areaField}></lightning-input-field>
+                            </div>
+                            <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
+                                <lightning-input-field field-name={familyField}></lightning-input-field>
+                            </div>
+
+                            <!-- Row 4 -->
+                            <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
+                                <lightning-input-field field-name={handoverDateField}></lightning-input-field>
+                            </div>
+                            <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
+                                <lightning-input-field field-name={ibanField}></lightning-input-field>
+                            </div>
+
+                            <!-- Row 5 - Description (Full Width) -->
+                            <div class="slds-col slds-size_1-of-1">
+                                <lightning-input-field field-name={descriptionField}></lightning-input-field>
+                            </div>
+
+                            <!-- Row 6 - Update Comments (Required) -->
+                            <div class="slds-col slds-size_1-of-1">
+                                <lightning-textarea
+                                    name="updateComments"
+                                    label="Update Comments"
+                                    value={updateComments}
+                                    onchange={handleUpdateCommentsChange}
+                                    required
+                                    min-length="10"
+                                    max-length="32768"
+                                    placeholder="Please explain the reason for this update (minimum 10 characters)"
+                                    class="slds-m-top_small">
+                                </lightning-textarea>
+                                <div class="slds-text-color_error slds-text-body_small slds-m-top_xx-small">
+                                    * Required - Explain why this unit is being updated
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Hidden submit button to trigger form submission -->
+                        <button type="submit" class="slds-hide">Submit</button>
+                    </lightning-record-edit-form>
+                </div>
+
+            <!-- Footer Actions -->
+            <div class="footer-actions slds-m-top_large slds-p-top_large slds-border_top">
+                <div class="slds-float_right">
+                    <button class="slds-button slds-button_neutral slds-m-right_x-small"
+                            onclick={closeModal}
+                            disabled={isProcessing}>
+                        Cancel
+                    </button>
+                    <button class="slds-button slds-button_brand"
+                            onclick={handleSave}
+                            disabled={isProcessing}>
+                        <template if:true={isProcessing}>
+                            <lightning-spinner alternative-text="Saving..." size="small"></lightning-spinner>
+                        </template>
+                        <template if:false={isProcessing}>
+                            Save Changes
+                        </template>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </template>
+
+    <!-- Warning Confirmation Modal -->
+    <template if:true={showWarningModal}>
+        <section role="dialog" tabindex="-1" class="slds-modal slds-fade-in-open">
+            <div class="slds-modal__container" style="max-width: 40rem;">
+                <header class="slds-modal__header">
+                    <h2 class="slds-modal__title slds-hyphenate">{warningTitle}</h2>
+                </header>
+                <div class="slds-modal__content slds-p-around_medium">
+                    <div class="slds-text-align_center">
+                        <lightning-icon icon-name="utility:warning"
+                                        size="large"
+                                        variant="warning"
+                                        class="slds-m-bottom_small">
+                        </lightning-icon>
+                    </div>
+                    <p class="slds-text-align_center slds-text-body_regular">
+                        {warningMessage}
+                    </p>
+                </div>
+                <footer class="slds-modal__footer">
+                    <button class="slds-button slds-button_neutral"
+                            onclick={handleWarningCancel}>
+                        Cancel
+                    </button>
+                    <button class="slds-button slds-button_brand"
+                            onclick={handleWarningConfirm}>
+                        Yes, Proceed
+                    </button>
+                </footer>
+            </div>
+        </section>
+    </template>
+</template>
