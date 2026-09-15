@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <actionCalls>
+        <description>Calls an action that creates or updates an asset related to the order that triggered the flow.</description>
+        <name>CreateOrUpdateRelatedAsset</name>
+        <label>Create or Update Related Asset</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <actionName>createOrUpdateAssetFromOrder</actionName>
+        <actionType>createOrUpdateAssetFromOrder</actionType>
+        <flowTransactionModel>CurrentTransaction</flowTransactionModel>
+        <inputParameters>
+            <name>orderId</name>
+            <value>
+                <elementReference>$Record.Id</elementReference>
+            </value>
+        </inputParameters>
+        <nameSegment>createOrUpdateAssetFromOrder</nameSegment>
+        <offset>0</offset>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </actionCalls>
+    <apiVersion>67.0</apiVersion>
+    <areMetricsLoggedToDataCloud>false</areMetricsLoggedToDataCloud>
+    <decisions>
+        <description>Determines whether GetApplicationUsageAssignment returned an application usage assignment record.</description>
+        <name>HaveApplicationUsageAssignmentRecord</name>
+        <label>Have Application Usage Assignment Record?</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnectorLabel>No (Default)</defaultConnectorLabel>
+        <rules>
+            <name>HaveRecord</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>AppUsageAssignment.Id</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>CreateOrUpdateRelatedAsset</targetReference>
+            </connector>
+            <label>Yes</label>
+        </rules>
+    </decisions>
+    <environments>Default</environments>
+    <interviewLabel>Residential Assetize Order {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>Residential Assetize Order</label>
+    <overriddenFlow>revenue_o2aflows__o2aFlow</overriddenFlow>
+    <processMetadataValues>
+        <name>BuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>CanvasMode</name>
+        <value>
+            <stringValue>AUTO_LAYOUT_CANVAS</stringValue>
+        </value>
+    </processMetadataValues>
+    <processType>AutoLaunchedFlow</processType>
+    <recordLookups>
+        <description>Gets the application usage assignment element with a record ID of the order ID of the triggering record and an app usage type that&apos;s RevenueLifecycleManagement. Stores the ID field of the result in the AppUsageAssignment record variable.</description>
+        <name>GetApplicationUsageAssignment</name>
+        <label>Get ApplicationUsageAssignment</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignNullValuesIfNoRecordsFound>true</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>HaveApplicationUsageAssignmentRecord</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>RecordId</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>$Record.Id</elementReference>
+            </value>
+        </filters>
+        <filters>
+            <field>AppUsageType</field>
+            <operator>EqualTo</operator>
+            <value>
+                <stringValue>SubscriptionManagement</stringValue>
+            </value>
+        </filters>
+        <object>AppUsageAssignment</object>
+        <outputReference>AppUsageAssignment</outputReference>
+        <queriedFields>Id</queriedFields>
+    </recordLookups>
+    <start>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <doesRequireRecordChangedToMeetCriteria>true</doesRequireRecordChangedToMeetCriteria>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Status</field>
+            <operator>EqualTo</operator>
+            <value>
+                <stringValue>Activated</stringValue>
+            </value>
+        </filters>
+        <object>Order</object>
+        <recordTriggerType>Update</recordTriggerType>
+        <scheduledPaths>
+            <connector>
+                <targetReference>GetApplicationUsageAssignment</targetReference>
+            </connector>
+            <pathType>AsyncAfterCommit</pathType>
+        </scheduledPaths>
+        <triggerType>RecordAfterSave</triggerType>
+    </start>
+    <status>Active</status>
+    <variables>
+        <description>Stores the ID of application usage assignment record with an ID that matches the order ID of the triggering record.</description>
+        <name>AppUsageAssignment</name>
+        <dataType>SObject</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <objectType>AppUsageAssignment</objectType>
+    </variables>
+</Flow>
