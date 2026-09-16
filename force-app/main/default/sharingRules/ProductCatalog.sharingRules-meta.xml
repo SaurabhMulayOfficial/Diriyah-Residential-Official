@@ -15,6 +15,20 @@
         <includeRecordsOwnedByAll>false</includeRecordsOwnedByAll>
     </sharingCriteriaRules>
     <sharingCriteriaRules>
+        <fullName>RES_Read_DevCo_Role</fullName>
+        <accessLevel>Read</accessLevel>
+        <label>Read DevCo Role</label>
+        <sharedTo>
+            <role>DevCo</role>
+        </sharedTo>
+        <criteriaItems>
+            <field>RecordTypeId</field>
+            <operation>equals</operation>
+            <value>Residential Sales</value>
+        </criteriaItems>
+        <includeRecordsOwnedByAll>true</includeRecordsOwnedByAll>
+    </sharingCriteriaRules>
+    <sharingCriteriaRules>
         <fullName>RES_Read_Write_Operation_Roles_and_subordinates</fullName>
         <accessLevel>Edit</accessLevel>
         <label>Read/Write Operation Roles and subordinates</label>

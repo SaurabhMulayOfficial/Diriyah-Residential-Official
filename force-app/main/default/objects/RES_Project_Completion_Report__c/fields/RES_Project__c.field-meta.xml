@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>RES_Project__c</fullName>
+    <deleteConstraint>Restrict</deleteConstraint>
+    <label>Project</label>
+    <referenceTo>ProductCatalog</referenceTo>
+    <relationshipLabel>Project Completion Reports</relationshipLabel>
+    <relationshipName>Project_Completion_Reports</relationshipName>
+    <required>true</required>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Lookup</type>
+</CustomField>

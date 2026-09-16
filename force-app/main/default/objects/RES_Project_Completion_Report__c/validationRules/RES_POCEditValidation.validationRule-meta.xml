@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>RES_POCEditValidation</fullName>
+    <active>true</active>
+    <errorConditionFormula>AND
+( 
+				NOT($Setup.RES_Config_Switch__c.RES_Validation_Rules_Off__c), 
+				ISCHANGED(RES_POC__c), 
+				ISPICKVAL(RES_Approval_Status__c, &quot;Approved&quot;)
+)</errorConditionFormula>
+    <errorDisplayField>RES_POC__c</errorDisplayField>
+    <errorMessage>You are not allowed to edit this field.</errorMessage>
+</ValidationRule>

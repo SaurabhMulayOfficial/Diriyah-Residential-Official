@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>RES_Approval_Status__c</fullName>
+    <label>Approval Status</label>
+    <required>false</required>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>Pending Project Manager Approval</fullName>
+                <default>false</default>
+                <label>Pending Project Manager Approval</label>
+            </value>
+            <value>
+                <fullName>Pending Project Chief Approval</fullName>
+                <default>false</default>
+                <label>Pending Project Chief Approval</label>
+            </value>
+            <value>
+                <fullName>Pending Finance Approval</fullName>
+                <default>false</default>
+                <label>Pending Finance Approval</label>
+            </value>
+            <value>
+                <fullName>Approved</fullName>
+                <default>false</default>
+                <label>Approved</label>
+            </value>
+            <value>
+                <fullName>Rejected</fullName>
+                <default>false</default>
+                <label>Rejected</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>
