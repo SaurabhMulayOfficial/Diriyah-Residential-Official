@@ -52,7 +52,7 @@ public Without sharing class RES_QuoteLineItemDAO extends RES_BaseDAOLayer {
         Set<String> excludedStatuses = new Set<String>{'Expired', 'Cancelled'};
         bindVars.put('excludedStatuses', excludedStatuses);
 
-        String soql = 'SELECT Id, QuoteId, Product2Id, Quote.OpportunityId, Quantity, UnitPrice, TotalPrice, Quote.IsSyncing ' +
+        String soql = 'SELECT Id, QuoteId, Product2Id, Product2.RES_Unit_Status__c, Quote.OpportunityId, Quantity, UnitPrice, TotalPrice, Quote.IsSyncing ' +
                     'FROM QuoteLineItem ' +
                     'WHERE Quote.OpportunityId IN :opportunityIds ' +
                     'AND Quote.RES_Product_Soft_Held__c = false ' +
@@ -71,7 +71,7 @@ public Without sharing class RES_QuoteLineItemDAO extends RES_BaseDAOLayer {
         Map<String, Object> bindVars = new Map<String, Object>();
         bindVars.put('product2Ids', product2Ids);
 
-        String soql = 'SELECT Id, QuoteId, Quote.OpportunityId, Product2Id, Quantity, UnitPrice, TotalPrice ' +
+        String soql = 'SELECT Id, QuoteId, Quote.OpportunityId, Product2Id, Product2.RES_Unit_Status__c, Quantity, UnitPrice, TotalPrice ' +
                     'FROM QuoteLineItem ' +
                     'WHERE Product2Id IN :product2Ids AND Quote.RES_Product_Soft_Held__c = false';
         
