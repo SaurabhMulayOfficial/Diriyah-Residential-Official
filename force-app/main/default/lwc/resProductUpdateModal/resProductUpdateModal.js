@@ -7,7 +7,7 @@ import { updateRecord } from 'lightning/uiRecordApi';
 import { refreshApex } from '@salesforce/apex';
 import notifyProductUpdate from '@salesforce/apex/RES_ProductUpdateNotificationController.notifyProductUpdate';
 
-// Product2 fields
+// Product2 fields - Core
 import ID_FIELD from '@salesforce/schema/Product2.Id';
 import UNIT_STATUS_FIELD from '@salesforce/schema/Product2.RES_Unit_Status__c';
 import IS_ACTIVE_FIELD from '@salesforce/schema/Product2.IsActive';
@@ -15,13 +15,34 @@ import NAME_FIELD from '@salesforce/schema/Product2.Name';
 import PRODUCT_CODE_FIELD from '@salesforce/schema/Product2.ProductCode';
 import BUSINESS_ENTITY_FIELD from '@salesforce/schema/Product2.RES_Business_Entity__c';
 import TYPE_FIELD from '@salesforce/schema/Product2.RES_Type__c';
-import AREA_FIELD from '@salesforce/schema/Product2.RES_Net_Saleable_Area__c';
 import FAMILY_FIELD from '@salesforce/schema/Product2.Family';
-import HANDOVER_DATE_FIELD from '@salesforce/schema/Product2.RES_Unit_Handover_Date__c';
-import IBAN_FIELD from '@salesforce/schema/Product2.RES_Unit_Virtual_IBAN__c';
 import DESCRIPTION_FIELD from '@salesforce/schema/Product2.Description';
 import UPDATE_COMMENTS_FIELD from '@salesforce/schema/Product2.RES_Update_Comments__c';
 import UPDATE_REQUESTED_FIELD from '@salesforce/schema/Product2.RES_Update_Requested__c';
+
+// Product2 fields - Details Tab (from screenshots)
+import CONSTRUCTION_PHASE_FIELD from '@salesforce/schema/Product2.RES_Construction_Phase__c';
+import USAGE_TYPE_ARABIC_FIELD from '@salesforce/schema/Product2.RES_Usage_Type_Arabic__c';
+import CIP_TYPE_FIELD from '@salesforce/schema/Product2.RES_CIP_Type__c';
+
+// Product2 fields - Fixtures/Fittings Tab (from screenshots)
+import ORIENTATION_FIELD from '@salesforce/schema/Product2.RES_Orientation__c';
+import STOREROOM_FIELD from '@salesforce/schema/Product2.RES_Storeroom__c';
+import ELEVATED_FIELD from '@salesforce/schema/Product2.RES_Elevated__c';
+import TERRACE_FIELD from '@salesforce/schema/Product2.RES_Terrace__c';
+import ROOF_TERRACE_FIELD from '@salesforce/schema/Product2.RES_Roof_Terrace__c';
+import MAIDS_ROOM_FIELD from '@salesforce/schema/Product2.RES_Maids_Room__c';
+import WADI_VIEW_FIELD from '@salesforce/schema/Product2.RES_Wadi_View__c';
+import GOLF_VIEW_FIELD from '@salesforce/schema/Product2.RES_Golf_View__c';
+import FURNISHED_FIELD from '@salesforce/schema/Product2.RES_Furnished__c';
+import ENTRY_COURTYARD_FIELD from '@salesforce/schema/Product2.RES_Entry_Courtyard__c';
+import GARAGE_FIELD from '@salesforce/schema/Product2.RES_Garage__c';
+import POOL_FIELD from '@salesforce/schema/Product2.RES_Pool__c';
+import ID_FINISH_FIELD from '@salesforce/schema/Product2.RES_ID_Finish__c';
+import DRIVERS_ROOM_FIELD from '@salesforce/schema/Product2.RES_Drivers_Room__c';
+import PANORAMIC_VIEW_FIELD from '@salesforce/schema/Product2.RES_Panoramic_View__c';
+import PRIVATE_FIELD from '@salesforce/schema/Product2.RES_Private__c';
+import CONDITION_FIELD from '@salesforce/schema/Product2.RES_Condition__c';
 
 const FIELDS = [
     UNIT_STATUS_FIELD,
@@ -29,16 +50,13 @@ const FIELDS = [
     PRODUCT_CODE_FIELD,
     BUSINESS_ENTITY_FIELD,
     TYPE_FIELD,
-    AREA_FIELD,
     FAMILY_FIELD,
-    HANDOVER_DATE_FIELD,
-    IBAN_FIELD,
     DESCRIPTION_FIELD
 ];
 
-const STATUS_AVAILABLE = 'Available'; // Changed from 'Active' to match picklist
+const STATUS_AVAILABLE = 'Available';
 const STATUS_SOFT_HOLD = 'Soft Hold';
-const STATUS_HARD_BLOCK = 'Hard Block'; // Changed from 'Hard Hold' to match picklist
+const STATUS_HARD_BLOCK = 'Hard Block';
 const STATUS_DRAFT = 'Draft';
 
 export default class ResProductUpdateModal extends LightningElement {
@@ -55,17 +73,36 @@ export default class ResProductUpdateModal extends LightningElement {
     currentStatus;
     productName;
 
-    // Fields to display in the form
+    // Fields to display in the form - Details Tab
     nameField = NAME_FIELD;
     productCodeField = PRODUCT_CODE_FIELD;
-    businessEntityField = BUSINESS_ENTITY_FIELD;
     typeField = TYPE_FIELD;
-    areaField = AREA_FIELD;
+    constructionPhaseField = CONSTRUCTION_PHASE_FIELD;
+    businessEntityField = BUSINESS_ENTITY_FIELD;
     familyField = FAMILY_FIELD;
-    handoverDateField = HANDOVER_DATE_FIELD;
-    ibanField = IBAN_FIELD;
+    usageTypeArabicField = USAGE_TYPE_ARABIC_FIELD;
     descriptionField = DESCRIPTION_FIELD;
+    cipTypeField = CIP_TYPE_FIELD;
     updateCommentsField = UPDATE_COMMENTS_FIELD;
+
+    // Fixtures/Fittings Tab Fields (from screenshots)
+    orientationField = ORIENTATION_FIELD;
+    storeroomField = STOREROOM_FIELD;
+    elevatedField = ELEVATED_FIELD;
+    terraceField = TERRACE_FIELD;
+    roofTerraceField = ROOF_TERRACE_FIELD;
+    maidsRoomField = MAIDS_ROOM_FIELD;
+    wadiViewField = WADI_VIEW_FIELD;
+    golfViewField = GOLF_VIEW_FIELD;
+    furnishedField = FURNISHED_FIELD;
+    entryCourtyardField = ENTRY_COURTYARD_FIELD;
+    garageField = GARAGE_FIELD;
+    poolField = POOL_FIELD;
+    idFinishField = ID_FINISH_FIELD;
+    driversRoomField = DRIVERS_ROOM_FIELD;
+    panoramicViewField = PANORAMIC_VIEW_FIELD;
+    privateField = PRIVATE_FIELD;
+    conditionField = CONDITION_FIELD;
 
     @wire(getRecord, { recordId: '$recordId', fields: FIELDS })
     wiredProduct(result) {
@@ -164,16 +201,13 @@ export default class ResProductUpdateModal extends LightningElement {
             fields[UPDATE_COMMENTS_FIELD.fieldApiName] = this.updateComments.trim();
             fields[UPDATE_REQUESTED_FIELD.fieldApiName] = true;
 
-            console.log('Fields before condition check:', JSON.stringify(fields));
-
             // Set status to Draft and IsActive to false when updating Active or Hold units
             const shouldUpdateStatus = (this.currentStatus === STATUS_AVAILABLE || this.currentStatus === STATUS_SOFT_HOLD || this.currentStatus === STATUS_HARD_BLOCK);
             if (shouldUpdateStatus) {
                 fields[UNIT_STATUS_FIELD.fieldApiName] = STATUS_DRAFT;
                 fields[IS_ACTIVE_FIELD.fieldApiName] = false;
-            } else {
-                console.log('CONDITION FALSE - NOT updating status/IsActive');
             }
+
             const recordInput = { fields };
             const updateResult = await updateRecord(recordInput);
 
@@ -185,7 +219,6 @@ export default class ResProductUpdateModal extends LightningElement {
             // Send notification to Operations team
             try {
                 await notifyProductUpdate({ productId: this.recordId });
-                console.log('Update notification sent successfully');
             } catch (notifyError) {
                 // Don't fail the whole operation if notification fails
                 console.error('Error sending notification:', notifyError);
@@ -203,7 +236,6 @@ export default class ResProductUpdateModal extends LightningElement {
             // Refresh the page to show updated values
             this.dispatchEvent(new RefreshEvent());
         } catch (error) {
-            console.error('=== ERROR in handleSuccess ===');
             console.error('Error updating product:', error);
 
             // Handle different error types

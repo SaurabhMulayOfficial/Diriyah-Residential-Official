@@ -20,85 +20,160 @@
 
             <!-- Modal Body -->
             <div class="slds-p-around_small" id="modal-content-id">
-                    <!-- Status Warning Message -->
-                    <template if:true={statusMessage}>
-                        <div class="slds-scoped-notification slds-media slds-media_center slds-theme_warning slds-m-bottom_medium" role="status">
-                            <div class="slds-media__figure">
-                                <lightning-icon icon-name="utility:warning" size="small" variant="inverse"></lightning-icon>
-                            </div>
-                            <div class="slds-media__body">
-                                <p>{statusMessage}</p>
-                            </div>
+                <!-- Status Warning Message -->
+                <template if:true={statusMessage}>
+                    <div class="slds-scoped-notification slds-media slds-media_center slds-theme_warning slds-m-bottom_medium" role="status">
+                        <div class="slds-media__figure">
+                            <lightning-icon icon-name="utility:warning" size="small" variant="inverse"></lightning-icon>
                         </div>
-                    </template>
+                        <div class="slds-media__body">
+                            <p>{statusMessage}</p>
+                        </div>
+                    </div>
+                </template>
 
-                    <!-- Update Form -->
-                    <lightning-record-edit-form record-id={recordId}
-                                                object-api-name="Product2"
-                                                onsuccess={handleSuccess}
-                                                onerror={handleError}>
+                <!-- Update Form -->
+                <lightning-record-edit-form record-id={recordId}
+                                            object-api-name="Product2"
+                                            onsuccess={handleSuccess}
+                                            onerror={handleError}>
 
-                        <div class="slds-grid slds-wrap slds-gutters_small">
-                            <!-- Row 1 -->
-                            <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
-                                <lightning-input-field field-name={nameField}></lightning-input-field>
-                            </div>
-                            <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
-                                <lightning-input-field field-name={productCodeField}></lightning-input-field>
-                            </div>
+                    <!-- Tabbed Layout -->
+                    <lightning-tabset>
+                        <!-- Tab 1: Details -->
+                        <lightning-tab label="Details">
+                            <div class="slds-p-around_small">
+                                <div class="slds-grid slds-wrap slds-gutters_small">
+                                    <!-- Product Information -->
+                                    <div class="slds-col slds-size_1-of-1">
+                                        <h3 class="slds-text-heading_small slds-m-bottom_small">Product Information</h3>
+                                    </div>
+                                    <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
+                                        <lightning-input-field field-name={nameField}></lightning-input-field>
+                                    </div>
+                                    <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
+                                        <lightning-input-field field-name={productCodeField}></lightning-input-field>
+                                    </div>
+                                    <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
+                                        <lightning-input-field field-name={typeField}></lightning-input-field>
+                                    </div>
+                                    <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
+                                        <lightning-input-field field-name={constructionPhaseField}></lightning-input-field>
+                                    </div>
+                                    <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
+                                        <lightning-input-field field-name={businessEntityField}></lightning-input-field>
+                                    </div>
+                                    <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
+                                        <lightning-input-field field-name={familyField}></lightning-input-field>
+                                    </div>
+                                    <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
+                                        <lightning-input-field field-name={usageTypeArabicField}></lightning-input-field>
+                                    </div>
 
-                            <!-- Row 2 -->
-                            <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
-                                <lightning-input-field field-name={businessEntityField}></lightning-input-field>
-                            </div>
-                            <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
-                                <lightning-input-field field-name={typeField}></lightning-input-field>
-                            </div>
+                                    <!-- Configuration Information -->
+                                    <div class="slds-col slds-size_1-of-1 slds-m-top_medium">
+                                        <h3 class="slds-text-heading_small slds-m-bottom_small">Configuration Information</h3>
+                                    </div>
+                                    <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
+                                        <lightning-input-field field-name={cipTypeField}></lightning-input-field>
+                                    </div>
 
-                            <!-- Row 3 -->
-                            <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
-                                <lightning-input-field field-name={areaField}></lightning-input-field>
-                            </div>
-                            <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
-                                <lightning-input-field field-name={familyField}></lightning-input-field>
-                            </div>
-
-                            <!-- Row 4 -->
-                            <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
-                                <lightning-input-field field-name={handoverDateField}></lightning-input-field>
-                            </div>
-                            <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
-                                <lightning-input-field field-name={ibanField}></lightning-input-field>
-                            </div>
-
-                            <!-- Row 5 - Description (Full Width) -->
-                            <div class="slds-col slds-size_1-of-1">
-                                <lightning-input-field field-name={descriptionField}></lightning-input-field>
-                            </div>
-
-                            <!-- Row 6 - Update Comments (Required) -->
-                            <div class="slds-col slds-size_1-of-1">
-                                <lightning-textarea
-                                    name="updateComments"
-                                    label="Update Comments"
-                                    value={updateComments}
-                                    onchange={handleUpdateCommentsChange}
-                                    required
-                                    min-length="10"
-                                    max-length="32768"
-                                    placeholder="Please explain the reason for this update (minimum 10 characters)"
-                                    class="slds-m-top_small">
-                                </lightning-textarea>
-                                <div class="slds-text-color_error slds-text-body_small slds-m-top_xx-small">
-                                    * Required - Explain why this unit is being updated
+                                    <!-- Description -->
+                                    <div class="slds-col slds-size_1-of-1 slds-m-top_medium">
+                                        <h3 class="slds-text-heading_small slds-m-bottom_small">Description Information</h3>
+                                    </div>
+                                    <div class="slds-col slds-size_1-of-1">
+                                        <lightning-input-field field-name={descriptionField}></lightning-input-field>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
+                        </lightning-tab>
 
-                        <!-- Hidden submit button to trigger form submission -->
-                        <button type="submit" class="slds-hide">Submit</button>
-                    </lightning-record-edit-form>
-                </div>
+                        <!-- Tab 2: Fixtures / Fittings -->
+                        <lightning-tab label="Fixtures / Fittings">
+                            <div class="slds-p-around_small">
+                                <div class="slds-grid slds-wrap slds-gutters_small">
+                                    <!-- Fixtures / Fittings Characteristics -->
+                                    <div class="slds-col slds-size_1-of-1">
+                                        <h3 class="slds-text-heading_small slds-m-bottom_small">Fixtures / Fittings Characteristics</h3>
+                                    </div>
+                                    <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-3">
+                                        <lightning-input-field field-name={orientationField}></lightning-input-field>
+                                    </div>
+                                    <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-3">
+                                        <lightning-input-field field-name={entryCourtyardField}></lightning-input-field>
+                                    </div>
+                                    <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-3">
+                                        <lightning-input-field field-name={storeroomField}></lightning-input-field>
+                                    </div>
+                                    <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-3">
+                                        <lightning-input-field field-name={garageField}></lightning-input-field>
+                                    </div>
+                                    <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-3">
+                                        <lightning-input-field field-name={elevatedField}></lightning-input-field>
+                                    </div>
+                                    <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-3">
+                                        <lightning-input-field field-name={poolField}></lightning-input-field>
+                                    </div>
+                                    <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-3">
+                                        <lightning-input-field field-name={terraceField}></lightning-input-field>
+                                    </div>
+                                    <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-3">
+                                        <lightning-input-field field-name={idFinishField}></lightning-input-field>
+                                    </div>
+                                    <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-3">
+                                        <lightning-input-field field-name={roofTerraceField}></lightning-input-field>
+                                    </div>
+                                    <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-3">
+                                        <lightning-input-field field-name={driversRoomField}></lightning-input-field>
+                                    </div>
+                                    <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-3">
+                                        <lightning-input-field field-name={maidsRoomField}></lightning-input-field>
+                                    </div>
+                                    <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-3">
+                                        <lightning-input-field field-name={panoramicViewField}></lightning-input-field>
+                                    </div>
+                                    <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-3">
+                                        <lightning-input-field field-name={wadiViewField}></lightning-input-field>
+                                    </div>
+                                    <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-3">
+                                        <lightning-input-field field-name={privateField}></lightning-input-field>
+                                    </div>
+                                    <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-3">
+                                        <lightning-input-field field-name={golfViewField}></lightning-input-field>
+                                    </div>
+                                    <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-3">
+                                        <lightning-input-field field-name={conditionField}></lightning-input-field>
+                                    </div>
+                                    <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-3">
+                                        <lightning-input-field field-name={furnishedField}></lightning-input-field>
+                                    </div>
+                                </div>
+                            </div>
+                        </lightning-tab>
+                    </lightning-tabset>
+
+                    <!-- Update Comments (Required) - Always visible at bottom -->
+                    <div class="slds-p-around_small slds-m-top_medium">
+                        <lightning-textarea
+                            name="updateComments"
+                            label="Update Comments"
+                            value={updateComments}
+                            onchange={handleUpdateCommentsChange}
+                            required
+                            min-length="10"
+                            max-length="32768"
+                            placeholder="Please explain the reason for this update (minimum 10 characters)">
+                        </lightning-textarea>
+                        <div class="slds-text-color_error slds-text-body_small slds-m-top_xx-small">
+                            * Required - Explain why this unit is being updated
+                        </div>
+                    </div>
+
+                    <!-- Hidden submit button to trigger form submission -->
+                    <button type="submit" class="slds-hide">Submit</button>
+                </lightning-record-edit-form>
+            </div>
 
             <!-- Footer Actions -->
             <div class="footer-actions slds-m-top_large slds-p-top_large slds-border_top">
