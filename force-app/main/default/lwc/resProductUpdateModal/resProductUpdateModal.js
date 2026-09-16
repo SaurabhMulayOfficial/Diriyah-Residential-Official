@@ -29,7 +29,6 @@ import BUILDING_NUMBER_FIELD from '@salesforce/schema/Product2.RES_Building_Numb
 import BUILDING_FIELD from '@salesforce/schema/Product2.RES_Building__c';
 import FLOOR_FIELD from '@salesforce/schema/Product2.RES_Floor__c';
 import FLOOR_ARABIC_FIELD from '@salesforce/schema/Product2.RES_Floor_Arabic__c';
-import PRODUCT_ADDRESS_FIELD from '@salesforce/schema/Product2.RES_Product_Address__c';
 import AREA_TYPE_FIELD from '@salesforce/schema/Product2.RES_Area_Type__c';
 import UNIT_SIZE_FIELD from '@salesforce/schema/Product2.RES_Unit_Size__c';
 import UNIT_SHARE_FIELD from '@salesforce/schema/Product2.RES_Unit_Share__c';
@@ -118,7 +117,6 @@ export default class ResProductUpdateModal extends LightningElement {
     buildingField = BUILDING_FIELD;
     floorField = FLOOR_FIELD;
     floorArabicField = FLOOR_ARABIC_FIELD;
-    productAddressField = PRODUCT_ADDRESS_FIELD;
     areaTypeField = AREA_TYPE_FIELD;
     unitSizeField = UNIT_SIZE_FIELD;
     unitShareField = UNIT_SHARE_FIELD;
