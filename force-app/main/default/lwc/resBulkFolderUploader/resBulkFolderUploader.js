@@ -1,4 +1,5 @@
 import { LightningElement, api, track } from 'lwc';
+import isInventoryFeatureEnabledLabel from '@salesforce/label/c.RES_Inventory_Config';
 import processUploadedFiles from '@salesforce/apex/RES_BulkFolderUploaderController.processUploadedFiles';
 import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 
@@ -24,6 +25,10 @@ export default class ResBulkFolderUploader extends LightningElement {
         '.png',
         '.zip'
     ];
+
+    get isFeatureEnabled() {
+        return isInventoryFeatureEnabledLabel ? isInventoryFeatureEnabledLabel.toLowerCase() === 'true' : false;
+    }
 
     get acceptedFormatsString() {
         return this.acceptedFormats.join(',');
