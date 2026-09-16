@@ -165,6 +165,38 @@
             <componentInstance>
                 <componentInstanceProperties>
                     <name>dashboardName</name>
+                    <value>RES_Opportunity_Dashboard</value>
+                </componentInstanceProperties>
+                <componentInstanceProperties>
+                    <name>hideOnError</name>
+                    <value>true</value>
+                </componentInstanceProperties>
+                <componentName>desktopDashboards:embeddedDashboard</componentName>
+                <identifier>desktopDashboards_embeddedDashboard7</identifier>
+                <visibilityRule>
+                    <booleanFilter>3 And (1 OR 2)</booleanFilter>
+                    <criteria>
+                        <leftValue>{!$Permission.CustomPermission.RES_Specalist_Dashboard_Visibility}</leftValue>
+                        <operator>EQUAL</operator>
+                        <rightValue>true</rightValue>
+                    </criteria>
+                    <criteria>
+                        <leftValue>{!$Permission.CustomPermission.RES_Manager_Dashboard_Visibility}</leftValue>
+                        <operator>EQUAL</operator>
+                        <rightValue>true</rightValue>
+                    </criteria>
+                    <criteria>
+                        <leftValue>{!$User.Profile.Name}</leftValue>
+                        <operator>EQUAL</operator>
+                        <rightValue>Diriyah Residential Sales Standard Profile</rightValue>
+                    </criteria>
+                </visibilityRule>
+            </componentInstance>
+        </itemInstances>
+        <itemInstances>
+            <componentInstance>
+                <componentInstanceProperties>
+                    <name>dashboardName</name>
                     <value>RES_MarketingDashboard</value>
                 </componentInstanceProperties>
                 <componentInstanceProperties>
