@@ -100,7 +100,7 @@
         <field>SUBJECT</field>
         <sortOrder>Asc</sortOrder>
     </groupingsDown>
-    <name>Total Tasks Overall</name>
+    <name>Total Overall Tasks</name>
     <params>
         <name>closed</name>
         <value>all</value>
@@ -122,6 +122,6 @@
     <sortOrder>Asc</sortOrder>
     <timeFrameFilter>
         <dateColumn>DUE_DATE</dateColumn>
-        <interval>INTERVAL_THISMONTH</interval>
+        <interval>INTERVAL_LAST120</interval>
     </timeFrameFilter>
 </Report>
