@@ -44,6 +44,18 @@
     color: #ffffff !important; /* Keep white text on hover */
 }
 
+/* Warning/Confirm Modal Header - Match main header style */
+.slds-modal__header {
+    background-color: #a65336 !important; /* Same brown/orange as main header */
+    padding: 1rem 1.5rem !important;
+    border-radius: 0.5rem 0.5rem 0 0 !important; /* Rounded top corners */
+}
+
+.slds-modal__title {
+    color: #ffffff !important; /* White text */
+    font-weight: 600 !important;
+}
+
 /* ========================================
    MOBILE-FRIENDLY STYLES
    ======================================== */
