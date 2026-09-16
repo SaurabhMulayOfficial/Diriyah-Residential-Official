@@ -7,7 +7,7 @@ import { updateRecord } from 'lightning/uiRecordApi';
 import { refreshApex } from '@salesforce/apex';
 import notifyProductUpdate from '@salesforce/apex/RES_ProductUpdateNotificationController.notifyProductUpdate';
 
-// Product2 fields
+// Product2 fields - Core
 import ID_FIELD from '@salesforce/schema/Product2.Id';
 import UNIT_STATUS_FIELD from '@salesforce/schema/Product2.RES_Unit_Status__c';
 import IS_ACTIVE_FIELD from '@salesforce/schema/Product2.IsActive';
@@ -22,6 +22,51 @@ import IBAN_FIELD from '@salesforce/schema/Product2.RES_Unit_Virtual_IBAN__c';
 import DESCRIPTION_FIELD from '@salesforce/schema/Product2.Description';
 import UPDATE_COMMENTS_FIELD from '@salesforce/schema/Product2.RES_Update_Comments__c';
 import UPDATE_REQUESTED_FIELD from '@salesforce/schema/Product2.RES_Update_Requested__c';
+
+// Product2 fields - Details Tab
+import UNIT_NUMBER_FIELD from '@salesforce/schema/Product2.RES_Unit_Number__c';
+import BUILDING_NUMBER_FIELD from '@salesforce/schema/Product2.RES_Building_Number__c';
+import BUILDING_FIELD from '@salesforce/schema/Product2.RES_Building__c';
+import FLOOR_FIELD from '@salesforce/schema/Product2.RES_Floor__c';
+import FLOOR_ARABIC_FIELD from '@salesforce/schema/Product2.RES_Floor_Arabic__c';
+import PRODUCT_ADDRESS_FIELD from '@salesforce/schema/Product2.RES_Product_Address__c';
+import AREA_TYPE_FIELD from '@salesforce/schema/Product2.RES_Area_Type__c';
+import UNIT_SIZE_FIELD from '@salesforce/schema/Product2.RES_Unit_Size__c';
+import UNIT_SHARE_FIELD from '@salesforce/schema/Product2.RES_Unit_Share__c';
+import STYLE_FIELD from '@salesforce/schema/Product2.RES_Style__c';
+import USAGE_TYPE_ARABIC_FIELD from '@salesforce/schema/Product2.RES_Usage_Type_Arabic__c';
+import ORIENTATION_FIELD from '@salesforce/schema/Product2.RES_Orientation__c';
+import ID_FINISH_FIELD from '@salesforce/schema/Product2.RES_ID_Finish__c';
+import CONSTRUCTION_PHASE_FIELD from '@salesforce/schema/Product2.RES_Construction_Phase__c';
+import SEQUENCE_FIELD from '@salesforce/schema/Product2.RES_Sequence__c';
+import PRODUCT_NUMBER_FIELD from '@salesforce/schema/Product2.RES_Product_Number__c';
+import ADDITIONAL_NUMBER_FIELD from '@salesforce/schema/Product2.RES_Additional_Number__c';
+import CATALOG_FIELD from '@salesforce/schema/Product2.RES_Catalog__c';
+import CIP_TYPE_FIELD from '@salesforce/schema/Product2.RES_CIP_Type__c';
+import PRICE_OPTION_FIELD from '@salesforce/schema/Product2.RES_Price_Option__c';
+import POC_PERCENTAGE_FIELD from '@salesforce/schema/Product2.RES_POC_Percentage__c';
+import INSTALLMENT_PERCENTAGE_FIELD from '@salesforce/schema/Product2.RES_Installment_Percentage__c';
+import INSTALLMENT_AMOUNT_FIELD from '@salesforce/schema/Product2.RES_Installment_Amount__c';
+import NO_OF_YEARS_FIELD from '@salesforce/schema/Product2.RES_No_of_Years__c';
+import PROFIT_CENTER_FIELD from '@salesforce/schema/Product2.RES_Profit_Center__c';
+import VIRTUAL_BANK_ACCOUNT_FIELD from '@salesforce/schema/Product2.RES_Virtual_Bank_Account__c';
+
+// Product2 fields - Fixtures/Fittings Tab
+import DRIVERS_ROOM_FIELD from '@salesforce/schema/Product2.RES_Drivers_Room__c';
+import MAIDS_ROOM_FIELD from '@salesforce/schema/Product2.RES_Maids_Room__c';
+import STOREROOM_FIELD from '@salesforce/schema/Product2.RES_Storeroom__c';
+import GARAGE_FIELD from '@salesforce/schema/Product2.RES_Garage__c';
+import POOL_FIELD from '@salesforce/schema/Product2.RES_Pool__c';
+import TERRACE_FIELD from '@salesforce/schema/Product2.RES_Terrace__c';
+import ROOF_TERRACE_FIELD from '@salesforce/schema/Product2.RES_Roof_Terrace__c';
+import ENTRY_COURTYARD_FIELD from '@salesforce/schema/Product2.RES_Entry_Courtyard__c';
+import PANORAMIC_VIEW_FIELD from '@salesforce/schema/Product2.RES_Panoramic_View__c';
+import WADI_VIEW_FIELD from '@salesforce/schema/Product2.RES_Wadi_View__c';
+import GOLF_VIEW_FIELD from '@salesforce/schema/Product2.RES_Golf_View__c';
+import ELEVATED_FIELD from '@salesforce/schema/Product2.RES_Elevated__c';
+import PRIVATE_FIELD from '@salesforce/schema/Product2.RES_Private__c';
+import FURNISHED_FIELD from '@salesforce/schema/Product2.RES_Furnished__c';
+import CONDITION_FIELD from '@salesforce/schema/Product2.RES_Condition__c';
 
 const FIELDS = [
     UNIT_STATUS_FIELD,
@@ -55,7 +100,7 @@ export default class ResProductUpdateModal extends LightningElement {
     currentStatus;
     productName;
 
-    // Fields to display in the form
+    // Fields to display in the form - Core
     nameField = NAME_FIELD;
     productCodeField = PRODUCT_CODE_FIELD;
     businessEntityField = BUSINESS_ENTITY_FIELD;
@@ -66,6 +111,51 @@ export default class ResProductUpdateModal extends LightningElement {
     ibanField = IBAN_FIELD;
     descriptionField = DESCRIPTION_FIELD;
     updateCommentsField = UPDATE_COMMENTS_FIELD;
+
+    // Details Tab Fields
+    unitNumberField = UNIT_NUMBER_FIELD;
+    buildingNumberField = BUILDING_NUMBER_FIELD;
+    buildingField = BUILDING_FIELD;
+    floorField = FLOOR_FIELD;
+    floorArabicField = FLOOR_ARABIC_FIELD;
+    productAddressField = PRODUCT_ADDRESS_FIELD;
+    areaTypeField = AREA_TYPE_FIELD;
+    unitSizeField = UNIT_SIZE_FIELD;
+    unitShareField = UNIT_SHARE_FIELD;
+    styleField = STYLE_FIELD;
+    usageTypeArabicField = USAGE_TYPE_ARABIC_FIELD;
+    orientationField = ORIENTATION_FIELD;
+    idFinishField = ID_FINISH_FIELD;
+    constructionPhaseField = CONSTRUCTION_PHASE_FIELD;
+    sequenceField = SEQUENCE_FIELD;
+    productNumberField = PRODUCT_NUMBER_FIELD;
+    additionalNumberField = ADDITIONAL_NUMBER_FIELD;
+    catalogField = CATALOG_FIELD;
+    cipTypeField = CIP_TYPE_FIELD;
+    priceOptionField = PRICE_OPTION_FIELD;
+    pocPercentageField = POC_PERCENTAGE_FIELD;
+    installmentPercentageField = INSTALLMENT_PERCENTAGE_FIELD;
+    installmentAmountField = INSTALLMENT_AMOUNT_FIELD;
+    noOfYearsField = NO_OF_YEARS_FIELD;
+    profitCenterField = PROFIT_CENTER_FIELD;
+    virtualBankAccountField = VIRTUAL_BANK_ACCOUNT_FIELD;
+
+    // Fixtures/Fittings Tab Fields
+    driversRoomField = DRIVERS_ROOM_FIELD;
+    maidsRoomField = MAIDS_ROOM_FIELD;
+    storeroomField = STOREROOM_FIELD;
+    garageField = GARAGE_FIELD;
+    poolField = POOL_FIELD;
+    terraceField = TERRACE_FIELD;
+    roofTerraceField = ROOF_TERRACE_FIELD;
+    entryCourtyardField = ENTRY_COURTYARD_FIELD;
+    panoramicViewField = PANORAMIC_VIEW_FIELD;
+    wadiViewField = WADI_VIEW_FIELD;
+    golfViewField = GOLF_VIEW_FIELD;
+    elevatedField = ELEVATED_FIELD;
+    privateField = PRIVATE_FIELD;
+    furnishedField = FURNISHED_FIELD;
+    conditionField = CONDITION_FIELD;
 
     @wire(getRecord, { recordId: '$recordId', fields: FIELDS })
     wiredProduct(result) {
