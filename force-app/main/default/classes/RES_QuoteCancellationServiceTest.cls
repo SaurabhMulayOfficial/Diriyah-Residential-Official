@@ -42,6 +42,9 @@ private class RES_QuoteCancellationServiceTest {
         );
         insert q;
 
+        opp.SyncedQuoteId = q.Id;
+        update opp;
+
         Product2 prod = new Product2(
             Name = 'RES QCS Test Unit',
             IsActive = true,
