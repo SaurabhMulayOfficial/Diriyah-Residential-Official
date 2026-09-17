@@ -1,4 +1,4 @@
-import { LightningElement, track } from 'lwc';
+import { LightningElement, track, wire } from 'lwc';
 import getUserApprovalAccess from '@salesforce/apex/RES_ProductApprovalController.getUserApprovalAccess';
 import getApprovalQueue from '@salesforce/apex/RES_ProductApprovalController.getApprovalQueue';
 import approveProducts from '@salesforce/apex/RES_ProductApprovalController.approveProducts';
@@ -6,6 +6,8 @@ import rejectProducts from '@salesforce/apex/RES_ProductApprovalController.rejec
 import getRejectedProducts from '@salesforce/apex/RES_ProductApprovalController.getRejectedProducts';
 import submitForApproval from '@salesforce/apex/RES_ProductApprovalController.submitForApproval';
 import { ShowToastEvent } from 'lightning/platformShowToastEvent';
+import { getPicklistValues } from 'lightning/uiObjectInfoApi';
+import FAMILY_FIELD from '@salesforce/schema/Product2.Family';
 
 const PAGE_SIZE = 50;
 const SEARCH_DELAY = 400;
@@ -35,7 +37,7 @@ const BASE_COLUMNS = [
     },
     {
         label: 'Project',
-        fieldName: 'RES_Business_Entity__c',
+        fieldName: 'BusinessEntityName',
         type: 'text'
     },
     {
@@ -49,18 +51,13 @@ const BASE_COLUMNS = [
         type: 'text'
     },
     {
-        label: 'Area',
+        label: 'Net Saleable Area (m²)',
         fieldName: 'RES_Net_Saleable_Area__c',
         type: 'number'
     },
     {
         label: 'Usage Type',
         fieldName: 'Family',
-        type: 'text'
-    },
-    {
-        label: 'Business Entity',
-        fieldName: 'RES_Business_Entity__c',
         type: 'text'
     },
     {
@@ -117,6 +114,8 @@ export default class ResProductApprovalQueue extends LightningElement {
     isLoadingMore = false;
     isProcessing = false;
 
+    familyPicklistValues = {};
+
     hasError = false;
     errorMessage = '';
 
@@ -134,6 +133,18 @@ export default class ResProductApprovalQueue extends LightningElement {
     failedResults = [];
     searchTimeout;
     searchController;
+    familyPicklistValues = {};
+
+    @wire(getPicklistValues, { recordTypeId: '012000000000000AAA', fieldApiName: FAMILY_FIELD })
+    wiredFamilyPicklist({ error, data }) {
+        if (data) {
+            const valueMap = {};
+            data.values.forEach(item => {
+                valueMap[item.value] = item.label;
+            });
+            this.familyPicklistValues = valueMap;
+        }
+    }
 
     connectedCallback() {
         this.loadUserAccess();
@@ -296,7 +307,9 @@ export default class ResProductApprovalQueue extends LightningElement {
         selected:
             this.selectedProductIds.includes(
                 record.Id
-            )
+            ),
+        Family: this.familyPicklistValues[record.Family] || record.Family,
+        BusinessEntityName: record.RES_Business_Entity__r?.Name || ''
         };
     }
 
