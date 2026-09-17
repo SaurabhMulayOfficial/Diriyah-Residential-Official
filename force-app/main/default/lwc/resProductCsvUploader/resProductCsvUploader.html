@@ -1,4 +1,5 @@
 <template>
+    <!-- Card 1: Product Inventory Importer -->
     <lightning-card title="Product Inventory Importer" icon-name="custom:custom63">
         <div class="slds-m-around_medium">
 
@@ -25,7 +26,7 @@
 
                 <!-- Step 2: inventory type, sourced from Ingestion Layout metadata -->
                 <lightning-combobox
-                    label="Inventory type"
+                    label="Inventory Type"
                     placeholder="Select an inventory type"
                     options={layoutOptions}
                     value={selectedLayout}
@@ -157,4 +158,9 @@
 
         </div>
     </lightning-card>
+
+    <!-- Card 2: Upload Product Documents / Files Framework -->
+    <div class="slds-m-top_medium">
+        <c-res-bulk-folder-uploader></c-res-bulk-folder-uploader>
+    </div>
 </template>
