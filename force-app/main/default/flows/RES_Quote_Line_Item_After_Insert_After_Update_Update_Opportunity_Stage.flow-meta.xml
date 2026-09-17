@@ -2,49 +2,72 @@
 <Flow xmlns="http://soap.sforce.com/2006/04/metadata">
     <apiVersion>67.0</apiVersion>
     <areMetricsLoggedToDataCloud>false</areMetricsLoggedToDataCloud>
+    <actionCalls>
+        <name>Opportunity_Stage_Update</name>
+        <label>Opportunity Stage Update</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <actionName>RES_OpportunityStageUpdateValidation</actionName>
+        <actionType>apex</actionType>
+        <flowTransactionModel>Automatic</flowTransactionModel>
+        <inputParameters>
+            <name>accountRecord</name>
+            <value>
+                <elementReference>Get_Account_On_Opportunity</elementReference>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>opportunityRecord</name>
+            <value>
+                <elementReference>Get_Opportunity_On_Quote</elementReference>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>quoteRecord</name>
+            <value>
+                <elementReference>Get_Quote_Record</elementReference>
+            </value>
+        </inputParameters>
+        <nameSegment>RES_OpportunityStageUpdateValidation</nameSegment>
+        <offset>0</offset>
+    </actionCalls>
     <assignments>
-        <name>Count_Quote_Line_Item_Records</name>
-        <label>Count Quote Line Item Records</label>
+        <name>Count_Root_Line_Items</name>
+        <label>Count Root Line Items</label>
         <locationX>0</locationX>
         <locationY>0</locationY>
         <assignmentItems>
-            <assignToReference>quoteLineItemCount</assignToReference>
+            <assignToReference>rootLineItemCount</assignToReference>
             <operator>AssignCount</operator>
             <value>
-                <elementReference>Get_all_Quote_Line_Item</elementReference>
+                <elementReference>Get_All_Root_Quote_Line_Items</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>bundleComponentCount</assignToReference>
+            <operator>AssignCount</operator>
+            <value>
+                <elementReference>Get_Unparented_Bundle_Component_Lines</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>rootLineItemCount</assignToReference>
+            <operator>Subtract</operator>
+            <value>
+                <elementReference>bundleComponentCount</elementReference>
             </value>
         </assignmentItems>
         <connector>
-            <targetReference>Check_for_Quote_Line_Item_on_quote</targetReference>
+            <targetReference>Check_Root_Line_Count</targetReference>
         </connector>
     </assignments>
     <customErrors>
-        <name>Validate_Product_And_Quantity</name>
-        <label>Validate Product And Quantity</label>
+        <name>Validate_Root_Line_Count</name>
+        <label>Validate Root Line Count</label>
         <locationX>0</locationX>
         <locationY>0</locationY>
         <customErrorMessages>
-            <errorMessage>Only one product can be added to a quote, and a product can be added with a quantity of 1 only.</errorMessage>
-            <isFieldError>false</isFieldError>
-        </customErrorMessages>
-    </customErrors>
-    <customErrors>
-        <name>Validate_Quantity</name>
-        <label>Validate Quantity</label>
-        <locationX>0</locationX>
-        <locationY>0</locationY>
-        <customErrorMessages>
-            <errorMessage>A product can be added with a quantity of 1 only.</errorMessage>
-            <isFieldError>false</isFieldError>
-        </customErrorMessages>
-    </customErrors>
-    <customErrors>
-        <name>Validate_Quote_Line_Item_Insertion</name>
-        <label>Validate Quote Line Item Insertion</label>
-        <locationX>0</locationX>
-        <locationY>0</locationY>
-        <customErrorMessages>
-            <errorMessage>Only one product can be added to a quote.</errorMessage>
+            <errorMessage>Only one unit or unit bundle can be added to a quote.</errorMessage>
             <isFieldError>false</isFieldError>
         </customErrorMessages>
     </customErrors>
@@ -65,115 +88,62 @@
                 </rightValue>
             </conditions>
             <connector>
-                <targetReference>Get_all_Quote_Line_Item</targetReference>
+                <targetReference>Check_Is_Root_Line</targetReference>
             </connector>
             <label>Outcome 1 of Check Flow Switch</label>
         </rules>
     </decisions>
     <decisions>
-        <name>Check_for_Quote_Line_Item_on_quote</name>
-        <label>Check for Quote Line Item on quote</label>
+        <name>Check_Is_Root_Line</name>
+        <label>Check Is Root Line</label>
         <locationX>0</locationX>
         <locationY>0</locationY>
-        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <defaultConnectorLabel>Root Or Standalone Line</defaultConnectorLabel>
+        <defaultConnector>
+            <targetReference>Get_All_Root_Quote_Line_Items</targetReference>
+        </defaultConnector>
         <rules>
-            <name>Product_And_Quantity_Both</name>
+            <name>Is_Bundle_Component_Line</name>
             <conditionLogic>and</conditionLogic>
             <conditions>
-                <leftValueReference>quoteLineItemCount</leftValueReference>
-                <operator>GreaterThan</operator>
+                <leftValueReference>$Record.PriceWaterfallIdentifier</leftValueReference>
+                <operator>StartsWith</operator>
                 <rightValue>
-                    <numberValue>1.0</numberValue>
-                </rightValue>
-            </conditions>
-            <conditions>
-                <leftValueReference>$Record.Quantity</leftValueReference>
-                <operator>GreaterThan</operator>
-                <rightValue>
-                    <numberValue>1.0</numberValue>
-                </rightValue>
-            </conditions>
-            <connector>
-                <targetReference>Publish_Alert_Both</targetReference>
-            </connector>
-            <label>Product and Quantity Both</label>
-        </rules>
-        <rules>
-            <name>Product_Only</name>
-            <conditionLogic>and</conditionLogic>
-            <conditions>
-                <leftValueReference>quoteLineItemCount</leftValueReference>
-                <operator>GreaterThan</operator>
-                <rightValue>
-                    <numberValue>1.0</numberValue>
-                </rightValue>
-            </conditions>
-            <connector>
-                <targetReference>Publish_Alert_Product</targetReference>
-            </connector>
-            <label>Product Only</label>
-        </rules>
-        <rules>
-            <name>Quantity_Only</name>
-            <conditionLogic>and</conditionLogic>
-            <conditions>
-                <leftValueReference>$Record.Quantity</leftValueReference>
-                <operator>GreaterThan</operator>
-                <rightValue>
-                    <numberValue>1.0</numberValue>
-                </rightValue>
-            </conditions>
-            <connector>
-                <targetReference>Publish_Alert_Quantity</targetReference>
-            </connector>
-            <label>Quantity Only</label>
-        </rules>
-        <rules>
-            <name>Quote_Line_Item_1</name>
-            <conditionLogic>and</conditionLogic>
-            <conditions>
-                <leftValueReference>quoteLineItemCount</leftValueReference>
-                <operator>EqualTo</operator>
-                <rightValue>
-                    <numberValue>1.0</numberValue>
+                    <stringValue>ref_</stringValue>
                 </rightValue>
             </conditions>
             <connector>
                 <targetReference>Get_Quote_Record</targetReference>
             </connector>
-            <label>Quote Line Item = 1</label>
+            <label>Is Bundle Component Line</label>
         </rules>
     </decisions>
     <decisions>
-        <name>Check_Opportunity_Stage</name>
-        <label>Check Opportunity Stage</label>
+        <name>Check_Root_Line_Count</name>
+        <label>Check Root Line Count</label>
         <locationX>0</locationX>
         <locationY>0</locationY>
-        <defaultConnectorLabel>No Update Needed</defaultConnectorLabel>
+        <defaultConnectorLabel>Single Root Line</defaultConnectorLabel>
+        <defaultConnector>
+            <targetReference>Get_Quote_Record</targetReference>
+        </defaultConnector>
         <rules>
-            <name>Needs_Stage_Update</name>
+            <name>Multiple_Root_Lines</name>
             <conditionLogic>and</conditionLogic>
             <conditions>
-                <leftValueReference>Get_Opportunity_On_Quote.Id</leftValueReference>
-                <operator>IsNull</operator>
+                <leftValueReference>rootLineItemCount</leftValueReference>
+                <operator>GreaterThan</operator>
                 <rightValue>
-                    <booleanValue>false</booleanValue>
-                </rightValue>
-            </conditions>
-            <conditions>
-                <leftValueReference>Get_Opportunity_On_Quote.StageName</leftValueReference>
-                <operator>NotEqualTo</operator>
-                <rightValue>
-                    <stringValue>Unit Selected</stringValue>
+                    <numberValue>1.0</numberValue>
                 </rightValue>
             </conditions>
             <connector>
-                <targetReference>Update_Opportunity_Stage</targetReference>
+                <targetReference>Validate_Root_Line_Count</targetReference>
             </connector>
-            <label>Needs Stage Update</label>
+            <label>Multiple Root Lines</label>
         </rules>
     </decisions>
-    <description>DIR-1128: On QuoteLineItem create, enforces one product per Quote and quantity of 1 (both errors surface together, published as a real-time alert since Browse Catalogs swallows save-time error messages). On a valid single line, updates the linked Opportunity's stage to Unit Selected.</description>
+    <description>DIR-1782: V7 base (delegates Opportunity stage transitions to RES_OpportunityStageUpdateValidation) plus a RES_Config_Switch__c gate and bundle-aware validation: a Quote may have only one root unit/bundle. ParentQuoteLineItemId is NOT yet populated on bundle component lines at insert time (the platform links them in a later step), so both the per-record root check and the root-count query also exclude lines whose PriceWaterfallIdentifier starts with "ref_" - the constraint engine's marker for a component line it derived, as opposed to the "QLI{n}_0__0"-style identifier on the line the user actually selected.</description>
     <environments>Default</environments>
     <interviewLabel>RES Quote Line Item - After Insert - After Update - Update Opportunity Stage {!$Flow.CurrentDateTime}</interviewLabel>
     <label>RES Quote Line Item - After Insert - After Update - Update Opportunity Stage</label>
@@ -196,98 +166,35 @@
         </value>
     </processMetadataValues>
     <processType>AutoLaunchedFlow</processType>
-    <recordCreates>
-        <name>Publish_Alert_Both</name>
-        <label>Publish Alert Both</label>
-        <locationX>0</locationX>
-        <locationY>0</locationY>
-        <connector>
-            <targetReference>Validate_Product_And_Quantity</targetReference>
-        </connector>
-        <inputAssignments>
-            <field>Message__c</field>
-            <value>
-                <stringValue>Only one product can be added to a quote, and a product can be added with a quantity of 1 only.</stringValue>
-            </value>
-        </inputAssignments>
-        <inputAssignments>
-            <field>QuoteId__c</field>
-            <value>
-                <elementReference>$Record.QuoteId</elementReference>
-            </value>
-        </inputAssignments>
-        <inputAssignments>
-            <field>RecipientUserId__c</field>
-            <value>
-                <elementReference>$User.Id</elementReference>
-            </value>
-        </inputAssignments>
-        <object>RES_Line_Item_Alert__e</object>
-    </recordCreates>
-    <recordCreates>
-        <name>Publish_Alert_Product</name>
-        <label>Publish Alert Product</label>
-        <locationX>0</locationX>
-        <locationY>0</locationY>
-        <connector>
-            <targetReference>Validate_Quote_Line_Item_Insertion</targetReference>
-        </connector>
-        <inputAssignments>
-            <field>Message__c</field>
-            <value>
-                <stringValue>Only one product can be added to a quote.</stringValue>
-            </value>
-        </inputAssignments>
-        <inputAssignments>
-            <field>QuoteId__c</field>
-            <value>
-                <elementReference>$Record.QuoteId</elementReference>
-            </value>
-        </inputAssignments>
-        <inputAssignments>
-            <field>RecipientUserId__c</field>
-            <value>
-                <elementReference>$User.Id</elementReference>
-            </value>
-        </inputAssignments>
-        <object>RES_Line_Item_Alert__e</object>
-    </recordCreates>
-    <recordCreates>
-        <name>Publish_Alert_Quantity</name>
-        <label>Publish Alert Quantity</label>
-        <locationX>0</locationX>
-        <locationY>0</locationY>
-        <connector>
-            <targetReference>Validate_Quantity</targetReference>
-        </connector>
-        <inputAssignments>
-            <field>Message__c</field>
-            <value>
-                <stringValue>A product can be added with a quantity of 1 only.</stringValue>
-            </value>
-        </inputAssignments>
-        <inputAssignments>
-            <field>QuoteId__c</field>
-            <value>
-                <elementReference>$Record.QuoteId</elementReference>
-            </value>
-        </inputAssignments>
-        <inputAssignments>
-            <field>RecipientUserId__c</field>
-            <value>
-                <elementReference>$User.Id</elementReference>
-            </value>
-        </inputAssignments>
-        <object>RES_Line_Item_Alert__e</object>
-    </recordCreates>
     <recordLookups>
-        <name>Get_all_Quote_Line_Item</name>
-        <label>Get all Quote Line Item</label>
+        <name>Get_Account_On_Opportunity</name>
+        <label>Get Account On Opportunity</label>
         <locationX>0</locationX>
         <locationY>0</locationY>
         <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
         <connector>
-            <targetReference>Count_Quote_Line_Item_Records</targetReference>
+            <targetReference>Opportunity_Stage_Update</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Id</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>Get_Opportunity_On_Quote.AccountId</elementReference>
+            </value>
+        </filters>
+        <getFirstRecordOnly>true</getFirstRecordOnly>
+        <object>Account</object>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
+    <recordLookups>
+        <name>Get_All_Root_Quote_Line_Items</name>
+        <label>Get All Root Quote Line Items</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Get_Unparented_Bundle_Component_Lines</targetReference>
         </connector>
         <filterLogic>and</filterLogic>
         <filters>
@@ -295,6 +202,48 @@
             <operator>EqualTo</operator>
             <value>
                 <elementReference>$Record.QuoteId</elementReference>
+            </value>
+        </filters>
+        <filters>
+            <field>ParentQuoteLineItemId</field>
+            <operator>IsNull</operator>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </filters>
+        <getFirstRecordOnly>false</getFirstRecordOnly>
+        <object>QuoteLineItem</object>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
+    <recordLookups>
+        <name>Get_Unparented_Bundle_Component_Lines</name>
+        <label>Get Unparented Bundle Component Lines</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Count_Root_Line_Items</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>QuoteId</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>$Record.QuoteId</elementReference>
+            </value>
+        </filters>
+        <filters>
+            <field>ParentQuoteLineItemId</field>
+            <operator>IsNull</operator>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </filters>
+        <filters>
+            <field>PriceWaterfallIdentifier</field>
+            <operator>StartsWith</operator>
+            <value>
+                <stringValue>ref_</stringValue>
             </value>
         </filters>
         <getFirstRecordOnly>false</getFirstRecordOnly>
@@ -306,9 +255,9 @@
         <label>Get Opportunity On Quote</label>
         <locationX>0</locationX>
         <locationY>0</locationY>
-        <assignNullValuesIfNoRecordsFound>true</assignNullValuesIfNoRecordsFound>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
         <connector>
-            <targetReference>Check_Opportunity_Stage</targetReference>
+            <targetReference>Get_Account_On_Opportunity</targetReference>
         </connector>
         <filterLogic>and</filterLogic>
         <filters>
@@ -316,6 +265,13 @@
             <operator>EqualTo</operator>
             <value>
                 <elementReference>Get_Quote_Record.OpportunityId</elementReference>
+            </value>
+        </filters>
+        <filters>
+            <field>StageName</field>
+            <operator>EqualTo</operator>
+            <value>
+                <stringValue>Proposal</stringValue>
             </value>
         </filters>
         <getFirstRecordOnly>true</getFirstRecordOnly>
@@ -343,27 +299,6 @@
         <object>Quote</object>
         <storeOutputAutomatically>true</storeOutputAutomatically>
     </recordLookups>
-    <recordUpdates>
-        <name>Update_Opportunity_Stage</name>
-        <label>Update Opportunity Stage</label>
-        <locationX>0</locationX>
-        <locationY>0</locationY>
-        <filterLogic>and</filterLogic>
-        <filters>
-            <field>Id</field>
-            <operator>EqualTo</operator>
-            <value>
-                <elementReference>Get_Opportunity_On_Quote.Id</elementReference>
-            </value>
-        </filters>
-        <inputAssignments>
-            <field>StageName</field>
-            <value>
-                <stringValue>Unit Selected</stringValue>
-            </value>
-        </inputAssignments>
-        <object>Opportunity</object>
-    </recordUpdates>
     <start>
         <locationX>0</locationX>
         <locationY>0</locationY>
@@ -376,7 +311,15 @@
     </start>
     <status>Active</status>
     <variables>
-        <name>quoteLineItemCount</name>
+        <name>bundleComponentCount</name>
+        <dataType>Number</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <scale>0</scale>
+    </variables>
+    <variables>
+        <name>rootLineItemCount</name>
         <dataType>Number</dataType>
         <isCollection>false</isCollection>
         <isInput>false</isInput>
