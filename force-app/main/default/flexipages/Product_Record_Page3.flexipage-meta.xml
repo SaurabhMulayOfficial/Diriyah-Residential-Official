@@ -144,23 +144,6 @@
     <flexiPageRegions>
         <itemInstances>
             <componentInstance>
-                <componentName>constraints_studio:constraintsStudioEditor</componentName>
-                <identifier>constraintsStudioEditor</identifier>
-            </componentInstance>
-        </itemInstances>
-        <itemInstances>
-            <componentInstance>
-                <componentName>runtime_industries_cfg:productConstraintModelsWrapper</componentName>
-                <identifier>productConstraintModelsContainer</identifier>
-            </componentInstance>
-        </itemInstances>
-        <mode>Replace</mode>
-        <name>constraintsTab</name>
-        <type>Facet</type>
-    </flexiPageRegions>
-    <flexiPageRegions>
-        <itemInstances>
-            <componentInstance>
                 <componentInstanceProperties>
                     <name>active</name>
                     <value>true</value>
@@ -227,24 +210,6 @@
                 <identifier>structureTab</identifier>
             </componentInstance>
         </itemInstances>
-        <itemInstances>
-            <componentInstance>
-                <componentInstanceProperties>
-                    <name>active</name>
-                    <value>true</value>
-                </componentInstanceProperties>
-                <componentInstanceProperties>
-                    <name>body</name>
-                    <value>constraintsTab</value>
-                </componentInstanceProperties>
-                <componentInstanceProperties>
-                    <name>title</name>
-                    <value>Standard.Tab.constraints</value>
-                </componentInstanceProperties>
-                <componentName>flexipage:tab</componentName>
-                <identifier>constraintsTab</identifier>
-            </componentInstance>
-        </itemInstances>
         <mode>Replace</mode>
         <name>maintabs</name>
         <type>Facet</type>
@@ -268,7 +233,7 @@
         <name>main</name>
         <type>Region</type>
     </flexiPageRegions>
-    <masterLabel>RES RS Product Record Page</masterLabel>
+    <masterLabel>RES PP Product Record Page</masterLabel>
     <parentFlexiPage>runtime_industries_epc__EpcProduct2_rec_L</parentFlexiPage>
     <sobjectType>Product2</sobjectType>
     <template>
