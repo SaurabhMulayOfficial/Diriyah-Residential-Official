@@ -181,6 +181,7 @@ public without sharing class RES_Product2DAOLayer extends RES_BaseDAOLayer {
             'RES_Type__c, ' +
             'RES_Net_Saleable_Area__c, ' +
             'RES_Business_Entity__c, ' +
+            'RES_Business_Entity__r.Name, ' +
             'RES_Unit_Handover_Date__c, ' +
             'RES_Unit_Virtual_IBAN__c, ' +
             'RES_Rejection_Comment__c, ' +
@@ -272,6 +273,7 @@ public List<Product2> getRejectedProducts(String status,String searchTerm,Intege
                 'RES_Type__c, ' +
                 'RES_Net_Saleable_Area__c, ' +
                 'RES_Business_Entity__c, ' +
+                'RES_Business_Entity__r.Name, ' +
                 'RES_Unit_Handover_Date__c, ' +
                 'RES_Unit_Virtual_IBAN__c, ' +
                 'RES_Rejection_Comment__c, ' +
