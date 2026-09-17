@@ -22,10 +22,6 @@
     </customPermissions>
     <customPermissions>
         <enabled>true</enabled>
-        <name>RES_Product_Operation_Visibility</name>
-    </customPermissions>
-    <customPermissions>
-        <enabled>true</enabled>
         <name>RES_Update_Unit_Visibility</name>
     </customPermissions>
     <description>Permission Set for DevCo for DevCo product approver Users</description>
@@ -2354,6 +2350,10 @@
     <tabSettings>
         <tab>standard-Task</tab>
         <visibility>Available</visibility>
+    </tabSettings>
+    <tabSettings>
+        <tab>standard-Product2</tab>
+        <visibility>Visible</visibility>
     </tabSettings>
     <tabSettings>
         <tab>Product_Approval_Queue</tab>
