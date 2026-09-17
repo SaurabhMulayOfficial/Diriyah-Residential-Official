@@ -66,13 +66,20 @@
 
 .custom-warning-msg {
     padding: 10px 12px;
-    margin-bottom: 0;
+    margin-top: 12px !important;
+    margin-bottom: 0 !important;
     border-radius: 5px;
     background: #fff7e6;
     border: 1px solid #e6b94a;
     color: #8c4b02;
     font-size: 13px;
     font-weight: 500;
+    display: flex;
+    align-items: center;
+}
+
+.custom-warning-icon {
+    --slds-c-icon-color-foreground-default: #8c4b02;
 }
 
 .custom-file-input-box.slds-is-disabled {

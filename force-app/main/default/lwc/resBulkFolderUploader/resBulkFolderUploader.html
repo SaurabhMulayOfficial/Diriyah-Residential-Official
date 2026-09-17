@@ -7,30 +7,46 @@
                 </div>
                 <div class="slds-media__body">
                     <h2 class="slds-card__header-title">
-                        <span class="custom-card-title slds-truncate">Upload Product Documents / Files</span>
+                        <span class="custom-card-title slds-truncate">Product Documents / Files Importer</span>
                     </h2>
                 </div>
             </header>
         </div>
 
         <div class="slds-card__body slds-card__body_inner slds-p-horizontal_medium slds-p-bottom_medium">
-            <div class="slds-form-element">
-                <label class="custom-form-label slds-form-element__label">Upload Files:</label>
-                <div class="custom-file-input-box">
-                    <lightning-file-upload
-                        label=""
-                        name="productFileUploader"
-                        multiple
-                        accept={acceptedFormatsString}
-                        onuploadfinished={handleUploadFinished}
-                        disabled={isUploading}>
-                    </lightning-file-upload>
+            
+            <!-- Displayed when feature is disabled -->
+            <template if:false={isFeatureEnabled}>
+                <div class="slds-notify slds-notify_alert slds-alert_warning" role="alert">
+                    <lightning-icon icon-name="utility:warning" size="small" class="slds-m-right_x-small"></lightning-icon>
+                    <h2>This feature is currently unavailable, please contact your System Admin for further assistance.</h2>
                 </div>
-            </div>
-
-            <template if:true={showSuccessMessage}>
-                <p class="custom-success-msg slds-m-top_small">{successMessageText}</p>
             </template>
+
+            <!-- Displayed when feature is enabled -->
+            <template if:true={isFeatureEnabled}>
+                <div class="slds-form-element">
+                    <div class="custom-file-input-box">
+                        <lightning-file-upload
+                            label=""
+                            name="productFileUploader"
+                            multiple
+                            accept={acceptedFormatsString}
+                            onuploadfinished={handleUploadFinished}
+                            disabled={isUploading}>
+                        </lightning-file-upload>
+                    </div>
+                    <div class="custom-warning-msg">
+                        <lightning-icon icon-name="utility:warning" size="x-small" class="slds-m-right_x-small custom-warning-icon"></lightning-icon>
+                        <span>Note: Please do not upload more than 25 files at a time.</span>
+                    </div>
+                </div>
+
+                <template if:true={showSuccessMessage}>
+                    <p class="custom-success-msg slds-m-top_small">{successMessageText}</p>
+                </template>
+            </template>
+
         </div>
     </article>
 </template>
