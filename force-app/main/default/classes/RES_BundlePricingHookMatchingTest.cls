@@ -91,7 +91,7 @@ private class RES_BundlePricingHookMatchingTest {
             scRateAttr = existingScRateAttrs[0];
         } else {
             scRateAttr = new AttributeDefinition(
-                Name = 'Service Charge Rate', Label = 'Service Charge Rate',
+                Name = 'RES Test Matching Service Charge Rate', Label = 'RES Test Matching Service Charge Rate',
                 DeveloperName = 'SC_RATE', DataType = 'Number', IsActive = true
             );
             insert scRateAttr;
@@ -111,14 +111,14 @@ private class RES_BundlePricingHookMatchingTest {
         }
 
         ProductClassificationAttr scClassificationAttr = new ProductClassificationAttr(
-            Name = 'Service Charge Rate',
+            Name = 'RES Test Matching Service Charge Rate',
             ProductClassificationId = classificationId,
             AttributeDefinitionId = scRateAttr.Id
         );
         insert scClassificationAttr;
 
         insert new ProductAttributeDefinition(
-            Name = 'Service Charge Rate',
+            Name = 'RES Test Matching Service Charge Rate',
             Product2Id = bundleProduct.Id,
             AttributeDefinitionId = scRateAttr.Id,
             ProductClassificationAttributeId = scClassificationAttr.Id,
@@ -148,7 +148,7 @@ private class RES_BundlePricingHookMatchingTest {
             pricingOptionAttr = existingPricingOptionAttrs[0];
         } else {
             pricingOptionAttr = new AttributeDefinition(
-                Name = 'Pricing Option', Label = 'Pricing Option',
+                Name = 'RES Test Matching Pricing Option', Label = 'RES Test Matching Pricing Option',
                 DeveloperName = 'Pricing_Option', DataType = 'Text', IsActive = true
             );
             insert pricingOptionAttr;
@@ -162,7 +162,7 @@ private class RES_BundlePricingHookMatchingTest {
         insert bundleClassification;
 
         insert new ProductClassificationAttr(
-            Name = 'Pricing Option',
+            Name = 'RES Test Matching Pricing Option',
             ProductClassificationId = bundleClassification.Id,
             AttributeDefinitionId = pricingOptionAttr.Id,
             IsPriceImpacting = true
@@ -566,7 +566,7 @@ private class RES_BundlePricingHookMatchingTest {
             pricingOptionAttr = existingPricingOptionAttrs[0];
         } else {
             pricingOptionAttr = new AttributeDefinition(
-                Name = 'Pricing Option', Label = 'Pricing Option',
+                Name = 'RES Test Matching Pricing Option', Label = 'RES Test Matching Pricing Option',
                 DeveloperName = 'Pricing_Option', DataType = 'Text', IsActive = true
             );
             insert pricingOptionAttr;
