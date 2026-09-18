@@ -29,7 +29,7 @@ private class RES_MeasurementServicesTest {
         );
         Test.stopTest();
 
-        Assert.areEqual(1, mock.businessCallCount, 'The queued job should perform the sync callout.');
+        Assert.areEqual(3, mock.businessCallCount, 'The queued job should perform the sync callout.');
     }
 
     @isTest

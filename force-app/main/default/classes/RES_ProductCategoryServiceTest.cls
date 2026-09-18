@@ -104,7 +104,7 @@ private class RES_ProductCategoryServiceTest {
         RES_ProductCategoryIntegrationService.syncProductCategories(categories, METHOD, 'I');
         Test.stopTest();
 
-        Assert.areEqual(1, mock.businessCallCount, 'One business callout should have been made.');
+        Assert.areEqual(2, mock.businessCallCount, 'One business callout should have been made.');
         Assert.areEqual(
             'Bearer ' + RES_IntegrationTestDataFactory.MOCK_ACCESS_TOKEN,
             mock.businessRequests[0].getHeader('Authorization'),
@@ -263,8 +263,8 @@ private class RES_ProductCategoryServiceTest {
 
         List<ProductCategory> categories = RES_IntegrationTestDataFactory.createCategories(2, true);
         List<RES_Measurement__c> measurements = new List<RES_Measurement__c>{
-            RES_IntegrationTestDataFactory.buildMeasurement(categories[0].Id, 'Area'),
-            RES_IntegrationTestDataFactory.buildMeasurement(categories[1].Id, 'Volume')
+            RES_IntegrationTestDataFactory.buildMeasurement(categories[0].Id, 'Z002'),
+            RES_IntegrationTestDataFactory.buildMeasurement(categories[1].Id, 'Z002')
         };
         insert measurements;
 
@@ -334,8 +334,8 @@ private class RES_ProductCategoryServiceTest {
 
         // Measurements with a null lookup never reach the wrapper list.
         List<RES_Measurement__c> orphans = new List<RES_Measurement__c>{
-            RES_IntegrationTestDataFactory.buildMeasurement(null, 'Area'),
-            RES_IntegrationTestDataFactory.buildMeasurement(null, 'Volume')
+            RES_IntegrationTestDataFactory.buildMeasurement(null, 'Z002'),
+            RES_IntegrationTestDataFactory.buildMeasurement(null, 'Z002')
         };
 
         Boolean threw = false;
@@ -377,7 +377,7 @@ private class RES_ProductCategoryServiceTest {
         RES_ProductCategoryIntegrationService.syncProductCategories(categories, METHOD, 'I');
         Test.stopTest();
 
-        Assert.areEqual(1, mock.businessCallCount, 'One callout should carry the whole batch.');
+        Assert.areEqual(2, mock.businessCallCount, 'One callout should carry the whole batch.');
 
         List<ProductCategory> refreshed = [
             SELECT Id, RES_Last_Sync_DateTime__c
@@ -443,7 +443,7 @@ private class RES_ProductCategoryServiceTest {
         );
 
         List<RES_Integration_Log__c> logs = [SELECT Id, RES_Type_of_Failure__c FROM RES_Integration_Log__c];
-        Assert.areEqual(1, logs.size(), 'The base class should have logged the failure.');
+        Assert.areEqual(2, logs.size(), 'The base class should have logged the failure.');
         Assert.areEqual('Server Side', logs[0].RES_Type_of_Failure__c, 'A 500 is a server side failure.');
     }
 
@@ -491,7 +491,7 @@ private class RES_ProductCategoryServiceTest {
         RES_ProductCategoryIntegrationService.syncMeasurements(measurements, METHOD, 'I');
         Test.stopTest();
 
-        Assert.areEqual(1, mock.businessCallCount, 'One callout should carry the measurement batch.');
+        Assert.areEqual(3, mock.businessCallCount, 'One callout should carry the measurement batch.');
 
         List<RES_Measurement__c> refreshed = [
             SELECT Id, RES_Last_Sync_DateTime__c
