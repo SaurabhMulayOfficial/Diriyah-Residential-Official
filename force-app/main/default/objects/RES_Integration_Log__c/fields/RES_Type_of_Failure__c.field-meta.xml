@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>RES_Type_of_Failure__c</fullName>
+    <label>Type Of Failure</label>
+    <required>false</required>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>Server Side</fullName>
+                <default>false</default>
+                <label>Server Side</label>
+            </value>
+            <value>
+                <fullName>Client Side</fullName>
+                <default>false</default>
+                <label>Client Side</label>
+            </value>
+            <value>
+                <fullName>Success</fullName>
+                <default>false</default>
+                <label>Success</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>
