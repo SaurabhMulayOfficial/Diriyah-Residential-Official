@@ -201,11 +201,10 @@ export default class ResProductUpdateModal extends LightningElement {
             fields[UPDATE_COMMENTS_FIELD.fieldApiName] = this.updateComments.trim();
             fields[UPDATE_REQUESTED_FIELD.fieldApiName] = true;
 
-            // Set status to Draft and IsActive to false when updating Active or Hold units
+            // Set status to Draft when updating Active or Hold units
             const shouldUpdateStatus = (this.currentStatus === STATUS_AVAILABLE || this.currentStatus === STATUS_SOFT_HOLD || this.currentStatus === STATUS_HARD_BLOCK);
             if (shouldUpdateStatus) {
                 fields[UNIT_STATUS_FIELD.fieldApiName] = STATUS_DRAFT;
-                fields[IS_ACTIVE_FIELD.fieldApiName] = false;
             }
 
             const recordInput = { fields };
