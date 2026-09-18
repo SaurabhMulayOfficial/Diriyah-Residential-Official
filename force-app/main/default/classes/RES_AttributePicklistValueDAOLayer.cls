@@ -10,7 +10,7 @@ public without sharing class RES_AttributePicklistValueDAOLayer extends RES_Base
     public List<AttributePicklistValue> getValuesByPicklistId(Id picklistId) {
         if (picklistId == null) return new List<AttributePicklistValue>();
         Map<String, Object> bindVars = new Map<String, Object>{ 'picklistId' => picklistId };
-        String soql = 'SELECT Value FROM AttributePicklistValue WHERE PicklistId = :picklistId';
+        String soql = 'SELECT Value, Status FROM AttributePicklistValue WHERE PicklistId = :picklistId';
         return (List<AttributePicklistValue>) executeQuery(soql, '', false, bindVars, AccessLevel.SYSTEM_MODE);
     }
 }

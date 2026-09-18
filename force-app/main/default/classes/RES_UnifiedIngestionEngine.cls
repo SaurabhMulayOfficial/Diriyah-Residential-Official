@@ -627,7 +627,7 @@ public with sharing class RES_UnifiedIngestionEngine implements Database.Batchab
                 putTemporal(rec, targetField, value);
 
             } else {
-                putCoerced(rec, targetField, value);
+                putCoerced(rec, targetField, value, tm.sourceCode);
             }
         }
     }
@@ -652,6 +652,10 @@ public with sharing class RES_UnifiedIngestionEngine implements Database.Batchab
 
     @TestVisible
     private static void putCoerced(SObject rec, Schema.SObjectField field, Object value) {
+        putCoerced(rec, field, value, null);
+    }
+
+    private static void putCoerced(SObject rec, Schema.SObjectField field, Object value, String trueCode) {
         Schema.DescribeFieldResult dfr = field.getDescribe();
         Schema.DisplayType t           = dfr.getType();
 
@@ -680,6 +684,12 @@ public with sharing class RES_UnifiedIngestionEngine implements Database.Batchab
         if (t == Schema.DisplayType.BOOLEAN) {
             if (value instanceof Boolean) { rec.put(field, value); return; }
             String flag = (value == null) ? '' : String.valueOf(value).trim().toUpperCase();
+
+            if (String.isNotBlank(trueCode)) {
+                rec.put(field, flag == trueCode.trim().toUpperCase());
+                return;
+            }
+
             if (String.isBlank(flag) || flag == 'FALSE' || flag == 'N' || flag == 'NO' || flag == '0') {
                 rec.put(field, false);
             } else {
@@ -983,6 +993,7 @@ public with sharing class RES_UnifiedIngestionEngine implements Database.Batchab
                     AttributeDefinitionId            = attrId,
                     ProductClassificationAttributeId = classAttrId,
                     DefaultValue                     = wanted,
+                    IsReadOnly                       = readOnlyAttributes.contains(attrName),
                     Sequence                         = 1
                 ));
                 insertRows.add(rowByKey.get(key));
@@ -1025,7 +1036,10 @@ public with sharing class RES_UnifiedIngestionEngine implements Database.Batchab
 
         for (RES_IngestionConfig.TargetMap tm : RES_IngestionConfig.targetMaps(layoutCode)) {
             if (tm.valueKind == 'Product_Attribute' || tm.valueKind == 'Product_Attribute_Computed') {
-                if (String.isNotBlank(tm.attributeName)) attrMaps.add(tm);
+                if (String.isNotBlank(tm.attributeName)) {
+                    attrMaps.add(tm);
+                    if (tm.isReadOnly) readOnlyAttributes.add(tm.attributeName);
+                }
             }
             if (tm.valueKind == 'Child_Record' && String.isNotBlank(tm.sourceCode)) {
                 measureByCode.put(tm.sourceCode.trim().toUpperCase(), tm);
@@ -1302,6 +1316,7 @@ public with sharing class RES_UnifiedIngestionEngine implements Database.Batchab
             Id productId = productIdByCode.get(code);
             Map<String, OptionPrice> bySel = priceByCodeAndSelector.get(code);
             for (String sel : bySel.keySet()) {
+                if (!allowedSelectorValues.isEmpty() && !allowedSelectorValues.contains(sel)) continue;
                 AttributeBasedAdjRule r = ruleByKey.get(code + '|' + sel);
                 if (r == null) continue;
                 OptionPrice op = bySel.get(sel);
@@ -1426,24 +1441,20 @@ public with sharing class RES_UnifiedIngestionEngine implements Database.Batchab
             attrId = ra.getId();
         }
 
+        // The loader consumes the selector picklist, it does not extend it. A condition whose
+        // selector value is missing or inactive is rejected, so an unapproved pricing option
+        // cannot price a unit just because it appeared in a file.
         if (picklistId != null) {
-            Set<String> have = new Set<String>();
-            List<AttributePicklistValue> existingValues = new RES_AttributePicklistValueDAOLayer().getValuesByPicklistId(picklistId);
-            for (AttributePicklistValue v : existingValues) {
-                have.add(v.Value);
+            allowedSelectorValues = new Set<String>();
+            for (AttributePicklistValue v :
+                    new RES_AttributePicklistValueDAOLayer().getValuesByPicklistId(picklistId)) {
+                if (v.Status == 'Active') allowedSelectorValues.add(v.Value);
             }
-            List<AttributePicklistValue> toAdd = new List<AttributePicklistValue>();
-            Integer seq = have.size() + 1;
             for (String sel : selectorValues) {
-                if (have.contains(sel)) continue;
-                toAdd.add(new AttributePicklistValue(
-                    Name = sel, Code = sel.replaceAll('[^a-zA-Z0-9]', '_'), Value = sel,
-                    DisplayValue = sel, PicklistId = picklistId, Status = 'Active',
-                    Sequence = seq++, IsDefault = (sel == defaultSelector)));
-            }
-            if (!toAdd.isEmpty()) {
-                for (Database.SaveResult sr : Database.insert(toAdd, false)) {
-                    if (!sr.isSuccess()) recordError('AttributePicklistValue: ' + sr.getErrors()[0].getMessage());
+                if (!allowedSelectorValues.contains(sel)) {
+                    recordError('Pricing option "' + sel + '" is not an active value on the ' +
+                                layout.selectorAttribute + ' picklist, so no adjustment was created. ' +
+                                'Add it to the attribute picklist first.');
                 }
             }
         }
@@ -1451,6 +1462,12 @@ public with sharing class RES_UnifiedIngestionEngine implements Database.Batchab
         if (String.isNotBlank(layout.attributeCategory)) selectorCategoryId = ensureCategory(layout.attributeCategory, attrId);
         return attrId;
     }
+
+    /** Attribute names the config marks read only, so the value cannot be edited on a line. */
+    private Set<String> readOnlyAttributes = new Set<String>();
+
+    /** Active values on the selector picklist; anything else is rejected, never created. */
+    private Set<String> allowedSelectorValues = new Set<String>();
 
     private Id selectorCategoryId;
 
