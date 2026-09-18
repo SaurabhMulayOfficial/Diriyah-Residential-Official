@@ -37,6 +37,37 @@ private class RES_UnifiedIngestionEngineTest {
                 EffectiveFrom    = Datetime.newInstanceGmt(Date.today().addYears(-1), Time.newInstance(0, 0, 0, 0))
             );
         }
+
+        if (String.isNotBlank(layout.selectorAttribute)) {
+            Set<String> selectorValues = new Set<String>();
+            for (RES_IngestionConfig.ConditionMapping cm : RES_IngestionConfig.conditionMappings(LAYOUT_CODE).values()) {
+                if (String.isNotBlank(cm.selectorValue)) selectorValues.add(cm.selectorValue);
+            }
+            if (!selectorValues.isEmpty()) {
+                AttributePicklist pl = new AttributePicklist(
+                    Name = layout.selectorAttribute, DataType = 'Text', Status = 'Active');
+                insert pl;
+
+                insert new AttributeDefinition(
+                    Name          = layout.selectorAttribute,
+                    Label         = layout.selectorAttribute,
+                    DeveloperName = layout.selectorAttribute.replaceAll('[^a-zA-Z0-9]', '_'),
+                    DataType      = 'Picklist',
+                    PicklistId    = pl.Id,
+                    IsActive      = true
+                );
+
+                List<AttributePicklistValue> values = new List<AttributePicklistValue>();
+                Integer seq = 1;
+                for (String sel : selectorValues) {
+                    values.add(new AttributePicklistValue(
+                        Name = sel, Code = sel.replaceAll('[^a-zA-Z0-9]', '_'), Value = sel,
+                        DisplayValue = sel, PicklistId = pl.Id, Status = 'Active', Sequence = seq++
+                    ));
+                }
+                insert values;
+            }
+        }
     }
 
     // ==================================================================
@@ -76,7 +107,7 @@ private class RES_UnifiedIngestionEngineTest {
         y100.RES_Condition_Price__c      = 1500000;
         y100.RES_Condition_Valid_From__c = Date.today().addDays(2);
         y100.RES_Service_Charge_Rate__c = 50;
-        y100.RES_Parameter_1__c         = 'Z006'; // matches Measurement_Area sourceCode
+        y100.RES_Parameter_1__c         = 'Z006';
         y100.RES_Area__c                = 120;
 
         RES_Product_Staging__c y101 = baseRow('UNIT-100', catalog, building);
@@ -164,19 +195,25 @@ private class RES_UnifiedIngestionEngineTest {
         Assert.areEqual(0, pbes[0].UnitPrice, 'Attribute_Based_Adjustment handling should zero out the base price');
         Assert.areEqual(false, pbes[0].IsActive, 'PricebookEntry should mirror the (inactive) product');
 
-        // ---- Selector attribute (Pricing Option) + picklist values ----
         List<AttributeDefinition> selectorDefs = [
             SELECT Id, PicklistId FROM AttributeDefinition WHERE Name = 'Pricing Option'
         ];
-        Assert.areEqual(1, selectorDefs.size());
+        Assert.areEqual(1, selectorDefs.size(), 'The pre-seeded selector AttributeDefinition should be reused, not duplicated');
         Assert.areEqual(3, [
             SELECT COUNT() FROM AttributePicklistValue WHERE PicklistId = :selectorDefs[0].PicklistId
-        ], 'Option 1/2/3 should all be added to the picklist');
+        ], 'Option 1/2/3 should already exist from @TestSetup and must not be duplicated');
 
         Assert.areEqual(1, [
             SELECT COUNT() FROM ProductAttributeDefinition
             WHERE Product2Id = :unit100.Id AND AttributeDefinitionId = :selectorDefs[0].Id AND DefaultValue = 'Option 1'
         ], 'Selector attribute should default to the primary conditions selector value');
+
+        Boolean sawSelectorRejection = false;
+        for (String e : engine.errorSamples) {
+            if (e.contains('is not an active value on the') && e.contains('Pricing Option')) sawSelectorRejection = true;
+        }
+        Assert.isFalse(sawSelectorRejection,
+            'All three selector values used here (Option 1/2/3) are pre-seeded as active, so none should be rejected');
 
         // ---- Attribute-based adjustment rules/conditions/adjustments ----
         List<AttributeBasedAdjRule> rules = [
@@ -252,12 +289,6 @@ private class RES_UnifiedIngestionEngineTest {
         Assert.areEqual(1, [SELECT COUNT() FROM ProductSellingModel WHERE Name LIKE 'SAP Y100%'],
             'Selling model should be reused (found via DAO query on a fresh engine instance), not duplicated');
 
-        // ---- Third pass: reuse the SAME engine instance and re-process UNIT-400 (plus a
-        // changed re-run of UNIT-100) to exercise every "record already exists" / "value
-        // changed, needs update" branch across links, disqualification, pricing-option
-        // rules/conditions/adjustments, attribute definitions, and measurements.
-        // Y100 is Attribute_Based_Adjustment, so PricebookEntry.UnitPrice is always zeroed;
-        // IsActive is the only thing on it that a re-run can change, hence flipping it here.
         update new Product2(Id = unit100.Id, IsActive = true);
 
         RES_Product_Staging__c y100Rerun = baseRow('UNIT-100', catalog, building);
