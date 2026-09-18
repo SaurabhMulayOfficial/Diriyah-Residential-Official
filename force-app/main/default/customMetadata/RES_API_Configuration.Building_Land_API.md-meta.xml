@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <label>Building&amp;Land API</label>
+    <protected>false</protected>
+    <values>
+        <field>RES_Callout_Timeout__c</field>
+        <value xsi:type="xsd:double">10000.0</value>
+    </values>
+    <values>
+        <field>RES_Credentials__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>RES_Endpoint__c</field>
+        <value xsi:type="xsd:string">https://e650058-iflmap.hcisbt.sa1.hana.ondemand.com/http/SalesForce/RE/Building/Land</value>
+    </values>
+    <values>
+        <field>RES_Headers__c</field>
+        <value xsi:type="xsd:string">{
+  &quot;Authorization&quot;: &quot;Bearer &quot;,
+  &quot;Content-Type&quot;: &quot;application/json&quot;,
+  &quot;Accept&quot;: &quot;*/*&quot;,
+  &quot;Connection&quot;: &quot;keep-alive&quot;
+}</value>
+    </values>
+    <values>
+        <field>RES_Max_Retries__c</field>
+        <value xsi:type="xsd:double">3.0</value>
+    </values>
+    <values>
+        <field>RES_Request_Method__c</field>
+        <value xsi:type="xsd:string">GET</value>
+    </values>
+</CustomMetadata>

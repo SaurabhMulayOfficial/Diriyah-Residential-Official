@@ -240,6 +240,61 @@
     <custom>false</custom>
     <fieldPermissions>
         <editable>true</editable>
+        <field>RES_Integration_Log__c.RES_Callout_Service__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>RES_Integration_Log__c.RES_Class_Method__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>RES_Integration_Log__c.RES_Error_Message__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>RES_Integration_Log__c.RES_Headers__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>RES_Integration_Log__c.RES_Object_Name__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>RES_Integration_Log__c.RES_Record_Id__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>RES_Integration_Log__c.RES_Request_Body__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>RES_Integration_Log__c.RES_Request_Method__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>RES_Integration_Log__c.RES_Request_Name__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>RES_Integration_Log__c.RES_Retry_Count__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>RES_Integration_Log__c.RES_Type_of_Failure__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
         <field>OrderItemRelationship.AssociatedOrderItemPricing</field>
         <readable>true</readable>
     </fieldPermissions>
@@ -1042,47 +1097,47 @@
         <editable>true</editable>
         <field>QuoteLineItem.RES_Discount_Type__c</field>
         <readable>true</readable>
-    </fieldPermissions>        
+    </fieldPermissions>
     <fieldPermissions>
         <editable>true</editable>
         <field>ContentVersion.RES_Attachment_Type__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
-            <editable>true</editable>
-            <field>ContentVersion.RES_Document_Label__c</field>
-            <readable>true</readable>
-        </fieldPermissions>
-        <fieldPermissions>
-            <editable>true</editable>
-            <field>Account.RES_National_ID_Status__c</field>
-            <readable>true</readable>
-        </fieldPermissions>
+        <editable>true</editable>
+        <field>ContentVersion.RES_Document_Label__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
     <fieldPermissions>
-            <editable>true</editable>
-            <field>Account.RES_Iqama_Id_Status__c</field>
-            <readable>true</readable>
-        </fieldPermissions>
+        <editable>true</editable>
+        <field>Account.RES_National_ID_Status__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
     <fieldPermissions>
-            <editable>true</editable>
-            <field>Account.RES_GCC_Id_Status__c</field>
-            <readable>true</readable>
-        </fieldPermissions>
+        <editable>true</editable>
+        <field>Account.RES_Iqama_Id_Status__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
     <fieldPermissions>
-            <editable>true</editable>
-            <field>Account.RES_Passport_Status__c</field>
-            <readable>true</readable>
-        </fieldPermissions>
+        <editable>true</editable>
+        <field>Account.RES_GCC_Id_Status__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
     <fieldPermissions>
-            <editable>true</editable>
-            <field>Account.RES_Simah_Form_Status__c</field>
-            <readable>true</readable>
-        </fieldPermissions>
+        <editable>true</editable>
+        <field>Account.RES_Passport_Status__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
     <fieldPermissions>
-            <editable>true</editable>
-            <field>Account.RES_Company_Reg_Certificate_Status__c</field>
-            <readable>true</readable>
-        </fieldPermissions>
+        <editable>true</editable>
+        <field>Account.RES_Simah_Form_Status__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>Account.RES_Company_Reg_Certificate_Status__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
     <fieldPermissions>
         <editable>true</editable>
         <field>Account.RES_Power_of_Attorney_Status__c</field>
@@ -1518,12 +1573,12 @@
         <field>Contact.RES_Status__c</field>
         <readable>true</readable>
     </fieldPermissions>
-     <fieldPermissions>
+    <fieldPermissions>
         <editable>true</editable>
         <field>Contact.RES_Full_Arabic_Name__c</field>
         <readable>true</readable>
     </fieldPermissions>
-      <fieldPermissions>
+    <fieldPermissions>
         <editable>true</editable>
         <field>Contact.RES_Nationality__c</field>
         <readable>true</readable>
@@ -2138,17 +2193,17 @@
         <field>Lead.Website</field>
         <readable>true</readable>
     </fieldPermissions>
-     <fieldPermissions>
+    <fieldPermissions>
         <editable>true</editable>
         <field>Lead.RES_Requested_Timing__c</field>
         <readable>true</readable>
     </fieldPermissions>
-     <fieldPermissions>
+    <fieldPermissions>
         <editable>true</editable>
         <field>Lead.RES_Has_License__c</field>
         <readable>true</readable>
     </fieldPermissions>
-     <fieldPermissions>
+    <fieldPermissions>
         <editable>true</editable>
         <field>Lead.RES_Date_of_Expiry__c</field>
         <readable>true</readable>
@@ -2158,27 +2213,27 @@
         <field>Lead.RES_Date_of_Birth__c</field>
         <readable>true</readable>
     </fieldPermissions>
-     <fieldPermissions>
+    <fieldPermissions>
         <editable>true</editable>
         <field>Lead.RES_Lead_Type__c </field>
         <readable>true</readable>
     </fieldPermissions>
-     <fieldPermissions>
+    <fieldPermissions>
         <editable>false</editable>
         <field>Lead.DIR_Lead_Id__c</field>
         <readable>true</readable>
     </fieldPermissions>
-     <fieldPermissions>
+    <fieldPermissions>
         <editable>true</editable>
         <field>Lead.RES_Year_Of_Establishment__c</field>
         <readable>true</readable>
     </fieldPermissions>
-     <fieldPermissions>
+    <fieldPermissions>
         <editable>true</editable>
         <field>Lead.RES_Vat_Cert_Expiry_Date__c</field>
         <readable>true</readable>
     </fieldPermissions>
-     <fieldPermissions>
+    <fieldPermissions>
         <editable>true</editable>
         <field>Lead.RES_Marital_Status__c</field>
         <readable>true</readable>
@@ -2197,13 +2252,13 @@
         <editable>true</editable>
         <field>Lead.RES_SLA_Met_Time__c</field>
         <readable>true</readable>
-     </fieldPermissions>
-     <fieldPermissions>
+    </fieldPermissions>
+    <fieldPermissions>
         <editable>false</editable>
         <field>Lead.RES_Lead_Response_Time__c</field>
         <readable>true</readable>
-     </fieldPermissions>
-     <fieldPermissions>
+    </fieldPermissions>
+    <fieldPermissions>
         <editable>false</editable>
         <field>Lead.RES_Lead_Response_Time_Hours__c</field>
         <readable>true</readable>
@@ -2305,12 +2360,12 @@
         <field>Opportunity.RES_Opportunity_Email__c </field>
         <readable>true</readable>
     </fieldPermissions>
-     <fieldPermissions>
+    <fieldPermissions>
         <editable>true</editable>
         <field>Opportunity.RES_Opportunity_Mobile__c</field>
         <readable>true</readable>
     </fieldPermissions>
-    
+
     <fieldPermissions>
         <editable>true</editable>
         <field>Opportunity.RES_Cityscape_Year__c</field>
@@ -2591,7 +2646,7 @@
         <editable>true</editable>
         <field>RES_Lead_History__c.RES_ChangedByUuid__c</field>
         <readable>true</readable>
-    </fieldPermissions> 
+    </fieldPermissions>
     <fieldPermissions>
         <editable>true</editable>
         <field>RES_Lead_History__c.RES_ChangedBy__c</field>
@@ -2821,7 +2876,7 @@
         <editable>true</editable>
         <field>Product2.UsageModelType</field>
         <readable>true</readable>
-    </fieldPermissions>    
+    </fieldPermissions>
     <fieldPermissions>
         <editable>true</editable>
         <field>Product2.Description</field>
@@ -3119,6 +3174,11 @@
     </fieldPermissions>
     <fieldPermissions>
         <editable>true</editable>
+        <field>ProductCategory.RES_Last_Sync_DateTime__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
         <field>ProductCategory.RES_Company_Code__c</field>
         <readable>true</readable>
     </fieldPermissions>
@@ -3230,6 +3290,11 @@
     <fieldPermissions>
         <editable>true</editable>
         <field>RES_Measurement__c.RES_Measurement_Type__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>RES_Measurement__c.RES_Last_Sync_DateTime__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
@@ -3781,7 +3846,7 @@
         <editable>true</editable>
         <field>Contract.RES_Cancellation_Reason__c</field>
         <readable>true</readable>
-    </fieldPermissions>  
+    </fieldPermissions>
     <fieldPermissions>
         <editable>true</editable>
         <field>Contract.RES_Approval_Status__c</field>
@@ -3862,12 +3927,12 @@
         <layout>Lead-Lead Layout</layout>
     </layoutAssignments>
     <layoutAssignments>
-            <layout>Lead-RES Company</layout>
-            <recordType>Lead.RES_Company</recordType>
+        <layout>Lead-RES Company</layout>
+        <recordType>Lead.RES_Company</recordType>
     </layoutAssignments>
     <layoutAssignments>
-            <layout>Lead-RES Individual</layout>
-            <recordType>Lead.RES_Individual</recordType>
+        <layout>Lead-RES Individual</layout>
+        <recordType>Lead.RES_Individual</recordType>
     </layoutAssignments>
     <layoutAssignments>
         <layout>Product2-Residential Product Layout</layout>
@@ -4222,7 +4287,7 @@
         <viewAllFields>false</viewAllFields>
         <viewAllRecords>true</viewAllRecords>
     </objectPermissions>
-   <objectPermissions>
+    <objectPermissions>
         <allowCreate>true</allowCreate>
         <allowDelete>true</allowDelete>
         <allowEdit>true</allowEdit>
@@ -4499,6 +4564,16 @@
         <modifyAllRecords>true</modifyAllRecords>
         <object>RES_Project_Completion_Report__c</object>
         <viewAllFields>false</viewAllFields>
+        <viewAllRecords>true</viewAllRecords>
+    </objectPermissions>
+    <objectPermissions>
+        <allowCreate>true</allowCreate>
+        <allowDelete>true</allowDelete>
+        <allowEdit>true</allowEdit>
+        <allowRead>true</allowRead>
+        <modifyAllRecords>true</modifyAllRecords>
+        <object>RES_Integration_Log__c</object>
+        <viewAllFields>true</viewAllFields>
         <viewAllRecords>true</viewAllRecords>
     </objectPermissions>
     <recordTypeVisibilities>
