@@ -7,6 +7,19 @@
                     <name>actionNames</name>
                     <valueList>
                         <valueListItems>
+                            <value>Contract.RES_Generate_URC</value>
+                        </valueListItems>
+                        <valueListItems>
+                            <value>Contract.RES_Generate_SPA</value>
+                            <visibilityRule>
+                                <criteria>
+                                    <leftValue>{!Record.RES_Source_Opportunity_Stage__c}</leftValue>
+                                    <operator>CONTAINS</operator>
+                                    <rightValue>SPA</rightValue>
+                                </criteria>
+                            </visibilityRule>
+                        </valueListItems>
+                        <valueListItems>
                             <value>CustomButton.Contract.RES_Send_for_KYC_Approval</value>
                             <visibilityRule>
                                 <booleanFilter>1 AND 2 AND 3 AND 4 AND 5 AND 6</booleanFilter>
@@ -128,6 +141,37 @@
                 </componentInstanceProperties>
                 <componentName>force:highlightsPanel</componentName>
                 <identifier>force_highlightsPanel</identifier>
+            </componentInstance>
+        </itemInstances>
+        <itemInstances>
+            <componentInstance>
+                <componentInstanceProperties>
+                    <name>body</name>
+                    <value>{!$Label.Unit_Updated_Body}</value>
+                </componentInstanceProperties>
+                <componentInstanceProperties>
+                    <name>header</name>
+                    <value>{!$Label.RES_Unit_Price_Updated}</value>
+                </componentInstanceProperties>
+                <componentInstanceProperties>
+                    <name>variant</name>
+                    <value>warning</value>
+                </componentInstanceProperties>
+                <componentName>productSoftHoldBanner</componentName>
+                <identifier>c_productSoftHoldBanner2</identifier>
+                <visibilityRule>
+                    <booleanFilter>1 OR 2</booleanFilter>
+                    <criteria>
+                        <leftValue>{!Record.RES_Quote_Id__r.RES_Product__r.RES_Unit_Status__c}</leftValue>
+                        <operator>EQUAL</operator>
+                        <rightValue>Draft</rightValue>
+                    </criteria>
+                    <criteria>
+                        <leftValue>{!Record.RES_Quote_Id__r.RES_Product__r.RES_Unit_Status__c}</leftValue>
+                        <operator>EQUAL</operator>
+                        <rightValue>Pending DevCo Approval</rightValue>
+                    </criteria>
+                </visibilityRule>
             </componentInstance>
         </itemInstances>
         <itemInstances>
@@ -267,6 +311,26 @@
                 </fieldInstanceProperties>
                 <fieldItem>Record.RES_Approval_Status__c</fieldItem>
                 <identifier>RecordRES_Approval_Status__cField</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.RES_Product_Approval_Stage__c</fieldItem>
+                <identifier>RecordRES_Product_Approval_Stage__cField</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.RES_Cancellation_Reason__c</fieldItem>
+                <identifier>RecordRES_Cancellation_Reason__cField</identifier>
             </fieldInstance>
         </itemInstances>
         <name>Facet-39f21a7a-f81d-4f9c-9557-59f60566f503</name>
@@ -643,6 +707,16 @@
                     <name>uiBehavior</name>
                     <value>none</value>
                 </fieldInstanceProperties>
+                <fieldItem>Record.RES_CRF_Form_Received__c</fieldItem>
+                <identifier>RecordRES_CRF_Form_Received_cField</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
                 <fieldItem>Record.RES_SIMAH_Report_Received__c</fieldItem>
                 <identifier>RecordRES_SIMAH_Report_Received_cField</identifier>
             </fieldInstance>
@@ -762,21 +836,45 @@
                 <componentName>resUploadDocuments</componentName>
                 <identifier>c_resUploadDocuments</identifier>
                 <visibilityRule>
-                    <booleanFilter>1 AND 2</booleanFilter>
                     <criteria>
                         <leftValue>{!Record.RES_Product_Soft_Held__c}</leftValue>
                         <operator>EQUAL</operator>
                         <rightValue>false</rightValue>
                     </criteria>
-                    <criteria>
-                        <leftValue>{!Record.Status}</leftValue>
-                        <operator>NE</operator>
-                        <rightValue>Canceled</rightValue>
-                    </criteria>
                 </visibilityRule>
             </componentInstance>
         </itemInstances>
         <name>Facet-f6341754-35ab-4a3c-9fe4-185656f2777c</name>
+        <type>Facet</type>
+    </flexiPageRegions>
+    <flexiPageRegions>
+        <itemInstances>
+            <componentInstance>
+                <componentName>runtime_industries_clm:contractDocumentHighlight</componentName>
+                <identifier>runtime_industries_clm_contractDocumentHighlight</identifier>
+            </componentInstance>
+        </itemInstances>
+        <itemInstances>
+            <componentInstance>
+                <componentName>runtime_industries_clm:contractDocument</componentName>
+                <identifier>runtime_industries_clm_contractDocument</identifier>
+            </componentInstance>
+        </itemInstances>
+        <name>Facet-0c2cfeea-b0f4-4486-8bf7-93873b41a047</name>
+        <type>Facet</type>
+    </flexiPageRegions>
+    <flexiPageRegions>
+        <itemInstances>
+            <componentInstance>
+                <componentInstanceProperties>
+                    <name>enableSidepanel</name>
+                    <value>true</value>
+                </componentInstanceProperties>
+                <componentName>runtime_revenue_foundation:assetViewer</componentName>
+                <identifier>runtime_revenue_foundation_assetViewer</identifier>
+            </componentInstance>
+        </itemInstances>
+        <name>Facet-90c321d2-65d6-42d1-bef1-69d242365e38</name>
         <type>Facet</type>
     </flexiPageRegions>
     <flexiPageRegions>
@@ -828,6 +926,34 @@
                 </componentInstanceProperties>
                 <componentName>flexipage:tab</componentName>
                 <identifier>flexipage_tab</identifier>
+            </componentInstance>
+        </itemInstances>
+        <itemInstances>
+            <componentInstance>
+                <componentInstanceProperties>
+                    <name>body</name>
+                    <value>Facet-0c2cfeea-b0f4-4486-8bf7-93873b41a047</value>
+                </componentInstanceProperties>
+                <componentInstanceProperties>
+                    <name>title</name>
+                    <value>Contract Document</value>
+                </componentInstanceProperties>
+                <componentName>flexipage:tab</componentName>
+                <identifier>flexipage_tab2</identifier>
+            </componentInstance>
+        </itemInstances>
+        <itemInstances>
+            <componentInstance>
+                <componentInstanceProperties>
+                    <name>body</name>
+                    <value>Facet-90c321d2-65d6-42d1-bef1-69d242365e38</value>
+                </componentInstanceProperties>
+                <componentInstanceProperties>
+                    <name>title</name>
+                    <value>Assets</value>
+                </componentInstanceProperties>
+                <componentName>flexipage:tab</componentName>
+                <identifier>flexipage_tab3</identifier>
             </componentInstance>
         </itemInstances>
         <mode>Replace</mode>
@@ -982,6 +1108,75 @@
                         <rightValue>Small</rightValue>
                     </criteria>
                 </visibilityRule>
+            </componentInstance>
+        </itemInstances>
+        <itemInstances>
+            <componentInstance>
+                <componentInstanceProperties>
+                    <name>actionNames</name>
+                    <valueList>
+                        <valueListItems>
+                            <value>New</value>
+                        </valueListItems>
+                    </valueList>
+                </componentInstanceProperties>
+                <componentInstanceProperties>
+                    <name>maxRecordsToDisplay</name>
+                    <value>10</value>
+                </componentInstanceProperties>
+                <componentInstanceProperties>
+                    <name>parentFieldApiName</name>
+                    <value>Contract.Id</value>
+                </componentInstanceProperties>
+                <componentInstanceProperties>
+                    <name>relatedListApiName</name>
+                    <value>AmendedContracts</value>
+                </componentInstanceProperties>
+                <componentInstanceProperties>
+                    <name>relatedListDisplayType</name>
+                    <value>ADVGRID</value>
+                </componentInstanceProperties>
+                <componentInstanceProperties>
+                    <name>relatedListFieldAliases</name>
+                    <valueList>
+                        <valueListItems>
+                            <value>CONTRACT.CONTRACT_NUMBER</value>
+                        </valueListItems>
+                        <valueListItems>
+                            <value>CONTRACT.STATUS</value>
+                        </valueListItems>
+                        <valueListItems>
+                            <value>CONTRACT.START_DATE</value>
+                        </valueListItems>
+                        <valueListItems>
+                            <value>CONTRACT.END_DATE</value>
+                        </valueListItems>
+                    </valueList>
+                </componentInstanceProperties>
+                <componentInstanceProperties>
+                    <name>relatedListLabel</name>
+                    <value>Amendment Contract</value>
+                </componentInstanceProperties>
+                <componentInstanceProperties>
+                    <name>showActionBar</name>
+                    <value>true</value>
+                </componentInstanceProperties>
+                <componentInstanceProperties>
+                    <name>sortFieldAlias</name>
+                    <value>__DEFAULT__</value>
+                </componentInstanceProperties>
+                <componentInstanceProperties>
+                    <name>sortFieldOrder</name>
+                    <value>Default</value>
+                </componentInstanceProperties>
+                <componentName>lst:dynamicRelatedList</componentName>
+                <identifier>lst_dynamicRelatedList</identifier>
+            </componentInstance>
+        </itemInstances>
+        <itemInstances>
+            <componentInstance>
+                <componentName>resToastMessage</componentName>
+                <identifier>c_resToastMessage</identifier>
             </componentInstance>
         </itemInstances>
         <mode>Replace</mode>
