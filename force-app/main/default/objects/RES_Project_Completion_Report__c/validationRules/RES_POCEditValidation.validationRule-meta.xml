@@ -5,9 +5,13 @@
     <errorConditionFormula>AND
 ( 
 				NOT($Setup.RES_Config_Switch__c.RES_Validation_Rules_Off__c), 
-				ISCHANGED(RES_POC__c), 
+				OR
+				(
+								ISCHANGED(RES_POC__c),
+								ISCHANGED(RES_Project__c),  
+								ISCHANGED(OwnerId)
+				), 
 				ISPICKVAL(RES_Approval_Status__c, &quot;Approved&quot;)
 )</errorConditionFormula>
-    <errorDisplayField>RES_POC__c</errorDisplayField>
-    <errorMessage>You are not allowed to edit this field.</errorMessage>
+    <errorMessage>You are not allowed to edit this record.</errorMessage>
 </ValidationRule>
