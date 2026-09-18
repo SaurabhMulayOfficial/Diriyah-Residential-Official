@@ -18,6 +18,15 @@ private class RES_UnifiedIngestionEngineTest {
      */
     @TestSetup
     static void setupReferenceData() {
+        // This class tests the ingestion engine's own logic, not the downstream SAP sync
+        // (RES_ProductCategoryServiceTest / RES_MeasurementServicesTest own that). The engine
+        // inserts ProductCategory/RES_Measurement__c records, which would otherwise fire
+        // RES_ProductCategoryTrigger/RES_MeasurementsTrigger and enqueue a real HTTP callout;
+        // switching triggers off here keeps every test deterministic and callout-free.
+        RES_Config_Switch__c triggerSwitch = RES_Config_Switch__c.getOrgDefaults();
+        triggerSwitch.RES_Triggers_Off__c = true;
+        upsert triggerSwitch;
+
         RES_IngestionConfig.Layout layout = RES_IngestionConfig.layoutByCode(LAYOUT_CODE);
         System.assert(layout != null, 'RESIDENTIAL_SALES layout must be configured in RES_Ingestion_Layout__mdt');
 
@@ -36,6 +45,88 @@ private class RES_UnifiedIngestionEngineTest {
                 AdjustmentMethod = 'Range',
                 EffectiveFrom    = Datetime.newInstanceGmt(Date.today().addYears(-1), Time.newInstance(0, 0, 0, 0))
             );
+        }
+
+        // The engine now only *consumes* the selector attribute's picklist - a condition whose
+        // selector value isn't already an active picklist value is rejected, not auto-added
+        // (see RES_UnifiedIngestionEngine.ensureSelectorAttribute/syncPricingOptions). So every
+        // selector value any RESIDENTIAL_SALES condition mapping names must pre-exist here,
+        // exactly like the classification/schedule above.
+        if (String.isNotBlank(layout.selectorAttribute)) {
+            Set<String> selectorValues = new Set<String>();
+            String defaultSelector;
+            for (RES_IngestionConfig.ConditionMapping cm : RES_IngestionConfig.conditionMappings(LAYOUT_CODE).values()) {
+                if (String.isBlank(cm.selectorValue)) continue;
+                selectorValues.add(cm.selectorValue);
+                if (cm.isPrimary) defaultSelector = cm.selectorValue;
+            }
+
+            if (!selectorValues.isEmpty()) {
+                // AttributeDefinition.Name isn't unique-enforced, and the org may already have
+                // a real "Pricing Option" definition. The engine looks this up with
+                // `WHERE Name = :name LIMIT 1` and no ORDER BY, so if a real row and a
+                // test-inserted row both matched the name, which one it gets back would be
+                // non-deterministic. Rather than gamble on that, patch every existing row's
+                // picklist so the required values are active no matter which one is picked;
+                // only insert a fresh definition when none exists at all.
+                List<AttributeDefinition> existingDefs = [
+                    SELECT Id, PicklistId FROM AttributeDefinition WHERE Name = :layout.selectorAttribute
+                ];
+
+                Set<Id> picklistIds = new Set<Id>();
+                for (AttributeDefinition ad : existingDefs) {
+                    if (ad.PicklistId != null) picklistIds.add(ad.PicklistId);
+                }
+
+                if (picklistIds.isEmpty()) {
+                    AttributePicklist picklist = new AttributePicklist(
+                        Name = layout.selectorAttribute, DataType = 'Text', Status = 'Active'
+                    );
+                    insert picklist;
+                    picklistIds.add(picklist.Id);
+
+                    if (existingDefs.isEmpty()) {
+                        insert new AttributeDefinition(
+                            Name          = layout.selectorAttribute,
+                            Label         = layout.selectorAttribute,
+                            DeveloperName = layout.selectorAttribute.replaceAll('[^a-zA-Z0-9]', '_'),
+                            DataType      = 'Picklist',
+                            PicklistId    = picklist.Id,
+                            IsActive      = true
+                        );
+                    } else {
+                        List<AttributeDefinition> toFix = new List<AttributeDefinition>();
+                        for (AttributeDefinition ad : existingDefs) {
+                            toFix.add(new AttributeDefinition(Id = ad.Id, PicklistId = picklist.Id));
+                        }
+                        update toFix;
+                    }
+                }
+
+                Map<Id, Set<String>> activeByPicklist = new Map<Id, Set<String>>();
+                for (Id pId : picklistIds) activeByPicklist.put(pId, new Set<String>());
+                for (AttributePicklistValue v : [
+                    SELECT PicklistId, Value FROM AttributePicklistValue
+                    WHERE PicklistId IN :picklistIds AND Status = 'Active'
+                ]) {
+                    activeByPicklist.get(v.PicklistId).add(v.Value);
+                }
+
+                List<AttributePicklistValue> values = new List<AttributePicklistValue>();
+                for (Id pId : picklistIds) {
+                    Set<String> alreadyActive = activeByPicklist.get(pId);
+                    Integer seq = alreadyActive.size() + 1;
+                    for (String sel : selectorValues) {
+                        if (alreadyActive.contains(sel)) continue;
+                        values.add(new AttributePicklistValue(
+                            Name = sel, Code = sel.replaceAll('[^a-zA-Z0-9]', '_'), Value = sel,
+                            DisplayValue = sel, PicklistId = pId, Status = 'Active',
+                            Sequence = seq++, IsDefault = (sel == defaultSelector)
+                        ));
+                    }
+                }
+                if (!values.isEmpty()) insert values;
+            }
         }
     }
 
@@ -201,19 +292,18 @@ private class RES_UnifiedIngestionEngineTest {
         }
         Assert.isTrue(values.containsAll(new Set<Decimal>{1500000, 1550000, 1600000}));
 
-        // ---- Computed + plain product attributes (Service Charge / Service Charge Rate) ----
+        // ---- Plain product attribute (Service Charge Rate) ----
+        // Note: the org no longer configures any Product_Attribute_Computed target map (the
+        // "Service Charge = rate * area" mapping was removed from RES_Target_Field_Map__mdt),
+        // so that branch of addTargetMapAttributes() is presently unconfigured/unreachable and
+        // isn't asserted here. RES_Parameter_1__c/RES_Area__c below are still needed as inputs
+        // to the still-active Measurement (Z006) mapping asserted next.
         Assert.areEqual(1, [
             SELECT COUNT() FROM ProductAttributeDefinition pad
             WHERE pad.Product2Id = :unit100.Id
             AND pad.AttributeDefinitionId IN (SELECT Id FROM AttributeDefinition WHERE Name = 'Service Charge Rate')
             AND pad.DefaultValue = '50.00'
         ], 'addTargetMapAttributes() scales every Product_Attribute/_Computed value to 2 decimal places');
-        Assert.areEqual(1, [
-            SELECT COUNT() FROM ProductAttributeDefinition pad
-            WHERE pad.Product2Id = :unit100.Id
-            AND pad.AttributeDefinitionId IN (SELECT Id FROM AttributeDefinition WHERE Name = 'Service Charge')
-            AND pad.DefaultValue = '6000.00'
-        ], 'Service Charge should be computed as rate (50) * Area measurement (120)');
 
         // ---- Measurement (Area, code Z006) ----
         Assert.areEqual(1, [
@@ -285,13 +375,6 @@ private class RES_UnifiedIngestionEngineTest {
             'Re-running after the product was activated should update the existing PricebookEntry');
 
         Assert.areEqual(1, [
-            SELECT COUNT() FROM ProductAttributeDefinition pad
-            WHERE pad.Product2Id = :unit100.Id
-            AND pad.AttributeDefinitionId IN (SELECT Id FROM AttributeDefinition WHERE Name = 'Service Charge')
-            AND pad.DefaultValue = '9000.00'
-        ], 'Service Charge should be recomputed and updated in place on a re-run with a changed rate/area');
-
-        Assert.areEqual(1, [
             SELECT COUNT() FROM RES_Measurement__c
             WHERE RES_Product__c = :unit100.Id AND RES_Measurement_Type__c = 'Z006' AND RES_Measurement_Amount__c = 150
         ], 'The Area measurement should be updated in place on a re-run with a changed value');
@@ -318,8 +401,13 @@ private class RES_UnifiedIngestionEngineTest {
     // Missing ProductClassification: the layout still names one, but the record
     // itself is gone, so resolveClassification() must fail closed for both the
     // attribute pipeline and the pricing-option pipeline in the same run. Also
-    // covers the Product_Attribute_Computed "no matching measurement" branch and
-    // the Attribute_Based_Adjustment "no price on the row" branch.
+    // covers the Attribute_Based_Adjustment "no price on the row" branch.
+    //
+    // This used to also cover the Product_Attribute_Computed "no matching
+    // measurement" branch (via a bogus RES_Parameter_1__c), but the org no
+    // longer configures any Product_Attribute_Computed target map (removed
+    // from RES_Target_Field_Map__mdt), so that branch is presently
+    // unconfigured/unreachable and isn't exercised here.
     // ==================================================================
     @IsTest
     static void testMissingProductClassification_SkipsAttributesAndPricingOptions() {
@@ -331,13 +419,11 @@ private class RES_UnifiedIngestionEngineTest {
         noPriceAdjustment.RES_Condition_Type__c = 'Y101';
 
         // Primary condition (has a price, so pricing options are attempted) plus a
-        // Product_Attribute_Computed field whose Parameter-1 code matches nothing.
+        // plain Product_Attribute field.
         RES_Product_Staging__c withAttrs = baseRow('CLS-200', 'ClsCat', 'ClsBldg');
         withAttrs.RES_Condition_Type__c      = 'Y100';
         withAttrs.RES_Condition_Price__c     = 500000;
         withAttrs.RES_Service_Charge_Rate__c = 30;
-        withAttrs.RES_Parameter_1__c         = 'NOT_A_REAL_CODE';
-        withAttrs.RES_Area__c                = 10;
 
         List<RES_Product_Staging__c> scope = new List<RES_Product_Staging__c>{ noPriceAdjustment, withAttrs };
         insert scope;
@@ -348,13 +434,10 @@ private class RES_UnifiedIngestionEngineTest {
         Test.stopTest();
 
         Boolean sawClassificationError = false;
-        Boolean sawParameterMismatchError = false;
         for (String e : engine.errorSamples) {
             if (e.contains('ProductClassification')) sawClassificationError = true;
-            if (e.contains('does not match any mapped measurement')) sawParameterMismatchError = true;
         }
         Assert.isTrue(sawClassificationError, 'A missing ProductClassification must be recorded as an error');
-        Assert.isTrue(sawParameterMismatchError, 'An unmatched Parameter-1 code must be recorded as an error');
 
         Product2 cls200 = [SELECT Id FROM Product2 WHERE RES_Product_External_ID__c = 'CLS-200'];
         Assert.areEqual(0, [SELECT COUNT() FROM ProductAttributeDefinition WHERE Product2Id = :cls200.Id],
@@ -613,4 +696,5 @@ private class RES_UnifiedIngestionEngineTest {
         Assert.isNull(engine.resolveAdjustmentSchedule(missingLayout),
             'A schedule name that matches no record should resolve to null');
     }
+
 }
