@@ -89,8 +89,8 @@
             <targetReference>Get_All_Quote_Line_Items_On_Quote</targetReference>
         </defaultConnector>
         <rules>
-            <name>Is_Bundle_Component_Line</name>
-            <conditionLogic>and</conditionLogic>
+            <name>Is_Bundle_Component_Or_Non_Positive_Line</name>
+            <conditionLogic>1 OR 2</conditionLogic>
             <conditions>
                 <leftValueReference>$Record.PriceWaterfallIdentifier</leftValueReference>
                 <operator>StartsWith</operator>
@@ -98,10 +98,17 @@
                     <stringValue>ref_</stringValue>
                 </rightValue>
             </conditions>
+            <conditions>
+                <leftValueReference>$Record.Quantity</leftValueReference>
+                <operator>LessThanOrEqualTo</operator>
+                <rightValue>
+                    <numberValue>0.0</numberValue>
+                </rightValue>
+            </conditions>
             <connector>
                 <targetReference>Get_Quote_Record</targetReference>
             </connector>
-            <label>Is Bundle Component Line</label>
+            <label>Is Bundle Component Or Non-Positive-Quantity Line</label>
         </rules>
     </decisions>
     <decisions>
@@ -109,13 +116,13 @@
         <label>Check Line Is Component Or Child</label>
         <locationX>0</locationX>
         <locationY>0</locationY>
-        <defaultConnectorLabel>Unparented Non-Component Line</defaultConnectorLabel>
+        <defaultConnectorLabel>Unparented Positive-Quantity Non-Component Line</defaultConnectorLabel>
         <defaultConnector>
             <targetReference>Increment_Root_Line_Count</targetReference>
         </defaultConnector>
         <rules>
-            <name>Is_Component_Or_Child</name>
-            <conditionLogic>1 OR 2</conditionLogic>
+            <name>Is_Component_Or_Child_Or_Non_Positive</name>
+            <conditionLogic>1 OR 2 OR 3</conditionLogic>
             <conditions>
                 <leftValueReference>Loop_Quote_Line_Items.ParentQuoteLineItemId</leftValueReference>
                 <operator>IsNull</operator>
@@ -130,10 +137,17 @@
                     <stringValue>ref_</stringValue>
                 </rightValue>
             </conditions>
+            <conditions>
+                <leftValueReference>Loop_Quote_Line_Items.Quantity</leftValueReference>
+                <operator>LessThanOrEqualTo</operator>
+                <rightValue>
+                    <numberValue>0.0</numberValue>
+                </rightValue>
+            </conditions>
             <connector>
                 <targetReference>Loop_Quote_Line_Items</targetReference>
             </connector>
-            <label>Is Component Or Child</label>
+            <label>Is Component Or Child Or Non-Positive Quantity</label>
         </rules>
     </decisions>
     <decisions>
@@ -161,7 +175,7 @@
             <label>Multiple Root Lines</label>
         </rules>
     </decisions>
-    <description>DIR-1782: V7 base (delegates Opportunity stage transitions to RES_OpportunityStageUpdateValidation) plus a RES_Config_Switch__c gate and bundle-aware validation: a Quote may have only one root unit/bundle. ParentQuoteLineItemId is NOT yet populated on bundle component lines at insert time (the platform links them in a later step), so root detection also excludes lines whose PriceWaterfallIdentifier starts with "ref_" - the constraint engine's marker for a component line it derived, as opposed to the "QLI{n}_0__0"-style identifier on the line the user actually selected. The line count is computed via Get_All_Quote_Line_Items_On_Quote (filtered on QuoteId only) + a Loop rather than a second SOQL filter on ParentQuoteLineItemId, because the platform rejects a QuoteLineItem query WHERE clause that includes ParentQuoteLineItemId once QuoteId stops being a single-value equality match - which is exactly what happens when Flow bulkifies this record-triggered flow across QuoteLineItem inserts spanning multiple Quotes in one transaction.</description>
+    <description>DIR-1782: V7 base (delegates Opportunity stage transitions to RES_OpportunityStageUpdateValidation) plus a RES_Config_Switch__c gate and bundle-aware validation: a Quote may have only one root unit/bundle. ParentQuoteLineItemId is NOT yet populated on bundle component lines at insert time (the platform links them in a later step), so root detection also excludes lines whose PriceWaterfallIdentifier starts with "ref_" - the constraint engine's marker for a component line it derived, as opposed to the "QLI{n}_0__0"-style identifier (or the "swap_in_line_item_0"-style identifier used during a unit swap) on the line the user actually selected. Root detection additionally excludes any line with Quantity &lt;= 0: a unit swap creates a -1 quantity line for the outgoing unit alongside a +1 line for the incoming one, and the outgoing line must not count toward the "one unit" limit. The line count is computed via Get_All_Quote_Line_Items_On_Quote (filtered on QuoteId only) + a Loop rather than a second SOQL filter on ParentQuoteLineItemId, because the platform rejects a QuoteLineItem query WHERE clause that includes ParentQuoteLineItemId once QuoteId stops being a single-value equality match - which is exactly what happens when Flow bulkifies this record-triggered flow across QuoteLineItem inserts spanning multiple Quotes in one transaction.</description>
     <environments>Default</environments>
     <interviewLabel>RES Quote Line Item - After Insert - After Update - Update Opportunity Stage {!$Flow.CurrentDateTime}</interviewLabel>
     <label>RES Quote Line Item - After Insert - After Update - Update Opportunity Stage</label>
