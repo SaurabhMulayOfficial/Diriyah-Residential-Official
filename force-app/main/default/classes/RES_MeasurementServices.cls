@@ -42,17 +42,15 @@ public with sharing class RES_MeasurementServices {
         String triggerContext = oldMap == null ? 'I' : 'U';
 
         try {
-            if(!Test.isRunningTest()){
-                Id jobId = System.enqueueJob(
-                new RES_IntegrationQueueable(
-                    measurementsToSync,
-                    'Measurement_Sync',
-                    'GET',
-                    triggerContext
-                    )
-                );
-                System.debug('Job Id for: Measurement_Sync ' + jobId);
-            }
+            Id jobId = System.enqueueJob(
+            new RES_IntegrationQueueable(
+                measurementsToSync,
+                'Measurement_Sync',
+                'GET',
+                triggerContext
+                )
+            );
+            System.debug('Job Id for: Measurement_Sync ' + jobId);
         } catch (Exception e) {
             System.debug('Failed to Enqueue Job: SyncMeasurement ' + e.getMessage());
         }

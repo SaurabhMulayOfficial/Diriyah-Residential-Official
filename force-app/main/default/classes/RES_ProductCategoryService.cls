@@ -37,18 +37,16 @@ public with sharing class RES_ProductCategoryService {
         }
 
         try{
-            if(!Test.isRunningTest()){
-                Id jobId = System.enqueueJob(
-                    new RES_IntegrationQueueable(
-                        categoriesToSync,
-                        'ProductCategory_Sync',
-                        'GET',
-                        triggerContext
-                    )
-                );
-                
-                System.debug('Product Category Job Sync ID ' + jobId);
-            }
+            Id jobId = System.enqueueJob(
+                new RES_IntegrationQueueable(
+                    categoriesToSync,
+                    'ProductCategory_Sync',
+                    'GET',
+                    triggerContext
+                )
+            );
+            
+            System.debug('Product Category Job Sync ID ' + jobId);
         }catch(Exception e){
             System.debug('Failed to Enqueue Job ' + e.getMessage());
         }
