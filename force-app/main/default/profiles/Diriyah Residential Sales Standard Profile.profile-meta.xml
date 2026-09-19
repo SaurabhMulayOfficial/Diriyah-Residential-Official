@@ -788,6 +788,11 @@
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
+        <editable>false</editable>
+        <field>Quote.RES_Product__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
         <editable>true</editable>
         <field>Quote.RES_Product_Soft_Held__c</field>
         <readable>true</readable>
@@ -845,6 +850,11 @@
     <fieldPermissions>
         <editable>true</editable>
         <field>Contract.RES_Product_Approval_Stage__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>Contract.RES_Quote_Id__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
