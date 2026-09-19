@@ -37,6 +37,7 @@ public with sharing class RES_IngestionConfig {
         public String stagingField;
         public String targetObject;
         public String targetField;
+        public Boolean isReadOnly = false;
         public String valueKind;
         public String literalValue;
         public String mergeStrategy;
@@ -135,6 +136,7 @@ public with sharing class RES_IngestionConfig {
             t.stagingField       = m.RES_Staging_Field__c;
             t.targetObject       = m.RES_Target_Object__c;
             t.targetField        = m.RES_Target_Field__c;
+            t.isReadOnly         = m.RES_Is_Read_Only__c == true;
             t.valueKind          = String.isBlank(m.RES_Value_Kind__c) ? 'Direct' : m.RES_Value_Kind__c;
             t.literalValue       = m.RES_Literal_Value__c;
             t.mergeStrategy      = String.isBlank(m.RES_Merge_Strategy__c) ? 'First_Non_Null' : m.RES_Merge_Strategy__c;

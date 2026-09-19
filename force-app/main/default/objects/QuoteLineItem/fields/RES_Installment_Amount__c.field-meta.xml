@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>RES_Installment_Amount__c</fullName>
+    <label>Installment Amount</label>
+    <description>Computed by RES_ResidentialBundlePricingHook as RES_Installment_Percentage__c x the selected parent payment plan's price. Display-only - never read by pricing, so it is never double-counted in the bundle total (the installment's own price stays "Included" via ProductRelatedComponent.DoesBundlePriceIncludeChild).</description>
+    <precision>18</precision>
+    <scale>2</scale>
+    <required>false</required>
+    <trackHistory>false</trackHistory>
+    <type>Currency</type>
+</CustomField>

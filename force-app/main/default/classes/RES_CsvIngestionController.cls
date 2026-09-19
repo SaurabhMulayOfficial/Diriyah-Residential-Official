@@ -45,10 +45,9 @@ public with sharing class RES_CsvIngestionController {
             );
         }
 
-        Id jobId = Database.executeBatch(new RES_UnifiedIngestionEngine(layoutCode), BATCH_SIZE);
-
-        UploadResult result = parseToStaging(rawCsvText, fileName, layout, columnMaps, operation, jobId);
-        result.jobId = jobId;
+        // The batch is enqueued inside parseToStaging, once it knows at least one row will be
+        // staged, so a file whose every row fails validation leaves no job running over nothing.
+        UploadResult result = parseToStaging(rawCsvText, fileName, layout, columnMaps, operation, layoutCode);
 
         if (result.rowsInserted == 0) {
             if (result.rowsInvalid > 0) return result;
@@ -94,14 +93,13 @@ public with sharing class RES_CsvIngestionController {
         RES_IngestionConfig.Layout layout,
         List<RES_IngestionConfig.ColumnMap> columnMaps,
         String operation,
-        Id jobId
+        String layoutCode
     ) {
         UploadResult result = new UploadResult();
         result.fileName     = fileName;
         result.operation    = operation;
         result.layoutCode   = layout.code;
         result.layoutLabel  = layout.label;
-        result.batchId      = String.valueOf(jobId);
 
         List<String> lines = splitLines(csvText);
 
@@ -188,7 +186,6 @@ public with sharing class RES_CsvIngestionController {
             List<String> warnings = new List<String>();
             SObject stg = buildStagingRow(cells, resolved, layout, sourceRow, warnings);
             stg.put('RES_Operation__c', operation);
-            stg.put('RES_Batch_Id__c', result.batchId);
 
             if (!warnings.isEmpty()) {
                 stg.put('RES_Error_Log__c',
@@ -244,6 +241,15 @@ public with sharing class RES_CsvIngestionController {
             toStage.add(stg);
         }
         if (toStage.isEmpty()) return result;
+
+        // The batch is enqueued only now that at least one row will be staged, so a file whose
+        // every row failed validation does not leave a job running over nothing. It is still
+        // enqueued before the insert so its Id can be stamped in the same DML: a batch starts
+        // only after this transaction commits, so the rows are always there when it queries.
+        Id jobId       = Database.executeBatch(new RES_UnifiedIngestionEngine(layoutCode), BATCH_SIZE);
+        result.jobId   = jobId;
+        result.batchId = String.valueOf(jobId);
+        for (SObject stg : toStage) stg.put('RES_Batch_Id__c', result.batchId);
 
         List<Database.SaveResult> saves = Database.insert(toStage, false);
         for (Integer i = 0; i < saves.size(); i++) {
