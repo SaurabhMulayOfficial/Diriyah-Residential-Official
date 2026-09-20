@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ProcedurePlanDefinition xmlns="http://soap.sforce.com/2006/04/metadata">
+    <developerName>Residential_Procedure_Plan</developerName>
+    <masterLabel>Residential Procedure Plan</masterLabel>
+    <primaryObject>Quote</primaryObject>
+    <procedurePlanDefinitionVersion>
+        <contextDefinition>ExtSalesTransactionContext</contextDefinition>
+        <developerName>Residential_Procedure_Plan</developerName>
+        <effectiveFrom>2026-09-06 00:00:00</effectiveFrom>
+        <isActive>true</isActive>
+        <procedurePlanDefinition>Residential_Procedure_Plan</procedurePlanDefinition>
+        <procedurePlanSection>
+            <isInherited>false</isInherited>
+            <phase>0</phase>
+            <procedurePlanOption>
+                <expressionSetDefinition>Rev_Mgmt_Default_Pricing_Procedure</expressionSetDefinition>
+                <priority>1</priority>
+                <procedurePlanSection></procedurePlanSection>
+            </procedurePlanOption>
+            <procedurePlanVersion>Residential_Procedure_Plan</procedurePlanVersion>
+            <resolutionType>Default</resolutionType>
+            <sectionType>PricingProcedure</sectionType>
+            <sequence>2</sequence>
+            <subSectionType>PricingProcedure</subSectionType>
+        </procedurePlanSection>
+        <procedurePlanSection>
+            <isInherited>false</isInherited>
+            <phase>0</phase>
+            <procedurePlanOption>
+                <apexClass>RES_ResidentialBundlePricingHook</apexClass>
+                <priority>1</priority>
+                <procedurePlanSection></procedurePlanSection>
+            </procedurePlanOption>
+            <procedurePlanVersion>Residential_Procedure_Plan</procedurePlanVersion>
+            <resolutionType>Default</resolutionType>
+            <sectionType>Apex</sectionType>
+            <sequence>1</sequence>
+            <subSectionType>ApexPreHook</subSectionType>
+        </procedurePlanSection>
+        <rank>1</rank>
+    </procedurePlanDefinitionVersion>
+    <processType>RevenueCloud</processType>
+</ProcedurePlanDefinition>
