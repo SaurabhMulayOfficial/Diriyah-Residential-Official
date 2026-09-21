@@ -14,15 +14,15 @@ private class RES_ResidentialBundlePricingHookTest {
     /** Shared setup: bundle + option products, relationship type, price book entries (no AttributeDefinition/adjustments - see the matching test class). */
     @testSetup
     static void setupTestData() {
-        // Revenue Cloud objects enforce FLS on DML even for admins, so grant the hook's permission set first
+        // Revenue Cloud objects enforce FLS on DML even for admins, so grant the shared permission set first
         List<PermissionSetAssignment> existingAssignments = [
             SELECT Id FROM PermissionSetAssignment
             WHERE AssigneeId = :UserInfo.getUserId()
-                AND PermissionSet.Name = 'RES_Bundle_Pricing_Option_Hook_Access'
+                AND PermissionSet.Name = 'RES_Revenue_Cloud_Objects'
         ];
         if (existingAssignments.isEmpty()) {
             List<PermissionSet> pricingHookPermSets = [
-                SELECT Id FROM PermissionSet WHERE Name = 'RES_Bundle_Pricing_Option_Hook_Access' LIMIT 1
+                SELECT Id FROM PermissionSet WHERE Name = 'RES_Revenue_Cloud_Objects' LIMIT 1
             ];
             if (!pricingHookPermSets.isEmpty()) {
                 insert new PermissionSetAssignment(
