@@ -20,8 +20,10 @@ public with sharing class RES_ProductCategoryService {
         List<String> syncFieldLst = categoryMDT.RES_Sync_Fields__c.split(',');
         Set<String> syncFields = new Set<String>();
 
-        for(String field: syncFields){
-            syncFields.add(field.trim());
+        for (String field : syncFieldLst) {
+            if (String.isNotBlank(field)) {
+                syncFields.add(field.trim());
+            }
         }
 
         for(ProductCategory pc: productCategories){
@@ -36,19 +38,26 @@ public with sharing class RES_ProductCategoryService {
             return;
         }
 
+        List<RES_Integration_Request__e> integrationRequestEventList = new List<RES_Integration_Request__e>();        
+        Set<String> recordIds = new Set<String>();
+        for (ProductCategory pc : categoriesToSync) {
+            recordIds.add(pc.Id);
+        }
+
+        String recordIdsString = String.join(
+            new List<String>(recordIds),
+            ','
+        );
+
         try{
-            Id jobId = System.enqueueJob(
-                new RES_IntegrationQueueable(
-                    categoriesToSync,
-                    'ProductCategory_Sync',
-                    'GET',
-                    triggerContext
-                )
-            );
-            
-            System.debug('Product Category Job Sync ID ' + jobId);
+            EventBus.publish(new RES_Integration_Request__e(
+                RES_RecordIds__c = recordIdsString,
+                RES_Request_Method__c = 'GET',
+                RES_Service_Name__c = 'ProductCategory_Sync',
+                RES_Triggering_Context__c = triggerContext
+            ));
         }catch(Exception e){
-            System.debug('Failed to Enqueue Job ' + e.getMessage());
+            System.debug('Exception Firing Integration Request Event ' + e.getMessage());
         }
     }
 

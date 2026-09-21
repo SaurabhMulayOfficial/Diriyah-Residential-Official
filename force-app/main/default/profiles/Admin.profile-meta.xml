@@ -240,6 +240,26 @@
     <custom>false</custom>
     <fieldPermissions>
         <editable>true</editable>
+        <field>RES_Integration_Request__e.RES_RecordIds__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>RES_Integration_Request__e.RES_Request_Method__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>RES_Integration_Request__e.RES_Service_Name__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>RES_Integration_Request__e.RES_Triggering_Context__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
         <field>RES_Integration_Log__c.RES_Callout_Service__c</field>
         <readable>true</readable>
     </fieldPermissions>
@@ -3037,7 +3057,7 @@
         <field>Product2.RES_Product_External_ID__c</field>
         <readable>true</readable>
     </fieldPermissions>
-       <fieldPermissions>
+    <fieldPermissions>
         <editable>true</editable>
         <field>ProductRelatedComponent.RES_Installment_Percentage__c</field>
         <readable>true</readable>
@@ -4573,6 +4593,16 @@
         <allowRead>true</allowRead>
         <modifyAllRecords>true</modifyAllRecords>
         <object>RES_Integration_Log__c</object>
+        <viewAllFields>true</viewAllFields>
+        <viewAllRecords>true</viewAllRecords>
+    </objectPermissions>
+    <objectPermissions>
+        <allowCreate>true</allowCreate>
+        <allowDelete>true</allowDelete>
+        <allowEdit>true</allowEdit>
+        <allowRead>true</allowRead>
+        <modifyAllRecords>true</modifyAllRecords>
+        <object>RES_Integration_Request__e</object>
         <viewAllFields>true</viewAllFields>
         <viewAllRecords>true</viewAllRecords>
     </objectPermissions>

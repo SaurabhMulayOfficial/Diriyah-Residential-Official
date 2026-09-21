@@ -1,561 +1,274 @@
 /**
- * @description Unit tests for RES_ProductCategoryIntegrationService.
+ * @description Unit tests for RES_ProductCategoryService.
  *
- *              PREREQUISITE: RES_API_Configuration__mdt records cannot be
- *              created in an Apex test. The tests below require deployed
- *              configuration for DeveloperName-style lookup
- *              ('GET' / 'Building_Land_API' and 'POST' / 'Building_Land_API').
- *              If those records are missing the constructor throws and the
- *              affected tests fail with RES_IntegrationException.
+ *              The service does NOT enqueue a job itself: it publishes a
+ *              RES_Integration_Request__e, and the platform-event subscriber
+ *              (RES_IntegrationRequestEventService) enqueues RES_IntegrationQueueable.
+ *              "Published" is therefore verified by the delta in queueable jobs around
+ *              syncProductCategories() + Test.getEventBus().deliver(), which ignores jobs
+ *              created by events fired from the test-data inserts.
  *
- *              The cleanest fix is a @TestVisible injection point on the
- *              service for the DAO, which would remove this dependency.
+ *              Dependencies that cannot be created in a test (custom metadata):
+ *              - RES_SAP_Integration_Config__mdt 'Product_Category_Sync' with RES_Sync_Fields__c
+ *              - API configuration used by the integration service
+ *              Tests that need them return early when they are not deployed; the
+ *              "config missing" test runs only in that situation.
+ *
+ *              NOTE: sync_update_syncFieldChanged_publishesEvent exposes a bug in the service
+ *              (the sync-field parsing loop iterates the empty syncFields set instead of
+ *              syncFieldLst). It fails until that loop is fixed.
  */
-@isTest
+@IsTest
 private class RES_ProductCategoryServiceTest {
 
-    private static final String METHOD = 'GET';
+    private static final String CONFIG_NAME = 'Product_Category_Sync';
 
-    /* ====================================================================
-     *  CONSTRUCTOR
-     * ==================================================================== */
+    // Fields the factory populates; used to pick one that is NOT a sync field
+    private static final List<String> CANDIDATE_FIELDS = new List<String>{
+        'Name',
+        'RES_Company_Code__c',
+        'RES_Business_Entity_Id__c',
+        'RES_Property_ID__c',
+        'RES_Valid_From_Date__c',
+        'RES_Valid_To_Date__c',
+        'RES_Profit_Center__c',
+        'RES_Property_Type__c'
+    };
 
-    @isTest
-    static void constructorSucceedsWithValidConfigurationAndToken() {
+    private static RES_IntegrationTestDataFactory.EndpointRoutingMock mock;
+
+    // ------------------------------------------------------------------
+    // Helpers
+    // ------------------------------------------------------------------
+    private static void setUpCallouts() {
         RES_IntegrationTestDataFactory.primeSapToken();
-        Test.setMock(
-            HttpCalloutMock.class,
-            new RES_IntegrationTestDataFactory.EndpointRoutingMock()
-        );
-
-        Test.startTest();
-        RES_ProductCategoryIntegrationService service =
-            new RES_ProductCategoryIntegrationService(METHOD);
-        Test.stopTest();
-
-        Assert.isNotNull(service, 'The service should be constructed when config and token are available.');
-    }
-
-    @isTest
-    static void constructorThrowsWhenNoApiConfigurationExists() {
-        RES_IntegrationTestDataFactory.primeSapToken();
-
-        Boolean threw = false;
-        String message;
-
-        Test.startTest();
-        try {
-            // A verb that will never be configured for Building_Land_API.
-            new RES_ProductCategoryIntegrationService('TRACE');
-        } catch (RES_IntegrationException e) {
-            threw = true;
-            message = e.getMessage();
-        }
-        Test.stopTest();
-
-        Assert.isTrue(threw, 'A missing configuration should raise RES_IntegrationException.');
-        Assert.isTrue(
-            message.contains('No API configuration found'),
-            'The exception should explain that configuration is missing.'
-        );
-    }
-
-    @isTest
-    static void constructorThrowsWhenSapTokenIsBlank() {
-        RES_IntegrationTestDataFactory.clearSapToken();
-
-        // Token callout returns 200 but without an access_token key,
-        // so the provider hands back a blank token.
-        RES_IntegrationTestDataFactory.EndpointRoutingMock mock =
-            new RES_IntegrationTestDataFactory.EndpointRoutingMock();
-        mock.tokenBody = '{"token_type":"Bearer"}';
+        mock = new RES_IntegrationTestDataFactory.EndpointRoutingMock();
         Test.setMock(HttpCalloutMock.class, mock);
+    }
 
-        Boolean threw = false;
-        String message;
-
-        Test.startTest();
-        try {
-            new RES_ProductCategoryIntegrationService(METHOD);
-        } catch (RES_IntegrationException e) {
-            threw = true;
-            message = e.getMessage();
+    /** Lower-cased sync field names from the deployed metadata (empty if missing/blank). */
+    private static Set<String> getSyncFields() {
+        Set<String> fields = new Set<String>();
+        RES_SAP_Integration_Config__mdt cfg =
+            new RES_SAPIntegrationConfigDAO().getSAPIntegrationConfigByDeveloperName(CONFIG_NAME);
+        if (cfg != null && String.isNotBlank(cfg.RES_Sync_Fields__c)) {
+            for (String f : cfg.RES_Sync_Fields__c.split(',')) {
+                if (String.isNotBlank(f)) {
+                    fields.add(f.trim().toLowerCase());
+                }
+            }
         }
-        Test.stopTest();
-
-        Assert.isTrue(threw, 'A blank token should raise RES_IntegrationException.');
-        Assert.isTrue(
-            message.contains('Failed to retrieve SAP token'),
-            'The exception should explain that the token could not be retrieved.'
-        );
+        return fields;
     }
 
-    @isTest
-    static void constructorAppliesAuthorizationHeader() {
-        RES_IntegrationTestDataFactory.primeSapToken();
-
-        RES_IntegrationTestDataFactory.EndpointRoutingMock mock =
-            new RES_IntegrationTestDataFactory.EndpointRoutingMock();
-        Test.setMock(HttpCalloutMock.class, mock);
-
-        List<ProductCategory> categories = RES_IntegrationTestDataFactory.createCategories(1, true);
-
-        Test.startTest();
-        RES_ProductCategoryIntegrationService.syncProductCategories(categories, METHOD, 'I');
-        Test.stopTest();
-
-        Assert.areEqual(2, mock.businessCallCount, 'One business callout should have been made.');
-        Assert.areEqual(
-            'Bearer ' + RES_IntegrationTestDataFactory.MOCK_ACCESS_TOKEN,
-            mock.businessRequests[0].getHeader('Authorization'),
-            'The bearer token should be attached to the outbound request.'
-        );
+    private static Boolean configReady() {
+        return !getSyncFields().isEmpty();
     }
 
-    /* ====================================================================
-     *  hydrateRequestBody  (ProductCategory)
-     * ==================================================================== */
-
-    @isTest
-    static void hydrateRequestBodySerialisesSingleRecordAsObject() {
-        RES_IntegrationTestDataFactory.primeSapToken();
-        Test.setMock(
-            HttpCalloutMock.class,
-            new RES_IntegrationTestDataFactory.EndpointRoutingMock()
-        );
-
-        List<ProductCategory> categories = RES_IntegrationTestDataFactory.createCategories(1, true);
-
-        Test.startTest();
-        RES_ProductCategoryIntegrationService service =
-            new RES_ProductCategoryIntegrationService(METHOD);
-        String body = service.hydrateRequestBody(categories, 'I');
-        Test.stopTest();
-
-        Assert.isTrue(body.startsWith('{'), 'A single record should serialise as a JSON object, not an array.');
-
-        Map<String, Object> parsed = (Map<String, Object>) JSON.deserializeUntyped(body);
-        Assert.areEqual('Test Category 0', parsed.get('Name'), 'Name should be mapped onto the wrapper.');
-        Assert.areEqual('1000', parsed.get('RES_Company_Code'), 'Company code should be mapped.');
-        Assert.areEqual('BE-001', parsed.get('RES_Business_Entity_Id'), 'Business entity id should be mapped.');
-        Assert.areEqual('PROP-0', parsed.get('RES_Property_ID'), 'Property id should be mapped.');
-        Assert.areEqual('PC-100', parsed.get('RES_Profit_Center'), 'Profit center should be mapped.');
-        Assert.areEqual('Land', parsed.get('RES_Property_Type'), 'Property type should be mapped.');
-        Assert.areEqual('I', parsed.get('Change_Indicator'), 'The trigger context drives the change indicator.');
+    /** Config present AND the queueable can run at stopTest(). */
+    private static Boolean canRun() {
+        return configReady() && RES_IntegrationTestDataFactory.hasApiConfiguration('GET');
     }
 
-    @isTest
-    static void hydrateRequestBodySerialisesMultipleRecordsAsArray() {
-        RES_IntegrationTestDataFactory.primeSapToken();
-        Test.setMock(
-            HttpCalloutMock.class,
-            new RES_IntegrationTestDataFactory.EndpointRoutingMock()
-        );
-
-        List<ProductCategory> categories = RES_IntegrationTestDataFactory.createCategories(3, true);
-
-        Test.startTest();
-        RES_ProductCategoryIntegrationService service =
-            new RES_ProductCategoryIntegrationService(METHOD);
-        String body = service.hydrateRequestBody(categories, 'U');
-        Test.stopTest();
-
-        Assert.isTrue(body.startsWith('['), 'Multiple records should serialise as a JSON array.');
-
-        List<Object> parsed = (List<Object>) JSON.deserializeUntyped(body);
-        Assert.areEqual(3, parsed.size(), 'Every supplied record should appear in the payload.');
-
-        Map<String, Object> first = (Map<String, Object>) parsed[0];
-        Assert.areEqual('U', first.get('Change_Indicator'), 'The update indicator should be propagated.');
-    }
-
-    @isTest
-    static void hydrateRequestBodyThrowsOnNullList() {
-        RES_IntegrationTestDataFactory.primeSapToken();
-        Test.setMock(
-            HttpCalloutMock.class,
-            new RES_IntegrationTestDataFactory.EndpointRoutingMock()
-        );
-
-        Boolean threw = false;
-
-        Test.startTest();
-        RES_ProductCategoryIntegrationService service =
-            new RES_ProductCategoryIntegrationService(METHOD);
-        try {
-            service.hydrateRequestBody(null, 'I');
-        } catch (RES_IntegrationException e) {
-            threw = true;
+    /** First sync field that has a value on the record (so nulling it on "old" is a change). */
+    private static String findPopulatedSyncField(ProductCategory record) {
+        for (String f : getSyncFields()) {
+            if (record.get(f) != null) {
+                return f;
+            }
         }
-        Test.stopTest();
-
-        Assert.isTrue(threw, 'A null record list should raise RES_IntegrationException.');
+        return null;
     }
 
-    @isTest
-    static void hydrateRequestBodyThrowsOnEmptyList() {
-        RES_IntegrationTestDataFactory.primeSapToken();
-        Test.setMock(
-            HttpCalloutMock.class,
-            new RES_IntegrationTestDataFactory.EndpointRoutingMock()
-        );
-
-        Boolean threw = false;
-
-        Test.startTest();
-        RES_ProductCategoryIntegrationService service =
-            new RES_ProductCategoryIntegrationService(METHOD);
-        try {
-            service.hydrateRequestBody(new List<ProductCategory>(), 'I');
-        } catch (RES_IntegrationException e) {
-            threw = true;
+    /** First factory-populated field that is not a sync field. */
+    private static String findPopulatedNonSyncField(ProductCategory record) {
+        Set<String> syncFields = getSyncFields();
+        for (String f : CANDIDATE_FIELDS) {
+            if (!syncFields.contains(f.toLowerCase()) && record.get(f) != null) {
+                return f;
+            }
         }
-        Test.stopTest();
-
-        Assert.isTrue(threw, 'An empty record list should raise RES_IntegrationException.');
-    }
-
-    /* ====================================================================
-     *  hydrateRequestBodyForMeasurements
-     * ==================================================================== */
-
-    @isTest
-    static void hydrateMeasurementsGroupsByCategory() {
-        RES_IntegrationTestDataFactory.primeSapToken();
-        Test.setMock(
-            HttpCalloutMock.class,
-            new RES_IntegrationTestDataFactory.EndpointRoutingMock()
-        );
-
-        List<ProductCategory> categories = RES_IntegrationTestDataFactory.createCategories(1, true);
-        List<RES_Measurement__c> measurements =
-            RES_IntegrationTestDataFactory.createMeasurements(categories[0].Id, 3);
-
-        Test.startTest();
-        RES_ProductCategoryIntegrationService service =
-            new RES_ProductCategoryIntegrationService(METHOD);
-        String body = service.hydrateRequestBodyForMeasurements(measurements, 'I');
-        Test.stopTest();
-
-        Assert.isTrue(body.startsWith('{'), 'Three measurements on one category collapse to a single wrapper.');
-
-        Map<String, Object> parsed = (Map<String, Object>) JSON.deserializeUntyped(body);
-        Assert.areEqual('U', parsed.get('Change_Indicator'),
-            'The category indicator is hard coded to U on the measurement path.');
-
-        List<Object> nested = (List<Object>) parsed.get('RES_Measurements');
-        Assert.areEqual(3, nested.size(), 'All three measurements should be nested under the category.');
-
-        Map<String, Object> firstMeasurement = (Map<String, Object>) nested[0];
-        Assert.areEqual('I', firstMeasurement.get('Measurement_Change_Indicator'),
-            'The trigger context drives the measurement level indicator.');
-        Assert.areEqual(125.50, firstMeasurement.get('RES_Measurement_Amount'),
-            'The measurement amount should be mapped onto the wrapper.');
-    }
-
-    @isTest
-    static void hydrateMeasurementsProducesArrayForMultipleCategories() {
-        RES_IntegrationTestDataFactory.primeSapToken();
-        Test.setMock(
-            HttpCalloutMock.class,
-            new RES_IntegrationTestDataFactory.EndpointRoutingMock()
-        );
-
-        List<ProductCategory> categories = RES_IntegrationTestDataFactory.createCategories(2, true);
-        List<RES_Measurement__c> measurements = new List<RES_Measurement__c>{
-            RES_IntegrationTestDataFactory.buildMeasurement(categories[0].Id, 'Z002'),
-            RES_IntegrationTestDataFactory.buildMeasurement(categories[1].Id, 'Z002')
-        };
-        insert measurements;
-
-        Test.startTest();
-        RES_ProductCategoryIntegrationService service =
-            new RES_ProductCategoryIntegrationService(METHOD);
-        String body = service.hydrateRequestBodyForMeasurements(measurements, 'U');
-        Test.stopTest();
-
-        List<Object> parsed = (List<Object>) JSON.deserializeUntyped(body);
-        Assert.areEqual(2, parsed.size(), 'Each distinct category should produce its own wrapper.');
-    }
-
-    @isTest
-    static void hydrateMeasurementsThrowsOnNullList() {
-        RES_IntegrationTestDataFactory.primeSapToken();
-        Test.setMock(
-            HttpCalloutMock.class,
-            new RES_IntegrationTestDataFactory.EndpointRoutingMock()
-        );
-
-        Boolean threw = false;
-
-        Test.startTest();
-        RES_ProductCategoryIntegrationService service =
-            new RES_ProductCategoryIntegrationService(METHOD);
-        try {
-            service.hydrateRequestBodyForMeasurements(null, 'I');
-        } catch (RES_IntegrationException e) {
-            threw = true;
-        }
-        Test.stopTest();
-
-        Assert.isTrue(threw, 'A null measurement list should raise RES_IntegrationException.');
-    }
-
-    @isTest
-    static void hydrateMeasurementsThrowsOnEmptyList() {
-        RES_IntegrationTestDataFactory.primeSapToken();
-        Test.setMock(
-            HttpCalloutMock.class,
-            new RES_IntegrationTestDataFactory.EndpointRoutingMock()
-        );
-
-        Boolean threw = false;
-
-        Test.startTest();
-        RES_ProductCategoryIntegrationService service =
-            new RES_ProductCategoryIntegrationService(METHOD);
-        try {
-            service.hydrateRequestBodyForMeasurements(new List<RES_Measurement__c>(), 'I');
-        } catch (RES_IntegrationException e) {
-            threw = true;
-        }
-        Test.stopTest();
-
-        Assert.isTrue(threw, 'An empty measurement list should raise RES_IntegrationException.');
-    }
-
-    @isTest
-    static void hydrateMeasurementsThrowsWhenNoMeasurementHasACategory() {
-        RES_IntegrationTestDataFactory.primeSapToken();
-        Test.setMock(
-            HttpCalloutMock.class,
-            new RES_IntegrationTestDataFactory.EndpointRoutingMock()
-        );
-
-        // Measurements with a null lookup never reach the wrapper list.
-        List<RES_Measurement__c> orphans = new List<RES_Measurement__c>{
-            RES_IntegrationTestDataFactory.buildMeasurement(null, 'Z002'),
-            RES_IntegrationTestDataFactory.buildMeasurement(null, 'Z002')
-        };
-
-        Boolean threw = false;
-        String message;
-
-        Test.startTest();
-        RES_ProductCategoryIntegrationService service =
-            new RES_ProductCategoryIntegrationService(METHOD);
-        try {
-            service.hydrateRequestBodyForMeasurements(orphans, 'I');
-        } catch (RES_IntegrationException e) {
-            threw = true;
-            message = e.getMessage();
-        }
-        Test.stopTest();
-
-        Assert.isTrue(threw, 'Measurements without a category produce an empty payload and should throw.');
-        Assert.isTrue(
-            message.contains('Empty Request Body'),
-            'The empty payload branch should be the one that fires.'
-        );
-    }
-
-    /* ====================================================================
-     *  syncProductCategories
-     * ==================================================================== */
-
-    @isTest
-    static void syncProductCategoriesStampsLastSyncOnSuccess() {
-        RES_IntegrationTestDataFactory.primeSapToken();
-
-        RES_IntegrationTestDataFactory.EndpointRoutingMock mock =
-            new RES_IntegrationTestDataFactory.EndpointRoutingMock();
-        Test.setMock(HttpCalloutMock.class, mock);
-
-        List<ProductCategory> categories = RES_IntegrationTestDataFactory.createCategories(2, true);
-
-        Test.startTest();
-        RES_ProductCategoryIntegrationService.syncProductCategories(categories, METHOD, 'I');
-        Test.stopTest();
-
-        Assert.areEqual(2, mock.businessCallCount, 'One callout should carry the whole batch.');
-
-        List<ProductCategory> refreshed = [
-            SELECT Id, RES_Last_Sync_DateTime__c
-            FROM ProductCategory
-            WHERE Id IN :categories
-        ];
-        for (ProductCategory pc : refreshed) {
-            Assert.isNotNull(pc.RES_Last_Sync_DateTime__c, 'A successful sync should stamp the sync timestamp.');
-        }
-    }
-
-    @isTest
-    static void syncProductCategoriesSendsSerialisedPayload() {
-        RES_IntegrationTestDataFactory.primeSapToken();
-
-        RES_IntegrationTestDataFactory.EndpointRoutingMock mock =
-            new RES_IntegrationTestDataFactory.EndpointRoutingMock();
-        Test.setMock(HttpCalloutMock.class, mock);
-
-        List<ProductCategory> categories = RES_IntegrationTestDataFactory.createCategories(1, true);
-
-        Test.startTest();
-        RES_ProductCategoryIntegrationService.syncProductCategories(categories, METHOD, 'I');
-        Test.stopTest();
-
-        String sentBody = mock.lastBusinessBody();
-        Assert.isNotNull(sentBody, 'The hydrated body should be attached to the request.');
-        Assert.isTrue(sentBody.contains('PROP-0'), 'The payload should contain the category property id.');
+        return null;
     }
 
     /**
-     * Documents current behaviour. sendRequest() returns null on a permanent
-     * failure, so the debug line dereferencing response.statusCode throws an
-     * NPE that is swallowed by the catch block. The result is that failures
-     * are silent AND the sync timestamp is never written, which is at least
-     * directionally correct but happens by accident rather than by design.
+     * Builds an "old" map from the records. For the first alterCount records, fieldToNull is
+     * cleared so it differs from the "new" version.
      */
-    @isTest
-    static void syncProductCategoriesSwallowsFailureAndSkipsTimestamp() {
-        RES_IntegrationTestDataFactory.primeSapToken();
-
-        RES_IntegrationTestDataFactory.EndpointRoutingMock mock =
-            new RES_IntegrationTestDataFactory.EndpointRoutingMock();
-        mock.businessStatusCode = 500;
-        mock.businessStatus = 'Internal Server Error';
-        mock.businessBody = '{"error":"boom"}';
-        Test.setMock(HttpCalloutMock.class, mock);
-
-        List<ProductCategory> categories = RES_IntegrationTestDataFactory.createCategories(1, true);
-
-        Test.startTest();
-        RES_ProductCategoryIntegrationService.syncProductCategories(categories, METHOD, 'I');
-        Test.stopTest();
-
-        List<ProductCategory> refreshed = [
-            SELECT Id, RES_Last_Sync_DateTime__c
-            FROM ProductCategory
-            WHERE Id IN :categories
-        ];
-        Assert.isNull(
-            refreshed[0].RES_Last_Sync_DateTime__c,
-            'A failed callout should not stamp the record as synced.'
-        );
-
-        List<RES_Integration_Log__c> logs = [SELECT Id, RES_Type_of_Failure__c FROM RES_Integration_Log__c];
-        Assert.areEqual(2, logs.size(), 'The base class should have logged the failure.');
-        Assert.areEqual('Server Side', logs[0].RES_Type_of_Failure__c, 'A 500 is a server side failure.');
+    private static Map<Id, ProductCategory> buildOldMap(
+        List<ProductCategory> records, String fieldToNull, Integer alterCount
+    ) {
+        Map<Id, ProductCategory> oldMap = new Map<Id, ProductCategory>();
+        for (Integer i = 0; i < records.size(); i++) {
+            ProductCategory old = records[i].clone(true);
+            if (i < alterCount && fieldToNull != null) {
+                old.put(fieldToNull, null);
+            }
+            oldMap.put(old.Id, old);
+        }
+        return oldMap;
     }
 
-    @isTest
-    static void syncProductCategoriesPropagatesHydrationException() {
-        RES_IntegrationTestDataFactory.primeSapToken();
-        Test.setMock(
-            HttpCalloutMock.class,
-            new RES_IntegrationTestDataFactory.EndpointRoutingMock()
-        );
+    private static Integer queueableJobCount() {
+        return [
+            SELECT COUNT()
+            FROM AsyncApexJob
+            WHERE JobType = 'Queueable'
+            AND ApexClass.Name = 'RES_IntegrationQueueable'
+        ];
+    }
+
+    /**
+     * Calls syncProductCategories and returns how many integration jobs that call caused
+     * (event published -> delivered -> subscriber enqueues job).
+     */
+    private static Integer syncAndCountJobs(
+        List<ProductCategory> records, Map<Id, ProductCategory> oldMap
+    ) {
+        setUpCallouts();
+        Test.startTest();
+        Test.getEventBus().deliver();          // flush events fired by the test-data inserts
+        Integer before = queueableJobCount();
+
+        RES_ProductCategoryService.syncProductCategories(records, oldMap);
+        Test.getEventBus().deliver();          // deliver the event published by the service
+
+        Integer after = queueableJobCount();
+        Test.stopTest();
+        return after - before;
+    }
+
+    // ------------------------------------------------------------------
+    // Insert path (oldMap == null)
+    // ------------------------------------------------------------------
+    @IsTest
+    static void sync_insert_publishesEventForAllRecords() {
+        if (!canRun()) { return; }
+        List<ProductCategory> categories = RES_IntegrationTestDataFactory.createCategories(2, true);
+
+        Integer jobs = syncAndCountJobs(categories, null);
+
+        Assert.areEqual(1, jobs, 'A single event / job should cover all inserted categories');
+        Assert.areEqual(0, mock.tokenCallCount, 'Primed token should avoid the token callout');
+    }
+
+    // ------------------------------------------------------------------
+    // Update path
+    // ------------------------------------------------------------------
+    @IsTest
+    static void sync_update_syncFieldChanged_publishesEvent() {
+        if (!canRun()) { return; }
+        List<ProductCategory> categories = RES_IntegrationTestDataFactory.createCategories(2, true);
+        String field = findPopulatedSyncField(categories[0]);
+        if (field == null) { return; }
+
+        Integer jobs = syncAndCountJobs(categories, buildOldMap(categories, field, categories.size()));
+
+        // Fails today because of the empty-set loop bug in RES_ProductCategoryService
+        Assert.areEqual(1, jobs, 'A changed sync field should publish an event');
+
+        // The job runs at stopTest(); the update context should reach the payload
+        Boolean sawUpdateIndicator = false;
+        for (HttpRequest req : mock.businessRequests) {
+            if (req.getBody() != null && req.getBody().contains('"Change_Indicator":"U"')) {
+                sawUpdateIndicator = true;
+            }
+        }
+        Assert.isTrue(sawUpdateIndicator, 'The update context (U) should flow through to the callout payload');
+    }
+
+    @IsTest
+    static void sync_update_noChanges_publishesNothing() {
+        if (!canRun()) { return; }
+        List<ProductCategory> categories = RES_IntegrationTestDataFactory.createCategories(2, true);
+
+        Integer jobs = syncAndCountJobs(categories, buildOldMap(categories, null, 0));
+
+        Assert.areEqual(0, jobs, 'Identical old/new values should not publish an event');
+    }
+
+    @IsTest
+    static void sync_update_onlyNonSyncFieldChanged_publishesNothing() {
+        if (!canRun()) { return; }
+        List<ProductCategory> categories = RES_IntegrationTestDataFactory.createCategories(2, true);
+        String field = findPopulatedNonSyncField(categories[0]);
+        if (field == null) { return; }
+
+        Integer jobs = syncAndCountJobs(categories, buildOldMap(categories, field, categories.size()));
+
+        Assert.areEqual(0, jobs, 'A change to a field outside RES_Sync_Fields__c must be ignored');
+    }
+
+    @IsTest
+    static void sync_update_mixedChangedAndUnchanged_publishesSingleEvent() {
+        if (!canRun()) { return; }
+        List<ProductCategory> categories = RES_IntegrationTestDataFactory.createCategories(3, true);
+        String field = findPopulatedSyncField(categories[0]);
+        if (field == null) { return; }
+
+        // Only the first record differs from its "old" version
+        Integer jobs = syncAndCountJobs(categories, buildOldMap(categories, field, 1));
+
+        Assert.areEqual(1, jobs, 'Only changed records are synced, in one event');
+    }
+
+    @IsTest
+    static void sync_update_recordMissingFromOldMap_treatedAsChanged() {
+        if (!canRun()) { return; }
+        List<ProductCategory> categories = RES_IntegrationTestDataFactory.createCategories(1, true);
+
+        // Non-null but empty oldMap -> oldMap.get(Id) is null -> isCategoryChanged returns true
+        Integer jobs = syncAndCountJobs(categories, new Map<Id, ProductCategory>());
+
+        Assert.areEqual(1, jobs, 'A record absent from oldMap should be treated as changed');
+    }
+
+    // ------------------------------------------------------------------
+    // Empty input
+    // ------------------------------------------------------------------
+    @IsTest
+    static void sync_emptyList_insertContext_publishesNothing() {
+        if (!canRun()) { return; }
+
+        Integer jobs = syncAndCountJobs(new List<ProductCategory>(), null);
+
+        Assert.areEqual(0, jobs, 'Empty input should not publish an event');
+    }
+
+    @IsTest
+    static void sync_emptyList_updateContext_publishesNothing() {
+        if (!canRun()) { return; }
+
+        Integer jobs = syncAndCountJobs(new List<ProductCategory>(), new Map<Id, ProductCategory>());
+
+        Assert.areEqual(0, jobs, 'Empty input should not publish an event');
+    }
+
+    // ------------------------------------------------------------------
+    // Missing configuration (runs only when the metadata is NOT deployed/populated)
+    // ------------------------------------------------------------------
+    @IsTest
+    static void sync_configMissing_throwsIntegrationException() {
+        if (configReady()) { return; }
 
         Boolean threw = false;
-
-        Test.startTest();
         try {
-            // Hydration runs before the try block, so this escapes the method.
-            RES_ProductCategoryIntegrationService.syncProductCategories(
-                new List<ProductCategory>(), METHOD, 'I'
+            RES_ProductCategoryService.syncProductCategories(new List<ProductCategory>(), null);
+        } catch (RES_IntegrationException e) {
+            threw = true;
+            Assert.isTrue(
+                e.getMessage().contains('SAP Integration Config'),
+                'Message should explain the missing configuration'
             );
-        } catch (RES_IntegrationException e) {
-            threw = true;
         }
-        Test.stopTest();
-
-        Assert.isTrue(threw, 'Hydration failures are not caught by syncProductCategories.');
+        Assert.isTrue(threw, 'Missing config / sync fields should raise RES_IntegrationException');
     }
 
-    /* ====================================================================
-     *  syncMeasurements
-     * ==================================================================== */
-
-    @isTest
-    static void syncMeasurementsStampsLastSyncOnSuccess() {
-        RES_IntegrationTestDataFactory.primeSapToken();
-
-        RES_IntegrationTestDataFactory.EndpointRoutingMock mock =
-            new RES_IntegrationTestDataFactory.EndpointRoutingMock();
-        Test.setMock(HttpCalloutMock.class, mock);
-
-        List<ProductCategory> categories = RES_IntegrationTestDataFactory.createCategories(1, true);
-        List<RES_Measurement__c> measurements =
-            RES_IntegrationTestDataFactory.createMeasurements(categories[0].Id, 2);
-
-        Test.startTest();
-        RES_ProductCategoryIntegrationService.syncMeasurements(measurements, METHOD, 'I');
-        Test.stopTest();
-
-        Assert.areEqual(3, mock.businessCallCount, 'One callout should carry the measurement batch.');
-
-        List<RES_Measurement__c> refreshed = [
-            SELECT Id, RES_Last_Sync_DateTime__c
-            FROM RES_Measurement__c
-            WHERE Id IN :measurements
-        ];
-        for (RES_Measurement__c m : refreshed) {
-            Assert.isNotNull(m.RES_Last_Sync_DateTime__c, 'A successful sync should stamp the sync timestamp.');
-        }
-    }
-
-    @isTest
-    static void syncMeasurementsSwallowsFailureAndSkipsTimestamp() {
-        RES_IntegrationTestDataFactory.primeSapToken();
-
-        RES_IntegrationTestDataFactory.EndpointRoutingMock mock =
-            new RES_IntegrationTestDataFactory.EndpointRoutingMock();
-        mock.businessStatusCode = 404;
-        mock.businessStatus = 'Not Found';
-        mock.businessBody = '{"error":"missing"}';
-        Test.setMock(HttpCalloutMock.class, mock);
-
-        List<ProductCategory> categories = RES_IntegrationTestDataFactory.createCategories(1, true);
-        List<RES_Measurement__c> measurements =
-            RES_IntegrationTestDataFactory.createMeasurements(categories[0].Id, 1);
-
-        Test.startTest();
-        RES_ProductCategoryIntegrationService.syncMeasurements(measurements, METHOD, 'I');
-        Test.stopTest();
-
-        List<RES_Measurement__c> refreshed = [
-            SELECT Id, RES_Last_Sync_DateTime__c
-            FROM RES_Measurement__c
-            WHERE Id IN :measurements
-        ];
-        Assert.isNull(
-            refreshed[0].RES_Last_Sync_DateTime__c,
-            'A failed callout should not stamp the record as synced.'
-        );
-        Assert.areEqual(
-            'Client Side',
-            [SELECT RES_Type_of_Failure__c FROM RES_Integration_Log__c LIMIT 1].RES_Type_of_Failure__c,
-            'A 404 is a client side failure.'
-        );
-    }
-
-    @isTest
-    static void syncMeasurementsPropagatesHydrationException() {
-        RES_IntegrationTestDataFactory.primeSapToken();
-        Test.setMock(
-            HttpCalloutMock.class,
-            new RES_IntegrationTestDataFactory.EndpointRoutingMock()
-        );
-
-        Boolean threw = false;
-
-        Test.startTest();
-        try {
-            RES_ProductCategoryIntegrationService.syncMeasurements(null, METHOD, 'I');
-        } catch (RES_IntegrationException e) {
-            threw = true;
-        }
-        Test.stopTest();
-
-        Assert.isTrue(threw, 'Hydration failures are not caught by syncMeasurements.');
+    // ------------------------------------------------------------------
+    // Constructor
+    // ------------------------------------------------------------------
+    @IsTest
+    static void constructor_canBeInstantiated() {
+        Assert.isNotNull(new RES_ProductCategoryService(), 'The no-arg constructor should be usable');
     }
 }

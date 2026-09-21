@@ -41,18 +41,26 @@ public with sharing class RES_MeasurementServices {
 
         String triggerContext = oldMap == null ? 'I' : 'U';
 
-        try {
-            Id jobId = System.enqueueJob(
-            new RES_IntegrationQueueable(
-                measurementsToSync,
-                'Measurement_Sync',
-                'GET',
-                triggerContext
-                )
-            );
-            System.debug('Job Id for: Measurement_Sync ' + jobId);
-        } catch (Exception e) {
-            System.debug('Failed to Enqueue Job: SyncMeasurement ' + e.getMessage());
+        List<RES_Integration_Request__e> integrationRequestEventList = new List<RES_Integration_Request__e>();        
+        Set<String> recordIds = new Set<String>();
+        for (RES_Measurement__c measurement : measurementsToSync) {
+            recordIds.add(measurement.Id);
+        }
+
+        String recordIdsString = String.join(
+            new List<String>(recordIds),
+            ','
+        );
+
+        try{
+            EventBus.publish(new RES_Integration_Request__e(
+                RES_RecordIds__c = recordIdsString,
+                RES_Request_Method__c = 'GET',
+                RES_Service_Name__c = 'Measurement_Sync',
+                RES_Triggering_Context__c = triggerContext
+            ));
+        }catch(Exception e){
+            System.debug('Exception Firing Integration Request Event ' + e.getMessage());
         }
     }
 
