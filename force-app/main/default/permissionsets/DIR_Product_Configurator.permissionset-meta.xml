@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<PermissionSet xmlns="http://soap.sforce.com/2006/04/metadata">
+    <hasActivationRequired>false</hasActivationRequired>
+    <label>Product Configurator</label>
+    <license>IndustriesConfiguratorPsl</license>
+    <userPermissions>
+        <enabled>true</enabled>
+        <name>EnableConfigurationLogAccess</name>
+    </userPermissions>
+    <userPermissions>
+        <enabled>true</enabled>
+        <name>HeadlessConfiguratorUser</name>
+    </userPermissions>
+    <userPermissions>
+        <enabled>true</enabled>
+        <name>InteractionCalcAdminPerm</name>
+    </userPermissions>
+    <userPermissions>
+        <enabled>true</enabled>
+        <name>ManageAdvancedConfigurator</name>
+    </userPermissions>
+    <userPermissions>
+        <enabled>true</enabled>
+        <name>ProductConfigurationRuleAccess</name>
+    </userPermissions>
+</PermissionSet>

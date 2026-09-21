@@ -79,12 +79,13 @@ private class RES_BundlePricingHookMatchingTest {
         );
     }
 
-    /** Sets SC_RATE (DefaultValue on a ProductAttributeDefinition scoped to the bundle) - read via SOQL by the hook. */
+    /** Sets the service charge rate attribute (DeveloperName driven by the same org-specific Custom Label the hook reads) on a ProductAttributeDefinition scoped to the bundle. */
     private static void insertServiceChargeRateAttribute() {
         Product2 bundleProduct = [SELECT Id, BasedOnId FROM Product2 WHERE Name = :BUNDLE_NAME LIMIT 1];
+        String scRateDeveloperName = Label.RES_Service_Charge_Rate_Attribute;
 
         List<AttributeDefinition> existingScRateAttrs = [
-            SELECT Id FROM AttributeDefinition WHERE DeveloperName = 'SC_RATE' LIMIT 1
+            SELECT Id FROM AttributeDefinition WHERE DeveloperName = :scRateDeveloperName LIMIT 1
         ];
         AttributeDefinition scRateAttr;
         if (!existingScRateAttrs.isEmpty()) {
@@ -92,7 +93,7 @@ private class RES_BundlePricingHookMatchingTest {
         } else {
             scRateAttr = new AttributeDefinition(
                 Name = 'RES Test Matching Service Charge Rate', Label = 'RES Test Matching Service Charge Rate',
-                DeveloperName = 'SC_RATE', DataType = 'Number', IsActive = true
+                DeveloperName = scRateDeveloperName, DataType = 'Number', IsActive = true
             );
             insert scRateAttr;
         }

@@ -18,7 +18,10 @@ global class RES_ResidentialBundlePricingHook implements RevSignaling.SignalingA
     // AttributeDefinition.DeveloperName the AttributeAdjustmentCondition records match against
     private static final String PRICE_OPTION_MATCHING_ATTRIBUTE = 'Pricing_Option';
 
-    private static final String SERVICE_CHARGE_RATE_ATTRIBUTE = 'SC_RATE';
+    // Configurable per-org via Custom Label, since the rate attribute's DeveloperName is not
+    // consistent across orgs (e.g. 'SC_RATE' in dev vs 'Service_Charge_Rate' in UAT) - hardcoding
+    // it here would silently break service charge calculation in any org that names it differently.
+    private static final String SERVICE_CHARGE_RATE_ATTRIBUTE = Label.RES_Service_Charge_Rate_Attribute;
     private static final String SERVICE_CHARGE_COMPONENT_NAME = 'Service Charge';
     private static final String SERVICE_CHARGE_AMOUNT_FIELD = 'RES_Service_Charge_Amount__c';
 
