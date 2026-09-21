@@ -78,7 +78,7 @@ public with sharing class RES_ProductCategoryIntegrationService extends RES_Base
         }
 
         if(requestWrappers.size() == 1){
-            return JSON.serialize(requestWrappers[0]);
+            return JSON.serialize(requestWrappers[0], true);
         }
         return JSON.serialize(requestWrappers, true);
     }
@@ -148,7 +148,7 @@ public with sharing class RES_ProductCategoryIntegrationService extends RES_Base
         }
 
         if(requestWrappers.size() == 1){
-            return JSON.serialize(requestWrappers[0]);
+            return JSON.serialize(requestWrappers[0], true);
         }
 
         return JSON.serialize(requestWrappers, true);
