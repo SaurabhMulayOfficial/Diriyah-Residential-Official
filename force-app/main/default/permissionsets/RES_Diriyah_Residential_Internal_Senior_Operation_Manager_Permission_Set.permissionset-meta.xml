@@ -54,6 +54,11 @@
         <name>RES_Update_Unit_Visibility</name>
     </customPermissions>
     <fieldPermissions>
+        <editable>false</editable>
+        <field>RES_Measurement__c.RES_Last_Sync_DateTime__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
         <editable>true</editable>
         <field>OrderItemRelationship.AssociatedOrderItemPricing</field>
         <readable>true</readable>
@@ -971,6 +976,11 @@
     <fieldPermissions>
         <editable>true</editable>
         <field>ProductCategory.RES_Valid_To_Date__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>ProductCategory.RES_Last_Sync_DateTime__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
@@ -3169,7 +3179,7 @@
     <tabSettings>
         <tab>RES_Product_Staging__c</tab>
         <visibility>Visible</visibility>
-    </tabSettings>    
+    </tabSettings>
     <tabSettings>
         <tab>standard-Quote</tab>
         <visibility>Visible</visibility>
