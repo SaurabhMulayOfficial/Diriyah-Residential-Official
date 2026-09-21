@@ -1,0 +1,344 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>RES_Function__c</fullName>
+    <label>Function</label>
+    <required>false</required>
+    <trackHistory>false</trackHistory>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>0001</fullName>
+                <default>false</default>
+                <label>Functional area 0001</label>
+            </value>
+            <value>
+                <fullName>0002</fullName>
+                <default>false</default>
+                <label>Functional area 0002</label>
+            </value>
+            <value>
+                <fullName>0003</fullName>
+                <default>false</default>
+                <label>Functional area 0003</label>
+            </value>
+            <value>
+                <fullName>0004</fullName>
+                <default>false</default>
+                <label>Functional area 0004</label>
+            </value>
+            <value>
+                <fullName>0100</fullName>
+                <default>false</default>
+                <label>Production</label>
+            </value>
+            <value>
+                <fullName>0300</fullName>
+                <default>false</default>
+                <label>Sales and Distribution</label>
+            </value>
+            <value>
+                <fullName>0400</fullName>
+                <default>false</default>
+                <label>Administration</label>
+            </value>
+            <value>
+                <fullName>0500</fullName>
+                <default>false</default>
+                <label>Research &amp; Development</label>
+            </value>
+            <value>
+                <fullName>0980</fullName>
+                <default>false</default>
+                <label>Accrued costs</label>
+            </value>
+            <value>
+                <fullName>4110</fullName>
+                <default>false</default>
+                <label>CEO Office</label>
+            </value>
+            <value>
+                <fullName>4130</fullName>
+                <default>false</default>
+                <label>Project Management Office</label>
+            </value>
+            <value>
+                <fullName>4140</fullName>
+                <default>false</default>
+                <label>Strategic Management</label>
+            </value>
+            <value>
+                <fullName>4150</fullName>
+                <default>false</default>
+                <label>Marketing &amp; Entertainment</label>
+            </value>
+            <value>
+                <fullName>4180</fullName>
+                <default>false</default>
+                <label>Corporate Finance</label>
+            </value>
+            <value>
+                <fullName>4190</fullName>
+                <default>false</default>
+                <label>Legal</label>
+            </value>
+            <value>
+                <fullName>4220</fullName>
+                <default>false</default>
+                <label>Human Capital</label>
+            </value>
+            <value>
+                <fullName>4230</fullName>
+                <default>false</default>
+                <label>Information Technology</label>
+            </value>
+            <value>
+                <fullName>4240</fullName>
+                <default>false</default>
+                <label>Procurement</label>
+            </value>
+            <value>
+                <fullName>4260</fullName>
+                <default>false</default>
+                <label>Administrative Support</label>
+            </value>
+            <value>
+                <fullName>4280</fullName>
+                <default>false</default>
+                <label>Claims &amp; Contract Managem</label>
+            </value>
+            <value>
+                <fullName>4310</fullName>
+                <default>false</default>
+                <label>Head of Design &amp; Developm</label>
+            </value>
+            <value>
+                <fullName>4320</fullName>
+                <default>false</default>
+                <label>Design &amp; Development</label>
+            </value>
+            <value>
+                <fullName>4330</fullName>
+                <default>false</default>
+                <label>Sales &amp; Lease</label>
+            </value>
+            <value>
+                <fullName>4400</fullName>
+                <default>false</default>
+                <label>AMCO-Asset Mgt Office</label>
+            </value>
+            <value>
+                <fullName>4401</fullName>
+                <default>false</default>
+                <label>AMCO-Facility Management</label>
+            </value>
+            <value>
+                <fullName>4402</fullName>
+                <default>false</default>
+                <label>AMCO-Landscape</label>
+            </value>
+            <value>
+                <fullName>4403</fullName>
+                <default>false</default>
+                <label>AMCO-Roads &amp; Infrastructu</label>
+            </value>
+            <value>
+                <fullName>4404</fullName>
+                <default>false</default>
+                <label>AMCO-Safety &amp; Security</label>
+            </value>
+            <value>
+                <fullName>4405</fullName>
+                <default>false</default>
+                <label>AMCO-Waste Management</label>
+            </value>
+            <value>
+                <fullName>4406</fullName>
+                <default>false</default>
+                <label>AMCO-Technical Excellence</label>
+            </value>
+            <value>
+                <fullName>4407</fullName>
+                <default>false</default>
+                <label>AMCO-Ancillary Income</label>
+            </value>
+            <value>
+                <fullName>4408</fullName>
+                <default>false</default>
+                <label>AMCO-Community Management</label>
+            </value>
+            <value>
+                <fullName>4409</fullName>
+                <default>false</default>
+                <label>AMCO-District Management</label>
+            </value>
+            <value>
+                <fullName>4410</fullName>
+                <default>false</default>
+                <label>AMCO-Stakeholder Manageme</label>
+            </value>
+            <value>
+                <fullName>4421</fullName>
+                <default>false</default>
+                <label>AMCO-Retail</label>
+            </value>
+            <value>
+                <fullName>4422</fullName>
+                <default>false</default>
+                <label>AMCO-Residential</label>
+            </value>
+            <value>
+                <fullName>4423</fullName>
+                <default>false</default>
+                <label>AMCO-Hospitality</label>
+            </value>
+            <value>
+                <fullName>4424</fullName>
+                <default>false</default>
+                <label>AMCO-Sports &amp; Leisure</label>
+            </value>
+            <value>
+                <fullName>4425</fullName>
+                <default>false</default>
+                <label>AMCO-Culture</label>
+            </value>
+            <value>
+                <fullName>4426</fullName>
+                <default>false</default>
+                <label>AMCO-Parking</label>
+            </value>
+            <value>
+                <fullName>4427</fullName>
+                <default>false</default>
+                <label>AMCO-Infrastructure</label>
+            </value>
+            <value>
+                <fullName>4428</fullName>
+                <default>false</default>
+                <label>AMCO-Commercial Offices</label>
+            </value>
+            <value>
+                <fullName>4429</fullName>
+                <default>false</default>
+                <label>AMCO-Mixed-Use Portfolio</label>
+            </value>
+            <value>
+                <fullName>4430</fullName>
+                <default>false</default>
+                <label>AMCO-Mixed-Use Assets</label>
+            </value>
+            <value>
+                <fullName>4500</fullName>
+                <default>false</default>
+                <label>Special Projects</label>
+            </value>
+            <value>
+                <fullName>4520</fullName>
+                <default>false</default>
+                <label>Diriyah Sports Club</label>
+            </value>
+            <value>
+                <fullName>4620</fullName>
+                <default>false</default>
+                <label>General Secretariat</label>
+            </value>
+            <value>
+                <fullName>4710</fullName>
+                <default>false</default>
+                <label>DGCEO Office</label>
+            </value>
+            <value>
+                <fullName>4720</fullName>
+                <default>false</default>
+                <label>Strategic Investment &amp; An</label>
+            </value>
+            <value>
+                <fullName>4730</fullName>
+                <default>false</default>
+                <label>Data Management</label>
+            </value>
+            <value>
+                <fullName>4740</fullName>
+                <default>false</default>
+                <label>Cybersecurity</label>
+            </value>
+            <value>
+                <fullName>4750</fullName>
+                <default>false</default>
+                <label>Business Transformation &amp;</label>
+            </value>
+            <value>
+                <fullName>4760</fullName>
+                <default>false</default>
+                <label>Project Costing &amp; Control</label>
+            </value>
+            <value>
+                <fullName>4770</fullName>
+                <default>false</default>
+                <label>Inspections &amp; Quality Ass</label>
+            </value>
+            <value>
+                <fullName>4780</fullName>
+                <default>false</default>
+                <label>DevCo Financial Planning</label>
+            </value>
+            <value>
+                <fullName>4910</fullName>
+                <default>false</default>
+                <label>Internal Audit</label>
+            </value>
+            <value>
+                <fullName>4920</fullName>
+                <default>false</default>
+                <label>Risk &amp; Compliance</label>
+            </value>
+            <value>
+                <fullName>9999</fullName>
+                <default>false</default>
+                <label>Migration FA</label>
+            </value>
+            <value>
+                <fullName>CAPEX_FA</fullName>
+                <default>false</default>
+                <label>CAPEX Functional Area</label>
+            </value>
+            <value>
+                <fullName>PT01</fullName>
+                <default>false</default>
+                <label>Retirement/Service Costs</label>
+            </value>
+            <value>
+                <fullName>PT02</fullName>
+                <default>false</default>
+                <label>Sales costs</label>
+            </value>
+            <value>
+                <fullName>PT03</fullName>
+                <default>false</default>
+                <label>Administration Costs</label>
+            </value>
+            <value>
+                <fullName>PT04</fullName>
+                <default>false</default>
+                <label>Net Costs - Financing</label>
+            </value>
+            <value>
+                <fullName>PT05</fullName>
+                <default>false</default>
+                <label>Taxes - Other Investments</label>
+            </value>
+            <value>
+                <fullName>PT06</fullName>
+                <default>false</default>
+                <label>Tax Current Profit/Loss</label>
+            </value>
+            <value>
+                <fullName>PT07</fullName>
+                <default>false</default>
+                <label>Tax Extraordinary P/L</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>
