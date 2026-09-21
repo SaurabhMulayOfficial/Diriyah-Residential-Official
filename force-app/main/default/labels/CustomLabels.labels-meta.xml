@@ -864,4 +864,20 @@ Do you wish to proceed with the cancellation?</value>
         <shortDescription>Update Unit Title</shortDescription>
         <value>Unit Price Updated</value>
     </labels>
+    <labels>
+        <fullName>RES_Hard_Block_Error_Message</fullName>
+        <categories>RES Contract - After Insert Update - HardBlock Product</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Hard Block Error Message</shortDescription>
+        <value>This unit cannot update to HardBlock because the unit status is Not In Soft Hold or Available.</value>
+    </labels>
+    <labels>
+        <fullName>Unit_Updated_Body</fullName>
+        <categories>Units Update Approval</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Unit Updated Body</shortDescription>
+        <value>The Unit for this Contract has been updated. Please hold and wait for this unit to be approved and be activated again to proceed with the quote.</value>
+    </labels>
 </CustomLabels>
