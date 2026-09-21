@@ -18,7 +18,7 @@
                     <axisBinding>y</axisBinding>
                     <column>RowCount</column>
                 </chartSummary>
-                <componentType>Donut</componentType>
+                <componentType>BarStacked</componentType>
                 <decimalPrecision>-1</decimalPrecision>
                 <displayUnits>Auto</displayUnits>
                 <drillEnabled>false</drillEnabled>
@@ -26,18 +26,23 @@
                 <enableHover>false</enableHover>
                 <expandOthers>false</expandOthers>
                 <groupingColumn>Opportunity$Owner</groupingColumn>
+                <groupingColumn>Opportunity$StageName</groupingColumn>
                 <groupingSortProperties>
                     <groupingSorts>
                         <groupingLevel>g1</groupingLevel>
+                        <sortColumn>RowCount</sortColumn>
+                        <sortOrder>a</sortOrder>
+                    </groupingSorts>
+                    <groupingSorts>
+                        <groupingLevel>g2</groupingLevel>
                         <sortOrder>a</sortOrder>
                     </groupingSorts>
                 </groupingSortProperties>
                 <header>Number of Opportunities per RM</header>
                 <legendPosition>Right</legendPosition>
-                <maxValuesDisplayed>6</maxValuesDisplayed>
+                <maxValuesDisplayed>12</maxValuesDisplayed>
                 <report>DiriyahResidentialReports/RES_Number_of_Opportunities_per_RM</report>
                 <showPercentage>false</showPercentage>
-                <showTotal>true</showTotal>
                 <showValues>true</showValues>
                 <sortBy>RowLabelAscending</sortBy>
                 <sortLegendValues>true</sortLegendValues>
