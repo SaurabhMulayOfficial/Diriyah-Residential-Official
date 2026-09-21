@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ListView xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Pending_Records</fullName>
+    <columns>NAME</columns>
+    <columns>RES_Product_Name__c</columns>
+    <columns>RES_Processing_Status__c</columns>
+    <columns>RES_Error_Log__c</columns>
+    <columns>RES_Batch_Id__c</columns>
+    <columns>CREATEDBY_USER</columns>
+    <columns>CREATED_DATE</columns>
+    <columns>UPDATEDBY_USER</columns>
+    <columns>LAST_UPDATE</columns>
+    <filterScope>Everything</filterScope>
+    <filters>
+        <field>RES_Processing_Status__c</field>
+        <operation>equals</operation>
+        <value>Pending</value>
+    </filters>
+    <label>Pending Records</label>
+    <sharedTo>
+        <roleAndSubordinates>RES_Sales_Operations_Executive_Director</roleAndSubordinates>
+    </sharedTo>
+</ListView>
