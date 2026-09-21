@@ -10,42 +10,64 @@
 *
 * Author        : Poonam Jain
 * Company       : Globant Inc
-* Created Date  : May 5, 2025
+* Created Date  : 05/05/2025
+*@last modified Date : 21/09/2026
 * ==============================================================================
 */
 @isTest
 private class RES_LeadConversionBatch_Test {
-    
+
     @isTest
-    static void testLeadQualified() {
-        
-        Lead l1 = RES_TestDataFactory.createLead('test@example.in');
-        l1.Status = '04';
-        l1.RES_Project__c = 'Amansamar Residences Wadi Safar';
+    static void testCompanyLeadConverted() {
+        Lead l1 = RES_TestDataFactory.createLeadFull(
+            'company@example.in', null, 'Test Co', 'Amansamar Residences Wadi Safar', '04', 'Met'
+        );
         l1.RES_CR_Number__c = '1290123456';
-        update l1;
-        
-        List<Lead> leads = new List<Lead>();
-        leads.add(l1);
-        
-        Test.startTest(); 
-        RES_LeadConversionBatch batch = new RES_LeadConversionBatch();
-        Database.executeBatch(batch, 1);
+        l1.RES_Identification_Type__c = 'ZIT04';
+        Database.DMLOptions dml = new Database.DMLOptions();
+        dml.duplicateRuleHeader.allowSave = true;
+        Database.update(l1, dml);
+
+        Test.startTest();
+        Database.executeBatch(new RES_LeadConversionBatch(), 200);
         Test.stopTest();
-        
-        // Verify Leads Converted
-        List<Lead> updatedLeads = [
-            SELECT Id, IsConverted 
-            FROM Lead 
-            WHERE Id IN :leads
-        ];
-        
-        System.assertEquals(1, updatedLeads.size(), 'Lead should be queried');
-        
-        for (Lead l : updatedLeads) {
-            System.assertEquals(true, l.IsConverted, 'Lead should be converted');
-        }
-        
+
+        Lead updated = [SELECT Id, IsConverted FROM Lead WHERE Id = :l1.Id];
+        System.assertEquals(true, updated.IsConverted, 'Company lead should be converted');
     }
-    
+
+    @isTest
+    static void testIndividualLeadConverted() {
+        // Individual (RES_Individual) record type lead — covers the if branch in execute
+        Id rtId = Schema.SObjectType.Lead.getRecordTypeInfosByDeveloperName()
+            .get('RES_Individual').getRecordTypeId();
+        Lead l1 = new Lead(
+            RecordTypeId = rtId,
+            FirstName = 'Indiv',
+            LastName = 'TestLead',
+            Company = 'Indiv Co',
+            Email = 'indiv@example.in',
+            Status = '04',
+            MobilePhone = '+966501234567',
+            RES_Project__c = 'Amansamar Residences Wadi Safar',
+            RES_SLA_Status__c = 'Met'
+        );
+        Database.DMLOptions dml = new Database.DMLOptions();
+        dml.duplicateRuleHeader.allowSave = true;
+        Database.insert(l1, dml);
+
+        Test.startTest();
+        Database.executeBatch(new RES_LeadConversionBatch(), 200);
+        Test.stopTest();
+
+        Lead updated = [SELECT Id, IsConverted FROM Lead WHERE Id = :l1.Id];
+        System.assertEquals(true, updated.IsConverted, 'Individual lead should be converted');
+    }
+
+    @isTest
+    static void testFinishNoop() {
+        Test.startTest();
+        new RES_LeadConversionBatch().finish(null);
+        Test.stopTest();
+    }
 }

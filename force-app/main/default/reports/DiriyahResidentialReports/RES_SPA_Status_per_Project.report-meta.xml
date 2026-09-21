@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Report xmlns="http://soap.sforce.com/2006/04/metadata">
+    <buckets>
+        <bucketType>picklist</bucketType>
+        <developerName>BucketField_27008480</developerName>
+        <masterLabel>SPA Status</masterLabel>
+        <nullTreatment>n</nullTreatment>
+        <otherBucketLabel>Other</otherBucketLabel>
+        <sourceColumnName>Contract$Status</sourceColumnName>
+        <useOther>true</useOther>
+        <values>
+            <sourceValues>
+                <sourceValue>Draft</sourceValue>
+            </sourceValues>
+            <sourceValues>
+                <sourceValue>In Progress</sourceValue>
+            </sourceValues>
+            <sourceValues>
+                <sourceValue>Negotiating</sourceValue>
+            </sourceValues>
+            <value>Draft</value>
+        </values>
+        <values>
+            <sourceValues>
+                <sourceValue>Awaiting Signature</sourceValue>
+            </sourceValues>
+            <sourceValues>
+                <sourceValue>In Approval Process</sourceValue>
+            </sourceValues>
+            <value>Sent for Signature</value>
+        </values>
+        <values>
+            <sourceValues>
+                <sourceValue>Signed</sourceValue>
+            </sourceValues>
+            <sourceValues>
+                <sourceValue>Activated</sourceValue>
+            </sourceValues>
+            <sourceValues>
+                <sourceValue>Approved</sourceValue>
+            </sourceValues>
+            <value>Signed</value>
+        </values>
+        <values>
+            <sourceValues>
+                <sourceValue>Canceled</sourceValue>
+            </sourceValues>
+            <sourceValues>
+                <sourceValue>Terminated</sourceValue>
+            </sourceValues>
+            <sourceValues>
+                <sourceValue>Contract Terminated</sourceValue>
+            </sourceValues>
+            <sourceValues>
+                <sourceValue>Rejected</sourceValue>
+            </sourceValues>
+            <sourceValues>
+                <sourceValue>Contract Rejected</sourceValue>
+            </sourceValues>
+            <sourceValues>
+                <sourceValue>Signature Declined</sourceValue>
+            </sourceValues>
+            <sourceValues>
+                <sourceValue>Contract Expired</sourceValue>
+            </sourceValues>
+            <sourceValues>
+                <sourceValue>Pending Cancellation Approval</sourceValue>
+            </sourceValues>
+            <value>Cancelled</value>
+        </values>
+    </buckets>
+    <chart>
+        <backgroundColor1>#FFFFFF</backgroundColor1>
+        <backgroundColor2>#FFFFFF</backgroundColor2>
+        <backgroundFadeDir>Diagonal</backgroundFadeDir>
+        <chartSummaries>
+            <axisBinding>y</axisBinding>
+            <column>RowCount</column>
+        </chartSummaries>
+        <chartType>HorizontalBarStacked</chartType>
+        <enableHoverLabels>false</enableHoverLabels>
+        <expandOthers>true</expandOthers>
+        <groupingColumn>BucketField_27008480</groupingColumn>
+        <legendPosition>Right</legendPosition>
+        <location>CHART_BOTTOM</location>
+        <secondaryGroupingColumn>Contract$SourceOpportunity.RES_Project__c</secondaryGroupingColumn>
+        <showAxisLabels>true</showAxisLabels>
+        <showPercentage>false</showPercentage>
+        <showTotal>false</showTotal>
+        <showValues>false</showValues>
+        <size>Medium</size>
+        <summaryAxisRange>Auto</summaryAxisRange>
+        <textColor>#000000</textColor>
+        <textSize>12</textSize>
+        <titleColor>#000000</titleColor>
+        <titleSize>18</titleSize>
+    </chart>
+    <columns>
+        <field>Contract$ContractNumber</field>
+    </columns>
+    <columns>
+        <field>Contract$Status</field>
+    </columns>
+    <columns>
+        <field>Contract$ContractType</field>
+    </columns>
+    <columns>
+        <field>Contract$StartDate</field>
+    </columns>
+    <columns>
+        <field>Contract$EndDate</field>
+    </columns>
+    <columns>
+        <field>Contract$RES_SPA_Signed_Date__c</field>
+    </columns>
+    <currency>SAR</currency>
+    <description>Breakdown of SPAs by status, overall and per project.</description>
+    <filter>
+        <criteriaItems>
+            <column>Contract$SourceOpportunity.RES_Project__c</column>
+            <columnToColumn>false</columnToColumn>
+            <isUnlocked>true</isUnlocked>
+            <operator>equals</operator>
+            <value>Amansamar Residences Wadi Safar,Armani Residences Diriyah,Baccarat Residences Diriyah,Corinthia Residences Diriyah,Faena Residences Wadi Safar,Manazel AlHadawi,Oberoi Branded Residences Wadi Safar,Raffles Branded Residences,The Chedi Residences Wadi Safar,The Ritz Carlton Residences Diriyah,The Ritz Carlton Signature,Wadi Safar – Plots,Not Decided</value>
+        </criteriaItems>
+        <criteriaItems>
+            <column>Contract$Status</column>
+            <columnToColumn>false</columnToColumn>
+            <isUnlocked>true</isUnlocked>
+            <operator>equals</operator>
+            <value>Draft,In Progress,In Approval Process,Activated,Rejected,Approved,Contract Rejected,Negotiating,Awaiting Signature,Signature Declined,Signed,Contract Expired,Contract Terminated,Pending Cancellation Approval,Terminated,Canceled</value>
+        </criteriaItems>
+        <language>en_US</language>
+    </filter>
+    <format>Summary</format>
+    <groupingsDown>
+        <dateGranularity>Day</dateGranularity>
+        <field>BucketField_27008480</field>
+        <sortOrder>Asc</sortOrder>
+    </groupingsDown>
+    <groupingsDown>
+        <dateGranularity>Day</dateGranularity>
+        <field>Contract$SourceOpportunity.RES_Project__c</field>
+        <sortOrder>Asc</sortOrder>
+    </groupingsDown>
+    <name>SPA Status per Project</name>
+    <params>
+        <name>co</name>
+        <value>1</value>
+    </params>
+    <reportType>RES_Contract_Report__c</reportType>
+    <scope>organization</scope>
+    <showDetails>true</showDetails>
+    <showGrandTotal>true</showGrandTotal>
+    <showSubTotals>true</showSubTotals>
+    <timeFrameFilter>
+        <dateColumn>Contract$CreatedDate</dateColumn>
+        <interval>INTERVAL_THISMONTH</interval>
+    </timeFrameFilter>
+</Report>
