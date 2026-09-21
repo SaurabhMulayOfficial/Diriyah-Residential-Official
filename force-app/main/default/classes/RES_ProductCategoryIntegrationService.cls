@@ -154,14 +154,62 @@ public with sharing class RES_ProductCategoryIntegrationService extends RES_Base
         return JSON.serialize(requestWrappers, true);
     }
 
+    private static Boolean processResponse(
+        String responseBody,
+        RES_ProductCategoryIntegrationService service,
+        Id recordId,
+        String objectType
+    ) {
+        if (String.isBlank(responseBody)) {
+            return false;
+        }
+
+        RES_ResponseWrapper responseWrapper = RES_ResponseWrapper.deserialize(responseBody);
+        String errorMessage = '';
+        Boolean isSuccess = false;
+
+        if (responseWrapper != null &&
+            responseWrapper.responseReturn != null &&
+            responseWrapper.responseReturn.item != null) {
+
+            for (RES_ResponseWrapper.ItemWrapper item : responseWrapper.responseReturn.item) {
+                if (item.type == 'E' && String.isNotBlank(item.message)) {
+                    errorMessage += item.message;
+                } else if (item.type == 'S') {
+                    isSuccess = true;
+                }
+            }
+        }
+
+        if (String.isNotBlank(errorMessage)) {
+            RES_IntegrationErrorLogger log = new RES_IntegrationErrorLogger(
+                'ProductCategory_Sync',
+                '',
+                errorMessage,
+                JSON.serialize(service.getHeaders()),
+                objectType,
+                recordId,
+                String.valueOf(service.getRequestBody()),
+                service.getRequestMethod(),
+                'ProductCategory_Sync',
+                service.getRetryCount(),
+                'Client Side'
+            );
+            RES_ResponseWrapper.logError(log);
+        }
+
+        return isSuccess;
+    }
+
     public static void syncMeasurements(List<RES_Measurement__c> measurements, String requestMethod, String triggerContext){
         RES_ProductCategoryIntegrationService service = new RES_ProductCategoryIntegrationService(requestMethod);
         String body = service.hydrateRequestBodyForMeasurements(measurements, triggerContext);
 
         service.setBody(body);
-        
+
         try{
             RES_IntegrationResponse response = service.sendRequest();
+
             System.debug(
                 'Measurement Integration Service | ' +
                 'Status Code: ' + response.statusCode +
@@ -169,17 +217,21 @@ public with sharing class RES_ProductCategoryIntegrationService extends RES_Base
                 ' | Body: ' + response.responseBody
             );
 
-            List<RES_Measurement__c> toUpdate = new List<RES_Measurement__c>();
-            for(RES_Measurement__c m : measurements){
-                RES_Measurement__c copy = new RES_Measurement__c(Id = m.Id);
-                copy.RES_Last_Sync_DateTime__c = SYSTEM.now();
-                toUpdate.add(copy);
-            }
+            Boolean isSuccess = processResponse(
+                response.responseBody,
+                service,
+                measurements[0].Id,
+                'RES_Measurement__c'
+            );
 
-            if(!toUpdate.isEmpty()){
+            if (isSuccess) {
+                RES_Measurement__c toUpdate = new RES_Measurement__c(
+                    Id = measurements[0].Id,
+                    RES_Last_Sync_DateTime__c = System.now()
+                );
                 Database.update(toUpdate, false, AccessLevel.SYSTEM_MODE);
             }
-            
+
         }catch(Exception e){
             System.debug('Exception Occur while calling the Measurement Integration Service: ' + e.getMessage());
         }
@@ -191,9 +243,10 @@ public with sharing class RES_ProductCategoryIntegrationService extends RES_Base
         String body = service.hydrateRequestBody(productCategories, triggerContext);
 
         service.setBody(body);
-        
+
         try{
             RES_IntegrationResponse response = service.sendRequest();
+
             System.debug(
                 'Product Category Integration Service | ' +
                 'Status Code: ' + response.statusCode +
@@ -201,17 +254,21 @@ public with sharing class RES_ProductCategoryIntegrationService extends RES_Base
                 ' | Body: ' + response.responseBody
             );
 
-            List<productCategory> toUpdate = new List<productCategory>();
-            for(ProductCategory pc : productCategories){
-                ProductCategory copy = new ProductCategory(Id = pc.Id);
-                copy.RES_Last_Sync_DateTime__c = SYSTEM.now();
-                toUpdate.add(copy);
-            }
+            Boolean isSuccess = processResponse(
+                response.responseBody,
+                service,
+                productCategories[0].Id,
+                'ProductCategory'
+            );
 
-            if(!toUpdate.isEmpty()){
+            if (isSuccess) {
+                ProductCategory toUpdate = new ProductCategory(
+                    Id = productCategories[0].Id,
+                    RES_Last_Sync_DateTime__c = System.now()
+                );
                 Database.update(toUpdate, false, AccessLevel.SYSTEM_MODE);
             }
-            
+
         }catch(Exception e){
             System.debug('Exception Occur while calling the Product Category Integration Service: ' + e.getMessage());
         }

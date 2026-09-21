@@ -51,6 +51,22 @@ public virtual class RES_BaseIntegrationCalloutService {
         this.request.calloutService = calloutService;
     }
 
+    public Map<String, String> getHeaders() {
+        return request.headers;
+    }
+
+    public String getRequestBody() {
+        return request.requestBody;
+    }
+
+    public Integer getRetryCount() {
+        return request.maxRetries;
+    }
+
+    public String getRequestMethod() {
+        return request.requestMethod;
+    }
+
     protected RES_IntegrationResponse sendRequest(){
         if(request == null){
             return null;

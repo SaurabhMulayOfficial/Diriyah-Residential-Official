@@ -271,4 +271,76 @@ private class RES_ProductCategoryServiceTest {
     static void constructor_canBeInstantiated() {
         Assert.isNotNull(new RES_ProductCategoryService(), 'The no-arg constructor should be usable');
     }
+
+    // ------------------------------------------------------------------
+    // processResponse (tested indirectly via syncProductCategories HTTP layer)
+    // ------------------------------------------------------------------
+
+    /** Mock that returns a single SAP success item. */
+    private class SapSuccessResponseMock implements HttpCalloutMock {
+        public HttpResponse respond(HttpRequest req) {
+            HttpResponse res = new HttpResponse();
+            res.setStatusCode(200);
+            res.setStatus('OK');
+            res.setBody('{"Return":{"item":{"type":"S","message":"Processed successfully","Number":"001","System":"SAP"}}}');
+            return res;
+        }
+    }
+
+    /** Mock that returns a single SAP error item. */
+    private class SapErrorResponseMock implements HttpCalloutMock {
+        public HttpResponse respond(HttpRequest req) {
+            HttpResponse res = new HttpResponse();
+            res.setStatusCode(200);
+            res.setStatus('OK');
+            res.setBody('{"Return":{"item":{"type":"E","message":"Validation failed","Number":"999","System":"SAP"}}}');
+            return res;
+        }
+    }
+
+    @IsTest
+    static void processResponse_successItem_stampsLastSyncDateTime() {
+        if (!RES_IntegrationTestDataFactory.hasApiConfiguration('POST')) { return; }
+        List<ProductCategory> categories = RES_IntegrationTestDataFactory.createCategories(1, true);
+
+        RES_IntegrationTestDataFactory.primeSapToken();
+        Test.setMock(HttpCalloutMock.class, new SapSuccessResponseMock());
+
+        Test.startTest();
+        RES_ProductCategoryIntegrationService.syncProductCategories(categories, 'POST', 'I');
+        Test.stopTest();
+
+        ProductCategory updated = [
+            SELECT RES_Last_Sync_DateTime__c
+            FROM ProductCategory
+            WHERE Id = :categories[0].Id
+        ];
+        Assert.isNotNull(
+            updated.RES_Last_Sync_DateTime__c,
+            'processResponse returning true (success item) should stamp RES_Last_Sync_DateTime__c'
+        );
+    }
+
+    @IsTest
+    static void processResponse_errorItem_doesNotStampLastSyncDateTime() {
+        if (!RES_IntegrationTestDataFactory.hasApiConfiguration('POST')) { return; }
+        List<ProductCategory> categories = RES_IntegrationTestDataFactory.createCategories(1, true);
+
+        RES_IntegrationTestDataFactory.primeSapToken();
+        Test.setMock(HttpCalloutMock.class, new SapErrorResponseMock());
+
+        Test.startTest();
+        RES_ProductCategoryIntegrationService.syncProductCategories(categories, 'POST', 'I');
+        Test.stopTest();
+
+        ProductCategory updated = [
+            SELECT RES_Last_Sync_DateTime__c
+            FROM ProductCategory
+            WHERE Id = :categories[0].Id
+        ];
+        Assert.isNull(
+            updated.RES_Last_Sync_DateTime__c,
+            'processResponse returning false (error item) must not stamp RES_Last_Sync_DateTime__c'
+        );
+    }
 }
