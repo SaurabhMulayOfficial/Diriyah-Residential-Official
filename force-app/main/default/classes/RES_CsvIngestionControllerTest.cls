@@ -1,6 +1,19 @@
 @IsTest
 private class RES_CsvIngestionControllerTest {
 
+    /**
+     * Batches / DML started by these tests fire triggers that publish
+     * RES_Integration_Request__e. The subscriber enqueues RES_IntegrationQueueable, which
+     * runs at Test.stopTest() and needs a SAP token plus an HTTP mock.
+     */
+    private static void setUpCallouts() {
+        RES_IntegrationTestDataFactory.primeSapToken();
+        Test.setMock(
+            HttpCalloutMock.class,
+            new RES_IntegrationTestDataFactory.EndpointRoutingMock()
+        );
+    }
+
     @IsTest
     static void testGetLayouts() {
         Test.startTest();
@@ -40,6 +53,8 @@ private class RES_CsvIngestionControllerTest {
 
     @IsTest
     static void testStartBatchFromCsvOperationInsertAlreadyExists() {
+        setUpCallouts();
+
         Product2 prod = new Product2(
             Name = 'Existing Unit',
             RES_Product_External_ID__c = 'EXISTS-UNIT-100',
@@ -64,6 +79,8 @@ private class RES_CsvIngestionControllerTest {
 
     @IsTest
     static void testStartBatchFromCsvOperationUpdateDoesNotExist() {
+        setUpCallouts();
+
         String validCode = getLayoutCodeWithMappings();
         if (String.isBlank(validCode)) return;
 
@@ -386,6 +403,8 @@ private class RES_CsvIngestionControllerTest {
 
     @IsTest
     static void testStartBatchFromCsvValidParseAndInsert() {
+        setUpCallouts();
+
         String validCode = getLayoutCodeWithMappings();
         if (String.isBlank(validCode)) return;
 
@@ -405,6 +424,8 @@ private class RES_CsvIngestionControllerTest {
 
     @IsTest
     static void testGetJobStatus() {
+        setUpCallouts();
+
         RES_Product_Staging__c stg = new RES_Product_Staging__c(
             Name = 'Test Staging',
             RES_Batch_Id__c = '707000000000000AAA',
