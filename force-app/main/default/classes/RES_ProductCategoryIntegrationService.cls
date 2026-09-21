@@ -80,7 +80,7 @@ public with sharing class RES_ProductCategoryIntegrationService extends RES_Base
         if(requestWrappers.size() == 1){
             return JSON.serialize(requestWrappers[0]);
         }
-        return JSON.serialize(requestWrappers);
+        return JSON.serialize(requestWrappers, true);
     }
 
 
@@ -151,7 +151,7 @@ public with sharing class RES_ProductCategoryIntegrationService extends RES_Base
             return JSON.serialize(requestWrappers[0]);
         }
 
-        return JSON.serialize(requestWrappers);
+        return JSON.serialize(requestWrappers, true);
     }
 
     public static void syncMeasurements(List<RES_Measurement__c> measurements, String requestMethod, String triggerContext){

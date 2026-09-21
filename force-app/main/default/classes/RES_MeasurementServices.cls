@@ -42,23 +42,17 @@ public with sharing class RES_MeasurementServices {
         String triggerContext = oldMap == null ? 'I' : 'U';
 
         List<RES_Integration_Request__e> integrationRequestEventList = new List<RES_Integration_Request__e>();        
-        Set<String> recordIds = new Set<String>();
-        for (RES_Measurement__c measurement : measurementsToSync) {
-            recordIds.add(measurement.Id);
+        for(RES_Measurement__c m : measurementsToSync){
+            RES_Integration_Request__e req = new RES_Integration_Request__e();
+            req.RES_RecordIds__c = String.valueOf(m.Id);
+            req.RES_Request_Method__c = 'GET';
+            req.RES_Service_Name__c = 'Measurement_Sync';
+            req.RES_Triggering_Context__c = triggerContext;
+            integrationRequestEventList.add(req);
         }
 
-        String recordIdsString = String.join(
-            new List<String>(recordIds),
-            ','
-        );
-
         try{
-            EventBus.publish(new RES_Integration_Request__e(
-                RES_RecordIds__c = recordIdsString,
-                RES_Request_Method__c = 'GET',
-                RES_Service_Name__c = 'Measurement_Sync',
-                RES_Triggering_Context__c = triggerContext
-            ));
+            EventBus.publish(integrationRequestEventList);
         }catch(Exception e){
             System.debug('Exception Firing Integration Request Event ' + e.getMessage());
         }

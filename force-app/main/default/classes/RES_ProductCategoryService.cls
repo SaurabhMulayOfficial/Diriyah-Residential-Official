@@ -39,23 +39,19 @@ public with sharing class RES_ProductCategoryService {
         }
 
         List<RES_Integration_Request__e> integrationRequestEventList = new List<RES_Integration_Request__e>();        
-        Set<String> recordIds = new Set<String>();
-        for (ProductCategory pc : categoriesToSync) {
-            recordIds.add(pc.Id);
+        for(ProductCategory pc: categoriesToSync){
+            RES_Integration_Request__e req = new RES_Integration_Request__e();
+            req.RES_RecordIds__c = String.valueOf(pc.Id);
+            req.RES_Request_Method__c = 'GET';
+            req.RES_Triggering_Context__c = triggerContext;
+            req.RES_Service_Name__c = 'ProductCategory_Sync';
+            integrationRequestEventList.add(req);
         }
 
-        String recordIdsString = String.join(
-            new List<String>(recordIds),
-            ','
-        );
-
         try{
-            EventBus.publish(new RES_Integration_Request__e(
-                RES_RecordIds__c = recordIdsString,
-                RES_Request_Method__c = 'GET',
-                RES_Service_Name__c = 'ProductCategory_Sync',
-                RES_Triggering_Context__c = triggerContext
-            ));
+            if(integrationRequestEventList.size() > 0){
+                EventBus.publish(integrationRequestEventList);
+            }
         }catch(Exception e){
             System.debug('Exception Firing Integration Request Event ' + e.getMessage());
         }
