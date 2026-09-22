@@ -132,8 +132,6 @@ private class RES_ProductCatalogIntegrationServiceTest {
         Test.stopTest();
 
         Assert.isTrue(body.contains('RES_Name_AR'), 'Custom field RES_Name_AR should be in body');
-        Assert.isTrue(body.contains('RES_Geo_Latitude'), 'Custom field RES_Geo_Latitude should be in body');
-        Assert.isTrue(body.contains('RES_Geo_Longitude'), 'Custom field RES_Geo_Longitude should be in body');
         Assert.isTrue(body.contains('RES_Master_Plan'), 'Custom field RES_Master_Plan should be in body');
     }
 

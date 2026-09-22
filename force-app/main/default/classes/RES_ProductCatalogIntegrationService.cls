@@ -84,19 +84,19 @@ public without sharing class RES_ProductCatalogIntegrationService extends RES_Ba
                     )
                 );
             }
-            if(pc.RES_Geo_Latitude__c != null) {
+            if(pc.RES_Geo_Location__c != null) {
                 customFields.add(
                     new RES_ProductCatalogWrapper.CustomFieldWrapper(
                         'RES_Geo_Latitude',
-                        String.valueOf(pc.RES_Geo_Latitude__c)
+                        String.valueOf(pc.RES_Geo_Location__Latitude__s)
                     )
                 );
             }
-            if(pc.RES_Geo_Longitude__c != null) {
+            if(pc.RES_Geo_Location__c != null) {
                 customFields.add(
                     new RES_ProductCatalogWrapper.CustomFieldWrapper(
                         'RES_Geo_Longitude',
-                        String.valueOf(pc.RES_Geo_Longitude__c)
+                        String.valueOf(pc.RES_Geo_Location__Longitude__s)
                     )
                 );
             }
