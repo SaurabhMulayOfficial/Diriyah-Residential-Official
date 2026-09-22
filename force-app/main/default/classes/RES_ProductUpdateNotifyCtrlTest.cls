@@ -219,12 +219,156 @@ private class RES_ProductUpdateNotifyCtrlTest {
         ];
 
         Test.startTest();
-        // Call notification method
         try {
             RES_ProductUpdateNotificationController.notifyProductUpdate(draftProduct.Id);
             System.assert(true, 'Method executed without throwing exception');
         } catch (Exception e) {
             System.assert(false, 'Method should not throw exception: ' + e.getMessage());
+        }
+        Test.stopTest();
+    }
+
+    // ============================================================
+    // Test: updateAllAndNotify - moves to Draft with form fields
+    // ============================================================
+
+    @isTest
+    static void testUpdateAllAndNotify_movesToDraft() {
+        Product2 availableProduct = [
+            SELECT Id FROM Product2 WHERE ProductCode = 'AVAIL-001' LIMIT 1
+        ];
+
+        Map<String, Object> formFields = new Map<String, Object>{
+            'Description' => 'Updated description for test'
+        };
+        String fieldsJson = JSON.serialize(formFields);
+
+        RES_ProductUpdateNotificationController.updateAllAndNotify(
+            availableProduct.Id,
+            fieldsJson,
+            'Updating unit for testing purposes',
+            true
+        );
+
+        Product2 updated = [
+            SELECT RES_Unit_Status__c, RES_Update_Requested__c, RES_Update_Comments__c, Description
+            FROM Product2 WHERE Id = :availableProduct.Id
+        ];
+        System.assertEquals('Draft', updated.RES_Unit_Status__c, 'Status should be Draft');
+        System.assertEquals(true, updated.RES_Update_Requested__c, 'Update requested flag should be true');
+        System.assertEquals('Updating unit for testing purposes', updated.RES_Update_Comments__c, 'Comments should be saved');
+        System.assertEquals('Updated description for test', updated.Description, 'Description should be updated');
+    }
+
+    // ============================================================
+    // Test: updateAllAndNotify - no status change, blank fields JSON
+    // ============================================================
+
+    @isTest
+    static void testUpdateAllAndNotify_noStatusChange_blankFields() {
+        Product2 draftProduct = [
+            SELECT Id FROM Product2 WHERE ProductCode = 'DRAFT-001' LIMIT 1
+        ];
+
+        Test.startTest();
+        RES_ProductUpdateNotificationController.updateAllAndNotify(
+            draftProduct.Id,
+            '',
+            'Updating draft unit for testing',
+            false
+        );
+        Test.stopTest();
+
+        Product2 updated = [
+            SELECT RES_Unit_Status__c, RES_Update_Requested__c
+            FROM Product2 WHERE Id = :draftProduct.Id
+        ];
+        System.assertEquals('Draft', updated.RES_Unit_Status__c, 'Status should remain Draft');
+        System.assertEquals(true, updated.RES_Update_Requested__c, 'Update requested flag should be true');
+    }
+
+    // ============================================================
+    // Test: updateAllAndNotify - null productId throws
+    // ============================================================
+
+    @isTest
+    static void testUpdateAllAndNotify_nullId_throws() {
+        Test.startTest();
+        try {
+            RES_ProductUpdateNotificationController.updateAllAndNotify(null, '{}', 'some comments', true);
+            System.assert(false, 'Should have thrown exception for null productId');
+        } catch (AuraHandledException e) {
+            System.assert(true, 'AuraHandledException thrown as expected');
+        }
+        Test.stopTest();
+    }
+
+    // ============================================================
+    // Test: updateProductAndNotify - moves to Draft
+    // ============================================================
+
+    @isTest
+    static void testUpdateProductAndNotify_movesToDraft() {
+        Product2 availableProduct = [
+            SELECT Id FROM Product2 WHERE ProductCode = 'AVAIL-001' LIMIT 1
+        ];
+
+        // Do not use Test.stopTest() here — status change triggers RES_IntegrationQueueable
+        // (SAP sync) which requires a live token unavailable in test context.
+        // The Apex method under test is synchronous; async job is not what we assert.
+        RES_ProductUpdateNotificationController.updateProductAndNotify(
+            availableProduct.Id,
+            'Updating unit for testing purposes',
+            true
+        );
+
+        Product2 updated = [
+            SELECT RES_Unit_Status__c, RES_Update_Requested__c, RES_Update_Comments__c
+            FROM Product2 WHERE Id = :availableProduct.Id
+        ];
+        System.assertEquals('Draft', updated.RES_Unit_Status__c, 'Status should be Draft');
+        System.assertEquals(true, updated.RES_Update_Requested__c, 'Update requested flag should be true');
+        System.assertEquals('Updating unit for testing purposes', updated.RES_Update_Comments__c, 'Comments should be saved');
+    }
+
+    // ============================================================
+    // Test: updateProductAndNotify - no status change for Draft unit
+    // ============================================================
+
+    @isTest
+    static void testUpdateProductAndNotify_noStatusChange() {
+        Product2 draftProduct = [
+            SELECT Id FROM Product2 WHERE ProductCode = 'DRAFT-001' LIMIT 1
+        ];
+
+        Test.startTest();
+        RES_ProductUpdateNotificationController.updateProductAndNotify(
+            draftProduct.Id,
+            'Updating draft unit for testing',
+            false
+        );
+        Test.stopTest();
+
+        Product2 updated = [
+            SELECT RES_Unit_Status__c, RES_Update_Requested__c
+            FROM Product2 WHERE Id = :draftProduct.Id
+        ];
+        System.assertEquals('Draft', updated.RES_Unit_Status__c, 'Status should remain Draft');
+        System.assertEquals(true, updated.RES_Update_Requested__c, 'Update requested flag should be true');
+    }
+
+    // ============================================================
+    // Test: updateProductAndNotify - null productId throws
+    // ============================================================
+
+    @isTest
+    static void testUpdateProductAndNotify_nullId_throws() {
+        Test.startTest();
+        try {
+            RES_ProductUpdateNotificationController.updateProductAndNotify(null, 'some comments', true);
+            System.assert(false, 'Should have thrown exception for null productId');
+        } catch (AuraHandledException e) {
+            System.assert(true, 'AuraHandledException thrown as expected');
         }
         Test.stopTest();
     }
