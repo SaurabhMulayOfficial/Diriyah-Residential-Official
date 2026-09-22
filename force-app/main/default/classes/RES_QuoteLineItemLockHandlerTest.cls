@@ -248,7 +248,11 @@ private class RES_QuoteLineItemLockHandlerTest {
     // DIR-1777: confirmed live against an actual stuck swap quote that the pricing engine's
     // recalculation writes ValidationResult and ConstraintEngineNodeStatus__c on the line item
     // itself (not just Quote.ValidationResult) - both must be exempt or the lock still blocks
-    // repricing.
+    // repricing. ConstraintEngineNodeStatus__c only exists in orgs with Revenue Cloud's
+    // constraint engine provisioned, so this skips it where the org's schema doesn't have it
+    // rather than failing SObject.put() with "Invalid field" - EXEMPT_FIELDS itself is safe
+    // either way, since RES_QuoteLineItemLockHandler only ever compares against fields that
+    // actually appear in Schema.SObjectType.QuoteLineItem.fields.getMap().
     @isTest
     static void testQuoteLineItem_ExemptEngineStatusFields_OnCustomerApprovedQuote_AreNotBlocked() {
         Quote q = [SELECT Id FROM Quote LIMIT 1];
@@ -265,9 +269,13 @@ private class RES_QuoteLineItemLockHandlerTest {
             'ValidationResult' => 'Warning',
             'ConstraintEngineNodeStatus__c' => '{"cfgStatus":"Default","attributes":[]}'
         };
+        Map<String, Schema.SObjectField> qliFields = Schema.SObjectType.QuoteLineItem.fields.getMap();
 
         Test.startTest();
         for (String fieldName : fieldsToTry.keySet()) {
+            if (!qliFields.containsKey(fieldName.toLowerCase())) {
+                continue; // not provisioned in this org - nothing to exercise
+            }
             QuoteLineItem toEdit = new QuoteLineItem(Id = [SELECT Id FROM QuoteLineItem LIMIT 1].Id);
             toEdit.put(fieldName, fieldsToTry.get(fieldName));
             try {
