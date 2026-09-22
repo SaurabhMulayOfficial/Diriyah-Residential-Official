@@ -1,12 +1,19 @@
 /**
  * @description Unit tests for RES_MeasurementServices.
  *
- *              The service does NOT enqueue a job itself: it publishes a
- *              RES_Integration_Request__e, and the platform-event subscriber
+ *              The service does NOT enqueue a job itself: it publishes
+ *              RES_Integration_Request__e platform events, and the subscriber
  *              (RES_IntegrationRequestEventService) enqueues RES_IntegrationQueueable.
  *              "Published" is therefore verified by the delta in queueable jobs around
  *              syncMeasurements() + Test.getEventBus().deliver(), which ignores jobs
  *              created by events fired from the test-data inserts.
+ *
+ *              For each changed measurement the service publishes TWO events:
+ *              - Measurement_Sync         (for ProductCategory integration)
+ *              - Measurement_Sync_Catalog (for ProductCatalog integration)
+ *              The subscriber batches all events from a single delivery into one
+ *              queueable job, so even with both event types published the delta
+ *              in RES_IntegrationQueueable jobs is still 1 per syncMeasurements() call.
  *
  *              Dependencies that cannot be created in a test (custom metadata):
  *              - RES_SAP_Integration_Config__mdt 'Measurement_Sync' with RES_Sync_Fields__c
@@ -145,7 +152,7 @@ private class RES_MeasurementServicesTest {
 
         Integer jobs = syncAndCountJobs(measurements, null);
 
-        Assert.areEqual(1, jobs, 'A single event / job should cover all inserted measurements');
+        Assert.areEqual(1, jobs, 'A single job should cover all inserted measurements (both Measurement_Sync and Measurement_Sync_Catalog events are batched by the subscriber)');
         Assert.areEqual(0, mock.tokenCallCount, 'Primed token should avoid the token callout');
     }
 
@@ -161,7 +168,7 @@ private class RES_MeasurementServicesTest {
 
         Integer jobs = syncAndCountJobs(measurements, buildOldMap(measurements, field, measurements.size()));
 
-        Assert.areEqual(1, jobs, 'A changed sync field should publish an event');
+        Assert.areEqual(1, jobs, 'A changed sync field should publish an event (subscriber batches both service names into one job)');
     }
 
     @IsTest
@@ -196,7 +203,7 @@ private class RES_MeasurementServicesTest {
         // Only the first record differs from its "old" version
         Integer jobs = syncAndCountJobs(measurements, buildOldMap(measurements, field, 1));
 
-        Assert.areEqual(1, jobs, 'Only changed records are synced, in one event');
+        Assert.areEqual(1, jobs, 'Only changed records are synced; subscriber batches both service-name events into one job');
     }
 
     @IsTest
@@ -207,7 +214,7 @@ private class RES_MeasurementServicesTest {
         // Non-null but empty oldMap -> oldMap.get(Id) is null -> isMeasurementChanged returns true
         Integer jobs = syncAndCountJobs(measurements, new Map<Id, RES_Measurement__c>());
 
-        Assert.areEqual(1, jobs, 'A record absent from oldMap should be treated as changed');
+        Assert.areEqual(1, jobs, 'A record absent from oldMap should be treated as changed; subscriber batches all events into one job');
     }
 
     // ------------------------------------------------------------------

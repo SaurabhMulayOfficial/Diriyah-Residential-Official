@@ -177,4 +177,34 @@ public class RES_IntegrationTestDataFactory {
             .getAPIConfiguration(requestMethod, 'Building_Land_API')
             .isEmpty();
     }
+
+    /** Same guard for the Product Catalog API configuration. */
+    public static Boolean hasProductCatalogApiConfiguration(String requestMethod) {
+        return !new RES_APIConfigurationsDAO()
+            .getAPIConfiguration(requestMethod, 'Product_Catalog_API')
+            .isEmpty();
+    }
+
+    /**
+     * Builds (without inserting) a measurement tied to the given ProductCatalog.
+     * RES_Catalog__c is required by hydrateCatalogWithMeasurements.
+     */
+    public static RES_Measurement__c buildMeasurementForCatalog(Id catalogId, String measurementType) {
+        return new RES_Measurement__c(
+            RES_Catalog__c            = catalogId,
+            RES_Measurement_Type__c   = measurementType,
+            RES_Measurement_Amount__c = 250.00,
+            RES_Measurement_From__c   = Date.newInstance(2026, 1, 1),
+            RES_Measurement_To__c     = Date.newInstance(2026, 12, 31)
+        );
+    }
+
+    public static List<RES_Measurement__c> createMeasurementsForCatalog(Id catalogId, Integer count) {
+        List<RES_Measurement__c> measurements = new List<RES_Measurement__c>();
+        for (Integer i = 0; i < count; i++) {
+            measurements.add(buildMeasurementForCatalog(catalogId, 'Z002'));
+        }
+        insert measurements;
+        return measurements;
+    }
 }

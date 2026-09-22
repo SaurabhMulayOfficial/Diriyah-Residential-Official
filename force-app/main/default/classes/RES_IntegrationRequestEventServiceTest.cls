@@ -18,8 +18,9 @@
 @IsTest
 private class RES_IntegrationRequestEventServiceTest {
 
-    private static final String PC_SERVICE          = 'ProductCategory_Sync';
-    private static final String MEASUREMENT_SERVICE = 'Measurement_Sync';
+    private static final String PC_SERVICE             = 'ProductCategory_Sync';
+    private static final String MEASUREMENT_SERVICE    = 'Measurement_Sync';
+    private static final String PRODUCT_CATALOG_SERVICE = 'ProductCatalog_Sync';
 
     private static RES_IntegrationTestDataFactory.EndpointRoutingMock mock;
 
@@ -230,6 +231,59 @@ private class RES_IntegrationRequestEventServiceTest {
         Test.stopTest();
 
         System.assertEquals(0, enqueued, 'Guard clauses should prevent enqueueing');
+    }
+
+    // ------------------------------------------------------------------
+    // ProductCatalog_Sync
+    // ------------------------------------------------------------------
+
+    @IsTest
+    static void handleIntegrations_productCatalogInsert_enqueuesJob() {
+        if (!integrationConfigured()) { return; }
+        ProductCatalog catalog = RES_IntegrationTestDataFactory.createCatalog();
+
+        Integer enqueued = handleAndCountJobs(
+            new List<RES_Integration_Request__e>{ buildEvent(PRODUCT_CATALOG_SERVICE, 'I', (String) catalog.Id) }
+        );
+
+        System.assertEquals(1, enqueued, 'One queueable should be enqueued for ProductCatalog insert');
+    }
+
+    @IsTest
+    static void handleIntegrations_productCatalogUpdate_enqueuesJob() {
+        if (!integrationConfigured()) { return; }
+        ProductCatalog catalog = RES_IntegrationTestDataFactory.createCatalog();
+
+        Integer enqueued = handleAndCountJobs(
+            new List<RES_Integration_Request__e>{ buildEvent(PRODUCT_CATALOG_SERVICE, 'U', (String) catalog.Id) }
+        );
+
+        System.assertEquals(1, enqueued, 'One queueable should be enqueued for ProductCatalog update');
+    }
+
+    @IsTest
+    static void handleIntegrations_productCatalogMultipleEvents_enqueuesSingleJob() {
+        if (!integrationConfigured()) { return; }
+        ProductCatalog cat1 = RES_IntegrationTestDataFactory.createCatalog();
+        ProductCatalog cat2 = RES_IntegrationTestDataFactory.createCatalog();
+
+        List<RES_Integration_Request__e> events = new List<RES_Integration_Request__e>{
+            buildEvent(PRODUCT_CATALOG_SERVICE, 'I', (String) cat1.Id),
+            buildEvent(PRODUCT_CATALOG_SERVICE, 'I', (String) cat2.Id)
+        };
+
+        System.assertEquals(1, handleAndCountJobs(events), 'Multiple ProductCatalog insert events should batch into one job');
+    }
+
+    @IsTest
+    static void handleIntegrations_productCatalogNoMatchingRecord_enqueuesNothing() {
+        Id fakeId = Id.valueOf(ProductCatalog.SObjectType.getDescribe().getKeyPrefix() + '000000000001');
+
+        Integer enqueued = handleAndCountJobs(
+            new List<RES_Integration_Request__e>{ buildEvent(PRODUCT_CATALOG_SERVICE, 'I', (String) fakeId) }
+        );
+
+        System.assertEquals(0, enqueued, 'No job when the DAO returns no ProductCatalog records');
     }
 
     @IsTest

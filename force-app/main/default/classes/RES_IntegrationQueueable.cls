@@ -72,8 +72,15 @@ public with sharing class RES_IntegrationQueueable implements Queueable, Databas
             for (SObject record: records){
                 measurements.add((RES_Measurement__c) record);
             }
-            RES_ProductCategoryIntegrationService.syncMeasurements(measurements, requestMethod, triggerContext);
-            
+            RES_ProductCategoryIntegrationService.syncMeasurements(measurements, requestMethod, triggerContext);   
+        }
+        
+        else if(serviceName == 'Measurement_Sync_Catalog'){
+            List<RES_Measurement__c> measurements = new List<RES_Measurement__c>();
+            for (SObject record: records){
+                measurements.add((RES_Measurement__c) record);
+            }
+            RES_ProductCatalogIntegrationService.syncMeasurementsWithProductCatalog(measurements, requestMethod, triggerContext);   
         }
         
         else if(serviceName == 'ProductCatalog_Sync'){
@@ -81,7 +88,7 @@ public with sharing class RES_IntegrationQueueable implements Queueable, Databas
             for (SObject record : records) {
                 productCatalogs.add((ProductCatalog) record);
             }
-            //RES_ProductCatalogIntegrationService.syncProductCatalogs(productCatalogs, requestMethod);
+            RES_ProductCatalogIntegrationService.syncProductCatalogs(productCatalogs, requestMethod, triggerContext);
         }
     }
 }
