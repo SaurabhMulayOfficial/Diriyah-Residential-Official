@@ -25,7 +25,7 @@
             <assignToReference>mergeFields</assignToReference>
             <operator>Add</operator>
             <value>
-                <stringValue>Finance Team</stringValue>
+                <elementReference>approvalTeamName</elementReference>
             </value>
         </assignmentItems>
         <assignmentItems>
@@ -37,6 +37,43 @@
         </assignmentItems>
         <connector>
             <targetReference>Send_Notification_To_Sales_Operations_Group</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
+        <name>Copy_2_of_Populate_Merge_Fields</name>
+        <label>Populate Merge Fields</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignmentItems>
+            <assignToReference>mergeFields</assignToReference>
+            <operator>Add</operator>
+            <value>
+                <elementReference>teamName</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>mergeFields</assignToReference>
+            <operator>Add</operator>
+            <value>
+                <elementReference>pocNumber</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>mergeFields</assignToReference>
+            <operator>Add</operator>
+            <value>
+                <elementReference>approvalTeamName</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>mergeFields</assignToReference>
+            <operator>Add</operator>
+            <value>
+                <elementReference>recordURL</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Send_Rejection_Notification</targetReference>
         </connector>
     </assignments>
     <assignments>
@@ -70,12 +107,49 @@
         </connector>
     </assignments>
     <decisions>
+        <name>Check_Email_Type</name>
+        <label>Check Email Type</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Approval_Request_Assigned</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>emailType</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Approval Request Assigned</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Get_Approval_Work_Item</targetReference>
+            </connector>
+            <label>Approval Request Assigned</label>
+        </rules>
+        <rules>
+            <name>Approval_Request_Rejected</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>emailType</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Approval Request Rejected</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Copy_2_of_Populate_Merge_Fields</targetReference>
+            </connector>
+            <label>Approval Request Rejected</label>
+        </rules>
+    </decisions>
+    <decisions>
         <name>Check_Team_Name</name>
         <label>Check Team Name</label>
         <locationX>0</locationX>
         <locationY>0</locationY>
         <defaultConnector>
-            <targetReference>Get_Approval_Work_Item</targetReference>
+            <targetReference>Check_Email_Type</targetReference>
         </defaultConnector>
         <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
         <rules>
@@ -269,6 +343,68 @@
             </value>
         </inputAssignments>
     </subflows>
+    <subflows>
+        <name>Send_Rejection_Notification</name>
+        <label>Send Rejection Notification</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <flowName>RES_POC_Send_Rejection_Notification</flowName>
+        <inputAssignments>
+            <name>bellNotificationBody</name>
+            <value>
+                <elementReference>bellNotificationBody</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <name>bellNotificationTitle</name>
+            <value>
+                <elementReference>bellNotificationTitle</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <name>customNotificationName</name>
+            <value>
+                <stringValue>RES_POC_Approval_Notification</stringValue>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <name>emailTemplateName</name>
+            <value>
+                <elementReference>emailTemplateName</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <name>mergeFields</name>
+            <value>
+                <elementReference>mergeFields</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <name>publicGroupDeveloperName</name>
+            <value>
+                <elementReference>publicGroupDeveloperName</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <name>recordId</name>
+            <value>
+                <elementReference>recordId</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <name>sendBellNotification</name>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </inputAssignments>
+    </subflows>
+    <variables>
+        <name>approvalTeamName</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>true</isInput>
+        <isOutput>false</isOutput>
+    </variables>
     <variables>
         <name>bellNotificationBody</name>
         <dataType>String</dataType>
@@ -285,6 +421,13 @@
     </variables>
     <variables>
         <name>emailTemplateName</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>true</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <name>emailType</name>
         <dataType>String</dataType>
         <isCollection>false</isCollection>
         <isInput>true</isInput>

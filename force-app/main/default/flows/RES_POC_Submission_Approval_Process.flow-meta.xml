@@ -119,6 +119,11 @@
         <dataType>String</dataType>
         <expression>{!pocNumber} &amp; &quot; requires your approval.&quot;</expression>
     </formulas>
+    <formulas>
+        <name>rejectedBellNotificationBody</name>
+        <dataType>String</dataType>
+        <expression>&quot;Approval request for &quot; &amp; {!pocNumber} &amp; &quot; has been rejected.&quot;</expression>
+    </formulas>
     <interviewLabel>POC {!$Flow.CurrentDateTime}</interviewLabel>
     <label>POC% Submission Approval Process</label>
     <orchestratedStages>
@@ -188,6 +193,12 @@
                 <name>emailTemplateName</name>
                 <value>
                     <stringValue>RES_POC_Approval_Email_Template</stringValue>
+                </value>
+            </inputParameters>
+            <inputParameters>
+                <name>emailType</name>
+                <value>
+                    <stringValue>Approval Request Assigned</stringValue>
                 </value>
             </inputParameters>
             <inputParameters>
@@ -426,6 +437,12 @@
             </entryConditions>
             <exitConditionLogic>and</exitConditionLogic>
             <inputParameters>
+                <name>approvalTeamName</name>
+                <value>
+                    <stringValue>Finance Team</stringValue>
+                </value>
+            </inputParameters>
+            <inputParameters>
                 <name>emailTemplateName</name>
                 <value>
                     <stringValue>RES_POC_Approval_Request_Approved</stringValue>
@@ -546,6 +563,228 @@
             <shouldLock>false</shouldLock>
             <stepSubtype>BackgroundStep</stepSubtype>
         </stageSteps>
+        <stageSteps>
+            <name>Copy_3_of_Send_Notification_To_Sales_Operations_Group</name>
+            <actionName>RES_POC_Send_Approval_Notification</actionName>
+            <actionType>stepBackground</actionType>
+            <canAssigneeEdit>false</canAssigneeEdit>
+            <debugSimulateStep>false</debugSimulateStep>
+            <entryConditionLogic>and</entryConditionLogic>
+            <entryConditions>
+                <conditionType>EntryCondition</conditionType>
+                <leftValueReference>Copy_2_of_Update_Approval_Status_Rejected.Status</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Completed</stringValue>
+                </rightValue>
+            </entryConditions>
+            <exitConditionLogic>and</exitConditionLogic>
+            <inputParameters>
+                <name>approvalTeamName</name>
+                <value>
+                    <stringValue>Finance Team</stringValue>
+                </value>
+            </inputParameters>
+            <inputParameters>
+                <name>bellNotificationBody</name>
+                <value>
+                    <elementReference>rejectedBellNotificationBody</elementReference>
+                </value>
+            </inputParameters>
+            <inputParameters>
+                <name>bellNotificationTitle</name>
+                <value>
+                    <elementReference>rejectedBellNotificationTitle</elementReference>
+                </value>
+            </inputParameters>
+            <inputParameters>
+                <name>emailTemplateName</name>
+                <value>
+                    <stringValue>RES_POC_Approval_Request_Rejected</stringValue>
+                </value>
+            </inputParameters>
+            <inputParameters>
+                <name>pocNumber</name>
+                <value>
+                    <elementReference>pocNumber</elementReference>
+                </value>
+            </inputParameters>
+            <inputParameters>
+                <name>publicGroupDeveloperName</name>
+                <value>
+                    <stringValue>RES_Sales_Operations_Team</stringValue>
+                </value>
+            </inputParameters>
+            <inputParameters>
+                <name>recordId</name>
+                <value>
+                    <elementReference>recordId</elementReference>
+                </value>
+            </inputParameters>
+            <inputParameters>
+                <name>teamName</name>
+                <value>
+                    <stringValue>Sales Operations Team</stringValue>
+                </value>
+            </inputParameters>
+            <label>Send Notification To Sales Operations Group</label>
+            <requiresAsyncProcessing>false</requiresAsyncProcessing>
+            <runAsUser>false</runAsUser>
+            <shouldLock>false</shouldLock>
+            <stepSubtype>BackgroundStep</stepSubtype>
+        </stageSteps>
+        <stageSteps>
+            <name>Send_Notification_To_Project_Chief_Approval_Group</name>
+            <actionName>RES_POC_Send_Approval_Notification</actionName>
+            <actionType>stepBackground</actionType>
+            <canAssigneeEdit>false</canAssigneeEdit>
+            <debugSimulateStep>false</debugSimulateStep>
+            <entryConditionLogic>and</entryConditionLogic>
+            <entryConditions>
+                <conditionType>EntryCondition</conditionType>
+                <leftValueReference>Copy_2_of_Update_Approval_Status_Rejected.Status</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Completed</stringValue>
+                </rightValue>
+            </entryConditions>
+            <exitConditionLogic>and</exitConditionLogic>
+            <inputParameters>
+                <name>approvalTeamName</name>
+                <value>
+                    <stringValue>Finance Team</stringValue>
+                </value>
+            </inputParameters>
+            <inputParameters>
+                <name>bellNotificationBody</name>
+                <value>
+                    <elementReference>rejectedBellNotificationBody</elementReference>
+                </value>
+            </inputParameters>
+            <inputParameters>
+                <name>bellNotificationTitle</name>
+                <value>
+                    <elementReference>rejectedBellNotificationTitle</elementReference>
+                </value>
+            </inputParameters>
+            <inputParameters>
+                <name>emailTemplateName</name>
+                <value>
+                    <stringValue>RES_POC_Approval_Request_Rejected</stringValue>
+                </value>
+            </inputParameters>
+            <inputParameters>
+                <name>emailType</name>
+                <value>
+                    <stringValue>Approval Request Rejected</stringValue>
+                </value>
+            </inputParameters>
+            <inputParameters>
+                <name>pocNumber</name>
+                <value>
+                    <elementReference>pocNumber</elementReference>
+                </value>
+            </inputParameters>
+            <inputParameters>
+                <name>publicGroupDeveloperName</name>
+                <value>
+                    <stringValue>RES_Project_Chief_Approval_Group</stringValue>
+                </value>
+            </inputParameters>
+            <inputParameters>
+                <name>recordId</name>
+                <value>
+                    <elementReference>recordId</elementReference>
+                </value>
+            </inputParameters>
+            <inputParameters>
+                <name>teamName</name>
+                <value>
+                    <stringValue>Project Chief Approval Team</stringValue>
+                </value>
+            </inputParameters>
+            <label>Send Notification To Project Chief Approval Group</label>
+            <requiresAsyncProcessing>false</requiresAsyncProcessing>
+            <runAsUser>false</runAsUser>
+            <shouldLock>false</shouldLock>
+            <stepSubtype>BackgroundStep</stepSubtype>
+        </stageSteps>
+        <stageSteps>
+            <name>Send_Notification_To_Project_Manager_Group2</name>
+            <actionName>RES_POC_Send_Approval_Notification</actionName>
+            <actionType>stepBackground</actionType>
+            <canAssigneeEdit>false</canAssigneeEdit>
+            <debugSimulateStep>false</debugSimulateStep>
+            <entryConditionLogic>and</entryConditionLogic>
+            <entryConditions>
+                <conditionType>EntryCondition</conditionType>
+                <leftValueReference>Copy_2_of_Update_Approval_Status_Rejected.Status</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Completed</stringValue>
+                </rightValue>
+            </entryConditions>
+            <exitConditionLogic>and</exitConditionLogic>
+            <inputParameters>
+                <name>approvalTeamName</name>
+                <value>
+                    <stringValue>Finance Team</stringValue>
+                </value>
+            </inputParameters>
+            <inputParameters>
+                <name>bellNotificationBody</name>
+                <value>
+                    <elementReference>rejectedBellNotificationBody</elementReference>
+                </value>
+            </inputParameters>
+            <inputParameters>
+                <name>bellNotificationTitle</name>
+                <value>
+                    <elementReference>rejectedBellNotificationTitle</elementReference>
+                </value>
+            </inputParameters>
+            <inputParameters>
+                <name>emailTemplateName</name>
+                <value>
+                    <stringValue>RES_POC_Approval_Request_Rejected</stringValue>
+                </value>
+            </inputParameters>
+            <inputParameters>
+                <name>emailType</name>
+                <value>
+                    <stringValue>Approval Request Rejected</stringValue>
+                </value>
+            </inputParameters>
+            <inputParameters>
+                <name>pocNumber</name>
+                <value>
+                    <elementReference>pocNumber</elementReference>
+                </value>
+            </inputParameters>
+            <inputParameters>
+                <name>publicGroupDeveloperName</name>
+                <value>
+                    <stringValue>RES_Project_Manager_Group</stringValue>
+                </value>
+            </inputParameters>
+            <inputParameters>
+                <name>recordId</name>
+                <value>
+                    <elementReference>recordId</elementReference>
+                </value>
+            </inputParameters>
+            <inputParameters>
+                <name>teamName</name>
+                <value>
+                    <stringValue>Project Manager Team</stringValue>
+                </value>
+            </inputParameters>
+            <label>Send Notification To Project Manager Group</label>
+            <requiresAsyncProcessing>false</requiresAsyncProcessing>
+            <runAsUser>false</runAsUser>
+            <shouldLock>false</shouldLock>
+            <stepSubtype>BackgroundStep</stepSubtype>
+        </stageSteps>
     </orchestratedStages>
     <orchestratedStages>
         <name>Project_Chief_Approval_Stage</name>
@@ -614,6 +853,12 @@
                 <name>emailTemplateName</name>
                 <value>
                     <stringValue>RES_POC_Approval_Email_Template</stringValue>
+                </value>
+            </inputParameters>
+            <inputParameters>
+                <name>emailType</name>
+                <value>
+                    <stringValue>Approval Request Assigned</stringValue>
                 </value>
             </inputParameters>
             <inputParameters>
@@ -835,6 +1080,152 @@
             <shouldLock>false</shouldLock>
             <stepSubtype>BackgroundStep</stepSubtype>
         </stageSteps>
+        <stageSteps>
+            <name>Copy_2_of_Send_Notification_To_Sales_Operations_Group</name>
+            <actionName>RES_POC_Send_Approval_Notification</actionName>
+            <actionType>stepBackground</actionType>
+            <canAssigneeEdit>false</canAssigneeEdit>
+            <debugSimulateStep>false</debugSimulateStep>
+            <entryConditionLogic>and</entryConditionLogic>
+            <entryConditions>
+                <conditionType>EntryCondition</conditionType>
+                <leftValueReference>Copy_1_of_Update_Approval_Status_Rejected.Status</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Completed</stringValue>
+                </rightValue>
+            </entryConditions>
+            <exitConditionLogic>and</exitConditionLogic>
+            <inputParameters>
+                <name>approvalTeamName</name>
+                <value>
+                    <stringValue>Project Chief Approval Team</stringValue>
+                </value>
+            </inputParameters>
+            <inputParameters>
+                <name>bellNotificationBody</name>
+                <value>
+                    <elementReference>rejectedBellNotificationBody</elementReference>
+                </value>
+            </inputParameters>
+            <inputParameters>
+                <name>bellNotificationTitle</name>
+                <value>
+                    <elementReference>rejectedBellNotificationTitle</elementReference>
+                </value>
+            </inputParameters>
+            <inputParameters>
+                <name>emailTemplateName</name>
+                <value>
+                    <stringValue>RES_POC_Approval_Request_Rejected</stringValue>
+                </value>
+            </inputParameters>
+            <inputParameters>
+                <name>pocNumber</name>
+                <value>
+                    <elementReference>pocNumber</elementReference>
+                </value>
+            </inputParameters>
+            <inputParameters>
+                <name>publicGroupDeveloperName</name>
+                <value>
+                    <stringValue>RES_Sales_Operations_Team</stringValue>
+                </value>
+            </inputParameters>
+            <inputParameters>
+                <name>recordId</name>
+                <value>
+                    <elementReference>recordId</elementReference>
+                </value>
+            </inputParameters>
+            <inputParameters>
+                <name>teamName</name>
+                <value>
+                    <stringValue>Sales Operations Team</stringValue>
+                </value>
+            </inputParameters>
+            <label>Send Notification To Sales Operations Group</label>
+            <requiresAsyncProcessing>false</requiresAsyncProcessing>
+            <runAsUser>false</runAsUser>
+            <shouldLock>false</shouldLock>
+            <stepSubtype>BackgroundStep</stepSubtype>
+        </stageSteps>
+        <stageSteps>
+            <name>Send_Notification_To_Project_Manager_Group_1</name>
+            <actionName>RES_POC_Send_Approval_Notification</actionName>
+            <actionType>stepBackground</actionType>
+            <canAssigneeEdit>false</canAssigneeEdit>
+            <debugSimulateStep>false</debugSimulateStep>
+            <entryConditionLogic>and</entryConditionLogic>
+            <entryConditions>
+                <conditionType>EntryCondition</conditionType>
+                <leftValueReference>Copy_1_of_Update_Approval_Status_Rejected.Status</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Completed</stringValue>
+                </rightValue>
+            </entryConditions>
+            <exitConditionLogic>and</exitConditionLogic>
+            <inputParameters>
+                <name>approvalTeamName</name>
+                <value>
+                    <stringValue>Project Chief Approval Team</stringValue>
+                </value>
+            </inputParameters>
+            <inputParameters>
+                <name>bellNotificationBody</name>
+                <value>
+                    <elementReference>rejectedBellNotificationBody</elementReference>
+                </value>
+            </inputParameters>
+            <inputParameters>
+                <name>bellNotificationTitle</name>
+                <value>
+                    <elementReference>rejectedBellNotificationTitle</elementReference>
+                </value>
+            </inputParameters>
+            <inputParameters>
+                <name>emailTemplateName</name>
+                <value>
+                    <stringValue>RES_POC_Approval_Request_Rejected</stringValue>
+                </value>
+            </inputParameters>
+            <inputParameters>
+                <name>emailType</name>
+                <value>
+                    <stringValue>Approval Request Rejected</stringValue>
+                </value>
+            </inputParameters>
+            <inputParameters>
+                <name>pocNumber</name>
+                <value>
+                    <elementReference>pocNumber</elementReference>
+                </value>
+            </inputParameters>
+            <inputParameters>
+                <name>publicGroupDeveloperName</name>
+                <value>
+                    <stringValue>RES_Project_Manager_Group</stringValue>
+                </value>
+            </inputParameters>
+            <inputParameters>
+                <name>recordId</name>
+                <value>
+                    <elementReference>recordId</elementReference>
+                </value>
+            </inputParameters>
+            <inputParameters>
+                <name>teamName</name>
+                <value>
+                    <stringValue>Project Manager Team</stringValue>
+                </value>
+            </inputParameters>
+            <label>Send Notification To Project Manager Group</label>
+            <requiresAsyncProcessing>false</requiresAsyncProcessing>
+            <runAsUser>false</runAsUser>
+            <shouldLock>false</shouldLock>
+            <stepSubtype>BackgroundStep</stepSubtype>
+        </stageSteps>
     </orchestratedStages>
     <orchestratedStages>
         <name>Project_Manager_Approval_Stage</name>
@@ -903,6 +1294,12 @@
                 <name>emailTemplateName</name>
                 <value>
                     <stringValue>RES_POC_Approval_Email_Template</stringValue>
+                </value>
+            </inputParameters>
+            <inputParameters>
+                <name>emailType</name>
+                <value>
+                    <stringValue>Approval Request Assigned</stringValue>
                 </value>
             </inputParameters>
             <inputParameters>
@@ -1072,6 +1469,76 @@
             <shouldLock>false</shouldLock>
             <stepSubtype>BackgroundStep</stepSubtype>
         </stageSteps>
+        <stageSteps>
+            <name>Copy_1_of_Send_Notification_To_Sales_Operations_Group</name>
+            <actionName>RES_POC_Send_Approval_Notification</actionName>
+            <actionType>stepBackground</actionType>
+            <canAssigneeEdit>false</canAssigneeEdit>
+            <debugSimulateStep>false</debugSimulateStep>
+            <entryConditionLogic>and</entryConditionLogic>
+            <entryConditions>
+                <conditionType>EntryCondition</conditionType>
+                <leftValueReference>Update_Approval_Status_Rejected.Status</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Completed</stringValue>
+                </rightValue>
+            </entryConditions>
+            <exitConditionLogic>and</exitConditionLogic>
+            <inputParameters>
+                <name>approvalTeamName</name>
+                <value>
+                    <stringValue>Project Manager Team</stringValue>
+                </value>
+            </inputParameters>
+            <inputParameters>
+                <name>bellNotificationBody</name>
+                <value>
+                    <elementReference>rejectedBellNotificationBody</elementReference>
+                </value>
+            </inputParameters>
+            <inputParameters>
+                <name>bellNotificationTitle</name>
+                <value>
+                    <elementReference>rejectedBellNotificationTitle</elementReference>
+                </value>
+            </inputParameters>
+            <inputParameters>
+                <name>emailTemplateName</name>
+                <value>
+                    <stringValue>RES_POC_Approval_Request_Rejected</stringValue>
+                </value>
+            </inputParameters>
+            <inputParameters>
+                <name>pocNumber</name>
+                <value>
+                    <elementReference>pocNumber</elementReference>
+                </value>
+            </inputParameters>
+            <inputParameters>
+                <name>publicGroupDeveloperName</name>
+                <value>
+                    <stringValue>RES_Sales_Operations_Team</stringValue>
+                </value>
+            </inputParameters>
+            <inputParameters>
+                <name>recordId</name>
+                <value>
+                    <elementReference>recordId</elementReference>
+                </value>
+            </inputParameters>
+            <inputParameters>
+                <name>teamName</name>
+                <value>
+                    <stringValue>Sales Operations Team</stringValue>
+                </value>
+            </inputParameters>
+            <label>Send Notification To Sales Operations Group</label>
+            <requiresAsyncProcessing>false</requiresAsyncProcessing>
+            <runAsUser>false</runAsUser>
+            <shouldLock>false</shouldLock>
+            <stepSubtype>BackgroundStep</stepSubtype>
+        </stageSteps>
     </orchestratedStages>
     <processMetadataValues>
         <name>BuilderType</name>
@@ -1131,6 +1598,16 @@
         <isCollection>false</isCollection>
         <isInput>true</isInput>
         <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <name>rejectedBellNotificationTitle</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <value>
+            <stringValue>POC% Approval Rejected</stringValue>
+        </value>
     </variables>
     <variables>
         <name>submissionComments</name>
