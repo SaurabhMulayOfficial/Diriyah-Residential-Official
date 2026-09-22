@@ -282,7 +282,7 @@ public List<Product2> getRejectedProducts(String status,String searchTerm,Intege
                 'Family ' +
                 'FROM Product2 ' +
                 'WHERE RES_Unit_Status__c IN :statuses ' +
-                'AND (IsActive = false OR (RES_Update_Requested__c = true AND RES_Update_Comments__c != null AND RES_Update_Comments__c != \'\')) ';
+                'AND (IsActive = false OR RES_Update_Requested__c = true) ';
     if (!String.isBlank(searchTerm)) {
         String searchPattern = '%' + searchTerm.trim() + '%';
         bindVars.put('searchPattern',searchPattern);
