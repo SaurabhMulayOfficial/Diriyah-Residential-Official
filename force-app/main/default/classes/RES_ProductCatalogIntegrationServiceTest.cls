@@ -26,7 +26,11 @@ private class RES_ProductCatalogIntegrationServiceTest {
     }
 
     private static ProductCatalog buildCatalog() {
-        ProductCatalog pc = new ProductCatalog(Name = 'Integration Test Catalog');
+        ProductCatalog pc = new ProductCatalog(
+            Name = 'Integration Test Catalog',
+            RES_Name_AR__c = 'Test Arabic Name',
+            RES_Master_Plan__c = 'Test Master Plan'
+        );
         insert pc;
         return pc;
     }
