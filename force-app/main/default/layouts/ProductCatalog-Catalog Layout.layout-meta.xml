@@ -58,6 +58,10 @@
                 <behavior>Edit</behavior>
                 <field>RES_Last_Sync_DateTime__c</field>
             </layoutItems>
+            <layoutItems>
+                <behavior>Edit</behavior>
+                <field>RES_Geo_Location__c</field>
+            </layoutItems>
         </layoutColumns>
         <layoutColumns>
             <layoutItems>
@@ -79,10 +83,6 @@
             <layoutItems>
                 <behavior>Edit</behavior>
                 <field>EffectiveEndDate</field>
-            </layoutItems>
-            <layoutItems>
-                <behavior>Edit</behavior>
-                <field>RES_Geo_Longitude__c</field>
             </layoutItems>
             <layoutItems>
                 <behavior>Edit</behavior>
@@ -119,10 +119,6 @@
             <layoutItems>
                 <behavior>Edit</behavior>
                 <field>RES_Tenancy_Law__c</field>
-            </layoutItems>
-            <layoutItems>
-                <behavior>Edit</behavior>
-                <field>RES_Geo_Latitude__c</field>
             </layoutItems>
         </layoutColumns>
         <style>TwoColumnsLeftToRight</style>
