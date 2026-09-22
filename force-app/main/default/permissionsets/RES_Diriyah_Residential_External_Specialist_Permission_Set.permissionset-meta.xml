@@ -20,6 +20,11 @@ Sales – External – Relationship Manager</description>
         <name>RES_Show_Document_Section</name>
     </customPermissions>
     <fieldPermissions>
+        <editable>false</editable>
+        <field>RES_Measurement__c.RES_Last_Sync_DateTime__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
         <editable>true</editable>
         <field>OrderItemRelationship.AssociatedOrderItemPricing</field>
         <readable>true</readable>
@@ -866,6 +871,11 @@ Sales – External – Relationship Manager</description>
     </fieldPermissions>
     <fieldPermissions>
         <editable>false</editable>
+        <field>ProductCatalog.RES_Last_Sync_DateTime__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
         <field>ProductCategory.RES_Business_Entity_Id__c</field>
         <readable>true</readable>
     </fieldPermissions>
@@ -922,6 +932,11 @@ Sales – External – Relationship Manager</description>
     <fieldPermissions>
         <editable>false</editable>
         <field>ProductCategory.RES_Valid_To_Date__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>ProductCategory.RES_Last_Sync_DateTime__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>

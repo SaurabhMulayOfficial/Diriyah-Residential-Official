@@ -41,14 +41,25 @@ public with sharing class RES_MeasurementServices {
 
         String triggerContext = oldMap == null ? 'I' : 'U';
 
-        List<RES_Integration_Request__e> integrationRequestEventList = new List<RES_Integration_Request__e>();        
+        List<RES_Integration_Request__e> integrationRequestEventList = new List<RES_Integration_Request__e>();
         for(RES_Measurement__c m : measurementsToSync){
-            RES_Integration_Request__e req = new RES_Integration_Request__e();
-            req.RES_RecordIds__c = String.valueOf(m.Id);
-            req.RES_Request_Method__c = 'GET';
-            req.RES_Service_Name__c = 'Measurement_Sync';
-            req.RES_Triggering_Context__c = triggerContext;
-            integrationRequestEventList.add(req);
+            if(m.RES_Category__c != null){
+                RES_Integration_Request__e req = new RES_Integration_Request__e();
+                req.RES_RecordIds__c = String.valueOf(m.Id);
+                req.RES_Request_Method__c = 'GET';
+                req.RES_Service_Name__c = 'Measurement_Sync';
+                req.RES_Triggering_Context__c = triggerContext;
+                integrationRequestEventList.add(req);
+            }
+
+            if(m.RES_Catalog__c != null){
+                RES_Integration_Request__e catalogReq = new RES_Integration_Request__e();
+                catalogReq.RES_RecordIds__c = String.valueOf(m.Id);
+                catalogReq.RES_Request_Method__c = 'GET';
+                catalogReq.RES_Service_Name__c = 'Measurement_Sync_Catalog';
+                catalogReq.RES_Triggering_Context__c = triggerContext;
+                integrationRequestEventList.add(catalogReq);
+            }
         }
 
         try{

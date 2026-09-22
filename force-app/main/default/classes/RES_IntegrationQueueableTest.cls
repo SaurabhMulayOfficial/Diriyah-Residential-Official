@@ -208,6 +208,52 @@ private class RES_IntegrationQueueableTest {
         Assert.isTrue(threw, 'A mismatched SObject type currently fails hard inside the cast loop.');
     }
 
+    @isTest
+    static void executeRoutesMeasurementSyncCatalog() {
+        if (!RES_IntegrationTestDataFactory.hasProductCatalogApiConfiguration(METHOD)) { return; }
+
+        RES_IntegrationTestDataFactory.primeSapToken();
+
+        RES_IntegrationTestDataFactory.EndpointRoutingMock mock =
+            new RES_IntegrationTestDataFactory.EndpointRoutingMock();
+        Test.setMock(HttpCalloutMock.class, mock);
+
+        ProductCatalog catalog = RES_IntegrationTestDataFactory.createCatalog();
+        List<RES_Measurement__c> measurements =
+            RES_IntegrationTestDataFactory.createMeasurementsForCatalog(catalog.Id, 1);
+
+        Test.startTest();
+        System.enqueueJob(
+            new RES_IntegrationQueueable(measurements, 'Measurement_Sync_Catalog', METHOD, 'U')
+        );
+        Test.stopTest();
+
+        Assert.areEqual(1, mock.businessCallCount, 'The Measurement_Sync_Catalog branch should reach the integration service.');
+    }
+
+    @isTest
+    static void executeRoutesProductCatalogSync() {
+        if (!RES_IntegrationTestDataFactory.hasProductCatalogApiConfiguration(METHOD)) { return; }
+
+        RES_IntegrationTestDataFactory.primeSapToken();
+
+        RES_IntegrationTestDataFactory.EndpointRoutingMock mock =
+            new RES_IntegrationTestDataFactory.EndpointRoutingMock();
+        Test.setMock(HttpCalloutMock.class, mock);
+
+        ProductCatalog catalog = RES_IntegrationTestDataFactory.createCatalog();
+
+        Test.startTest();
+        System.enqueueJob(
+            new RES_IntegrationQueueable(
+                new List<SObject>{ catalog }, 'ProductCatalog_Sync', METHOD, 'I'
+            )
+        );
+        Test.stopTest();
+
+        Assert.areEqual(1, mock.businessCallCount, 'The ProductCatalog_Sync branch should reach the integration service.');
+    }
+
     /* ====================================================================
      *  CONSTRUCTOR
      * ==================================================================== */

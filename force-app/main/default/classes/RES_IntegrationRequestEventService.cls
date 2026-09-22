@@ -13,6 +13,7 @@ public with sharing class RES_IntegrationRequestEventService {
 
     private static final String PRODUCT_CATEGORY_INTEGRATION = 'ProductCategory_Sync';
     private static final String MEASUREMENT_INTEGRATION = 'Measurement_Sync';
+    private static final String PRODUCT_CATALOG_INTEGRATION = 'ProductCatalog_Sync';
     
     public RES_IntegrationRequestEventService() {}
 
@@ -99,6 +100,43 @@ public with sharing class RES_IntegrationRequestEventService {
             if(!measurementIds.isEmpty()){
                 List<sObject> records = (List<sObject>)new RES_MeasurementDAOLayer().getMeasurementByIds(measurementIds);
                 enqueueService(MEASUREMENT_INTEGRATION, records, 'U', 'GET');
+            }
+        }
+
+        String pcCatalogIntegrationKey_onInsert = 'GET' + PRODUCT_CATALOG_INTEGRATION + 'I';
+        String pcCatalogIntegrationKey_onUpdate = 'GET' + PRODUCT_CATALOG_INTEGRATION + 'U';
+
+        if(results.containsKey(pcCatalogIntegrationKey_onInsert) && results.get(pcCatalogIntegrationKey_onInsert).size() > 0){
+            Set<Id> catalogIds = new Set<Id>();
+            for(RES_Integration_Request__e e: results.get(pcCatalogIntegrationKey_onInsert)){
+                if(String.isBlank(e.RES_RecordIds__c))continue;
+                for (String recordId : e.RES_RecordIds__c.split(',')) {
+                    if (String.isNotBlank(recordId)) {
+                        catalogIds.add((Id) recordId.trim());
+                    }
+                }
+            }
+
+            if(!catalogIds.isEmpty()){
+                List<sObject> records = (List<sObject>)new RES_ProductCatalogDAOLayer().getCatalogByIds(catalogIds);
+                enqueueService(PRODUCT_CATALOG_INTEGRATION, records, 'I', 'GET');
+            }
+        }
+
+        if(results.containsKey(pcCatalogIntegrationKey_onUpdate) && results.get(pcCatalogIntegrationKey_onUpdate).size() > 0){
+            Set<Id> catalogIds = new Set<Id>();
+            for(RES_Integration_Request__e e: results.get(pcCatalogIntegrationKey_onUpdate)){
+                if(String.isBlank(e.RES_RecordIds__c))continue;
+                for (String recordId : e.RES_RecordIds__c.split(',')) {
+                    if (String.isNotBlank(recordId)) {
+                        catalogIds.add((Id) recordId.trim());
+                    }
+                }
+            }
+
+            if(!catalogIds.isEmpty()){
+                List<sObject> records = (List<sObject>)new RES_ProductCatalogDAOLayer().getCatalogByIds(catalogIds);
+                enqueueService(PRODUCT_CATALOG_INTEGRATION, records, 'U', 'GET');
             }
         }
     }
