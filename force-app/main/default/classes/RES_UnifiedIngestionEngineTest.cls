@@ -642,11 +642,16 @@ private class RES_UnifiedIngestionEngineTest {
     // ==================================================================
     @IsTest
     static void testBatchScaffoldingAndScheduleHelpers() {
-        // ---- Zero-arg constructor picks the first active layout; start()/finish() ----
+        // ---- Zero-arg constructor / finish() ----
         RES_UnifiedIngestionEngine defaultEngine = new RES_UnifiedIngestionEngine();
-        Database.QueryLocator ql = defaultEngine.start(null);
-        Assert.isNotNull(ql, 'start() should return a query locator for the pending staging rows');
         defaultEngine.finish(null);
+        
+        // ---- start() now requires the import batch ID ----
+        RES_UnifiedIngestionEngine batchEngine = new RES_UnifiedIngestionEngine(LAYOUT_CODE, 'TEST_BATCH_START');
+        
+        Database.QueryLocator ql = batchEngine.start(null);
+        Assert.isNotNull(ql, 'start() should return a query locator for the specified batch');
+        batchEngine.finish(null);
 
         // ---- isNewer(): null candidate, null current, candidate newer, candidate older ----
         Assert.isFalse(RES_UnifiedIngestionEngine.isNewer(null, Date.today()));
