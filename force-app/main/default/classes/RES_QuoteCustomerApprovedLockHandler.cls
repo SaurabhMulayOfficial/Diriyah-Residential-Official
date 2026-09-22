@@ -29,7 +29,14 @@ public without sharing class RES_QuoteCustomerApprovedLockHandler {
         'res_reservation_start_date__c',       // stamped by RES_OpportunityStageUpdateValidation on Reservation
         'contractid',                          // stamped by RES_OpportunityStageUpdateValidation on Reservation
         'res_product_soft_held__c',            // cleared by RES_Product_After_Insert_Update_Product_Management_Flow
-        'res_unit_blocked_start_date__c'       // cleared by RES_Product_After_Insert_Update_Product_Management_Flow
+        'res_unit_blocked_start_date__c',      // cleared by RES_Product_After_Insert_Update_Product_Management_Flow
+        'validationresult'                     // DIR-1777: cleared by the platform's own pricing/calculation engine
+                                                // (e.g. Reprice All, or whatever Create Order depends on) once
+                                                // recalculation succeeds. It's FLS-updateable so the isUpdateable()
+                                                // check below doesn't exempt it on its own, but blocking this write
+                                                // left Customer Approved quotes permanently stuck at
+                                                // CalculationStatus = SaveFailedOrIncomplete, since the engine could
+                                                // never finish clearing its own validation state.
     };
 
     // Fields Salesforce itself mutates on every save regardless of what the user/process touched.
