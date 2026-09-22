@@ -76,33 +76,40 @@ public without sharing class RES_ProductCatalogIntegrationService extends RES_Ba
 
             List<RES_ProductCatalogWrapper.CustomFieldWrapper> customFields = new List<RES_ProductCatalogWrapper.CustomFieldWrapper>();
             
-            customFields.add(
-                new RES_ProductCatalogWrapper.CustomFieldWrapper(
-                    'RES_Name_AR',
-                    pc.RES_Name_AR__c
-                )
-            );
-            customFields.add(
-                new RES_ProductCatalogWrapper.CustomFieldWrapper(
-                    'RES_Geo_Latitude',
-                    String.valueOf(pc.RES_Geo_Latitude__c)
-                )
-            );
-            customFields.add(
-                new RES_ProductCatalogWrapper.CustomFieldWrapper(
-                    'RES_Geo_Longitude',
-                    String.valueOf(pc.RES_Geo_Longitude__c)
-                )
-            );
-            customFields.add(
-                new RES_ProductCatalogWrapper.CustomFieldWrapper(
-                    'RES_Master_Plan',
-                    pc.RES_Master_Plan__c
-                )
-            );
+            if(pc.RES_Name_AR__c != null) {
+                customFields.add(
+                    new RES_ProductCatalogWrapper.CustomFieldWrapper(
+                        'RES_Name_AR',
+                        pc.RES_Name_AR__c
+                    )
+                );
+            }
+            if(pc.RES_Geo_Latitude__c != null) {
+                customFields.add(
+                    new RES_ProductCatalogWrapper.CustomFieldWrapper(
+                        'RES_Geo_Latitude',
+                        String.valueOf(pc.RES_Geo_Latitude__c)
+                    )
+                );
+            }
+            if(pc.RES_Geo_Longitude__c != null) {
+                customFields.add(
+                    new RES_ProductCatalogWrapper.CustomFieldWrapper(
+                        'RES_Geo_Longitude',
+                        String.valueOf(pc.RES_Geo_Longitude__c)
+                    )
+                );
+            }
+            if(pc.RES_Master_Plan__c != null) {
+                customFields.add(
+                    new RES_ProductCatalogWrapper.CustomFieldWrapper(
+                        'RES_Master_Plan',
+                        pc.RES_Master_Plan__c
+                    )
+                );
+            }
 
             w.RES_CustomFields = customFields;
-
             catalogWrapper.add(w);
         }
 
