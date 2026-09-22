@@ -48,9 +48,7 @@ public with sharing class RES_ProductCategoryIntegrationService extends RES_Base
         setHeaders(headers);
         setMaxRetries(maxRetries);
         setRequestMethod(requestMethod);
-        setObjectName('ProductCategory');
         setTimeout(timeout);
-        setRequestName('ProductCategory_Sync');
     }
 
     public String hydrateRequestBody(List<ProductCategory> productCategories, String triggerContext){
@@ -204,8 +202,10 @@ public with sharing class RES_ProductCategoryIntegrationService extends RES_Base
     public static void syncMeasurements(List<RES_Measurement__c> measurements, String requestMethod, String triggerContext){
         RES_ProductCategoryIntegrationService service = new RES_ProductCategoryIntegrationService(requestMethod);
         String body = service.hydrateRequestBodyForMeasurements(measurements, triggerContext);
-
+        service.setObjectName('Measurement');
+        service.setRequestName('Measurement_Sync_Category');
         service.setBody(body);
+        service.setRecordId(String.valueOf(measurements[0].Id));
 
         try{
             RES_IntegrationResponse response = service.sendRequest();
@@ -241,7 +241,9 @@ public with sharing class RES_ProductCategoryIntegrationService extends RES_Base
     public static void syncProductCategories(List<ProductCategory> productCategories, String requestMethod, String triggerContext){
         RES_ProductCategoryIntegrationService service = new RES_ProductCategoryIntegrationService(requestMethod);
         String body = service.hydrateRequestBody(productCategories, triggerContext);
-
+        service.setObjectName('ProductCategory');
+        service.setRequestName('ProductCategory_Sync');
+        service.setRecordId(String.valueOf(productCategories[0].Id));
         service.setBody(body);
 
         try{

@@ -51,6 +51,10 @@ public virtual class RES_BaseIntegrationCalloutService {
         this.request.calloutService = calloutService;
     }
 
+    protected void setRecordId(String recordId){
+        this.request.recordId = recordId;
+    }
+
     public Map<String, String> getHeaders() {
         return request.headers;
     }
@@ -176,7 +180,8 @@ public virtual class RES_BaseIntegrationCalloutService {
                 RES_Headers__c = request.headers != null
                     ? JSON.serialize(request.headers)
                     : null,
-                RES_Callout_Service__c = request.calloutService
+                RES_Callout_Service__c = request.calloutService,
+                RES_Record_Id__c = request.recordId
             );
 
             try{
