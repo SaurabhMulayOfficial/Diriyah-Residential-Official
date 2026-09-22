@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ListView xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>RES_Payment_Plan</fullName>
+    <columns>PRODUCT2.NAME</columns>
+    <columns>RES_Catalog__c</columns>
+    <columns>PRODUCT2.AVAILABILITY_DATE</columns>
+    <columns>PRODUCT2.DISCONTINUED_DATE</columns>
+    <filterScope>Everything</filterScope>
+    <filters>
+        <field>PRODUCT2.RECORD_TYPE</field>
+        <operation>equals</operation>
+        <value>Product2.RES_Residential_Payment_Plan</value>
+    </filters>
+    <label>Residential Payment Plans</label>
+    <sharedTo>
+        <roleAndSubordinates>DevCo</roleAndSubordinates>
+        <roleAndSubordinates>RES_Business_Development_Corporate_CBDO</roleAndSubordinates>
+        <roleAndSubordinates>RES_Finance_Corporate_CFO</roleAndSubordinates>
+    </sharedTo>
+</ListView>
