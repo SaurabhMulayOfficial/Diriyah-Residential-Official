@@ -48,10 +48,47 @@ public without sharing class RES_ProductCatalogIntegrationService extends RES_Ba
         setHeaders(headers);
         setMaxRetries(maxRetries);
         setRequestMethod(requestMethod);
-        setObjectName('ProductCatalog');
         setTimeout(timeout);
-        setRequestName('ProductCatalog_Sync');
+    }
 
+    private static RES_ProductCatalogWrapper buildCatalogWrapper(ProductCatalog pc, String changeIndicator) {
+        RES_ProductCatalogWrapper w = new RES_ProductCatalogWrapper();
+        w.Change_Indicator = changeIndicator;
+        w.EffectiveEndDate = String.valueOf(pc.EffectiveEndDate);
+        w.EffectiveStartDate = String.valueOf(pc.EffectiveStartDate);
+        w.Name = pc.Name;
+        w.RES_BP_Number = pc.RES_BP_Number__c;
+        w.RES_BP_Role = pc.RES_BP_Role__c;
+        w.RES_Business_Entity_Id = pc.RES_Business_Entity_Id__c;
+        w.RES_Company_Code = pc.RES_Company_Code__c;
+        w.RES_Profit_Center = pc.RES_Profit_Center__c;
+        w.RES_Tenancy_Law = pc.RES_Tenancy_Law__c;
+        w.RES_CustomFields = buildCustomFields(pc);
+        return w;
+    }
+
+    private static List<RES_ProductCatalogWrapper.CustomFieldWrapper> buildCustomFields(ProductCatalog pc) {
+        List<RES_ProductCatalogWrapper.CustomFieldWrapper> customFields = new List<RES_ProductCatalogWrapper.CustomFieldWrapper>();
+
+        if (pc.RES_Name_AR__c != null) {
+            customFields.add(new RES_ProductCatalogWrapper.CustomFieldWrapper('RES_Name_AR', pc.RES_Name_AR__c));
+        }
+        if (pc.RES_Geo_Location__c != null) {
+            customFields.add(new RES_ProductCatalogWrapper.CustomFieldWrapper('RES_Geo_Latitude', String.valueOf(pc.RES_Geo_Location__Latitude__s)));
+            customFields.add(new RES_ProductCatalogWrapper.CustomFieldWrapper('RES_Geo_Longitude', String.valueOf(pc.RES_Geo_Location__Longitude__s)));
+        }
+        if (pc.RES_Master_Plan__c != null) {
+            customFields.add(new RES_ProductCatalogWrapper.CustomFieldWrapper('RES_Master_Plan', pc.RES_Master_Plan__c));
+        }
+
+        return customFields;
+    }
+
+    private static String serializeWrapper(List<RES_ProductCatalogWrapper> wrappers) {
+        if (wrappers.size() == 1) {
+            return JSON.serialize(wrappers[0], true);
+        }
+        return JSON.serialize(wrappers, true);
     }
 
     public static String hydrateProductCatalogBody(List<ProductCatalog> catalogs, String triggeringContext){
@@ -62,66 +99,14 @@ public without sharing class RES_ProductCatalogIntegrationService extends RES_Ba
         List<RES_ProductCatalogWrapper> catalogWrapper = new List<RES_ProductCatalogWrapper>();
 
         for(ProductCatalog pc: catalogs){
-            RES_ProductCatalogWrapper w = new RES_ProductCatalogWrapper();
-            w.Change_Indicator = triggeringContext;
-            w.EffectiveEndDate = String.valueOf(pc.EffectiveEndDate);
-            w.EffectiveStartDate = String.valueOf(pc.EffectiveStartDate);
-            w.Name = pc.Name;
-            w.RES_BP_Number = pc.RES_BP_Number__c;
-            w.RES_BP_Role = pc.RES_BP_Role__c;
-            w.RES_Business_Entity_Id = pc.RES_Business_Entity_Id__c;
-            w.RES_Company_Code = pc.RES_Company_Code__c;
-            w.RES_Profit_Center = pc.RES_Profit_Center__c;
-            w.RES_Tenancy_Law = pc.RES_Tenancy_Law__c;
-
-            List<RES_ProductCatalogWrapper.CustomFieldWrapper> customFields = new List<RES_ProductCatalogWrapper.CustomFieldWrapper>();
-            
-            if(pc.RES_Name_AR__c != null) {
-                customFields.add(
-                    new RES_ProductCatalogWrapper.CustomFieldWrapper(
-                        'RES_Name_AR',
-                        pc.RES_Name_AR__c
-                    )
-                );
-            }
-            if(pc.RES_Geo_Location__c != null) {
-                customFields.add(
-                    new RES_ProductCatalogWrapper.CustomFieldWrapper(
-                        'RES_Geo_Latitude',
-                        String.valueOf(pc.RES_Geo_Location__Latitude__s)
-                    )
-                );
-            }
-            if(pc.RES_Geo_Location__c != null) {
-                customFields.add(
-                    new RES_ProductCatalogWrapper.CustomFieldWrapper(
-                        'RES_Geo_Longitude',
-                        String.valueOf(pc.RES_Geo_Location__Longitude__s)
-                    )
-                );
-            }
-            if(pc.RES_Master_Plan__c != null) {
-                customFields.add(
-                    new RES_ProductCatalogWrapper.CustomFieldWrapper(
-                        'RES_Master_Plan',
-                        pc.RES_Master_Plan__c
-                    )
-                );
-            }
-
-            w.RES_CustomFields = customFields;
-            catalogWrapper.add(w);
+            catalogWrapper.add(buildCatalogWrapper(pc, triggeringContext));
         }
 
         if(catalogWrapper.isEmpty()){
             throw new RES_IntegrationException('Empty Catalog Wrapper');
         }
 
-        if(catalogWrapper.size() == 1){
-            return JSON.serialize(catalogWrapper[0], true);
-        }
-
-        return JSON.serialize(catalogWrapper, true);
+        return serializeWrapper(catalogWrapper);
     }
 
     public static String hydrateCatalogWithMeasurements(List<RES_Measurement__c> measurements, String triggeringContext){
@@ -151,18 +136,13 @@ public without sharing class RES_ProductCatalogIntegrationService extends RES_Ba
 
         for(ProductCatalog pc: catalogs){
             if(catalogToMeasurementMapping.containsKey(pc.Id) && !catalogToMeasurementMapping.get(pc.Id).isEmpty()){
-                RES_ProductCatalogWrapper w = new RES_ProductCatalogWrapper();
-                w.Change_Indicator = 'U';
-                w.EffectiveEndDate = String.valueOf(pc.EffectiveEndDate);
-                w.EffectiveStartDate = String.valueOf(pc.EffectiveStartDate);
-                w.Name = pc.Name;
-                w.RES_BP_Number = pc.RES_BP_Number__c;
-                w.RES_BP_Role = pc.RES_BP_Role__c;
-                w.RES_Business_Entity_Id = pc.RES_Business_Entity_Id__c;
-                w.RES_Company_Code = pc.RES_Company_Code__c;
-                w.RES_Profit_Center = pc.RES_Profit_Center__c;
-                w.RES_Tenancy_Law = pc.RES_Tenancy_Law__c;
+                RES_ProductCatalogWrapper w = buildCatalogWrapper(pc, 'U');
 
+                List<RES_ProductCatalogWrapper.CustomFieldWrapper> customFields = buildCustomFields(pc);
+                if(!customFields.isEmpty()){
+                    w.RES_CustomFields = customFields;
+                }
+                
                 List<RES_ProductCatalogWrapper.MeasurementWrapper> measurementsWrapper = new List<RES_ProductCatalogWrapper.MeasurementWrapper>();
 
                 for(RES_Measurement__c m : catalogToMeasurementMapping.get(pc.Id)){
@@ -187,11 +167,7 @@ public without sharing class RES_ProductCatalogIntegrationService extends RES_Ba
             throw new RES_IntegrationException('Empty Request Body: (Measurements w.r.t. Catalog)');
         }
 
-        if(catalogWrapper.size() == 1){
-            return JSON.serialize(catalogWrapper[0], true);
-        }
-
-        return JSON.serialize(catalogWrapper, true);
+        return serializeWrapper(catalogWrapper);
     }
 
     private static Boolean processResponse(
@@ -244,7 +220,9 @@ public without sharing class RES_ProductCatalogIntegrationService extends RES_Ba
     public static void syncProductCatalogs(List<ProductCatalog> catalogs, String requestMethod, String triggeringContext){
         RES_ProductCatalogIntegrationService service = new RES_ProductCatalogIntegrationService(requestMethod);
         String body = hydrateProductCatalogBody(catalogs, triggeringContext);
-
+        service.setRequestName('ProductCatalog_Sync');
+        service.setObjectName('ProductCatalog');
+        service.setRecordId(String.valueOf(catalogs[0].Id));
         service.setBody(body);
 
         try {
@@ -280,8 +258,10 @@ public without sharing class RES_ProductCatalogIntegrationService extends RES_Ba
     public static void syncMeasurementsWithProductCatalog(List<RES_Measurement__c> measurements, String requestMethod, String triggeringContext){
         RES_ProductCatalogIntegrationService service = new RES_ProductCatalogIntegrationService(requestMethod);
         String body = hydrateCatalogWithMeasurements(measurements, triggeringContext);
-
+        service.setRequestName('Measurement_Sync_Catalog');
+        service.setObjectName('Measurement');
         service.setBody(body);
+        service.setRecordId(String.valueOf(measurements[0].Id));
 
         try {
             RES_IntegrationResponse response = service.sendRequest();

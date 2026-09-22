@@ -13,6 +13,7 @@ public with sharing class RES_IntegrationRequestEventService {
 
     private static final String PRODUCT_CATEGORY_INTEGRATION = 'ProductCategory_Sync';
     private static final String MEASUREMENT_INTEGRATION = 'Measurement_Sync';
+    private static final String MEASUREMENT_CATALOG_INTEGRATION = 'Measurement_Sync_Catalog';
     private static final String PRODUCT_CATALOG_INTEGRATION = 'ProductCatalog_Sync';
     
     public RES_IntegrationRequestEventService() {}
@@ -100,6 +101,43 @@ public with sharing class RES_IntegrationRequestEventService {
             if(!measurementIds.isEmpty()){
                 List<sObject> records = (List<sObject>)new RES_MeasurementDAOLayer().getMeasurementByIds(measurementIds);
                 enqueueService(MEASUREMENT_INTEGRATION, records, 'U', 'GET');
+            }
+        }
+
+        String measurementCatalogIntegrationKey_onInsert = 'GET' + MEASUREMENT_CATALOG_INTEGRATION + 'I';
+        String measurementCatalogIntegrationKey_onUpdate = 'GET' + MEASUREMENT_CATALOG_INTEGRATION + 'U';
+
+        if(results.containsKey(measurementCatalogIntegrationKey_onInsert) && results.get(measurementCatalogIntegrationKey_onInsert).size() > 0){
+            Set<Id> measurementIds = new Set<Id>();
+            for(RES_Integration_Request__e e: results.get(measurementCatalogIntegrationKey_onInsert)){
+                if(String.isBlank(e.RES_RecordIds__c))continue;
+                for (String recordId : e.RES_RecordIds__c.split(',')) {
+                    if (String.isNotBlank(recordId)) {
+                        measurementIds.add((Id) recordId.trim());
+                    }
+                }
+            }
+
+            if(!measurementIds.isEmpty()){
+                List<sObject> records = (List<sObject>)new RES_MeasurementDAOLayer().getMeasurementByIds(measurementIds);
+                enqueueService(MEASUREMENT_CATALOG_INTEGRATION, records, 'I', 'GET');
+            }
+        }
+
+        if(results.containsKey(measurementCatalogIntegrationKey_onUpdate) && results.get(measurementCatalogIntegrationKey_onUpdate).size() > 0){
+            Set<Id> measurementIds = new Set<Id>();
+            for(RES_Integration_Request__e e: results.get(measurementCatalogIntegrationKey_onUpdate)){
+                if(String.isBlank(e.RES_RecordIds__c))continue;
+                for (String recordId : e.RES_RecordIds__c.split(',')) {
+                    if (String.isNotBlank(recordId)) {
+                        measurementIds.add((Id) recordId.trim());
+                    }
+                }
+            }
+
+            if(!measurementIds.isEmpty()){
+                List<sObject> records = (List<sObject>)new RES_MeasurementDAOLayer().getMeasurementByIds(measurementIds);
+                enqueueService(MEASUREMENT_CATALOG_INTEGRATION, records, 'U', 'GET');
             }
         }
 

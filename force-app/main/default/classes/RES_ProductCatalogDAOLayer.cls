@@ -32,7 +32,7 @@ public without sharing class RES_ProductCatalogDAOLayer extends RES_BaseDAOLayer
             '       EffectiveStartDate, EffectiveEndDate, RES_Geo_Latitude__c, RES_Geo_Longitude__c, ' +
             '       RES_Last_Sync_DateTime__c, RES_Master_Plan__c, RES_Measurement_Amount__c, ' +
             '       RES_Measurement_Type__c, RES_Measurement_Valid_From__c, RES_Measurement_Valid_To__c, ' +
-            '       RES_Name_AR__c, RES_Profit_Center__c, RES_Swift__c, RES_Tenancy_Law__c ' +
+            '       RES_Name_AR__c, RES_Profit_Center__c, RES_Geo_Location__Latitude__s, RES_Geo_Location__Longitude__s, RES_Swift__c, RES_Tenancy_Law__c ' +
             'FROM ProductCatalog ' +
             'WHERE Id IN :recordIds';
 

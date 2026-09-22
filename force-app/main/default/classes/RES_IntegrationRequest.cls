@@ -8,6 +8,7 @@ public class RES_IntegrationRequest {
     public Integer timeout;
     public String objectName;
     public String calloutService;
+    public String recordId;
     
     public RES_IntegrationRequest(){
 

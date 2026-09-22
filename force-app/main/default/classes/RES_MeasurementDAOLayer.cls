@@ -17,13 +17,13 @@ public without sharing class RES_MeasurementDAOLayer extends RES_BaseDAOLayer {
 
     public List<RES_Measurement__c> getMeasurementsByCategoryId(Set<Id> categoryIds){
         Map<String, Object> bindVars = new Map<String, Object>{ 'categoryIds' => categoryIds };
-        String soql = 'SELECT Id, RES_Measurement_From__c, RES_Measurement_To__c, RES_Category__c, RES_Measurement_Type__c, RES_Unit_Of_Measurement__c, RES_Product__c FROM RES_Measurement__c WHERE RES_Category__c IN :categoryIds';
+        String soql = 'SELECT Id, RES_Catalog__c, RES_Measurement_From__c, RES_Measurement_To__c, RES_Category__c, RES_Measurement_Type__c, RES_Unit_Of_Measurement__c, RES_Product__c FROM RES_Measurement__c WHERE RES_Category__c IN :categoryIds';
         return (List<RES_Measurement__c>) executeQuery(soql, '', false, bindVars, AccessLevel.SYSTEM_MODE);
     }
 
     public List<RES_Measurement__c> getMeasurementByIds(Set<Id> recordIds){
         Map<String, Object> bindVars = new Map<String, Object>{ 'recordIds' => recordIds };
-        String soql = 'SELECT Id, RES_Measurement_From__c, RES_Measurement_To__c, RES_Measurement_Amount__c, RES_Category__c, RES_Measurement_Type__c, RES_Unit_Of_Measurement__c, RES_Product__c FROM RES_Measurement__c WHERE Id IN :recordIds';
+        String soql = 'SELECT Id, RES_Measurement_From__c, RES_Catalog__c, RES_Measurement_To__c, RES_Measurement_Amount__c, RES_Category__c, RES_Measurement_Type__c, RES_Unit_Of_Measurement__c, RES_Product__c FROM RES_Measurement__c WHERE Id IN :recordIds';
         return (List<RES_Measurement__c>) executeQuery(soql, '', false, bindVars, AccessLevel.SYSTEM_MODE);
     }
 }

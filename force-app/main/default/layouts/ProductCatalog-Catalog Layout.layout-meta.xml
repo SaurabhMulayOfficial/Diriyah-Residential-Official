@@ -153,6 +153,18 @@
         <style>CustomLinks</style>
     </layoutSections>
     <relatedLists>
+        <fields>NAME</fields>
+        <fields>RES_Category__c</fields>
+        <fields>RES_Measurement_Amount__c</fields>
+        <fields>RES_Measurement_To__c</fields>
+        <fields>RES_Measurement_From__c</fields>
+        <fields>RES_Measurement_Type__c</fields>
+        <fields>RES_Product__c</fields>
+        <fields>RES_Unit_Of_Measurement__c</fields>
+        <fields>RES_Last_Sync_DateTime__c</fields>
+        <relatedList>RES_Measurement__c.RES_Catalog__c</relatedList>
+    </relatedLists>
+    <relatedLists>
         <fields>Name</fields>
         <fields>Description</fields>
         <fields>ParentCategory</fields>

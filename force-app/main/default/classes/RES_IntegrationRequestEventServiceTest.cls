@@ -18,9 +18,10 @@
 @IsTest
 private class RES_IntegrationRequestEventServiceTest {
 
-    private static final String PC_SERVICE             = 'ProductCategory_Sync';
-    private static final String MEASUREMENT_SERVICE    = 'Measurement_Sync';
-    private static final String PRODUCT_CATALOG_SERVICE = 'ProductCatalog_Sync';
+    private static final String PC_SERVICE                   = 'ProductCategory_Sync';
+    private static final String MEASUREMENT_SERVICE          = 'Measurement_Sync';
+    private static final String MEASUREMENT_CATALOG_SERVICE  = 'Measurement_Sync_Catalog';
+    private static final String PRODUCT_CATALOG_SERVICE      = 'ProductCatalog_Sync';
 
     private static RES_IntegrationTestDataFactory.EndpointRoutingMock mock;
 
@@ -284,6 +285,60 @@ private class RES_IntegrationRequestEventServiceTest {
         );
 
         System.assertEquals(0, enqueued, 'No job when the DAO returns no ProductCatalog records');
+    }
+    
+    @IsTest
+    static void handleIntegrations_measurementCatalogInsert_enqueuesJob() {
+        if (!integrationConfigured()) { return; }
+        ProductCatalog catalog = RES_IntegrationTestDataFactory.createCatalog();
+        List<RES_Measurement__c> measurements =
+            RES_IntegrationTestDataFactory.createMeasurementsForCatalog(catalog.Id, 2);
+
+        Integer enqueued = handleAndCountJobs(
+            new List<RES_Integration_Request__e>{ buildEvent(MEASUREMENT_CATALOG_SERVICE, 'I', joinIds(measurements)) }
+        );
+
+        System.assertEquals(1, enqueued, 'One queueable should be enqueued for Measurement_Sync_Catalog insert');
+    }
+
+    @IsTest
+    static void handleIntegrations_measurementCatalogUpdate_enqueuesJob() {
+        if (!integrationConfigured()) { return; }
+        ProductCatalog catalog = RES_IntegrationTestDataFactory.createCatalog();
+        List<RES_Measurement__c> measurements =
+            RES_IntegrationTestDataFactory.createMeasurementsForCatalog(catalog.Id, 2);
+
+        Integer enqueued = handleAndCountJobs(
+            new List<RES_Integration_Request__e>{ buildEvent(MEASUREMENT_CATALOG_SERVICE, 'U', joinIds(measurements)) }
+        );
+
+        System.assertEquals(1, enqueued, 'One queueable should be enqueued for Measurement_Sync_Catalog update');
+    }
+
+    @IsTest
+    static void handleIntegrations_measurementCatalogMultipleEvents_enqueuesSingleJob() {
+        if (!integrationConfigured()) { return; }
+        ProductCatalog catalog = RES_IntegrationTestDataFactory.createCatalog();
+        List<RES_Measurement__c> measurements =
+            RES_IntegrationTestDataFactory.createMeasurementsForCatalog(catalog.Id, 2);
+
+        List<RES_Integration_Request__e> events = new List<RES_Integration_Request__e>{
+            buildEvent(MEASUREMENT_CATALOG_SERVICE, 'I', (String) measurements[0].Id),
+            buildEvent(MEASUREMENT_CATALOG_SERVICE, 'I', measurements[0].Id + ' , ' + measurements[1].Id + ',')
+        };
+
+        System.assertEquals(1, handleAndCountJobs(events), 'Multiple Measurement_Sync_Catalog insert events should batch into one job');
+    }
+
+    @IsTest
+    static void handleIntegrations_measurementCatalogNoMatchingRecord_enqueuesNothing() {
+        Id fakeId = Id.valueOf(RES_Measurement__c.SObjectType.getDescribe().getKeyPrefix() + '000000000001');
+
+        Integer enqueued = handleAndCountJobs(
+            new List<RES_Integration_Request__e>{ buildEvent(MEASUREMENT_CATALOG_SERVICE, 'I', (String) fakeId) }
+        );
+
+        System.assertEquals(0, enqueued, 'No job when the DAO returns no Measurement_Sync_Catalog records');
     }
 
     @IsTest
