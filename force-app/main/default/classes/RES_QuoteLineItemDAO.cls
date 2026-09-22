@@ -123,6 +123,19 @@ public Without sharing class RES_QuoteLineItemDAO extends RES_BaseDAOLayer {
         );
     }
 
+    // DIR-1777: lightweight query (just Id/QuoteId/Quantity) used to detect which quotes have a
+    // swap's negative-quantity "outgoing product" line among their own line items.
+    public List<QuoteLineItem> getQuoteLineItemQuantitiesByQuoteIds(Set<Id> quoteIds){
+        Map<String, Object> bindVars = new Map<String, Object>();
+        bindVars.put('quoteIds', quoteIds);
+
+        String soql = 'SELECT Id, QuoteId, Quantity ' +
+                    'FROM QuoteLineItem ' +
+                    'WHERE QuoteId IN :quoteIds';
+
+        return (List<QuoteLineItem>) executeQuery(soql, '', false, bindVars, AccessLevel.SYSTEM_MODE);
+    }
+
     public List<QuoteLineItem> getActiveQuoteLineItemsByProductIdsExcludingOpportunities(
         Set<Id> productIds, Set<Id> excludedOpportunityIds
         ) {

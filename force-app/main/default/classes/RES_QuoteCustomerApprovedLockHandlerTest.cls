@@ -69,7 +69,8 @@ private class RES_QuoteCustomerApprovedLockHandlerTest {
             'RES_Unit_Blocked_End_Date__c' => Date.today().addDays(1),
             'RES_Unit_Blocked_Start_Date__c' => Date.today(),
             'RES_Approval_Request_Remarks__c' => 'remark',
-            'RES_Product_Soft_Held__c' => false
+            'RES_Product_Soft_Held__c' => false,
+            'ValidationResult' => 'TransactionIncomplete'
         };
 
         Test.startTest();
