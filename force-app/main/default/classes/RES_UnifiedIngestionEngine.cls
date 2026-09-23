@@ -1274,10 +1274,13 @@ public with sharing class RES_UnifiedIngestionEngine implements Database.Batchab
         Id classAttrId = classAttrByAttrId.get(selectorAttrId);
         if (classAttrId == null) return;
 
-        Set<Id> productIds = new Set<Id>();
-        for (String code : priceByCodeAndSelector.keySet()) productIds.add(productIdByCode.get(code));
-
-        ensureSelectorOnProducts(productIds, selectorAttrId, classAttrId, layout, defaultSelector);
+        // Products based on this classification inherit the selector attribute from the
+        // classification, so the price-impacting flag and default belong on the
+        // ProductClassificationAttr, not on a per-product ProductAttributeDefinition. Creating
+        // a ProductAttributeDefinition here would make every product's Pricing Option attribute
+        // show as "Overridden" instead of "Inherited" in Product Configurator, and diverge from
+        // the classification's own settings (e.g. IsHidden) since it is never copied across.
+        ensureSelectorPriceImpacting(classAttrId, defaultSelector);
 
         Map<String, AttributeBasedAdjRule> ruleByKey = new Map<String, AttributeBasedAdjRule>();
         Set<String> wantedRuleNames = new Set<String>();
@@ -1528,34 +1531,31 @@ public with sharing class RES_UnifiedIngestionEngine implements Database.Batchab
         return catId;
     }
 
+    /**
+     * Products based on the classification inherit the selector attribute automatically, so
+     * this only keeps the classification-level ProductClassificationAttr's price-impacting
+     * flag and default value in sync - it never creates a per-product
+     * ProductAttributeDefinition, which would turn inheritance into an override.
+     * (AttributeCategoryId is createable but not updateable on ProductClassificationAttr, so
+     * it is set only at creation time by ensureClassificationAttrs, not touched here.)
+     */
     @TestVisible
-    private void ensureSelectorOnProducts(
-        Set<Id> productIds,
-        Id selectorAttrId,
-        Id classAttrId,
-        RES_IngestionConfig.Layout layout,
-        String defaultSelector
-    ) {
-        Set<Id> have = new Set<Id>();
-        List<ProductAttributeDefinition> existingPads = new RES_ProductAttributeDefinitionDAOLayer().getProductAttributeDefinitionsByAttrId(productIds, selectorAttrId);
-        for (ProductAttributeDefinition p : existingPads) {
-            have.add(p.Product2Id);
-        }
-        List<ProductAttributeDefinition> toAdd = new List<ProductAttributeDefinition>();
-        for (Id pid : productIds) {
-            if (pid == null || have.contains(pid)) continue;
-            ProductAttributeDefinition pad = new ProductAttributeDefinition(
-                Name = truncate(layout.selectorAttribute, 255),
-                Product2Id = pid, AttributeDefinitionId = selectorAttrId,
-                ProductClassificationAttributeId = classAttrId,
-                DefaultValue = defaultSelector, Sequence = 1, IsPriceImpacting = true);
-            if (selectorCategoryId != null) pad.AttributeCategoryId = selectorCategoryId;
-            toAdd.add(pad);
-        }
-        if (toAdd.isEmpty()) return;
-        for (Database.SaveResult sr : Database.insert(toAdd, false)) {
-            if (!sr.isSuccess()) recordError('Selector ProductAttributeDefinition: ' + sr.getErrors()[0].getMessage());
-        }
+    private void ensureSelectorPriceImpacting(Id classAttrId, String defaultSelector) {
+        if (classAttrId == null) return;
+        List<ProductClassificationAttr> found =
+            new RES_ProductClassificationAttrDAOLayer().getClassAttrsByIds(new Set<Id>{ classAttrId });
+        if (found.isEmpty()) return;
+        ProductClassificationAttr current = found[0];
+
+        Boolean needsUpdate = current.IsPriceImpacting != true
+            || (String.isNotBlank(defaultSelector) && defaultSelector != current.DefaultValue);
+        if (!needsUpdate) return;
+
+        ProductClassificationAttr toUpdate = new ProductClassificationAttr(Id = classAttrId, IsPriceImpacting = true);
+        if (String.isNotBlank(defaultSelector)) toUpdate.DefaultValue = defaultSelector;
+
+        Database.SaveResult sr = Database.update(toUpdate, false);
+        if (!sr.isSuccess()) recordError('ProductClassificationAttr (selector): ' + sr.getErrors()[0].getMessage());
     }
 
     private void syncMeasurements(
