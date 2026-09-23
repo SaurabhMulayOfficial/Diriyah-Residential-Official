@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<SharingRules xmlns="http://soap.sforce.com/2006/04/metadata">
+    <sharingCriteriaRules>
+        <fullName>Share_All_Records_With_CBDO_Role</fullName>
+        <label>Share All Records With CBDO Role</label>
+        <accessLevel>Read</accessLevel>
+        <criteriaItems>
+            <field>Name</field>
+            <operation>notEqual</operation>
+            <value></value>
+        </criteriaItems>
+        <sharedTo>
+            <roleAndSubordinates>RES_Business_Development_Corporate_CBDO</roleAndSubordinates>
+        </sharedTo>
+    </sharingCriteriaRules>
+    <sharingCriteriaRules>
+        <fullName>Share_All_Records_With_DevCo_Role</fullName>
+        <label>Share All Records With DevCo Role</label>
+        <accessLevel>Read</accessLevel>
+        <criteriaItems>
+            <field>Name</field>
+            <operation>notEqual</operation>
+            <value></value>
+        </criteriaItems>
+        <sharedTo>
+            <roleAndSubordinates>DevCo</roleAndSubordinates>
+        </sharedTo>
+    </sharingCriteriaRules>
+    <sharingCriteriaRules>
+        <fullName>Share_All_Records_With_CFO_Role</fullName>
+        <label>Share All Records With CFO Role</label>
+        <accessLevel>Read</accessLevel>
+        <criteriaItems>
+            <field>Name</field>
+            <operation>notEqual</operation>
+            <value></value>
+        </criteriaItems>
+        <sharedTo>
+            <roleAndSubordinates>RES_Finance_Corporate_CFO</roleAndSubordinates>
+        </sharedTo>
+    </sharingCriteriaRules>
+</SharingRules>

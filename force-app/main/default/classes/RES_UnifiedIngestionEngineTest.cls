@@ -264,10 +264,25 @@ private class RES_UnifiedIngestionEngineTest {
             SELECT COUNT() FROM AttributePicklistValue WHERE PicklistId = :selectorDefs[0].PicklistId
         ], 'Option 1/2/3 should all be added to the picklist');
 
-        Assert.areEqual(1, [
+        // The selector attribute must be INHERITED from the classification, not overridden per
+        // product: no ProductAttributeDefinition should exist for it on any product, and the
+        // classification-level ProductClassificationAttr should carry the price-impacting flag
+        // and the primary condition's selector value as its default.
+        Assert.areEqual(0, [
             SELECT COUNT() FROM ProductAttributeDefinition
-            WHERE Product2Id = :unit100.Id AND AttributeDefinitionId = :selectorDefs[0].Id AND DefaultValue = 'Option 1'
-        ], 'Selector attribute should default to the primary conditions selector value');
+            WHERE AttributeDefinitionId = :selectorDefs[0].Id
+        ], 'Selector attribute must be inherited from the classification, never overridden per product');
+
+        List<ProductClassificationAttr> selectorClassAttrs = [
+            SELECT DefaultValue, IsPriceImpacting
+            FROM ProductClassificationAttr
+            WHERE AttributeDefinitionId = :selectorDefs[0].Id
+        ];
+        Assert.areEqual(1, selectorClassAttrs.size());
+        Assert.areEqual('Option 1', selectorClassAttrs[0].DefaultValue,
+            'Classification attribute should default to the primary condition\'s selector value');
+        Assert.isTrue(selectorClassAttrs[0].IsPriceImpacting,
+            'Classification attribute should be marked price-impacting so it drives the adjustment');
 
         // ---- Attribute-based adjustment rules/conditions/adjustments ----
         List<AttributeBasedAdjRule> rules = [
