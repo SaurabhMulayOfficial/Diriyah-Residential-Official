@@ -3,6 +3,19 @@
     <apiVersion>66.0</apiVersion>
     <areMetricsLoggedToDataCloud>false</areMetricsLoggedToDataCloud>
     <assignments>
+        <name>Assign_Payment_Plan_Remarks</name>
+        <label>Assign Payment Plan Remarks</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignmentItems>
+            <assignToReference>$Record.RES_Approval_Request_Remarks__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>Get_Payment_Plan.RES_Payment_Plan_Submission_Comment__c</elementReference>
+            </value>
+        </assignmentItems>
+    </assignments>
+    <assignments>
         <name>Assign_Quote_Remarks</name>
         <label>Assign Quote Remarks</label>
         <locationX>0</locationX>
@@ -98,6 +111,21 @@
             </connector>
             <label>Yes, Quote</label>
         </rules>
+        <rules>
+            <name>Yes_Product2</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.RelatedRecordObjectName</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Product2</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Get_Payment_Plan</targetReference>
+            </connector>
+            <label>Yes, Product2</label>
+        </rules>
     </decisions>
     <decisions>
         <name>If_soft_Hold_Approvals</name>
@@ -186,6 +214,27 @@
         </filters>
         <getFirstRecordOnly>true</getFirstRecordOnly>
         <object>Lead</object>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
+    <recordLookups>
+        <name>Get_Payment_Plan</name>
+        <label>Get Payment Plan</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Assign_Payment_Plan_Remarks</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Id</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>$Record.RelatedRecordId</elementReference>
+            </value>
+        </filters>
+        <getFirstRecordOnly>true</getFirstRecordOnly>
+        <object>Product2</object>
         <storeOutputAutomatically>true</storeOutputAutomatically>
     </recordLookups>
     <recordLookups>

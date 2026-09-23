@@ -3,6 +3,10 @@
     <description>Permission Set for Finance - Approver - Accounts Receivable</description>
     <customPermissions>
         <enabled>true</enabled>
+        <name>RES_AR_Payment_Plan_Unit_Override</name>
+    </customPermissions>
+    <customPermissions>
+        <enabled>true</enabled>
         <name>RES_Manager_Dashboard_Visibility</name>
     </customPermissions>
     <customPermissions>
@@ -17,11 +21,6 @@
     <fieldPermissions>
         <editable>false</editable>
         <field>Product2.RES_Approval_Status__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>false</editable>
-        <field>Product2.RES_Catalog__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
