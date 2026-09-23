@@ -41,14 +41,6 @@
         <apexClass>RES_ProductUpdateNotificationController</apexClass>
         <enabled>true</enabled>
     </classAccesses>
-    <classAccesses>
-        <apexClass>RES_PaymentPlanConfiguratorService</apexClass>
-        <enabled>true</enabled>
-    </classAccesses>
-    <classAccesses>
-        <apexClass>RES_PaymentPlanConfiguratorServiceTest</apexClass>
-        <enabled>true</enabled>
-    </classAccesses>
     <fieldPermissions>
         <editable>false</editable>
         <field>RES_Measurement__c.RES_Last_Sync_DateTime__c</field>
@@ -2823,10 +2815,6 @@
         <field>Product2.RES_Payment_Plan_Modified_Since_Approval__c</field>
         <readable>true</readable>
     </fieldPermissions>
-    <flowAccesses>
-        <enabled>true</enabled>
-        <flow>RES_Create_Payment_Plan</flow>
-    </flowAccesses>
     <hasActivationRequired>false</hasActivationRequired>
     <label>Diriyah Residential – Contract Operations Specialist Permission Set</label>
     <license>Salesforce</license>
