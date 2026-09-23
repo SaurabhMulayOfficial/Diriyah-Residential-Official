@@ -125,6 +125,8 @@ jobs:
           echo "BASE: $BASE_SHA"
           echo "HEAD: $HEAD_SHA"
 
+          mkdir -p delta
+
           sf sgd source delta \
             --from "$BASE_SHA" \
             --to "$HEAD_SHA" \
@@ -226,6 +228,8 @@ jobs:
           BASE_SHA: ${{ github.event.pull_request.base.sha }}
           HEAD_SHA: ${{ github.event.pull_request.head.sha }}
         run: |
+        
+          mkdir -p delta
           sf sgd source delta \
             --from "$BASE_SHA" \
             --to "$HEAD_SHA" \
