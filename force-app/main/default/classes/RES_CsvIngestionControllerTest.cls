@@ -425,21 +425,24 @@ private class RES_CsvIngestionControllerTest {
     @IsTest
     static void testGetJobStatus() {
         setUpCallouts();
-
+        String stagingBatchId = 'TEST_BATCH_STATUS'; 
         RES_Product_Staging__c stg = new RES_Product_Staging__c(
             Name = 'Test Staging',
-            RES_Batch_Id__c = '707000000000000AAA',
+            RES_Batch_Id__c = stagingBatchId,
             RES_Processing_Status__c = 'Pending'
         );
         insert stg;
-
+    
         Test.startTest();
-        Id jobId = Database.executeBatch(new RES_UnifiedIngestionEngine());
-        
-        RES_CsvIngestionController.JobStatus status = 
-            RES_CsvIngestionController.getJobStatus(jobId, '707000000000000AAA');
+    
+        // Use a separate batch ID so the test batch does not process
+        // the staging record we are testing for status counting.
+        Id jobId = Database.executeBatch(new RES_UnifiedIngestionEngine('RESIDENTIAL_SALES', 'TEST_BATCH_RUNNER'));
+    
+        RES_CsvIngestionController.JobStatus status = RES_CsvIngestionController.getJobStatus(jobId, stagingBatchId);
+    
         Test.stopTest();
-
+    
         Assert.isNotNull(status, 'JobStatus should be returned');
         Assert.areEqual(1, status.stagingPending, 'Should count 1 pending staging record');
     }

@@ -4,6 +4,7 @@
 public with sharing class RES_UnifiedIngestionEngine implements Database.Batchable<sObject>, Database.Stateful {
 
     private final String layoutCode;
+    private final String batchId;
 
     private Set<String> newProductCodes = new Set<String>();
     private Map<String, Id> catalogIdByCode  = new Map<String, Id>();
@@ -47,20 +48,30 @@ public with sharing class RES_UnifiedIngestionEngine implements Database.Batchab
     private static final String F_LAND            = 'RES_Land__c';
     private static final String F_PARAMETER_1     = 'RES_Parameter_1__c';
 
+    public RES_UnifiedIngestionEngine(String layoutCode, String batchId) {
+        this.layoutCode = layoutCode;
+        this.batchId   = batchId;
+    }
+
+    // Retained for existing tests/callers that construct the engine with only layoutCode.
+    // Production imports should use the two-argument constructor so the Batch is scoped
+    // to the current CSV import.
     public RES_UnifiedIngestionEngine(String layoutCode) {
         this.layoutCode = layoutCode;
+        this.batchId   = null;
     }
 
     public RES_UnifiedIngestionEngine() {
         List<RES_IngestionConfig.Layout> layouts = RES_IngestionConfig.activeLayouts();
         this.layoutCode = layouts.isEmpty() ? null : layouts[0].code;
+        this.batchId   = null;
     }
 
-    public Database.QueryLocator start(Database.BatchableContext bc) {
-        return new RES_ProductStagingDAOLayer().getPendingStagingRecordsBatch();
+    public Database.QueryLocator start(Database.BatchableContext bc) {        
+        return new RES_ProductStagingDAOLayer().getPendingStagingRecordsBatch(batchId);
     }
 
-    public void execute(Database.BatchableContext bc, List<RES_Product_Staging__c> scope) {
+    public void execute(Database.BatchableContext bc, List<RES_Product_Staging__c> scope) {      
         Map<Id, List<String>> rowErrors = new Map<Id, List<String>>();
         for (RES_Product_Staging__c stg : scope) {
             rowErrors.put(stg.Id, new List<String>());
@@ -565,19 +576,46 @@ public with sharing class RES_UnifiedIngestionEngine implements Database.Batchab
     }
 
     private void finalizeStagingRows(List<RES_Product_Staging__c> scope, Map<Id, List<String>> rowErrors) {
+        List<RES_Product_Staging__c> updates = new List<RES_Product_Staging__c>();
         for (RES_Product_Staging__c stg : scope) {
             List<String> errs = rowErrors.get(stg.Id);
+            RES_Product_Staging__c updateRow = new RES_Product_Staging__c(Id = stg.Id);
+    
             if (errs != null && !errs.isEmpty()) {
-                stg.RES_Processing_Status__c = 'Error';
-                stg.RES_Error_Log__c = truncate(String.join(errs, '\n'), 32768);
-                totalRowsErrored++;
+                updateRow.RES_Processing_Status__c = 'Error';
+                updateRow.RES_Error_Log__c =
+                    truncate(String.join(errs, '\n'), 32768);
             } else {
-                stg.RES_Processing_Status__c = 'Completed';
-                stg.RES_Error_Log__c = null;
-                totalRowsCompleted++;
+                updateRow.RES_Processing_Status__c = 'Completed';
+                updateRow.RES_Error_Log__c = null;
+            }  
+            updates.add(updateRow);
+        }
+    
+        if (updates.isEmpty()) {
+            System.debug('No staging rows to finalize.');
+            return;
+        }
+    
+        Database.SaveResult[] results = Database.update(updates, false);
+    
+        for (Integer i = 0; i < results.size(); i++) {    
+            if (results[i].isSuccess()) {    
+                String finalStatus = String.valueOf(updates[i].RES_Processing_Status__c);
+    
+                if (finalStatus == 'Completed') {
+                    totalRowsCompleted++;
+                } else {
+                    totalRowsErrored++;
+                }    
+            } else {   
+                for (Database.Error err : results[i].getErrors()) {
+                    String msg = 'STAGING UPDATE FAILED: ' + updates[i].Id +
+                    ' | StatusCode=' + err.getStatusCode() + ' | Message=' + err.getMessage();
+                    errorSamples.add(msg);
+                }
             }
         }
-        Database.update(scope, false);
     }
 
     private void applyTargetMaps(

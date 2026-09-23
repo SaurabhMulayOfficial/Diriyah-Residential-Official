@@ -242,16 +242,21 @@ public with sharing class RES_CsvIngestionController {
         }
         if (toStage.isEmpty()) return result;
 
-        // The batch is enqueued only now that at least one row will be staged, so a file whose
-        // every row failed validation does not leave a job running over nothing. It is still
-        // enqueued before the insert so its Id can be stamped in the same DML: a batch starts
-        // only after this transaction commits, so the rows are always there when it queries.
-        Id jobId       = Database.executeBatch(new RES_UnifiedIngestionEngine(layoutCode), BATCH_SIZE);
-        result.jobId   = jobId;
-        result.batchId = String.valueOf(jobId);
-        for (SObject stg : toStage) stg.put('RES_Batch_Id__c', result.batchId);
+        // Generate a readable, timestamp-based import ID.
+        // Example: BATCH_1758582400000
+        // This ID identifies the CSV import and is intentionally separate from AsyncApexJob.Id.
+        String importBatchId = 'BATCH_' + String.valueOf(Datetime.now().getTime());
 
+        for (SObject stg : toStage) {
+            stg.put('RES_Batch_Id__c', importBatchId);
+        }
+
+        // Insert staging records FIRST so the Batch is always scoped to records that
+        // have already been committed when the asynchronous job starts.
         List<Database.SaveResult> saves = Database.insert(toStage, false);
+
+        result.batchId = importBatchId;
+
         for (Integer i = 0; i < saves.size(); i++) {
             if (saves[i].isSuccess()) {
                 result.rowsInserted++;
@@ -266,6 +271,17 @@ public with sharing class RES_CsvIngestionController {
             }
         }
         result.errors.addAll(rowErrors);
+
+        // Start the Batch only after staging records have been inserted.
+        // The Batch receives the importBatchId and therefore processes only this upload.
+        if (result.rowsInserted > 0) {
+            Id jobId = Database.executeBatch(
+                new RES_UnifiedIngestionEngine(layoutCode, importBatchId),
+                BATCH_SIZE
+            );
+            result.jobId = jobId;
+        }
+
         return result;
     }
 
