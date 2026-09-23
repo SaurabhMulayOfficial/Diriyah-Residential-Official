@@ -292,6 +292,10 @@ public with sharing class RES_UnifiedIngestionEngine implements Database.Batchab
 
             applyTargetMaps(p, 'Product2', rows, isNew, rowErrors);
 
+            if (!isNew) {
+                p.RES_Update_Requested__c = true;
+            }
+
             for (RES_Product_Staging__c row : rows) {
                 Id catalogId = catalogIdByCode.get(catalogCode(row));
                 if (catalogId != null) { p.RES_Business_Entity__c = catalogId; break; }
@@ -359,7 +363,7 @@ public with sharing class RES_UnifiedIngestionEngine implements Database.Batchab
             toInsert.add(new ProductDisqualification(
                 ProductId         = productId,
                 EffectiveFromDate = today,
-                EffectiveToDate   = today.addYears(3),
+                EffectiveToDate   = Date.newInstance(2099, 12, 31),
                 RES_Unit_Status__c = 'Draft'));
         }
         for (Database.SaveResult sr : Database.insert(toInsert, false)) {
