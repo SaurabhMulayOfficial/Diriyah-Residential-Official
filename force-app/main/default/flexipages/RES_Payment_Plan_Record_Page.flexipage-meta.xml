@@ -12,6 +12,53 @@
                         <valueListItems>
                             <value>Clone</value>
                         </valueListItems>
+                        <valueListItems>
+                            <value>Product2.RES_Submit_For_Approval</value>
+                            <visibilityRule>
+                                <booleanFilter>1 AND 2 AND (3 OR 4)</booleanFilter>
+                                <criteria>
+                                    <leftValue>{!Record.RES_Approval_Status__c}</leftValue>
+                                    <operator>NE</operator>
+                                    <rightValue>Pending Approval</rightValue>
+                                </criteria>
+                                <criteria>
+                                    <leftValue>{!Record.RES_Payment_Plan_Approval_Stage__c}</leftValue>
+                                    <operator>NE</operator>
+                                    <rightValue>Pending Deactivation Approval</rightValue>
+                                </criteria>
+                                <criteria>
+                                    <leftValue>{!Record.RES_Approval_Status__c}</leftValue>
+                                    <operator>NE</operator>
+                                    <rightValue>Approved</rightValue>
+                                </criteria>
+                                <criteria>
+                                    <leftValue>{!Record.RES_Payment_Plan_Modified_Since_Approval__c}</leftValue>
+                                    <operator>EQUAL</operator>
+                                    <rightValue>true</rightValue>
+                                </criteria>
+                            </visibilityRule>
+                        </valueListItems>
+                        <valueListItems>
+                            <value>Product2.RES_Request_Deactivation</value>
+                            <visibilityRule>
+                                <booleanFilter>1 AND 2 AND 3</booleanFilter>
+                                <criteria>
+                                    <leftValue>{!Record.RES_Approval_Status__c}</leftValue>
+                                    <operator>EQUAL</operator>
+                                    <rightValue>Approved</rightValue>
+                                </criteria>
+                                <criteria>
+                                    <leftValue>{!Record.RES_Payment_Plan_Approval_Stage__c}</leftValue>
+                                    <operator>NE</operator>
+                                    <rightValue>Pending Deactivation Approval</rightValue>
+                                </criteria>
+                                <criteria>
+                                    <leftValue>{!Record.IsActive}</leftValue>
+                                    <operator>EQUAL</operator>
+                                    <rightValue>true</rightValue>
+                                </criteria>
+                            </visibilityRule>
+                        </valueListItems>
                     </valueList>
                 </componentInstanceProperties>
                 <componentInstanceProperties>
@@ -42,7 +89,6 @@
                 <identifier>force_highlightsPanel</identifier>
             </componentInstance>
         </itemInstances>
-        <mode>Replace</mode>
         <name>header</name>
         <type>Region</type>
     </flexiPageRegions>
@@ -93,8 +139,8 @@
                     <name>uiBehavior</name>
                     <value>none</value>
                 </fieldInstanceProperties>
-                <fieldItem>Record.RES_Catalog__c</fieldItem>
-                <identifier>RecordRES_Catalog_cField</identifier>
+                <fieldItem>Record.RES_Business_Entity__c</fieldItem>
+                <identifier>RecordRES_Business_Entity_cField</identifier>
             </fieldInstance>
         </itemInstances>
         <itemInstances>
@@ -173,8 +219,14 @@
                 <fieldItem>Record.RES_Rejection_Comment__c</fieldItem>
                 <identifier>RecordRES_Rejection_Comment__cField</identifier>
                 <visibilityRule>
+                    <booleanFilter>1 OR 2</booleanFilter>
                     <criteria>
                         <leftValue>{!Record.RES_Unit_Status__c}</leftValue>
+                        <operator>EQUAL</operator>
+                        <rightValue>Rejected</rightValue>
+                    </criteria>
+                    <criteria>
+                        <leftValue>{!Record.RES_Approval_Status__c}</leftValue>
                         <operator>EQUAL</operator>
                         <rightValue>Rejected</rightValue>
                     </criteria>
@@ -453,31 +505,7 @@
                 <identifier>flexipage_fieldSection3</identifier>
             </componentInstance>
         </itemInstances>
-        <mode>Replace</mode>
         <name>detailTabContent</name>
-        <type>Facet</type>
-    </flexiPageRegions>
-    <flexiPageRegions>
-        <itemInstances>
-            <componentInstance>
-                <componentInstanceProperties>
-                    <name>relatedListComponentOverride</name>
-                    <value>NONE</value>
-                </componentInstanceProperties>
-                <componentInstanceProperties>
-                    <name>rowsToDisplay</name>
-                    <value>10</value>
-                </componentInstanceProperties>
-                <componentInstanceProperties>
-                    <name>showActionBar</name>
-                    <value>true</value>
-                </componentInstanceProperties>
-                <componentName>force:relatedListContainer</componentName>
-                <identifier>force_relatedListContainer</identifier>
-            </componentInstance>
-        </itemInstances>
-        <mode>Replace</mode>
-        <name>relatedTabContent</name>
         <type>Facet</type>
     </flexiPageRegions>
     <flexiPageRegions>
@@ -491,7 +519,6 @@
                 <identifier>epcProductStructureGraph</identifier>
             </componentInstance>
         </itemInstances>
-        <mode>Replace</mode>
         <name>structureTab</name>
         <type>Facet</type>
     </flexiPageRegions>
@@ -517,20 +544,6 @@
         <itemInstances>
             <componentInstance>
                 <componentInstanceProperties>
-                    <name>body</name>
-                    <value>relatedTabContent</value>
-                </componentInstanceProperties>
-                <componentInstanceProperties>
-                    <name>title</name>
-                    <value>Standard.Tab.relatedLists</value>
-                </componentInstanceProperties>
-                <componentName>flexipage:tab</componentName>
-                <identifier>relatedListsTab</identifier>
-            </componentInstance>
-        </itemInstances>
-        <itemInstances>
-            <componentInstance>
-                <componentInstanceProperties>
                     <name>active</name>
                     <value>true</value>
                 </componentInstanceProperties>
@@ -546,7 +559,6 @@
                 <identifier>structureTab</identifier>
             </componentInstance>
         </itemInstances>
-        <mode>Replace</mode>
         <name>maintabs</name>
         <type>Facet</type>
     </flexiPageRegions>
@@ -565,15 +577,215 @@
                 <identifier>flexipage_tabset</identifier>
             </componentInstance>
         </itemInstances>
-        <mode>Replace</mode>
         <name>main</name>
         <type>Region</type>
     </flexiPageRegions>
+    <flexiPageRegions>
+        <itemInstances>
+            <componentInstance>
+                <componentInstanceProperties>
+                    <name>showLegacyActivityComposer</name>
+                    <value>false</value>
+                </componentInstanceProperties>
+                <componentName>runtime_sales_activities:activityPanel</componentName>
+                <identifier>runtime_sales_activities_activityPanel</identifier>
+            </componentInstance>
+        </itemInstances>
+        <name>Facet-80f45851-f472-4d6c-8bfd-42f864849243</name>
+        <type>Facet</type>
+    </flexiPageRegions>
+    <flexiPageRegions>
+        <itemInstances>
+            <componentInstance>
+                <componentInstanceProperties>
+                    <name>parentFieldApiName</name>
+                    <value>Product2.Id</value>
+                </componentInstanceProperties>
+                <componentInstanceProperties>
+                    <name>relatedListApiName</name>
+                    <value>AttachedContentNotes</value>
+                </componentInstanceProperties>
+                <componentInstanceProperties>
+                    <name>relatedListComponentOverride</name>
+                    <value>NONE</value>
+                </componentInstanceProperties>
+                <componentInstanceProperties>
+                    <name>rowsToDisplay</name>
+                    <value>10</value>
+                </componentInstanceProperties>
+                <componentInstanceProperties>
+                    <name>showActionBar</name>
+                    <value>true</value>
+                </componentInstanceProperties>
+                <componentName>force:relatedListSingleContainer</componentName>
+                <identifier>force_relatedListSingleContainer</identifier>
+            </componentInstance>
+        </itemInstances>
+        <name>Facet-3b960f69-d89b-4f20-bfaf-28088b9d0e1a</name>
+        <type>Facet</type>
+    </flexiPageRegions>
+    <flexiPageRegions>
+        <itemInstances>
+            <componentInstance>
+                <componentInstanceProperties>
+                    <name>parentFieldApiName</name>
+                    <value>Product2.Id</value>
+                </componentInstanceProperties>
+                <componentInstanceProperties>
+                    <name>relatedListApiName</name>
+                    <value>AttachedContentDocuments</value>
+                </componentInstanceProperties>
+                <componentInstanceProperties>
+                    <name>relatedListComponentOverride</name>
+                    <value>NONE</value>
+                </componentInstanceProperties>
+                <componentInstanceProperties>
+                    <name>rowsToDisplay</name>
+                    <value>10</value>
+                </componentInstanceProperties>
+                <componentInstanceProperties>
+                    <name>showActionBar</name>
+                    <value>true</value>
+                </componentInstanceProperties>
+                <componentName>force:relatedListSingleContainer</componentName>
+                <identifier>force_relatedListSingleContainer2</identifier>
+            </componentInstance>
+        </itemInstances>
+        <name>Facet-0408a489-64ef-467b-bfe1-77c132514e0f</name>
+        <type>Facet</type>
+    </flexiPageRegions>
+    <flexiPageRegions>
+        <itemInstances>
+            <componentInstance>
+                <componentInstanceProperties>
+                    <name>parentFieldApiName</name>
+                    <value>Product2.Id</value>
+                </componentInstanceProperties>
+                <componentInstanceProperties>
+                    <name>relatedListApiName</name>
+                    <value>Histories</value>
+                </componentInstanceProperties>
+                <componentInstanceProperties>
+                    <name>relatedListComponentOverride</name>
+                    <value>NONE</value>
+                </componentInstanceProperties>
+                <componentInstanceProperties>
+                    <name>rowsToDisplay</name>
+                    <value>10</value>
+                </componentInstanceProperties>
+                <componentInstanceProperties>
+                    <name>showActionBar</name>
+                    <value>true</value>
+                </componentInstanceProperties>
+                <componentName>force:relatedListSingleContainer</componentName>
+                <identifier>force_relatedListSingleContainer3</identifier>
+            </componentInstance>
+        </itemInstances>
+        <name>Facet-2wberd8ph5r</name>
+        <type>Facet</type>
+    </flexiPageRegions>
+    <flexiPageRegions>
+        <itemInstances>
+            <componentInstance>
+                <componentInstanceProperties>
+                    <name>active</name>
+                    <value>true</value>
+                </componentInstanceProperties>
+                <componentInstanceProperties>
+                    <name>body</name>
+                    <value>Facet-80f45851-f472-4d6c-8bfd-42f864849243</value>
+                </componentInstanceProperties>
+                <componentInstanceProperties>
+                    <name>title</name>
+                    <value>Standard.Tab.activity</value>
+                </componentInstanceProperties>
+                <componentName>flexipage:tab</componentName>
+                <identifier>flexipage_tab</identifier>
+            </componentInstance>
+        </itemInstances>
+        <itemInstances>
+            <componentInstance>
+                <componentInstanceProperties>
+                    <name>body</name>
+                    <value>Facet-3b960f69-d89b-4f20-bfaf-28088b9d0e1a</value>
+                </componentInstanceProperties>
+                <componentInstanceProperties>
+                    <name>title</name>
+                    <value>Standard.Tab.crisisCenterNotes</value>
+                </componentInstanceProperties>
+                <componentName>flexipage:tab</componentName>
+                <identifier>flexipage_tab2</identifier>
+            </componentInstance>
+        </itemInstances>
+        <itemInstances>
+            <componentInstance>
+                <componentInstanceProperties>
+                    <name>body</name>
+                    <value>Facet-0408a489-64ef-467b-bfe1-77c132514e0f</value>
+                </componentInstanceProperties>
+                <componentInstanceProperties>
+                    <name>title</name>
+                    <value>Standard.Tab.files</value>
+                </componentInstanceProperties>
+                <componentName>flexipage:tab</componentName>
+                <identifier>flexipage_tab3</identifier>
+            </componentInstance>
+        </itemInstances>
+        <itemInstances>
+            <componentInstance>
+                <componentInstanceProperties>
+                    <name>body</name>
+                    <value>Facet-2wberd8ph5r</value>
+                </componentInstanceProperties>
+                <componentInstanceProperties>
+                    <name>title</name>
+                    <value>Standard.Tab.batchPersonalizationActivationHistory</value>
+                </componentInstanceProperties>
+                <componentName>flexipage:tab</componentName>
+                <identifier>flexipage_tab4</identifier>
+            </componentInstance>
+        </itemInstances>
+        <name>Facet-4880e4a1-8725-4463-817f-61ff78bbdb5a</name>
+        <type>Facet</type>
+    </flexiPageRegions>
+    <flexiPageRegions>
+        <itemInstances>
+            <componentInstance>
+                <componentInstanceProperties>
+                    <name>hideHeader</name>
+                    <value>false</value>
+                </componentInstanceProperties>
+                <componentName>force:relatedListQuickLinksContainer</componentName>
+                <identifier>force_relatedListQuickLinksContainer</identifier>
+            </componentInstance>
+        </itemInstances>
+        <itemInstances>
+            <componentInstance>
+                <componentInstanceProperties>
+                    <name>label</name>
+                    <value>Tabs</value>
+                </componentInstanceProperties>
+                <componentInstanceProperties>
+                    <name>tabs</name>
+                    <value>Facet-4880e4a1-8725-4463-817f-61ff78bbdb5a</value>
+                </componentInstanceProperties>
+                <componentName>flexipage:tabset</componentName>
+                <identifier>flexipage_tabset2</identifier>
+            </componentInstance>
+        </itemInstances>
+        <itemInstances>
+            <componentInstance>
+                <componentName>runtime_approvals:approvalTrace</componentName>
+                <identifier>runtime_approvals_approvalTrace</identifier>
+            </componentInstance>
+        </itemInstances>
+        <name>sidebar</name>
+        <type>Region</type>
+    </flexiPageRegions>
     <masterLabel>Residential Payment Plan Record Page</masterLabel>
-    <parentFlexiPage>runtime_industries_epc__EpcProduct2_rec_L</parentFlexiPage>
     <sobjectType>Product2</sobjectType>
     <template>
-        <name>flexipage:recordHomeSingleColTemplateDesktop</name>
+        <name>flexipage:recordHomeTemplateDesktop</name>
     </template>
     <type>RecordPage</type>
 </FlexiPage>

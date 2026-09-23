@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <PermissionSet xmlns="http://soap.sforce.com/2006/04/metadata">
+    <customPermissions>
+        <enabled>true</enabled>
+        <name>RES_Can_Submit_Payment_Plan_Approval</name>
+    </customPermissions>
     <description>Permission Set for Operational Excellence – Operations – Specialist</description>
     <classAccesses>
         <apexClass>RES_BulkFolderUploaderController</apexClass>
@@ -688,13 +692,8 @@
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
-        <editable>true</editable>
+        <editable>false</editable>
         <field>Product2.RES_Approval_Status__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>Product2.RES_Catalog__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
@@ -3173,4 +3172,39 @@
         <enabled>false</enabled>
         <name>ExportReport</name>
     </userPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>Product2.RES_Price_Option__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>Product2.RES_Payment_Plan_Approval_Stage__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>Product2.RES_Payment_Plan_Submission_Requested__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>Product2.RES_Payment_Plan_Deactivation_Requested__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>Product2.RES_Payment_Plan_Submission_Comment__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>Product2.RES_Validity_End_Date__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>Product2.RES_Payment_Plan_Modified_Since_Approval__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
 </PermissionSet>

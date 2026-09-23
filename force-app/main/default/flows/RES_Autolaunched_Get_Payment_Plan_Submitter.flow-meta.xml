@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>67.0</apiVersion>
+    <areMetricsLoggedToDataCloud>false</areMetricsLoggedToDataCloud>
+    <description>DIR-1258: Captures the Payment Plan's LastModifiedById as the very first step of each approval orchestration, BEFORE any of the orchestration's own background steps (Update_Status_*, Activate_Plan, Deactivate_Plan) perform their own DML. Necessary because $Record inside a Flow Orchestration reflects live database state throughout the interview, not a snapshot from when it started - by the time a later Notify_Submitter_* step reads $Record.LastModifiedById directly, it resolves to "Automated Process" (whichever background step touched the record most recently), not the human who actually clicked Submit/Request Deactivation. This flow's output is referenced instead at every Notify_Submitter_* step.</description>
+    <environments>Default</environments>
+    <interviewLabel>Get Payment Plan Submitter {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>RES Autolaunched Get Payment Plan Submitter</label>
+    <processMetadataValues>
+        <name>BuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>CanvasMode</name>
+        <value>
+            <stringValue>AUTO_LAYOUT_CANVAS</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>OriginBuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processType>AutoLaunchedFlow</processType>
+    <recordLookups>
+        <name>Get_Payment_Plan</name>
+        <label>Get Payment Plan</label>
+        <locationX>176</locationX>
+        <locationY>158</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Id</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>recordId</elementReference>
+            </value>
+        </filters>
+        <getFirstRecordOnly>true</getFirstRecordOnly>
+        <object>Product2</object>
+        <outputAssignments>
+            <assignToReference>submitterId</assignToReference>
+            <field>LastModifiedById</field>
+        </outputAssignments>
+    </recordLookups>
+    <start>
+        <locationX>50</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Get_Payment_Plan</targetReference>
+        </connector>
+    </start>
+    <status>Active</status>
+    <variables>
+        <name>recordId</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>true</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <name>submitterId</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>true</isOutput>
+    </variables>
+</Flow>

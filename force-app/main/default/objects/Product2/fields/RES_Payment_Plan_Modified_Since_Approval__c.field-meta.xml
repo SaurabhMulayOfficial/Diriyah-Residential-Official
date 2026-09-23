@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>RES_Payment_Plan_Modified_Since_Approval__c</fullName>
+    <defaultValue>false</defaultValue>
+    <label>Modified Since Approval</label>
+    <description>Set true by RES_Payment_Plan_Before_Save_Edit_Lock whenever a business field changes (or a bundle/pricing related record changes) while RES_Approval_Status__c is Approved - drives the Submit for Approval button's visibility so it only reappears on an Approved plan once it has actually been touched. Reset to false by RES_Autolaunched_Update_Payment_Plan_Approval_Status on every approval-stage transition.</description>
+    <trackHistory>false</trackHistory>
+    <type>Checkbox</type>
+</CustomField>

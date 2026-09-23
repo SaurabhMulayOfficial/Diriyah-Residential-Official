@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>67.0</apiVersion>
+    <areMetricsLoggedToDataCloud>false</areMetricsLoggedToDataCloud>
+    <description>DIR-1258: Resets RES_Payment_Plan_Deactivation_Requested__c to false on the Payment Plan Product2 once the Deactivation orchestration has picked up a request, so the "Request Deactivation" screen flow can trigger the next one later.</description>
+    <environments>Default</environments>
+    <interviewLabel>RES Autolaunched Reset Payment Plan Deactivation Flag {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>RES Autolaunched Reset Payment Plan Deactivation Flag</label>
+    <processMetadataValues>
+        <name>BuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>CanvasMode</name>
+        <value>
+            <stringValue>AUTO_LAYOUT_CANVAS</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>OriginBuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processType>AutoLaunchedFlow</processType>
+    <assignments>
+        <name>Handle_Fault</name>
+        <label>Handle Fault</label>
+        <locationX>320</locationX>
+        <locationY>158</locationY>
+        <assignmentItems>
+            <assignToReference>faultMessage</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>$Flow.FaultMessage</elementReference>
+            </value>
+        </assignmentItems>
+    </assignments>
+    <recordUpdates>
+        <name>Reset_Flag</name>
+        <label>Reset Flag</label>
+        <locationX>176</locationX>
+        <locationY>158</locationY>
+        <faultConnector>
+            <targetReference>Handle_Fault</targetReference>
+        </faultConnector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Id</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>recordId</elementReference>
+            </value>
+        </filters>
+        <inputAssignments>
+            <field>RES_Payment_Plan_Deactivation_Requested__c</field>
+            <value>
+                <booleanValue>false</booleanValue>
+            </value>
+        </inputAssignments>
+        <object>Product2</object>
+    </recordUpdates>
+    <start>
+        <locationX>50</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Reset_Flag</targetReference>
+        </connector>
+    </start>
+    <status>Active</status>
+    <variables>
+        <name>faultMessage</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <name>recordId</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>true</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+</Flow>

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>RES_Payment_Plan_Submission_Requested__c</fullName>
+    <defaultValue>false</defaultValue>
+    <label>Payment Plan Submission Requested</label>
+    <description>Trigger flag for the DIR-1258 approval process. Set true by the Submit for Approval screen flow; the matching Flow Orchestration record-triggers off this flag flipping, then resets it to false.</description>
+    <trackHistory>false</trackHistory>
+    <type>Checkbox</type>
+</CustomField>

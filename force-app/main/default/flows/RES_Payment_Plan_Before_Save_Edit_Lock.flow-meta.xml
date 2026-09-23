@@ -1,0 +1,214 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>67.0</apiVersion>
+    <areMetricsLoggedToDataCloud>false</areMetricsLoggedToDataCloud>
+    <customErrors>
+        <name>Block_Edit</name>
+        <label>Block Edit</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <customErrorMessages>
+            <errorMessage>This Payment Plan is assigned to a Sales Contract and can no longer be edited directly. You may still deactivate it, update its validity end date, or reassign its project/catalog. Contact the AR team for unit-specific changes after contract execution.</errorMessage>
+            <isFieldError>false</isFieldError>
+        </customErrorMessages>
+    </customErrors>
+    <decisions>
+        <name>Has_Disallowed_Change</name>
+        <label>Has Disallowed Change?</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnectorLabel>No Disallowed Change</defaultConnectorLabel>
+        <rules>
+            <name>Disallowed_Change</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>HasDisallowedFieldChange</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Block_Edit</targetReference>
+            </connector>
+            <label>Disallowed Change</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>Flows_Enabled</name>
+        <label>Flows Enabled</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnectorLabel>Flows Off</defaultConnectorLabel>
+        <rules>
+            <name>Enabled</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Setup.RES_Config_Switch__c.RES_Flows_Off__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Get_Linked_Contract_Item_Price</targetReference>
+            </connector>
+            <label>Enabled</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>Was_Approved_And_Changed</name>
+        <label>Was Approved And Changed?</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnectorLabel>No</defaultConnectorLabel>
+        <rules>
+            <name>Approved_And_Changed</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>fShouldFlagModified</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Set_Modified_Flag</targetReference>
+            </connector>
+            <label>Approved And Changed</label>
+        </rules>
+        <defaultConnector>
+            <targetReference>Should_Enforce_Lock</targetReference>
+        </defaultConnector>
+    </decisions>
+    <decisions>
+        <name>Should_Enforce_Lock</name>
+        <label>Should Enforce Lock?</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnectorLabel>Not Locked</defaultConnectorLabel>
+        <rules>
+            <name>Enforce_Lock</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>Get_Linked_Contract_Item_Price</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Permission.RES_AR_Payment_Plan_Unit_Override</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Has_Disallowed_Change</targetReference>
+            </connector>
+            <label>Enforce Lock</label>
+        </rules>
+    </decisions>
+    <assignments>
+        <name>Set_Modified_Flag</name>
+        <label>Set Modified Flag</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignmentItems>
+            <assignToReference>$Record.RES_Payment_Plan_Modified_Since_Approval__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Should_Enforce_Lock</targetReference>
+        </connector>
+    </assignments>
+    <description>DIR-1258 AC5/AC6/AC7: Blocks routine edits to a Residential Payment Plan Product2 record once it is assigned to a Sales Contract (a ContractItemPrice exists with RES_Product__c = this record and RES_Payment_Plan_Check__c = true, per the DIR-868 CIP model). Permitted post-assignment changes: IsActive (deactivate), RES_Validity_End_Date__c, RES_Business_Entity__c (project reassignment), and the approval-engine's own status/flag fields (so the New Submission / Modification / Deactivation orchestrations are never blocked by their own writes). RES_AR_Payment_Plan_Unit_Override bypasses the lock entirely for the AR team's post-execution unit-specific changes (AC7).</description>
+    <environments>Default</environments>
+    <formulas>
+        <name>HasDisallowedFieldChange</name>
+        <dataType>Boolean</dataType>
+        <expression>OR(
+    ISCHANGED({!$Record.Name}),
+    ISCHANGED({!$Record.RES_No_of_Years__c}),
+    ISCHANGED({!$Record.RES_Sequence__c}),
+    ISCHANGED({!$Record.RES_POC_Percentage__c}),
+    ISCHANGED({!$Record.RES_Installment_Percentage__c}),
+    ISCHANGED({!$Record.RES_Installment_Amount__c}),
+    ISCHANGED({!$Record.RES_Price_Option__c}),
+    ISCHANGED({!$Record.Description})
+)</expression>
+    </formulas>
+    <formulas>
+        <name>fShouldFlagModified</name>
+        <dataType>Boolean</dataType>
+        <expression>AND(
+    ISPICKVAL({!$Record.RES_Approval_Status__c}, &quot;Approved&quot;),
+    {!HasDisallowedFieldChange}
+)</expression>
+    </formulas>
+    <interviewLabel>Payment Plan Before Save Edit Lock {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>RES Payment Plan Before Save Edit Lock</label>
+    <processMetadataValues>
+        <name>BuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>CanvasMode</name>
+        <value>
+            <stringValue>AUTO_LAYOUT_CANVAS</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>OriginBuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processType>AutoLaunchedFlow</processType>
+    <recordLookups>
+        <name>Get_Linked_Contract_Item_Price</name>
+        <label>Get Linked Contract Item Price</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Was_Approved_And_Changed</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>RES_Product__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>$Record.Id</elementReference>
+            </value>
+        </filters>
+        <filters>
+            <field>RES_Payment_Plan_Check__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </filters>
+        <getFirstRecordOnly>true</getFirstRecordOnly>
+        <object>ContractItemPrice</object>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
+    <start>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Flows_Enabled</targetReference>
+        </connector>
+        <filterFormula>{!$Record.RecordType.DeveloperName} = &quot;RES_Residential_Payment_Plan&quot;</filterFormula>
+        <object>Product2</object>
+        <recordTriggerType>Update</recordTriggerType>
+        <triggerType>RecordBeforeSave</triggerType>
+    </start>
+    <status>Active</status>
+</Flow>
