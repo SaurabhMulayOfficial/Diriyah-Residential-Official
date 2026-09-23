@@ -18,15 +18,6 @@
         <masterLabel>Call Count</masterLabel>
         <scale>0</scale>
     </aggregates>
-    <aggregates>
-        <calculatedFormula>Activity.RES_Is_Meeting_Flag__c:SUM</calculatedFormula>
-        <datatype>number</datatype>
-        <developerName>FORMULA3</developerName>
-        <isActive>true</isActive>
-        <isCrossBlock>false</isCrossBlock>
-        <masterLabel>Meeting Count</masterLabel>
-        <scale>0</scale>
-    </aggregates>
     <chart>
         <backgroundColor1>#FFFFFF</backgroundColor1>
         <backgroundColor2>#FFFFFF</backgroundColor2>
@@ -56,6 +47,9 @@
     </chart>
     <columns>
         <field>SUBJECT</field>
+    </columns>
+    <columns>
+        <field>Activity.RES_Task_Subject__c</field>
     </columns>
     <columns>
         <field>TASK_SUBTYPE</field>
