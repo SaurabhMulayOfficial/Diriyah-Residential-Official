@@ -21,9 +21,28 @@ private class RES_PaymentPlanBundleProvisionerTest {
         paymentPlanRecordTypeId = infos.get('RES_Residential_Payment_Plan').getRecordTypeId();
     }
 
+    /*
+     * ProductCatalog insert fires RES_ProductCatalogTrigger, which (when
+     * triggers are enabled) syncs to the SAP integration queueable - unrelated
+     * to bundle provisioning and prone to failing here for its own
+     * environment/config reasons (Named Credential, etc.). Trigger toggling
+     * is scoped tightly to just this insert and restored immediately after,
+     * matching the RES_Config_Switch__c.RES_Triggers_Off__c framework
+     * convention already used by RES_ProductCatalogTrigger itself. Safe
+     * under SeeAllData=true because all test-method DML, including Custom
+     * Setting changes, is rolled back automatically when the test ends.
+     */
     private static ProductCatalog createCatalog() {
+        RES_Config_Switch__c config = RES_Config_Switch__c.getOrgDefaults();
+        Boolean wasOff = config.RES_Triggers_Off__c;
+        config.RES_Triggers_Off__c = true;
+        upsert config;
+
         ProductCatalog catalog = new ProductCatalog(Name = 'Test Catalog');
         insert catalog;
+
+        config.RES_Triggers_Off__c = wasOff;
+        upsert config;
         return catalog;
     }
 
