@@ -7,9 +7,13 @@
  *                    1. A "Service Charge" ProductComponentGroup (created
  *                       once per Unit).
  *                    2. A ProductRelatedComponent linking that group to the
- *                       single, shared Service Charge product referenced by
- *                       the RES_Service_Charge_Product_Id custom label - the
- *                       same product every Unit uses, never created fresh.
+ *                       single, shared Service Charge product looked up by
+ *                       the ProductCode named in the RES_Service_Charge_Product_Code
+ *                       custom label - the same product every Unit uses,
+ *                       never created fresh. Resolved by ProductCode rather
+ *                       than a stored Id: Salesforce record Ids are
+ *                       org-specific, so a hardcoded Id would only resolve
+ *                       correctly in the one org it was captured from.
  *                  Mirrors the same bundle-wiring shape used by
  *                  RES_PaymentPlanBundleProvisioner (DIR-1258) and the
  *                  reference "Wadi Safar Top Unit" / "RES Test Unit A/B/C"
@@ -30,6 +34,7 @@ public without sharing class RES_ServiceChargeBundleProvisioner {
     private static final Integer GROUP_MAX_COMPONENTS = 1;
     private static final String RELATIONSHIP_TYPE_NAME = 'Bundle to Bundle Component Relationship';
 
+    private static final RES_Product2DAOLayer PRODUCT_DAO = new RES_Product2DAOLayer();
     private static final RES_ProductComponentGroupDAOLayer GROUP_DAO = new RES_ProductComponentGroupDAOLayer();
     private static final RES_ProductRelatedComponentDAOLayer COMPONENT_DAO = new RES_ProductRelatedComponentDAOLayer();
     private static final RES_ProductRelationshipTypeDAOLayer RELATIONSHIP_TYPE_DAO = new RES_ProductRelationshipTypeDAOLayer();
@@ -42,12 +47,13 @@ public without sharing class RES_ServiceChargeBundleProvisioner {
         Id serviceChargeId = resolveServiceChargeProductId();
         if (serviceChargeId == null) {
             /*
-             * RES_Service_Charge_Product_Id is blank or not a valid Id -
-             * nothing to wire up. Abort rather than attempt doomed DML.
+             * RES_Service_Charge_Product_Code is blank, or no active Product2
+             * in this org carries that ProductCode - nothing to wire up.
+             * Abort rather than attempt doomed DML.
              */
             System.debug(
-                'RES_ServiceChargeBundleProvisioner: RES_Service_Charge_Product_Id label is blank ' +
-                'or invalid - skipping Service Charge provisioning.'
+                'RES_ServiceChargeBundleProvisioner: no Product2 found for ProductCode "' +
+                System.Label.RES_Service_Charge_Product_Code + '" - skipping Service Charge provisioning.'
             );
             return;
         }
@@ -124,15 +130,12 @@ public without sharing class RES_ServiceChargeBundleProvisioner {
     }
 
     private static Id resolveServiceChargeProductId() {
-        String raw = System.Label.RES_Service_Charge_Product_Id;
-        if (String.isBlank(raw)) {
+        String code = System.Label.RES_Service_Charge_Product_Code;
+        if (String.isBlank(code)) {
             return null;
         }
-        try {
-            return (Id) raw;
-        } catch (System.StringException e) {
-            return null;
-        }
+        List<Product2> found = PRODUCT_DAO.getProductsByProductCodes(new Set<String>{ code });
+        return found.isEmpty() ? null : found[0].Id;
     }
 
     private static Id resolveRelationshipTypeId() {

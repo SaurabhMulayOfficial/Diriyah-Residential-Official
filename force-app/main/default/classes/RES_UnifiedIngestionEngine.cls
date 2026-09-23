@@ -384,7 +384,7 @@ public with sharing class RES_UnifiedIngestionEngine implements Database.Batchab
     /**
      * Every new Unit gets a "Service Charge" bundle component pointing at the
      * single, shared Service Charge product (RES_ServiceChargeBundleProvisioner
-     * resolves it from the RES_Service_Charge_Product_Id custom label - the
+     * resolves it by ProductCode via the RES_Service_Charge_Product_Code custom label - the
      * same reference product every Unit uses, never created fresh).
      */
     private void provisionServiceChargeComponent(Map<String, Id> productIdByCode) {

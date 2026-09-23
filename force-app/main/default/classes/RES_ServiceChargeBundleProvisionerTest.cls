@@ -3,8 +3,8 @@
  * data but because ProductRelationshipType is org-wide Revenue Cloud
  * reference/configuration data (see RES_PaymentPlanBundleProvisionerTest for
  * the same rationale), and because RES_ServiceChargeBundleProvisioner
- * resolves its Service Charge child product from the
- * RES_Service_Charge_Product_Id custom label, which points at the single,
+ * resolves its Service Charge child product by the ProductCode named in the
+ * RES_Service_Charge_Product_Code custom label, which points at the single,
  * real, shared Service Charge product this org already depends on (see
  * RES_ResidentialBundlePricingHook) rather than something a test should
  * fabricate.
@@ -47,7 +47,7 @@ private class RES_ServiceChargeBundleProvisionerTest {
     private static Product2 createUnit(Id catalogId) {
         /*
          * ConfigureDuringSale = 'Allowed' is required, not optional: the real
-         * shared Service Charge product (RES_Service_Charge_Product_Id) is
+         * shared Service Charge product (RES_Service_Charge_Product_Code) is
          * itself ConfigureDuringSale = 'Allowed', and Revenue Cloud rejects
          * adding a configurable child to a static (ConfigureDuringSale
          * blank/'Not Allowed') parent with "You can add only static products
@@ -67,7 +67,10 @@ private class RES_ServiceChargeBundleProvisionerTest {
     }
 
     private static Id serviceChargeProductId() {
-        return Id.valueOf(System.Label.RES_Service_Charge_Product_Id);
+        List<Product2> found = [
+            SELECT Id FROM Product2 WHERE ProductCode = :System.Label.RES_Service_Charge_Product_Code LIMIT 1
+        ];
+        return found.isEmpty() ? null : found[0].Id;
     }
 
     @isTest
