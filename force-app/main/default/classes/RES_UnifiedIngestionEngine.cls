@@ -87,6 +87,7 @@ public with sharing class RES_UnifiedIngestionEngine implements Database.Batchab
 
         linkProductsToCategories(scope, productIdByCode);
         disqualifyNewProducts(productIdByCode);
+        provisionServiceChargeComponent(productIdByCode);
         linkProductsToSellingModels(scope, productIdByCode);
         syncPricebookEntries(scope, productIdByCode, rowErrors);
         syncProductAttributes(scope, productIdByCode, rowErrors);
@@ -287,6 +288,15 @@ public with sharing class RES_UnifiedIngestionEngine implements Database.Batchab
 
             Product2 p = new Product2(RES_Product_External_ID__c = truncate(code, 255));
             if (isNew && recordTypeId != null) p.RecordTypeId = recordTypeId;
+            /*
+             * A new Unit is always provisioned with a Service Charge bundle
+             * component (see provisionServiceChargeComponent below), and a
+             * ProductRelatedComponent only functions as a real bundle
+             * component when its parent is Type = 'Bundle' - confirmed
+             * against the reference "Wadi Safar Top Unit" / "RES Test Unit
+             * A/B/C" products, which are all Type = 'Bundle'.
+             */
+            if (isNew) p.Type = 'Bundle';
             Id classId = resolveClassification();
             if (classId != null) p.BasedOnId = classId;
 
@@ -369,6 +379,22 @@ public with sharing class RES_UnifiedIngestionEngine implements Database.Batchab
         for (Database.SaveResult sr : Database.insert(toInsert, false)) {
             if (!sr.isSuccess()) recordError('ProductDisqualification: ' + sr.getErrors()[0].getMessage());
         }
+    }
+
+    /**
+     * Every new Unit gets a "Service Charge" bundle component pointing at the
+     * single, shared Service Charge product (RES_ServiceChargeBundleProvisioner
+     * resolves it from the RES_Service_Charge_Product_Id custom label - the
+     * same reference product every Unit uses, never created fresh).
+     */
+    private void provisionServiceChargeComponent(Map<String, Id> productIdByCode) {
+        Set<Id> productIds = new Set<Id>();
+        for (String code : newProductCodes) {
+            Id productId = productIdByCode.get(code);
+            if (productId != null) productIds.add(productId);
+        }
+        if (productIds.isEmpty()) return;
+        RES_ServiceChargeBundleProvisioner.provisionForUnits(productIds);
     }
 
     private void linkProductsToCategories(List<RES_Product_Staging__c> scope, Map<String, Id> productIdByCode) {
@@ -1035,7 +1061,7 @@ public with sharing class RES_UnifiedIngestionEngine implements Database.Batchab
                     AttributeDefinitionId            = attrId,
                     ProductClassificationAttributeId = classAttrId,
                     DefaultValue                     = wanted,
-                    IsReadOnly                       = readOnlyAttributes.contains(attrName),
+                    IsHidden                         = hiddenAttributes.contains(attrName),
                     Sequence                         = 1
                 ));
                 insertRows.add(rowByKey.get(key));
@@ -1080,7 +1106,7 @@ public with sharing class RES_UnifiedIngestionEngine implements Database.Batchab
             if (tm.valueKind == 'Product_Attribute' || tm.valueKind == 'Product_Attribute_Computed') {
                 if (String.isNotBlank(tm.attributeName)) {
                     attrMaps.add(tm);
-                    if (tm.isReadOnly) readOnlyAttributes.add(tm.attributeName);
+                    if (tm.isHidden) hiddenAttributes.add(tm.attributeName);
                 }
             }
             if (tm.valueKind == 'Child_Record' && String.isNotBlank(tm.sourceCode)) {
@@ -1279,11 +1305,10 @@ public with sharing class RES_UnifiedIngestionEngine implements Database.Batchab
         if (classAttrId == null) return;
 
         // Products based on this classification inherit the selector attribute from the
-        // classification, so the price-impacting flag and default belong on the
+        // classification, so the price-impacting/hidden flags and default belong on the
         // ProductClassificationAttr, not on a per-product ProductAttributeDefinition. Creating
         // a ProductAttributeDefinition here would make every product's Pricing Option attribute
-        // show as "Overridden" instead of "Inherited" in Product Configurator, and diverge from
-        // the classification's own settings (e.g. IsHidden) since it is never copied across.
+        // show as "Overridden" instead of "Inherited" in Product Configurator.
         ensureSelectorPriceImpacting(classAttrId, defaultSelector);
 
         Map<String, AttributeBasedAdjRule> ruleByKey = new Map<String, AttributeBasedAdjRule>();
@@ -1509,7 +1534,7 @@ public with sharing class RES_UnifiedIngestionEngine implements Database.Batchab
     }
 
     /** Attribute names the config marks read only, so the value cannot be edited on a line. */
-    private Set<String> readOnlyAttributes = new Set<String>();
+    private Set<String> hiddenAttributes = new Set<String>();
 
     /** Active values on the selector picklist; anything else is rejected, never created. */
     private Set<String> allowedSelectorValues = new Set<String>();
@@ -1537,8 +1562,8 @@ public with sharing class RES_UnifiedIngestionEngine implements Database.Batchab
 
     /**
      * Products based on the classification inherit the selector attribute automatically, so
-     * this only keeps the classification-level ProductClassificationAttr's price-impacting
-     * flag and default value in sync - it never creates a per-product
+     * this only keeps the classification-level ProductClassificationAttr's price-impacting,
+     * hidden, and default-value settings in sync - it never creates a per-product
      * ProductAttributeDefinition, which would turn inheritance into an override.
      * (AttributeCategoryId is createable but not updateable on ProductClassificationAttr, so
      * it is set only at creation time by ensureClassificationAttrs, not touched here.)
@@ -1552,10 +1577,12 @@ public with sharing class RES_UnifiedIngestionEngine implements Database.Batchab
         ProductClassificationAttr current = found[0];
 
         Boolean needsUpdate = current.IsPriceImpacting != true
+            || current.IsHidden != true
             || (String.isNotBlank(defaultSelector) && defaultSelector != current.DefaultValue);
         if (!needsUpdate) return;
 
-        ProductClassificationAttr toUpdate = new ProductClassificationAttr(Id = classAttrId, IsPriceImpacting = true);
+        ProductClassificationAttr toUpdate = new ProductClassificationAttr(
+            Id = classAttrId, IsPriceImpacting = true, IsHidden = true);
         if (String.isNotBlank(defaultSelector)) toUpdate.DefaultValue = defaultSelector;
 
         Database.SaveResult sr = Database.update(toUpdate, false);

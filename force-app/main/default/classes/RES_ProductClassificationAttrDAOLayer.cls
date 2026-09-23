@@ -18,7 +18,7 @@ public without sharing class RES_ProductClassificationAttrDAOLayer extends RES_B
     public List<ProductClassificationAttr> getClassAttrsByIds(Set<Id> ids) {
         if (ids == null || ids.isEmpty()) return new List<ProductClassificationAttr>();
         Map<String, Object> bindVars = new Map<String, Object>{ 'ids' => ids };
-        String soql = 'SELECT Id, DefaultValue, IsPriceImpacting FROM ProductClassificationAttr ' +
+        String soql = 'SELECT Id, DefaultValue, IsPriceImpacting, IsHidden FROM ProductClassificationAttr ' +
                       'WHERE Id IN :ids';
         return (List<ProductClassificationAttr>) executeQuery(soql, '', false, bindVars, AccessLevel.SYSTEM_MODE);
     }

@@ -266,15 +266,15 @@ private class RES_UnifiedIngestionEngineTest {
 
         // The selector attribute must be INHERITED from the classification, not overridden per
         // product: no ProductAttributeDefinition should exist for it on any product, and the
-        // classification-level ProductClassificationAttr should carry the price-impacting flag
-        // and the primary condition's selector value as its default.
+        // classification-level ProductClassificationAttr should carry the price-impacting flag,
+        // the hidden flag, and the primary condition's selector value as its default.
         Assert.areEqual(0, [
             SELECT COUNT() FROM ProductAttributeDefinition
             WHERE AttributeDefinitionId = :selectorDefs[0].Id
         ], 'Selector attribute must be inherited from the classification, never overridden per product');
 
         List<ProductClassificationAttr> selectorClassAttrs = [
-            SELECT DefaultValue, IsPriceImpacting
+            SELECT DefaultValue, IsPriceImpacting, IsHidden
             FROM ProductClassificationAttr
             WHERE AttributeDefinitionId = :selectorDefs[0].Id
         ];
@@ -283,6 +283,8 @@ private class RES_UnifiedIngestionEngineTest {
             'Classification attribute should default to the primary condition\'s selector value');
         Assert.isTrue(selectorClassAttrs[0].IsPriceImpacting,
             'Classification attribute should be marked price-impacting so it drives the adjustment');
+        Assert.isTrue(selectorClassAttrs[0].IsHidden,
+            'Classification attribute should be hidden rather than read-only');
 
         // ---- Attribute-based adjustment rules/conditions/adjustments ----
         List<AttributeBasedAdjRule> rules = [
@@ -313,12 +315,19 @@ private class RES_UnifiedIngestionEngineTest {
         // so that branch of addTargetMapAttributes() is presently unconfigured/unreachable and
         // isn't asserted here. RES_Parameter_1__c/RES_Area__c below are still needed as inputs
         // to the still-active Measurement (Z006) mapping asserted next.
-        Assert.areEqual(1, [
-            SELECT COUNT() FROM ProductAttributeDefinition pad
-            WHERE pad.Product2Id = :unit100.Id
-            AND pad.AttributeDefinitionId IN (SELECT Id FROM AttributeDefinition WHERE Name = 'Service Charge Rate')
-            AND pad.DefaultValue = '50.00'
-        ], 'addTargetMapAttributes() scales every Product_Attribute/_Computed value to 2 decimal places');
+        List<ProductAttributeDefinition> serviceChargePads = [
+            SELECT DefaultValue, IsHidden, IsReadOnly
+            FROM ProductAttributeDefinition
+            WHERE Product2Id = :unit100.Id
+            AND AttributeDefinitionId IN (SELECT Id FROM AttributeDefinition WHERE Name = 'Service Charge Rate')
+        ];
+        Assert.areEqual(1, serviceChargePads.size(),
+            'addTargetMapAttributes() scales every Product_Attribute/_Computed value to 2 decimal places');
+        Assert.areEqual('50.00', serviceChargePads[0].DefaultValue);
+        Assert.isTrue(serviceChargePads[0].IsHidden,
+            'RES_Is_Hidden__c on the target field map should mark the attribute hidden, not read-only');
+        Assert.isFalse(serviceChargePads[0].IsReadOnly,
+            'The framework no longer writes IsReadOnly for Product_Attribute maps');
 
         // ---- Measurement (Area, code Z006) ----
         Assert.areEqual(1, [

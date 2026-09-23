@@ -24,13 +24,13 @@ public without sharing class RES_ProductStagingDAOLayer extends RES_BaseDAOLayer
         return (List<AggregateResult>) results;
     }
 
-    public Database.QueryLocator getPendingStagingRecordsBatch(String batchId) {    
+    public Database.QueryLocator getPendingStagingRecordsBatch(String batchId) {
         List<String> fields = new List<String>(
             RES_Product_Staging__c.SObjectType.getDescribe().fields.getMap().keySet()
         );
-    
+
         String safeBatchId = String.escapeSingleQuotes(batchId);
-    
+
         String soql =
             'SELECT ' + String.join(fields, ', ') +
             ' FROM RES_Product_Staging__c' +
