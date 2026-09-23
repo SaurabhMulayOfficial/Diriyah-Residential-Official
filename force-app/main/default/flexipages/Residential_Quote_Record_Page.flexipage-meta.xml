@@ -104,12 +104,12 @@
                 <visibilityRule>
                     <booleanFilter>1 OR 2</booleanFilter>
                     <criteria>
-                        <leftValue>{!Record.RES_Product__r.RES_Unit_Status__c}</leftValue>
+                        <leftValue>{!Record.RES_Product_Unit_Status__c}</leftValue>
                         <operator>EQUAL</operator>
                         <rightValue>Draft</rightValue>
                     </criteria>
                     <criteria>
-                        <leftValue>{!Record.RES_Product__r.RES_Unit_Status__c}</leftValue>
+                        <leftValue>{!Record.RES_Product_Unit_Status__c}</leftValue>
                         <operator>EQUAL</operator>
                         <rightValue>Pending DevCo Approval</rightValue>
                     </criteria>

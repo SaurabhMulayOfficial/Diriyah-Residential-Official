@@ -3,14 +3,11 @@ import { getRecord, getFieldValue } from 'lightning/uiRecordApi';
 import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 import { CloseActionScreenEvent } from 'lightning/actions';
 import { RefreshEvent } from 'lightning/refresh';
-import { updateRecord } from 'lightning/uiRecordApi';
 import { refreshApex } from '@salesforce/apex';
-import notifyProductUpdate from '@salesforce/apex/RES_ProductUpdateNotificationController.notifyProductUpdate';
+import updateAllAndNotify from '@salesforce/apex/RES_ProductUpdateNotificationController.updateAllAndNotify';
 
 // Product2 fields - Core
-import ID_FIELD from '@salesforce/schema/Product2.Id';
 import UNIT_STATUS_FIELD from '@salesforce/schema/Product2.RES_Unit_Status__c';
-import IS_ACTIVE_FIELD from '@salesforce/schema/Product2.IsActive';
 import NAME_FIELD from '@salesforce/schema/Product2.Name';
 import PRODUCT_CODE_FIELD from '@salesforce/schema/Product2.ProductCode';
 import BUSINESS_ENTITY_FIELD from '@salesforce/schema/Product2.RES_Business_Entity__c';
@@ -18,7 +15,6 @@ import TYPE_FIELD from '@salesforce/schema/Product2.RES_Type__c';
 import FAMILY_FIELD from '@salesforce/schema/Product2.Family';
 import DESCRIPTION_FIELD from '@salesforce/schema/Product2.Description';
 import UPDATE_COMMENTS_FIELD from '@salesforce/schema/Product2.RES_Update_Comments__c';
-import UPDATE_REQUESTED_FIELD from '@salesforce/schema/Product2.RES_Update_Requested__c';
 
 // Product2 fields - Details Tab (from screenshots)
 import CONSTRUCTION_PHASE_FIELD from '@salesforce/schema/Product2.RES_Construction_Phase__c';
@@ -135,9 +131,8 @@ export default class ResProductUpdateModal extends LightningElement {
     }
 
     handleSave(event) {
-        event.preventDefault(); // Prevent default form submission
+        event.preventDefault();
 
-        // Validate update comments
         if (!this.updateComments || this.updateComments.trim().length === 0) {
             this.showToast('Required', 'Please provide update comments to explain the reason for this amendment.', 'error');
             return;
@@ -148,7 +143,6 @@ export default class ResProductUpdateModal extends LightningElement {
             return;
         }
 
-        // Show appropriate warning based on current status
         if (this.currentStatus === STATUS_AVAILABLE) {
             this.warningTitle = 'Confirm Update';
             this.warningMessage = 'Units being updated are already available for sale. Any changes made will put the unit in draft and development approval will be required to make it available again. Do you want to proceed?';
@@ -158,94 +152,73 @@ export default class ResProductUpdateModal extends LightningElement {
             this.warningMessage = 'Units being updated are already reserved. This will affect the quote/contract in progress on these units. Do you want to proceed?';
             this.showWarningModal = true;
         } else {
-            // For Draft or other statuses, submit form directly
-            const form = this.template.querySelector('lightning-record-edit-form');
-            if (form) {
-                form.submit();
-            }
+            this.performSave();
         }
     }
 
     handleWarningConfirm() {
         this.showWarningModal = false;
-
-        // Get form data and perform update
-        const form = this.template.querySelector('lightning-record-edit-form');
-        if (form) {
-            // Submit the form
-            form.submit();
-        }
+        this.performSave();
     }
 
     handleWarningCancel() {
         this.showWarningModal = false;
     }
 
-    async handleSuccess(event) {
-        this.isProcessing = true;
+    // Collect current values from all lightning-input-field elements without calling form.submit().
+    // form.submit() triggers the UI API save which enforces sharing and fails for read-only users.
+    // Instead, we read values directly from DOM and pass them to Apex (without sharing).
+    collectFieldValues() {
+        const fields = {};
+        this.template.querySelectorAll('lightning-input-field').forEach(field => {
+            const fieldName = field.dataset.field;
+            if (fieldName && field.value !== undefined && field.value !== null) {
+                fields[fieldName] = field.value;
+            }
+        });
+        return fields;
+    }
 
+    async performSave() {
+        this.isProcessing = true;
         try {
-            // Validate recordId exists
             if (!this.recordId) {
                 throw new Error('Record ID is missing. Cannot update the unit.');
             }
 
-            // Validate update comments exist and meet minimum length
-            if (!this.updateComments || this.updateComments.trim().length < 10) {
-                throw new Error('Update comments must be at least 10 characters.');
-            }
+            const formFields = this.collectFieldValues();
+            const shouldMoveToDraft = (
+                this.currentStatus === STATUS_AVAILABLE ||
+                this.currentStatus === STATUS_SOFT_HOLD ||
+                this.currentStatus === STATUS_HARD_BLOCK
+            );
 
-            // After successful form save, update additional fields
-            const fields = {};
-            fields[ID_FIELD.fieldApiName] = this.recordId;
-            fields[UPDATE_COMMENTS_FIELD.fieldApiName] = this.updateComments.trim();
-            fields[UPDATE_REQUESTED_FIELD.fieldApiName] = true;
+            await updateAllAndNotify({
+                productId: this.recordId,
+                fieldsJson: JSON.stringify(formFields),
+                updateComments: this.updateComments.trim(),
+                shouldMoveToDraft: shouldMoveToDraft
+            });
 
-            // Set status to Draft when updating Active or Hold units
-            const shouldUpdateStatus = (this.currentStatus === STATUS_AVAILABLE || this.currentStatus === STATUS_SOFT_HOLD || this.currentStatus === STATUS_HARD_BLOCK);
-            if (shouldUpdateStatus) {
-                fields[UNIT_STATUS_FIELD.fieldApiName] = STATUS_DRAFT;
-            }
-
-            const recordInput = { fields };
-            const updateResult = await updateRecord(recordInput);
-
-            // Refresh the wired product data
             if (this.wiredProductResult) {
                 await refreshApex(this.wiredProductResult);
             }
 
-            // Send notification to Operations team
-            try {
-                await notifyProductUpdate({ productId: this.recordId });
-            } catch (notifyError) {
-                // Don't fail the whole operation if notification fails
-                console.error('Error sending notification:', notifyError);
-            }
-
             this.showToast(
                 'Success',
-                `Unit "${this.productName || 'Unit'}" has been updated successfully and moved to Draft status. Submit for approval to make it available again.`,
+                `Unit "${this.productName || 'Unit'}" has been updated successfully. Submit for approval to make it available again.`,
                 'success'
             );
 
-            // Close modal and dispatch event to refresh parent
             this.closeModal();
             this.dispatchEvent(new CustomEvent('updatecomplete'));
-            // Refresh the page to show updated values
             this.dispatchEvent(new RefreshEvent());
         } catch (error) {
             console.error('Error updating product:', error);
 
-            // Handle different error types
             let errorMessage = 'An error occurred while updating the unit.';
             if (error.body?.message) {
                 errorMessage = error.body.message;
-            } else if (error.body?.fieldErrors) {
-                const fieldErrors = Object.values(error.body.fieldErrors).flat();
-                if (fieldErrors.length > 0) {
-                    errorMessage = fieldErrors.map(e => e.message).join(', ');
-                }
             } else if (error.body?.output?.errors) {
                 errorMessage = error.body.output.errors.map(e => e.message).join(', ');
             } else if (error.message) {

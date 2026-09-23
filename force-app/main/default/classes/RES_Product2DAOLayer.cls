@@ -282,7 +282,7 @@ public List<Product2> getRejectedProducts(String status,String searchTerm,Intege
                 'Family ' +
                 'FROM Product2 ' +
                 'WHERE RES_Unit_Status__c IN :statuses ' +
-                'AND IsActive = false ';
+                'AND (IsActive = false OR RES_Update_Requested__c = true) ';
     if (!String.isBlank(searchTerm)) {
         String searchPattern = '%' + searchTerm.trim() + '%';
         bindVars.put('searchPattern',searchPattern);
@@ -315,6 +315,38 @@ public List<Product2> getRejectedProducts(String status,String searchTerm,Intege
 }
 
     /**
+     * Retrieves a single Payment Plan Product2 record by Id, including
+     * RES_Business_Entity__c, for DIR-1258 bundle provisioning.
+     */
+    public Product2 getPaymentPlanById(Id paymentPlanId) {
+        if (paymentPlanId == null) {
+            return null;
+        }
+        String soql = 'SELECT Id, Name, RES_Business_Entity__c FROM Product2 WHERE Id = :paymentPlanId LIMIT 1';
+        Map<String, Object> bindVars = new Map<String, Object>{ 'paymentPlanId' => paymentPlanId };
+        List<Product2> results = (List<Product2>) executeQuery(soql, '', false, bindVars, AccessLevel.SYSTEM_MODE);
+        return results.isEmpty() ? null : results[0];
+    }
+
+    /**
+     * Retrieves active Residential Sales Unit Product2 records tagged to a
+     * given catalog (RES_Business_Entity__c), for DIR-1258 bundle provisioning.
+     */
+    public List<Product2> getUnitsByCatalog(Id catalogId) {
+        if (catalogId == null) {
+            return new List<Product2>();
+        }
+        String soql =
+            'SELECT Id, Name, RES_Business_Entity__c ' +
+            'FROM Product2 ' +
+            'WHERE RES_Business_Entity__c = :catalogId ' +
+            'AND RecordType.DeveloperName = \'RES_Residential_Sales\' ' +
+            'AND IsActive = true';
+        Map<String, Object> bindVars = new Map<String, Object>{ 'catalogId' => catalogId };
+        return (List<Product2>) executeQuery(soql, '', false, bindVars, AccessLevel.SYSTEM_MODE);
+    }
+
+    /**
      * Normalizes requested page size.
      */
     private Integer normalizePageSize(Integer requestedPageSize) {
@@ -329,5 +361,21 @@ public List<Product2> getRejectedProducts(String status,String searchTerm,Intege
         }
 
         return requestedPageSize;
+    }
+    
+    /**
+     * Get Products Related To Catalog with Record Type
+     */
+    public List<Product2> getProductsRelatedToCatalog(Set<Id> productCatalogIdSet, String recordTypeDeveloperName) {
+        if (productCatalogIdSet == null || productCatalogIdSet.isEmpty()) return new List<Product2>();
+        Map<String, Object> bindVars = new Map<String, Object>{ 'productCatalogIdSet' => productCatalogIdSet, 'recordTypeDeveloperName' => recordTypeDeveloperName };
+        String soql = 'SELECT Id, Name, RES_Catalog__c, RES_Version__c, IsActive, ' + 
+                      '(SELECT Id, Name, RES_Parent_Payment_Plan__c, RES_Version__c FROM ParentPaymentPlan__r WHERE RES_Version__c > 0 ORDER BY RES_Version__c DESC) ' + 
+        			  'FROM Product2 ' +  
+                      'WHERE RES_Catalog__c IN : productCatalogIdSet AND ' + 
+                      'RecordType.DeveloperName =: recordTypeDeveloperName AND ' +
+                      'IsActive = TRUE AND ' + 
+                      'RES_Version__c = NULL';
+        return (List<Product2>) executeQuery(soql, '', false, bindVars, AccessLevel.SYSTEM_MODE);
     }
 }
