@@ -8,7 +8,7 @@ on:
       - 'feature/QADIR/**'
 
   pull_request:
-    types: [opened, synchronize, reopened, closed]
+    types: [opened, synchronize, reopened, closed, labeled, unlabeled]
     branches:
       - develop
       - 'feature/QADIR/**'
@@ -58,26 +58,83 @@ jobs:
     environment: env
 
     if: |
-      (github.event_name == 'create' && startsWith(github.ref, 'refs/heads/feature/QADIR/')) ||
-      (github.event_name == 'push'   && startsWith(github.ref, 'refs/heads/feature/QADIR/')) ||
-      (github.event_name == 'pull_request' && github.event.action != 'closed' &&
-        startsWith(github.head_ref, 'feature/') && github.base_ref == 'develop') ||
-      (github.event_name == 'pull_request' && github.event.pull_request.merged == true &&
-        startsWith(github.head_ref, 'feature/') && github.base_ref == 'develop')
+      github.event_name == 'pull_request' &&
+      github.base_ref == 'develop' &&
+      startsWith(github.head_ref, 'feature/')
 
     steps:
       - uses: actions/checkout@v4
-      
+        with:
+          fetch-depth: 0
+          ref: ${{ github.event.pull_request.head.sha }}
+
       - uses: actions/setup-node@v4
         with:
           node-version: lts/*
 
+      - name: Determine QA Deployment Mode
+        id: deployment-mode
+        shell: bash
+        run: |
+          DELTA=false
+          FULL=false
+
+          while IFS= read -r label; do
+            case "$label" in
+              QA-Delta)
+                DELTA=true
+                ;;
+              QA-Full)
+                FULL=true
+                ;;
+            esac
+          done < <(jq -r '.pull_request.labels[].name' "$GITHUB_EVENT_PATH")
+
+          if [[ "$DELTA" == "true" && "$FULL" == "true" ]]; then
+            echo "::error::PR cannot have both QA-Delta and QA-Full labels."
+            exit 1
+          fi
+
+          if [[ "$DELTA" == "false" && "$FULL" == "false" ]]; then
+            echo "::error::Please add either QA-Delta or QA-Full label to the PR."
+            exit 1
+          fi
+
+          if [[ "$DELTA" == "true" ]]; then
+            echo "deployment_type=delta" >> "$GITHUB_OUTPUT"
+            echo "QA deployment mode: DELTA"
+          else
+            echo "deployment_type=full" >> "$GITHUB_OUTPUT"
+            echo "QA deployment mode: FULL"
+          fi
+
       - name: Install Salesforce CLI
         run: npm install -g @salesforce/cli
 
-      - name: Authenticate 🐒
+      - name: Install sfdx-git-delta
+        if: steps.deployment-mode.outputs.deployment_type == 'delta'
+        run: |
+          echo "y" | sf plugins install sfdx-git-delta
+
+      - name: Generate Delta Package
+        if: steps.deployment-mode.outputs.deployment_type == 'delta'
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          echo "BASE: $BASE_SHA"
+          echo "HEAD: $HEAD_SHA"
+
+          sf sgd source delta \
+            --from "$BASE_SHA" \
+            --to "$HEAD_SHA" \
+            --output-dir delta \
+            --generate-delta
+
+      - name: Authenticate QA 🐒
         run: |
           echo "${{ secrets.SF_JWT_KEY_QA }}" > server.key
+
           sf org login jwt \
             --client-id "${{ secrets.SF_CLIENT_ID_QA }}" \
             --jwt-key-file server.key \
@@ -85,7 +142,16 @@ jobs:
             --instance-url https://login.salesforce.com \
             --set-default
 
-      - name: Validate QA 🐥
+      - name: Validate QA - Delta 🐥
+        if: steps.deployment-mode.outputs.deployment_type == 'delta'
+        run: |
+          sf project deploy validate \
+            --source-dir delta/force-app \
+            --test-level RunLocalTests \
+            --wait 30
+
+      - name: Validate QA - Full 🐥
+        if: steps.deployment-mode.outputs.deployment_type == 'full'
         run: |
           sf project deploy validate \
             --source-dir force-app \
@@ -99,25 +165,77 @@ jobs:
 
     if: |
       needs.validate-qa.result == 'success' &&
-      (
-        (github.event_name == 'create' && startsWith(github.ref, 'refs/heads/feature/QADIR/')) ||
-        (github.event_name == 'pull_request' && github.event.pull_request.merged == true &&
-          startsWith(github.head_ref, 'feature/') && github.base_ref == 'develop')
-      )
+      github.event_name == 'pull_request' &&
+      github.event.pull_request.merged == true &&
+      github.base_ref == 'develop' &&
+      startsWith(github.head_ref, 'feature/')
 
     steps:
       - uses: actions/checkout@v4
-      
+        with:
+          fetch-depth: 0
+          ref: ${{ github.event.pull_request.head.sha }}
+
       - uses: actions/setup-node@v4
         with:
           node-version: lts/*
 
+      - name: Determine QA Deployment Mode
+        id: deployment-mode
+        shell: bash
+        run: |
+          DELTA=false
+          FULL=false
+
+          while IFS= read -r label; do
+            case "$label" in
+              QA-Delta)
+                DELTA=true
+                ;;
+              QA-Full)
+                FULL=true
+                ;;
+            esac
+          done < <(jq -r '.pull_request.labels[].name' "$GITHUB_EVENT_PATH")
+
+          if [[ "$DELTA" == "true" && "$FULL" == "true" ]]; then
+            echo "::error::PR cannot have both QA-Delta and QA-Full labels."
+            exit 1
+          fi
+
+          if [[ "$DELTA" == "true" ]]; then
+            echo "deployment_type=delta" >> "$GITHUB_OUTPUT"
+          elif [[ "$FULL" == "true" ]]; then
+            echo "deployment_type=full" >> "$GITHUB_OUTPUT"
+          else
+            echo "::error::PR must have either QA-Delta or QA-Full."
+            exit 1
+          fi
+
       - name: Install Salesforce CLI
         run: npm install -g @salesforce/cli
 
-      - name: Authenticate 🐒
+      - name: Install sfdx-git-delta
+        if: steps.deployment-mode.outputs.deployment_type == 'delta'
+        run: |
+          echo "y" | sf plugins install sfdx-git-delta
+
+      - name: Generate Delta Package
+        if: steps.deployment-mode.outputs.deployment_type == 'delta'
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          sf sgd source delta \
+            --from "$BASE_SHA" \
+            --to "$HEAD_SHA" \
+            --output-dir delta \
+            --generate-delta
+
+      - name: Authenticate QA 🐒
         run: |
           echo "${{ secrets.SF_JWT_KEY_QA }}" > server.key
+
           sf org login jwt \
             --client-id "${{ secrets.SF_CLIENT_ID_QA }}" \
             --jwt-key-file server.key \
@@ -125,13 +243,24 @@ jobs:
             --instance-url https://login.salesforce.com \
             --set-default
 
-      - name: Deploy QA 🦧
+      - name: Deploy QA - Delta 🦧
+        if: steps.deployment-mode.outputs.deployment_type == 'delta'
+        run: |
+          sf project deploy start \
+            --source-dir delta/force-app \
+            --test-level RunLocalTests \
+            --ignore-conflicts \
+            --wait 30
+
+      - name: Deploy QA - Full 🦧
+        if: steps.deployment-mode.outputs.deployment_type == 'full'
         run: |
           sf project deploy start \
             --source-dir force-app \
             --test-level RunLocalTests \
             --ignore-conflicts \
             --wait 30
+
 
   validate-uat:
     runs-on: ubuntu-24.04
