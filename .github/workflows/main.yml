@@ -149,7 +149,7 @@ jobs:
         run: |
           sf project deploy validate \
             --source-dir delta/force-app \
-            --test-level RunLocalTests \
+            --test-level RunRelevantTests \
             --wait 30
 
       - name: Validate QA - Full 🐥
@@ -252,7 +252,7 @@ jobs:
         run: |
           sf project deploy start \
             --source-dir delta/force-app \
-            --test-level RunLocalTests \
+            --test-level RunRelevantTests \
             --ignore-conflicts \
             --wait 30
 
