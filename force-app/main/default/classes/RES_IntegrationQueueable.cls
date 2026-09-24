@@ -48,15 +48,15 @@ public with sharing class RES_IntegrationQueueable implements Queueable, Databas
             for (SObject record : records) {
                 accounts.add((Account) record);
             }
-            //RES_AccountIntegrationService.syncAccounts(accounts, requestMethod);
+            RES_AccountIntegrationService.syncAccounts(accounts, requestMethod);
         }
         
-        else if(serviceName == 'Product_Sync'){
+        else if(serviceName == 'Unit_Sync'){
             List<Product2> products = new List<Product2>();
             for (SObject record : records) {
                 products.add((Product2) record);
             }
-            //RES_ProductIntegrationService.syncProducts(products, requestMethod);
+            RES_ProductIntegrationService.syncProducts(products, requestMethod, triggerContext);
         }
         
         else if(serviceName == 'ProductCategory_Sync'){
