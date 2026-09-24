@@ -1,35 +1,30 @@
-/*
- * SeeAllData=true is used deliberately here, not for fabricated business
- * data but because ProductRelationshipType is org-wide Revenue Cloud
- * reference/configuration data (see RES_PaymentPlanBundleProvisionerTest for
- * the same rationale), and because RES_ServiceChargeBundleProvisioner
- * resolves its Service Charge child product by the ProductCode named in the
- * RES_Service_Charge_Product_Code custom label, which points at the single,
- * real, shared Service Charge product this org already depends on (see
- * RES_ResidentialBundlePricingHook) rather than something a test should
- * fabricate.
- */
-@isTest(SeeAllData=true)
+@isTest
 private class RES_ServiceChargeBundleProvisionerTest {
 
     private static Id unitRecordTypeId;
+
+    @testSetup
+    static void setUpReferenceData() {
+        // Org reference data isn't visible without SeeAllData, so recreate what the provisioner resolves.
+        insert new ProductRelationshipType(
+            Name = 'Bundle to Bundle Component Relationship',
+            MainProductRoleCat = 'Bundle',
+            AssociatedProductRoleCat = 'BundleComponent'
+        );
+        insert new Product2(
+            Name = 'Service Charge',
+            ProductCode = System.Label.RES_Service_Charge_Product_Code,
+            IsActive = true,
+            ConfigureDuringSale = 'Allowed'
+        );
+    }
 
     private static void setUpRecordTypeIds() {
         Map<String, Schema.RecordTypeInfo> infos = Schema.SObjectType.Product2.getRecordTypeInfosByDeveloperName();
         unitRecordTypeId = infos.get('RES_Residential_Sales').getRecordTypeId();
     }
 
-    /*
-     * ProductCatalog insert fires RES_ProductCatalogTrigger, which (when
-     * triggers are enabled) syncs to the SAP integration queueable - unrelated
-     * to bundle provisioning and prone to failing here for its own
-     * environment/config reasons (Named Credential, etc.). Trigger toggling
-     * is scoped tightly to just this insert and restored immediately after,
-     * matching the RES_Config_Switch__c.RES_Triggers_Off__c framework
-     * convention already used by RES_ProductCatalogTrigger itself. Safe
-     * under SeeAllData=true because all test-method DML, including Custom
-     * Setting changes, is rolled back automatically when the test ends.
-     */
+    // Triggers off for the catalog insert so RES_ProductCatalogTrigger doesn't enqueue the SAP sync.
     private static ProductCatalog createCatalog() {
         RES_Config_Switch__c config = RES_Config_Switch__c.getOrgDefaults();
         Boolean wasOff = config.RES_Triggers_Off__c;
@@ -44,16 +39,8 @@ private class RES_ServiceChargeBundleProvisionerTest {
         return catalog;
     }
 
+    // ConfigureDuringSale = 'Allowed' is required: a static parent can't take the configurable Service Charge child.
     private static Product2 createUnit(Id catalogId) {
-        /*
-         * ConfigureDuringSale = 'Allowed' is required, not optional: the real
-         * shared Service Charge product (RES_Service_Charge_Product_Code) is
-         * itself ConfigureDuringSale = 'Allowed', and Revenue Cloud rejects
-         * adding a configurable child to a static (ConfigureDuringSale
-         * blank/'Not Allowed') parent with "You can add only static products
-         * as child components of a static parent product." Matches how
-         * RES_UnifiedIngestionEngine actually creates every Unit.
-         */
         Product2 unit = new Product2(
             Name = 'Test Unit',
             IsActive = true,
