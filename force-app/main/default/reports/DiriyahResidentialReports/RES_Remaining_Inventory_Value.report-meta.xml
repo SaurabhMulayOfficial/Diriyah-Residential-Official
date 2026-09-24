@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Report xmlns="http://soap.sforce.com/2006/04/metadata">
+    <columns>
+        <field>Quote.Products__r$Name</field>
+    </columns>
+    <columns>
+        <field>Quote.Products__r$RES_Unit_Status__c</field>
+    </columns>
+    <columns>
+        <aggregateTypes>Sum</aggregateTypes>
+        <field>Quote$TotalPrice</field>
+    </columns>
+    <currency>SAR</currency>
+    <filter>
+        <criteriaItems>
+            <column>Quote.Products__r$RES_Unit_Status__c</column>
+            <columnToColumn>false</columnToColumn>
+            <isUnlocked>true</isUnlocked>
+            <operator>equals</operator>
+            <value>Available</value>
+        </criteriaItems>
+        <criteriaItems>
+            <column>Quote$RES_Project__c</column>
+            <columnToColumn>false</columnToColumn>
+            <isUnlocked>true</isUnlocked>
+            <operator>equals</operator>
+            <value>Amansamar Residences Wadi Safar,Armani Residences Diriyah,Baccarat Residences Diriyah,Corinthia Residences Diriyah,Faena Residences Wadi Safar,Manazel AlHadawi,Oberoi Branded Residences Wadi Safar,Raffles Branded Residences,The Chedi Residences Wadi Safar,The Ritz Carlton Residences Diriyah,The Ritz Carlton Signature,Wadi Safar – Plots,Not Decided</value>
+        </criteriaItems>
+        <language>en_US</language>
+    </filter>
+    <format>Summary</format>
+    <groupingsDown>
+        <dateGranularity>Day</dateGranularity>
+        <field>Quote$RES_Project__c</field>
+        <sortOrder>Asc</sortOrder>
+    </groupingsDown>
+    <name>Remaining Inventory Value</name>
+    <params>
+        <name>co</name>
+        <value>1</value>
+    </params>
+    <reportType>RES_Quotes_with_Units__c</reportType>
+    <scope>organization</scope>
+    <showDetails>true</showDetails>
+    <showGrandTotal>true</showGrandTotal>
+    <showSubTotals>true</showSubTotals>
+    <timeFrameFilter>
+        <dateColumn>Quote$CreatedDate</dateColumn>
+        <interval>INTERVAL_THISMONTH</interval>
+    </timeFrameFilter>
+</Report>
