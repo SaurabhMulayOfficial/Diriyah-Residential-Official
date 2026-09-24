@@ -131,13 +131,7 @@ public with sharing class RES_UnifiedIngestionEngine implements Database.Batchab
         }
         if (rowsByCode.isEmpty()) return;
 
-        /*
-         * The ingestion framework no longer creates catalogs on the fly -
-         * every Business Entity/catalog external identifier a CSV
-         * references must already exist in Salesforce. Anything left in
-         * rowsByCode has no matching ProductCatalog, so every row naming it
-         * is a row error, not a new record.
-         */
+        // Every catalog code left unmatched here must already exist - the framework no longer creates catalogs on the fly.
         for (String code : rowsByCode.keySet()) {
             String msg = 'ProductCatalog with external identifier "' + code +
                          '" does not exist. Create it before running ingestion.';
@@ -163,13 +157,7 @@ public with sharing class RES_UnifiedIngestionEngine implements Database.Batchab
         }
         if (rowsByCode.isEmpty()) return;
 
-        /*
-         * The ingestion framework no longer creates categories on the fly -
-         * every Building/category external identifier a CSV references must
-         * already exist in Salesforce. Anything left in rowsByCode has no
-         * matching ProductCategory, so every row naming it is a row error,
-         * not a new record.
-         */
+        // Every category code left unmatched here must already exist - the framework no longer creates categories on the fly.
         for (String code : rowsByCode.keySet()) {
             List<RES_Product_Staging__c> rows = rowsByCode.get(code);
             if (catalogIdByCode.get(catalogCode(rows[0])) == null) {
@@ -1350,10 +1338,13 @@ public with sharing class RES_UnifiedIngestionEngine implements Database.Batchab
         }
 
         PriceAdjustmentSchedule sch = new RES_PriceAdjustmentScheduleDAOLayer().getScheduleById(scheduleId);
+        // A rule can carry several adjustments over time; the current one per rule is whichever has the latest EffectiveFrom (getAdjustmentsByRuleIds orders DESC).
         Map<Id, AttributeBasedAdjustment> existingByRule = new Map<Id, AttributeBasedAdjustment>();
         List<AttributeBasedAdjustment> existingAdjs = new RES_AttributeBasedAdjustmentDAOLayer().getAdjustmentsByRuleIds(ruleIds);
         for (AttributeBasedAdjustment a : existingAdjs) {
-            existingByRule.put(a.AttributeBasedAdjRuleId, a);
+            if (!existingByRule.containsKey(a.AttributeBasedAdjRuleId)) {
+                existingByRule.put(a.AttributeBasedAdjRuleId, a);
+            }
         }
 
         Id psmId = psmIdByKey.get('OneTime');
@@ -1374,22 +1365,24 @@ public with sharing class RES_UnifiedIngestionEngine implements Database.Batchab
                 Datetime thru = adjustmentTo(op.validTo, sch);
 
                 if (current == null) {
-                    AttributeBasedAdjustment a = new AttributeBasedAdjustment(
-                        PriceAdjustmentScheduleId = sch.Id,
-                        AttributeBasedAdjRuleId   = r.Id,
-                        ProductId                 = productId,
-                        AdjustmentType            = cm == null ? 'Override' : cm.adjustmentType,
-                        AdjustmentValue           = op.price,
-                        EffectiveFrom              = startsAt,
-                        EffectiveTo                = thru);
-                    if (psmId != null) a.ProductSellingModelId = psmId;
-                    toInsert.add(a);
-                } else if (current.AdjustmentValue != op.price
-                        || current.EffectiveFrom != startsAt
-                        || current.EffectiveTo != thru) {
+                    toInsert.add(buildAdjustment(sch.Id, r.Id, productId, cm, op.price, startsAt, thru, psmId));
+                } else if (current.AdjustmentValue != op.price) {
+                    // A repriced re-upload opens a new period instead of overwriting the existing one; cap the old period's EffectiveTo to end-of-day before the new one starts.
+                    if (startsAt <= current.EffectiveFrom) {
+                        addRowError(rowErrors, rowIdByCodeAndSelector.get(code + '|' + sel),
+                            'Pricing option "' + sel + '" for ' + code + ' has a new price starting ' +
+                            startsAt.dateGmt() + ', which is not after the existing period starting ' +
+                            current.EffectiveFrom.dateGmt() + ' - no new adjustment was created');
+                        continue;
+                    }
+                    toInsert.add(buildAdjustment(sch.Id, r.Id, productId, cm, op.price, startsAt, thru, psmId));
+                    toUpdate.add(new AttributeBasedAdjustment(
+                        Id          = current.Id,
+                        EffectiveTo = dayBeforeAsEndOfDay(startsAt)
+                    ));
+                } else if (current.EffectiveFrom != startsAt || current.EffectiveTo != thru) {
                     toUpdate.add(new AttributeBasedAdjustment(
                         Id              = current.Id,
-                        AdjustmentValue = op.price,
                         EffectiveFrom   = startsAt,
                         EffectiveTo     = thru
                     ));
@@ -1397,16 +1390,17 @@ public with sharing class RES_UnifiedIngestionEngine implements Database.Batchab
             }
         }
 
-        if (!toInsert.isEmpty()) {
-            for (Database.SaveResult sr : Database.insert(toInsert, false)) {
-                if (sr.isSuccess()) totalAdjustments++;
-                else recordError('AttributeBasedAdjustment: ' + sr.getErrors()[0].getMessage());
-            }
-        }
+        // Update before insert: Revenue Cloud rejects an overlapping AttributeBasedAdjustment insert, and a null EffectiveTo reads as open-ended.
         if (!toUpdate.isEmpty()) {
             for (Database.SaveResult sr : Database.update(toUpdate, false)) {
                 if (sr.isSuccess()) totalAdjustments++;
                 else recordError('AttributeBasedAdjustment update: ' + sr.getErrors()[0].getMessage());
+            }
+        }
+        if (!toInsert.isEmpty()) {
+            for (Database.SaveResult sr : Database.insert(toInsert, false)) {
+                if (sr.isSuccess()) totalAdjustments++;
+                else recordError('AttributeBasedAdjustment: ' + sr.getErrors()[0].getMessage());
             }
         }
     }
@@ -1437,6 +1431,28 @@ public with sharing class RES_UnifiedIngestionEngine implements Database.Batchab
         if (rowTo == null) return latest;
         Datetime wanted = Datetime.newInstanceGmt(rowTo, Time.newInstance(23, 59, 59, 0));
         return (latest != null && wanted > latest) ? latest : wanted;
+    }
+
+    /** End-of-day, one calendar day before the given (midnight) start. */
+    @TestVisible
+    private static Datetime dayBeforeAsEndOfDay(Datetime start) {
+        return Datetime.newInstanceGmt(start.dateGmt().addDays(-1), Time.newInstance(23, 59, 59, 0));
+    }
+
+    private static AttributeBasedAdjustment buildAdjustment(
+        Id scheduleId, Id ruleId, Id productId, RES_IngestionConfig.ConditionMapping cm,
+        Decimal price, Datetime startsAt, Datetime thru, Id psmId
+    ) {
+        AttributeBasedAdjustment a = new AttributeBasedAdjustment(
+            PriceAdjustmentScheduleId = scheduleId,
+            AttributeBasedAdjRuleId   = ruleId,
+            ProductId                 = productId,
+            AdjustmentType            = cm == null ? 'Override' : cm.adjustmentType,
+            AdjustmentValue           = price,
+            EffectiveFrom              = startsAt,
+            EffectiveTo                = thru);
+        if (psmId != null) a.ProductSellingModelId = psmId;
+        return a;
     }
 
     @TestVisible

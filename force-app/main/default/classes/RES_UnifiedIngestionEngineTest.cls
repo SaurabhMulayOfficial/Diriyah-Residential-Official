@@ -383,8 +383,9 @@ private class RES_UnifiedIngestionEngineTest {
 
         // ---- Second execute() call: reuse catalog/category/selling model to hit "already exists" branches ----
         RES_Product_Staging__c product3 = baseRow('UNIT-400', catalog, building); // same catalog+building as UNIT-100
-        product3.RES_Condition_Type__c  = 'Y100';
-        product3.RES_Condition_Price__c = 700000;
+        product3.RES_Condition_Type__c       = 'Y100';
+        product3.RES_Condition_Price__c      = 700000;
+        product3.RES_Condition_Valid_From__c = Date.today();
         insert product3;
 
         RES_UnifiedIngestionEngine secondEngine = new RES_UnifiedIngestionEngine(LAYOUT_CODE);
@@ -409,6 +410,8 @@ private class RES_UnifiedIngestionEngineTest {
         RES_Product_Staging__c y100Rerun = baseRow('UNIT-100', catalog, building);
         y100Rerun.RES_Condition_Type__c      = 'Y100';
         y100Rerun.RES_Condition_Price__c     = 1600000;
+        // Later than y100's own valid-from, so this opens a new period rather than tripping the "not after" guard.
+        y100Rerun.RES_Condition_Valid_From__c = Date.today().addDays(30);
         y100Rerun.RES_Service_Charge_Rate__c = 60;
         y100Rerun.RES_Parameter_1__c         = 'Z006';
         y100Rerun.RES_Area__c                = 150;
@@ -416,6 +419,7 @@ private class RES_UnifiedIngestionEngineTest {
         RES_Product_Staging__c product3Rerun = baseRow('UNIT-400', catalog, building);
         product3Rerun.RES_Condition_Type__c      = 'Y100';
         product3Rerun.RES_Condition_Price__c     = 750000;
+        product3Rerun.RES_Condition_Valid_From__c = Date.today().addDays(30);
         product3Rerun.RES_Service_Charge_Rate__c = 55;
         product3Rerun.RES_Parameter_1__c         = 'Z006';
         product3Rerun.RES_Area__c                = 120;
@@ -445,12 +449,24 @@ private class RES_UnifiedIngestionEngineTest {
         Assert.areEqual(1, [SELECT COUNT() FROM AttributeBasedAdjRule WHERE Name = 'UNIT-400 :: Option 1'],
             'Re-running must not duplicate the pricing-option rule');
 
+        // A price-changed re-upload must preserve history, not overwrite the original adjustment.
         List<AttributeBasedAdjustment> unit400Adjustments = [
-            SELECT AdjustmentValue FROM AttributeBasedAdjustment WHERE ProductId = :unit400.Id
+            SELECT AdjustmentValue, EffectiveFrom, EffectiveTo FROM AttributeBasedAdjustment
+            WHERE ProductId = :unit400.Id ORDER BY EffectiveFrom ASC
         ];
-        Assert.areEqual(1, unit400Adjustments.size(), 'Re-running must not duplicate the adjustment');
-        Assert.areEqual(750000, unit400Adjustments[0].AdjustmentValue.setScale(0),
-            'Re-running with a changed price should update the existing adjustment rather than duplicate it');
+        Assert.areEqual(2, unit400Adjustments.size(),
+            'A price change on re-upload must add a new adjustment, not overwrite the existing one');
+        Assert.areEqual(700000, unit400Adjustments[0].AdjustmentValue.setScale(0),
+            'The original price period must be preserved, not overwritten');
+        Assert.areEqual(750000, unit400Adjustments[1].AdjustmentValue.setScale(0),
+            'The new price period must be added');
+        Assert.areEqual(
+            unit400Adjustments[1].EffectiveFrom.addDays(-1).dateGmt(),
+            unit400Adjustments[0].EffectiveTo.dateGmt(),
+            'The original period must be capped to end the day before the new period starts'
+        );
+        Assert.areEqual(1, [SELECT COUNT() FROM AttributeBasedAdjRule WHERE Name = 'UNIT-400 :: Option 1'],
+            'Historizing the adjustment must not create a second rule for the same condition');
     }
 
     // ==================================================================
@@ -495,6 +511,101 @@ private class RES_UnifiedIngestionEngineTest {
             finalRows.get(missingCategory.Id).RES_Error_Log__c.contains('ProductCategory with external identifier "BLD-PartialCatalog-NoSuchBuilding2" does not exist'),
             'Missing category must record its own row error even when its catalog exists'
         );
+    }
+
+    // ==================================================================
+    // Price-changed re-upload must historize: cap the previous adjustment, add a new one.
+    // ==================================================================
+    @IsTest
+    static void testPricingOptionRepriced_HistorizesPreviousAdjustment() {
+        String catalog  = 'RepriceCatalog';
+        String building = 'Reprice Building';
+        ProductCatalog cat = ensureCatalog(catalog);
+        ensureCategory(cat.Id, catalog, building);
+
+        RES_Product_Staging__c original = baseRow('UNIT-900', catalog, building);
+        original.RES_Condition_Type__c       = 'Y100';
+        original.RES_Condition_Price__c      = 1000000;
+        original.RES_Condition_Valid_From__c = Date.today();
+        insert original;
+
+        RES_UnifiedIngestionEngine engine = new RES_UnifiedIngestionEngine(LAYOUT_CODE);
+        engine.execute(null, new List<RES_Product_Staging__c>{ original });
+
+        RES_Product_Staging__c repriced = baseRow('UNIT-900', catalog, building);
+        repriced.RES_Condition_Type__c       = 'Y100';
+        repriced.RES_Condition_Price__c      = 1100000;
+        repriced.RES_Condition_Valid_From__c = Date.today().addDays(30);
+        insert repriced;
+
+        Test.startTest();
+        RES_UnifiedIngestionEngine secondEngine = new RES_UnifiedIngestionEngine(LAYOUT_CODE);
+        secondEngine.execute(null, new List<RES_Product_Staging__c>{ repriced });
+        Test.stopTest();
+
+        Product2 unit900 = [SELECT Id FROM Product2 WHERE RES_Product_External_ID__c = 'UNIT-900'];
+        List<AttributeBasedAdjustment> adjustments = [
+            SELECT AdjustmentValue, EffectiveFrom, EffectiveTo FROM AttributeBasedAdjustment
+            WHERE ProductId = :unit900.Id ORDER BY EffectiveFrom ASC
+        ];
+        Assert.areEqual(2, adjustments.size(),
+            'A repriced re-upload must add a new adjustment, not overwrite the existing one');
+        Assert.areEqual(1000000, adjustments[0].AdjustmentValue.setScale(0), 'Original price period preserved');
+        Assert.areEqual(1100000, adjustments[1].AdjustmentValue.setScale(0), 'New price period added');
+        Assert.areEqual(
+            adjustments[1].EffectiveFrom.addDays(-1).dateGmt(),
+            adjustments[0].EffectiveTo.dateGmt(),
+            'Original period must be capped to end the day before the new period starts'
+        );
+        Assert.areEqual(Date.today().addDays(30), adjustments[1].EffectiveFrom.dateGmt(),
+            'New adjustment must start on the repriced row\'s own valid-from date');
+
+        Assert.areEqual(1, [SELECT COUNT() FROM AttributeBasedAdjRule WHERE Name = 'UNIT-900 :: Option 1'],
+            'Historizing must reuse the existing rule, not create a second one for the same condition');
+    }
+
+    // ==================================================================
+    // A reprice whose new start isn't after the existing period's start is a row error.
+    // ==================================================================
+    @IsTest
+    static void testPricingOptionRepriced_EarlierStartDateIsRowError() {
+        String catalog  = 'RepriceCatalog2';
+        String building = 'Reprice Building 2';
+        ProductCatalog cat = ensureCatalog(catalog);
+        ensureCategory(cat.Id, catalog, building);
+
+        RES_Product_Staging__c original = baseRow('UNIT-901', catalog, building);
+        original.RES_Condition_Type__c       = 'Y100';
+        original.RES_Condition_Price__c      = 1000000;
+        original.RES_Condition_Valid_From__c = Date.today().addDays(30);
+        insert original;
+
+        RES_UnifiedIngestionEngine engine = new RES_UnifiedIngestionEngine(LAYOUT_CODE);
+        engine.execute(null, new List<RES_Product_Staging__c>{ original });
+
+        RES_Product_Staging__c repriced = baseRow('UNIT-901', catalog, building);
+        repriced.RES_Condition_Type__c       = 'Y100';
+        repriced.RES_Condition_Price__c      = 1100000;
+        repriced.RES_Condition_Valid_From__c = Date.today(); // earlier than the existing period's start
+        insert repriced;
+
+        Test.startTest();
+        RES_UnifiedIngestionEngine secondEngine = new RES_UnifiedIngestionEngine(LAYOUT_CODE);
+        secondEngine.execute(null, new List<RES_Product_Staging__c>{ repriced });
+        Test.stopTest();
+
+        Product2 unit901 = [SELECT Id FROM Product2 WHERE RES_Product_External_ID__c = 'UNIT-901'];
+        List<AttributeBasedAdjustment> adjustments = [
+            SELECT AdjustmentValue FROM AttributeBasedAdjustment WHERE ProductId = :unit901.Id
+        ];
+        Assert.areEqual(1, adjustments.size(), 'An earlier-dated reprice must not create a new adjustment');
+        Assert.areEqual(1000000, adjustments[0].AdjustmentValue.setScale(0), 'The original adjustment must be untouched');
+
+        RES_Product_Staging__c refreshed = [
+            SELECT RES_Error_Log__c FROM RES_Product_Staging__c WHERE Id = :repriced.Id
+        ];
+        Assert.isTrue(refreshed.RES_Error_Log__c.contains('is not after the existing period'),
+            'An earlier-dated reprice must record its own row error');
     }
 
     // ==================================================================
