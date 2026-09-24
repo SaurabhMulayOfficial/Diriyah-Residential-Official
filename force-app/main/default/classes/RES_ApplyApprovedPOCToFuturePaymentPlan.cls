@@ -205,7 +205,7 @@ public with sharing class RES_ApplyApprovedPOCToFuturePaymentPlan {
     private static Map<Id, Map<Id, List<ProductRelatedComponent>>> groupComponentsByCatalogAndPlan(List<ProductRelatedComponent> componentsLst){
         Map<Id, Map<Id, List<ProductRelatedComponent>>> catalogToPlanComponentsMap = new Map<Id, Map<Id, List<ProductRelatedComponent>>>();
         for(ProductRelatedComponent prc : componentsLst){
-            Id catalogId = prc.ParentProduct.RES_Catalog__c;
+            Id catalogId = prc.ParentProduct.RES_Business_Entity__c;
             if(!catalogToPlanComponentsMap.containsKey(catalogId)){
                 catalogToPlanComponentsMap.put(catalogId, new Map<Id, List<ProductRelatedComponent>>());
             }

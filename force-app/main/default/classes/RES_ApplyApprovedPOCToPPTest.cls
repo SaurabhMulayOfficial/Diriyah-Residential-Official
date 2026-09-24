@@ -98,7 +98,6 @@ private class RES_ApplyApprovedPOCToPPTest {
             IsActive = true,
             RecordTypeId = paymentPlanRecordTypeId,
             Type = 'Bundle',
-            RES_Catalog__c = catalogId,
             RES_Business_Entity__c = catalogId,
             RES_Price_Option__c = 'Option 1'
         );
@@ -218,7 +217,7 @@ private class RES_ApplyApprovedPOCToPPTest {
         Test.stopTest();
 
         List<Product2> newVersions = [
-            SELECT Id, RES_Version__c, RES_Price_Option__c, RES_Catalog__c
+            SELECT Id, RES_Version__c, RES_Price_Option__c, RES_Business_Entity__c
             FROM Product2
             WHERE RES_Parent_Payment_Plan__c = :ids.get('plan')
         ];

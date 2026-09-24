@@ -208,7 +208,7 @@ public with sharing class RES_PaymentPlanConfiguratorService {
             ConfigureDuringSale = 'Allowed',
             RES_CIP_Type__c = CIP_TYPE_PAYMENT_PLAN,
             RES_No_of_Years__c = req.numberOfYears,
-            RES_Catalog__c = req.catalogId,
+            RES_Business_Entity__c = req.catalogId,
             RES_Price_Option__c = req.priceOption,
             CurrencyIsoCode = String.isNotBlank(req.currencyIsoCode) ? req.currencyIsoCode : UserInfo.getDefaultCurrency(),
             AvailabilityDate = req.validFromDate,
