@@ -2147,6 +2147,11 @@
         <field>RES_Project_Completion_Report__c.RES_Is_Approval_Status_Blank__c</field>
         <readable>true</readable>
     </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>Quote.TotalPrice</field>
+        <readable>true</readable>
+    </fieldPermissions>
     <hasActivationRequired>false</hasActivationRequired>
     <label>Diriyah Residential – CSO Permission Set</label>
     <license>Salesforce</license>
