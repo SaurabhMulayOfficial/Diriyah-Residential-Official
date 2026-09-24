@@ -2827,6 +2827,11 @@
         <enabled>true</enabled>
         <flow>RES_Create_Payment_Plan</flow>
     </flowAccesses>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>Quote.TotalPrice</field>
+        <readable>true</readable>
+    </fieldPermissions>
     <hasActivationRequired>false</hasActivationRequired>
     <label>Diriyah Residential – Contract Operations Specialist Permission Set</label>
     <license>Salesforce</license>
