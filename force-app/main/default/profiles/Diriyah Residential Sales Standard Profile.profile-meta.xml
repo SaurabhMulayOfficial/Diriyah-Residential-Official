@@ -668,6 +668,11 @@
     <layoutAssignments>
         <layout>RES_Integration_Log__c-Integration Log Layout</layout>
     </layoutAssignments>
+        <fieldPermissions>
+        <editable>true</editable>
+        <field>QuoteLineItem.RES_CIP_Type__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
     <fieldPermissions>
         <editable>true</editable>
         <field>RES_Integration_Request__e.RES_RecordIds__c</field>
