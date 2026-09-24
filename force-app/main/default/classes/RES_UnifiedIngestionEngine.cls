@@ -131,29 +131,18 @@ public with sharing class RES_UnifiedIngestionEngine implements Database.Batchab
         }
         if (rowsByCode.isEmpty()) return;
 
-        List<ProductCatalog> toInsert = new List<ProductCatalog>();
-        List<String> codes           = new List<String>();
+        /*
+         * The ingestion framework no longer creates catalogs on the fly -
+         * every Business Entity/catalog external identifier a CSV
+         * references must already exist in Salesforce. Anything left in
+         * rowsByCode has no matching ProductCatalog, so every row naming it
+         * is a row error, not a new record.
+         */
         for (String code : rowsByCode.keySet()) {
-            List<RES_Product_Staging__c> rows = rowsByCode.get(code);
-            ProductCatalog pc = new ProductCatalog(
-                Code = code,
-                Name = truncate('Business Entity ' + textOf(rows[0], F_CATALOG_NAME), 255)
-            );
-            applyTargetMaps(pc, 'ProductCatalog', rows, true, rowErrors);
-            toInsert.add(pc);
-            codes.add(code);
-        }
-
-        List<Database.SaveResult> saves = Database.insert(toInsert, false);
-        for (Integer i = 0; i < saves.size(); i++) {
-            if (saves[i].isSuccess()) {
-                catalogIdByCode.put(codes[i], saves[i].getId());
-                totalCatalogs++;
-            } else {
-                String msg = 'ProductCatalog "' + codes[i] + '": ' + saves[i].getErrors()[0].getMessage();
-                recordError(msg);
-                for (RES_Product_Staging__c stg : rowsByCode.get(codes[i])) addRowError(rowErrors, stg.Id, msg);
-            }
+            String msg = 'ProductCatalog with external identifier "' + code +
+                         '" does not exist. Create it before running ingestion.';
+            recordError(msg);
+            for (RES_Product_Staging__c stg : rowsByCode.get(code)) addRowError(rowErrors, stg.Id, msg);
         }
     }
 
@@ -174,38 +163,27 @@ public with sharing class RES_UnifiedIngestionEngine implements Database.Batchab
         }
         if (rowsByCode.isEmpty()) return;
 
-        List<ProductCategory> toInsert = new List<ProductCategory>();
-        List<String> codes              = new List<String>();
+        /*
+         * The ingestion framework no longer creates categories on the fly -
+         * every Building/category external identifier a CSV references must
+         * already exist in Salesforce. Anything left in rowsByCode has no
+         * matching ProductCategory, so every row naming it is a row error,
+         * not a new record.
+         */
         for (String code : rowsByCode.keySet()) {
             List<RES_Product_Staging__c> rows = rowsByCode.get(code);
-            Id catalogId = catalogIdByCode.get(catalogCode(rows[0]));
-            if (catalogId == null) continue;
-
-            String kind  = categoryKind(rows[0]);
-            String value = categoryValue(rows[0]);
-
-            ProductCategory cat = new ProductCategory(
-                Code           = code,
-                Name           = truncate(kind + ' ' + value, 200),
-                CatalogId      = catalogId,
-                IsNavigational = true
-            );
-            applyTargetMaps(cat, 'ProductCategory', rows, true, rowErrors);
-            toInsert.add(cat);
-            codes.add(code);
-        }
-        if (toInsert.isEmpty()) return;
-
-        List<Database.SaveResult> saves = Database.insert(toInsert, false);
-        for (Integer i = 0; i < saves.size(); i++) {
-            if (saves[i].isSuccess()) {
-                categoryIdByCode.put(codes[i], saves[i].getId());
-                totalCategories++;
-            } else {
-                String msg = 'ProductCategory "' + codes[i] + '": ' + saves[i].getErrors()[0].getMessage();
-                recordError(msg);
-                for (RES_Product_Staging__c stg : rowsByCode.get(codes[i])) addRowError(rowErrors, stg.Id, msg);
+            if (catalogIdByCode.get(catalogCode(rows[0])) == null) {
+                /*
+                 * The catalog itself didn't resolve either - resolveCatalogs
+                 * already recorded a row error for these rows, so skip
+                 * without a duplicate.
+                 */
+                continue;
             }
+            String msg = 'ProductCategory with external identifier "' + code +
+                         '" does not exist. Create it before running ingestion.';
+            recordError(msg);
+            for (RES_Product_Staging__c stg : rows) addRowError(rowErrors, stg.Id, msg);
         }
     }
 

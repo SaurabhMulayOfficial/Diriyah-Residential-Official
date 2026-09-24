@@ -150,6 +150,33 @@ private class RES_UnifiedIngestionEngineTest {
         return (rt != null && rt.isAvailable()) ? rt.getRecordTypeId() : null;
     }
 
+    /*
+     * The ingestion framework no longer creates ProductCatalog/ProductCategory
+     * records on the fly (see resolveCatalogs/resolveCategories) - every
+     * external identifier a staging row references must already exist.
+     * Tests that need a row to resolve successfully must pre-create these
+     * with the exact same Code formula the engine itself uses.
+     */
+    private static ProductCatalog ensureCatalog(String catalogName) {
+        ProductCatalog cat = new ProductCatalog(
+            Code = 'BE-' + catalogName,
+            Name = 'Business Entity ' + catalogName
+        );
+        insert cat;
+        return cat;
+    }
+
+    private static ProductCategory ensureCategory(Id catalogId, String catalogName, String buildingName) {
+        ProductCategory cat = new ProductCategory(
+            Code           = 'BLD-' + catalogName + '-' + buildingName,
+            Name           = 'Building ' + buildingName,
+            CatalogId      = catalogId,
+            IsNavigational = true
+        );
+        insert cat;
+        return cat;
+    }
+
     // ==================================================================
     // Happy path: two new products, pricing options (Y100/Y101/Y102),
     // computed + plain attributes, measurements, plus row-level errors,
@@ -161,6 +188,10 @@ private class RES_UnifiedIngestionEngineTest {
     static void testHappyPath_NewProductsPricingOptionsAttributesAndErrors() {
         String catalog  = 'WadiSafar1';
         String building = 'Villa Type A';
+
+        ProductCatalog wadiSafarCatalog = ensureCatalog(catalog);
+        ensureCategory(wadiSafarCatalog.Id, catalog, building);
+        ensureCategory(wadiSafarCatalog.Id, catalog, 'Villa Type B');
 
         RES_Product_Staging__c y100 = baseRow('UNIT-100', catalog, building);
         y100.RES_Condition_Type__c       = 'Y100';
@@ -221,15 +252,16 @@ private class RES_UnifiedIngestionEngineTest {
             Assert.areEqual(expectedRt, unit100.RecordTypeId, 'Record type should be applied for new products');
         }
 
-        // ---- ProductCatalog / ProductCategory ----
+        // ---- ProductCatalog / ProductCategory: pre-created above, the engine must resolve
+        // them (not create duplicates) since it no longer creates catalogs/categories itself ----
         List<ProductCatalog> catalogs = [SELECT Id, Code FROM ProductCatalog WHERE Code = :('BE-' + catalog)];
-        Assert.areEqual(1, catalogs.size(), 'Exactly one catalog should be created for the shared catalog name');
+        Assert.areEqual(1, catalogs.size(), 'The pre-existing catalog must be reused, not duplicated');
 
         List<ProductCategory> categories = [
             SELECT Id, Code FROM ProductCategory
             WHERE Code IN (:('BLD-' + catalog + '-' + building), :('BLD-' + catalog + '-Villa Type B'))
         ];
-        Assert.areEqual(2, categories.size(), 'Two categories should be created (one per building)');
+        Assert.areEqual(2, categories.size(), 'The pre-existing categories must be reused, not duplicated');
 
         Assert.areEqual(1, [SELECT COUNT() FROM ProductCategoryProduct WHERE ProductId = :unit100.Id]);
 
@@ -419,6 +451,50 @@ private class RES_UnifiedIngestionEngineTest {
         Assert.areEqual(1, unit400Adjustments.size(), 'Re-running must not duplicate the adjustment');
         Assert.areEqual(750000, unit400Adjustments[0].AdjustmentValue.setScale(0),
             'Re-running with a changed price should update the existing adjustment rather than duplicate it');
+    }
+
+    // ==================================================================
+    // Missing catalog/category: resolveCatalogs/resolveCategories must no longer create
+    // these on the fly. A staging row naming a catalog or category external identifier
+    // that doesn't already exist must fail with a row error, and no ProductCatalog/
+    // ProductCategory record may be created for it.
+    // ==================================================================
+    @IsTest
+    static void testMissingCatalogAndCategory_RecordsRowErrorAndCreatesNothing() {
+        // No catalog/category created here - deliberately.
+        RES_Product_Staging__c missingCatalog = baseRow('UNIT-700', 'NoSuchCatalog', 'NoSuchBuilding');
+
+        // Catalog exists but the category under it doesn't.
+        ProductCatalog existingCatalog = ensureCatalog('PartialCatalog');
+        RES_Product_Staging__c missingCategory = baseRow('UNIT-800', 'PartialCatalog', 'NoSuchBuilding2');
+
+        List<RES_Product_Staging__c> scope = new List<RES_Product_Staging__c>{ missingCatalog, missingCategory };
+        insert scope;
+
+        Test.startTest();
+        RES_UnifiedIngestionEngine engine = new RES_UnifiedIngestionEngine(LAYOUT_CODE);
+        engine.execute(null, scope);
+        Test.stopTest();
+
+        Assert.areEqual(0, [SELECT COUNT() FROM ProductCatalog WHERE Code = 'BE-NoSuchCatalog'],
+            'A referenced-but-missing catalog must not be created');
+        Assert.areEqual(0, [SELECT COUNT() FROM ProductCategory WHERE Code = 'BLD-PartialCatalog-NoSuchBuilding2'],
+            'A referenced-but-missing category must not be created, even when its catalog exists');
+
+        Map<Id, RES_Product_Staging__c> finalRows = new Map<Id, RES_Product_Staging__c>(
+            [SELECT Id, RES_Processing_Status__c, RES_Error_Log__c FROM RES_Product_Staging__c WHERE Id IN :scope]
+        );
+        Assert.areEqual('Error', finalRows.get(missingCatalog.Id).RES_Processing_Status__c);
+        Assert.isTrue(
+            finalRows.get(missingCatalog.Id).RES_Error_Log__c.contains('ProductCatalog with external identifier "BE-NoSuchCatalog" does not exist'),
+            'Missing catalog must record its own row error'
+        );
+
+        Assert.areEqual('Error', finalRows.get(missingCategory.Id).RES_Processing_Status__c);
+        Assert.isTrue(
+            finalRows.get(missingCategory.Id).RES_Error_Log__c.contains('ProductCategory with external identifier "BLD-PartialCatalog-NoSuchBuilding2" does not exist'),
+            'Missing category must record its own row error even when its catalog exists'
+        );
     }
 
     // ==================================================================
