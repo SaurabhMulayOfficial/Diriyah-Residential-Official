@@ -14,6 +14,10 @@
             <default>true</default>
         </values>
         <values>
+            <fullName>ZTR603</fullName>
+            <default>false</default>
+        </values>
+        <values>
             <fullName>ZTR640</fullName>
             <default>false</default>
         </values>
@@ -25,14 +29,158 @@
             <fullName>ZTR893</fullName>
             <default>false</default>
         </values>
+    </picklistValues>
+    <picklistValues>
+        <picklist>RES_Bank_Name_AR__c</picklist>
         <values>
-            <fullName>ZTR603</fullName>
+            <fullName>البنك السعودي الأول</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>البنك السعودي الفرنسي</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>البنك العربي الوطني</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>مصرف الراجحي</fullName>
+            <default>false</default>
+        </values>
+    </picklistValues>
+    <picklistValues>
+        <picklist>RES_Bank_Name_EN__c</picklist>
+        <values>
+            <fullName>AlRajhi Bank</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Arab National Bank</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Banque Saudi Fransi</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Saudi Awwal Bank</fullName>
+            <default>false</default>
+        </values>
+    </picklistValues>
+    <picklistValues>
+        <picklist>RES_Beneficiary_Name_AR__c</picklist>
+        <values>
+            <fullName>أرماني%C2%A0ريزدينسز الدرعية</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>أمان%C2%A0سمر%C2%A0رزيدنسز%C2%A0وادي%C2%A0صفار</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>الأراضي السكنية بوادي صفار</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>الريتز كارلتون رزيدنسز الدرعية</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>الريتز كارلتون ريزيدنسز سيجنتشر كوليكشن الدرعية</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>باكارا رزيدنسز الدرعية</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>ذا أوبيروي رزيدنسز وادي صفار</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>رافلز ريزدينسز الدرعية</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>شيدي ريزيدنسز وادي صفار</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>فايينا ريزيدنسز وادي صفار</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>كورينثيا رزيدنسز الدرعية</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>منازل الحداوي</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>ميدان الدرعية</fullName>
+            <default>false</default>
+        </values>
+    </picklistValues>
+    <picklistValues>
+        <picklist>RES_Beneficiary_Name_EN__c</picklist>
+        <values>
+            <fullName>Amansamar Residences Wadi Safar</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Armani Residences Diriyah</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Baccarat Residences Diriyah</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Corinthia Residences Diriyah</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Diriyah Square</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Faena Residences Wadi Safar</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>MANAZEL ALHADAWI</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Raffles Residences Diriyah</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>The Chedi Residences Wadi Safar</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>The Oberoi Residences Wadi Safar</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>The Ritz Carlton Residences Diriyah</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>The Ritz Carlton Residences Signature Co</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Wadi Safar Residential Plots</fullName>
             <default>false</default>
         </values>
     </picklistValues>
     <picklistValues>
         <picklist>RES_Master_Plan__c</picklist>
-        <value>
+        <values>
             <fullName>DG1</fullName>
             <default>false</default>
             <label>DG1</label>
@@ -57,6 +205,25 @@
         <picklist>RES_Measurement_Type__c</picklist>
         <values>
             <fullName>None</fullName>
+            <default>false</default>
+        </values>
+    </picklistValues>
+    <picklistValues>
+        <picklist>RES_Swift__c</picklist>
+        <values>
+            <fullName>ARNBSARI</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>BSFRSARI</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>RJHISARI</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>SABBSARI</fullName>
             <default>false</default>
         </values>
     </picklistValues>

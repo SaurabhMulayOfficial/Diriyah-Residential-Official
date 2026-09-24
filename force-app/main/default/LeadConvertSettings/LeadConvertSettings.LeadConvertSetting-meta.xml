@@ -8,6 +8,10 @@
             <outputField>RES_BP_Role__c</outputField>
         </mappingFields>
         <mappingFields>
+            <inputField>RES_City_Arabic__c</inputField>
+            <outputField>RES_City_Arabic__c</outputField>
+        </mappingFields>
+        <mappingFields>
             <inputField>RES_Cityscape_Year__c</inputField>
             <outputField>RES_Cityscape_Year__c</outputField>
         </mappingFields>
@@ -20,6 +24,10 @@
             <outputField>RES_CR_number__c</outputField>
         </mappingFields>
         <mappingFields>
+            <inputField>RES_Company_Organization__c</inputField>
+            <outputField>RES_Company_Organization__c</outputField>
+        </mappingFields>
+        <mappingFields>
             <inputField>RES_Corporate_Title__c</inputField>
             <outputField>RES_Corporate_Title__c</outputField>
         </mappingFields>
@@ -28,8 +36,16 @@
             <outputField>DIR_Country__c</outputField>
         </mappingFields>
         <mappingFields>
+            <inputField>RES_Country_Arabic__c</inputField>
+            <outputField>RES_Country_Arabic__c</outputField>
+        </mappingFields>
+        <mappingFields>
             <inputField>RES_Form_Submission_ID__c</inputField>
             <outputField>RES_Form_Submission_ID__c</outputField>
+        </mappingFields>
+        <mappingFields>
+            <inputField>RES_Full_Arabic_Name__c</inputField>
+            <outputField>RES_Full_Arabic_Name__c</outputField>
         </mappingFields>
         <mappingFields>
             <inputField>RES_House_Number__c</inputField>
@@ -46,6 +62,10 @@
         <mappingFields>
             <inputField>RES_Marketing_Permission__c</inputField>
             <outputField>RES_Marketing_Permission__c</outputField>
+        </mappingFields>
+        <mappingFields>
+            <inputField>RES_PO_Box__c</inputField>
+            <outputField>RES_PO_Box__c</outputField>
         </mappingFields>
         <mappingFields>
             <inputField>RES_Position__c</inputField>
@@ -88,12 +108,24 @@
     <objectMapping>
         <inputObject>Lead</inputObject>
         <mappingFields>
+            <inputField>RES_City_Arabic__c</inputField>
+            <outputField>RES_City_Arabic__c</outputField>
+        </mappingFields>
+        <mappingFields>
             <inputField>RES_Cityscape_Year__c</inputField>
             <outputField>RES_Cityscape_Year__c</outputField>
         </mappingFields>
         <mappingFields>
             <inputField>DIR_Country__c</inputField>
             <outputField>DIR_Country__c</outputField>
+        </mappingFields>
+        <mappingFields>
+            <inputField>RES_Country_Arabic__c</inputField>
+            <outputField>RES_Country_Arabic__c</outputField>
+        </mappingFields>
+        <mappingFields>
+            <inputField>RES_Date_of_Birth__c</inputField>
+            <outputField>RES_Date_of_Birth__c</outputField>
         </mappingFields>
         <mappingFields>
             <inputField>RES_Full_Arabic_Name__c</inputField>
@@ -114,6 +146,14 @@
         <mappingFields>
             <inputField>RES_Nationality__c</inputField>
             <outputField>RES_Nationality__c</outputField>
+        </mappingFields>
+        <mappingFields>
+            <inputField>RES_Nationality_Arabic__c</inputField>
+            <outputField>RES_Nationality_Arabic__c</outputField>
+        </mappingFields>
+        <mappingFields>
+            <inputField>RES_PO_Box__c</inputField>
+            <outputField>RES_PO_Box__c</outputField>
         </mappingFields>
         <outputObject>Contact</outputObject>
     </objectMapping>

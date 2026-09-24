@@ -7,6 +7,16 @@
                     <name>actionNames</name>
                     <valueList>
                         <valueListItems>
+                            <value>Contract.RES_Generate_SPA</value>
+                            <visibilityRule>
+                                <criteria>
+                                    <leftValue>{!Record.RES_Source_Opportunity_Stage__c}</leftValue>
+                                    <operator>CONTAINS</operator>
+                                    <rightValue>SPA</rightValue>
+                                </criteria>
+                            </visibilityRule>
+                        </valueListItems>
+                        <valueListItems>
                             <value>CustomButton.Contract.RES_Send_for_KYC_Approval</value>
                             <visibilityRule>
                                 <booleanFilter>1 AND 2 AND 3 AND 4 AND 5 AND 6</booleanFilter>
@@ -1158,6 +1168,12 @@
                 </componentInstanceProperties>
                 <componentName>lst:dynamicRelatedList</componentName>
                 <identifier>lst_dynamicRelatedList</identifier>
+            </componentInstance>
+        </itemInstances>
+        <itemInstances>
+            <componentInstance>
+                <componentName>resToastMessage</componentName>
+                <identifier>c_resToastMessage</identifier>
             </componentInstance>
         </itemInstances>
         <mode>Replace</mode>
