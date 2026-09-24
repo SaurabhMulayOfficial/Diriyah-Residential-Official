@@ -87,20 +87,6 @@
                 <leftValueReference>Get_Units.RES_Unit_Status__c</leftValueReference>
                 <operator>EqualTo</operator>
                 <rightValue>
-                    <stringValue>Available</stringValue>
-                </rightValue>
-            </conditions>
-            <conditions>
-                <leftValueReference>Get_Units.RES_Unit_Status__c</leftValueReference>
-                <operator>EqualTo</operator>
-                <rightValue>
-                    <stringValue>Hard Block</stringValue>
-                </rightValue>
-            </conditions>
-            <conditions>
-                <leftValueReference>Get_Units.RES_Unit_Status__c</leftValueReference>
-                <operator>EqualTo</operator>
-                <rightValue>
                     <stringValue>Soft Hold</stringValue>
                 </rightValue>
             </conditions>
@@ -323,6 +309,13 @@
             <operator>NotEqualTo</operator>
             <value>
                 <stringValue>Hard Block</stringValue>
+            </value>
+        </filters>
+        <filters>
+            <field>RES_CIP_Type__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <stringValue>Unit</stringValue>
             </value>
         </filters>
         <inputAssignments>
