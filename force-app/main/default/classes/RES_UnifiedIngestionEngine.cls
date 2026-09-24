@@ -263,6 +263,8 @@ public with sharing class RES_UnifiedIngestionEngine implements Database.Batchab
              * A/B/C" products, which are all Type = 'Bundle'.
              */
             if (isNew) p.Type = 'Bundle';
+            // CIP Type is normally entered manually on product creation; the ingestion framework must set it itself since it bypasses that UI.
+            if (isNew) p.RES_CIP_Type__c = 'Unit';
             Id classId = resolveClassification();
             if (classId != null) p.BasedOnId = classId;
 

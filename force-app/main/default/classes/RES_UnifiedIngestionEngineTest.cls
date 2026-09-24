@@ -234,7 +234,7 @@ private class RES_UnifiedIngestionEngineTest {
 
         // ---- Product2 ----
         List<Product2> products = [
-            SELECT Id, ProductCode, Name, IsActive, Family, RecordTypeId
+            SELECT Id, ProductCode, Name, IsActive, Family, RecordTypeId, RES_CIP_Type__c
             FROM Product2
             WHERE RES_Product_External_ID__c IN ('UNIT-100', 'UNIT-200', 'UNIT-300')
         ];
@@ -246,6 +246,7 @@ private class RES_UnifiedIngestionEngineTest {
         Assert.isNotNull(unit100, 'UNIT-100 should have been created');
         Assert.areEqual(false, unit100.IsActive, 'New products default to IsActive=false via literal mapping');
         Assert.areEqual(VALID_FAMILY_VALUE, unit100.Family, 'Family should be set via Picklist_Safe mapping');
+        Assert.areEqual('Unit', unit100.RES_CIP_Type__c, 'New units must be tagged CIP Type = Unit since the ingestion framework bypasses manual entry');
 
         Id expectedRt = productRecordTypeIdIfAny();
         if (expectedRt != null) {
