@@ -43,4 +43,19 @@ public with sharing class RES_GroupDAOLayer extends RES_BaseDAOLayer {
 
         return queueMapping;
     }
+    
+    public Map<Id, String> getGroupsByDeveloperNames(Set<String> groupDeveloperNames){
+        Map<String, Object> bindVars = new Map<String, Object>();
+        bindVars.put('groupDeveloperNames', groupDeveloperNames);
+        String soql = 'SELECT Id, DeveloperName FROM Group WHERE DeveloperName IN : groupDeveloperNames';
+        List<Group> groups = executeQuery(soql, '' , false, bindVars, AccessLevel.SYSTEM_MODE);
+        Map<Id, String> groupMapping = new Map<Id, String>();
+
+        for(Group grp : groups){
+            if(!groupMapping.containsKey(grp.Id)){
+                groupMapping.put(grp.Id, grp.DeveloperName);
+            }
+        }
+        return groupMapping;
+    }
 }
