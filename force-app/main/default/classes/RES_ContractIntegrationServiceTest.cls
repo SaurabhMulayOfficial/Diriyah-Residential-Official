@@ -49,8 +49,8 @@ private class RES_ContractIntegrationServiceTest {
         Contract c = new Contract(
             AccountId = accountId,
             Status    = 'Draft',
-            StartDate = Date.today(),
-            EndDate   = Date.today().addYears(1)
+            StartDate    = Date.today(),
+            ContractTerm = 12
         );
         insert c;
         return [
