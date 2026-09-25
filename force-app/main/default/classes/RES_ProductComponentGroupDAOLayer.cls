@@ -40,4 +40,22 @@ public without sharing class RES_ProductComponentGroupDAOLayer extends RES_BaseD
         };
         return (List<ProductComponentGroup>) executeQuery(soql, '', false, bindVars, AccessLevel.SYSTEM_MODE);
     }
+
+    /**
+     * Retrieves every ProductComponentGroup under the given parent products, regardless of
+     * Name. Used by RES_ApplyApprovedPOCToFuturePaymentPlan to find each root Payment Plan's
+     * existing Installments group, so the equivalent group on a new Payment Plan version can
+     * mirror its Name/Sequence.
+     */
+    public List<ProductComponentGroup> getGroupsByParentProducts(Set<Id> parentProductIds) {
+        if (parentProductIds == null || parentProductIds.isEmpty()) {
+            return new List<ProductComponentGroup>();
+        }
+        String soql =
+            'SELECT Id, ParentProductId, Name, Sequence, MinBundleComponents, MaxBundleComponents ' +
+            'FROM ProductComponentGroup ' +
+            'WHERE ParentProductId IN :parentProductIds';
+        Map<String, Object> bindVars = new Map<String, Object>{ 'parentProductIds' => parentProductIds };
+        return (List<ProductComponentGroup>) executeQuery(soql, '', false, bindVars, AccessLevel.SYSTEM_MODE);
+    }
 }

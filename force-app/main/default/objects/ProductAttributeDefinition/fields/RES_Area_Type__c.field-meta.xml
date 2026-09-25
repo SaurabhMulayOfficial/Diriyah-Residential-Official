@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>RES_Area_Type__c</fullName>
+    <description>Which area measurement drives the service charge calculation instead of the default Product2.RES_Net_Saleable_Area__c. Values match RES_Measurement__c.RES_Measurement_Type__c exactly (Z-codes), so RES_ResidentialBundlePricingHook can look up the matching RES_Measurement__c record by Product + Measurement Type. Blank defaults to the legacy Net Saleable Area behavior for backward compatibility with existing records.</description>
+    <label>Area Type</label>
+    <required>false</required>
+    <trackHistory>false</trackHistory>
+    <type>Picklist</type>
+    <valueSet>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>Z001</fullName>
+                <default>false</default>
+                <label>NLA (Net Leasable Area)</label>
+            </value>
+            <value>
+                <fullName>Z002</fullName>
+                <default>false</default>
+                <label>Common Area</label>
+            </value>
+            <value>
+                <fullName>Z003</fullName>
+                <default>false</default>
+                <label>GLA (Gross Leasing Area)</label>
+            </value>
+            <value>
+                <fullName>Z005</fullName>
+                <default>false</default>
+                <label>Gross Floor Area</label>
+            </value>
+            <value>
+                <fullName>Z006</fullName>
+                <default>false</default>
+                <label>BUA (Build Up Area)</label>
+            </value>
+            <value>
+                <fullName>Z007</fullName>
+                <default>false</default>
+                <label>Net Saleable Area (Z007)</label>
+            </value>
+            <value>
+                <fullName>Z009</fullName>
+                <default>false</default>
+                <label>Plot Area</label>
+            </value>
+            <value>
+                <fullName>Z013</fullName>
+                <default>false</default>
+                <label>Internal BUA</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>
