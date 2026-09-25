@@ -206,4 +206,103 @@ private class RES_ContractItemPriceTriggerHandlerTest {
         }
         Assert.isFalse(threw, 'Handler constructor must not throw.');
     }
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // handleAfterUpdate — delegates to updateFinalPaymentOnContract
+    // ─────────────────────────────────────────────────────────────────────────
+
+    @isTest
+    static void handleAfterUpdate_emptyList_doesNotThrow() {
+        Boolean threw = false;
+        try {
+            Test.startTest();
+            RES_ContractItemPriceTriggerHandler.handleAfterUpdate(
+                new List<ContractItemPrice>()
+            );
+            Test.stopTest();
+        } catch (Exception e) {
+            threw = true;
+        }
+        Assert.isFalse(threw, 'handleAfterUpdate with empty list must not throw.');
+    }
+
+    @isTest
+    static void handleAfterUpdate_withCIPs_doesNotThrow() {
+        Account acc = RES_TestDataFactory.createAccount();
+        Contract c  = new Contract(AccountId = acc.Id, Status = 'Draft', StartDate = Date.today());
+        insert c;
+
+        ContractItemPrice cip = new ContractItemPrice(ContractId = c.Id, RES_CIP_Type__c = 'Unit');
+
+        Boolean threw = false;
+        try {
+            Test.startTest();
+            RES_ContractItemPriceTriggerHandler.handleAfterUpdate(
+                new List<ContractItemPrice>{ cip }
+            );
+            Test.stopTest();
+        } catch (Exception e) {
+            threw = true;
+        }
+        Assert.isFalse(threw, 'handleAfterUpdate must not propagate exceptions.');
+    }
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // handleAfterDelete — delegates to updateFinalPaymentOnContract
+    // ─────────────────────────────────────────────────────────────────────────
+
+    @isTest
+    static void handleAfterDelete_emptyList_doesNotThrow() {
+        Boolean threw = false;
+        try {
+            Test.startTest();
+            RES_ContractItemPriceTriggerHandler.handleAfterDelete(
+                new List<ContractItemPrice>()
+            );
+            Test.stopTest();
+        } catch (Exception e) {
+            threw = true;
+        }
+        Assert.isFalse(threw, 'handleAfterDelete with empty list must not throw.');
+    }
+
+    @isTest
+    static void handleAfterDelete_withCIPs_doesNotThrow() {
+        Account acc = RES_TestDataFactory.createAccount();
+        Contract c  = new Contract(AccountId = acc.Id, Status = 'Draft', StartDate = Date.today());
+        insert c;
+
+        ContractItemPrice cip = new ContractItemPrice(ContractId = c.Id, RES_CIP_Type__c = 'Unit');
+
+        Boolean threw = false;
+        try {
+            Test.startTest();
+            RES_ContractItemPriceTriggerHandler.handleAfterDelete(
+                new List<ContractItemPrice>{ cip }
+            );
+            Test.stopTest();
+        } catch (Exception e) {
+            threw = true;
+        }
+        Assert.isFalse(threw, 'handleAfterDelete must not propagate exceptions.');
+    }
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // handleAfterUndelete — delegates to updateFinalPaymentOnContract
+    // ─────────────────────────────────────────────────────────────────────────
+
+    @isTest
+    static void handleAfterUndelete_emptyList_doesNotThrow() {
+        Boolean threw = false;
+        try {
+            Test.startTest();
+            RES_ContractItemPriceTriggerHandler.handleAfterUndelete(
+                new List<ContractItemPrice>()
+            );
+            Test.stopTest();
+        } catch (Exception e) {
+            threw = true;
+        }
+        Assert.isFalse(threw, 'handleAfterUndelete with empty list must not throw.');
+    }
 }
