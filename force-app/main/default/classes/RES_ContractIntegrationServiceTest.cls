@@ -54,10 +54,11 @@ private class RES_ContractIntegrationServiceTest {
         );
         insert c;
         return [
-            SELECT Id, AccountId, OwnerId, StartDate, EndDate,
+            SELECT Id, AccountId, OwnerId, Owner.Name, StartDate, EndDate,
                    ContractNumber, RES_Contract_Type__c,
                    RES_First_Residential_Buyer__c,
                    CompanySignedDate, DIR_Old_Contract__c,
+                   RES_Company_Code__c,
                    Account.RES_BP_Role__c
             FROM Contract
             WHERE Id = :c.Id

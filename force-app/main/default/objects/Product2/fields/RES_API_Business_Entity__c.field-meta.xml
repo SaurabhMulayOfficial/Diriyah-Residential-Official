@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>RES_API_Business_Entity__c</fullName>
+    <externalId>false</externalId>
+    <formula>RES_Business_Entity__r.RES_Business_Entity_Id__c + &apos;/&apos; +  RES_Product_External_ID__c</formula>
+    <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+    <label>API Business Entity</label>
+    <required>false</required>
+    <trackHistory>false</trackHistory>
+    <type>Text</type>
+    <unique>false</unique>
+</CustomField>
