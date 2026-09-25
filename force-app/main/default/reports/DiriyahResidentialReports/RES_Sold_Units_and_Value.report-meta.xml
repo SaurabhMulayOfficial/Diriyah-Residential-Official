@@ -7,20 +7,14 @@
         <field>Quote$Status</field>
     </columns>
     <columns>
-        <aggregateTypes>Sum</aggregateTypes>
-        <field>Quote$TotalPrice</field>
-    </columns>
-    <columns>
         <field>Quote.Products__r$Name</field>
     </columns>
     <columns>
         <field>Quote.Products__r$RES_Unit_Status__c</field>
     </columns>
     <columns>
-        <field>Quote.Products__r$RES_Type__c</field>
-    </columns>
-    <columns>
-        <field>Quote.Products__r$RES_Unit_Handover_Date__c</field>
+        <aggregateTypes>Sum</aggregateTypes>
+        <field>Quote$TotalPrice</field>
     </columns>
     <currency>SAR</currency>
     <description>Products (units) with Unit Status = Sold, with SAR value from the Quote total Price. One quote carries one unit, so record count equals sold units</description>
@@ -32,19 +26,12 @@
             <operator>equals</operator>
             <value>Sold</value>
         </criteriaItems>
-        <criteriaItems>
-            <column>Quote$RES_Project__c</column>
-            <columnToColumn>false</columnToColumn>
-            <isUnlocked>true</isUnlocked>
-            <operator>equals</operator>
-            <value>Amansamar Residences Wadi Safar,Armani Residences Diriyah,Baccarat Residences Diriyah,Corinthia Residences Diriyah,Faena Residences Wadi Safar,Manazel AlHadawi,Oberoi Branded Residences Wadi Safar,Raffles Branded Residences,The Chedi Residences Wadi Safar,The Ritz Carlton Residences Diriyah,The Ritz Carlton Signature,Wadi Safar – Plots,Not Decided</value>
-        </criteriaItems>
         <language>en_US</language>
     </filter>
     <format>Summary</format>
     <groupingsDown>
         <dateGranularity>Day</dateGranularity>
-        <field>Quote$RES_Project__c</field>
+        <field>Quote.Products__r$RES_Business_Entity__c</field>
         <sortOrder>Asc</sortOrder>
     </groupingsDown>
     <name>Sold Units and Value</name>
