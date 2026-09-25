@@ -3,6 +3,41 @@
     <description>Read-only access to Revenue Cloud fields not in the standard Revenue Cloud Users permission sets: Product2 area, ProductRelatedComponent price option, AttributeAdjustmentCondition values.</description>
     <fieldPermissions>
         <editable>false</editable>
+        <field>ProductAttributeDefinition.RES_Area_Type__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>ProductAttributeDefinition.RES_Billing_Frequency__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>Product2.RES_Price_Option__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>Product2.RES_Construction_Phase__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>Product2.RES_CIP_Type__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>Product2.RES_Parent_Payment_Plan__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>Product2.RES_Version__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
         <field>Product2.RES_Net_Saleable_Area__c</field>
         <readable>true</readable>
     </fieldPermissions>
