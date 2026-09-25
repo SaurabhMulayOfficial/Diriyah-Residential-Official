@@ -15,7 +15,7 @@ public without sharing class RES_ContractItemPriceDAOLayer extends RES_BaseDAOLa
         Map<String, Object> bindVars = new Map<String, Object>{ 'contractIds' => contractIds };
         return (List<ContractItemPrice>) executeQuery(soql, '', false, bindVars, AccessLevel.SYSTEM_MODE);
     }
-}
+
     public List<ContractItemPrice> getCIPByContractIds(Set<Id> contractIds) {
         if (contractIds == null || contractIds.isEmpty()) {
             return new List<ContractItemPrice>();
