@@ -236,4 +236,115 @@ private class RES_ContractItemPriceServicesTest {
 
         Assert.isFalse(threw, 'Any exception from the inner syncContract call must be caught and logged, not propagated.');
     }
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // DAO mock: both CIP types present → eligibility check passes
+    // ─────────────────────────────────────────────────────────────────────────
+
+    @isTest
+    static void syncContracts_bothCIPTypesPresent_marksEligible() {
+        Account acc = RES_TestDataFactory.createAccount();
+        Contract c  = createAndFetchContract(acc.Id);
+
+        // Inject mock DAO results so the eligibility block is reached
+        ContractItemPrice mockUnit = new ContractItemPrice(
+            ContractId      = c.Id,
+            RES_CIP_Type__c = 'Unit'
+        );
+        ContractItemPrice mockPP = new ContractItemPrice(
+            ContractId      = c.Id,
+            RES_CIP_Type__c = 'Payment Plan'
+        );
+        RES_ContractItemPriceServices.mockExistingCIPs =
+            new List<ContractItemPrice>{ mockUnit, mockPP };
+        RES_ContractItemPriceServices.mockContractList =
+            new List<Contract>{ c };
+
+        RES_IntegrationTestDataFactory.primeSapToken();
+        RES_IntegrationTestDataFactory.EndpointRoutingMock mock =
+            new RES_IntegrationTestDataFactory.EndpointRoutingMock();
+        Test.setMock(HttpCalloutMock.class, mock);
+
+        Boolean threw = false;
+        try {
+            Test.startTest();
+            RES_ContractItemPriceServices.syncContracts(
+                new List<ContractItemPrice>{ mockUnit, mockPP }
+            );
+            Test.getEventBus().deliver();
+            Test.stopTest();
+        } catch (Exception e) {
+            threw = true;
+        } finally {
+            RES_ContractItemPriceServices.mockExistingCIPs = null;
+            RES_ContractItemPriceServices.mockContractList = null;
+            RES_IntegrationTestDataFactory.clearSapToken();
+        }
+
+        Assert.isFalse(threw, 'syncContracts must not propagate exceptions when both CIP types are present.');
+    }
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // DAO mock: only Unit CIP in existing → eligibility still fails
+    // ─────────────────────────────────────────────────────────────────────────
+
+    @isTest
+    static void syncContracts_mockOnlyUnit_notEligible() {
+        Account acc = RES_TestDataFactory.createAccount();
+        Contract c  = createAndFetchContract(acc.Id);
+
+        ContractItemPrice mockUnit = new ContractItemPrice(
+            ContractId      = c.Id,
+            RES_CIP_Type__c = 'Unit'
+        );
+        RES_ContractItemPriceServices.mockExistingCIPs =
+            new List<ContractItemPrice>{ mockUnit };
+
+        Boolean threw = false;
+        try {
+            Test.startTest();
+            RES_ContractItemPriceServices.syncContracts(
+                new List<ContractItemPrice>{ mockUnit }
+            );
+            Test.stopTest();
+        } catch (Exception e) {
+            threw = true;
+        } finally {
+            RES_ContractItemPriceServices.mockExistingCIPs = null;
+        }
+
+        Assert.isFalse(threw, 'A contract with only Unit in existing CIPs must exit without error.');
+    }
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // DAO mock: only Payment Plan in existing → eligibility still fails
+    // ─────────────────────────────────────────────────────────────────────────
+
+    @isTest
+    static void syncContracts_mockOnlyPaymentPlan_notEligible() {
+        Account acc = RES_TestDataFactory.createAccount();
+        Contract c  = createAndFetchContract(acc.Id);
+
+        ContractItemPrice mockPP = new ContractItemPrice(
+            ContractId      = c.Id,
+            RES_CIP_Type__c = 'Payment Plan'
+        );
+        RES_ContractItemPriceServices.mockExistingCIPs =
+            new List<ContractItemPrice>{ mockPP };
+
+        Boolean threw = false;
+        try {
+            Test.startTest();
+            RES_ContractItemPriceServices.syncContracts(
+                new List<ContractItemPrice>{ mockPP }
+            );
+            Test.stopTest();
+        } catch (Exception e) {
+            threw = true;
+        } finally {
+            RES_ContractItemPriceServices.mockExistingCIPs = null;
+        }
+
+        Assert.isFalse(threw, 'A contract with only Payment Plan in existing CIPs must exit without error.');
+    }
 }

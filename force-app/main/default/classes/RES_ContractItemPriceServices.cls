@@ -9,6 +9,9 @@
 public with sharing class RES_ContractItemPriceServices {
     public RES_ContractItemPriceServices() {}
 
+    @TestVisible private static List<ContractItemPrice> mockExistingCIPs;
+    @TestVisible private static List<Contract> mockContractList;
+
     public static void syncContracts(List<ContractItemPrice> CIPList){
         if(CIPList.isEmpty())return;
 
@@ -23,7 +26,9 @@ public with sharing class RES_ContractItemPriceServices {
 
         if(contractIds.isEmpty())return;
 
-        List<ContractItemPrice> existingCIPs = new RES_ContractItemPriceDAOLayer().getCIPByContractIds(contractIds);
+        List<ContractItemPrice> existingCIPs = mockExistingCIPs != null
+            ? mockExistingCIPs
+            : new RES_ContractItemPriceDAOLayer().getCIPByContractIds(contractIds);
 
         Map<Id, Boolean> hasUnit = new Map<Id, Boolean>();
         Map<Id, Boolean> hasPaymentPlan = new Map<Id, Boolean>();
@@ -45,7 +50,9 @@ public with sharing class RES_ContractItemPriceServices {
         }
 
         if(!eligibleContractsToSync.isEmpty()){
-            List<Contract> contractList = new RES_ContractDAOLayer().getContractsByIds(eligibleContractsToSync);
+            List<Contract> contractList = mockContractList != null
+                ? mockContractList
+                : new RES_ContractDAOLayer().getContractsByIds(eligibleContractsToSync);
 
             try{
                 RES_ContractServices.syncContract(contractList, null);

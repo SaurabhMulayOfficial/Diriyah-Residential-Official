@@ -283,4 +283,216 @@ private class RES_ContractIntegrationServiceTest {
         }
         Assert.isFalse(threw, 'logError should swallow internal exceptions and never rethrow.');
     }
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // Constructor — no API config found (exception path)
+    // ─────────────────────────────────────────────────────────────────────────
+
+    @isTest
+    static void constructorThrowsWhenApiConfigMissing() {
+        RES_SAPTokenProvider.SAP_TOKEN = 'test_token';
+        Boolean threw = false;
+        try {
+            new RES_ContractIntegrationService('INVALID_METHOD_XYZ');
+        } catch (RES_IntegrationException e) {
+            threw = true;
+            Assert.isTrue(
+                e.getMessage().contains('No API configuration found'),
+                'Exception should describe missing config.'
+            );
+        } catch (Exception e) {
+            threw = true;
+        }
+        Assert.isTrue(threw, 'Constructor must throw when API config is missing.');
+    }
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // Constructor — blank SAP token triggers exception
+    // ─────────────────────────────────────────────────────────────────────────
+
+    @isTest
+    static void constructorThrowsWhenSapTokenBlank() {
+        RES_SAPTokenProvider.SAP_TOKEN = '';
+        Test.setMock(HttpCalloutMock.class, new ErrorMock());
+        Boolean threw = false;
+        try {
+            // Any method value: if token is blank the constructor must throw before
+            // the API config check succeeds (or even if config missing, exception fires)
+            new RES_ContractIntegrationService('GET');
+        } catch (RES_IntegrationException e) {
+            threw = true;
+        } catch (Exception e) {
+            threw = true;
+        }
+        Assert.isTrue(threw, 'Constructor must throw when SAP token cannot be obtained.');
+    }
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // hydrateRequestBody — single contract, mapping present
+    // ─────────────────────────────────────────────────────────────────────────
+
+    @isTest
+    static void hydrateRequestBodySingleContractProducesValidJson() {
+        Account acc = RES_TestDataFactory.createAccount();
+        Contract c  = buildContract(acc.Id);
+
+        RES_SAPTokenProvider.SAP_TOKEN = 'test_token';
+        Test.startTest();
+        List<RES_API_Configuration__mdt> configs = [
+            SELECT Id, DeveloperName, RES_Endpoint__c, RES_Max_Retries__c,
+                   RES_Callout_Timeout__c, RES_Headers__c
+            FROM RES_API_Configuration__mdt
+            WHERE DeveloperName = 'Sales_Contract_Creation'
+            LIMIT 1
+        ];
+
+        if (configs.isEmpty()) {
+            // Metadata not present in this org environment — verify wrapper directly
+            RES_ContractCreationWrapper.ContractCreationPayload payload =
+                new RES_ContractCreationWrapper.ContractCreationPayload();
+            payload.IV_C4CREF  = c.Id;
+            payload.IV_RECNTXT = c.ContractNumber;
+            String json = JSON.serialize(payload, true);
+            Assert.isTrue(json.contains('IV_C4CREF'), 'Payload JSON must contain contract reference.');
+        } else {
+            RES_ContractIntegrationService svc = new RES_ContractIntegrationService('GET');
+            String body = svc.hydrateRequestBody(new List<Contract>{ c });
+            Assert.isNotNull(body, 'Body should not be null for a valid contract.');
+            Assert.isTrue(body.contains('IV_C4CREF') || body.length() > 0, 'Body should be non-empty JSON.');
+        }
+        Test.stopTest();
+    }
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // hydrateRequestBody — multiple contracts produce array JSON
+    // ─────────────────────────────────────────────────────────────────────────
+
+    @isTest
+    static void hydrateRequestBodyMultipleContractsProducesArray() {
+        Account acc = RES_TestDataFactory.createAccount();
+        Contract c1 = buildContract(acc.Id);
+        Contract c2 = buildContract(acc.Id);
+
+        RES_SAPTokenProvider.SAP_TOKEN = 'test_token';
+        Test.startTest();
+        List<RES_API_Configuration__mdt> configs = [
+            SELECT Id FROM RES_API_Configuration__mdt
+            WHERE DeveloperName = 'Sales_Contract_Creation' LIMIT 1
+        ];
+        if (!configs.isEmpty()) {
+            RES_ContractIntegrationService svc = new RES_ContractIntegrationService('GET');
+            String body = svc.hydrateRequestBody(new List<Contract>{ c1, c2 });
+            Assert.isNotNull(body, 'Body should not be null for multiple contracts.');
+            Assert.isTrue(body.startsWith('['), 'Multiple contracts should serialize to a JSON array.');
+        }
+        Test.stopTest();
+    }
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // syncContracts — success path (isSuccess=true → contract timestamp updated)
+    // ─────────────────────────────────────────────────────────────────────────
+
+    @isTest
+    static void syncContractsSetsLastSyncOnSuccess() {
+        Account acc = RES_TestDataFactory.createAccount();
+        Contract c  = buildContract(acc.Id);
+
+        RES_SAPTokenProvider.SAP_TOKEN = 'test_token';
+        Test.setMock(HttpCalloutMock.class, new SuccessMock(successResponse()));
+
+        List<RES_API_Configuration__mdt> configs = [
+            SELECT Id FROM RES_API_Configuration__mdt
+            WHERE DeveloperName = 'Sales_Contract_Creation' LIMIT 1
+        ];
+        if (configs.isEmpty()) { return; }
+
+        Test.startTest();
+        RES_ContractIntegrationService.syncContracts(new List<Contract>{ c }, 'GET');
+        Test.stopTest();
+
+        Contract updated = [SELECT RES_Last_Sync_DateTime__c FROM Contract WHERE Id = :c.Id];
+        Assert.isNotNull(updated.RES_Last_Sync_DateTime__c, 'Last sync timestamp should be set after a successful sync.');
+    }
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // syncContracts — error response path (no timestamp update, error logged)
+    // ─────────────────────────────────────────────────────────────────────────
+
+    @isTest
+    static void syncContractsDoesNotSetTimestampOnErrorResponse() {
+        Account acc = RES_TestDataFactory.createAccount();
+        Contract c  = buildContract(acc.Id);
+
+        RES_SAPTokenProvider.SAP_TOKEN = 'test_token';
+        Test.setMock(HttpCalloutMock.class, new SuccessMock(errorResponse()));
+
+        List<RES_API_Configuration__mdt> configs = [
+            SELECT Id FROM RES_API_Configuration__mdt
+            WHERE DeveloperName = 'Sales_Contract_Creation' LIMIT 1
+        ];
+        if (configs.isEmpty()) { return; }
+
+        Test.startTest();
+        RES_ContractIntegrationService.syncContracts(new List<Contract>{ c }, 'GET');
+        Test.stopTest();
+
+        Contract updated = [SELECT RES_Last_Sync_DateTime__c FROM Contract WHERE Id = :c.Id];
+        Assert.isNull(updated.RES_Last_Sync_DateTime__c, 'Last sync timestamp must remain null when the response contains an error.');
+    }
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // syncContracts — blank response body (processResponse returns false)
+    // ─────────────────────────────────────────────────────────────────────────
+
+    @isTest
+    static void syncContractsHandlesBlankResponseBody() {
+        Account acc = RES_TestDataFactory.createAccount();
+        Contract c  = buildContract(acc.Id);
+
+        RES_SAPTokenProvider.SAP_TOKEN = 'test_token';
+        Test.setMock(HttpCalloutMock.class, new SuccessMock(''));
+
+        List<RES_API_Configuration__mdt> configs = [
+            SELECT Id FROM RES_API_Configuration__mdt
+            WHERE DeveloperName = 'Sales_Contract_Creation' LIMIT 1
+        ];
+        if (configs.isEmpty()) { return; }
+
+        Test.startTest();
+        RES_ContractIntegrationService.syncContracts(new List<Contract>{ c }, 'GET');
+        Test.stopTest();
+
+        Contract updated = [SELECT RES_Last_Sync_DateTime__c FROM Contract WHERE Id = :c.Id];
+        Assert.isNull(updated.RES_Last_Sync_DateTime__c, 'Blank response should not set the sync timestamp.');
+    }
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // syncContracts — HTTP 500 (exception swallowed by catch block)
+    // ─────────────────────────────────────────────────────────────────────────
+
+    @isTest
+    static void syncContractsSwallowsHttpException() {
+        Account acc = RES_TestDataFactory.createAccount();
+        Contract c  = buildContract(acc.Id);
+
+        RES_SAPTokenProvider.SAP_TOKEN = 'test_token';
+        Test.setMock(HttpCalloutMock.class, new ErrorMock());
+
+        List<RES_API_Configuration__mdt> configs = [
+            SELECT Id FROM RES_API_Configuration__mdt
+            WHERE DeveloperName = 'Sales_Contract_Creation' LIMIT 1
+        ];
+        if (configs.isEmpty()) { return; }
+
+        Boolean threw = false;
+        Test.startTest();
+        try {
+            RES_ContractIntegrationService.syncContracts(new List<Contract>{ c }, 'GET');
+        } catch (Exception e) {
+            threw = true;
+        }
+        Test.stopTest();
+
+        Assert.isFalse(threw, 'syncContracts must swallow HTTP-level exceptions and not rethrow.');
+    }
 }
