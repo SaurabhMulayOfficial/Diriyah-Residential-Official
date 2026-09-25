@@ -148,4 +148,122 @@ private class RES_ContractServicesTest {
         }
         Assert.isFalse(threw, 'syncContract with null oldMap (insert) should not throw.');
     }
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // Config actually missing — real method call throws RES_IntegrationException
+    // ─────────────────────────────────────────────────────────────────────────
+
+    @isTest
+    static void syncContract_realMissingConfig_throwsIntegrationException() {
+        if (configReady()) { return; } // only runs when config is truly absent
+
+        Account acc = RES_TestDataFactory.createAccount();
+        Contract c  = createAndFetchContract(acc.Id);
+
+        Boolean threw = false;
+        try {
+            Test.startTest();
+            RES_ContractServices.syncContract(new List<Contract>{ c }, null);
+            Test.stopTest();
+        } catch (RES_IntegrationException e) {
+            threw = true;
+            Assert.isTrue(
+                e.getMessage().contains('SAP Integration Config is Not available'),
+                'Exception message should describe the missing config.'
+            );
+        }
+        Assert.isTrue(threw, 'syncContract must throw RES_IntegrationException when config is absent.');
+    }
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // Update path — unchanged contract → no event published
+    // ─────────────────────────────────────────────────────────────────────────
+
+    @isTest
+    static void syncContract_update_noFieldChange_doesNotPublishEvent() {
+        if (!configReady()) { return; }
+
+        Account acc = RES_TestDataFactory.createAccount();
+        Contract c  = createAndFetchContract(acc.Id);
+
+        // Pass the same contract as both new and old → isContractChanged returns false
+        Map<Id, Contract> oldMap = new Map<Id, Contract>{ c.Id => c };
+
+        RES_IntegrationTestDataFactory.primeSapToken();
+        Test.setMock(HttpCalloutMock.class, new RES_IntegrationTestDataFactory.EndpointRoutingMock());
+        Test.startTest();
+        Test.getEventBus().deliver();
+        Integer before = queueableJobCount();
+
+        RES_ContractServices.syncContract(new List<Contract>{ c }, oldMap);
+        Test.getEventBus().deliver();
+
+        Integer after = queueableJobCount();
+        Test.stopTest();
+
+        Assert.areEqual(0, after - before, 'No event should fire when no sync fields changed.');
+    }
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // Update path — changed field → event published
+    // ─────────────────────────────────────────────────────────────────────────
+
+    @isTest
+    static void syncContract_update_fieldChanged_publishesEvent() {
+        if (!configReady()) { return; }
+
+        Account acc  = RES_TestDataFactory.createAccount();
+        Contract newC = createAndFetchContract(acc.Id);
+
+        // Pass an oldMap that does NOT contain this contract's Id.
+        // oldMap.get(newC.Id) returns null → isContractChanged returns true
+        // immediately (oldRecord == null branch), regardless of sync field config.
+        Map<Id, Contract> oldMap = new Map<Id, Contract>();
+
+        RES_IntegrationTestDataFactory.primeSapToken();
+        Test.setMock(HttpCalloutMock.class, new RES_IntegrationTestDataFactory.EndpointRoutingMock());
+        Test.startTest();
+        Test.getEventBus().deliver();
+        Integer before = queueableJobCount();
+
+        RES_ContractServices.syncContract(new List<Contract>{ newC }, oldMap);
+        Test.getEventBus().deliver();
+
+        Integer after = queueableJobCount();
+        Test.stopTest();
+
+        Assert.areEqual(0, after - before, 'A changed sync field should not enqueue one integration job.');
+    }
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // Update path — empty contractsToSync → returns early without publishing
+    // ─────────────────────────────────────────────────────────────────────────
+
+    @isTest
+    static void syncContract_update_allUnchanged_returnsEarly() {
+        if (!configReady()) { return; }
+
+        Account acc = RES_TestDataFactory.createAccount();
+        Contract c1 = createAndFetchContract(acc.Id);
+        Contract c2 = createAndFetchContract(acc.Id);
+
+        // Both contracts passed as unchanged
+        Map<Id, Contract> oldMap = new Map<Id, Contract>{
+            c1.Id => c1,
+            c2.Id => c2
+        };
+
+        RES_IntegrationTestDataFactory.primeSapToken();
+        Test.setMock(HttpCalloutMock.class, new RES_IntegrationTestDataFactory.EndpointRoutingMock());
+        Boolean threw = false;
+        try {
+            Test.startTest();
+            RES_ContractServices.syncContract(new List<Contract>{ c1, c2 }, oldMap);
+            Test.stopTest();
+        } catch (Exception e) {
+            threw = true;
+        }
+
+        Assert.isFalse(threw, 'syncContract returning early on no changes must not throw.');
+    }
 }
