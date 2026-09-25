@@ -981,6 +981,11 @@
     </fieldPermissions>
     <fieldPermissions>
         <editable>true</editable>
+        <field>Contract.RES_Contract_Type__c</field>
+        <readable>true</readable>
+    </fieldPermissions>    
+    <fieldPermissions>
+        <editable>true</editable>
         <field>ContractItemPrice.RES_CIP_Type__c</field>
         <readable>true</readable>
     </fieldPermissions>
@@ -3344,6 +3349,11 @@
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
+        <editable>false</editable>
+        <field>Contract.RES_Last_Sync_DateTime__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
         <editable>true</editable>
         <field>Contract.RES_KYC_Cleared__c</field>
         <readable>true</readable>
@@ -4155,6 +4165,21 @@
     <fieldPermissions>
         <editable>true</editable>
         <field>Contract.RES_PAR_POA_Date__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>Contract.DIR_Old_Contract__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>Contract.RES_Company_Code__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>Contract.RES_First_Residential_Buyer__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
