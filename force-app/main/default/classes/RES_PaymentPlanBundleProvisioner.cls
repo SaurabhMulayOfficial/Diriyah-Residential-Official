@@ -151,7 +151,7 @@ public without sharing class RES_PaymentPlanBundleProvisioner {
              * no way to demote earlier ones via Apex DML, and the
              * platform enforces this invariant itself.
              */
-            componentsToInsert.add(buildComponent(unitId, componentGroup.Id, paymentPlanId, relationshipTypeId, true));
+            componentsToInsert.add(buildComponent(unitId, componentGroup.Id, paymentPlanId, relationshipTypeId, true, paymentPlan.RES_Price_Option__c));
         }
 
         if (!componentsToInsert.isEmpty()) {
@@ -186,7 +186,7 @@ public without sharing class RES_PaymentPlanBundleProvisioner {
         );
     }
 
-    private static ProductRelatedComponent buildComponent(Id unitId, Id groupId, Id paymentPlanId, Id relationshipTypeId, Boolean isDefaultComponent) {
+    private static ProductRelatedComponent buildComponent(Id unitId, Id groupId, Id paymentPlanId, Id relationshipTypeId, Boolean isDefaultComponent, String priceOption) {
         return new ProductRelatedComponent(
             ParentProductId = unitId,
             ChildProductId = paymentPlanId,
@@ -197,7 +197,15 @@ public without sharing class RES_PaymentPlanBundleProvisioner {
             IsDefaultComponent = isDefaultComponent,
             IsQuantityEditable = false,
             DoesBundlePriceIncludeChild = false,
-            QuoteVisibility = 'Always'
+            QuoteVisibility = 'Always',
+            /*
+             * RES_ResidentialBundlePricingHook reads RES_Price_Option__c off this exact
+             * Unit->Payment-Plan relationship to decide which AttributeBasedAdjustment
+             * prices the Unit - without it, selecting this Payment Plan silently applies
+             * no pricing adjustment at all. Carried over from the Payment Plan Product2's
+             * own RES_Price_Option__c (set once, at Payment Plan creation).
+             */
+            RES_Price_Option__c = priceOption
         );
     }
 

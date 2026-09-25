@@ -10,6 +10,10 @@ private class RES_BundlePricingHookMatchingTest {
 
     /** Creates the bundle + Premium option, relationship type, and price book entries (not @testSetup - called per test). */
     private static void setupCoreData() {
+        // Product2 insert enqueues an async SAP sync (RES_IntegrationQueueable); mock the callout so
+        // Test.stopTest() doesn't surface the real-callout NPE documented in RES_SAPTokenProviderTest.
+        Test.setMock(HttpCalloutMock.class, new RES_IntegrationTestDataFactory.EndpointRoutingMock());
+
         Product2 bundleProduct = new Product2(
             Name = BUNDLE_NAME,
             ProductCode = 'RES-TEST-MATCH-WSTU-001',
@@ -81,6 +85,11 @@ private class RES_BundlePricingHookMatchingTest {
 
     /** Sets the service charge rate attribute (DeveloperName driven by the same org-specific Custom Label the hook reads) on a ProductAttributeDefinition scoped to the bundle. */
     private static void insertServiceChargeRateAttribute() {
+        insertServiceChargeRateAttribute(null, null);
+    }
+
+    /** Same as insertServiceChargeRateAttribute() but also sets the billing frequency / area type override fields. */
+    private static void insertServiceChargeRateAttribute(String billingFrequency, String areaType) {
         Product2 bundleProduct = [SELECT Id, BasedOnId FROM Product2 WHERE Name = :BUNDLE_NAME LIMIT 1];
         String scRateDeveloperName = Label.RES_Service_Charge_Rate_Attribute;
 
@@ -124,7 +133,9 @@ private class RES_BundlePricingHookMatchingTest {
             AttributeDefinitionId = scRateAttr.Id,
             ProductClassificationAttributeId = scClassificationAttr.Id,
             DefaultValue = '149',
-            IsReadOnly = true
+            IsReadOnly = true,
+            RES_Billing_Frequency__c = billingFrequency,
+            RES_Area_Type__c = areaType
         );
     }
 
@@ -465,7 +476,12 @@ private class RES_BundlePricingHookMatchingTest {
         Map<String, String> childProductPriceOptionMap = hook.queryChildOptionPriceValues(bundleMap);
         Map<Id, Decimal> netSaleableAreaMap = hook.queryNetSaleableAreaByProduct(bundleMap);
         Set<Id> serviceChargeProductIds = hook.queryServiceChargeProductIds(bundleMap);
-        Map<Id, Decimal> serviceChargeRateMap = hook.queryServiceChargeRateByProduct(bundleMap);
+        Map<Id, RES_ResidentialBundlePricingHook.ServiceChargeConfig> serviceChargeConfigMap =
+            hook.queryServiceChargeConfigByProduct(bundleMap);
+        Map<Id, Decimal> serviceChargeRateMap = new Map<Id, Decimal>();
+        for (Id productId : serviceChargeConfigMap.keySet()) {
+            serviceChargeRateMap.put(productId, serviceChargeConfigMap.get(productId).rate);
+        }
 
         List<Map<String, Object>> updates = hook.applyPricingToOptions(
             bundleMap, new Map<String, Map<String, String>>(), bundleAdjustmentsMap, childProductPriceOptionMap,
@@ -646,7 +662,7 @@ private class RES_BundlePricingHookMatchingTest {
         System.assertEquals(false, matchesNullItemValue, 'A null item attribute value can never match');
     }
 
-    /** Test: queryServiceChargeRateByProduct reads SC_RATE from catalog config (org-wide-unique name, needs SeeAllData). */
+    /** Test: queryServiceChargeConfigByProduct reads SC_RATE (+ billing frequency/area type, both blank here) from catalog config (org-wide-unique name, needs SeeAllData). */
     @isTest
     static void testQueryServiceChargeRateByProduct() {
         setupCoreData();
@@ -662,15 +678,141 @@ private class RES_BundlePricingHookMatchingTest {
         Map<String, RES_ResidentialBundlePricingHook.BundleStructure> bundleMap =
             new Map<String, RES_ResidentialBundlePricingHook.BundleStructure>{'Bundle_001' => bundle};
 
-        Map<Id, Decimal> rateMap = hook.queryServiceChargeRateByProduct(bundleMap);
+        Map<Id, RES_ResidentialBundlePricingHook.ServiceChargeConfig> configMap =
+            hook.queryServiceChargeConfigByProduct(bundleMap);
 
-        Map<Id, Decimal> emptyResult = hook.queryServiceChargeRateByProduct(
+        Map<Id, RES_ResidentialBundlePricingHook.ServiceChargeConfig> emptyResult = hook.queryServiceChargeConfigByProduct(
             new Map<String, RES_ResidentialBundlePricingHook.BundleStructure>()
         );
 
         Test.stopTest();
 
-        System.assertEquals(149, rateMap.get(bundleProduct.Id), 'Should load SC_RATE = 149 from catalog config');
+        System.assertEquals(149, configMap.get(bundleProduct.Id).rate, 'Should load SC_RATE = 149 from catalog config');
+        System.assertEquals(null, configMap.get(bundleProduct.Id).billingFrequency, 'Billing frequency should be blank when not configured');
+        System.assertEquals(null, configMap.get(bundleProduct.Id).areaType, 'Area type should be blank when not configured');
         System.assert(emptyResult.isEmpty(), 'No bundle product IDs should yield an empty map');
+    }
+
+    /** Test: billingFrequencyToMonths maps each picklist value to its month count, defaulting unset/unknown to Annual (12). */
+    @isTest
+    static void testBillingFrequencyToMonths() {
+        RES_ResidentialBundlePricingHook hook = new RES_ResidentialBundlePricingHook();
+
+        Test.startTest();
+        Decimal annual = hook.billingFrequencyToMonths('Annual');
+        Decimal semiAnnual = hook.billingFrequencyToMonths('Semi_Annual');
+        Decimal quarterly = hook.billingFrequencyToMonths('Quarterly');
+        Decimal blank = hook.billingFrequencyToMonths(null);
+        Decimal unknown = hook.billingFrequencyToMonths('Monthly');
+        Test.stopTest();
+
+        System.assertEquals(12, annual, 'Annual should be 12 months');
+        System.assertEquals(6, semiAnnual, 'Semi-Annual should be 6 months');
+        System.assertEquals(3, quarterly, 'Quarterly should be 3 months');
+        System.assertEquals(12, blank, 'Blank should default to Annual (12 months) for backward compatibility');
+        System.assertEquals(12, unknown, 'An unrecognized value should default to Annual (12 months)');
+    }
+
+    /** Test: queryAreaByProductAndType looks up the RES_Measurement__c record matching the configured RES_Area_Type__c. */
+    @isTest
+    static void testQueryAreaByProductAndType() {
+        setupCoreData();
+        Product2 bundleProduct = [SELECT Id FROM Product2 WHERE Name = :BUNDLE_NAME LIMIT 1];
+
+        insert new List<RES_Measurement__c>{
+            new RES_Measurement__c(RES_Product__c = bundleProduct.Id, RES_Measurement_Type__c = 'Z007', RES_Measurement_Amount__c = 500),
+            new RES_Measurement__c(RES_Product__c = bundleProduct.Id, RES_Measurement_Type__c = 'Z009', RES_Measurement_Amount__c = 800)
+        };
+
+        RES_ResidentialBundlePricingHook.ServiceChargeConfig configuredForZ007 = new RES_ResidentialBundlePricingHook.ServiceChargeConfig();
+        configuredForZ007.rate = 149;
+        configuredForZ007.areaType = 'Z007';
+        Map<Id, RES_ResidentialBundlePricingHook.ServiceChargeConfig> configMap =
+            new Map<Id, RES_ResidentialBundlePricingHook.ServiceChargeConfig>{ bundleProduct.Id => configuredForZ007 };
+
+        RES_ResidentialBundlePricingHook.ServiceChargeConfig configuredWithNoAreaType = new RES_ResidentialBundlePricingHook.ServiceChargeConfig();
+        configuredWithNoAreaType.rate = 149;
+        Map<Id, RES_ResidentialBundlePricingHook.ServiceChargeConfig> emptyAreaTypeMap =
+            new Map<Id, RES_ResidentialBundlePricingHook.ServiceChargeConfig>{ bundleProduct.Id => configuredWithNoAreaType };
+
+        RES_ResidentialBundlePricingHook hook = new RES_ResidentialBundlePricingHook();
+
+        Test.startTest();
+        Map<Id, Decimal> areaMap = hook.queryAreaByProductAndType(configMap);
+        Map<Id, Decimal> noOverrideResult = hook.queryAreaByProductAndType(emptyAreaTypeMap);
+        Test.stopTest();
+
+        System.assertEquals(500, areaMap.get(bundleProduct.Id),
+            'Should return the Z007 (Net Saleable Area) measurement, not the Z009 (Plot Area) one on the same product');
+        System.assert(noOverrideResult.isEmpty(), 'A config with no area type override should not trigger a measurement lookup');
+    }
+
+    /** Test: end-to-end service charge = rate x measurement-override-area x (billing months / 12), for a Quarterly + Z007 override. */
+    @isTest
+    static void testApplyPricingToOptions_ServiceChargeWithBillingFrequencyAndAreaType() {
+        setupCoreData();
+        insertServiceChargeRateAttribute('Quarterly', 'Z007');
+
+        Product2 bundleProduct = [SELECT Id FROM Product2 WHERE Name = :BUNDLE_NAME LIMIT 1];
+        Product2 premiumOption = [SELECT Id FROM Product2 WHERE Name = :PREMIUM_NAME LIMIT 1];
+        Product2 serviceCharge = [SELECT Id FROM Product2 WHERE Name = :SERVICE_CHARGE_NAME LIMIT 1];
+
+        insert new RES_Measurement__c(
+            RES_Product__c = bundleProduct.Id, RES_Measurement_Type__c = 'Z007', RES_Measurement_Amount__c = 500
+        );
+
+        RES_ResidentialBundlePricingHook hook = new RES_ResidentialBundlePricingHook();
+
+        RES_ResidentialBundlePricingHook.BundleStructure bundle =
+            new RES_ResidentialBundlePricingHook.BundleStructure('Bundle_001', bundleProduct.Id);
+        bundle.nodePath = new List<Object>{'QuoteId_123', 'Bundle_001'};
+        List<Object> childNodePath = new List<Object>{'QuoteId_123', 'LineId_456'};
+        List<Object> serviceChargeNodePath = new List<Object>{'QuoteId_123', 'LineId_789'};
+        bundle.addChildOption(new RES_ResidentialBundlePricingHook.OptionItem(
+            'Child_001', premiumOption.Id, childNodePath, 'Bundle_001/Child_001'
+        ));
+        bundle.addChildOption(new RES_ResidentialBundlePricingHook.OptionItem(
+            'SC_001', serviceCharge.Id, serviceChargeNodePath, 'Bundle_001/SC_001'
+        ));
+
+        Map<String, RES_ResidentialBundlePricingHook.BundleStructure> bundleMap =
+            new Map<String, RES_ResidentialBundlePricingHook.BundleStructure>{'Bundle_001' => bundle};
+
+        Test.startTest();
+
+        Map<Id, RES_ResidentialBundlePricingHook.ServiceChargeConfig> serviceChargeConfigMap =
+            hook.queryServiceChargeConfigByProduct(bundleMap);
+        Map<Id, Decimal> overrideAreaMap = hook.queryAreaByProductAndType(serviceChargeConfigMap);
+
+        Map<Id, Decimal> effectiveRateMap = new Map<Id, Decimal>();
+        Map<Id, Decimal> effectiveAreaMap = new Map<Id, Decimal>();
+        for (Id productId : serviceChargeConfigMap.keySet()) {
+            RES_ResidentialBundlePricingHook.ServiceChargeConfig config = serviceChargeConfigMap.get(productId);
+            effectiveRateMap.put(productId, config.rate * (hook.billingFrequencyToMonths(config.billingFrequency) / 12));
+            effectiveAreaMap.put(productId, overrideAreaMap.get(productId));
+        }
+
+        Set<Id> serviceChargeProductIds = hook.queryServiceChargeProductIds(bundleMap);
+
+        List<Map<String, Object>> updates = hook.applyPricingToOptions(
+            bundleMap, new Map<String, Map<String, String>>(), new Map<String, List<RES_ResidentialBundlePricingHook.AttributeAdjustment>>(),
+            new Map<String, String>(), new Map<String, List<Object>>(), new Map<String, Decimal>(),
+            effectiveAreaMap, serviceChargeProductIds, effectiveRateMap
+        );
+
+        Test.stopTest();
+
+        Boolean foundServiceCharge = false;
+        for (Map<String, Object> updateEntry : updates) {
+            for (Object attrObj : (List<Object>) updateEntry.get('attributes')) {
+                Map<String, Object> attr = (Map<String, Object>) attrObj;
+                if (attr.get('attributeName') == 'RES_Service_Charge_Amount__c') {
+                    foundServiceCharge = true;
+                    System.assertEquals(18625, attr.get('attributeValue'),
+                        'Service charge should be rate (149) x Z007 measurement area (500) x Quarterly factor (3/12) = 18,625');
+                }
+            }
+        }
+        System.assert(foundServiceCharge, 'Should compute and apply the billing-frequency- and area-type-adjusted service charge');
     }
 }

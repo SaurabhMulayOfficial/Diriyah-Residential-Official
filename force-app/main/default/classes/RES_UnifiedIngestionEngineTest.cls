@@ -150,6 +150,33 @@ private class RES_UnifiedIngestionEngineTest {
         return (rt != null && rt.isAvailable()) ? rt.getRecordTypeId() : null;
     }
 
+    /*
+     * The ingestion framework no longer creates ProductCatalog/ProductCategory
+     * records on the fly (see resolveCatalogs/resolveCategories) - every
+     * external identifier a staging row references must already exist.
+     * Tests that need a row to resolve successfully must pre-create these
+     * with the exact same Code formula the engine itself uses.
+     */
+    private static ProductCatalog ensureCatalog(String catalogName) {
+        ProductCatalog cat = new ProductCatalog(
+            Code = 'BE-' + catalogName,
+            Name = 'Business Entity ' + catalogName
+        );
+        insert cat;
+        return cat;
+    }
+
+    private static ProductCategory ensureCategory(Id catalogId, String catalogName, String buildingName) {
+        ProductCategory cat = new ProductCategory(
+            Code           = 'BLD-' + catalogName + '-' + buildingName,
+            Name           = 'Building ' + buildingName,
+            CatalogId      = catalogId,
+            IsNavigational = true
+        );
+        insert cat;
+        return cat;
+    }
+
     // ==================================================================
     // Happy path: two new products, pricing options (Y100/Y101/Y102),
     // computed + plain attributes, measurements, plus row-level errors,
@@ -161,6 +188,10 @@ private class RES_UnifiedIngestionEngineTest {
     static void testHappyPath_NewProductsPricingOptionsAttributesAndErrors() {
         String catalog  = 'WadiSafar1';
         String building = 'Villa Type A';
+
+        ProductCatalog wadiSafarCatalog = ensureCatalog(catalog);
+        ensureCategory(wadiSafarCatalog.Id, catalog, building);
+        ensureCategory(wadiSafarCatalog.Id, catalog, 'Villa Type B');
 
         RES_Product_Staging__c y100 = baseRow('UNIT-100', catalog, building);
         y100.RES_Condition_Type__c       = 'Y100';
@@ -203,7 +234,7 @@ private class RES_UnifiedIngestionEngineTest {
 
         // ---- Product2 ----
         List<Product2> products = [
-            SELECT Id, ProductCode, Name, IsActive, Family, RecordTypeId
+            SELECT Id, ProductCode, Name, IsActive, Family, RecordTypeId, RES_CIP_Type__c
             FROM Product2
             WHERE RES_Product_External_ID__c IN ('UNIT-100', 'UNIT-200', 'UNIT-300')
         ];
@@ -215,21 +246,23 @@ private class RES_UnifiedIngestionEngineTest {
         Assert.isNotNull(unit100, 'UNIT-100 should have been created');
         Assert.areEqual(false, unit100.IsActive, 'New products default to IsActive=false via literal mapping');
         Assert.areEqual(VALID_FAMILY_VALUE, unit100.Family, 'Family should be set via Picklist_Safe mapping');
+        Assert.areEqual('Unit', unit100.RES_CIP_Type__c, 'New units must be tagged CIP Type = Unit since the ingestion framework bypasses manual entry');
 
         Id expectedRt = productRecordTypeIdIfAny();
         if (expectedRt != null) {
             Assert.areEqual(expectedRt, unit100.RecordTypeId, 'Record type should be applied for new products');
         }
 
-        // ---- ProductCatalog / ProductCategory ----
+        // ---- ProductCatalog / ProductCategory: pre-created above, the engine must resolve
+        // them (not create duplicates) since it no longer creates catalogs/categories itself ----
         List<ProductCatalog> catalogs = [SELECT Id, Code FROM ProductCatalog WHERE Code = :('BE-' + catalog)];
-        Assert.areEqual(1, catalogs.size(), 'Exactly one catalog should be created for the shared catalog name');
+        Assert.areEqual(1, catalogs.size(), 'The pre-existing catalog must be reused, not duplicated');
 
         List<ProductCategory> categories = [
             SELECT Id, Code FROM ProductCategory
             WHERE Code IN (:('BLD-' + catalog + '-' + building), :('BLD-' + catalog + '-Villa Type B'))
         ];
-        Assert.areEqual(2, categories.size(), 'Two categories should be created (one per building)');
+        Assert.areEqual(2, categories.size(), 'The pre-existing categories must be reused, not duplicated');
 
         Assert.areEqual(1, [SELECT COUNT() FROM ProductCategoryProduct WHERE ProductId = :unit100.Id]);
 
@@ -266,15 +299,15 @@ private class RES_UnifiedIngestionEngineTest {
 
         // The selector attribute must be INHERITED from the classification, not overridden per
         // product: no ProductAttributeDefinition should exist for it on any product, and the
-        // classification-level ProductClassificationAttr should carry the price-impacting flag
-        // and the primary condition's selector value as its default.
+        // classification-level ProductClassificationAttr should carry the price-impacting flag,
+        // the hidden flag, and the primary condition's selector value as its default.
         Assert.areEqual(0, [
             SELECT COUNT() FROM ProductAttributeDefinition
             WHERE AttributeDefinitionId = :selectorDefs[0].Id
         ], 'Selector attribute must be inherited from the classification, never overridden per product');
 
         List<ProductClassificationAttr> selectorClassAttrs = [
-            SELECT DefaultValue, IsPriceImpacting
+            SELECT DefaultValue, IsPriceImpacting, IsHidden
             FROM ProductClassificationAttr
             WHERE AttributeDefinitionId = :selectorDefs[0].Id
         ];
@@ -283,6 +316,8 @@ private class RES_UnifiedIngestionEngineTest {
             'Classification attribute should default to the primary condition\'s selector value');
         Assert.isTrue(selectorClassAttrs[0].IsPriceImpacting,
             'Classification attribute should be marked price-impacting so it drives the adjustment');
+        Assert.isTrue(selectorClassAttrs[0].IsHidden,
+            'Classification attribute should be hidden rather than read-only');
 
         // ---- Attribute-based adjustment rules/conditions/adjustments ----
         List<AttributeBasedAdjRule> rules = [
@@ -313,12 +348,19 @@ private class RES_UnifiedIngestionEngineTest {
         // so that branch of addTargetMapAttributes() is presently unconfigured/unreachable and
         // isn't asserted here. RES_Parameter_1__c/RES_Area__c below are still needed as inputs
         // to the still-active Measurement (Z006) mapping asserted next.
-        Assert.areEqual(1, [
-            SELECT COUNT() FROM ProductAttributeDefinition pad
-            WHERE pad.Product2Id = :unit100.Id
-            AND pad.AttributeDefinitionId IN (SELECT Id FROM AttributeDefinition WHERE Name = 'Service Charge Rate')
-            AND pad.DefaultValue = '50.00'
-        ], 'addTargetMapAttributes() scales every Product_Attribute/_Computed value to 2 decimal places');
+        List<ProductAttributeDefinition> serviceChargePads = [
+            SELECT DefaultValue, IsHidden, IsReadOnly
+            FROM ProductAttributeDefinition
+            WHERE Product2Id = :unit100.Id
+            AND AttributeDefinitionId IN (SELECT Id FROM AttributeDefinition WHERE Name = 'Service Charge Rate')
+        ];
+        Assert.areEqual(1, serviceChargePads.size(),
+            'addTargetMapAttributes() scales every Product_Attribute/_Computed value to 2 decimal places');
+        Assert.areEqual('50.00', serviceChargePads[0].DefaultValue);
+        Assert.isTrue(serviceChargePads[0].IsHidden,
+            'RES_Is_Hidden__c on the target field map should mark the attribute hidden, not read-only');
+        Assert.isFalse(serviceChargePads[0].IsReadOnly,
+            'The framework no longer writes IsReadOnly for Product_Attribute maps');
 
         // ---- Measurement (Area, code Z006) ----
         Assert.areEqual(1, [
@@ -342,8 +384,9 @@ private class RES_UnifiedIngestionEngineTest {
 
         // ---- Second execute() call: reuse catalog/category/selling model to hit "already exists" branches ----
         RES_Product_Staging__c product3 = baseRow('UNIT-400', catalog, building); // same catalog+building as UNIT-100
-        product3.RES_Condition_Type__c  = 'Y100';
-        product3.RES_Condition_Price__c = 700000;
+        product3.RES_Condition_Type__c       = 'Y100';
+        product3.RES_Condition_Price__c      = 700000;
+        product3.RES_Condition_Valid_From__c = Date.today();
         insert product3;
 
         RES_UnifiedIngestionEngine secondEngine = new RES_UnifiedIngestionEngine(LAYOUT_CODE);
@@ -368,6 +411,8 @@ private class RES_UnifiedIngestionEngineTest {
         RES_Product_Staging__c y100Rerun = baseRow('UNIT-100', catalog, building);
         y100Rerun.RES_Condition_Type__c      = 'Y100';
         y100Rerun.RES_Condition_Price__c     = 1600000;
+        // Later than y100's own valid-from, so this opens a new period rather than tripping the "not after" guard.
+        y100Rerun.RES_Condition_Valid_From__c = Date.today().addDays(30);
         y100Rerun.RES_Service_Charge_Rate__c = 60;
         y100Rerun.RES_Parameter_1__c         = 'Z006';
         y100Rerun.RES_Area__c                = 150;
@@ -375,6 +420,7 @@ private class RES_UnifiedIngestionEngineTest {
         RES_Product_Staging__c product3Rerun = baseRow('UNIT-400', catalog, building);
         product3Rerun.RES_Condition_Type__c      = 'Y100';
         product3Rerun.RES_Condition_Price__c     = 750000;
+        product3Rerun.RES_Condition_Valid_From__c = Date.today().addDays(30);
         product3Rerun.RES_Service_Charge_Rate__c = 55;
         product3Rerun.RES_Parameter_1__c         = 'Z006';
         product3Rerun.RES_Area__c                = 120;
@@ -404,12 +450,163 @@ private class RES_UnifiedIngestionEngineTest {
         Assert.areEqual(1, [SELECT COUNT() FROM AttributeBasedAdjRule WHERE Name = 'UNIT-400 :: Option 1'],
             'Re-running must not duplicate the pricing-option rule');
 
+        // A price-changed re-upload must preserve history, not overwrite the original adjustment.
         List<AttributeBasedAdjustment> unit400Adjustments = [
-            SELECT AdjustmentValue FROM AttributeBasedAdjustment WHERE ProductId = :unit400.Id
+            SELECT AdjustmentValue, EffectiveFrom, EffectiveTo FROM AttributeBasedAdjustment
+            WHERE ProductId = :unit400.Id ORDER BY EffectiveFrom ASC
         ];
-        Assert.areEqual(1, unit400Adjustments.size(), 'Re-running must not duplicate the adjustment');
-        Assert.areEqual(750000, unit400Adjustments[0].AdjustmentValue.setScale(0),
-            'Re-running with a changed price should update the existing adjustment rather than duplicate it');
+        Assert.areEqual(2, unit400Adjustments.size(),
+            'A price change on re-upload must add a new adjustment, not overwrite the existing one');
+        Assert.areEqual(700000, unit400Adjustments[0].AdjustmentValue.setScale(0),
+            'The original price period must be preserved, not overwritten');
+        Assert.areEqual(750000, unit400Adjustments[1].AdjustmentValue.setScale(0),
+            'The new price period must be added');
+        Assert.areEqual(
+            unit400Adjustments[1].EffectiveFrom.addDays(-1).dateGmt(),
+            unit400Adjustments[0].EffectiveTo.dateGmt(),
+            'The original period must be capped to end the day before the new period starts'
+        );
+        Assert.areEqual(1, [SELECT COUNT() FROM AttributeBasedAdjRule WHERE Name = 'UNIT-400 :: Option 1'],
+            'Historizing the adjustment must not create a second rule for the same condition');
+    }
+
+    // ==================================================================
+    // Missing catalog/category: resolveCatalogs/resolveCategories must no longer create
+    // these on the fly. A staging row naming a catalog or category external identifier
+    // that doesn't already exist must fail with a row error, and no ProductCatalog/
+    // ProductCategory record may be created for it.
+    // ==================================================================
+    @IsTest
+    static void testMissingCatalogAndCategory_RecordsRowErrorAndCreatesNothing() {
+        // No catalog/category created here - deliberately.
+        RES_Product_Staging__c missingCatalog = baseRow('UNIT-700', 'NoSuchCatalog', 'NoSuchBuilding');
+
+        // Catalog exists but the category under it doesn't.
+        ProductCatalog existingCatalog = ensureCatalog('PartialCatalog');
+        RES_Product_Staging__c missingCategory = baseRow('UNIT-800', 'PartialCatalog', 'NoSuchBuilding2');
+
+        List<RES_Product_Staging__c> scope = new List<RES_Product_Staging__c>{ missingCatalog, missingCategory };
+        insert scope;
+
+        Test.startTest();
+        RES_UnifiedIngestionEngine engine = new RES_UnifiedIngestionEngine(LAYOUT_CODE);
+        engine.execute(null, scope);
+        Test.stopTest();
+
+        Assert.areEqual(0, [SELECT COUNT() FROM ProductCatalog WHERE Code = 'BE-NoSuchCatalog'],
+            'A referenced-but-missing catalog must not be created');
+        Assert.areEqual(0, [SELECT COUNT() FROM ProductCategory WHERE Code = 'BLD-PartialCatalog-NoSuchBuilding2'],
+            'A referenced-but-missing category must not be created, even when its catalog exists');
+
+        Map<Id, RES_Product_Staging__c> finalRows = new Map<Id, RES_Product_Staging__c>(
+            [SELECT Id, RES_Processing_Status__c, RES_Error_Log__c FROM RES_Product_Staging__c WHERE Id IN :scope]
+        );
+        Assert.areEqual('Error', finalRows.get(missingCatalog.Id).RES_Processing_Status__c);
+        Assert.isTrue(
+            finalRows.get(missingCatalog.Id).RES_Error_Log__c.contains('ProductCatalog with external identifier "BE-NoSuchCatalog" does not exist'),
+            'Missing catalog must record its own row error'
+        );
+
+        Assert.areEqual('Error', finalRows.get(missingCategory.Id).RES_Processing_Status__c);
+        Assert.isTrue(
+            finalRows.get(missingCategory.Id).RES_Error_Log__c.contains('ProductCategory with external identifier "BLD-PartialCatalog-NoSuchBuilding2" does not exist'),
+            'Missing category must record its own row error even when its catalog exists'
+        );
+    }
+
+    // ==================================================================
+    // Price-changed re-upload must historize: cap the previous adjustment, add a new one.
+    // ==================================================================
+    @IsTest
+    static void testPricingOptionRepriced_HistorizesPreviousAdjustment() {
+        String catalog  = 'RepriceCatalog';
+        String building = 'Reprice Building';
+        ProductCatalog cat = ensureCatalog(catalog);
+        ensureCategory(cat.Id, catalog, building);
+
+        RES_Product_Staging__c original = baseRow('UNIT-900', catalog, building);
+        original.RES_Condition_Type__c       = 'Y100';
+        original.RES_Condition_Price__c      = 1000000;
+        original.RES_Condition_Valid_From__c = Date.today();
+        insert original;
+
+        RES_UnifiedIngestionEngine engine = new RES_UnifiedIngestionEngine(LAYOUT_CODE);
+        engine.execute(null, new List<RES_Product_Staging__c>{ original });
+
+        RES_Product_Staging__c repriced = baseRow('UNIT-900', catalog, building);
+        repriced.RES_Condition_Type__c       = 'Y100';
+        repriced.RES_Condition_Price__c      = 1100000;
+        repriced.RES_Condition_Valid_From__c = Date.today().addDays(30);
+        insert repriced;
+
+        Test.startTest();
+        RES_UnifiedIngestionEngine secondEngine = new RES_UnifiedIngestionEngine(LAYOUT_CODE);
+        secondEngine.execute(null, new List<RES_Product_Staging__c>{ repriced });
+        Test.stopTest();
+
+        Product2 unit900 = [SELECT Id FROM Product2 WHERE RES_Product_External_ID__c = 'UNIT-900'];
+        List<AttributeBasedAdjustment> adjustments = [
+            SELECT AdjustmentValue, EffectiveFrom, EffectiveTo FROM AttributeBasedAdjustment
+            WHERE ProductId = :unit900.Id ORDER BY EffectiveFrom ASC
+        ];
+        Assert.areEqual(2, adjustments.size(),
+            'A repriced re-upload must add a new adjustment, not overwrite the existing one');
+        Assert.areEqual(1000000, adjustments[0].AdjustmentValue.setScale(0), 'Original price period preserved');
+        Assert.areEqual(1100000, adjustments[1].AdjustmentValue.setScale(0), 'New price period added');
+        Assert.areEqual(
+            adjustments[1].EffectiveFrom.addDays(-1).dateGmt(),
+            adjustments[0].EffectiveTo.dateGmt(),
+            'Original period must be capped to end the day before the new period starts'
+        );
+        Assert.areEqual(Date.today().addDays(30), adjustments[1].EffectiveFrom.dateGmt(),
+            'New adjustment must start on the repriced row\'s own valid-from date');
+
+        Assert.areEqual(1, [SELECT COUNT() FROM AttributeBasedAdjRule WHERE Name = 'UNIT-900 :: Option 1'],
+            'Historizing must reuse the existing rule, not create a second one for the same condition');
+    }
+
+    // ==================================================================
+    // A reprice whose new start isn't after the existing period's start is a row error.
+    // ==================================================================
+    @IsTest
+    static void testPricingOptionRepriced_EarlierStartDateIsRowError() {
+        String catalog  = 'RepriceCatalog2';
+        String building = 'Reprice Building 2';
+        ProductCatalog cat = ensureCatalog(catalog);
+        ensureCategory(cat.Id, catalog, building);
+
+        RES_Product_Staging__c original = baseRow('UNIT-901', catalog, building);
+        original.RES_Condition_Type__c       = 'Y100';
+        original.RES_Condition_Price__c      = 1000000;
+        original.RES_Condition_Valid_From__c = Date.today().addDays(30);
+        insert original;
+
+        RES_UnifiedIngestionEngine engine = new RES_UnifiedIngestionEngine(LAYOUT_CODE);
+        engine.execute(null, new List<RES_Product_Staging__c>{ original });
+
+        RES_Product_Staging__c repriced = baseRow('UNIT-901', catalog, building);
+        repriced.RES_Condition_Type__c       = 'Y100';
+        repriced.RES_Condition_Price__c      = 1100000;
+        repriced.RES_Condition_Valid_From__c = Date.today(); // earlier than the existing period's start
+        insert repriced;
+
+        Test.startTest();
+        RES_UnifiedIngestionEngine secondEngine = new RES_UnifiedIngestionEngine(LAYOUT_CODE);
+        secondEngine.execute(null, new List<RES_Product_Staging__c>{ repriced });
+        Test.stopTest();
+
+        Product2 unit901 = [SELECT Id FROM Product2 WHERE RES_Product_External_ID__c = 'UNIT-901'];
+        List<AttributeBasedAdjustment> adjustments = [
+            SELECT AdjustmentValue FROM AttributeBasedAdjustment WHERE ProductId = :unit901.Id
+        ];
+        Assert.areEqual(1, adjustments.size(), 'An earlier-dated reprice must not create a new adjustment');
+        Assert.areEqual(1000000, adjustments[0].AdjustmentValue.setScale(0), 'The original adjustment must be untouched');
+
+        RES_Product_Staging__c refreshed = [
+            SELECT RES_Error_Log__c FROM RES_Product_Staging__c WHERE Id = :repriced.Id
+        ];
+        Assert.isTrue(refreshed.RES_Error_Log__c.contains('is not after the existing period'),
+            'An earlier-dated reprice must record its own row error');
     }
 
     // ==================================================================

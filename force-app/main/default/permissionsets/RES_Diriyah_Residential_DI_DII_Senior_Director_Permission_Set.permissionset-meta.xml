@@ -34,6 +34,16 @@
         <name>RES_Show_Document_Section</name>
     </customPermissions>
     <fieldPermissions>
+        <editable>true</editable>
+        <field>User.RES_Name_Arabic__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>User.RES_Position_Arabic__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
         <editable>false</editable>
         <field>Product2.RES_No_of_Years__c</field>
         <readable>true</readable>
@@ -116,6 +126,11 @@
     <fieldPermissions>
         <editable>true</editable>
         <field>Quote.RES_Reservation_Start_Date__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>Quote.TotalPrice</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
