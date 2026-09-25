@@ -2689,11 +2689,6 @@
     </fieldPermissions>
     <fieldPermissions>
         <editable>true</editable>
-        <field>RES_Send_Email__e.Merge_Fields__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>true</editable>
         <field>RES_Lead_Conversion_Event__e.Account_Id__c</field>
         <readable>true</readable>
     </fieldPermissions>
@@ -3140,11 +3135,6 @@
     <fieldPermissions>
         <editable>true</editable>
         <field>Quote.RES_System_Status_Update__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>Quote.RES_Discount_Submission_Lock__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
@@ -3944,6 +3934,41 @@
     </fieldPermissions>
     <fieldPermissions>
         <field>RES_Project_Completion_Report__c.RES_Is_Approval_Status_Blank__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>Product2.RES_Price_Option__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>Product2.RES_Payment_Plan_Approval_Stage__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>Product2.RES_Payment_Plan_Submission_Requested__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>Product2.RES_Payment_Plan_Deactivation_Requested__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>Product2.RES_Payment_Plan_Submission_Comment__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>Product2.RES_Validity_End_Date__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>Product2.RES_Payment_Plan_Modified_Since_Approval__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <layoutAssignments>
