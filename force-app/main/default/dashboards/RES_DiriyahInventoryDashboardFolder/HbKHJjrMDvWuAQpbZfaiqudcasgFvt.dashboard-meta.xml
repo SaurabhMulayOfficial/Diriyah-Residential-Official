@@ -4,9 +4,9 @@
     <backgroundFadeDirection>Diagonal</backgroundFadeDirection>
     <backgroundStartColor>#FFFFFF</backgroundStartColor>
     <chartTheme>light</chartTheme>
-    <colorPalette>unity</colorPalette>
+    <colorPalette>sunrise</colorPalette>
     <dashboardChartTheme>light</dashboardChartTheme>
-    <dashboardColorPalette>unity</dashboardColorPalette>
+    <dashboardColorPalette>sunrise</dashboardColorPalette>
     <dashboardGridLayout>
         <dashboardGridComponents>
             <colSpan>4</colSpan>
@@ -18,14 +18,14 @@
                     <axisBinding>y</axisBinding>
                     <column>RowCount</column>
                 </chartSummary>
-                <componentType>BarStacked100</componentType>
+                <componentType>BarStacked</componentType>
                 <decimalPrecision>-1</decimalPrecision>
                 <displayUnits>Auto</displayUnits>
                 <drillEnabled>false</drillEnabled>
                 <drillToDetailEnabled>false</drillToDetailEnabled>
                 <enableHover>false</enableHover>
                 <expandOthers>false</expandOthers>
-                <groupingColumn>Quote$RES_Project__c</groupingColumn>
+                <groupingColumn>Quote.Products__r$RES_Business_Entity__c</groupingColumn>
                 <groupingColumn>Quote.Products__r$RES_Unit_Status__c</groupingColumn>
                 <groupingSortProperties>
                     <groupingSorts>
@@ -66,7 +66,7 @@
                 <drillToDetailEnabled>false</drillToDetailEnabled>
                 <enableHover>false</enableHover>
                 <expandOthers>false</expandOthers>
-                <groupingColumn>Quote$RES_Project__c</groupingColumn>
+                <groupingColumn>Quote.Products__r$RES_Business_Entity__c</groupingColumn>
                 <groupingSortProperties>
                     <groupingSorts>
                         <groupingLevel>g1</groupingLevel>
@@ -102,7 +102,7 @@
                 <drillToDetailEnabled>false</drillToDetailEnabled>
                 <enableHover>false</enableHover>
                 <expandOthers>false</expandOthers>
-                <groupingColumn>Quote$RES_Project__c</groupingColumn>
+                <groupingColumn>Quote.Products__r$RES_Business_Entity__c</groupingColumn>
                 <groupingSortProperties>
                     <groupingSorts>
                         <groupingLevel>g1</groupingLevel>
@@ -139,7 +139,7 @@
                 <drillToDetailEnabled>false</drillToDetailEnabled>
                 <enableHover>false</enableHover>
                 <expandOthers>false</expandOthers>
-                <groupingColumn>Quote$RES_Project__c</groupingColumn>
+                <groupingColumn>Quote.Products__r$RES_Business_Entity__c</groupingColumn>
                 <groupingSortProperties>
                     <groupingSorts>
                         <groupingLevel>g1</groupingLevel>
@@ -176,7 +176,7 @@
                 <drillToDetailEnabled>false</drillToDetailEnabled>
                 <enableHover>false</enableHover>
                 <expandOthers>false</expandOthers>
-                <groupingColumn>Quote$RES_Project__c</groupingColumn>
+                <groupingColumn>Quote.Products__r$RES_Business_Entity__c</groupingColumn>
                 <groupingSortProperties>
                     <groupingSorts>
                         <groupingLevel>g1</groupingLevel>
@@ -200,6 +200,8 @@
     </dashboardGridLayout>
     <dashboardType>LoggedInUser</dashboardType>
     <isGridLayout>true</isGridLayout>
+    <owner>nikhil.takawale@globant.com.diriyah</owner>
+    <runningUser>nikhil.takawale@globant.com.diriyah</runningUser>
     <textColor>#000000</textColor>
     <title>Inventory Dashboard</title>
     <titleColor>#000000</titleColor>
