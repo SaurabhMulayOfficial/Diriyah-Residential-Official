@@ -688,4 +688,28 @@ public class RES_TestDataFactory {
         insert members;
         return members;
     }
+    
+    // ═══════════════════════════════════════════════════════════════════════
+    // ContractItemPrice Creation Methods
+    // ═══════════════════════════════════════════════════════════════════════
+	/**
+     * @description Creates a test ContractItemPrice
+     * @param contractId - contractId
+     * @param productId - productId
+     * @param price - price
+     * @param cipType - cipType
+     * @return ContractItemPrice
+     */
+    public static ContractItemPrice createContractItemPrice(Id contractId, Id productId, double price, String cipType) {
+        ContractItemPrice cip = new ContractItemPrice(
+            ContractId = contractId,
+            RES_Product__c = productId,
+            Price = price,
+            RES_CIP_Type__c = cipType,
+            ItemId = productId,
+            StartDate = System.now()
+        );
+        insert cip;
+        return cip;
+    }
 }
