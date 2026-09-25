@@ -62,6 +62,7 @@ public with sharing class RES_ContractIntegrationService extends RES_BaseIntegra
 
         List<ContractItemPrice> contractItemPriceList = new RES_ContractItemPriceDAOLayer().getCIPByContractIds(contractIds);
         Map<Id, Map<String, String>> mapping = new Map<Id, Map<String, String>>();
+        Map<Id, ContractItemPrice> unitMapping = new Map<Id, ContractItemPrice>();
 
         for(ContractItemPrice cip: contractItemPriceList){
             if(cip.ContractId != null){
@@ -74,6 +75,7 @@ public with sharing class RES_ContractIntegrationService extends RES_BaseIntegra
                 }
                 else if(cip.RES_CIP_Type__c == 'Unit'){
                     mapping.get(cip.ContractId).put(cip.RES_CIP_Type__c, String.valueOf(cip.Price));
+                    unitMapping.put(cip.ContractId, cip);
                 }   
             }
         }
@@ -85,7 +87,7 @@ public with sharing class RES_ContractIntegrationService extends RES_BaseIntegra
             List<RES_ContractCreationWrapper.PartnerWrapper> partner = new List<RES_ContractCreationWrapper.PartnerWrapper>();
             RES_ContractCreationWrapper.PartnerWrapper p1 = new  RES_ContractCreationWrapper.PartnerWrapper();
             p1.ROLE = c.Account.RES_BP_Role__c;
-            p1.PARTNER = null;
+            p1.PARTNER = '20001621';
 
             partner.add(
                 p1
@@ -96,11 +98,16 @@ public with sharing class RES_ContractIntegrationService extends RES_BaseIntegra
             }
 
             payload.IV_C4CREF = c.Id;
-            payload.IV_C4CUSR = c.OwnerId;
+            payload.IV_C4CUSR = c.Owner.Name;
             payload.IV_CN_STDATE = String.valueOf(c.StartDate);
             payload.IV_CN_ENDDATE = String.valueOf(c.EndDate);
-            payload.IV_CONTRACT_OBJECT_ID = null;
 
+            if(unitMapping.containsKey(c.Id)){
+                ContractItemPrice unitCIP = unitMapping.get(c.Id);
+                String objectID = String.valueOf(c.RES_Company_Code__c) + '/' + unitCIP.RES_Product__r.RES_API_Business_Entity__c;
+                payload.IV_CONTRACT_OBJECT_ID = objectID;
+            }
+        
             if(mapping.containsKey(c.Id)){
                 if(mapping.get(c.Id).containsKey('Payment Plan')){
                     payload.IV_PAYPLAN_ID = mapping.get(c.Id).get('Payment Plan');
@@ -109,7 +116,9 @@ public with sharing class RES_ContractIntegrationService extends RES_BaseIntegra
             
             payload.IV_RECNTXT = c.ContractNumber;
             payload.IV_RECNTYPE = c.RES_Contract_Type__c;
-            payload.IV_FIRST_TIME_BUYER = String.valueOf(c.RES_First_Residential_Buyer__c);
+            
+            String firstTimeBuyer = (c.RES_First_Residential_Buyer__c == true? 'X': '');
+            payload.IV_FIRST_TIME_BUYER = firstTimeBuyer;
 
             if(mapping.containsKey(c.Id)){
                 if(mapping.get(c.Id).containsKey('Unit')){
