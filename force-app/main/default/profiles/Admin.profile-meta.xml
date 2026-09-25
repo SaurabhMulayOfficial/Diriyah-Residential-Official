@@ -2745,6 +2745,11 @@
     </fieldPermissions>
     <fieldPermissions>
         <editable>true</editable>
+        <field>Product2.RES_Version__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
         <field>Product2.RES_Net_Saleable_Area__c</field>
         <readable>true</readable>
     </fieldPermissions>
@@ -3331,6 +3336,11 @@
     <fieldPermissions>
         <editable>false</editable>
         <field>Contract.RES_SPA_Signed_Date__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>Contract.RES_Last_Sync_DateTime__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
