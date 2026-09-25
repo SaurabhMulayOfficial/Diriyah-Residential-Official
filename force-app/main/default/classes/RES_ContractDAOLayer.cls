@@ -42,7 +42,7 @@ public with sharing class RES_ContractDAOLayer extends RES_BaseDAOLayer {
         };
 
         String soql =
-            'SELECT Id, OwnerId, StartDate, EndDate, ContractNumber, CompanySignedDate, ' +
+            'SELECT Id, OwnerId, StartDate, RES_Company_Code__c, EndDate, ContractNumber, Owner.Name, CompanySignedDate, ' +
             '       RES_Contract_Type__c, RES_First_Residential_Buyer__c, DIR_Old_Contract__c, ' +
             '       Account.RES_BP_Role__c ' +
             'FROM Contract ' +
