@@ -41,9 +41,9 @@ public with sharing class RES_ContractDAOLayer extends RES_BaseDAOLayer {
             'contractIds' => contractIds
         };
 
-        String soql = 'SELECT Id, ContractNumber, ' +
+        String soql = 'SELECT Id, ContractNumber ' +
                       'FROM Contract ' +
-                      'WHERE Id IN :contractIds';
+                       'WHERE Id IN :contractIds';
 
         return (List<Contract>) executeQuery(soql, '', false, bindVars, AccessLevel.SYSTEM_MODE);
     }
