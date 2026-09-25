@@ -16,6 +16,11 @@ private class RES_PaymentPlanConfiguratorServiceTest {
             MainProductRoleCat = 'Bundle',
             AssociatedProductRoleCat = 'BundleComponent'
         );
+
+        // RES_ProductTrigger enqueues an SAP sync queueable once RES_Business_Entity__c is set, which throws in test context (no Named Credential) - unrelated here, so turn triggers off for every test method.
+        RES_Config_Switch__c config = RES_Config_Switch__c.getOrgDefaults();
+        config.RES_Triggers_Off__c = true;
+        upsert config;
     }
 
     private static String threeInstallmentsJson() {

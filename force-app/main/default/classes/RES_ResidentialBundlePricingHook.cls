@@ -69,19 +69,41 @@ global class RES_ResidentialBundlePricingHook implements RevSignaling.SignalingA
             System.debug(DEBUG_VERSION + ' - Loaded ' + INSTALLMENT_PERCENTAGE_SOURCE_FIELD + ' for ' +
                        installmentPercentageMap.size() + ' option-to-installment relationships');
 
-            // STEP 4.6: Query each bundle's Net Saleable Area for the service charge calc
-            Map<Id, Decimal> netSaleableAreaMap = queryNetSaleableAreaByProduct(bundleStructureMap);
+            // STEP 4.6: Query each bundle's Net Saleable Area (default area, used when no RES_Area_Type__c override)
+            Map<Id, Decimal> defaultAreaMap = queryNetSaleableAreaByProduct(bundleStructureMap);
             System.debug(DEBUG_VERSION + ' - Loaded RES_Net_Saleable_Area__c for ' +
-                       netSaleableAreaMap.size() + ' bundle product(s)');
+                       defaultAreaMap.size() + ' bundle product(s)');
 
             // STEP 4.7: Identify which child option is the 'Service Charge' component
             Set<Id> serviceChargeProductIds = queryServiceChargeProductIds(bundleStructureMap);
             System.debug(DEBUG_VERSION + ' - Identified ' + serviceChargeProductIds.size() + ' service charge product(s)');
 
-            // STEP 4.8: Query each bundle's SC_RATE from catalog config (not the live context)
-            Map<Id, Decimal> serviceChargeRateMap = queryServiceChargeRateByProduct(bundleStructureMap);
-            System.debug(DEBUG_VERSION + ' - Loaded ' + SERVICE_CHARGE_RATE_ATTRIBUTE + ' for ' +
-                       serviceChargeRateMap.size() + ' bundle product(s)');
+            // STEP 4.8: Query each bundle's SC_RATE + billing frequency + area type override from catalog config
+            Map<Id, ServiceChargeConfig> serviceChargeConfigMap = queryServiceChargeConfigByProduct(bundleStructureMap);
+            System.debug(DEBUG_VERSION + ' - Loaded ' + SERVICE_CHARGE_RATE_ATTRIBUTE + ' config for ' +
+                       serviceChargeConfigMap.size() + ' bundle product(s)');
+
+            // STEP 4.9: Where RES_Area_Type__c is set, look up the matching RES_Measurement__c amount instead of the default area
+            Map<Id, Decimal> overrideAreaMap = queryAreaByProductAndType(serviceChargeConfigMap);
+            System.debug(DEBUG_VERSION + ' - Loaded RES_Area_Type__c measurement override for ' +
+                       overrideAreaMap.size() + ' bundle product(s)');
+
+            // STEP 4.10: Collapse config + areas into the (rate, area) pair each bundle should actually be priced with -
+            // rate is pre-multiplied by the billing frequency factor (Annual=12/12=1, Semi-Annual=6/12=0.5, Quarterly=3/12=0.25)
+            // so computeServiceCharge's existing 'rate x area' formula produces the correct billing-period amount unchanged.
+            Map<Id, Decimal> serviceChargeRateMap = new Map<Id, Decimal>();
+            Map<Id, Decimal> netSaleableAreaMap = new Map<Id, Decimal>();
+            for (Id bundleProductId : serviceChargeConfigMap.keySet()) {
+                ServiceChargeConfig config = serviceChargeConfigMap.get(bundleProductId);
+                Decimal area = overrideAreaMap.containsKey(bundleProductId)
+                    ? overrideAreaMap.get(bundleProductId)
+                    : defaultAreaMap.get(bundleProductId);
+                if (config.rate == null || area == null) {
+                    continue;
+                }
+                serviceChargeRateMap.put(bundleProductId, config.rate * (billingFrequencyToMonths(config.billingFrequency) / 12));
+                netSaleableAreaMap.put(bundleProductId, area);
+            }
 
             // STEP 5: Match and apply adjustments to the selected child options
             List<Map<String, Object>> allNodeUpdates = applyPricingToOptions(
@@ -500,10 +522,29 @@ global class RES_ResidentialBundlePricingHook implements RevSignaling.SignalingA
         return serviceChargeProductIds;
     }
 
-    /** Query each bundle's SC_RATE directly from catalog config (ProductAttributeDefinition.DefaultValue), not the live context. */
+    /** Rate + billing frequency + area type override, all sourced from the same ProductAttributeDefinition record. */
+    public class ServiceChargeConfig {
+        public Decimal rate;
+        public String billingFrequency;
+        public String areaType;
+    }
+
+    /** Number of months a billing frequency covers, for scaling the annual (rate x area) amount. Unrecognized/blank defaults to Annual (legacy behavior). */
     @TestVisible
-    private Map<Id, Decimal> queryServiceChargeRateByProduct(Map<String, BundleStructure> bundleMap) {
-        Map<Id, Decimal> rateMap = new Map<Id, Decimal>();
+    private Decimal billingFrequencyToMonths(String billingFrequency) {
+        if (billingFrequency == 'Semi_Annual') {
+            return 6;
+        }
+        if (billingFrequency == 'Quarterly') {
+            return 3;
+        }
+        return 12;
+    }
+
+    /** Query each bundle's SC_RATE + RES_Billing_Frequency__c + RES_Area_Type__c directly from catalog config (ProductAttributeDefinition), not the live context. */
+    @TestVisible
+    private Map<Id, ServiceChargeConfig> queryServiceChargeConfigByProduct(Map<String, BundleStructure> bundleMap) {
+        Map<Id, ServiceChargeConfig> configMap = new Map<Id, ServiceChargeConfig>();
 
         Set<Id> bundleProductIds = new Set<Id>();
         for (BundleStructure bundle : bundleMap.values()) {
@@ -514,25 +555,69 @@ global class RES_ResidentialBundlePricingHook implements RevSignaling.SignalingA
 
         if (bundleProductIds.isEmpty()) {
             System.debug(DEBUG_VERSION + ' - No bundle product IDs found for SC_RATE lookup');
-            return rateMap;
+            return configMap;
         }
 
         for (ProductAttributeDefinition attrDef : [
-            SELECT Product2Id, DefaultValue
+            SELECT Product2Id, DefaultValue, RES_Billing_Frequency__c, RES_Area_Type__c
             FROM ProductAttributeDefinition
             WHERE Product2Id IN :bundleProductIds
                 AND AttributeDefinition.DeveloperName = :SERVICE_CHARGE_RATE_ATTRIBUTE
                 AND DefaultValue != null
         ]) {
             if (String.isNotBlank(attrDef.DefaultValue)) {
-                rateMap.put(attrDef.Product2Id, Decimal.valueOf(attrDef.DefaultValue));
+                ServiceChargeConfig config = new ServiceChargeConfig();
+                config.rate = Decimal.valueOf(attrDef.DefaultValue);
+                config.billingFrequency = attrDef.RES_Billing_Frequency__c;
+                config.areaType = attrDef.RES_Area_Type__c;
+                configMap.put(attrDef.Product2Id, config);
                 System.debug(DEBUG_VERSION + ' - Product ' + attrDef.Product2Id + ' has ' +
-                           SERVICE_CHARGE_RATE_ATTRIBUTE + ' = ' + attrDef.DefaultValue);
+                           SERVICE_CHARGE_RATE_ATTRIBUTE + ' = ' + attrDef.DefaultValue +
+                           ', billing frequency = ' + config.billingFrequency + ', area type = ' + config.areaType);
             }
         }
 
-        System.debug(DEBUG_VERSION + ' - queryServiceChargeRateByProduct: returning ' + rateMap.size() + ' entr(y/ies): ' + rateMap);
-        return rateMap;
+        System.debug(DEBUG_VERSION + ' - queryServiceChargeConfigByProduct: returning ' + configMap.size() + ' entr(y/ies)');
+        return configMap;
+    }
+
+    /** For bundles with RES_Area_Type__c set, look up the matching RES_Measurement__c amount (by Product + Measurement Type). */
+    @TestVisible
+    private Map<Id, Decimal> queryAreaByProductAndType(Map<Id, ServiceChargeConfig> serviceChargeConfigMap) {
+        Map<Id, Decimal> areaMap = new Map<Id, Decimal>();
+
+        Set<Id> productIds = new Set<Id>();
+        Set<String> areaTypes = new Set<String>();
+        for (Id productId : serviceChargeConfigMap.keySet()) {
+            String areaType = serviceChargeConfigMap.get(productId).areaType;
+            if (String.isNotBlank(areaType)) {
+                productIds.add(productId);
+                areaTypes.add(areaType);
+            }
+        }
+
+        if (productIds.isEmpty()) {
+            System.debug(DEBUG_VERSION + ' - No RES_Area_Type__c overrides found, using default area for all bundles');
+            return areaMap;
+        }
+
+        for (RES_Measurement__c measurement : [
+            SELECT RES_Product__c, RES_Measurement_Type__c, RES_Measurement_Amount__c
+            FROM RES_Measurement__c
+            WHERE RES_Product__c IN :productIds
+                AND RES_Measurement_Type__c IN :areaTypes
+                AND RES_Measurement_Amount__c != null
+        ]) {
+            String configuredAreaType = serviceChargeConfigMap.get(measurement.RES_Product__c).areaType;
+            if (measurement.RES_Measurement_Type__c == configuredAreaType) {
+                areaMap.put(measurement.RES_Product__c, measurement.RES_Measurement_Amount__c);
+                System.debug(DEBUG_VERSION + ' - Product ' + measurement.RES_Product__c + ' area type ' +
+                           configuredAreaType + ' = ' + measurement.RES_Measurement_Amount__c);
+            }
+        }
+
+        System.debug(DEBUG_VERSION + ' - queryAreaByProductAndType: returning ' + areaMap.size() + ' entr(y/ies)');
+        return areaMap;
     }
 
     /** Key for looking up a ProductRelatedComponent value by parent bundle + child option product pair. */

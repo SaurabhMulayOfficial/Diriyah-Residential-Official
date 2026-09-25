@@ -63,7 +63,8 @@ private class RES_PaymentPlanBundleProvisionerTest {
             Name = 'Test Payment Plan',
             IsActive = true,
             RecordTypeId = paymentPlanRecordTypeId,
-            RES_Business_Entity__c = catalogId
+            RES_Business_Entity__c = catalogId,
+            RES_Price_Option__c = 'Test Price Option'
         );
         insert plan;
         return plan;
@@ -98,7 +99,7 @@ private class RES_PaymentPlanBundleProvisionerTest {
         }
 
         List<ProductRelatedComponent> components = [
-            SELECT Id, ParentProductId, ChildProductId, ProductComponentGroupId, ProductRelationshipTypeId
+            SELECT Id, ParentProductId, ChildProductId, ProductComponentGroupId, ProductRelationshipTypeId, RES_Price_Option__c
             FROM ProductRelatedComponent
             WHERE ChildProductId = :plan.Id
         ];
@@ -106,6 +107,8 @@ private class RES_PaymentPlanBundleProvisionerTest {
         for (ProductRelatedComponent component : components) {
             System.assertNotEquals(null, component.ProductComponentGroupId);
             System.assertNotEquals(null, component.ProductRelationshipTypeId);
+            System.assertEquals('Test Price Option', component.RES_Price_Option__c,
+                'RES_ResidentialBundlePricingHook prices the Unit off this field - it must be carried over from the Payment Plan');
         }
     }
 

@@ -1,32 +1,35 @@
 /**
  * ==============================================================================
- * Class Name    : RES_PaymentPlanBundleProvisioner
- * Description   : DIR-1258 Solution Design bullet 6. Invoked as an Action step
- *                  from the final CFO-approve stage of
- *                  RES_Payment_Plan_New_Submission_Approval_Process. For a
- *                  newly-approved Payment Plan that is tagged to a catalog
- *                  (RES_Business_Entity__c), ensures every active Unit under that
- *                  catalog has:
- *                    1. A "Payment Plan" ProductComponentGroup (created once
- *                       per Unit, reused for every Payment Plan approved
- *                       against that catalog - a Unit offers one Payment
- *                       Plan *choice* with potentially several options).
- *                    2. A ProductRelatedComponent child option linking that
- *                       group to this specific Payment Plan product.
+ * Class Name    : RES_ServiceChargeBundleProvisioner
+ * Description   : Invoked from RES_UnifiedIngestionEngine whenever the CSV
+ *                  ingestion framework creates a new Unit. Ensures the unit
+ *                  has:
+ *                    1. A "Service Charge" ProductComponentGroup (created
+ *                       once per Unit).
+ *                    2. A ProductRelatedComponent linking that group to the
+ *                       single, shared Service Charge product looked up by
+ *                       the ProductCode named in the RES_Service_Charge_Product_Code
+ *                       custom label - the same product every Unit uses,
+ *                       never created fresh. Resolved by ProductCode rather
+ *                       than a stored Id: Salesforce record Ids are
+ *                       org-specific, so a hardcoded Id would only resolve
+ *                       correctly in the one org it was captured from.
+ *                  Mirrors the same bundle-wiring shape used by
+ *                  RES_PaymentPlanBundleProvisioner (DIR-1258) and the
+ *                  reference "Wadi Safar Top Unit" / "RES Test Unit A/B/C"
+ *                  products already in the org.
  *
  * Framework Rule:
  *      - No SOQL/DML directly against unrelated objects without a DAO.
- *      - Query-only DAOs; DML for the new records lives here (this class
- *        plays the "Service" role for this one-off provisioning task -
- *        it is intentionally not split into a separate Controller/Service
- *        pair given its single entry point and narrow scope).
+ *      - Query-only DAOs; DML for the new records lives here (same
+ *        Controller/Service split RES_PaymentPlanBundleProvisioner uses).
  * ==============================================================================
  */
-public without sharing class RES_PaymentPlanBundleProvisioner {
+public without sharing class RES_ServiceChargeBundleProvisioner {
 
-    private static final String GROUP_NAME = 'Payment Plan';
-    private static final String GROUP_CODE_SUFFIX = '-PP';
-    private static final Integer GROUP_SEQUENCE = 10;
+    private static final String GROUP_NAME = 'Service Charge';
+    private static final String GROUP_CODE_SUFFIX = '-SC';
+    private static final Integer GROUP_SEQUENCE = 100;
     private static final Integer GROUP_MIN_COMPONENTS = 1;
     private static final Integer GROUP_MAX_COMPONENTS = 1;
     private static final String RELATIONSHIP_TYPE_NAME = 'Bundle to Bundle Component Relationship';
@@ -36,59 +39,24 @@ public without sharing class RES_PaymentPlanBundleProvisioner {
     private static final RES_ProductRelatedComponentDAOLayer COMPONENT_DAO = new RES_ProductRelatedComponentDAOLayer();
     private static final RES_ProductRelationshipTypeDAOLayer RELATIONSHIP_TYPE_DAO = new RES_ProductRelationshipTypeDAOLayer();
 
-    public class Request {
-        @InvocableVariable(required=true label='Payment Plan Product2 Id')
-        public Id paymentPlanId;
-    }
-
-    @InvocableMethod(
-        label='Provision Payment Plan Bundle Components'
-        category='Payment Plan'
-        description='DIR-1258: On final approval of a new Payment Plan, ensures every active Unit under its catalog has a Payment Plan ProductComponentGroup and a ProductRelatedComponent option for this plan.'
-    )
-    public static void provision(List<Request> requests) {
-        if (requests == null || requests.isEmpty()) {
+    public static void provisionForUnits(Set<Id> unitIds) {
+        if (unitIds == null || unitIds.isEmpty()) {
             return;
         }
 
-        Set<Id> paymentPlanIds = new Set<Id>();
-        for (Request req : requests) {
-            if (req != null && req.paymentPlanId != null) {
-                paymentPlanIds.add(req.paymentPlanId);
-            }
-        }
-
-        for (Id paymentPlanId : paymentPlanIds) {
-            provisionForPlan(paymentPlanId);
-        }
-    }
-
-    private static void provisionForPlan(Id paymentPlanId) {
-        Product2 paymentPlan = PRODUCT_DAO.getPaymentPlanById(paymentPlanId);
-        if (paymentPlan == null || paymentPlan.RES_Business_Entity__c == null) {
+        Id serviceChargeId = resolveServiceChargeProductId();
+        if (serviceChargeId == null) {
             /*
-             * Solution Design bullet 3: a Payment Plan not tagged to a
-             * project/catalog is approved but not auto-applied to any
-             * units - the Submit screen already warns the user about this.
+             * RES_Service_Charge_Product_Code is blank, or no active Product2
+             * in this org carries that ProductCode - nothing to wire up.
+             * Abort rather than attempt doomed DML.
              */
+            System.debug(
+                'RES_ServiceChargeBundleProvisioner: no Product2 found for ProductCode "' +
+                System.Label.RES_Service_Charge_Product_Code + '" - skipping Service Charge provisioning.'
+            );
             return;
         }
-
-        List<Product2> units = PRODUCT_DAO.getUnitsByCatalog(paymentPlan.RES_Business_Entity__c);
-        if (units.isEmpty()) {
-            return;
-        }
-
-        Map<Id, Product2> unitsById = new Map<Id, Product2>(units);
-        Set<Id> unitIds = unitsById.keySet();
-
-        Map<Id, ProductComponentGroup> existingGroupByUnitId = mapGroupsByUnit(
-            GROUP_DAO.getGroupsByParentProductsAndName(unitIds, GROUP_NAME)
-        );
-
-        Set<Id> unitsAlreadyWired = mapUnitIdsFromComponents(
-            COMPONENT_DAO.getComponentsByParentProductsAndChild(unitIds, paymentPlanId)
-        );
 
         Id relationshipTypeId = resolveRelationshipTypeId();
         if (relationshipTypeId == null) {
@@ -98,11 +66,19 @@ public without sharing class RES_PaymentPlanBundleProvisioner {
              * would fail. Abort rather than attempt doomed DML.
              */
             System.debug(
-                'RES_PaymentPlanBundleProvisioner: ProductRelationshipType "' +
-                RELATIONSHIP_TYPE_NAME + '" not found - aborting provisioning for Payment Plan ' + paymentPlanId
+                'RES_ServiceChargeBundleProvisioner: ProductRelationshipType "' +
+                RELATIONSHIP_TYPE_NAME + '" not found - aborting Service Charge provisioning.'
             );
             return;
         }
+
+        Map<Id, ProductComponentGroup> existingGroupByUnitId = mapGroupsByUnit(
+            GROUP_DAO.getGroupsByParentProductsAndName(unitIds, GROUP_NAME)
+        );
+
+        Set<Id> unitsAlreadyWired = mapUnitIdsFromComponents(
+            COMPONENT_DAO.getComponentsByParentProductsAndChild(unitIds, serviceChargeId)
+        );
 
         List<ProductComponentGroup> groupsToInsert = new List<ProductComponentGroup>();
         List<Id> unitIdsForNewGroups = new List<Id>();
@@ -140,18 +116,7 @@ public without sharing class RES_PaymentPlanBundleProvisioner {
                  */
                 continue;
             }
-            /*
-             * Revenue Cloud requires every ProductRelatedComponent under a
-             * Static bundle parent to have IsDefaultComponent = true -
-             * confirmed against the real org: both insert AND a follow-up
-             * update to false are rejected with "Child component must be
-             * added by default for a Static Parent Product," for the
-             * first and any later component alike. So every option this
-             * invocable adds simply stays a default component; there is
-             * no way to demote earlier ones via Apex DML, and the
-             * platform enforces this invariant itself.
-             */
-            componentsToInsert.add(buildComponent(unitId, componentGroup.Id, paymentPlanId, relationshipTypeId, true, paymentPlan.RES_Price_Option__c));
+            componentsToInsert.add(buildComponent(unitId, componentGroup.Id, serviceChargeId, relationshipTypeId));
         }
 
         if (!componentsToInsert.isEmpty()) {
@@ -162,6 +127,15 @@ public without sharing class RES_PaymentPlanBundleProvisioner {
                 }
             }
         }
+    }
+
+    private static Id resolveServiceChargeProductId() {
+        String code = System.Label.RES_Service_Charge_Product_Code;
+        if (String.isBlank(code)) {
+            return null;
+        }
+        List<Product2> found = PRODUCT_DAO.getProductsByProductCodes(new Set<String>{ code });
+        return found.isEmpty() ? null : found[0].Id;
     }
 
     private static Id resolveRelationshipTypeId() {
@@ -186,26 +160,20 @@ public without sharing class RES_PaymentPlanBundleProvisioner {
         );
     }
 
-    private static ProductRelatedComponent buildComponent(Id unitId, Id groupId, Id paymentPlanId, Id relationshipTypeId, Boolean isDefaultComponent, String priceOption) {
+    private static ProductRelatedComponent buildComponent(Id unitId, Id groupId, Id serviceChargeId, Id relationshipTypeId) {
         return new ProductRelatedComponent(
             ParentProductId = unitId,
-            ChildProductId = paymentPlanId,
+            ChildProductId = serviceChargeId,
             ProductComponentGroupId = groupId,
             ProductRelationshipTypeId = relationshipTypeId,
             Quantity = 1,
-            IsComponentRequired = false,
-            IsDefaultComponent = isDefaultComponent,
+            IsComponentRequired = true,
+            IsDefaultComponent = true,
             IsQuantityEditable = false,
             DoesBundlePriceIncludeChild = false,
             QuoteVisibility = 'Always',
-            /*
-             * RES_ResidentialBundlePricingHook reads RES_Price_Option__c off this exact
-             * Unit->Payment-Plan relationship to decide which AttributeBasedAdjustment
-             * prices the Unit - without it, selecting this Payment Plan silently applies
-             * no pricing adjustment at all. Carried over from the Payment Plan Product2's
-             * own RES_Price_Option__c (set once, at Payment Plan creation).
-             */
-            RES_Price_Option__c = priceOption
+            QuantityScaleMethod = 'Proportional',
+            Sequence = GROUP_SEQUENCE
         );
     }
 
@@ -231,7 +199,7 @@ public without sharing class RES_PaymentPlanBundleProvisioner {
             messages.add(error.getMessage());
         }
         System.debug(
-            'RES_PaymentPlanBundleProvisioner: ' + operation +
+            'RES_ServiceChargeBundleProvisioner: ' + operation +
             ' failed for Unit ' + unitId + ' - ' + String.join(messages, '; ')
         );
     }

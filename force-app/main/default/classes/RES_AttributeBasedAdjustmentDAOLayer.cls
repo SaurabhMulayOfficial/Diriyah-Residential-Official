@@ -11,7 +11,8 @@ public without sharing class RES_AttributeBasedAdjustmentDAOLayer extends RES_Ba
         if (ruleIds == null || ruleIds.isEmpty()) return new List<AttributeBasedAdjustment>();
         Map<String, Object> bindVars = new Map<String, Object>{ 'ruleIds' => ruleIds };
         String soql = 'SELECT Id, AttributeBasedAdjRuleId, AdjustmentValue, AdjustmentType, EffectiveFrom, EffectiveTo ' +
-                      'FROM AttributeBasedAdjustment WHERE AttributeBasedAdjRuleId IN :ruleIds';
+                      'FROM AttributeBasedAdjustment WHERE AttributeBasedAdjRuleId IN :ruleIds ' +
+                      'ORDER BY EffectiveFrom DESC NULLS LAST';
         return (List<AttributeBasedAdjustment>) executeQuery(soql, '', false, bindVars, AccessLevel.SYSTEM_MODE);
     }
 }
