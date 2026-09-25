@@ -14,6 +14,7 @@ public without sharing class RES_SAPTokenProvider extends RES_BaseIntegrationCal
         if(String.isBlank(SAP_TOKEN)){
             RES_SAPTokenProvider tokenProvider = new RES_SAPTokenProvider();
             RES_IntegrationResponse response = tokenProvider.sendRequest();
+            if (response == null) { return SAP_TOKEN; }
             System.debug('SAP Token Response: ' + response.responseBody);
             try{
                 if(response.statusCode >= 200 && response.statusCode < 300){

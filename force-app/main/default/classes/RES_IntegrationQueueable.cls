@@ -35,12 +35,12 @@ public with sharing class RES_IntegrationQueueable implements Queueable, Databas
             return;
         }
 
-        if (serviceName == 'Contract_Sync') {
+        if (serviceName == 'Sales_Contract_Creation') {
             List<Contract> contracts = new List<Contract>();
             for (SObject record : records) {
                 contracts.add((Contract) record);
             }
-            //RES_ContractIntegrationService.syncContracts(contracts, requestMethod);
+            RES_ContractIntegrationService.syncContracts(contracts, requestMethod);
         }
 
         else if(serviceName == 'Account_Sync'){
@@ -48,15 +48,15 @@ public with sharing class RES_IntegrationQueueable implements Queueable, Databas
             for (SObject record : records) {
                 accounts.add((Account) record);
             }
-            //RES_AccountIntegrationService.syncAccounts(accounts, requestMethod);
+            //RES_AccountIntegrationService.syncAccounts(accounts, requestMethod, triggerContext);
         }
         
-        else if(serviceName == 'Product_Sync'){
+        else if(serviceName == 'Unit_Sync'){
             List<Product2> products = new List<Product2>();
             for (SObject record : records) {
                 products.add((Product2) record);
             }
-            //RES_ProductIntegrationService.syncProducts(products, requestMethod);
+            //RES_ProductIntegrationService.syncProducts(products, requestMethod, triggerContext);
         }
         
         else if(serviceName == 'ProductCategory_Sync'){

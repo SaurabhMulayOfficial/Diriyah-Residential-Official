@@ -43,8 +43,11 @@ public class RES_ResponseWrapper {
         Map<String, Object> root =
             (Map<String, Object>) JSON.deserializeUntyped(responseBody);
 
-        Map<String, Object> sapReturn =
-            (Map<String, Object>) root.remove('Return');
+        Map<String, Object> sapReturn = (Map<String, Object>) root.remove('Return');
+
+        if (sapReturn == null) {
+            sapReturn = (Map<String, Object>) root.remove('ET_RETURN');
+        }
 
         if (sapReturn == null) {
             return null;

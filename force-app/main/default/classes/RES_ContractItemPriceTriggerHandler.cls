@@ -5,24 +5,32 @@ public with sharing class RES_ContractItemPriceTriggerHandler extends RES_BaseTr
     protected override void afterInsert() {
         if (isRunning) return;
         isRunning = true;
-        RES_ContractItemPriceService.updateFinalPaymentOnContract((List<ContractItemPrice>) Trigger.new);
+        RES_ContractItemPriceServices.updateFinalPaymentOnContract((List<ContractItemPrice>) Trigger.new);
+        handleAfterInsert((List<ContractItemPrice>) Trigger.new);
+    
     }
 
     protected override void afterUpdate() {
         if (isRunning) return;
         isRunning = true;
-        RES_ContractItemPriceService.updateFinalPaymentOnContract((List<ContractItemPrice>) Trigger.new);
+        RES_ContractItemPriceServices.updateFinalPaymentOnContract((List<ContractItemPrice>) Trigger.new);
     }
 
     protected override void afterDelete() {
         if (isRunning) return;
         isRunning = true;
-        RES_ContractItemPriceService.updateFinalPaymentOnContract((List<ContractItemPrice>) Trigger.old);
+        RES_ContractItemPriceServices.updateFinalPaymentOnContract((List<ContractItemPrice>) Trigger.old);
     }
 
     protected override void afterUndelete() {
         if (isRunning) return;
         isRunning = true;
-        RES_ContractItemPriceService.updateFinalPaymentOnContract((List<ContractItemPrice>) Trigger.new);
+        RES_ContractItemPriceServices.updateFinalPaymentOnContract((List<ContractItemPrice>) Trigger.new);
+    }
+  
+   @TestVisible
+    private static void handleAfterInsert(List<ContractItemPrice> newCIPs) {
+        RES_ContractItemPriceServices.syncContracts(newCIPs);
     }
 }
+
