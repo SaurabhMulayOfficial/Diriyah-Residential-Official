@@ -108,6 +108,11 @@
             <field>RES_Unit_Handover_Date__c</field>
             <table>Quote.Products__r</table>
         </columns>
+        <columns>
+            <checkedByDefault>true</checkedByDefault>
+            <field>RES_Business_Entity__c</field>
+            <table>Quote.Products__r</table>
+        </columns>
         <masterLabel>Units</masterLabel>
     </sections>
 </ReportType>
