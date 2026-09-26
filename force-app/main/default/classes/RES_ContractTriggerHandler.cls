@@ -1,12 +1,12 @@
 public with sharing class RES_ContractTriggerHandler extends RES_BaseTriggerHandler {
     public RES_ContractTriggerHandler() {}
 
-    @TestVisible
-    protected override void afterInsert() {
-        //RES_AccountServices.handleContractAccountSync((List<Contract>) Trigger.new);
+    protected override void afterInsert(){
+        
     }
-
-    @TestVisible
-    protected override void afterUpdate() {
+    
+    protected override void afterUpdate(){
+        RES_ContractServices.syncContract((List<Contract>) Trigger.new, (Map<Id, Contract>) Trigger.oldMap);
     }
+    
 }
