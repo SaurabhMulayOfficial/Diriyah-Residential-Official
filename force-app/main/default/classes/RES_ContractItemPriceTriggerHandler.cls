@@ -1,7 +1,8 @@
 public with sharing class RES_ContractItemPriceTriggerHandler extends RES_BaseTriggerHandler {
 
-    private static Boolean isRunning = false;
+    @TestVisible private static Boolean isRunning = false;
 
+    @TestVisible
     protected override void afterInsert() {
         if (isRunning) return;
         isRunning = true;
@@ -9,18 +10,21 @@ public with sharing class RES_ContractItemPriceTriggerHandler extends RES_BaseTr
         handleAfterInsert((List<ContractItemPrice>) Trigger.new);
     }
 
+    @TestVisible
     protected override void afterUpdate() {
         if (isRunning) return;
         isRunning = true;
         handleAfterUpdate((List<ContractItemPrice>) Trigger.new);
     }
 
+    @TestVisible
     protected override void afterDelete() {
         if (isRunning) return;
         isRunning = true;
         handleAfterDelete((List<ContractItemPrice>) Trigger.old);
     }
 
+    @TestVisible
     protected override void afterUndelete() {
         if (isRunning) return;
         isRunning = true;
