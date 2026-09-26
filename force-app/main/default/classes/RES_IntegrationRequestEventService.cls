@@ -15,11 +15,13 @@ public with sharing class RES_IntegrationRequestEventService {
     private static final String MEASUREMENT_INTEGRATION = 'Measurement_Sync';
     private static final String MEASUREMENT_CATALOG_INTEGRATION = 'Measurement_Sync_Catalog';
     private static final String PRODUCT_CATALOG_INTEGRATION = 'ProductCatalog_Sync';
-    //private static final String UNIT_INTEGRATION = 'Unit_Sync';
-    //private static final String ACCOUNT_INTEGRATION = 'Account_Sync';
+    private static final String UNIT_INTEGRATION = 'Unit_Sync';
+    private static final String ACCOUNT_INTEGRATION = 'Account_Sync';
     private static final String CONTRACT_INTEGRATION = 'Sales_Contract_Creation';
     private static final String CONTRACT_UPDATE_INTEGRATION = 'Sales_Contract_Update';
     private static final String CONTRACT_TERMINATION_INTEGRATION = 'Sales_Contract_Termination';
+    private static final String PAYMENT_PLAN_INTEGRATION = 'Payment_Plan';
+    private static final String INSTALLMENT_INTEGRATION = 'Installments';
     
     public RES_IntegrationRequestEventService() {}
 
@@ -146,36 +148,39 @@ public with sharing class RES_IntegrationRequestEventService {
             }
         }
 
-        // String unitIntegrationKey_onInsert = 'GET' + UNIT_INTEGRATION + 'I';
-        // String unitIntegrationKey_onUpdate = 'GET' + UNIT_INTEGRATION + 'U';
+        String unitIntegrationKey_onInsert = 'GET' + UNIT_INTEGRATION + 'I';
+        String unitIntegrationKey_onUpdate = 'GET' + UNIT_INTEGRATION + 'U';
+        System.debug('### [RES_IntegrationRequestEventService] Keys in map: ' + results.keySet());
+        System.debug('### [RES_IntegrationRequestEventService] Checking Unit_Sync Insert key: ' + unitIntegrationKey_onInsert + ' | Found: ' + results.containsKey(unitIntegrationKey_onInsert));
+        System.debug('### [RES_IntegrationRequestEventService] Checking Unit_Sync Update key: ' + unitIntegrationKey_onUpdate + ' | Found: ' + results.containsKey(unitIntegrationKey_onUpdate));
 
-        // if (results.containsKey(unitIntegrationKey_onInsert) && results.get(unitIntegrationKey_onInsert).size() > 0) {
-        //     Set<Id> productIds = new Set<Id>();
-        //     for (RES_Integration_Request__e e : results.get(unitIntegrationKey_onInsert)) {
-        //         if (String.isBlank(e.RES_RecordIds__c)) continue;
-        //         for (String recordId : e.RES_RecordIds__c.split(',')) {
-        //             if (String.isNotBlank(recordId)) productIds.add((Id) recordId.trim());
-        //         }
-        //     }
-        //     if (!productIds.isEmpty()) {
-        //         List<SObject> records = (List<SObject>) new RES_Product2DAOLayer().getProductsForSync(productIds);
-        //         enqueueService(UNIT_INTEGRATION, records, 'I', 'GET');
-        //     }
-        // }
+        if (results.containsKey(unitIntegrationKey_onInsert) && results.get(unitIntegrationKey_onInsert).size() > 0) {
+            Set<Id> productIds = new Set<Id>();
+            for (RES_Integration_Request__e e : results.get(unitIntegrationKey_onInsert)) {
+                if (String.isBlank(e.RES_RecordIds__c)) continue;
+                for (String recordId : e.RES_RecordIds__c.split(',')) {
+                    if (String.isNotBlank(recordId)) productIds.add((Id) recordId.trim());
+                }
+            }
+            if (!productIds.isEmpty()) {
+                List<SObject> records = (List<SObject>) new RES_Product2DAOLayer().getProductsForSync(productIds);
+                enqueueService(UNIT_INTEGRATION, records, 'I', 'GET');
+            }
+        }
 
-        // if (results.containsKey(unitIntegrationKey_onUpdate) && results.get(unitIntegrationKey_onUpdate).size() > 0) {
-        //     Set<Id> productIds = new Set<Id>();
-        //     for (RES_Integration_Request__e e : results.get(unitIntegrationKey_onUpdate)) {
-        //         if (String.isBlank(e.RES_RecordIds__c)) continue;
-        //         for (String recordId : e.RES_RecordIds__c.split(',')) {
-        //             if (String.isNotBlank(recordId)) productIds.add((Id) recordId.trim());
-        //         }
-        //     }
-        //     if (!productIds.isEmpty()) {
-        //         List<SObject> records = (List<SObject>) new RES_Product2DAOLayer().getProductsForSync(productIds);
-        //         enqueueService(UNIT_INTEGRATION, records, 'U', 'GET');
-        //     }
-        // }
+        if (results.containsKey(unitIntegrationKey_onUpdate) && results.get(unitIntegrationKey_onUpdate).size() > 0) {
+            Set<Id> productIds = new Set<Id>();
+            for (RES_Integration_Request__e e : results.get(unitIntegrationKey_onUpdate)) {
+                if (String.isBlank(e.RES_RecordIds__c)) continue;
+                for (String recordId : e.RES_RecordIds__c.split(',')) {
+                    if (String.isNotBlank(recordId)) productIds.add((Id) recordId.trim());
+                }
+            }
+            if (!productIds.isEmpty()) {
+                List<SObject> records = (List<SObject>) new RES_Product2DAOLayer().getProductsForSync(productIds);
+                enqueueService(UNIT_INTEGRATION, records, 'U', 'GET');
+            }
+        }
 
         String pcCatalogIntegrationKey_onInsert = 'GET' + PRODUCT_CATALOG_INTEGRATION + 'I';
         String pcCatalogIntegrationKey_onUpdate = 'GET' + PRODUCT_CATALOG_INTEGRATION + 'U';
@@ -214,44 +219,44 @@ public with sharing class RES_IntegrationRequestEventService {
             }
         }
 
-        // String accountIntegrationKey_onInsert = 'GET' + ACCOUNT_INTEGRATION + 'I';
-        // String accountIntegrationKey_onUpdate = 'GET' + ACCOUNT_INTEGRATION + 'U';
+        String accountIntegrationKey_onInsert = 'GET' + ACCOUNT_INTEGRATION + 'I';
+        String accountIntegrationKey_onUpdate = 'GET' + ACCOUNT_INTEGRATION + 'U';
 
-        // if (results.containsKey(accountIntegrationKey_onInsert) && results.get(accountIntegrationKey_onInsert).size() > 0) {
-        //     Set<Id> accountIds = new Set<Id>();
-        //     for (RES_Integration_Request__e e : results.get(accountIntegrationKey_onInsert)) {
-        //         if (String.isBlank(e.RES_RecordIds__c)) continue;
-        //         for (String recordId : e.RES_RecordIds__c.split(',')) {
-        //             if (String.isNotBlank(recordId)) {
-        //                 accountIds.add((Id) recordId.trim());
-        //             }
-        //         }
-        //     }
+        if (results.containsKey(accountIntegrationKey_onInsert) && results.get(accountIntegrationKey_onInsert).size() > 0) {
+            Set<Id> accountIds = new Set<Id>();
+            for (RES_Integration_Request__e e : results.get(accountIntegrationKey_onInsert)) {
+                if (String.isBlank(e.RES_RecordIds__c)) continue;
+                for (String recordId : e.RES_RecordIds__c.split(',')) {
+                    if (String.isNotBlank(recordId)) {
+                        accountIds.add((Id) recordId.trim());
+                    }
+                }
+            }
 
-        //     if (!accountIds.isEmpty()) {
-        //         List<sObject> records = new List<sObject>();
-        //         records.addAll(new RES_AccountDAOLayer().getAccountsByIds(accountIds).values());
-        //         enqueueService(ACCOUNT_INTEGRATION, records, 'I', 'GET');
-        //     }
-        // }
+            if (!accountIds.isEmpty()) {
+                List<sObject> records = new List<sObject>();
+                records.addAll(new RES_AccountDAOLayer().getAccountsByIds(accountIds).values());
+                enqueueService(ACCOUNT_INTEGRATION, records, 'I', 'GET');
+            }
+        }
 
-        // if (results.containsKey(accountIntegrationKey_onUpdate) && results.get(accountIntegrationKey_onUpdate).size() > 0) {
-        //     Set<Id> accountIds = new Set<Id>();
-        //     for (RES_Integration_Request__e e : results.get(accountIntegrationKey_onUpdate)) {
-        //         if (String.isBlank(e.RES_RecordIds__c)) continue;
-        //         for (String recordId : e.RES_RecordIds__c.split(',')) {
-        //             if (String.isNotBlank(recordId)) {
-        //                 accountIds.add((Id) recordId.trim());
-        //             }
-        //         }
-        //     }
+        if (results.containsKey(accountIntegrationKey_onUpdate) && results.get(accountIntegrationKey_onUpdate).size() > 0) {
+            Set<Id> accountIds = new Set<Id>();
+            for (RES_Integration_Request__e e : results.get(accountIntegrationKey_onUpdate)) {
+                if (String.isBlank(e.RES_RecordIds__c)) continue;
+                for (String recordId : e.RES_RecordIds__c.split(',')) {
+                    if (String.isNotBlank(recordId)) {
+                        accountIds.add((Id) recordId.trim());
+                    }
+                }
+            }
 
-        //     if (!accountIds.isEmpty()) {
-        //         List<sObject> records = new List<sObject>();
-        //         records.addAll(new RES_AccountDAOLayer().getAccountsByIds(accountIds).values());
-        //         enqueueService(ACCOUNT_INTEGRATION, records, 'U', 'GET');
-        //     }
-        // }
+            if (!accountIds.isEmpty()) {
+                List<sObject> records = new List<sObject>();
+                records.addAll(new RES_AccountDAOLayer().getAccountsByIds(accountIds).values());
+                enqueueService(ACCOUNT_INTEGRATION, records, 'U', 'GET');
+            }
+        }
     
         String contractIntegrationKey_onInsert = 'GET' + CONTRACT_INTEGRATION + 'I';
 
@@ -301,6 +306,72 @@ public with sharing class RES_IntegrationRequestEventService {
             if (!contractIds.isEmpty()) {
                 List<SObject> records = (List<SObject>) new RES_ContractDAOLayer().getContractsByIds(contractIds);
                 enqueueService(CONTRACT_TERMINATION_INTEGRATION, records, 'U', 'GET');
+            }
+        }
+
+        String paymentPlanIntegrationKey_onInsert = 'GET' + PAYMENT_PLAN_INTEGRATION + 'I';
+        String paymentPlanIntegrationKey_onUpdate = 'GET' + PAYMENT_PLAN_INTEGRATION + 'U';
+
+        if (results.containsKey(paymentPlanIntegrationKey_onInsert) && results.get(paymentPlanIntegrationKey_onInsert).size() > 0) {
+            Set<Id> paymentPlanIds = new Set<Id>();
+            for (RES_Integration_Request__e e : results.get(paymentPlanIntegrationKey_onInsert)) {
+                if (String.isBlank(e.RES_RecordIds__c)) continue;
+                for (String recordId : e.RES_RecordIds__c.split(',')) {
+                    if (String.isNotBlank(recordId)) paymentPlanIds.add((Id) recordId.trim());
+                }
+            }
+
+            if (!paymentPlanIds.isEmpty()) {
+                List<SObject> records = (List<SObject>) new RES_PaymentPlanDAOLayer().getPaymentPlansByIds(paymentPlanIds);
+                enqueueService(PAYMENT_PLAN_INTEGRATION, records, 'I', 'GET');
+            }
+        }
+
+        if (results.containsKey(paymentPlanIntegrationKey_onUpdate) && results.get(paymentPlanIntegrationKey_onUpdate).size() > 0) {
+            Set<Id> paymentPlanIds = new Set<Id>();
+            for (RES_Integration_Request__e e : results.get(paymentPlanIntegrationKey_onUpdate)) {
+                if (String.isBlank(e.RES_RecordIds__c)) continue;
+                for (String recordId : e.RES_RecordIds__c.split(',')) {
+                    if (String.isNotBlank(recordId)) paymentPlanIds.add((Id) recordId.trim());
+                }
+            }
+
+            if (!paymentPlanIds.isEmpty()) {
+                List<SObject> records = (List<SObject>) new RES_PaymentPlanDAOLayer().getPaymentPlansByIds(paymentPlanIds);
+                enqueueService(PAYMENT_PLAN_INTEGRATION, records, 'U', 'GET');
+            }
+        }
+
+        String installmentIntegrationKey_onInsert = 'GET' + INSTALLMENT_INTEGRATION + 'I';
+        String installmentIntegrationKey_onUpdate = 'GET' + INSTALLMENT_INTEGRATION + 'U';
+
+        if (results.containsKey(installmentIntegrationKey_onInsert) && results.get(installmentIntegrationKey_onInsert).size() > 0) {
+            Set<Id> installmentIds = new Set<Id>();
+            for (RES_Integration_Request__e e : results.get(installmentIntegrationKey_onInsert)) {
+                if (String.isBlank(e.RES_RecordIds__c)) continue;
+                for (String recordId : e.RES_RecordIds__c.split(',')) {
+                    if (String.isNotBlank(recordId)) installmentIds.add((Id) recordId.trim());
+                }
+            }
+
+            if (!installmentIds.isEmpty()) {
+                List<SObject> records = (List<SObject>) new RES_InstallmentDAOLayer().getInstallmentsByIds(installmentIds);
+                enqueueService(INSTALLMENT_INTEGRATION, records, 'I', 'GET');
+            }
+        }
+
+        if (results.containsKey(installmentIntegrationKey_onUpdate) && results.get(installmentIntegrationKey_onUpdate).size() > 0) {
+            Set<Id> installmentIds = new Set<Id>();
+            for (RES_Integration_Request__e e : results.get(installmentIntegrationKey_onUpdate)) {
+                if (String.isBlank(e.RES_RecordIds__c)) continue;
+                for (String recordId : e.RES_RecordIds__c.split(',')) {
+                    if (String.isNotBlank(recordId)) installmentIds.add((Id) recordId.trim());
+                }
+            }
+
+            if (!installmentIds.isEmpty()) {
+                List<SObject> records = (List<SObject>) new RES_InstallmentDAOLayer().getInstallmentsByIds(installmentIds);
+                enqueueService(INSTALLMENT_INTEGRATION, records, 'U', 'GET');
             }
         }
     }

@@ -59,20 +59,37 @@ public with sharing class RES_IntegrationQueueable implements Queueable, Databas
             RES_ContractTerminationIntService.syncContracts(contracts, requestMethod);
         }
 
+        else if (serviceName == 'Payment_Plan') {
+            List<RES_Payment_Plan__c> paymentPlans = new List<RES_Payment_Plan__c>();
+            for (SObject record : records) {
+                paymentPlans.add((RES_Payment_Plan__c) record);
+            }
+            RES_PaymentPlanIntegrationService.syncPaymentPlans(paymentPlans, requestMethod, triggerContext);
+        }
+
+        else if (serviceName == 'Installments') {
+            List<RES_Installment__c> installments = new List<RES_Installment__c>();
+            for (SObject record : records) {
+                installments.add((RES_Installment__c) record);
+            }
+            RES_PaymentPlanIntegrationService.syncPaymentPlans(installments, requestMethod, triggerContext);
+        }
+
         else if(serviceName == 'Account_Sync'){
             List<Account> accounts = new List<Account>();
             for (SObject record : records) {
                 accounts.add((Account) record);
             }
-            //RES_AccountIntegrationService.syncAccounts(accounts, requestMethod, triggerContext);
+            RES_AccountIntegrationService.syncAccounts(accounts, requestMethod, triggerContext);
         }
         
         else if(serviceName == 'Unit_Sync'){
+            System.debug('### [RES_IntegrationQueueable] Unit_Sync executing | Records: ' + records.size() + ' | Context: ' + triggerContext);
             List<Product2> products = new List<Product2>();
             for (SObject record : records) {
                 products.add((Product2) record);
             }
-            //RES_ProductIntegrationService.syncProducts(products, requestMethod, triggerContext);
+            RES_ProductIntegrationService.syncProducts(products, requestMethod, triggerContext);
         }
         
         else if(serviceName == 'ProductCategory_Sync'){
