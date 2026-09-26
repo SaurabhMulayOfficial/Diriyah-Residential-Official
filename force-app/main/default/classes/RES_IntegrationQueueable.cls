@@ -43,6 +43,22 @@ public with sharing class RES_IntegrationQueueable implements Queueable, Databas
             RES_ContractIntegrationService.syncContracts(contracts, requestMethod);
         }
 
+        else if (serviceName == 'Sales_Contract_Update') {
+            List<Contract> contracts = new List<Contract>();
+            for (SObject record : records) {
+                contracts.add((Contract) record);
+            }
+            RES_ContractUpdateIntegrationService.syncContracts(contracts, requestMethod);
+        }
+
+        else if (serviceName == 'Sales_Contract_Termination') {
+            List<Contract> contracts = new List<Contract>();
+            for (SObject record : records) {
+                contracts.add((Contract) record);
+            }
+            RES_ContractTerminationIntService.syncContracts(contracts, requestMethod);
+        }
+
         else if(serviceName == 'Account_Sync'){
             List<Account> accounts = new List<Account>();
             for (SObject record : records) {
