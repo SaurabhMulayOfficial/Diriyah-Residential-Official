@@ -753,7 +753,7 @@ global class RES_ResidentialBundlePricingHook implements RevSignaling.SignalingA
         return allUpdates;
     }
 
-    /** Build display-only updates for each installment child of the selected option (identified via lineItemPath). */
+    /** Build updates for each installment child of the selected option (identified via lineItemPath), including the standard price field. */
     @TestVisible
     private List<Map<String, Object>> buildInstallmentDisplayUpdates(
         BundleStructure bundle,
@@ -800,7 +800,7 @@ global class RES_ResidentialBundlePricingHook implements RevSignaling.SignalingA
         return updates;
     }
 
-    /** Build the update node for an installment's display-only percentage/amount fields (never affects pricing). */
+    /** Build the update node for an installment's percentage/amount fields, plus InputUnitPrice - the procedure's generic, ungated "Assign InputUnitPrice to NetUnitPrice" step reads this for every line, so it's what actually persists the amount onto Net Unit Price / Total Price. */
     @TestVisible
     private Map<String, Object> buildInstallmentDisplayUpdateNode(
         List<Object> nodePath,
@@ -821,6 +821,10 @@ global class RES_ResidentialBundlePricingHook implements RevSignaling.SignalingA
                 },
                 new Map<String, Object>{
                     'attributeName' => 'RES_Installment_Amount__c',
+                    'attributeValue' => amount
+                },
+                new Map<String, Object>{
+                    'attributeName' => 'InputUnitPrice',
                     'attributeValue' => amount
                 }
             }

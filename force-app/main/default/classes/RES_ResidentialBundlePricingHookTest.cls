@@ -697,13 +697,17 @@ private class RES_ResidentialBundlePricingHookTest {
 
         Map<String, Object> percentageAttr;
         Map<String, Object> amountAttr;
+        Map<String, Object> inputUnitPriceAttr;
         for (Object attrObj : (List<Object>) updateEntry.get('attributes')) {
             Map<String, Object> attr = (Map<String, Object>) attrObj;
             if (attr.get('attributeName') == 'RES_Installment_Percentage__c') percentageAttr = attr;
             if (attr.get('attributeName') == 'RES_Installment_Amount__c') amountAttr = attr;
+            if (attr.get('attributeName') == 'InputUnitPrice') inputUnitPriceAttr = attr;
         }
         System.assertEquals(60, percentageAttr.get('attributeValue'), 'Should carry the 60% share');
         System.assertEquals(30000, amountAttr.get('attributeValue'), '60% of 50000 should be 30000');
+        System.assertNotEquals(null, inputUnitPriceAttr, 'Should also set InputUnitPrice so the amount persists onto Net Unit Price / Total Price');
+        System.assertEquals(30000, inputUnitPriceAttr.get('attributeValue'), 'InputUnitPrice should match the computed installment amount');
     }
 
     /** Test: buildInstallmentDisplayUpdateNode returns null for a blank/null node path. */
