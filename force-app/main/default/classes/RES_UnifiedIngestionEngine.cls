@@ -1368,26 +1368,27 @@ public with sharing class RES_UnifiedIngestionEngine implements Database.Batchab
 
                 if (current == null) {
                     toInsert.add(buildAdjustment(sch.Id, r.Id, productId, cm, op.price, startsAt, thru, psmId));
-                } else if (current.AdjustmentValue != op.price) {
-                    // A repriced re-upload opens a new period instead of overwriting the existing one; cap the old period's EffectiveTo to end-of-day before the new one starts.
-                    if (startsAt <= current.EffectiveFrom) {
-                        addRowError(rowErrors, rowIdByCodeAndSelector.get(code + '|' + sel),
-                            'Pricing option "' + sel + '" for ' + code + ' has a new price starting ' +
-                            startsAt.dateGmt() + ', which is not after the existing period starting ' +
-                            current.EffectiveFrom.dateGmt() + ' - no new adjustment was created');
-                        continue;
+                } else if (startsAt == current.EffectiveFrom) {
+                    // Same period window - a re-upload with this same start date corrects the current period in place rather than opening a new one.
+                    if (current.AdjustmentValue != op.price || current.EffectiveTo != thru) {
+                        toUpdate.add(new AttributeBasedAdjustment(
+                            Id              = current.Id,
+                            AdjustmentValue = op.price,
+                            EffectiveTo     = thru
+                        ));
                     }
+                } else if (startsAt > current.EffectiveFrom) {
+                    // A re-upload starting later than the current period opens a new one - price changed or not - and caps the previous period's EffectiveTo to end-of-day before it.
                     toInsert.add(buildAdjustment(sch.Id, r.Id, productId, cm, op.price, startsAt, thru, psmId));
                     toUpdate.add(new AttributeBasedAdjustment(
                         Id          = current.Id,
                         EffectiveTo = dayBeforeAsEndOfDay(startsAt)
                     ));
-                } else if (current.EffectiveFrom != startsAt || current.EffectiveTo != thru) {
-                    toUpdate.add(new AttributeBasedAdjustment(
-                        Id              = current.Id,
-                        EffectiveFrom   = startsAt,
-                        EffectiveTo     = thru
-                    ));
+                } else {
+                    addRowError(rowErrors, rowIdByCodeAndSelector.get(code + '|' + sel),
+                        'Pricing option "' + sel + '" for ' + code + ' has a new start date ' +
+                        startsAt.dateGmt() + ', which is before the existing period starting ' +
+                        current.EffectiveFrom.dateGmt() + ' - no new adjustment was created');
                 }
             }
         }
