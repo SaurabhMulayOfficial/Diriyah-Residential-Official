@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>RES_Billing_Frequency__c</fullName>
+    <description>How often the service charge is billed. Divides the annual (Rate x Area) amount by 12 and multiplies by the number of months in this frequency (Annual=12, Semi-Annual=6, Quarterly=3) in RES_ResidentialBundlePricingHook.computeServiceCharge. Blank defaults to Annual (unchanged legacy behavior) for backward compatibility with existing records.</description>
+    <label>Billing Frequency</label>
+    <required>false</required>
+    <trackHistory>false</trackHistory>
+    <type>Picklist</type>
+    <valueSet>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>Annual</fullName>
+                <default>false</default>
+                <label>Annual</label>
+            </value>
+            <value>
+                <fullName>Semi_Annual</fullName>
+                <default>false</default>
+                <label>Semi-Annual</label>
+            </value>
+            <value>
+                <fullName>Quarterly</fullName>
+                <default>false</default>
+                <label>Quarterly</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

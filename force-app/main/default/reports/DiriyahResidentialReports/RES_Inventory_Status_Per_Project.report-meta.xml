@@ -8,20 +8,10 @@
         <field>Quote$TotalPrice</field>
     </columns>
     <currency>SAR</currency>
-    <filter>
-        <criteriaItems>
-            <column>Quote$RES_Project__c</column>
-            <columnToColumn>false</columnToColumn>
-            <isUnlocked>true</isUnlocked>
-            <operator>equals</operator>
-            <value>Amansamar Residences Wadi Safar,Armani Residences Diriyah,Baccarat Residences Diriyah,Corinthia Residences Diriyah,Faena Residences Wadi Safar,Manazel AlHadawi,Oberoi Branded Residences Wadi Safar,Raffles Branded Residences,The Chedi Residences Wadi Safar,The Ritz Carlton Residences Diriyah,The Ritz Carlton Signature,Wadi Safar – Plots,Not Decided</value>
-        </criteriaItems>
-        <language>en_US</language>
-    </filter>
     <format>Summary</format>
     <groupingsDown>
         <dateGranularity>Day</dateGranularity>
-        <field>Quote$RES_Project__c</field>
+        <field>Quote.Products__r$RES_Business_Entity__c</field>
         <sortOrder>Asc</sortOrder>
     </groupingsDown>
     <groupingsDown>

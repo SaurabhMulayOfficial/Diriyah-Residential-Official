@@ -32,7 +32,7 @@
                 </rightValue>
             </conditions>
             <connector>
-                <targetReference>Is_Product_On_Soft_Hold</targetReference>
+                <targetReference>Is_Total_Price_Changed</targetReference>
             </connector>
             <label>No</label>
         </rules>
@@ -66,6 +66,31 @@
             <label>Yes, Soft Held</label>
         </rules>
     </decisions>
+    <decisions>
+        <name>Is_Total_Price_Changed</name>
+        <label>Is Total Price Changed</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnector>
+            <targetReference>Is_Product_On_Soft_Hold</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Not Changed</defaultConnectorLabel>
+        <rules>
+            <name>Total_Price_Changed</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.TotalPrice</leftValueReference>
+                <operator>IsChanged</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Convert_Amount_To_Words</targetReference>
+            </connector>
+            <label>Total Price Changed</label>
+        </rules>
+    </decisions>
     <environments>Default</environments>
     <formulas>
         <name>ISNEW</name>
@@ -93,6 +118,59 @@
         </value>
     </processMetadataValues>
     <processType>AutoLaunchedFlow</processType>
+    <actionCalls>
+        <name>Convert_Amount_To_Words</name>
+        <label>Convert Amount To Words</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <actionName>RES_NumberToWordsService</actionName>
+        <actionType>apex</actionType>
+        <connector>
+            <targetReference>Update_Quote_Words</targetReference>
+        </connector>
+        <faultConnector>
+            <targetReference>fault_Message</targetReference>
+        </faultConnector>
+        <inputParameters>
+            <name>amount</name>
+            <value>
+                <elementReference>$Record.TotalPrice</elementReference>
+            </value>
+        </inputParameters>
+        <outputParameters>
+            <assignToReference>varEnglishWords</assignToReference>
+            <name>englishWords</name>
+        </outputParameters>
+        <outputParameters>
+            <assignToReference>varArabicWords</assignToReference>
+            <name>arabicWords</name>
+        </outputParameters>
+    </actionCalls>
+    <recordUpdates>
+        <name>Update_Quote_Words</name>
+        <label>Update Quote Words</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Is_Product_On_Soft_Hold</targetReference>
+        </connector>
+        <faultConnector>
+            <targetReference>fault_Message</targetReference>
+        </faultConnector>
+        <inputAssignments>
+            <field>RES_Total_Price_In_Words__c</field>
+            <value>
+                <elementReference>varEnglishWords</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>RES_Total_Price_In_Words_Arabic__c</field>
+            <value>
+                <elementReference>varArabicWords</elementReference>
+            </value>
+        </inputAssignments>
+        <inputReference>$Record</inputReference>
+    </recordUpdates>
     <recordUpdates>
         <name>Update_Related_Contract</name>
         <label>Update Related Contract</label>
@@ -122,6 +200,20 @@
     <status>Active</status>
     <variables>
         <name>faultMessage</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <name>varEnglishWords</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <name>varArabicWords</name>
         <dataType>String</dataType>
         <isCollection>false</isCollection>
         <isInput>false</isInput>

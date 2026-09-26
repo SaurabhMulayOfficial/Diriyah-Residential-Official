@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <actionCalls>
+        <name>Convert_to_Hijri_Date</name>
+        <label>Convert to Hijri Date</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <actionName>RES_HijriDateUtility</actionName>
+        <actionType>apex</actionType>
+        <connector>
+            <targetReference>Assign_Company_Signed_Date_Hijri</targetReference>
+        </connector>
+        <flowTransactionModel>CurrentTransaction</flowTransactionModel>
+        <inputParameters>
+            <name>gregorianDate</name>
+            <value>
+                <elementReference>$Record.CompanySignedDate</elementReference>
+            </value>
+        </inputParameters>
+        <nameSegment>RES_HijriDateUtility</nameSegment>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </actionCalls>
+    <apiVersion>67.0</apiVersion>
+    <areMetricsLoggedToDataCloud>false</areMetricsLoggedToDataCloud>
+    <assignments>
+        <name>Assign_Company_Signed_Date_Hijri</name>
+        <label>Assign Company Signed Date (Hijri)</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignmentItems>
+            <assignToReference>$Record.RES_CompanySignedDate_Arabic__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>Convert_to_Hijri_Date.hijriDateText</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Update_Triggering_Contract</targetReference>
+        </connector>
+    </assignments>
+    <decisions>
+        <name>Check_Flow_Switch</name>
+        <label>Check Flow Switch</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnectorLabel>Flow Switch is Off</defaultConnectorLabel>
+        <rules>
+            <name>Flow_Switch_is_On</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Setup.RES_Config_Switch__c.RES_Flows_Off__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Convert_to_Hijri_Date</targetReference>
+            </connector>
+            <label>Flow Switch is On</label>
+        </rules>
+    </decisions>
+    <environments>Default</environments>
+    <interviewLabel>RES Contract AfterSave -Populate CompanySignedDate Hijri {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>RES Contract AfterSave -Populate CompanySignedDate Hijri</label>
+    <processMetadataValues>
+        <name>BuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>CanvasMode</name>
+        <value>
+            <stringValue>AUTO_LAYOUT_CANVAS</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>OriginBuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processType>AutoLaunchedFlow</processType>
+    <recordUpdates>
+        <name>Update_Triggering_Contract</name>
+        <label>Update Triggering Contract</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <inputReference>$Record</inputReference>
+    </recordUpdates>
+    <start>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Check_Flow_Switch</targetReference>
+        </connector>
+        <doesRequireRecordChangedToMeetCriteria>true</doesRequireRecordChangedToMeetCriteria>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>CompanySignedDate</field>
+            <operator>IsNull</operator>
+            <value>
+                <booleanValue>false</booleanValue>
+            </value>
+        </filters>
+        <object>Contract</object>
+        <recordTriggerType>CreateAndUpdate</recordTriggerType>
+        <triggerType>RecordAfterSave</triggerType>
+    </start>
+    <status>Active</status>
+</Flow>

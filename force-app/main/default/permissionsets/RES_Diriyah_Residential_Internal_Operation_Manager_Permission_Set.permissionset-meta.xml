@@ -60,6 +60,11 @@
     </fieldPermissions>
     <fieldPermissions>
         <editable>true</editable>
+        <field>User.RES_Name_Arabic__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
         <field>ProductAttributeDefinition.RES_Billing_Frequency__c</field>
         <readable>true</readable>
     </fieldPermissions>
@@ -71,6 +76,11 @@
     <fieldPermissions>
         <editable>true</editable>
         <field>ProductRelatedComponent.RES_Price_Option__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>User.RES_Position_Arabic__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
@@ -841,6 +851,11 @@
     <fieldPermissions>
         <editable>false</editable>
         <field>Quote.RES_Reservation_Start_Date__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>Quote.TotalPrice</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
@@ -2876,6 +2891,31 @@
     <fieldPermissions>
         <editable>false</editable>
         <field>Contract.RES_CRF_Form_Received__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>Contract.RES_Last_Sync_DateTime__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>Contract.RES_Contract_Type__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>Contract.DIR_Old_Contract__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>Contract.RES_Company_Code__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>Contract.RES_First_Residential_Buyer__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>

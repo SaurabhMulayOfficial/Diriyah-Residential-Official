@@ -87,6 +87,7 @@ public with sharing class RES_UnifiedIngestionEngine implements Database.Batchab
 
         linkProductsToCategories(scope, productIdByCode);
         disqualifyNewProducts(productIdByCode);
+        provisionServiceChargeComponent(productIdByCode);
         linkProductsToSellingModels(scope, productIdByCode);
         syncPricebookEntries(scope, productIdByCode, rowErrors);
         syncProductAttributes(scope, productIdByCode, rowErrors);
@@ -130,29 +131,12 @@ public with sharing class RES_UnifiedIngestionEngine implements Database.Batchab
         }
         if (rowsByCode.isEmpty()) return;
 
-        List<ProductCatalog> toInsert = new List<ProductCatalog>();
-        List<String> codes           = new List<String>();
+        // Every catalog code left unmatched here must already exist - the framework no longer creates catalogs on the fly.
         for (String code : rowsByCode.keySet()) {
-            List<RES_Product_Staging__c> rows = rowsByCode.get(code);
-            ProductCatalog pc = new ProductCatalog(
-                Code = code,
-                Name = truncate('Business Entity ' + textOf(rows[0], F_CATALOG_NAME), 255)
-            );
-            applyTargetMaps(pc, 'ProductCatalog', rows, true, rowErrors);
-            toInsert.add(pc);
-            codes.add(code);
-        }
-
-        List<Database.SaveResult> saves = Database.insert(toInsert, false);
-        for (Integer i = 0; i < saves.size(); i++) {
-            if (saves[i].isSuccess()) {
-                catalogIdByCode.put(codes[i], saves[i].getId());
-                totalCatalogs++;
-            } else {
-                String msg = 'ProductCatalog "' + codes[i] + '": ' + saves[i].getErrors()[0].getMessage();
-                recordError(msg);
-                for (RES_Product_Staging__c stg : rowsByCode.get(codes[i])) addRowError(rowErrors, stg.Id, msg);
-            }
+            String msg = 'ProductCatalog with external identifier "' + code +
+                         '" does not exist. Create it before running ingestion.';
+            recordError(msg);
+            for (RES_Product_Staging__c stg : rowsByCode.get(code)) addRowError(rowErrors, stg.Id, msg);
         }
     }
 
@@ -173,38 +157,21 @@ public with sharing class RES_UnifiedIngestionEngine implements Database.Batchab
         }
         if (rowsByCode.isEmpty()) return;
 
-        List<ProductCategory> toInsert = new List<ProductCategory>();
-        List<String> codes              = new List<String>();
+        // Every category code left unmatched here must already exist - the framework no longer creates categories on the fly.
         for (String code : rowsByCode.keySet()) {
             List<RES_Product_Staging__c> rows = rowsByCode.get(code);
-            Id catalogId = catalogIdByCode.get(catalogCode(rows[0]));
-            if (catalogId == null) continue;
-
-            String kind  = categoryKind(rows[0]);
-            String value = categoryValue(rows[0]);
-
-            ProductCategory cat = new ProductCategory(
-                Code           = code,
-                Name           = truncate(kind + ' ' + value, 200),
-                CatalogId      = catalogId,
-                IsNavigational = true
-            );
-            applyTargetMaps(cat, 'ProductCategory', rows, true, rowErrors);
-            toInsert.add(cat);
-            codes.add(code);
-        }
-        if (toInsert.isEmpty()) return;
-
-        List<Database.SaveResult> saves = Database.insert(toInsert, false);
-        for (Integer i = 0; i < saves.size(); i++) {
-            if (saves[i].isSuccess()) {
-                categoryIdByCode.put(codes[i], saves[i].getId());
-                totalCategories++;
-            } else {
-                String msg = 'ProductCategory "' + codes[i] + '": ' + saves[i].getErrors()[0].getMessage();
-                recordError(msg);
-                for (RES_Product_Staging__c stg : rowsByCode.get(codes[i])) addRowError(rowErrors, stg.Id, msg);
+            if (catalogIdByCode.get(catalogCode(rows[0])) == null) {
+                /*
+                 * The catalog itself didn't resolve either - resolveCatalogs
+                 * already recorded a row error for these rows, so skip
+                 * without a duplicate.
+                 */
+                continue;
             }
+            String msg = 'ProductCategory with external identifier "' + code +
+                         '" does not exist. Create it before running ingestion.';
+            recordError(msg);
+            for (RES_Product_Staging__c stg : rows) addRowError(rowErrors, stg.Id, msg);
         }
     }
 
@@ -287,6 +254,17 @@ public with sharing class RES_UnifiedIngestionEngine implements Database.Batchab
 
             Product2 p = new Product2(RES_Product_External_ID__c = truncate(code, 255));
             if (isNew && recordTypeId != null) p.RecordTypeId = recordTypeId;
+            /*
+             * A new Unit is always provisioned with a Service Charge bundle
+             * component (see provisionServiceChargeComponent below), and a
+             * ProductRelatedComponent only functions as a real bundle
+             * component when its parent is Type = 'Bundle' - confirmed
+             * against the reference "Wadi Safar Top Unit" / "RES Test Unit
+             * A/B/C" products, which are all Type = 'Bundle'.
+             */
+            if (isNew) p.Type = 'Bundle';
+            // CIP Type is normally entered manually on product creation; the ingestion framework must set it itself since it bypasses that UI.
+            if (isNew) p.RES_CIP_Type__c = 'Unit';
             Id classId = resolveClassification();
             if (classId != null) p.BasedOnId = classId;
 
@@ -369,6 +347,22 @@ public with sharing class RES_UnifiedIngestionEngine implements Database.Batchab
         for (Database.SaveResult sr : Database.insert(toInsert, false)) {
             if (!sr.isSuccess()) recordError('ProductDisqualification: ' + sr.getErrors()[0].getMessage());
         }
+    }
+
+    /**
+     * Every new Unit gets a "Service Charge" bundle component pointing at the
+     * single, shared Service Charge product (RES_ServiceChargeBundleProvisioner
+     * resolves it by ProductCode via the RES_Service_Charge_Product_Code custom label - the
+     * same reference product every Unit uses, never created fresh).
+     */
+    private void provisionServiceChargeComponent(Map<String, Id> productIdByCode) {
+        Set<Id> productIds = new Set<Id>();
+        for (String code : newProductCodes) {
+            Id productId = productIdByCode.get(code);
+            if (productId != null) productIds.add(productId);
+        }
+        if (productIds.isEmpty()) return;
+        RES_ServiceChargeBundleProvisioner.provisionForUnits(productIds);
     }
 
     private void linkProductsToCategories(List<RES_Product_Staging__c> scope, Map<String, Id> productIdByCode) {
@@ -1035,7 +1029,7 @@ public with sharing class RES_UnifiedIngestionEngine implements Database.Batchab
                     AttributeDefinitionId            = attrId,
                     ProductClassificationAttributeId = classAttrId,
                     DefaultValue                     = wanted,
-                    IsReadOnly                       = readOnlyAttributes.contains(attrName),
+                    IsHidden                         = hiddenAttributes.contains(attrName),
                     Sequence                         = 1
                 ));
                 insertRows.add(rowByKey.get(key));
@@ -1080,7 +1074,7 @@ public with sharing class RES_UnifiedIngestionEngine implements Database.Batchab
             if (tm.valueKind == 'Product_Attribute' || tm.valueKind == 'Product_Attribute_Computed') {
                 if (String.isNotBlank(tm.attributeName)) {
                     attrMaps.add(tm);
-                    if (tm.isReadOnly) readOnlyAttributes.add(tm.attributeName);
+                    if (tm.isHidden) hiddenAttributes.add(tm.attributeName);
                 }
             }
             if (tm.valueKind == 'Child_Record' && String.isNotBlank(tm.sourceCode)) {
@@ -1279,11 +1273,10 @@ public with sharing class RES_UnifiedIngestionEngine implements Database.Batchab
         if (classAttrId == null) return;
 
         // Products based on this classification inherit the selector attribute from the
-        // classification, so the price-impacting flag and default belong on the
+        // classification, so the price-impacting/hidden flags and default belong on the
         // ProductClassificationAttr, not on a per-product ProductAttributeDefinition. Creating
         // a ProductAttributeDefinition here would make every product's Pricing Option attribute
-        // show as "Overridden" instead of "Inherited" in Product Configurator, and diverge from
-        // the classification's own settings (e.g. IsHidden) since it is never copied across.
+        // show as "Overridden" instead of "Inherited" in Product Configurator.
         ensureSelectorPriceImpacting(classAttrId, defaultSelector);
 
         Map<String, AttributeBasedAdjRule> ruleByKey = new Map<String, AttributeBasedAdjRule>();
@@ -1347,10 +1340,13 @@ public with sharing class RES_UnifiedIngestionEngine implements Database.Batchab
         }
 
         PriceAdjustmentSchedule sch = new RES_PriceAdjustmentScheduleDAOLayer().getScheduleById(scheduleId);
+        // A rule can carry several adjustments over time; the current one per rule is whichever has the latest EffectiveFrom (getAdjustmentsByRuleIds orders DESC).
         Map<Id, AttributeBasedAdjustment> existingByRule = new Map<Id, AttributeBasedAdjustment>();
         List<AttributeBasedAdjustment> existingAdjs = new RES_AttributeBasedAdjustmentDAOLayer().getAdjustmentsByRuleIds(ruleIds);
         for (AttributeBasedAdjustment a : existingAdjs) {
-            existingByRule.put(a.AttributeBasedAdjRuleId, a);
+            if (!existingByRule.containsKey(a.AttributeBasedAdjRuleId)) {
+                existingByRule.put(a.AttributeBasedAdjRuleId, a);
+            }
         }
 
         Id psmId = psmIdByKey.get('OneTime');
@@ -1371,22 +1367,24 @@ public with sharing class RES_UnifiedIngestionEngine implements Database.Batchab
                 Datetime thru = adjustmentTo(op.validTo, sch);
 
                 if (current == null) {
-                    AttributeBasedAdjustment a = new AttributeBasedAdjustment(
-                        PriceAdjustmentScheduleId = sch.Id,
-                        AttributeBasedAdjRuleId   = r.Id,
-                        ProductId                 = productId,
-                        AdjustmentType            = cm == null ? 'Override' : cm.adjustmentType,
-                        AdjustmentValue           = op.price,
-                        EffectiveFrom              = startsAt,
-                        EffectiveTo                = thru);
-                    if (psmId != null) a.ProductSellingModelId = psmId;
-                    toInsert.add(a);
-                } else if (current.AdjustmentValue != op.price
-                        || current.EffectiveFrom != startsAt
-                        || current.EffectiveTo != thru) {
+                    toInsert.add(buildAdjustment(sch.Id, r.Id, productId, cm, op.price, startsAt, thru, psmId));
+                } else if (current.AdjustmentValue != op.price) {
+                    // A repriced re-upload opens a new period instead of overwriting the existing one; cap the old period's EffectiveTo to end-of-day before the new one starts.
+                    if (startsAt <= current.EffectiveFrom) {
+                        addRowError(rowErrors, rowIdByCodeAndSelector.get(code + '|' + sel),
+                            'Pricing option "' + sel + '" for ' + code + ' has a new price starting ' +
+                            startsAt.dateGmt() + ', which is not after the existing period starting ' +
+                            current.EffectiveFrom.dateGmt() + ' - no new adjustment was created');
+                        continue;
+                    }
+                    toInsert.add(buildAdjustment(sch.Id, r.Id, productId, cm, op.price, startsAt, thru, psmId));
+                    toUpdate.add(new AttributeBasedAdjustment(
+                        Id          = current.Id,
+                        EffectiveTo = dayBeforeAsEndOfDay(startsAt)
+                    ));
+                } else if (current.EffectiveFrom != startsAt || current.EffectiveTo != thru) {
                     toUpdate.add(new AttributeBasedAdjustment(
                         Id              = current.Id,
-                        AdjustmentValue = op.price,
                         EffectiveFrom   = startsAt,
                         EffectiveTo     = thru
                     ));
@@ -1394,16 +1392,17 @@ public with sharing class RES_UnifiedIngestionEngine implements Database.Batchab
             }
         }
 
-        if (!toInsert.isEmpty()) {
-            for (Database.SaveResult sr : Database.insert(toInsert, false)) {
-                if (sr.isSuccess()) totalAdjustments++;
-                else recordError('AttributeBasedAdjustment: ' + sr.getErrors()[0].getMessage());
-            }
-        }
+        // Update before insert: Revenue Cloud rejects an overlapping AttributeBasedAdjustment insert, and a null EffectiveTo reads as open-ended.
         if (!toUpdate.isEmpty()) {
             for (Database.SaveResult sr : Database.update(toUpdate, false)) {
                 if (sr.isSuccess()) totalAdjustments++;
                 else recordError('AttributeBasedAdjustment update: ' + sr.getErrors()[0].getMessage());
+            }
+        }
+        if (!toInsert.isEmpty()) {
+            for (Database.SaveResult sr : Database.insert(toInsert, false)) {
+                if (sr.isSuccess()) totalAdjustments++;
+                else recordError('AttributeBasedAdjustment: ' + sr.getErrors()[0].getMessage());
             }
         }
     }
@@ -1434,6 +1433,28 @@ public with sharing class RES_UnifiedIngestionEngine implements Database.Batchab
         if (rowTo == null) return latest;
         Datetime wanted = Datetime.newInstanceGmt(rowTo, Time.newInstance(23, 59, 59, 0));
         return (latest != null && wanted > latest) ? latest : wanted;
+    }
+
+    /** End-of-day, one calendar day before the given (midnight) start. */
+    @TestVisible
+    private static Datetime dayBeforeAsEndOfDay(Datetime start) {
+        return Datetime.newInstanceGmt(start.dateGmt().addDays(-1), Time.newInstance(23, 59, 59, 0));
+    }
+
+    private static AttributeBasedAdjustment buildAdjustment(
+        Id scheduleId, Id ruleId, Id productId, RES_IngestionConfig.ConditionMapping cm,
+        Decimal price, Datetime startsAt, Datetime thru, Id psmId
+    ) {
+        AttributeBasedAdjustment a = new AttributeBasedAdjustment(
+            PriceAdjustmentScheduleId = scheduleId,
+            AttributeBasedAdjRuleId   = ruleId,
+            ProductId                 = productId,
+            AdjustmentType            = cm == null ? 'Override' : cm.adjustmentType,
+            AdjustmentValue           = price,
+            EffectiveFrom              = startsAt,
+            EffectiveTo                = thru);
+        if (psmId != null) a.ProductSellingModelId = psmId;
+        return a;
     }
 
     @TestVisible
@@ -1509,7 +1530,7 @@ public with sharing class RES_UnifiedIngestionEngine implements Database.Batchab
     }
 
     /** Attribute names the config marks read only, so the value cannot be edited on a line. */
-    private Set<String> readOnlyAttributes = new Set<String>();
+    private Set<String> hiddenAttributes = new Set<String>();
 
     /** Active values on the selector picklist; anything else is rejected, never created. */
     private Set<String> allowedSelectorValues = new Set<String>();
@@ -1537,8 +1558,8 @@ public with sharing class RES_UnifiedIngestionEngine implements Database.Batchab
 
     /**
      * Products based on the classification inherit the selector attribute automatically, so
-     * this only keeps the classification-level ProductClassificationAttr's price-impacting
-     * flag and default value in sync - it never creates a per-product
+     * this only keeps the classification-level ProductClassificationAttr's price-impacting,
+     * hidden, and default-value settings in sync - it never creates a per-product
      * ProductAttributeDefinition, which would turn inheritance into an override.
      * (AttributeCategoryId is createable but not updateable on ProductClassificationAttr, so
      * it is set only at creation time by ensureClassificationAttrs, not touched here.)
@@ -1552,10 +1573,12 @@ public with sharing class RES_UnifiedIngestionEngine implements Database.Batchab
         ProductClassificationAttr current = found[0];
 
         Boolean needsUpdate = current.IsPriceImpacting != true
+            || current.IsHidden != true
             || (String.isNotBlank(defaultSelector) && defaultSelector != current.DefaultValue);
         if (!needsUpdate) return;
 
-        ProductClassificationAttr toUpdate = new ProductClassificationAttr(Id = classAttrId, IsPriceImpacting = true);
+        ProductClassificationAttr toUpdate = new ProductClassificationAttr(
+            Id = classAttrId, IsPriceImpacting = true, IsHidden = true);
         if (String.isNotBlank(defaultSelector)) toUpdate.DefaultValue = defaultSelector;
 
         Database.SaveResult sr = Database.update(toUpdate, false);

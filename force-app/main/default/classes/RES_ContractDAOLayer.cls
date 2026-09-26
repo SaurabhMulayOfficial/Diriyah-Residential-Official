@@ -27,8 +27,27 @@ public with sharing class RES_ContractDAOLayer extends RES_BaseDAOLayer {
         bindVars.put('opportunityIds', opportunityIds);
 
         String soql = 'SELECT Id, Status, SourceOpportunityId ' +
-                      'FROM Contract ' +
-                      'WHERE SourceOpportunityId IN :opportunityIds';
+                    'FROM Contract ' +
+                    'WHERE SourceOpportunityId IN :opportunityIds';
+        return (List<Contract>) executeQuery(soql, '', false, bindVars, AccessLevel.SYSTEM_MODE);
+    }
+
+    public List<Contract> getContractsByIds(Set<Id> contractIds) {
+        if (contractIds == null || contractIds.isEmpty()) {
+            return new List<Contract>();
+        }
+
+        Map<String, Object> bindVars = new Map<String, Object>{
+            'contractIds' => contractIds
+        };
+
+        String soql =
+            'SELECT Id, OwnerId, StartDate, RES_Company_Code__c, EndDate, ContractNumber, Owner.Name, CompanySignedDate, ' +
+            '       RES_Contract_Type__c, RES_First_Residential_Buyer__c, DIR_Old_Contract__c, ' +
+            '       Account.RES_BP_Role__c ' +
+            'FROM Contract ' +
+            'WHERE Id IN :contractIds';
+
         return (List<Contract>) executeQuery(soql, '', false, bindVars, AccessLevel.SYSTEM_MODE);
     }
 }

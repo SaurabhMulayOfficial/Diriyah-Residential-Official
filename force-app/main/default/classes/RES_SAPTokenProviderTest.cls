@@ -108,19 +108,8 @@ private class RES_SAPTokenProviderTest {
         Assert.isTrue(String.isBlank(token), 'A cast failure is caught and leaves the token blank.');
     }
 
-    /**
-     * Documents a defect rather than approving it.
-     *
-     * RES_BaseIntegrationCalloutService.sendRequest() returns null on a
-     * permanent failure, and getToken() dereferences response.responseBody
-     * on the debug line BEFORE entering its try block. A failing token
-     * callout therefore throws an uncaught NullPointerException.
-     *
-     * Once the debug statement is moved inside the try (or a null guard is
-     * added), change this test to assert a blank token instead.
-     */
     @isTest
-    static void getTokenThrowsNullPointerWhenCalloutFails() {
+    static void getTokenReturnsBlankWhenCalloutFails() {
         RES_IntegrationTestDataFactory.clearSapToken();
 
         RES_IntegrationTestDataFactory.EndpointRoutingMock mock =
@@ -130,21 +119,16 @@ private class RES_SAPTokenProviderTest {
         mock.tokenBody = '{"error":"invalid_client"}';
         Test.setMock(HttpCalloutMock.class, mock);
 
-        Boolean threw = false;
         Test.startTest();
-        try {
-            new RES_SAPTokenProvider().getToken();
-        } catch (NullPointerException e) {
-            threw = true;
-        }
+        String token = new RES_SAPTokenProvider().getToken();
         Test.stopTest();
 
-        Assert.isTrue(threw, 'A failed token callout currently produces an unhandled NullPointerException.');
+        Assert.isTrue(String.isBlank(token), 'A failed callout should return a blank token, not throw.');
         Assert.areEqual(3, mock.tokenCallCount, 'All three configured retries should be attempted first.');
     }
 
     @isTest
-    static void getTokenThrowsNullPointerWhenEveryAttemptErrors() {
+    static void getTokenReturnsBlankWhenEveryAttemptErrors() {
         RES_IntegrationTestDataFactory.clearSapToken();
 
         RES_IntegrationTestDataFactory.EndpointRoutingMock mock =
@@ -152,16 +136,11 @@ private class RES_SAPTokenProviderTest {
         mock.throwOnToken = true;
         Test.setMock(HttpCalloutMock.class, mock);
 
-        Boolean threw = false;
         Test.startTest();
-        try {
-            new RES_SAPTokenProvider().getToken();
-        } catch (NullPointerException e) {
-            threw = true;
-        }
+        String token = new RES_SAPTokenProvider().getToken();
         Test.stopTest();
 
-        Assert.isTrue(threw, 'A connection level failure also reaches the unguarded debug statement.');
+        Assert.isTrue(String.isBlank(token), 'A connection-level failure should return a blank token, not throw.');
     }
 
     @isTest
