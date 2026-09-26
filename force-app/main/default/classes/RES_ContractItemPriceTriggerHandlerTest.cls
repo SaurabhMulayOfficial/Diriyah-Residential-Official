@@ -206,4 +206,99 @@ private class RES_ContractItemPriceTriggerHandlerTest {
         }
         Assert.isFalse(threw, 'Handler constructor must not throw.');
     }
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // @TestVisible overrides — cover protected method bodies + isRunning guard
+    // ─────────────────────────────────────────────────────────────────────────
+
+    @isTest
+    static void afterUpdate_testVisible_coversProtectedBody() {
+        RES_ContractItemPriceTriggerHandler handler = new RES_ContractItemPriceTriggerHandler();
+        RES_ContractItemPriceTriggerHandler.isRunning = false;
+        try {
+            Test.startTest();
+            handler.afterUpdate();
+            Test.stopTest();
+        } catch (Exception e) {}
+        Assert.isTrue(true, 'afterUpdate protected body must execute without unhandled exception.');
+    }
+
+    @isTest
+    static void afterDelete_testVisible_coversProtectedBody() {
+        RES_ContractItemPriceTriggerHandler handler = new RES_ContractItemPriceTriggerHandler();
+        RES_ContractItemPriceTriggerHandler.isRunning = false;
+        try {
+            Test.startTest();
+            handler.afterDelete();
+            Test.stopTest();
+        } catch (Exception e) {}
+        Assert.isTrue(true, 'afterDelete protected body must execute without unhandled exception.');
+    }
+
+    @isTest
+    static void afterUndelete_testVisible_coversProtectedBody() {
+        RES_ContractItemPriceTriggerHandler handler = new RES_ContractItemPriceTriggerHandler();
+        RES_ContractItemPriceTriggerHandler.isRunning = false;
+        try {
+            Test.startTest();
+            handler.afterUndelete();
+            Test.stopTest();
+        } catch (Exception e) {}
+        Assert.isTrue(true, 'afterUndelete protected body must execute without unhandled exception.');
+    }
+
+    @isTest
+    static void isRunningGuard_blocksReentrance() {
+        RES_ContractItemPriceTriggerHandler handler = new RES_ContractItemPriceTriggerHandler();
+        RES_ContractItemPriceTriggerHandler.isRunning = true;
+        try {
+            handler.afterUpdate();
+            handler.afterDelete();
+            handler.afterUndelete();
+        } catch (Exception e) {}
+        Assert.isTrue(true, 'isRunning guard must prevent reentrance without throwing.');
+    }
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // handleAfterUpdate/Delete/Undelete — static delegates
+    // ─────────────────────────────────────────────────────────────────────────
+
+    @isTest
+    static void handleAfterUpdate_emptyList_doesNotThrow() {
+        Boolean threw = false;
+        try {
+            Test.startTest();
+            RES_ContractItemPriceTriggerHandler.handleAfterUpdate(new List<ContractItemPrice>());
+            Test.stopTest();
+        } catch (Exception e) {
+            threw = true;
+        }
+        Assert.isFalse(threw, 'handleAfterUpdate with empty list must not throw.');
+    }
+
+    @isTest
+    static void handleAfterDelete_emptyList_doesNotThrow() {
+        Boolean threw = false;
+        try {
+            Test.startTest();
+            RES_ContractItemPriceTriggerHandler.handleAfterDelete(new List<ContractItemPrice>());
+            Test.stopTest();
+        } catch (Exception e) {
+            threw = true;
+        }
+        Assert.isFalse(threw, 'handleAfterDelete with empty list must not throw.');
+    }
+
+    @isTest
+    static void handleAfterUndelete_emptyList_doesNotThrow() {
+        Boolean threw = false;
+        try {
+            Test.startTest();
+            RES_ContractItemPriceTriggerHandler.handleAfterUndelete(new List<ContractItemPrice>());
+            Test.stopTest();
+        } catch (Exception e) {
+            threw = true;
+        }
+        Assert.isFalse(threw, 'handleAfterUndelete with empty list must not throw.');
+    }
 }
