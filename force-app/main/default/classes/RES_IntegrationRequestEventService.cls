@@ -18,6 +18,8 @@ public with sharing class RES_IntegrationRequestEventService {
     //private static final String UNIT_INTEGRATION = 'Unit_Sync';
     //private static final String ACCOUNT_INTEGRATION = 'Account_Sync';
     private static final String CONTRACT_INTEGRATION = 'Sales_Contract_Creation';
+    private static final String CONTRACT_UPDATE_INTEGRATION = 'Sales_Contract_Update';
+    private static final String CONTRACT_TERMINATION_INTEGRATION = 'Sales_Contract_Termination';
     
     public RES_IntegrationRequestEventService() {}
 
@@ -265,6 +267,40 @@ public with sharing class RES_IntegrationRequestEventService {
             if (!contractIds.isEmpty()) {
                 List<SObject> records = (List<SObject>) new RES_ContractDAOLayer().getContractsByIds(contractIds);
                 enqueueService(CONTRACT_INTEGRATION, records, 'I', 'GET');
+            }
+        }
+
+        String contractUpdateIntegrationKey_onUpdate = 'GET' + CONTRACT_UPDATE_INTEGRATION + 'U';
+
+        if (results.containsKey(contractUpdateIntegrationKey_onUpdate) && results.get(contractUpdateIntegrationKey_onUpdate).size() > 0) {
+            Set<Id> contractIds = new Set<Id>();
+            for (RES_Integration_Request__e e : results.get(contractUpdateIntegrationKey_onUpdate)) {
+                if (String.isBlank(e.RES_RecordIds__c)) continue;
+                for (String recordId : e.RES_RecordIds__c.split(',')) {
+                    if (String.isNotBlank(recordId)) contractIds.add((Id) recordId.trim());
+                }
+            }
+
+            if (!contractIds.isEmpty()) {
+                List<SObject> records = (List<SObject>) new RES_ContractDAOLayer().getContractsByIds(contractIds);
+                enqueueService(CONTRACT_UPDATE_INTEGRATION, records, 'U', 'GET');
+            }
+        }
+
+        String contractTerminationIntegrationKey_onUpdate = 'GET' + CONTRACT_TERMINATION_INTEGRATION + 'U';
+
+        if (results.containsKey(contractTerminationIntegrationKey_onUpdate) && results.get(contractTerminationIntegrationKey_onUpdate).size() > 0) {
+            Set<Id> contractIds = new Set<Id>();
+            for (RES_Integration_Request__e e : results.get(contractTerminationIntegrationKey_onUpdate)) {
+                if (String.isBlank(e.RES_RecordIds__c)) continue;
+                for (String recordId : e.RES_RecordIds__c.split(',')) {
+                    if (String.isNotBlank(recordId)) contractIds.add((Id) recordId.trim());
+                }
+            }
+
+            if (!contractIds.isEmpty()) {
+                List<SObject> records = (List<SObject>) new RES_ContractDAOLayer().getContractsByIds(contractIds);
+                enqueueService(CONTRACT_TERMINATION_INTEGRATION, records, 'U', 'GET');
             }
         }
     }
