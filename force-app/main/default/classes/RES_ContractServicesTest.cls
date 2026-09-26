@@ -45,6 +45,7 @@ private class RES_ContractServicesTest {
                    ContractNumber, RES_Contract_Type__c,
                    RES_First_Residential_Buyer__c,
                    CompanySignedDate, DIR_Old_Contract__c,
+                   RES_Last_Sync_DateTime__c,
                    Account.RES_BP_Role__c
             FROM Contract WHERE Id = :c.Id
         ];
