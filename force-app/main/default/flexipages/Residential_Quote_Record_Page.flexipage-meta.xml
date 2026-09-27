@@ -663,67 +663,41 @@
                     <name>displayFields</name>
                     <valueList>
                         <valueListItems>
+                            <value>QuoteLineItem.Product2.RES_Sequence__c[Product2]</value>
+                        </valueListItems>
+                        <valueListItems>
                             <value>QuoteLineItem.Product2.Name[Product2]</value>
-                        </valueListItems>
-                        <valueListItems>
-                            <value>QuoteLineItem.UnitPrice</value>
-                        </valueListItems>
-                        <valueListItems>
-                            <value>QuoteLineItem.Quantity</value>
-                        </valueListItems>
-                        <valueListItems>
-                            <value>QuoteLineItem.Subtotal</value>
-                        </valueListItems>
-                        <valueListItems>
-                            <value>QuoteLineItem.RES_Discount_Type__c</value>
                         </valueListItems>
                         <valueListItems>
                             <value>QuoteLineItem.DiscountAmount</value>
                         </valueListItems>
                         <valueListItems>
-                            <value>QuoteLineItem.Discount</value>
-                        </valueListItems>
-                        <valueListItems>
                             <value>QuoteLineItem.TotalPrice</value>
                         </valueListItems>
                         <valueListItems>
-                            <value>QuoteLineItem.ListPrice</value>
+                            <value>QuoteLineItem.Product2.RES_POC_Percentage__c[Product2]</value>
                         </valueListItems>
                         <valueListItems>
-                            <value>QuoteLineItem.NetUnitPrice</value>
+                            <value>QuoteLineItem.RES_Installment_Amount__c</value>
                         </valueListItems>
                         <valueListItems>
-                            <value>QuoteLineItem.NetTotalPrice</value>
+                            <value>QuoteLineItem.RES_Installment_Percentage__c</value>
+                        </valueListItems>
+                        <valueListItems>
+                            <value>QuoteLineItem.Product2.RES_Instalment_DueDate__c[Product2]</value>
                         </valueListItems>
                     </valueList>
                 </componentInstanceProperties>
                 <componentInstanceProperties>
                     <name>enableQuickAdd</name>
-                    <value>false</value>
+                    <value>true</value>
                 </componentInstanceProperties>
                 <componentInstanceProperties>
                     <name>enableSidepanel</name>
                     <value>true</value>
                 </componentInstanceProperties>
-                <componentInstanceProperties>
-                    <name>sidepanelDetailFields</name>
-                    <valueList>
-                        <valueListItems>
-                            <value>Product2.Name</value>
-                        </valueListItems>
-                        <valueListItems>
-                            <value>Product2.RES_Product_Number__c</value>
-                        </valueListItems>
-                        <valueListItems>
-                            <value>Product2.RES_Unit_Status__c</value>
-                        </valueListItems>
-                        <valueListItems>
-                            <value>Product2.Type</value>
-                        </valueListItems>
-                    </valueList>
-                </componentInstanceProperties>
-                <componentName>runtime_revenue_foundation:transactionLineTable</componentName>
-                <identifier>runtime_revenue_foundation_transactionLineTable</identifier>
+                <componentName>runtime_rca:salesTxnLineTable</componentName>
+                <identifier>runtime_rca_salesTxnLineTable</identifier>
             </componentInstance>
         </itemInstances>
         <name>Facet-08bcfff5-a09b-4463-81e7-7feccdc08cf8</name>
