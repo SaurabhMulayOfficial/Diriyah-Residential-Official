@@ -77,4 +77,64 @@ private class RES_ProdAttrDefServiceTest {
         );
         Test.stopTest();
     }
+
+    @isTest
+    static void testSyncUnitsInsertPublishesEventForProduct2Id() {
+        RES_Config_Switch__c cfg = new RES_Config_Switch__c(
+            SetupOwnerId = UserInfo.getOrganizationId(), RES_Triggers_Off__c = true
+        );
+        upsert cfg;
+        Product2 p = new Product2(Name = 'PAD-Coverage', IsActive = true);
+        insert p;
+        cfg.RES_Triggers_Off__c = false;
+        update cfg;
+
+        RES_IntegrationRequestEventService.CountingBatchSubmitter spy =
+            new RES_IntegrationRequestEventService.CountingBatchSubmitter();
+        RES_IntegrationRequestEventService.batchSubmitter = spy;
+
+        ProductAttributeDefinition pad = new ProductAttributeDefinition(Product2Id = p.Id, DefaultValue = '100');
+
+        Test.startTest();
+        RES_ProductAttributeDefinitionService.syncUnits(
+            new List<ProductAttributeDefinition>{ pad }, null
+        );
+        Test.getEventBus().deliver();
+        Test.stopTest();
+
+        Assert.isTrue(spy.callCount > 0, 'INSERT with a valid Product2Id must publish a Unit_Sync batch job');
+    }
+
+    @isTest
+    static void testSyncUnitsUpdatePublishesEventWhenNotInOldMap() {
+        RES_Config_Switch__c cfg = new RES_Config_Switch__c(
+            SetupOwnerId = UserInfo.getOrganizationId(), RES_Triggers_Off__c = true
+        );
+        upsert cfg;
+        Product2 p = new Product2(Name = 'PAD-Coverage-Update', IsActive = true);
+        insert p;
+        cfg.RES_Triggers_Off__c = false;
+        update cfg;
+
+        RES_IntegrationRequestEventService.CountingBatchSubmitter spy =
+            new RES_IntegrationRequestEventService.CountingBatchSubmitter();
+        RES_IntegrationRequestEventService.batchSubmitter = spy;
+
+        ProductAttributeDefinition pad = new ProductAttributeDefinition(Product2Id = p.Id, DefaultValue = '200');
+
+        Test.startTest();
+        RES_ProductAttributeDefinitionService.syncUnits(
+            new List<ProductAttributeDefinition>{ pad },
+            new Map<Id, ProductAttributeDefinition>()
+        );
+        Test.getEventBus().deliver();
+        Test.stopTest();
+
+        Assert.isTrue(spy.callCount > 0, 'UPDATE with record absent from oldMap must publish a Unit_Sync event');
+    }
+
+    @isTest
+    static void testConstructorInstantiates() {
+        Assert.isNotNull(new RES_ProductAttributeDefinitionService(), 'Constructor should succeed');
+    }
 }

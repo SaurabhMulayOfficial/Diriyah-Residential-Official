@@ -90,4 +90,67 @@ private class RES_AttributeBasedAdjustmentServiceTest {
         );
         Test.stopTest();
     }
+
+    @isTest
+    static void testSyncUnitsInsertPublishesEventForProductId() {
+        RES_Config_Switch__c cfg = new RES_Config_Switch__c(
+            SetupOwnerId = UserInfo.getOrganizationId(), RES_Triggers_Off__c = true
+        );
+        upsert cfg;
+        Product2 p = new Product2(Name = 'ABA-Coverage', IsActive = true);
+        insert p;
+        cfg.RES_Triggers_Off__c = false;
+        update cfg;
+
+        RES_IntegrationRequestEventService.CountingBatchSubmitter spy =
+            new RES_IntegrationRequestEventService.CountingBatchSubmitter();
+        RES_IntegrationRequestEventService.batchSubmitter = spy;
+
+        AttributeBasedAdjustment aba = new AttributeBasedAdjustment(ProductId = p.Id, AdjustmentValue = 5000);
+
+        Test.startTest();
+        RES_AttributeBasedAdjustmentService.syncUnits(
+            new List<AttributeBasedAdjustment>{ aba }, null
+        );
+        Test.getEventBus().deliver();
+        Test.stopTest();
+
+        Assert.isTrue(spy.callCount > 0, 'INSERT with a valid ProductId must publish a Unit_Sync batch job');
+    }
+
+    @isTest
+    static void testSyncUnitsUpdatePublishesEventWhenNotInOldMap() {
+        RES_Config_Switch__c cfg = new RES_Config_Switch__c(
+            SetupOwnerId = UserInfo.getOrganizationId(), RES_Triggers_Off__c = true
+        );
+        upsert cfg;
+        Product2 p = new Product2(Name = 'ABA-Coverage-Update', IsActive = true);
+        insert p;
+        cfg.RES_Triggers_Off__c = false;
+        update cfg;
+
+        RES_IntegrationRequestEventService.CountingBatchSubmitter spy =
+            new RES_IntegrationRequestEventService.CountingBatchSubmitter();
+        RES_IntegrationRequestEventService.batchSubmitter = spy;
+
+        AttributeBasedAdjustment aba = new AttributeBasedAdjustment(
+            ProductId = p.Id, AdjustmentValue = 6000, AdjustmentType = 'Discount'
+        );
+
+        Test.startTest();
+        // empty oldMap → aba.Id not found → treated as changed → event published
+        RES_AttributeBasedAdjustmentService.syncUnits(
+            new List<AttributeBasedAdjustment>{ aba },
+            new Map<Id, AttributeBasedAdjustment>()
+        );
+        Test.getEventBus().deliver();
+        Test.stopTest();
+
+        Assert.isTrue(spy.callCount > 0, 'UPDATE with record absent from oldMap must publish a Unit_Sync event');
+    }
+
+    @isTest
+    static void testConstructorInstantiates() {
+        Assert.isNotNull(new RES_AttributeBasedAdjustmentService(), 'Constructor should succeed');
+    }
 }
