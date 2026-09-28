@@ -1,11 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
-    <fullName>RES_SAP_False_Value__c</fullName>
+    <fullName>RES_Json_Mapping__c</fullName>
     <externalId>false</externalId>
     <fieldManageability>DeveloperControlled</fieldManageability>
-    <label>SAP False Value</label>
-    <length>50</length>
-    <required>false</required>
-    <type>Text</type>
-    <unique>false</unique>
+    <label>Json Mapping</label>
+    <length>32768</length>
+    <type>LongTextArea</type>
+    <visibleLines>5</visibleLines>
 </CustomField>

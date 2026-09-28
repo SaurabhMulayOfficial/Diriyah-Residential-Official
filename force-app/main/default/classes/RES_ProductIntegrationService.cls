@@ -10,7 +10,7 @@ public without sharing class RES_ProductIntegrationService extends RES_BaseInteg
         'Family', 'RES_Business_Entity__c', 'RES_Building__c',
         'AvailabilityDate', 'DiscontinuedDate', 'RES_Floor__c',
         'RES_Area_Type__c', 'RES_Area__c', 'RES_Unit_Status__c',
-        'ProductCode', 'RES_Profit_Center__c',
+        'ProductCode', 'Description', 'RES_Profit_Center__c',
         'RES_Type__c'
     };
 
@@ -132,25 +132,12 @@ public without sharing class RES_ProductIntegrationService extends RES_BaseInteg
             }
         }
 
-        Map<String, String> unitStatusMap      = new Map<String, String>();
-        Map<String, String> uomCodeMap         = new Map<String, String>();
-        Map<String, String> inventoryTypeMap   = new Map<String, String>();
-        Map<String, String> fixtureBoolTrueMap  = new Map<String, String>();
-        Map<String, String> fixtureBoolFalseMap = new Map<String, String>();
-
-        for (RES_SAP_Value_Mapping__mdt vm : new RES_SAPValueMappingDAOLayer().getAllActiveMappings()) {
-            String cat = vm.RES_Category__c;
-            if (cat == 'Unit_Status') {
-                unitStatusMap.put(vm.RES_SF_Value__c, vm.RES_SAP_Value__c);
-            } else if (cat == 'UOM') {
-                uomCodeMap.put(vm.RES_SF_Value__c, vm.RES_SAP_Value__c);
-            } else if (cat == 'Inventory_Type') {
-                inventoryTypeMap.put(vm.RES_SF_Value__c, vm.RES_SAP_Value__c);
-            } else if (cat == 'Fixture_Boolean') {
-                fixtureBoolTrueMap.put(vm.RES_SF_Field__c, vm.RES_SAP_Value__c);
-                fixtureBoolFalseMap.put(vm.RES_SF_Field__c, vm.RES_SAP_False_Value__c);
-            }
-        }
+        RES_SAPValueMappingDAOLayer mappingDAO   = new RES_SAPValueMappingDAOLayer();
+        Map<String, String> unitStatusMap       = mappingDAO.getMappingAsMap('Unit_Status');
+        Map<String, String> uomCodeMap          = mappingDAO.getMappingAsMap('UOM');
+        Map<String, String> inventoryTypeMap    = mappingDAO.getMappingAsMap('Inventory_Type');
+        Map<String, String> fixtureBoolTrueMap  = mappingDAO.getMappingAsMap('Fixture_Boolean');
+        Map<String, String> fixtureBoolFalseMap = mappingDAO.getFalseMappingAsMap('Fixture_Boolean');
 
         includedMeasurementIds.clear();
         List<Map<String, Object>> payloads = new List<Map<String, Object>>();
@@ -178,7 +165,10 @@ public without sharing class RES_ProductIntegrationService extends RES_BaseInteg
                     String padded = String.valueOf(Integer.valueOf(floorCode));
                     while (padded.length() < 3) padded = '0' + padded;
                     floorCode = padded;
-                } catch (Exception e) { /* non-numeric floor value — send as-is */ }
+                } catch (Exception e) {
+                    System.debug('### [Unit_Sync] Non-numeric RES_Floor__c "' + floorCode + '" on Product ' + p.Id + ' — omitting floor field; map to numeric code before syncing.');
+                    floorCode = null;
+                }
             }
             payload.put('RES_Floor', floorCode);
             payload.put('RES_Area_Type',       p.RES_Area_Type__c);
@@ -188,7 +178,12 @@ public without sharing class RES_ProductIntegrationService extends RES_BaseInteg
                 : p.RES_Unit_Status__c;
             payload.put('RES_Unit_Status',     sapStatus);
             payload.put('RES_Profit_Center',   p.RES_Profit_Center__c);
-            payload.put('Description',         p.ProductCode);
+            // SAP Description field has a 20-character limit
+            String productDescription = p.ProductCode;
+            if (String.isNotBlank(productDescription) && productDescription.length() > 20) {
+                productDescription = productDescription.left(20);
+            }
+            payload.put('Description', productDescription);
             payload.put('Change_Indicator',    effectiveContext);
             // INSERT: empty string so SAP registers no existing rental object; UPDATE: last segment of external ID
             String rentalObject = '';

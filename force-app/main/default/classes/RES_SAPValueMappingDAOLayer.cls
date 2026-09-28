@@ -5,21 +5,38 @@ public without sharing class RES_SAPValueMappingDAOLayer extends RES_BaseDAOLaye
         return 'RES_SAP_Value_Mapping__mdt';
     }
 
-    public List<RES_SAP_Value_Mapping__mdt> getMappingsByCategory(String category) {
-        Map<String, Object> bindVars = new Map<String, Object>();
-        bindVars.put('category', category);
-        String soql = 'SELECT DeveloperName, RES_Category__c, RES_SF_Field__c, RES_SF_Value__c, RES_SAP_Value__c, RES_SAP_False_Value__c, RES_Sequence__c, RES_Is_Active__c ' +
-                      'FROM RES_SAP_Value_Mapping__mdt ' +
-                      'WHERE RES_Category__c = :category AND RES_Is_Active__c = true ' +
-                      'ORDER BY RES_Sequence__c ASC NULLS LAST';
-        return executeQuery(soql, '', false, bindVars, AccessLevel.SYSTEM_MODE);
+    private List<RES_SAP_Value_Mapping__mdt> getMappingsByCategory(String category) {
+        Map<String, Object> bindVars = new Map<String, Object>{ 'category' => category };
+        String soql = 'SELECT RES_Category__c, RES_Json_Mapping__c, RES_Json_False_Mapping__c, RES_Is_Active__c '
+                    + 'FROM RES_SAP_Value_Mapping__mdt '
+                    + 'WHERE RES_Category__c = :category AND RES_Is_Active__c = true '
+                    + 'LIMIT 1';
+        return executeQuery(soql, category, true, bindVars, AccessLevel.SYSTEM_MODE);
     }
 
-    public List<RES_SAP_Value_Mapping__mdt> getAllActiveMappings() {
-        String soql = 'SELECT DeveloperName, RES_Category__c, RES_SF_Field__c, RES_SF_Value__c, RES_SAP_Value__c, RES_SAP_False_Value__c, RES_Sequence__c, RES_Is_Active__c ' +
-                      'FROM RES_SAP_Value_Mapping__mdt ' +
-                      'WHERE RES_Is_Active__c = true ' +
-                      'ORDER BY RES_Category__c ASC, RES_Sequence__c ASC NULLS LAST';
-        return executeQuery(soql, 'ALL_ACTIVE', true, new Map<String, Object>(), AccessLevel.SYSTEM_MODE);
+    public Map<String, String> getMappingAsMap(String category) {
+        List<RES_SAP_Value_Mapping__mdt> records = getMappingsByCategory(category);
+        if (records.isEmpty() || String.isBlank(records[0].RES_Json_Mapping__c)) {
+            return new Map<String, String>();
+        }
+        try {
+            return (Map<String, String>) JSON.deserialize(records[0].RES_Json_Mapping__c, Map<String, String>.class);
+        } catch (Exception e) {
+            System.debug('### [SAP_Mapping] Failed to deserialize mapping for "' + category + '": ' + e.getMessage());
+            return new Map<String, String>();
+        }
+    }
+
+    public Map<String, String> getFalseMappingAsMap(String category) {
+        List<RES_SAP_Value_Mapping__mdt> records = getMappingsByCategory(category);
+        if (records.isEmpty() || String.isBlank(records[0].RES_Json_False_Mapping__c)) {
+            return new Map<String, String>();
+        }
+        try {
+            return (Map<String, String>) JSON.deserialize(records[0].RES_Json_False_Mapping__c, Map<String, String>.class);
+        } catch (Exception e) {
+            System.debug('### [SAP_Mapping] Failed to deserialize false mapping for "' + category + '": ' + e.getMessage());
+            return new Map<String, String>();
+        }
     }
 }
