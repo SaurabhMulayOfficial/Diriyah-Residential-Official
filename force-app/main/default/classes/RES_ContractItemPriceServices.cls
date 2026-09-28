@@ -93,9 +93,7 @@ public with sharing class RES_ContractItemPriceServices {
         }
 
         // Query current Contract values to avoid unnecessary updates
-        Map<Id, Contract> currentContracts = new Map<Id, Contract>(
-            [SELECT Id, RES_Final_Payment__c FROM Contract WHERE Id IN :contractIds]
-        );
+       Map<Id, Contract> currentContracts = new RES_ContractDAOLayer().getContractsForFinalPayment(contractIds);
 
         List<Contract> contractsToUpdate = new List<Contract>();
         for (Id contractId : contractIds) {
