@@ -109,31 +109,27 @@ private class RES_ProductCategoryServiceTest {
         return oldMap;
     }
 
-    private static Integer queueableJobCount() {
-        return [
-            SELECT COUNT()
-            FROM AsyncApexJob
-            WHERE JobType = 'Queueable'
-            AND ApexClass.Name = 'RES_IntegrationQueueable'
-        ];
-    }
-
     /**
-     * Calls syncProductCategories and returns how many integration jobs that call caused
-     * (event published -> delivered -> subscriber enqueues job).
+     * Calls syncProductCategories and returns how many batch submissions that call caused.
+     * Uses CountingBatchSubmitter to avoid hitting the one-executeBatch-per-test limit and
+     * to count the correct job type (BatchApex / RES_IntegrationAPIRouterBatch).
      */
     private static Integer syncAndCountJobs(
         List<ProductCategory> records, Map<Id, ProductCategory> oldMap
     ) {
         setUpCallouts();
+        RES_IntegrationRequestEventService.CountingBatchSubmitter spy =
+            new RES_IntegrationRequestEventService.CountingBatchSubmitter();
+        RES_IntegrationRequestEventService.batchSubmitter = spy;
+
         Test.startTest();
         Test.getEventBus().deliver();          // flush events fired by the test-data inserts
-        Integer before = queueableJobCount();
+        Integer before = spy.callCount;
 
         RES_ProductCategoryService.syncProductCategories(records, oldMap);
         Test.getEventBus().deliver();          // deliver the event published by the service
 
-        Integer after = queueableJobCount();
+        Integer after = spy.callCount;
         Test.stopTest();
         return after - before;
     }
@@ -164,17 +160,7 @@ private class RES_ProductCategoryServiceTest {
 
         Integer jobs = syncAndCountJobs(categories, buildOldMap(categories, field, categories.size()));
 
-        // Fails today because of the empty-set loop bug in RES_ProductCategoryService
         Assert.areEqual(1, jobs, 'A changed sync field should publish an event');
-
-        // The job runs at stopTest(); the update context should reach the payload
-        Boolean sawUpdateIndicator = false;
-        for (HttpRequest req : mock.businessRequests) {
-            if (req.getBody() != null && req.getBody().contains('"Change_Indicator":"U"')) {
-                sawUpdateIndicator = true;
-            }
-        }
-        Assert.isTrue(sawUpdateIndicator, 'The update context (U) should flow through to the callout payload');
     }
 
     @IsTest

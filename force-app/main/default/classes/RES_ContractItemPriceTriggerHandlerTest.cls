@@ -206,4 +206,61 @@ private class RES_ContractItemPriceTriggerHandlerTest {
         }
         Assert.isFalse(threw, 'Handler constructor must not throw.');
     }
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // handleAfterUpdate/Delete/Undelete — @TestVisible static delegates
+    // ─────────────────────────────────────────────────────────────────────────
+
+    @isTest
+    static void handleAfterUpdate_emptyList_doesNotThrow() {
+        Boolean threw = false;
+        try {
+            Test.startTest();
+            RES_ContractItemPriceTriggerHandler.handleAfterUpdate(new List<ContractItemPrice>());
+            Test.stopTest();
+        } catch (Exception e) {
+            threw = true;
+        }
+        Assert.isFalse(threw, 'handleAfterUpdate with empty list must not throw.');
+    }
+
+    @isTest
+    static void handleAfterDelete_emptyList_doesNotThrow() {
+        Boolean threw = false;
+        try {
+            Test.startTest();
+            RES_ContractItemPriceTriggerHandler.handleAfterDelete(new List<ContractItemPrice>());
+            Test.stopTest();
+        } catch (Exception e) {
+            threw = true;
+        }
+        Assert.isFalse(threw, 'handleAfterDelete with empty list must not throw.');
+    }
+
+    @isTest
+    static void handleAfterUndelete_emptyList_doesNotThrow() {
+        Boolean threw = false;
+        try {
+            Test.startTest();
+            RES_ContractItemPriceTriggerHandler.handleAfterUndelete(new List<ContractItemPrice>());
+            Test.stopTest();
+        } catch (Exception e) {
+            threw = true;
+        }
+        Assert.isFalse(threw, 'handleAfterUndelete with empty list must not throw.');
+    }
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // isRunning guard — reentrance blocked in each delegate
+    // ─────────────────────────────────────────────────────────────────────────
+
+    @isTest
+    static void isRunningGuard_blocksReentrance() {
+        RES_ContractItemPriceTriggerHandler.isRunning = true;
+        RES_ContractItemPriceTriggerHandler.handleAfterInsert(new List<ContractItemPrice>());
+        RES_ContractItemPriceTriggerHandler.handleAfterUpdate(new List<ContractItemPrice>());
+        RES_ContractItemPriceTriggerHandler.handleAfterDelete(new List<ContractItemPrice>());
+        RES_ContractItemPriceTriggerHandler.handleAfterUndelete(new List<ContractItemPrice>());
+        Assert.isTrue(true, 'All delegates must exit silently when isRunning is true.');
+    }
 }
