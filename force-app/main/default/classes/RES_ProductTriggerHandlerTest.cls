@@ -143,7 +143,7 @@ private class RES_ProductTriggerHandlerTest {
             Family             = '1004',
             RES_Type__c        = 'N',
             RES_Floor__c       = '001',
-            RES_Area_Type__c   = 'Z004',
+            RES_Area_Type__c   = 'None',
             RES_Area__c        = 100.0,
             RES_Unit_Status__c = 'Available'
         );

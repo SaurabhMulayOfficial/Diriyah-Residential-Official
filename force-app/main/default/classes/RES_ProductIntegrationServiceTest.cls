@@ -31,7 +31,7 @@ private class RES_ProductIntegrationServiceTest {
             ProductCode        = 'PC-TEST-001',
             Family             = '1004',
             RES_Floor__c       = '001',
-            RES_Area_Type__c   = 'Z004',
+            RES_Area_Type__c   = 'None',
             RES_Area__c        = 100,
             RES_Unit_Status__c = 'Available',
             RES_Type__c        = 'N',
@@ -324,7 +324,7 @@ private class RES_ProductIntegrationServiceTest {
             Family             = '1004',
             ProductCode        = 'PC-HRB-I',
             RES_Floor__c       = '001',
-            RES_Area_Type__c   = 'Z004',
+            RES_Area_Type__c   = 'None',
             RES_Area__c        = 120,
             RES_Unit_Status__c = 'Available',
             RES_Type__c        = 'N',
@@ -630,7 +630,7 @@ private class RES_ProductIntegrationServiceTest {
             RES_Type__c        = 'N',
             Family             = '1004',
             RES_Floor__c       = '001',
-            RES_Area_Type__c   = 'Z004',
+            RES_Area_Type__c   = 'None',
             RES_Area__c        = 100.0,
             RES_Unit_Status__c = 'Available'
         );
@@ -688,7 +688,7 @@ private class RES_ProductIntegrationServiceTest {
             RES_Type__c        = 'N',
             Family             = '1004',
             RES_Floor__c       = '001',
-            RES_Area_Type__c   = 'Z004',
+            RES_Area_Type__c   = 'None',
             RES_Area__c        = 100.0,
             RES_Unit_Status__c = 'Available'
         );
@@ -744,7 +744,7 @@ private class RES_ProductIntegrationServiceTest {
             RES_Type__c        = 'N',
             Family             = '1004',
             RES_Floor__c       = '001',
-            RES_Area_Type__c   = 'Z004',
+            RES_Area_Type__c   = 'None',
             RES_Area__c        = 100.0,
             RES_Unit_Status__c = 'Available'
         );

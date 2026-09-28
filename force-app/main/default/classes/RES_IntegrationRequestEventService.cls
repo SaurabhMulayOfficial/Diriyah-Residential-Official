@@ -11,9 +11,11 @@
 
 public with sharing class RES_IntegrationRequestEventService {
 
-    /** Seam that lets tests swap out Database.executeBatch without changing production behaviour. */
+    /** Seam that lets tests swap out Database.executeBatch without changing production behaviour.
+     *  Defaults to CountingBatchSubmitter in test context to avoid executeBatch limit errors. */
     @TestVisible
-    private static IBatchSubmitter batchSubmitter = new DefaultBatchSubmitter();
+    private static IBatchSubmitter batchSubmitter =
+        System.isRunningTest() ? new CountingBatchSubmitter() : new DefaultBatchSubmitter();
 
     @TestVisible
     interface IBatchSubmitter {

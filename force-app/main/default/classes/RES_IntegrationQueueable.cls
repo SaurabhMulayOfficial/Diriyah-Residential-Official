@@ -88,7 +88,11 @@ public with sharing class RES_IntegrationQueueable implements Queueable, Databas
             for (SObject record : records) {
                 products.add((Product2) record);
             }
-            RES_ProductIntegrationService.syncProducts(products, requestMethod, triggerContext);
+            try {
+                RES_ProductIntegrationService.syncProducts(products, requestMethod, triggerContext);
+            } catch (Exception e) {
+                System.debug('[Unit_Sync] syncProducts error: ' + e.getMessage());
+            }
         }
         
         else if(serviceName == 'ProductCategory_Sync'){
