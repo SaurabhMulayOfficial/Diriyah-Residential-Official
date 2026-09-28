@@ -15,7 +15,7 @@ public with sharing class RES_IntegrationRequestEventService {
      *  Defaults to CountingBatchSubmitter in test context to avoid executeBatch limit errors. */
     @TestVisible
     private static IBatchSubmitter batchSubmitter =
-        Test.isRunningTest() ? new CountingBatchSubmitter() : new DefaultBatchSubmitter();
+        Test.isRunningTest() ? (IBatchSubmitter) new CountingBatchSubmitter() : new DefaultBatchSubmitter();
 
     @TestVisible
     interface IBatchSubmitter {
