@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>RES_Approved_Business_Entity__c</fullName>
+    <description>DIR-1258: Last-approved Business Entity/Catalog snapshot for a Payment Plan, used to reset the real field while a modification is pending. Backend only.</description>
+    <deleteConstraint>SetNull</deleteConstraint>
+    <label>Approved Business Entity</label>
+    <referenceTo>ProductCatalog</referenceTo>
+    <relationshipLabel>Approved Payment Plan Baselines</relationshipLabel>
+    <relationshipName>ApprovedBusinessEntityProducts</relationshipName>
+    <required>false</required>
+    <trackHistory>false</trackHistory>
+    <type>Lookup</type>
+</CustomField>

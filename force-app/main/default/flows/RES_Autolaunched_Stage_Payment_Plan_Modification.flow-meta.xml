@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>67.0</apiVersion>
+    <areMetricsLoggedToDataCloud>false</areMetricsLoggedToDataCloud>
+    <assignments>
+        <name>Handle_Fault</name>
+        <label>Handle Fault</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignmentItems>
+            <assignToReference>faultMessage</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>$Flow.FaultMessage</elementReference>
+            </value>
+        </assignmentItems>
+    </assignments>
+    <description>DIR-1258: Called once at Modification submission (first step of the Modification orchestration's PDC stage). The RES_Pending_*/RES_Approved_* staging itself now happens at record-save time (RES_Payment_Plan_Before_Save_Edit_Lock), not here - by the time this runs, the real tracked fields already sit at the RES_Approved_* baseline and RES_Pending_* already holds the edit. This step just finalizes the "submitted" banner text (swapping the pre-submit "not yet submitted" wording for "pending PDC approval, submitted by..."), deactivates the plan, and stamps who/when it was formally submitted.</description>
+    <environments>Default</environments>
+    <formulas>
+        <description>DIR-1258: banner text once the modification has actually been submitted for approval. Reads RES_Pending_*/RES_Approved_* (not the real tracked fields, which already equal RES_Approved_* by this point since staging happens at save time). DateTime fields get a +3 hour offset before TEXT() since Flow's TEXT() renders DateTime in GMT, not the Asia/Riyadh (UTC+3) timezone this org's users are on.</description>
+        <name>BannerText</name>
+        <dataType>String</dataType>
+        <expression>&quot;Payment Plan modification pending PDC approval, submitted by &quot; &amp; TRIM(BLANKVALUE({!Get_Submitter.FirstName},&quot;&quot;) &amp; &quot; &quot; &amp; BLANKVALUE({!Get_Submitter.LastName},&quot;&quot;)) &amp; &quot; on &quot; &amp; TEXT(TODAY()) &amp; &quot;.&quot; &amp;
+&quot;~~NL~~&quot; &amp; &quot;Field/s modified - &quot; &amp;
+MID(
+IF(AND(NOT(ISBLANK({!Get_Payment_Plan.RES_Pending_Name__c})), BLANKVALUE({!Get_Payment_Plan.RES_Pending_Name__c},&quot;&quot;) &lt;&gt; BLANKVALUE({!Get_Payment_Plan.RES_Approved_Name__c},&quot;&quot;)),
+    &quot;, Name: &quot; &amp; {!Get_Payment_Plan.RES_Pending_Name__c}, &quot;&quot;) &amp;
+IF(AND(NOT(ISBLANK({!Get_Payment_Plan.RES_Pending_No_Of_Years__c})), BLANKVALUE(TEXT({!Get_Payment_Plan.RES_Pending_No_Of_Years__c}),&quot;&quot;) &lt;&gt; BLANKVALUE(TEXT({!Get_Payment_Plan.RES_Approved_No_Of_Years__c}),&quot;&quot;)),
+    &quot;, No of Years: &quot; &amp; TEXT({!Get_Payment_Plan.RES_Pending_No_Of_Years__c}), &quot;&quot;) &amp;
+IF(AND(NOT(ISBLANK({!Get_Payment_Plan.RES_Pending_Description__c})), BLANKVALUE({!Get_Payment_Plan.RES_Pending_Description__c},&quot;&quot;) &lt;&gt; BLANKVALUE({!Get_Payment_Plan.RES_Approved_Description__c},&quot;&quot;)),
+    &quot;, Description: &quot; &amp; {!Get_Payment_Plan.RES_Pending_Description__c}, &quot;&quot;) &amp;
+IF(AND(NOT(ISBLANK({!Get_Payment_Plan.RES_Pending_Availability_Date__c})), BLANKVALUE(TEXT(IF(ISBLANK({!Get_Payment_Plan.RES_Pending_Availability_Date__c}), {!Get_Payment_Plan.RES_Pending_Availability_Date__c}, {!Get_Payment_Plan.RES_Pending_Availability_Date__c} + (3/24))),&quot;&quot;) &lt;&gt; BLANKVALUE(TEXT(IF(ISBLANK({!Get_Payment_Plan.RES_Approved_Availability_Date__c}), {!Get_Payment_Plan.RES_Approved_Availability_Date__c}, {!Get_Payment_Plan.RES_Approved_Availability_Date__c} + (3/24))),&quot;&quot;)),
+    &quot;, Availability Date: &quot; &amp; TEXT(IF(ISBLANK({!Get_Payment_Plan.RES_Pending_Availability_Date__c}), {!Get_Payment_Plan.RES_Pending_Availability_Date__c}, {!Get_Payment_Plan.RES_Pending_Availability_Date__c} + (3/24))), &quot;&quot;) &amp;
+IF(AND(NOT(ISBLANK({!Get_Payment_Plan.RES_Pending_Discontinued_Date__c})), BLANKVALUE(TEXT(IF(ISBLANK({!Get_Payment_Plan.RES_Pending_Discontinued_Date__c}), {!Get_Payment_Plan.RES_Pending_Discontinued_Date__c}, {!Get_Payment_Plan.RES_Pending_Discontinued_Date__c} + (3/24))),&quot;&quot;) &lt;&gt; BLANKVALUE(TEXT(IF(ISBLANK({!Get_Payment_Plan.RES_Approved_Discontinued_Date__c}), {!Get_Payment_Plan.RES_Approved_Discontinued_Date__c}, {!Get_Payment_Plan.RES_Approved_Discontinued_Date__c} + (3/24))),&quot;&quot;)),
+    &quot;, Discontinued Date: &quot; &amp; TEXT(IF(ISBLANK({!Get_Payment_Plan.RES_Pending_Discontinued_Date__c}), {!Get_Payment_Plan.RES_Pending_Discontinued_Date__c}, {!Get_Payment_Plan.RES_Pending_Discontinued_Date__c} + (3/24))), &quot;&quot;) &amp;
+IF(AND(NOT(ISBLANK({!Get_Payment_Plan.RES_Pending_Business_Entity__c})), BLANKVALUE({!Get_Payment_Plan.RES_Pending_Business_Entity__c},&quot;&quot;) &lt;&gt; BLANKVALUE({!Get_Payment_Plan.RES_Approved_Business_Entity__c},&quot;&quot;)),
+    &quot;, Business Entity: &quot; &amp; BLANKVALUE({!Get_Payment_Plan.RES_Pending_Business_Entity__r.Name},&quot;&quot;), &quot;&quot;) &amp;
+IF(AND(NOT(ISBLANK({!Get_Payment_Plan.RES_Pending_Product_Code__c})), BLANKVALUE({!Get_Payment_Plan.RES_Pending_Product_Code__c},&quot;&quot;) &lt;&gt; BLANKVALUE({!Get_Payment_Plan.RES_Approved_Product_Code__c},&quot;&quot;)),
+    &quot;, Product Code: &quot; &amp; {!Get_Payment_Plan.RES_Pending_Product_Code__c}, &quot;&quot;) &amp;
+IF(AND(NOT(ISBLANK({!Get_Payment_Plan.RES_Pending_Version__c})), BLANKVALUE(TEXT({!Get_Payment_Plan.RES_Pending_Version__c}),&quot;&quot;) &lt;&gt; BLANKVALUE(TEXT({!Get_Payment_Plan.RES_Approved_Version__c}),&quot;&quot;)),
+    &quot;, Version: &quot; &amp; TEXT({!Get_Payment_Plan.RES_Pending_Version__c}), &quot;&quot;) &amp;
+IF(AND(NOT(ISBLANK(TEXT({!Get_Payment_Plan.RES_Pending_Construction_Phase__c}))), BLANKVALUE(TEXT({!Get_Payment_Plan.RES_Pending_Construction_Phase__c}),&quot;&quot;) &lt;&gt; BLANKVALUE(TEXT({!Get_Payment_Plan.RES_Approved_Construction_Phase__c}),&quot;&quot;)),
+    &quot;, Construction Phase: &quot; &amp; TEXT({!Get_Payment_Plan.RES_Pending_Construction_Phase__c}), &quot;&quot;) &amp;
+IF(AND(NOT(ISBLANK({!Get_Payment_Plan.RES_Pending_Parent_Payment_Plan__c})), BLANKVALUE({!Get_Payment_Plan.RES_Pending_Parent_Payment_Plan__c},&quot;&quot;) &lt;&gt; BLANKVALUE({!Get_Payment_Plan.RES_Approved_Parent_Payment_Plan__c},&quot;&quot;)),
+    &quot;, Parent Payment Plan: &quot; &amp; BLANKVALUE({!Get_Payment_Plan.RES_Pending_Parent_Payment_Plan__r.Name},&quot;&quot;), &quot;&quot;)
+, 3, 9999)</expression>
+    </formulas>
+    <interviewLabel>Stage Payment Plan Modification {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>RES Autolaunched Stage Payment Plan Modification</label>
+    <processMetadataValues>
+        <name>BuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>CanvasMode</name>
+        <value>
+            <stringValue>AUTO_LAYOUT_CANVAS</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>OriginBuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processType>AutoLaunchedFlow</processType>
+    <recordLookups>
+        <name>Get_Payment_Plan</name>
+        <label>Get Payment Plan</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Get_Submitter</targetReference>
+        </connector>
+        <faultConnector>
+            <targetReference>Handle_Fault</targetReference>
+        </faultConnector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Id</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>recordId</elementReference>
+            </value>
+        </filters>
+        <getFirstRecordOnly>true</getFirstRecordOnly>
+        <object>Product2</object>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
+    <recordLookups>
+        <name>Get_Submitter</name>
+        <label>Get Submitter</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Stage_Modification</targetReference>
+        </connector>
+        <faultConnector>
+            <targetReference>Handle_Fault</targetReference>
+        </faultConnector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Id</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>submitterId</elementReference>
+            </value>
+        </filters>
+        <getFirstRecordOnly>true</getFirstRecordOnly>
+        <object>User</object>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
+    <recordUpdates>
+        <name>Stage_Modification</name>
+        <label>Stage Modification</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <faultConnector>
+            <targetReference>Handle_Fault</targetReference>
+        </faultConnector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Id</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>recordId</elementReference>
+            </value>
+        </filters>
+        <inputAssignments>
+            <field>IsActive</field>
+            <value>
+                <booleanValue>false</booleanValue>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>RES_Modification_Submitted_By__c</field>
+            <value>
+                <elementReference>submitterId</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>RES_Modification_Submitted_Date__c</field>
+            <value>
+                <elementReference>$Flow.CurrentDate</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>RES_Payment_Plan_Modification_Banner__c</field>
+            <value>
+                <elementReference>BannerText</elementReference>
+            </value>
+        </inputAssignments>
+        <object>Product2</object>
+    </recordUpdates>
+    <start>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Get_Payment_Plan</targetReference>
+        </connector>
+    </start>
+    <status>Active</status>
+    <variables>
+        <name>faultMessage</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <name>recordId</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>true</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <name>submitterId</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>true</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+</Flow>

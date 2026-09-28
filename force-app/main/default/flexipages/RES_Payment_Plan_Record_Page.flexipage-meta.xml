@@ -180,6 +180,16 @@
                 </visibilityRule>
             </fieldInstance>
         </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>readonly</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.RES_Version__c</fieldItem>
+                <identifier>RecordRES_Version_cField</identifier>
+            </fieldInstance>
+        </itemInstances>
         <name>Facet-9b6b8057-c9bd-4708-bdbf-0fc4a1e0a71e</name>
         <type>Facet</type>
     </flexiPageRegions>
@@ -287,6 +297,16 @@
                 </fieldInstanceProperties>
                 <fieldItem>Record.RES_Construction_Phase__c</fieldItem>
                 <identifier>RecordRES_Construction_Phase_cField</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>readonly</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.RES_Parent_Payment_Plan__c</fieldItem>
+                <identifier>RecordRES_Parent_Payment_Plan_cField</identifier>
             </fieldInstance>
         </itemInstances>
         <name>Facet-8c111148-f536-47ee-a362-e9f864031955</name>
@@ -563,6 +583,12 @@
         <type>Facet</type>
     </flexiPageRegions>
     <flexiPageRegions>
+        <itemInstances>
+            <componentInstance>
+                <componentName>resPaymentPlanModificationBanner</componentName>
+                <identifier>c_resPaymentPlanModificationBanner</identifier>
+            </componentInstance>
+        </itemInstances>
         <itemInstances>
             <componentInstance>
                 <componentInstanceProperties>

@@ -40,6 +40,28 @@
         </rules>
     </decisions>
     <decisions>
+        <name>Flows_Enabled</name>
+        <label>Flows Enabled</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnectorLabel>Flows Off</defaultConnectorLabel>
+        <rules>
+            <name>Enabled</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Setup.RES_Config_Switch__c.RES_Flows_Off__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>PDC_Approval_Stage</targetReference>
+            </connector>
+            <label>Enabled</label>
+        </rules>
+    </decisions>
+    <decisions>
         <name>GCEO_Approval_Outcome</name>
         <label>GCEO Approval Outcome</label>
         <locationX>0</locationX>
@@ -113,29 +135,7 @@
             <label>PDC Rejected</label>
         </rules>
     </decisions>
-    <decisions>
-        <name>Flows_Enabled</name>
-        <label>Flows Enabled</label>
-        <locationX>0</locationX>
-        <locationY>0</locationY>
-        <defaultConnectorLabel>Flows Off</defaultConnectorLabel>
-        <rules>
-            <name>Enabled</name>
-            <conditionLogic>and</conditionLogic>
-            <conditions>
-                <leftValueReference>$Setup.RES_Config_Switch__c.RES_Flows_Off__c</leftValueReference>
-                <operator>EqualTo</operator>
-                <rightValue>
-                    <booleanValue>false</booleanValue>
-                </rightValue>
-            </conditions>
-            <connector>
-                <targetReference>PDC_Approval_Stage</targetReference>
-            </connector>
-            <label>Enabled</label>
-        </rules>
-    </decisions>
-    <description>DIR-1258: Modification approval process for a Residential Payment Plan Product2 record that was PREVIOUSLY Approved and is now being resubmitted after an edit. 3-level chain (4-eyes review + final approval): PDC (DevCo) -&gt; CFO -&gt; GCEO (CEO), per AC3's "sequence PDC-CFO-GCEO". Self-triggers off RES_Payment_Plan_Submission_Requested__c flipping true on a record whose prior RES_Approval_Status__c WAS Approved (a first-time/post-rejection submission is handled by RES_Payment_Plan_New_Submission_Approval_Process instead). Does not re-run bundle provisioning - that happens once, on first approval, via the New Submission process.</description>
+    <description>DIR-1258: Modification approval process for a Residential Payment Plan Product2 record that was PREVIOUSLY Approved and is now being resubmitted after an edit. 3-level chain (4-eyes review + final approval): PDC (DevCo) -&gt; CFO -&gt; GCEO (CEO), per AC3&apos;s &quot;sequence PDC-CFO-GCEO&quot;. Self-triggers off RES_Payment_Plan_Submission_Requested__c flipping true on a record whose prior RES_Approval_Status__c WAS Approved (a first-time/post-rejection submission is handled by RES_Payment_Plan_New_Submission_Approval_Process instead). Does not re-run bundle provisioning - that happens once, on first approval, via the New Submission process.</description>
     <environments>Default</environments>
     <formulas>
         <name>GroupBellNotificationBody</name>
@@ -199,8 +199,8 @@
             <stepSubtype>BackgroundStep</stepSubtype>
         </stageSteps>
         <stageSteps>
-            <name>Activate_Plan</name>
-            <actionName>RES_Autolaunched_Activate_Payment_Plan</actionName>
+            <name>Finalize_Modification</name>
+            <actionName>RES_Autolaunched_Finalize_Payment_Plan_Modification</actionName>
             <actionType>stepBackground</actionType>
             <canAssigneeEdit>false</canAssigneeEdit>
             <debugSimulateStep>false</debugSimulateStep>
@@ -220,7 +220,7 @@
                     <elementReference>$Record.Id</elementReference>
                 </value>
             </inputParameters>
-            <label>Activate Plan</label>
+            <label>Finalize Modification</label>
             <requiresAsyncProcessing>false</requiresAsyncProcessing>
             <runAsUser>false</runAsUser>
             <shouldLock>false</shouldLock>
@@ -235,7 +235,7 @@
             <entryConditionLogic>and</entryConditionLogic>
             <entryConditions>
                 <conditionType>EntryCondition</conditionType>
-                <leftValueReference>Activate_Plan.Status</leftValueReference>
+                <leftValueReference>Finalize_Modification.Status</leftValueReference>
                 <operator>EqualTo</operator>
                 <rightValue>
                     <stringValue>Completed</stringValue>
@@ -339,6 +339,46 @@
                 </value>
             </inputParameters>
             <label>Update Status - Pending CFO Approval</label>
+            <requiresAsyncProcessing>false</requiresAsyncProcessing>
+            <runAsUser>false</runAsUser>
+            <shouldLock>false</shouldLock>
+            <stepSubtype>BackgroundStep</stepSubtype>
+        </stageSteps>
+        <stageSteps>
+            <name>Update_Banner_Level_CFO</name>
+            <actionName>RES_Autolaunched_Update_Payment_Plan_Modification_Banner_Level</actionName>
+            <actionType>stepBackground</actionType>
+            <canAssigneeEdit>false</canAssigneeEdit>
+            <debugSimulateStep>false</debugSimulateStep>
+            <entryConditionLogic>and</entryConditionLogic>
+            <entryConditions>
+                <conditionType>EntryCondition</conditionType>
+                <leftValueReference>Update_Status_Pending_CFO.Status</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Completed</stringValue>
+                </rightValue>
+            </entryConditions>
+            <exitConditionLogic>and</exitConditionLogic>
+            <inputParameters>
+                <name>recordId</name>
+                <value>
+                    <elementReference>$Record.Id</elementReference>
+                </value>
+            </inputParameters>
+            <inputParameters>
+                <name>oldLevelText</name>
+                <value>
+                    <stringValue>pending PDC approval</stringValue>
+                </value>
+            </inputParameters>
+            <inputParameters>
+                <name>newLevelText</name>
+                <value>
+                    <stringValue>pending CFO approval</stringValue>
+                </value>
+            </inputParameters>
+            <label>Update Banner Level - CFO</label>
             <requiresAsyncProcessing>false</requiresAsyncProcessing>
             <runAsUser>false</runAsUser>
             <shouldLock>false</shouldLock>
@@ -562,13 +602,13 @@
             <inputParameters>
                 <name>newApprovalStatus</name>
                 <value>
-                    <stringValue>Rejected</stringValue>
+                    <stringValue>Approved</stringValue>
                 </value>
             </inputParameters>
             <inputParameters>
                 <name>newStage</name>
                 <value>
-                    <stringValue>Rejected</stringValue>
+                    <stringValue>Approved</stringValue>
                 </value>
             </inputParameters>
             <inputParameters>
@@ -590,6 +630,34 @@
             <stepSubtype>BackgroundStep</stepSubtype>
         </stageSteps>
         <stageSteps>
+            <name>Discard_Modification_CFO</name>
+            <actionName>RES_Autolaunched_Discard_Payment_Plan_Modification</actionName>
+            <actionType>stepBackground</actionType>
+            <canAssigneeEdit>false</canAssigneeEdit>
+            <debugSimulateStep>false</debugSimulateStep>
+            <entryConditionLogic>and</entryConditionLogic>
+            <entryConditions>
+                <conditionType>EntryCondition</conditionType>
+                <leftValueReference>Update_Status_Rejected_By_CFO.Status</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Completed</stringValue>
+                </rightValue>
+            </entryConditions>
+            <exitConditionLogic>and</exitConditionLogic>
+            <inputParameters>
+                <name>recordId</name>
+                <value>
+                    <elementReference>$Record.Id</elementReference>
+                </value>
+            </inputParameters>
+            <label>Discard Modification</label>
+            <requiresAsyncProcessing>false</requiresAsyncProcessing>
+            <runAsUser>false</runAsUser>
+            <shouldLock>false</shouldLock>
+            <stepSubtype>BackgroundStep</stepSubtype>
+        </stageSteps>
+        <stageSteps>
             <name>Notify_Submitter_Rejected_By_CFO</name>
             <actionName>RES_Payment_Plan_Send_Notification_To_Submitter</actionName>
             <actionType>stepBackground</actionType>
@@ -598,7 +666,7 @@
             <entryConditionLogic>and</entryConditionLogic>
             <entryConditions>
                 <conditionType>EntryCondition</conditionType>
-                <leftValueReference>Update_Status_Rejected_By_CFO.Status</leftValueReference>
+                <leftValueReference>Discard_Modification_CFO.Status</leftValueReference>
                 <operator>EqualTo</operator>
                 <rightValue>
                     <stringValue>Completed</stringValue>
@@ -702,6 +770,46 @@
                 </value>
             </inputParameters>
             <label>Update Status - Pending GCEO Approval</label>
+            <requiresAsyncProcessing>false</requiresAsyncProcessing>
+            <runAsUser>false</runAsUser>
+            <shouldLock>false</shouldLock>
+            <stepSubtype>BackgroundStep</stepSubtype>
+        </stageSteps>
+        <stageSteps>
+            <name>Update_Banner_Level_GCEO</name>
+            <actionName>RES_Autolaunched_Update_Payment_Plan_Modification_Banner_Level</actionName>
+            <actionType>stepBackground</actionType>
+            <canAssigneeEdit>false</canAssigneeEdit>
+            <debugSimulateStep>false</debugSimulateStep>
+            <entryConditionLogic>and</entryConditionLogic>
+            <entryConditions>
+                <conditionType>EntryCondition</conditionType>
+                <leftValueReference>Update_Status_Pending_GCEO.Status</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Completed</stringValue>
+                </rightValue>
+            </entryConditions>
+            <exitConditionLogic>and</exitConditionLogic>
+            <inputParameters>
+                <name>recordId</name>
+                <value>
+                    <elementReference>$Record.Id</elementReference>
+                </value>
+            </inputParameters>
+            <inputParameters>
+                <name>oldLevelText</name>
+                <value>
+                    <stringValue>pending CFO approval</stringValue>
+                </value>
+            </inputParameters>
+            <inputParameters>
+                <name>newLevelText</name>
+                <value>
+                    <stringValue>pending GCEO approval</stringValue>
+                </value>
+            </inputParameters>
+            <label>Update Banner Level - GCEO</label>
             <requiresAsyncProcessing>false</requiresAsyncProcessing>
             <runAsUser>false</runAsUser>
             <shouldLock>false</shouldLock>
@@ -925,13 +1033,13 @@
             <inputParameters>
                 <name>newApprovalStatus</name>
                 <value>
-                    <stringValue>Rejected</stringValue>
+                    <stringValue>Approved</stringValue>
                 </value>
             </inputParameters>
             <inputParameters>
                 <name>newStage</name>
                 <value>
-                    <stringValue>Rejected</stringValue>
+                    <stringValue>Approved</stringValue>
                 </value>
             </inputParameters>
             <inputParameters>
@@ -953,6 +1061,34 @@
             <stepSubtype>BackgroundStep</stepSubtype>
         </stageSteps>
         <stageSteps>
+            <name>Discard_Modification_GCEO</name>
+            <actionName>RES_Autolaunched_Discard_Payment_Plan_Modification</actionName>
+            <actionType>stepBackground</actionType>
+            <canAssigneeEdit>false</canAssigneeEdit>
+            <debugSimulateStep>false</debugSimulateStep>
+            <entryConditionLogic>and</entryConditionLogic>
+            <entryConditions>
+                <conditionType>EntryCondition</conditionType>
+                <leftValueReference>Update_Status_Rejected_By_GCEO.Status</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Completed</stringValue>
+                </rightValue>
+            </entryConditions>
+            <exitConditionLogic>and</exitConditionLogic>
+            <inputParameters>
+                <name>recordId</name>
+                <value>
+                    <elementReference>$Record.Id</elementReference>
+                </value>
+            </inputParameters>
+            <label>Discard Modification</label>
+            <requiresAsyncProcessing>false</requiresAsyncProcessing>
+            <runAsUser>false</runAsUser>
+            <shouldLock>false</shouldLock>
+            <stepSubtype>BackgroundStep</stepSubtype>
+        </stageSteps>
+        <stageSteps>
             <name>Notify_Submitter_Rejected_By_GCEO</name>
             <actionName>RES_Payment_Plan_Send_Notification_To_Submitter</actionName>
             <actionType>stepBackground</actionType>
@@ -961,7 +1097,7 @@
             <entryConditionLogic>and</entryConditionLogic>
             <entryConditions>
                 <conditionType>EntryCondition</conditionType>
-                <leftValueReference>Update_Status_Rejected_By_GCEO.Status</leftValueReference>
+                <leftValueReference>Discard_Modification_GCEO.Status</leftValueReference>
                 <operator>EqualTo</operator>
                 <rightValue>
                     <stringValue>Completed</stringValue>
@@ -1053,6 +1189,40 @@
             <stepSubtype>BackgroundStep</stepSubtype>
         </stageSteps>
         <stageSteps>
+            <name>Stage_Modification</name>
+            <actionName>RES_Autolaunched_Stage_Payment_Plan_Modification</actionName>
+            <actionType>stepBackground</actionType>
+            <canAssigneeEdit>false</canAssigneeEdit>
+            <debugSimulateStep>false</debugSimulateStep>
+            <entryConditionLogic>and</entryConditionLogic>
+            <entryConditions>
+                <conditionType>EntryCondition</conditionType>
+                <leftValueReference>Capture_Submitter.Status</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Completed</stringValue>
+                </rightValue>
+            </entryConditions>
+            <exitConditionLogic>and</exitConditionLogic>
+            <inputParameters>
+                <name>recordId</name>
+                <value>
+                    <elementReference>$Record.Id</elementReference>
+                </value>
+            </inputParameters>
+            <inputParameters>
+                <name>submitterId</name>
+                <value>
+                    <elementReference>Capture_Submitter.Outputs.submitterId</elementReference>
+                </value>
+            </inputParameters>
+            <label>Stage Modification</label>
+            <requiresAsyncProcessing>false</requiresAsyncProcessing>
+            <runAsUser>false</runAsUser>
+            <shouldLock>false</shouldLock>
+            <stepSubtype>BackgroundStep</stepSubtype>
+        </stageSteps>
+        <stageSteps>
             <name>Reset_Submission_Flag</name>
             <actionName>RES_Autolaunched_Reset_Payment_Plan_Submission_Flag</actionName>
             <actionType>stepBackground</actionType>
@@ -1061,7 +1231,7 @@
             <entryConditionLogic>and</entryConditionLogic>
             <entryConditions>
                 <conditionType>EntryCondition</conditionType>
-                <leftValueReference>Capture_Submitter.Status</leftValueReference>
+                <leftValueReference>Stage_Modification.Status</leftValueReference>
                 <operator>EqualTo</operator>
                 <rightValue>
                     <stringValue>Completed</stringValue>
@@ -1274,13 +1444,13 @@
             <inputParameters>
                 <name>newApprovalStatus</name>
                 <value>
-                    <stringValue>Rejected</stringValue>
+                    <stringValue>Approved</stringValue>
                 </value>
             </inputParameters>
             <inputParameters>
                 <name>newStage</name>
                 <value>
-                    <stringValue>Rejected</stringValue>
+                    <stringValue>Approved</stringValue>
                 </value>
             </inputParameters>
             <inputParameters>
@@ -1302,6 +1472,34 @@
             <stepSubtype>BackgroundStep</stepSubtype>
         </stageSteps>
         <stageSteps>
+            <name>Discard_Modification_PDC</name>
+            <actionName>RES_Autolaunched_Discard_Payment_Plan_Modification</actionName>
+            <actionType>stepBackground</actionType>
+            <canAssigneeEdit>false</canAssigneeEdit>
+            <debugSimulateStep>false</debugSimulateStep>
+            <entryConditionLogic>and</entryConditionLogic>
+            <entryConditions>
+                <conditionType>EntryCondition</conditionType>
+                <leftValueReference>Update_Status_Rejected_By_PDC.Status</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Completed</stringValue>
+                </rightValue>
+            </entryConditions>
+            <exitConditionLogic>and</exitConditionLogic>
+            <inputParameters>
+                <name>recordId</name>
+                <value>
+                    <elementReference>$Record.Id</elementReference>
+                </value>
+            </inputParameters>
+            <label>Discard Modification</label>
+            <requiresAsyncProcessing>false</requiresAsyncProcessing>
+            <runAsUser>false</runAsUser>
+            <shouldLock>false</shouldLock>
+            <stepSubtype>BackgroundStep</stepSubtype>
+        </stageSteps>
+        <stageSteps>
             <name>Notify_Submitter_Rejected_By_PDC</name>
             <actionName>RES_Payment_Plan_Send_Notification_To_Submitter</actionName>
             <actionType>stepBackground</actionType>
@@ -1310,7 +1508,7 @@
             <entryConditionLogic>and</entryConditionLogic>
             <entryConditions>
                 <conditionType>EntryCondition</conditionType>
-                <leftValueReference>Update_Status_Rejected_By_PDC.Status</leftValueReference>
+                <leftValueReference>Discard_Modification_PDC.Status</leftValueReference>
                 <operator>EqualTo</operator>
                 <rightValue>
                     <stringValue>Completed</stringValue>
