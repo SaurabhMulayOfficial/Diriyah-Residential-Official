@@ -40,6 +40,28 @@
         </rules>
     </decisions>
     <decisions>
+        <name>Flows_Enabled</name>
+        <label>Flows Enabled</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnectorLabel>Flows Off</defaultConnectorLabel>
+        <rules>
+            <name>Enabled</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Setup.RES_Config_Switch__c.RES_Flows_Off__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>PDC_Approval_Stage</targetReference>
+            </connector>
+            <label>Enabled</label>
+        </rules>
+    </decisions>
+    <decisions>
         <name>PDC_Approval_Outcome</name>
         <label>PDC Approval Outcome</label>
         <locationX>0</locationX>
@@ -74,28 +96,6 @@
                 <targetReference>PDC_Rejection_Stage</targetReference>
             </connector>
             <label>PDC Rejected</label>
-        </rules>
-    </decisions>
-    <decisions>
-        <name>Flows_Enabled</name>
-        <label>Flows Enabled</label>
-        <locationX>0</locationX>
-        <locationY>0</locationY>
-        <defaultConnectorLabel>Flows Off</defaultConnectorLabel>
-        <rules>
-            <name>Enabled</name>
-            <conditionLogic>and</conditionLogic>
-            <conditions>
-                <leftValueReference>$Setup.RES_Config_Switch__c.RES_Flows_Off__c</leftValueReference>
-                <operator>EqualTo</operator>
-                <rightValue>
-                    <booleanValue>false</booleanValue>
-                </rightValue>
-            </conditions>
-            <connector>
-                <targetReference>PDC_Approval_Stage</targetReference>
-            </connector>
-            <label>Enabled</label>
         </rules>
     </decisions>
     <description>DIR-1258: New Submission approval process for a Residential Payment Plan Product2 record (first-time submission or resubmission after rejection). 2-level chain: PDC (DevCo) -&gt; CFO. Self-triggers off RES_Payment_Plan_Submission_Requested__c flipping true on a record whose prior RES_Approval_Status__c was NOT Approved (an already-approved plan being modified is handled by RES_Payment_Plan_Modification_Approval_Process instead).</description>
@@ -282,6 +282,34 @@
                 </value>
             </inputParameters>
             <label>Provision Bundle Components</label>
+            <requiresAsyncProcessing>false</requiresAsyncProcessing>
+            <runAsUser>false</runAsUser>
+            <shouldLock>false</shouldLock>
+            <stepSubtype>BackgroundStep</stepSubtype>
+        </stageSteps>
+        <stageSteps>
+            <name>Snapshot_Approved_Values</name>
+            <actionName>RES_Autolaunched_Snapshot_Payment_Plan_Approved_Values</actionName>
+            <actionType>stepBackground</actionType>
+            <canAssigneeEdit>false</canAssigneeEdit>
+            <debugSimulateStep>false</debugSimulateStep>
+            <entryConditionLogic>and</entryConditionLogic>
+            <entryConditions>
+                <conditionType>EntryCondition</conditionType>
+                <leftValueReference>Update_Status_Approved.Status</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Completed</stringValue>
+                </rightValue>
+            </entryConditions>
+            <exitConditionLogic>and</exitConditionLogic>
+            <inputParameters>
+                <name>recordId</name>
+                <value>
+                    <elementReference>$Record.Id</elementReference>
+                </value>
+            </inputParameters>
+            <label>Snapshot Approved Values</label>
             <requiresAsyncProcessing>false</requiresAsyncProcessing>
             <runAsUser>false</runAsUser>
             <shouldLock>false</shouldLock>

@@ -2,6 +2,187 @@
 <Flow xmlns="http://soap.sforce.com/2006/04/metadata">
     <apiVersion>67.0</apiVersion>
     <areMetricsLoggedToDataCloud>false</areMetricsLoggedToDataCloud>
+    <assignments>
+        <name>Capture_Modification</name>
+        <label>Capture Modification</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignmentItems>
+            <assignToReference>$Record.RES_Pending_Name__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>PendingCandidate_Name</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>$Record.RES_Pending_No_Of_Years__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>PendingCandidate_NoOfYears</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>$Record.RES_Pending_Description__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>PendingCandidate_Description</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>$Record.RES_Pending_Availability_Date__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>PendingCandidate_AvailabilityDate</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>$Record.RES_Pending_Discontinued_Date__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>PendingCandidate_DiscontinuedDate</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>$Record.RES_Pending_Business_Entity__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>PendingCandidate_BusinessEntity</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>$Record.RES_Pending_Product_Code__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>PendingCandidate_ProductCode</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>$Record.RES_Pending_Version__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>PendingCandidate_Version</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>$Record.RES_Pending_Construction_Phase__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>PendingCandidate_ConstructionPhase</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>$Record.RES_Pending_Parent_Payment_Plan__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>PendingCandidate_ParentPaymentPlan</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Has_Pending_Business_Entity</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
+        <name>Finalize_Staging</name>
+        <label>Finalize Staging</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignmentItems>
+            <assignToReference>$Record.RES_Payment_Plan_Modification_Banner__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>InterimBannerText</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>$Record.Name</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>$Record.RES_Approved_Name__c</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>$Record.RES_No_of_Years__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>$Record.RES_Approved_No_Of_Years__c</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>$Record.Description</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>$Record.RES_Approved_Description__c</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>$Record.AvailabilityDate</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>$Record.RES_Approved_Availability_Date__c</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>$Record.DiscontinuedDate</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>$Record.RES_Approved_Discontinued_Date__c</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>$Record.RES_Business_Entity__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>$Record.RES_Approved_Business_Entity__c</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>$Record.ProductCode</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>$Record.RES_Approved_Product_Code__c</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>$Record.RES_Version__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>$Record.RES_Approved_Version__c</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>$Record.RES_Construction_Phase__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>$Record.RES_Approved_Construction_Phase__c</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>$Record.RES_Parent_Payment_Plan__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>$Record.RES_Approved_Parent_Payment_Plan__c</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Should_Enforce_Lock</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
+        <name>Set_Modified_Flag</name>
+        <label>Set Modified Flag</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignmentItems>
+            <assignToReference>$Record.RES_Payment_Plan_Modified_Since_Approval__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Capture_Modification</targetReference>
+        </connector>
+    </assignments>
     <customErrors>
         <name>Block_Edit</name>
         <label>Block Edit</label>
@@ -12,28 +193,16 @@
             <isFieldError>false</isFieldError>
         </customErrorMessages>
     </customErrors>
-    <decisions>
-        <name>Has_Disallowed_Change</name>
-        <label>Has Disallowed Change?</label>
+    <customErrors>
+        <name>Show_Staging_Fault</name>
+        <label>Show Staging Fault</label>
         <locationX>0</locationX>
         <locationY>0</locationY>
-        <defaultConnectorLabel>No Disallowed Change</defaultConnectorLabel>
-        <rules>
-            <name>Disallowed_Change</name>
-            <conditionLogic>and</conditionLogic>
-            <conditions>
-                <leftValueReference>HasDisallowedFieldChange</leftValueReference>
-                <operator>EqualTo</operator>
-                <rightValue>
-                    <booleanValue>true</booleanValue>
-                </rightValue>
-            </conditions>
-            <connector>
-                <targetReference>Block_Edit</targetReference>
-            </connector>
-            <label>Disallowed Change</label>
-        </rules>
-    </decisions>
+        <customErrorMessages>
+            <errorMessage>Payment Plan modification staging failed: {!$Flow.FaultMessage}</errorMessage>
+            <isFieldError>false</isFieldError>
+        </customErrorMessages>
+    </customErrors>
     <decisions>
         <name>Flows_Enabled</name>
         <label>Flows Enabled</label>
@@ -57,29 +226,26 @@
         </rules>
     </decisions>
     <decisions>
-        <name>Was_Approved_And_Changed</name>
-        <label>Was Approved And Changed?</label>
+        <name>Has_Disallowed_Change</name>
+        <label>Has Disallowed Change?</label>
         <locationX>0</locationX>
         <locationY>0</locationY>
-        <defaultConnectorLabel>No</defaultConnectorLabel>
+        <defaultConnectorLabel>No Disallowed Change</defaultConnectorLabel>
         <rules>
-            <name>Approved_And_Changed</name>
+            <name>Disallowed_Change</name>
             <conditionLogic>and</conditionLogic>
             <conditions>
-                <leftValueReference>fShouldFlagModified</leftValueReference>
+                <leftValueReference>HasDisallowedFieldChange</leftValueReference>
                 <operator>EqualTo</operator>
                 <rightValue>
                     <booleanValue>true</booleanValue>
                 </rightValue>
             </conditions>
             <connector>
-                <targetReference>Set_Modified_Flag</targetReference>
+                <targetReference>Block_Edit</targetReference>
             </connector>
-            <label>Approved And Changed</label>
+            <label>Disallowed Change</label>
         </rules>
-        <defaultConnector>
-            <targetReference>Should_Enforce_Lock</targetReference>
-        </defaultConnector>
     </decisions>
     <decisions>
         <name>Should_Enforce_Lock</name>
@@ -110,24 +276,93 @@
             <label>Enforce Lock</label>
         </rules>
     </decisions>
-    <assignments>
-        <name>Set_Modified_Flag</name>
-        <label>Set Modified Flag</label>
+    <decisions>
+        <name>Was_Approved_And_Changed</name>
+        <label>Was Approved And Changed?</label>
         <locationX>0</locationX>
         <locationY>0</locationY>
-        <assignmentItems>
-            <assignToReference>$Record.RES_Payment_Plan_Modified_Since_Approval__c</assignToReference>
-            <operator>Assign</operator>
-            <value>
-                <booleanValue>true</booleanValue>
-            </value>
-        </assignmentItems>
-        <connector>
+        <defaultConnector>
             <targetReference>Should_Enforce_Lock</targetReference>
-        </connector>
-    </assignments>
-    <description>DIR-1258 AC5/AC6/AC7: Blocks routine edits to a Residential Payment Plan Product2 record once it is assigned to a Sales Contract (a ContractItemPrice exists with RES_Product__c = this record and RES_Payment_Plan_Check__c = true, per the DIR-868 CIP model). Permitted post-assignment changes: IsActive (deactivate), RES_Validity_End_Date__c, RES_Business_Entity__c (project reassignment), and the approval-engine's own status/flag fields (so the New Submission / Modification / Deactivation orchestrations are never blocked by their own writes). RES_AR_Payment_Plan_Unit_Override bypasses the lock entirely for the AR team's post-execution unit-specific changes (AC7).</description>
+        </defaultConnector>
+        <defaultConnectorLabel>No</defaultConnectorLabel>
+        <rules>
+            <name>Approved_And_Changed</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>fShouldFlagModified</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Set_Modified_Flag</targetReference>
+            </connector>
+            <label>Approved And Changed</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>Has_Pending_Business_Entity</name>
+        <label>Has Pending Business Entity?</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnector>
+            <targetReference>Has_Pending_Parent_Payment_Plan</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>No</defaultConnectorLabel>
+        <rules>
+            <name>Has_Business_Entity_Value</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>PendingCandidate_BusinessEntity</leftValueReference>
+                <operator>IsBlank</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Get_Pending_Business_Entity_Name</targetReference>
+            </connector>
+            <label>Has Value</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>Has_Pending_Parent_Payment_Plan</name>
+        <label>Has Pending Parent Payment Plan?</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnector>
+            <targetReference>Finalize_Staging</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>No</defaultConnectorLabel>
+        <rules>
+            <name>Has_Parent_Payment_Plan_Value</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>PendingCandidate_ParentPaymentPlan</leftValueReference>
+                <operator>IsBlank</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Get_Pending_Parent_Payment_Plan_Name</targetReference>
+            </connector>
+            <label>Has Value</label>
+        </rules>
+    </decisions>
+    <description>DIR-1258 AC5/AC6/AC7: Blocks routine edits to a Residential Payment Plan Product2 record once it is assigned to a Sales Contract (a ContractItemPrice exists with RES_Product__c = this record and RES_Payment_Plan_Check__c = true, per the DIR-868 CIP model). Permitted post-assignment changes: IsActive (deactivate), RES_Validity_End_Date__c, RES_Business_Entity__c (project reassignment), and the approval-engine&apos;s own status/flag fields (so the New Submission / Modification / Deactivation orchestrations are never blocked by their own writes). RES_AR_Payment_Plan_Unit_Override bypasses the lock entirely for the AR team&apos;s post-execution unit-specific changes (AC7).</description>
     <environments>Default</environments>
+    <formulas>
+        <description>DIR-1258: NOT(ISCHANGED(IsActive)) excludes the system's own Finalize_Modification/Discard_Modification/Stage_Modification commits, all of which flip IsActive in the same transaction as part of resolving a modification - without this guard, Finalize_Modification's own field commit (Approved status, tracked fields genuinely changing) would satisfy this formula and re-trigger the save-time staging logic recursively, undoing the very commit it just made. A genuine user edit on an already-active Approved record never touches IsActive, so this doesn't affect real edits.</description>
+        <name>fShouldFlagModified</name>
+        <dataType>Boolean</dataType>
+        <expression>AND(
+    ISPICKVAL({!$Record.RES_Approval_Status__c}, &quot;Approved&quot;),
+    NOT(ISCHANGED({!$Record.IsActive})),
+    {!HasModificationTriggerFieldChange}
+)</expression>
+    </formulas>
     <formulas>
         <name>HasDisallowedFieldChange</name>
         <dataType>Boolean</dataType>
@@ -143,12 +378,103 @@
 )</expression>
     </formulas>
     <formulas>
-        <name>fShouldFlagModified</name>
+        <description>DIR-1258: the 10-field list that triggers the Modification staged-change flow (Submit button reappearance + staging on submit). Deliberately separate from HasDisallowedFieldChange, which still gates the unrelated Sales-Contract edit lock with its own 8-field list.</description>
+        <name>HasModificationTriggerFieldChange</name>
         <dataType>Boolean</dataType>
-        <expression>AND(
-    ISPICKVAL({!$Record.RES_Approval_Status__c}, &quot;Approved&quot;),
-    {!HasDisallowedFieldChange}
+        <expression>OR(
+    ISCHANGED({!$Record.Name}),
+    ISCHANGED({!$Record.RES_No_of_Years__c}),
+    ISCHANGED({!$Record.Description}),
+    ISCHANGED({!$Record.AvailabilityDate}),
+    ISCHANGED({!$Record.DiscontinuedDate}),
+    ISCHANGED({!$Record.RES_Business_Entity__c}),
+    ISCHANGED({!$Record.ProductCode}),
+    ISCHANGED({!$Record.RES_Version__c}),
+    ISCHANGED({!$Record.RES_Construction_Phase__c}),
+    ISCHANGED({!$Record.RES_Parent_Payment_Plan__c})
 )</expression>
+    </formulas>
+    <formulas>
+        <description>DIR-1258: banner shown immediately on save (before Submit for Approval is ever clicked). Diffs the just-captured RES_Pending_* values (set moments earlier by Capture_Modification, in this same transaction) against the RES_Approved_* baseline. DateTime fields get a +3 hour offset before TEXT() since Flow&apos;s TEXT() renders DateTime in GMT, not the Asia/Riyadh (UTC+3) timezone this org&apos;s users are on - without it, an edited time displays confusingly close to the old value.</description>
+        <name>InterimBannerText</name>
+        <dataType>String</dataType>
+        <expression>&quot;Payment Plan has been modified. Submit for approval to initiate the review process and apply these changes.&quot; &amp;
+&quot;~~NL~~&quot; &amp; &quot;Field/s modified - &quot; &amp;
+MID(
+IF(AND(NOT(ISBLANK({!$Record.RES_Pending_Name__c})), BLANKVALUE({!$Record.RES_Pending_Name__c},&quot;&quot;) &lt;&gt; BLANKVALUE({!$Record.RES_Approved_Name__c},&quot;&quot;)),
+    &quot;, Name: &quot; &amp; {!$Record.RES_Pending_Name__c}, &quot;&quot;) &amp;
+IF(AND(NOT(ISBLANK({!$Record.RES_Pending_No_Of_Years__c})), BLANKVALUE(TEXT({!$Record.RES_Pending_No_Of_Years__c}),&quot;&quot;) &lt;&gt; BLANKVALUE(TEXT({!$Record.RES_Approved_No_Of_Years__c}),&quot;&quot;)),
+    &quot;, No of Years: &quot; &amp; TEXT({!$Record.RES_Pending_No_Of_Years__c}), &quot;&quot;) &amp;
+IF(AND(NOT(ISBLANK({!$Record.RES_Pending_Description__c})), BLANKVALUE({!$Record.RES_Pending_Description__c},&quot;&quot;) &lt;&gt; BLANKVALUE({!$Record.RES_Approved_Description__c},&quot;&quot;)),
+    &quot;, Description: &quot; &amp; {!$Record.RES_Pending_Description__c}, &quot;&quot;) &amp;
+IF(AND(NOT(ISBLANK({!$Record.RES_Pending_Availability_Date__c})), BLANKVALUE(TEXT(IF(ISBLANK({!$Record.RES_Pending_Availability_Date__c}), {!$Record.RES_Pending_Availability_Date__c}, {!$Record.RES_Pending_Availability_Date__c} + (3/24))),&quot;&quot;) &lt;&gt; BLANKVALUE(TEXT(IF(ISBLANK({!$Record.RES_Approved_Availability_Date__c}), {!$Record.RES_Approved_Availability_Date__c}, {!$Record.RES_Approved_Availability_Date__c} + (3/24))),&quot;&quot;)),
+    &quot;, Availability Date: &quot; &amp; TEXT(IF(ISBLANK({!$Record.RES_Pending_Availability_Date__c}), {!$Record.RES_Pending_Availability_Date__c}, {!$Record.RES_Pending_Availability_Date__c} + (3/24))), &quot;&quot;) &amp;
+IF(AND(NOT(ISBLANK({!$Record.RES_Pending_Discontinued_Date__c})), BLANKVALUE(TEXT(IF(ISBLANK({!$Record.RES_Pending_Discontinued_Date__c}), {!$Record.RES_Pending_Discontinued_Date__c}, {!$Record.RES_Pending_Discontinued_Date__c} + (3/24))),&quot;&quot;) &lt;&gt; BLANKVALUE(TEXT(IF(ISBLANK({!$Record.RES_Approved_Discontinued_Date__c}), {!$Record.RES_Approved_Discontinued_Date__c}, {!$Record.RES_Approved_Discontinued_Date__c} + (3/24))),&quot;&quot;)),
+    &quot;, Discontinued Date: &quot; &amp; TEXT(IF(ISBLANK({!$Record.RES_Pending_Discontinued_Date__c}), {!$Record.RES_Pending_Discontinued_Date__c}, {!$Record.RES_Pending_Discontinued_Date__c} + (3/24))), &quot;&quot;) &amp;
+IF(AND(NOT(ISBLANK({!$Record.RES_Pending_Business_Entity__c})), BLANKVALUE({!$Record.RES_Pending_Business_Entity__c},&quot;&quot;) &lt;&gt; BLANKVALUE({!$Record.RES_Approved_Business_Entity__c},&quot;&quot;)),
+    &quot;, Business Entity: &quot; &amp; BLANKVALUE({!Get_Pending_Business_Entity_Name.Name},&quot;&quot;), &quot;&quot;) &amp;
+IF(AND(NOT(ISBLANK({!$Record.RES_Pending_Product_Code__c})), BLANKVALUE({!$Record.RES_Pending_Product_Code__c},&quot;&quot;) &lt;&gt; BLANKVALUE({!$Record.RES_Approved_Product_Code__c},&quot;&quot;)),
+    &quot;, Product Code: &quot; &amp; {!$Record.RES_Pending_Product_Code__c}, &quot;&quot;) &amp;
+IF(AND(NOT(ISBLANK({!$Record.RES_Pending_Version__c})), BLANKVALUE(TEXT({!$Record.RES_Pending_Version__c}),&quot;&quot;) &lt;&gt; BLANKVALUE(TEXT({!$Record.RES_Approved_Version__c}),&quot;&quot;)),
+    &quot;, Version: &quot; &amp; TEXT({!$Record.RES_Pending_Version__c}), &quot;&quot;) &amp;
+IF(AND(NOT(ISBLANK(TEXT({!$Record.RES_Pending_Construction_Phase__c}))), BLANKVALUE(TEXT({!$Record.RES_Pending_Construction_Phase__c}),&quot;&quot;) &lt;&gt; BLANKVALUE(TEXT({!$Record.RES_Approved_Construction_Phase__c}),&quot;&quot;)),
+    &quot;, Construction Phase: &quot; &amp; TEXT({!$Record.RES_Pending_Construction_Phase__c}), &quot;&quot;) &amp;
+IF(AND(NOT(ISBLANK({!$Record.RES_Pending_Parent_Payment_Plan__c})), BLANKVALUE({!$Record.RES_Pending_Parent_Payment_Plan__c},&quot;&quot;) &lt;&gt; BLANKVALUE({!$Record.RES_Approved_Parent_Payment_Plan__c},&quot;&quot;)),
+    &quot;, Parent Payment Plan: &quot; &amp; BLANKVALUE({!Get_Pending_Parent_Payment_Plan_Name.Name},&quot;&quot;), &quot;&quot;)
+, 3, 9999)</expression>
+    </formulas>
+    <formulas>
+        <name>PendingCandidate_AvailabilityDate</name>
+        <dataType>DateTime</dataType>
+        <expression>IF(ISCHANGED({!$Record.AvailabilityDate}), {!$Record.AvailabilityDate}, {!$Record.RES_Pending_Availability_Date__c})</expression>
+    </formulas>
+    <formulas>
+        <name>PendingCandidate_BusinessEntity</name>
+        <dataType>String</dataType>
+        <expression>IF(ISCHANGED({!$Record.RES_Business_Entity__c}), {!$Record.RES_Business_Entity__c}, {!$Record.RES_Pending_Business_Entity__c})</expression>
+    </formulas>
+    <formulas>
+        <name>PendingCandidate_ConstructionPhase</name>
+        <dataType>String</dataType>
+        <expression>IF(ISCHANGED({!$Record.RES_Construction_Phase__c}), TEXT({!$Record.RES_Construction_Phase__c}), TEXT({!$Record.RES_Pending_Construction_Phase__c}))</expression>
+    </formulas>
+    <formulas>
+        <name>PendingCandidate_Description</name>
+        <dataType>String</dataType>
+        <expression>IF(ISCHANGED({!$Record.Description}), {!$Record.Description}, {!$Record.RES_Pending_Description__c})</expression>
+    </formulas>
+    <formulas>
+        <name>PendingCandidate_DiscontinuedDate</name>
+        <dataType>DateTime</dataType>
+        <expression>IF(ISCHANGED({!$Record.DiscontinuedDate}), {!$Record.DiscontinuedDate}, {!$Record.RES_Pending_Discontinued_Date__c})</expression>
+    </formulas>
+    <formulas>
+        <description>DIR-1258: what RES_Pending_Name__c should become on this save. If Name was actually edited this transaction, capture the new value; otherwise preserve whatever was already staged from an earlier save (so a second unrelated edit before Submit doesn&apos;t wipe out the first one).</description>
+        <name>PendingCandidate_Name</name>
+        <dataType>String</dataType>
+        <expression>IF(ISCHANGED({!$Record.Name}), {!$Record.Name}, {!$Record.RES_Pending_Name__c})</expression>
+    </formulas>
+    <formulas>
+        <name>PendingCandidate_NoOfYears</name>
+        <dataType>Number</dataType>
+        <expression>IF(ISCHANGED({!$Record.RES_No_of_Years__c}), {!$Record.RES_No_of_Years__c}, {!$Record.RES_Pending_No_Of_Years__c})</expression>
+        <scale>0</scale>
+    </formulas>
+    <formulas>
+        <name>PendingCandidate_ParentPaymentPlan</name>
+        <dataType>String</dataType>
+        <expression>IF(ISCHANGED({!$Record.RES_Parent_Payment_Plan__c}), {!$Record.RES_Parent_Payment_Plan__c}, {!$Record.RES_Pending_Parent_Payment_Plan__c})</expression>
+    </formulas>
+    <formulas>
+        <name>PendingCandidate_ProductCode</name>
+        <dataType>String</dataType>
+        <expression>IF(ISCHANGED({!$Record.ProductCode}), {!$Record.ProductCode}, {!$Record.RES_Pending_Product_Code__c})</expression>
+    </formulas>
+    <formulas>
+        <name>PendingCandidate_Version</name>
+        <dataType>Number</dataType>
+        <expression>IF(ISCHANGED({!$Record.RES_Version__c}), {!$Record.RES_Version__c}, {!$Record.RES_Pending_Version__c})</expression>
+        <scale>2</scale>
     </formulas>
     <interviewLabel>Payment Plan Before Save Edit Lock {!$Flow.CurrentDateTime}</interviewLabel>
     <label>RES Payment Plan Before Save Edit Lock</label>
@@ -197,6 +523,54 @@
         </filters>
         <getFirstRecordOnly>true</getFirstRecordOnly>
         <object>ContractItemPrice</object>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
+    <recordLookups>
+        <name>Get_Pending_Business_Entity_Name</name>
+        <label>Get Pending Business Entity Name</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignNullValuesIfNoRecordsFound>true</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Has_Pending_Parent_Payment_Plan</targetReference>
+        </connector>
+        <faultConnector>
+            <targetReference>Show_Staging_Fault</targetReference>
+        </faultConnector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Id</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>PendingCandidate_BusinessEntity</elementReference>
+            </value>
+        </filters>
+        <getFirstRecordOnly>true</getFirstRecordOnly>
+        <object>ProductCatalog</object>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
+    <recordLookups>
+        <name>Get_Pending_Parent_Payment_Plan_Name</name>
+        <label>Get Pending Parent Payment Plan Name</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignNullValuesIfNoRecordsFound>true</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Finalize_Staging</targetReference>
+        </connector>
+        <faultConnector>
+            <targetReference>Show_Staging_Fault</targetReference>
+        </faultConnector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Id</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>PendingCandidate_ParentPaymentPlan</elementReference>
+            </value>
+        </filters>
+        <getFirstRecordOnly>true</getFirstRecordOnly>
+        <object>Product2</object>
         <storeOutputAutomatically>true</storeOutputAutomatically>
     </recordLookups>
     <start>
