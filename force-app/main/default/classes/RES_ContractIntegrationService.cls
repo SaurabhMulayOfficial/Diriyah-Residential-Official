@@ -145,46 +145,24 @@ public with sharing class RES_ContractIntegrationService extends RES_BaseIntegra
         return JSON.serialize(contractWrapperList, true);
     }
 
-    private static Boolean processResponse(
+    // Returns the SAP CONTRACT_NUMBER on success, null on error.
+    private static String processResponse(
         String responseBody,
         RES_ContractIntegrationService service,
         Id recordId,
         String objectType
     ) {
-        if (String.isBlank(responseBody)) {
-            return false;
+        RES_ContractCreationResponseWrapper parsed = RES_ContractCreationResponseWrapper.deserialize(responseBody);
+
+        if (parsed == null) {
+            return null;
         }
 
-        Map<String, Object> root = (Map<String, Object>) JSON.deserializeUntyped(responseBody);
-        if (root.containsKey('CONTRACT_CREATION')) {
-            Object innerPayload = root.get('CONTRACT_CREATION');
-            if (innerPayload instanceof Map<String, Object>) {
-                responseBody = JSON.serialize(innerPayload);
-            }
-        }
-
-        RES_ResponseWrapper responseWrapper = RES_ResponseWrapper.deserialize(responseBody);
-        String errorMessage = '';
-        Boolean isSuccess = false;
-
-        if (responseWrapper != null &&
-            responseWrapper.responseReturn != null &&
-            responseWrapper.responseReturn.item != null) {
-
-            for (RES_ResponseWrapper.ItemWrapper item : responseWrapper.responseReturn.item) {
-                if (item.type == 'E' && String.isNotBlank(item.message)) {
-                    errorMessage += item.message;
-                } else if (item.type == 'S') {
-                    isSuccess = true;
-                }
-            }
-        }
-
-        if (String.isNotBlank(errorMessage)) {
+        if (parsed.hasErrors()) {
             RES_IntegrationErrorLogger log = new RES_IntegrationErrorLogger(
                 'Sales_Contract_Creation',
                 '',
-                errorMessage,
+                parsed.getErrorMessage(),
                 JSON.serialize(service.getHeaders()),
                 objectType,
                 recordId,
@@ -195,9 +173,10 @@ public with sharing class RES_ContractIntegrationService extends RES_BaseIntegra
                 'Client Side'
             );
             RES_ResponseWrapper.logError(log);
+            return null;
         }
 
-        return isSuccess;
+        return parsed.isSuccess() ? parsed.contractNumber : null;
     }
 
     public static void syncContracts(List<Contract> contracts, String requestMethod) {
@@ -216,31 +195,24 @@ public with sharing class RES_ContractIntegrationService extends RES_BaseIntegra
                 ' | Body: ' + response.responseBody
             );
 
-            Boolean isSuccess = processResponse(
+            String contractNumber = processResponse(
                 response.responseBody,
                 service,
                 contracts[0].Id,
                 'Contract'
             );
 
-            if (isSuccess) {
+            if (String.isNotBlank(contractNumber)) {
                 Contract toUpdate = new Contract(
                     Id = contracts[0].Id,
+                    RES_External_ID__c = contractNumber,
                     RES_Last_Sync_DateTime__c = System.now()
                 );
                 Database.update(toUpdate, false, AccessLevel.SYSTEM_MODE);
             }
 
         } catch (Exception e) {
-            System.debug('Exception occurred while calling the Contract Integration Service: ' + e.getMessage());
-            RES_IntegrationErrorLogger log = new RES_IntegrationErrorLogger(
-                'Sales_Contract_Creation', '', e.getMessage(),
-                JSON.serialize(service.getHeaders()), 'Contract',
-                contracts[0].Id, String.valueOf(service.getRequestBody()),
-                service.getRequestMethod(), 'Sales_Contract_Creation',
-                service.getRetryCount(), 'Client Side'
-            );
-            RES_ResponseWrapper.logError(log);
+            System.debug('Exception occurred while calling the Contract Integration Service: ' + e.getMessage() + ' | Line: ' + e.getLineNumber() + ' | Stack: ' + e.getStackTraceString());
         }
     }
 }

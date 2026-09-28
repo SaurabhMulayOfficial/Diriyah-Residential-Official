@@ -68,12 +68,19 @@ private class RES_ContractIntegrationServiceTest {
 
     private static String successResponse() {
         return JSON.serialize(new Map<String, Object>{
-            'Return' => new Map<String, Object>{
-                'item' => new Map<String, Object>{
-                    'type'    => 'S',
-                    'Number'  => '001',
-                    'message' => 'Created successfully',
-                    'System'  => 'SAP'
+            'n0:ZRE_SALES_CONTRACT_CREATIONResponse' => new Map<String, Object>{
+                'ES_CONTRACT_CREATED' => new Map<String, Object>{
+                    'COMP_CODE'       => '1000',
+                    'CONTRACT_NUMBER' => '0000001200407',
+                    'CONTRACT_TYPE'   => 'Y002',
+                    'C4CREF'          => 'SF5531'
+                },
+                'ET_RETURN'  => '',
+                'IT_PARTNERS' => new Map<String, Object>{
+                    'item' => new Map<String, Object>{
+                        'ROLE'    => 'ZTR602',
+                        'PARTNER' => '20001621'
+                    }
                 }
             }
         });
@@ -81,12 +88,27 @@ private class RES_ContractIntegrationServiceTest {
 
     private static String errorResponse() {
         return JSON.serialize(new Map<String, Object>{
-            'Return' => new Map<String, Object>{
-                'item' => new Map<String, Object>{
-                    'type'    => 'E',
-                    'Number'  => '002',
-                    'message' => 'Validation failed',
-                    'System'  => 'SAP'
+            'n0:ZRE_SALES_CONTRACT_CREATIONResponse' => new Map<String, Object>{
+                'ES_CONTRACT_CREATED' => new Map<String, Object>{
+                    'COMP_CODE'       => '',
+                    'CONTRACT_NUMBER' => '',
+                    'CONTRACT_TYPE'   => '',
+                    'C4CREF'          => ''
+                },
+                'ET_RETURN' => new Map<String, Object>{
+                    'item' => new Map<String, Object>{
+                        'TYPE'      => 'E',
+                        'ID'        => 'RECAAP',
+                        'NUMBER'    => '061',
+                        'MESSAGE'   => 'Rental Object 1000/200/20001621 does not exist',
+                        'System'    => 'S4DCLNT250'
+                    }
+                },
+                'IT_PARTNERS' => new Map<String, Object>{
+                    'item' => new Map<String, Object>{
+                        'ROLE'    => 'ZTR602',
+                        'PARTNER' => 'EXTERNL_ACCOUNT'
+                    }
                 }
             }
         });
@@ -150,7 +172,16 @@ private class RES_ContractIntegrationServiceTest {
 
     @isTest
     static void deserializeSuccessResponseMapsTypeS() {
-        String body = successResponse();
+        String body = JSON.serialize(new Map<String, Object>{
+            'Return' => new Map<String, Object>{
+                'item' => new Map<String, Object>{
+                    'type'    => 'S',
+                    'Number'  => '001',
+                    'message' => 'Created successfully',
+                    'System'  => 'SAP'
+                }
+            }
+        });
         Test.startTest();
         RES_ResponseWrapper wrapper = RES_ResponseWrapper.deserialize(body);
         Test.stopTest();
@@ -167,7 +198,16 @@ private class RES_ContractIntegrationServiceTest {
 
     @isTest
     static void deserializeErrorResponseMapsTypeE() {
-        String body = errorResponse();
+        String body = JSON.serialize(new Map<String, Object>{
+            'ET_RETURN' => new Map<String, Object>{
+                'item' => new Map<String, Object>{
+                    'TYPE'    => 'E',
+                    'Number'  => '002',
+                    'MESSAGE' => 'Validation failed',
+                    'System'  => 'SAP'
+                }
+            }
+        });
         Test.startTest();
         RES_ResponseWrapper wrapper = RES_ResponseWrapper.deserialize(body);
         Test.stopTest();
@@ -412,8 +452,9 @@ private class RES_ContractIntegrationServiceTest {
         RES_ContractIntegrationService.syncContracts(new List<Contract>{ c }, 'GET');
         Test.stopTest();
 
-        Contract updated = [SELECT RES_Last_Sync_DateTime__c FROM Contract WHERE Id = :c.Id];
+        Contract updated = [SELECT RES_Last_Sync_DateTime__c, RES_External_ID__c FROM Contract WHERE Id = :c.Id];
         Assert.isNotNull(updated.RES_Last_Sync_DateTime__c, 'Last sync timestamp should be set after a successful sync.');
+        Assert.areEqual('0000001200407', updated.RES_External_ID__c, 'External ID should be populated from CONTRACT_NUMBER in the SAP response.');
     }
 
     // ─────────────────────────────────────────────────────────────────────────
