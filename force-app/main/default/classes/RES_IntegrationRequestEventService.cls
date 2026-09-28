@@ -11,6 +11,31 @@
 
 public with sharing class RES_IntegrationRequestEventService {
 
+    /** Seam that lets tests swap out Database.executeBatch without changing production behaviour. */
+    @TestVisible
+    private static IBatchSubmitter batchSubmitter = new DefaultBatchSubmitter();
+
+    @TestVisible
+    interface IBatchSubmitter {
+        Id submit(Database.Batchable<SObject> batchable, Integer batchSize);
+    }
+
+    private class DefaultBatchSubmitter implements IBatchSubmitter {
+        public Id submit(Database.Batchable<SObject> batchable, Integer batchSize) {
+            return Database.executeBatch(batchable, batchSize);
+        }
+    }
+
+    /** Test-only submitter that counts calls without invoking Database.executeBatch. */
+    @TestVisible
+    private class CountingBatchSubmitter implements IBatchSubmitter {
+        public Integer callCount = 0;
+        public Id submit(Database.Batchable<SObject> batchable, Integer batchSize) {
+            callCount++;
+            return null;
+        }
+    }
+
     private static final String PRODUCT_CATEGORY_INTEGRATION = 'ProductCategory_Sync';
     private static final String MEASUREMENT_INTEGRATION = 'Measurement_Sync';
     private static final String MEASUREMENT_CATALOG_INTEGRATION = 'Measurement_Sync_Catalog';
@@ -379,17 +404,18 @@ public with sharing class RES_IntegrationRequestEventService {
     public static void enqueueService(String serviceName, List<sObject> records, String triggeringContext, String requestMethod){
         if(String.isNotBlank(serviceName) && !records.isEmpty() && String.isNotBlank(triggeringContext) &&  String.isNotBlank(requestMethod)){
             try{
-                Id jobId = System.enqueueJob(
-                    new RES_IntegrationQueueable(
+                Id jobId = batchSubmitter.submit(
+                    new RES_IntegrationAPIRouterBatch(
                         records,
                         serviceName,
                         requestMethod,
                         triggeringContext
-                    )
+                    ),
+                    1
                 );
-                System.debug('Job Sync ID ' + jobId);
+                System.debug('Batch Job ID ' + jobId);
             }catch(Exception e){
-                System.debug('Failed to Enqueue Job ' + e.getMessage());
+                System.debug('Failed to Execute Batch ' + e.getMessage());
             }
         }
     }
