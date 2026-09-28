@@ -6,7 +6,7 @@ public with sharing class RES_ContractTriggerHandler extends RES_BaseTriggerHand
     }
 
     protected override void afterUpdate() {
-        handleAfterUpdate((List<Contract>) Trigger.new);
+        handleAfterUpdate((List<Contract>) Trigger.new, (Map<Id, Contract>) Trigger.oldMap);
     }
 
     @TestVisible
@@ -15,8 +15,8 @@ public with sharing class RES_ContractTriggerHandler extends RES_BaseTriggerHand
     }
 
     @TestVisible
-    private static void handleAfterUpdate(List<Contract> newContracts) {
-     RES_ContractServices.syncContract((List<Contract>) Trigger.new, (Map<Id, Contract>) Trigger.oldMap);
+    private static void handleAfterUpdate(List<Contract> newContracts, Map<Id, Contract> oldMap) {
+        RES_ContractServices.syncContract(newContracts, oldMap);
     }
     
 }

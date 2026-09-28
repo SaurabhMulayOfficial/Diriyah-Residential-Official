@@ -30,7 +30,10 @@ private class RES_ContractTriggerHandlerTest {
         Boolean threw = false;
         try {
             Test.startTest();
-            RES_ContractTriggerHandler.handleAfterUpdate(new List<Contract>());
+            RES_ContractTriggerHandler.handleAfterUpdate(
+                new List<Contract>(),
+                new Map<Id, Contract>()
+            );
             Test.stopTest();
         } catch (Exception e) {
             threw = true;

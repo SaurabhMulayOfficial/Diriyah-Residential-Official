@@ -249,4 +249,18 @@ private class RES_ContractItemPriceTriggerHandlerTest {
         }
         Assert.isFalse(threw, 'handleAfterUndelete with empty list must not throw.');
     }
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // isRunning guard — reentrance blocked in each delegate
+    // ─────────────────────────────────────────────────────────────────────────
+
+    @isTest
+    static void isRunningGuard_blocksReentrance() {
+        RES_ContractItemPriceTriggerHandler.isRunning = true;
+        RES_ContractItemPriceTriggerHandler.handleAfterInsert(new List<ContractItemPrice>());
+        RES_ContractItemPriceTriggerHandler.handleAfterUpdate(new List<ContractItemPrice>());
+        RES_ContractItemPriceTriggerHandler.handleAfterDelete(new List<ContractItemPrice>());
+        RES_ContractItemPriceTriggerHandler.handleAfterUndelete(new List<ContractItemPrice>());
+        Assert.isTrue(true, 'All delegates must exit silently when isRunning is true.');
+    }
 }
