@@ -80,14 +80,14 @@ public with sharing class RES_ContractIntegrationService extends RES_BaseIntegra
             }
         }
 
-        List<RES_ContractCreationWrapper.ContractCreationPayload> contractWrapperList = new List<RES_ContractCreationWrapper.ContractCreationPayload>();
+        List<RES_ContractCreationWrapper> contractWrapperList = new List<RES_ContractCreationWrapper>();
 
         for(Contract c: contracts){
-            RES_ContractCreationWrapper.ContractCreationPayload payload = new  RES_ContractCreationWrapper.ContractCreationPayload();
+            RES_ContractCreationWrapper.ContractCreationPayload payload = new RES_ContractCreationWrapper.ContractCreationPayload();
             List<RES_ContractCreationWrapper.PartnerWrapper> partner = new List<RES_ContractCreationWrapper.PartnerWrapper>();
             RES_ContractCreationWrapper.PartnerWrapper p1 = new  RES_ContractCreationWrapper.PartnerWrapper();
             p1.ROLE = c.Account.RES_BP_Role__c;
-            p1.PARTNER = '20001621';
+            p1.PARTNER = c.Account.RES_External_Key__c;
 
             partner.add(
                 p1
@@ -97,7 +97,7 @@ public with sharing class RES_ContractIntegrationService extends RES_BaseIntegra
                 payload.IT_PARTNERS = partner;
             }
 
-            payload.IV_C4CREF = c.Id;
+            payload.IV_C4CREF = String.valueOf(c.Id).right(15);
             payload.IV_C4CUSR = c.Owner.Name;
             payload.IV_CN_STDATE = String.valueOf(c.StartDate);
             payload.IV_CN_ENDDATE = String.valueOf(c.EndDate);
@@ -129,7 +129,9 @@ public with sharing class RES_ContractIntegrationService extends RES_BaseIntegra
             payload.IV_CONTRACT_CONCLUSION_DATE = String.valueOf(c.CompanySignedDate);
             payload.IV_RECNTXTOLD = c.DIR_Old_Contract__c;    
 
-            contractWrapperList.add(payload);
+            RES_ContractCreationWrapper wrapper = new RES_ContractCreationWrapper();
+            wrapper.CONTRACT_CREATION = payload;
+            contractWrapperList.add(wrapper);
         }
 
         if(contractWrapperList.isEmpty()){
@@ -139,7 +141,7 @@ public with sharing class RES_ContractIntegrationService extends RES_BaseIntegra
         if(contractWrapperList.size() == 1){
             return JSON.serialize(contractWrapperList[0], true);
         }
-    
+
         return JSON.serialize(contractWrapperList, true);
     }
 
@@ -151,6 +153,14 @@ public with sharing class RES_ContractIntegrationService extends RES_BaseIntegra
     ) {
         if (String.isBlank(responseBody)) {
             return false;
+        }
+
+        Map<String, Object> root = (Map<String, Object>) JSON.deserializeUntyped(responseBody);
+        if (root.containsKey('CONTRACT_CREATION')) {
+            Object innerPayload = root.get('CONTRACT_CREATION');
+            if (innerPayload instanceof Map<String, Object>) {
+                responseBody = JSON.serialize(innerPayload);
+            }
         }
 
         RES_ResponseWrapper responseWrapper = RES_ResponseWrapper.deserialize(responseBody);
@@ -223,6 +233,14 @@ public with sharing class RES_ContractIntegrationService extends RES_BaseIntegra
 
         } catch (Exception e) {
             System.debug('Exception occurred while calling the Contract Integration Service: ' + e.getMessage());
+            RES_IntegrationErrorLogger log = new RES_IntegrationErrorLogger(
+                'Sales_Contract_Creation', '', e.getMessage(),
+                JSON.serialize(service.getHeaders()), 'Contract',
+                contracts[0].Id, String.valueOf(service.getRequestBody()),
+                service.getRequestMethod(), 'Sales_Contract_Creation',
+                service.getRetryCount(), 'Client Side'
+            );
+            RES_ResponseWrapper.logError(log);
         }
     }
 }

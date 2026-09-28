@@ -59,7 +59,8 @@ private class RES_ContractIntegrationServiceTest {
                    RES_First_Residential_Buyer__c,
                    CompanySignedDate, DIR_Old_Contract__c,
                    RES_Company_Code__c,
-                   Account.RES_BP_Role__c
+                   Account.RES_BP_Role__c,
+                   Account.RES_External_Key__c
             FROM Contract
             WHERE Id = :c.Id
         ];
