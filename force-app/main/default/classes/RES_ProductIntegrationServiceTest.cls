@@ -18,7 +18,7 @@ private class RES_ProductIntegrationServiceTest {
     private static final Set<String> MIXED_FIELDS = new Set<String>{
         'Family', 'RES_Business_Entity__c', 'RES_Building__c',
         'AvailabilityDate', 'DiscontinuedDate', 'RES_Floor__c',
-        'RES_Unit_Status__c', 'Description', 'RES_Profit_Center__c',
+        'RES_Unit_Status__c', 'ProductCode', 'RES_Profit_Center__c',
         'RES_Orientation__c', 'RES_Storeroom__c', 'RES_Elevated__c',
         'RES_Unit_Handover_Date__c', 'RES_Type__c', 'StockKeepingUnit'
     };
@@ -28,8 +28,8 @@ private class RES_ProductIntegrationServiceTest {
             Name               = 'TEST-UNIT',
             IsActive           = true,
             StockKeepingUnit   = 'SKU-001',
+            ProductCode        = 'PC-TEST-001',
             Family             = '1004',
-            Description        = 'Test Desc',
             RES_Floor__c       = '001',
             RES_Area_Type__c   = 'Z004',
             RES_Area__c        = 100,
@@ -62,6 +62,30 @@ private class RES_ProductIntegrationServiceTest {
         return p;
     }
 
+    private static Map<String, String> makeInventoryTypeMap() {
+        return new Map<String, String>{ 'RES_Residential_Sales' => 'Y01', 'DEFAULT' => 'Z01' };
+    }
+
+    private static Map<String, String> makeFixtureBoolTrueMap() {
+        return new Map<String, String>{
+            'RES_Storeroom__c' => 'Z005', 'RES_Elevated__c' => 'Z007', 'RES_Terrace__c' => 'Z009',
+            'RES_Roof_Terrace__c' => 'Z011', 'RES_Entry_Courtyard__c' => 'Z013', 'RES_Garage__c' => 'Z015',
+            'RES_Pool__c' => 'Z017', 'RES_Drivers_Room__c' => 'Z022', 'RES_Maids_Room__c' => 'Z024',
+            'RES_Wadi_View__c' => 'Z026', 'RES_Golf_View__c' => 'Z028', 'RES_Panoramic_View__c' => 'Z030',
+            'RES_Private__c' => 'Z032', 'RES_Furnished__c' => 'Z042'
+        };
+    }
+
+    private static Map<String, String> makeFixtureBoolFalseMap() {
+        return new Map<String, String>{
+            'RES_Storeroom__c' => 'Z006', 'RES_Elevated__c' => 'Z008', 'RES_Terrace__c' => 'Z010',
+            'RES_Roof_Terrace__c' => 'Z012', 'RES_Entry_Courtyard__c' => 'Z014', 'RES_Garage__c' => 'Z016',
+            'RES_Pool__c' => 'Z018', 'RES_Drivers_Room__c' => 'Z023', 'RES_Maids_Room__c' => 'Z025',
+            'RES_Wadi_View__c' => 'Z027', 'RES_Golf_View__c' => 'Z029', 'RES_Panoramic_View__c' => 'Z031',
+            'RES_Private__c' => 'Z033', 'RES_Furnished__c' => 'Z043'
+        };
+    }
+
     private static Boolean canConstruct() {
         return !new RES_APIConfigurationsDAO().getAPIConfiguration('GET', 'Unit_API').isEmpty();
     }
@@ -71,7 +95,7 @@ private class RES_ProductIntegrationServiceTest {
         Product2 p = makeProduct();
 
         List<Map<String, Object>> result =
-            RES_ProductIntegrationService.buildCustomFields(p, new Set<String>{ 'StockKeepingUnit' });
+            RES_ProductIntegrationService.buildCustomFields(p, new Set<String>{ 'StockKeepingUnit' }, makeInventoryTypeMap());
 
         Map<String, String> byName = toNameValueMap(result);
         Assert.isTrue(byName.containsKey('StockKeepingUnit'), 'StockKeepingUnit must be in CustomFields');
@@ -83,7 +107,7 @@ private class RES_ProductIntegrationServiceTest {
         Product2 p = makeProduct();
 
         List<Map<String, Object>> result =
-            RES_ProductIntegrationService.buildCustomFields(p, CUSTOM_ONLY_FIELDS);
+            RES_ProductIntegrationService.buildCustomFields(p, CUSTOM_ONLY_FIELDS, makeInventoryTypeMap());
 
         Map<String, String> byName = toNameValueMap(result);
         Assert.areEqual('SKU-001',  byName.get('StockKeepingUnit'),       'StockKeepingUnit');
@@ -100,7 +124,7 @@ private class RES_ProductIntegrationServiceTest {
 
         List<Map<String, Object>> result =
             RES_ProductIntegrationService.buildCustomFields(
-                p, new Set<String>{ 'StockKeepingUnit', 'RES_Type__c', 'RES_Style__c' }
+                p, new Set<String>{ 'StockKeepingUnit', 'RES_Type__c', 'RES_Style__c' }, makeInventoryTypeMap()
             );
 
         Map<String, String> byName = toNameValueMap(result);
@@ -115,7 +139,7 @@ private class RES_ProductIntegrationServiceTest {
 
         List<Map<String, Object>> result =
             RES_ProductIntegrationService.buildCustomFields(
-                p, new Set<String>{ 'RES_Type__c', 'RES_Style__c', 'RES_Building_Number__c' }
+                p, new Set<String>{ 'RES_Type__c', 'RES_Style__c', 'RES_Building_Number__c' }, makeInventoryTypeMap()
             );
 
         Assert.isTrue(result.isEmpty(),
@@ -127,7 +151,7 @@ private class RES_ProductIntegrationServiceTest {
         Product2 p = makeProduct();
 
         List<Map<String, Object>> result =
-            RES_ProductIntegrationService.buildCustomFields(p, MIXED_FIELDS);
+            RES_ProductIntegrationService.buildCustomFields(p, MIXED_FIELDS, makeInventoryTypeMap());
 
         Set<String> names = new Set<String>();
         for (Map<String, Object> e : result) names.add((String) e.get('name'));
@@ -144,7 +168,7 @@ private class RES_ProductIntegrationServiceTest {
         Product2 p = makeProduct();
 
         List<Map<String, Object>> result =
-            RES_ProductIntegrationService.buildCustomFields(p, MIXED_FIELDS);
+            RES_ProductIntegrationService.buildCustomFields(p, MIXED_FIELDS, makeInventoryTypeMap());
 
         Set<String> names = new Set<String>();
         for (Map<String, Object> e : result) names.add((String) e.get('name'));
@@ -162,7 +186,7 @@ private class RES_ProductIntegrationServiceTest {
 
         List<Map<String, Object>> result =
             RES_ProductIntegrationService.buildCustomFields(
-                p, new Set<String>{ 'RES_Unit_Handover_Date__c' }
+                p, new Set<String>{ 'RES_Unit_Handover_Date__c' }, makeInventoryTypeMap()
             );
 
         Map<String, String> byName = toNameValueMap(result);
@@ -176,7 +200,7 @@ private class RES_ProductIntegrationServiceTest {
 
         List<Map<String, Object>> result =
             RES_ProductIntegrationService.buildCustomFields(
-                p, new Set<String>{ 'RES_Style__c', 'StockKeepingUnit' }
+                p, new Set<String>{ 'RES_Style__c', 'StockKeepingUnit' }, makeInventoryTypeMap()
             );
 
         Set<String> names = new Set<String>();
@@ -298,7 +322,7 @@ private class RES_ProductIntegrationServiceTest {
             IsActive           = true,
             StockKeepingUnit   = 'SKU-HRB-I',
             Family             = '1004',
-            Description        = 'Insert Test',
+            ProductCode        = 'PC-HRB-I',
             RES_Floor__c       = '001',
             RES_Area_Type__c   = 'Z004',
             RES_Area__c        = 120,
@@ -390,7 +414,7 @@ private class RES_ProductIntegrationServiceTest {
         Product2 p = new Product2(RES_Storeroom__c = true);
 
         List<Map<String, Object>> fixtures =
-            RES_ProductIntegrationService.buildFixturesFittings(p, 'I');
+            RES_ProductIntegrationService.buildFixturesFittings(p, 'I', makeFixtureBoolTrueMap(), makeFixtureBoolFalseMap());
 
         Boolean foundZ005 = false;
         for (Map<String, Object> f : fixtures) {
@@ -407,7 +431,7 @@ private class RES_ProductIntegrationServiceTest {
         Product2 p = new Product2(RES_Storeroom__c = false);
 
         List<Map<String, Object>> fixtures =
-            RES_ProductIntegrationService.buildFixturesFittings(p, 'U');
+            RES_ProductIntegrationService.buildFixturesFittings(p, 'U', makeFixtureBoolTrueMap(), makeFixtureBoolFalseMap());
 
         Boolean foundZ006 = false;
         for (Map<String, Object> f : fixtures) {
@@ -421,10 +445,10 @@ private class RES_ProductIntegrationServiceTest {
 
     @isTest
     static void testBuildFixturesFittingsOrientationNorth() {
-        Product2 p = new Product2(RES_Orientation__c = 'North');
+        Product2 p = new Product2(RES_Orientation__c = 'Z001');
 
         List<Map<String, Object>> fixtures =
-            RES_ProductIntegrationService.buildFixturesFittings(p, 'I');
+            RES_ProductIntegrationService.buildFixturesFittings(p, 'I', makeFixtureBoolTrueMap(), makeFixtureBoolFalseMap());
 
         Boolean foundZ001 = false;
         for (Map<String, Object> f : fixtures) {
@@ -437,10 +461,10 @@ private class RES_ProductIntegrationServiceTest {
 
     @isTest
     static void testBuildFixturesFittingsIdFinishContemporary() {
-        Product2 p = new Product2(RES_ID_Finish__c = 'Contemporary');
+        Product2 p = new Product2(RES_ID_Finish__c = 'Z021');
 
         List<Map<String, Object>> fixtures =
-            RES_ProductIntegrationService.buildFixturesFittings(p, 'I');
+            RES_ProductIntegrationService.buildFixturesFittings(p, 'I', makeFixtureBoolTrueMap(), makeFixtureBoolFalseMap());
 
         Boolean foundZ021 = false;
         for (Map<String, Object> f : fixtures) {
@@ -621,7 +645,7 @@ private class RES_ProductIntegrationServiceTest {
 
         Test.startTest();
         RES_ProductIntegrationService.syncProducts(
-            new List<Product2>{ [SELECT Id, Name, Family, Description,
+            new List<Product2>{ [SELECT Id, Name, Family, ProductCode,
                                   RES_Floor__c, RES_Area_Type__c, RES_Area__c,
                                   RES_Unit_Status__c, RES_Type__c, StockKeepingUnit,
                                   RES_Product_External_ID__c, RES_Last_Sync_DateTime__c,
@@ -679,7 +703,7 @@ private class RES_ProductIntegrationServiceTest {
 
         Test.startTest();
         RES_ProductIntegrationService.syncProducts(
-            new List<Product2>{ [SELECT Id, Name, Family, Description,
+            new List<Product2>{ [SELECT Id, Name, Family, ProductCode,
                                   RES_Floor__c, RES_Area_Type__c, RES_Area__c,
                                   RES_Unit_Status__c, RES_Type__c, StockKeepingUnit,
                                   RES_Product_External_ID__c, RES_Last_Sync_DateTime__c,
@@ -735,7 +759,7 @@ private class RES_ProductIntegrationServiceTest {
         Test.startTest();
         try {
             RES_ProductIntegrationService.syncProducts(
-                new List<Product2>{ [SELECT Id, Name, Family, Description,
+                new List<Product2>{ [SELECT Id, Name, Family, ProductCode,
                                       RES_Floor__c, RES_Area_Type__c, RES_Area__c,
                                       RES_Unit_Status__c, RES_Type__c, StockKeepingUnit,
                                       RES_Product_External_ID__c, RES_Last_Sync_DateTime__c,

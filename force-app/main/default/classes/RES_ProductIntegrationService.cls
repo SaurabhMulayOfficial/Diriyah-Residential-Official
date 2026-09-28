@@ -10,7 +10,7 @@ public without sharing class RES_ProductIntegrationService extends RES_BaseInteg
         'Family', 'RES_Business_Entity__c', 'RES_Building__c',
         'AvailabilityDate', 'DiscontinuedDate', 'RES_Floor__c',
         'RES_Area_Type__c', 'RES_Area__c', 'RES_Unit_Status__c',
-        'Description', 'RES_Profit_Center__c',
+        'ProductCode', 'RES_Profit_Center__c',
         'RES_Type__c'
     };
 
@@ -132,22 +132,25 @@ public without sharing class RES_ProductIntegrationService extends RES_BaseInteg
             }
         }
 
-        Map<String, String> unitStatusMap = new Map<String, String>{
-            'Available'                => 'Z10',
-            'Sold'                     => 'Z11',
-            'Soft Hold'                => 'Z03',
-            'Hard Block'               => 'Z06',
-            'Draft'                    => 'Z01',
-            'Pending DevCo Approval'   => 'Z01',
-            'Pending Finance Approval' => 'Z01',
-            'Pending CSO Approval'     => 'Z01',
-            'Rejected'                 => 'Z05'
-        };
+        Map<String, String> unitStatusMap      = new Map<String, String>();
+        Map<String, String> uomCodeMap         = new Map<String, String>();
+        Map<String, String> inventoryTypeMap   = new Map<String, String>();
+        Map<String, String> fixtureBoolTrueMap  = new Map<String, String>();
+        Map<String, String> fixtureBoolFalseMap = new Map<String, String>();
 
-        Map<String, String> uomCodeMap = new Map<String, String>{
-            'Sqr Mtr' => 'M2',
-            'Pcs'     => 'PC'
-        };
+        for (RES_SAP_Value_Mapping__mdt vm : new RES_SAPValueMappingDAOLayer().getAllActiveMappings()) {
+            String cat = vm.RES_Category__c;
+            if (cat == 'Unit_Status') {
+                unitStatusMap.put(vm.RES_SF_Value__c, vm.RES_SAP_Value__c);
+            } else if (cat == 'UOM') {
+                uomCodeMap.put(vm.RES_SF_Value__c, vm.RES_SAP_Value__c);
+            } else if (cat == 'Inventory_Type') {
+                inventoryTypeMap.put(vm.RES_SF_Value__c, vm.RES_SAP_Value__c);
+            } else if (cat == 'Fixture_Boolean') {
+                fixtureBoolTrueMap.put(vm.RES_SF_Field__c, vm.RES_SAP_Value__c);
+                fixtureBoolFalseMap.put(vm.RES_SF_Field__c, vm.RES_SAP_False_Value__c);
+            }
+        }
 
         includedMeasurementIds.clear();
         List<Map<String, Object>> payloads = new List<Map<String, Object>>();
@@ -185,7 +188,7 @@ public without sharing class RES_ProductIntegrationService extends RES_BaseInteg
                 : p.RES_Unit_Status__c;
             payload.put('RES_Unit_Status',     sapStatus);
             payload.put('RES_Profit_Center',   p.RES_Profit_Center__c);
-            payload.put('Description',         p.Description);
+            payload.put('Description',         p.ProductCode);
             payload.put('Change_Indicator',    effectiveContext);
             // INSERT: empty string so SAP registers no existing rental object; UPDATE: last segment of external ID
             String rentalObject = '';
@@ -196,7 +199,7 @@ public without sharing class RES_ProductIntegrationService extends RES_BaseInteg
             }
             payload.put('RES_Rental_Object', rentalObject);
 
-            List<Map<String, Object>> customFields = buildCustomFields(p, unitSyncFields);
+            List<Map<String, Object>> customFields = buildCustomFields(p, unitSyncFields, inventoryTypeMap);
             if (customFields.isEmpty()) {
                 String cfErr = 'Unit Sync validation failed for Product ' + p.Id
                     + ': RES_CustomFields must contain at least one populated field.'
@@ -269,7 +272,7 @@ public without sharing class RES_ProductIntegrationService extends RES_BaseInteg
 
             // Fixtures sent on INSERT only; SAP rejects re-send on UPDATE (duplicate-key error)
             if (effectiveContext == 'I') {
-                List<Map<String, Object>> fixtures = buildFixturesFittings(p, effectiveContext);
+                List<Map<String, Object>> fixtures = buildFixturesFittings(p, effectiveContext, fixtureBoolTrueMap, fixtureBoolFalseMap);
                 if (!fixtures.isEmpty()) {
                     payload.put('RES_Fixtures_Fittings', fixtures);
                 }
@@ -369,7 +372,7 @@ public without sharing class RES_ProductIntegrationService extends RES_BaseInteg
      *              Excludes ROOT_FIELD_SF_NAMES and FIXTURES_SF_NAMES; appends address and RES_Type.
      */
     @TestVisible
-    private static List<Map<String, Object>> buildCustomFields(Product2 p, Set<String> mdtFields) {
+    private static List<Map<String, Object>> buildCustomFields(Product2 p, Set<String> mdtFields, Map<String, String> inventoryTypeMap) {
         List<Map<String, Object>> result = new List<Map<String, Object>>();
         Set<String> addedSapNames = new Set<String>();
 
@@ -397,7 +400,10 @@ public without sharing class RES_ProductIntegrationService extends RES_BaseInteg
 
         // RES_Type__c holds SF-internal type values; SAP expects Y01/Z01 derived from RecordType
         if (!addedSapNames.contains('RES_Type') && p.RecordType != null && String.isNotBlank(p.RecordType.DeveloperName)) {
-            String invType = p.RecordType.DeveloperName == 'RES_Residential_Sales' ? 'Y01' : 'Z01';
+            String rtName = p.RecordType.DeveloperName;
+            String invType = inventoryTypeMap.containsKey(rtName)
+                ? inventoryTypeMap.get(rtName)
+                : (inventoryTypeMap.containsKey('DEFAULT') ? inventoryTypeMap.get('DEFAULT') : 'Z01');
             result.add(new Map<String, Object>{ 'name' => 'RES_Type', 'value' => invType });
             addedSapNames.add('RES_Type');
         }
@@ -419,31 +425,14 @@ public without sharing class RES_ProductIntegrationService extends RES_BaseInteg
         return String.valueOf(rawVal);
     }
 
-    private static final Map<String, String> COUNTRY_CODE_NAMES = new Map<String, String>{
-        'SA' => 'Saudi Arabia'
-    };
-    private static final Map<String, String> SA_STATE_CODE_NAMES = new Map<String, String>{
-        '01' => 'Riyadh Region',    '02' => 'Makkah Region',           '03' => 'Madinah Region',
-        '04' => 'Eastern Region',   '05' => 'Qassim Region',           '06' => 'Hail Region',
-        '07' => 'Tabuk Region',     '08' => 'Northern Borders Region', '09' => 'Jizan Region',
-        '10' => 'Najran Region',    '11' => 'Al Bahah Region',         '12' => 'Al Jawf Region',
-        '13' => 'Asir Region'
-    };
-
     /** @description Serializes compound address fields to a JSON string for the RES_Product_Address custom field. */
     private static String buildAddressJson(Product2 p) {
         Map<String, String> addr = new Map<String, String>();
-        if (String.isNotBlank(p.RES_Product_Address__Street__s))     addr.put('street',     p.RES_Product_Address__Street__s);
-        if (String.isNotBlank(p.RES_Product_Address__City__s))       addr.put('city',       p.RES_Product_Address__City__s);
-        if (String.isNotBlank(p.RES_Product_Address__StateCode__s)) {
-            String stateCode = p.RES_Product_Address__StateCode__s;
-            addr.put('state', SA_STATE_CODE_NAMES.containsKey(stateCode) ? SA_STATE_CODE_NAMES.get(stateCode) : stateCode);
-        }
-        if (String.isNotBlank(p.RES_Product_Address__PostalCode__s)) addr.put('postalCode', p.RES_Product_Address__PostalCode__s);
-        if (String.isNotBlank(p.RES_Product_Address__CountryCode__s)) {
-            String countryCode = p.RES_Product_Address__CountryCode__s;
-            addr.put('country', COUNTRY_CODE_NAMES.containsKey(countryCode) ? COUNTRY_CODE_NAMES.get(countryCode) : countryCode);
-        }
+        if (String.isNotBlank(p.RES_Product_Address__Street__s))     addr.put('street',      p.RES_Product_Address__Street__s);
+        if (String.isNotBlank(p.RES_Product_Address__City__s))       addr.put('city',        p.RES_Product_Address__City__s);
+        if (String.isNotBlank(p.RES_Product_Address__StateCode__s))  addr.put('state',       p.RES_Product_Address__StateCode__s);
+        if (String.isNotBlank(p.RES_Product_Address__PostalCode__s)) addr.put('postalCode',  p.RES_Product_Address__PostalCode__s);
+        if (String.isNotBlank(p.RES_Product_Address__CountryCode__s)) addr.put('country',    p.RES_Product_Address__CountryCode__s);
         return addr.isEmpty() ? null : JSON.serialize(addr);
     }
 
@@ -451,48 +440,40 @@ public without sharing class RES_ProductIntegrationService extends RES_BaseInteg
      * @description Builds the RES_Fixtures_Fittings array mapping Product2 boolean/picklist fields to SAP Z-codes.
      */
     @TestVisible
-    private static List<Map<String, Object>> buildFixturesFittings(Product2 p, String triggerContext) {
+    private static List<Map<String, Object>> buildFixturesFittings(
+        Product2 p, String triggerContext,
+        Map<String, String> boolTrueCodes,
+        Map<String, String> boolFalseCodes
+    ) {
         List<Map<String, Object>> result = new List<Map<String, Object>>();
 
-        Map<String, String> orientationCodes = new Map<String, String>{
-            'North' => 'Z001', 'East' => 'Z002', 'South' => 'Z003', 'West' => 'Z004'
-        };
-        if (String.isNotBlank(p.RES_Orientation__c) && orientationCodes.containsKey(p.RES_Orientation__c)) {
-            addChar(result, orientationCodes.get(p.RES_Orientation__c), triggerContext);
-        }
-
-        addBool(result, p.RES_Storeroom__c,      'Z005', 'Z006', triggerContext);
-        addBool(result, p.RES_Elevated__c,        'Z007', 'Z008', triggerContext);
-        addBool(result, p.RES_Terrace__c,         'Z009', 'Z010', triggerContext);
-        addBool(result, p.RES_Roof_Terrace__c,    'Z011', 'Z012', triggerContext);
-        addBool(result, p.RES_Entry_Courtyard__c, 'Z013', 'Z014', triggerContext);
-        addBool(result, p.RES_Garage__c,          'Z015', 'Z016', triggerContext);
-        addBool(result, p.RES_Pool__c,            'Z017', 'Z018', triggerContext);
-
-        Map<String, String> idFinishCodes = new Map<String, String>{
-            'Najdi' => 'Z019', 'Light Najdi' => 'Z020', 'Contemporary' => 'Z021'
-        };
-        if (String.isNotBlank(p.RES_ID_Finish__c) && idFinishCodes.containsKey(p.RES_ID_Finish__c)) {
-            addChar(result, idFinishCodes.get(p.RES_ID_Finish__c), triggerContext);
-        }
-
-        addBool(result, p.RES_Drivers_Room__c,   'Z022', 'Z023', triggerContext);
-        addBool(result, p.RES_Maids_Room__c,     'Z024', 'Z025', triggerContext);
-        addBool(result, p.RES_Wadi_View__c,      'Z026', 'Z027', triggerContext);
-        addBool(result, p.RES_Golf_View__c,      'Z028', 'Z029', triggerContext);
-        addBool(result, p.RES_Panoramic_View__c, 'Z030', 'Z031', triggerContext);
-        addBool(result, p.RES_Private__c,        'Z032', 'Z033', triggerContext);
-
-        Map<String, String> conditionCodes = new Map<String, String>{
-            'Soft Finish' => 'Z037', 'Shell' => 'Z038', 'Core' => 'Z039'
-        };
-        if (String.isNotBlank(p.RES_Condition__c) && conditionCodes.containsKey(p.RES_Condition__c)) {
-            addChar(result, conditionCodes.get(p.RES_Condition__c), triggerContext);
-        }
-
-        addBool(result, p.RES_Furnished__c, 'Z042', 'Z043', triggerContext);
+        // RES_Orientation__c, RES_ID_Finish__c, RES_Condition__c store Z-codes as their API value directly
+        if (String.isNotBlank(p.RES_Orientation__c)) addChar(result, p.RES_Orientation__c, triggerContext);
+        addBoolFixture(result, p.RES_Storeroom__c,        'RES_Storeroom__c',      boolTrueCodes, boolFalseCodes, triggerContext);
+        addBoolFixture(result, p.RES_Elevated__c,         'RES_Elevated__c',       boolTrueCodes, boolFalseCodes, triggerContext);
+        addBoolFixture(result, p.RES_Terrace__c,          'RES_Terrace__c',        boolTrueCodes, boolFalseCodes, triggerContext);
+        addBoolFixture(result, p.RES_Roof_Terrace__c,     'RES_Roof_Terrace__c',   boolTrueCodes, boolFalseCodes, triggerContext);
+        addBoolFixture(result, p.RES_Entry_Courtyard__c,  'RES_Entry_Courtyard__c',boolTrueCodes, boolFalseCodes, triggerContext);
+        addBoolFixture(result, p.RES_Garage__c,           'RES_Garage__c',         boolTrueCodes, boolFalseCodes, triggerContext);
+        addBoolFixture(result, p.RES_Pool__c,             'RES_Pool__c',           boolTrueCodes, boolFalseCodes, triggerContext);
+        if (String.isNotBlank(p.RES_ID_Finish__c)) addChar(result, p.RES_ID_Finish__c, triggerContext);
+        addBoolFixture(result, p.RES_Drivers_Room__c,     'RES_Drivers_Room__c',   boolTrueCodes, boolFalseCodes, triggerContext);
+        addBoolFixture(result, p.RES_Maids_Room__c,       'RES_Maids_Room__c',     boolTrueCodes, boolFalseCodes, triggerContext);
+        addBoolFixture(result, p.RES_Wadi_View__c,        'RES_Wadi_View__c',      boolTrueCodes, boolFalseCodes, triggerContext);
+        addBoolFixture(result, p.RES_Golf_View__c,        'RES_Golf_View__c',      boolTrueCodes, boolFalseCodes, triggerContext);
+        addBoolFixture(result, p.RES_Panoramic_View__c,   'RES_Panoramic_View__c', boolTrueCodes, boolFalseCodes, triggerContext);
+        addBoolFixture(result, p.RES_Private__c,          'RES_Private__c',        boolTrueCodes, boolFalseCodes, triggerContext);
+        if (String.isNotBlank(p.RES_Condition__c)) addChar(result, p.RES_Condition__c, triggerContext);
+        addBoolFixture(result, p.RES_Furnished__c,        'RES_Furnished__c',      boolTrueCodes, boolFalseCodes, triggerContext);
 
         return result;
+    }
+
+    private static void addBoolFixture(List<Map<String, Object>> r, Boolean val, String sfField,
+                                       Map<String, String> boolTrueCodes, Map<String, String> boolFalseCodes, String ctx) {
+        String trueCode  = boolTrueCodes.get(sfField);
+        String falseCode = boolFalseCodes.get(sfField);
+        if (trueCode != null && falseCode != null) addBool(r, val, trueCode, falseCode, ctx);
     }
 
     private static void addBool(List<Map<String, Object>> r, Boolean val, String trueCode, String falseCode, String ctx) {
