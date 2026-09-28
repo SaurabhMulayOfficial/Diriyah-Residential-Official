@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<LightningComponentBundle xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>67.0</apiVersion>
+    <isExposed>true</isExposed>
+    <masterLabel>Product Fittings &amp; Measurements</masterLabel>
+    <description>Read-only tabs for the Product Configuration flow: Fittings &amp; Fixtures (checked features on the Product) and Measurements (related Measurement Type and Amount).</description>
+    <targets>
+        <target>lightning__FlowScreen</target>
+    </targets>
+    <targetConfigs>
+        <targetConfig targets="lightning__FlowScreen">
+            <property name="productId" type="String" label="Product Id" description="Id of the Product2 record being configured." role="inputOnly" />
+        </targetConfig>
+    </targetConfigs>
+</LightningComponentBundle>

@@ -1,0 +1,52 @@
+<template>
+    <template lwc:if={error}>
+        <div class="slds-text-color_error slds-p-around_small">{error}</div>
+    </template>
+    <template lwc:elseif={isLoading}>
+        <div class="slds-is-relative slds-p-around_large">
+            <lightning-spinner alternative-text="Loading" size="small"></lightning-spinner>
+        </div>
+    </template>
+    <template lwc:else>
+        <lightning-tabset>
+            <lightning-tab label="Fittings &amp; Fixtures">
+                <template lwc:if={hasAnyFittingData}>
+                    <template lwc:if={hasPicklistValues}>
+                        <dl class="slds-grid slds-wrap slds-p-horizontal_small slds-p-bottom_small">
+                            <template for:each={picklistValues} for:item="item">
+                                <div key={item.apiName} class="slds-size_1-of-2 slds-p-vertical_x-small">
+                                    <dt class="slds-text-title">{item.label}</dt>
+                                    <dd class="slds-text-body_regular">{item.value}</dd>
+                                </div>
+                            </template>
+                        </dl>
+                    </template>
+                    <ul class="slds-grid slds-wrap slds-p-horizontal_small">
+                        <template for:each={fittings} for:item="fitting">
+                            <li key={fitting.apiName} class="slds-size_1-of-2 slds-p-vertical_x-small">
+                                <lightning-icon icon-name="utility:check" size="x-small" variant="success" class="slds-m-right_x-small"></lightning-icon>
+                                {fitting.label}
+                            </li>
+                        </template>
+                    </ul>
+                </template>
+                <template lwc:else>
+                    <p class="slds-p-around_small slds-text-color_weak">No fittings or fixtures are selected for this product.</p>
+                </template>
+            </lightning-tab>
+            <lightning-tab label="Measurements">
+                <template lwc:if={hasMeasurements}>
+                    <lightning-datatable
+                        key-field="id"
+                        data={measurements}
+                        columns={measurementColumns}
+                        hide-checkbox-column
+                    ></lightning-datatable>
+                </template>
+                <template lwc:else>
+                    <p class="slds-p-around_small slds-text-color_weak">No measurements found for this product.</p>
+                </template>
+            </lightning-tab>
+        </lightning-tabset>
+    </template>
+</template>

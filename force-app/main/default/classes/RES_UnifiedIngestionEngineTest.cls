@@ -566,6 +566,94 @@ private class RES_UnifiedIngestionEngineTest {
     }
 
     // ==================================================================
+    // A later start date alone (same price) must also historize, not just a price change.
+    // ==================================================================
+    @IsTest
+    static void testPricingOptionSameDateShift_HistorizesEvenWithUnchangedPrice() {
+        String catalog  = 'RepriceCatalog3';
+        String building = 'Reprice Building 3';
+        ProductCatalog cat = ensureCatalog(catalog);
+        ensureCategory(cat.Id, catalog, building);
+
+        RES_Product_Staging__c original = baseRow('UNIT-902', catalog, building);
+        original.RES_Condition_Type__c       = 'Y100';
+        original.RES_Condition_Price__c      = 1000000;
+        original.RES_Condition_Valid_From__c = Date.today();
+        insert original;
+
+        RES_UnifiedIngestionEngine engine = new RES_UnifiedIngestionEngine(LAYOUT_CODE);
+        engine.execute(null, new List<RES_Product_Staging__c>{ original });
+
+        RES_Product_Staging__c dateShifted = baseRow('UNIT-902', catalog, building);
+        dateShifted.RES_Condition_Type__c       = 'Y100';
+        dateShifted.RES_Condition_Price__c      = 1000000; // same price as original
+        dateShifted.RES_Condition_Valid_From__c = Date.today().addDays(30); // later start only
+        insert dateShifted;
+
+        Test.startTest();
+        RES_UnifiedIngestionEngine secondEngine = new RES_UnifiedIngestionEngine(LAYOUT_CODE);
+        secondEngine.execute(null, new List<RES_Product_Staging__c>{ dateShifted });
+        Test.stopTest();
+
+        Product2 unit902 = [SELECT Id FROM Product2 WHERE RES_Product_External_ID__c = 'UNIT-902'];
+        List<AttributeBasedAdjustment> adjustments = [
+            SELECT AdjustmentValue, EffectiveFrom, EffectiveTo FROM AttributeBasedAdjustment
+            WHERE ProductId = :unit902.Id ORDER BY EffectiveFrom ASC
+        ];
+        Assert.areEqual(2, adjustments.size(),
+            'A later start date alone must open a new period, even with an unchanged price');
+        Assert.areEqual(1000000, adjustments[0].AdjustmentValue.setScale(0));
+        Assert.areEqual(1000000, adjustments[1].AdjustmentValue.setScale(0));
+        Assert.areEqual(
+            adjustments[1].EffectiveFrom.addDays(-1).dateGmt(),
+            adjustments[0].EffectiveTo.dateGmt(),
+            'Original period must be capped to end the day before the new period starts'
+        );
+    }
+
+    // ==================================================================
+    // Re-uploading the same condition with the same start date corrects the current period in
+    // place (price and/or end date), rather than opening a new one.
+    // ==================================================================
+    @IsTest
+    static void testPricingOptionSameStartDate_CorrectsCurrentPeriodInPlace() {
+        String catalog  = 'RepriceCatalog4';
+        String building = 'Reprice Building 4';
+        ProductCatalog cat = ensureCatalog(catalog);
+        ensureCategory(cat.Id, catalog, building);
+
+        Date sharedStart = Date.today();
+
+        RES_Product_Staging__c original = baseRow('UNIT-903', catalog, building);
+        original.RES_Condition_Type__c       = 'Y100';
+        original.RES_Condition_Price__c      = 1000000;
+        original.RES_Condition_Valid_From__c = sharedStart;
+        insert original;
+
+        RES_UnifiedIngestionEngine engine = new RES_UnifiedIngestionEngine(LAYOUT_CODE);
+        engine.execute(null, new List<RES_Product_Staging__c>{ original });
+
+        RES_Product_Staging__c corrected = baseRow('UNIT-903', catalog, building);
+        corrected.RES_Condition_Type__c       = 'Y100';
+        corrected.RES_Condition_Price__c      = 1050000; // corrected price, same window
+        corrected.RES_Condition_Valid_From__c = sharedStart;
+        insert corrected;
+
+        Test.startTest();
+        RES_UnifiedIngestionEngine secondEngine = new RES_UnifiedIngestionEngine(LAYOUT_CODE);
+        secondEngine.execute(null, new List<RES_Product_Staging__c>{ corrected });
+        Test.stopTest();
+
+        Product2 unit903 = [SELECT Id FROM Product2 WHERE RES_Product_External_ID__c = 'UNIT-903'];
+        List<AttributeBasedAdjustment> adjustments = [
+            SELECT AdjustmentValue FROM AttributeBasedAdjustment WHERE ProductId = :unit903.Id
+        ];
+        Assert.areEqual(1, adjustments.size(),
+            'Re-uploading the same start date must correct the existing period, not open a new one');
+        Assert.areEqual(1050000, adjustments[0].AdjustmentValue.setScale(0), 'Price must be corrected in place');
+    }
+
+    // ==================================================================
     // A reprice whose new start isn't after the existing period's start is a row error.
     // ==================================================================
     @IsTest
@@ -605,7 +693,7 @@ private class RES_UnifiedIngestionEngineTest {
         RES_Product_Staging__c refreshed = [
             SELECT RES_Error_Log__c FROM RES_Product_Staging__c WHERE Id = :repriced.Id
         ];
-        Assert.isTrue(refreshed.RES_Error_Log__c.contains('is not after the existing period'),
+        Assert.isTrue(refreshed.RES_Error_Log__c.contains('is before the existing period'),
             'An earlier-dated reprice must record its own row error');
     }
 
