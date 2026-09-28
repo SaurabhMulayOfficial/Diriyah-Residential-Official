@@ -40,7 +40,7 @@ public with sharing class RES_IntegrationRequestEventService {
     private static final String MEASUREMENT_INTEGRATION = 'Measurement_Sync';
     private static final String MEASUREMENT_CATALOG_INTEGRATION = 'Measurement_Sync_Catalog';
     private static final String PRODUCT_CATALOG_INTEGRATION = 'ProductCatalog_Sync';
-    //private static final String UNIT_INTEGRATION = 'Unit_Sync';
+    private static final String UNIT_INTEGRATION = 'Unit_Sync';
     //private static final String ACCOUNT_INTEGRATION = 'Account_Sync';
     private static final String CONTRACT_INTEGRATION = 'Sales_Contract_Creation';
     private static final String CONTRACT_UPDATE_INTEGRATION = 'Sales_Contract_Update';
@@ -173,39 +173,36 @@ public with sharing class RES_IntegrationRequestEventService {
             }
         }
 
-        // String unitIntegrationKey_onInsert = 'GET' + UNIT_INTEGRATION + 'I';
-        // String unitIntegrationKey_onUpdate = 'GET' + UNIT_INTEGRATION + 'U';
-        // System.debug('### [RES_IntegrationRequestEventService] Keys in map: ' + results.keySet());
-        // System.debug('### [RES_IntegrationRequestEventService] Checking Unit_Sync Insert key: ' + unitIntegrationKey_onInsert + ' | Found: ' + results.containsKey(unitIntegrationKey_onInsert));
-        // System.debug('### [RES_IntegrationRequestEventService] Checking Unit_Sync Update key: ' + unitIntegrationKey_onUpdate + ' | Found: ' + results.containsKey(unitIntegrationKey_onUpdate));
+        String unitIntegrationKey_onInsert = 'GET' + UNIT_INTEGRATION + 'I';
+        String unitIntegrationKey_onUpdate = 'GET' + UNIT_INTEGRATION + 'U';
 
-        // if (results.containsKey(unitIntegrationKey_onInsert) && results.get(unitIntegrationKey_onInsert).size() > 0) {
-        //     Set<Id> productIds = new Set<Id>();
-        //     for (RES_Integration_Request__e e : results.get(unitIntegrationKey_onInsert)) {
-        //         if (String.isBlank(e.RES_RecordIds__c)) continue;
-        //         for (String recordId : e.RES_RecordIds__c.split(',')) {
-        //             if (String.isNotBlank(recordId)) productIds.add((Id) recordId.trim());
-        //         }
-        //     }
-        //     if (!productIds.isEmpty()) {
-        //         List<SObject> records = (List<SObject>) new RES_Product2DAOLayer().getProductsForSync(productIds);
-        //         enqueueService(UNIT_INTEGRATION, records, 'I', 'GET');
-        //     }
-        // }
+        if (results.containsKey(unitIntegrationKey_onInsert) && results.get(unitIntegrationKey_onInsert).size() > 0) {
+            Set<Id> productIds = new Set<Id>();
+            for (RES_Integration_Request__e e : results.get(unitIntegrationKey_onInsert)) {
+                if (String.isBlank(e.RES_RecordIds__c)) continue;
+                for (String recordId : e.RES_RecordIds__c.split(',')) {
+                    if (String.isNotBlank(recordId)) productIds.add((Id) recordId.trim());
+                }
+            }
+            if (!productIds.isEmpty()) {
+                List<SObject> records = (List<SObject>) new RES_Product2DAOLayer().getProductsForSync(productIds);
+                enqueueService(UNIT_INTEGRATION, records, 'I', 'GET');
+            }
+        }
 
-        // if (results.containsKey(unitIntegrationKey_onUpdate) && results.get(unitIntegrationKey_onUpdate).size() > 0) {
-        //     Set<Id> productIds = new Set<Id>();
-        //     for (RES_Integration_Request__e e : results.get(unitIntegrationKey_onUpdate)) {
-        //         if (String.isBlank(e.RES_RecordIds__c)) continue;
-        //         for (String recordId : e.RES_RecordIds__c.split(',')) {
-        //             if (String.isNotBlank(recordId)) productIds.add((Id) recordId.trim());
-        //         }
-        //     }
-        //     if (!productIds.isEmpty()) {
-        //         List<SObject> records = (List<SObject>) new RES_Product2DAOLayer().getProductsForSync(productIds);
-        //         enqueueService(UNIT_INTEGRATION, records, 'U', 'GET');
-        //     }
-        // }
+        if (results.containsKey(unitIntegrationKey_onUpdate) && results.get(unitIntegrationKey_onUpdate).size() > 0) {
+            Set<Id> productIds = new Set<Id>();
+            for (RES_Integration_Request__e e : results.get(unitIntegrationKey_onUpdate)) {
+                if (String.isBlank(e.RES_RecordIds__c)) continue;
+                for (String recordId : e.RES_RecordIds__c.split(',')) {
+                    if (String.isNotBlank(recordId)) productIds.add((Id) recordId.trim());
+                }
+            }
+            if (!productIds.isEmpty()) {
+                List<SObject> records = (List<SObject>) new RES_Product2DAOLayer().getProductsForSync(productIds);
+                enqueueService(UNIT_INTEGRATION, records, 'U', 'GET');
+            }
+        }
 
         String pcCatalogIntegrationKey_onInsert = 'GET' + PRODUCT_CATALOG_INTEGRATION + 'I';
         String pcCatalogIntegrationKey_onUpdate = 'GET' + PRODUCT_CATALOG_INTEGRATION + 'U';

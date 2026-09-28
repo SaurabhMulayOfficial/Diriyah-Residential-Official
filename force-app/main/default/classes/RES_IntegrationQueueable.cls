@@ -84,12 +84,11 @@ public with sharing class RES_IntegrationQueueable implements Queueable, Databas
         }
         
         else if(serviceName == 'Unit_Sync'){
-            System.debug('### [RES_IntegrationQueueable] Unit_Sync executing | Records: ' + records.size() + ' | Context: ' + triggerContext);
             List<Product2> products = new List<Product2>();
             for (SObject record : records) {
                 products.add((Product2) record);
             }
-            //RES_ProductIntegrationService.syncProducts(products, requestMethod, triggerContext);
+            RES_ProductIntegrationService.syncProducts(products, requestMethod, triggerContext);
         }
         
         else if(serviceName == 'ProductCategory_Sync'){
