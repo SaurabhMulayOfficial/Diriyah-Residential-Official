@@ -42,6 +42,8 @@ public with sharing class RES_MeasurementServices {
         String triggerContext = oldMap == null ? 'I' : 'U';
 
         List<RES_Integration_Request__e> integrationRequestEventList = new List<RES_Integration_Request__e>();
+        Set<Id> unitProductIds = new Set<Id>();
+
         for(RES_Measurement__c m : measurementsToSync){
             if(m.RES_Category__c != null){
                 RES_Integration_Request__e req = new RES_Integration_Request__e();
@@ -60,6 +62,19 @@ public with sharing class RES_MeasurementServices {
                 catalogReq.RES_Triggering_Context__c = triggerContext;
                 integrationRequestEventList.add(catalogReq);
             }
+
+            if(m.RES_Product__c != null){
+                unitProductIds.add(m.RES_Product__c);
+            }
+        }
+
+        for(Id productId : unitProductIds){
+            RES_Integration_Request__e unitReq = new RES_Integration_Request__e();
+            unitReq.RES_RecordIds__c = String.valueOf(productId);
+            unitReq.RES_Request_Method__c = 'GET';
+            unitReq.RES_Service_Name__c = 'Unit_Sync';
+            unitReq.RES_Triggering_Context__c = triggerContext;
+            integrationRequestEventList.add(unitReq);
         }
 
         try{

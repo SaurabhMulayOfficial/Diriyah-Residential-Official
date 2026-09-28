@@ -10,7 +10,7 @@ public without sharing class RES_AttributeAdjustmentConditionDAOLayer extends RE
     public List<AttributeAdjustmentCondition> getConditionsByRuleIds(Set<Id> ruleIds) {
         if (ruleIds == null || ruleIds.isEmpty()) return new List<AttributeAdjustmentCondition>();
         Map<String, Object> bindVars = new Map<String, Object>{ 'ruleIds' => ruleIds };
-        String soql = 'SELECT AttributeBasedAdjRuleId FROM AttributeAdjustmentCondition WHERE AttributeBasedAdjRuleId IN :ruleIds';
+        String soql = 'SELECT AttributeBasedAdjRuleId, StringValue FROM AttributeAdjustmentCondition WHERE AttributeBasedAdjRuleId IN :ruleIds';
         return (List<AttributeAdjustmentCondition>) executeQuery(soql, '', false, bindVars, AccessLevel.SYSTEM_MODE);
     }
 }

@@ -27,4 +27,12 @@ public without sharing class RES_ProductAttributeDefinitionDAOLayer extends RES_
                       'WHERE Product2Id IN :productIds AND AttributeDefinitionId = :selectorAttrId';
         return (List<ProductAttributeDefinition>) executeQuery(soql, '', false, bindVars, AccessLevel.SYSTEM_MODE);
     }
+
+    public List<ProductAttributeDefinition> getByProductIds(Set<Id> productIds) {
+        if (productIds == null || productIds.isEmpty()) return new List<ProductAttributeDefinition>();
+        Map<String, Object> bindVars = new Map<String, Object>{ 'productIds' => productIds };
+        String soql = 'SELECT Id, Product2Id, Name, DefaultValue, RES_Valid_From__c, RES_Valid_To__c, Status ' +
+                      'FROM ProductAttributeDefinition WHERE Product2Id IN :productIds AND Status = \'Active\'';
+        return (List<ProductAttributeDefinition>) executeQuery(soql, '', false, bindVars, AccessLevel.SYSTEM_MODE);
+    }
 }
