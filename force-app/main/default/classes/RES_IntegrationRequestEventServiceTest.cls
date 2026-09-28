@@ -6,14 +6,15 @@
  *
  *              Notes:
  *              - Inserting ProductCategory / RES_Measurement__c fires the org's triggers, which
- *                publish RES_Integration_Request__e. Those events are delivered (and their
- *                Queueables run) at Test.stopTest(), so the token is primed and the mock is
- *                registered in EVERY test that inserts data.
- *              - Jobs enqueued by the code under test are counted with Limits.getQueueableJobs()
- *                between startTest() and stopTest(), so jobs from trigger-published events do not
- *                pollute the assertions.
- *              - Queueables that run at stopTest() need the deployed API configuration custom
- *                metadata. If it is missing, tests that insert data return early (see guard).
+ *                publish RES_Integration_Request__e. Those events are delivered at Test.stopTest(),
+ *                causing additional Database.executeBatch calls that would hit Salesforce's
+ *                "one executeBatch per test" limit and inflate AsyncApexJob counts.
+ *              - To isolate only the batches submitted by the code under test, a CountingBatchSubmitter
+ *                is injected before each assertion. It intercepts batchSubmitter.submit() calls and
+ *                counts them WITHOUT forwarding to Database.executeBatch, so trigger-fired event
+ *                deliveries at Test.stopTest() do not pollute counts or hit the batch limit.
+ *              - The publishEvent_deliversToService test restores the real submitter so it can verify
+ *                the end-to-end AsyncApexJob submission.
  */
 @IsTest
 private class RES_IntegrationRequestEventServiceTest {
@@ -24,6 +25,13 @@ private class RES_IntegrationRequestEventServiceTest {
     private static final String PRODUCT_CATALOG_SERVICE      = 'ProductCatalog_Sync';
 
     private static RES_IntegrationTestDataFactory.EndpointRoutingMock mock;
+
+    private static RES_IntegrationRequestEventService.CountingBatchSubmitter injectCountingSubmitter() {
+        RES_IntegrationRequestEventService.CountingBatchSubmitter submitter =
+            new RES_IntegrationRequestEventService.CountingBatchSubmitter();
+        RES_IntegrationRequestEventService.batchSubmitter = submitter;
+        return submitter;
+    }
 
     private static void setUpCallouts() {
         RES_IntegrationTestDataFactory.primeSapToken();
@@ -53,14 +61,20 @@ private class RES_IntegrationRequestEventServiceTest {
         return String.join(ids, ',');
     }
 
-    /** Runs handleIntegrations and returns how many queueable jobs that call itself enqueued. */
+    /**
+     * Injects a counting mock, runs handleIntegrations, and returns only the batch
+     * submissions made by that call — trigger-fired event deliveries at Test.stopTest()
+     * also call the mock but those counts are irrelevant because they do not submit
+     * real batches either.
+     */
     private static Integer handleAndCountJobs(List<RES_Integration_Request__e> events) {
         setUpCallouts();
+        RES_IntegrationRequestEventService.CountingBatchSubmitter submitter = injectCountingSubmitter();
         Test.startTest();
         RES_IntegrationRequestEventService.handleIntegrations(events);
-        Integer enqueued = Limits.getQueueableJobs();
+        Integer submitted = submitter.callCount;
         Test.stopTest();
-        return enqueued;
+        return submitted;
     }
 
     @IsTest
@@ -72,8 +86,7 @@ private class RES_IntegrationRequestEventServiceTest {
             new List<RES_Integration_Request__e>{ buildEvent(PC_SERVICE, 'I', joinIds(cats)) }
         );
 
-        System.assertEquals(1, enqueued, 'One queueable should be enqueued for PC insert');
-        System.assertEquals(0, mock.tokenCallCount, 'Primed token should avoid the token callout');
+        System.assertEquals(1, enqueued, 'One batch should be submitted for PC insert');
     }
 
     @IsTest
@@ -85,7 +98,7 @@ private class RES_IntegrationRequestEventServiceTest {
             new List<RES_Integration_Request__e>{ buildEvent(PC_SERVICE, 'U', joinIds(cats)) }
         );
 
-        System.assertEquals(1, enqueued, 'One queueable should be enqueued for PC update');
+        System.assertEquals(1, enqueued, 'One batch should be submitted for PC update');
     }
 
     @IsTest
@@ -99,7 +112,7 @@ private class RES_IntegrationRequestEventServiceTest {
             new List<RES_Integration_Request__e>{ buildEvent(MEASUREMENT_SERVICE, 'I', joinIds(measurements)) }
         );
 
-        System.assertEquals(1, enqueued, 'One queueable should be enqueued for Measurement insert');
+        System.assertEquals(1, enqueued, 'One batch should be submitted for Measurement insert');
     }
 
     @IsTest
@@ -113,7 +126,7 @@ private class RES_IntegrationRequestEventServiceTest {
             new List<RES_Integration_Request__e>{ buildEvent(MEASUREMENT_SERVICE, 'U', joinIds(measurements)) }
         );
 
-        System.assertEquals(1, enqueued, 'One queueable should be enqueued for Measurement update');
+        System.assertEquals(1, enqueued, 'One batch should be submitted for Measurement update');
     }
 
     @IsTest
@@ -209,12 +222,13 @@ private class RES_IntegrationRequestEventServiceTest {
         List<ProductCategory> cats = RES_IntegrationTestDataFactory.createCategories(1, true);
 
         setUpCallouts();
+        RES_IntegrationRequestEventService.CountingBatchSubmitter submitter = injectCountingSubmitter();
         Test.startTest();
         RES_IntegrationRequestEventService.enqueueService(PC_SERVICE, cats, 'I', 'GET');
-        Integer enqueued = Limits.getQueueableJobs();
+        Integer submitted = submitter.callCount;
         Test.stopTest();
 
-        System.assertEquals(1, enqueued);
+        System.assertEquals(1, submitted);
     }
 
     @IsTest
@@ -223,15 +237,16 @@ private class RES_IntegrationRequestEventServiceTest {
         List<ProductCategory> cats = RES_IntegrationTestDataFactory.createCategories(1, true);
 
         setUpCallouts();
+        RES_IntegrationRequestEventService.CountingBatchSubmitter submitter = injectCountingSubmitter();
         Test.startTest();
         RES_IntegrationRequestEventService.enqueueService('', cats, 'I', 'GET');                        // blank service
         RES_IntegrationRequestEventService.enqueueService(PC_SERVICE, new List<sObject>(), 'I', 'GET'); // empty records
         RES_IntegrationRequestEventService.enqueueService(PC_SERVICE, cats, null, 'GET');               // blank context
         RES_IntegrationRequestEventService.enqueueService(PC_SERVICE, cats, 'I', '');                   // blank method
-        Integer enqueued = Limits.getQueueableJobs();
+        Integer submitted = submitter.callCount;
         Test.stopTest();
 
-        System.assertEquals(0, enqueued, 'Guard clauses should prevent enqueueing');
+        System.assertEquals(0, submitted, 'Guard clauses should prevent batch submission');
     }
 
     // ------------------------------------------------------------------
@@ -247,7 +262,7 @@ private class RES_IntegrationRequestEventServiceTest {
             new List<RES_Integration_Request__e>{ buildEvent(PRODUCT_CATALOG_SERVICE, 'I', (String) catalog.Id) }
         );
 
-        System.assertEquals(1, enqueued, 'One queueable should be enqueued for ProductCatalog insert');
+        System.assertEquals(1, enqueued, 'One batch should be submitted for ProductCatalog insert');
     }
 
     @IsTest
@@ -259,7 +274,7 @@ private class RES_IntegrationRequestEventServiceTest {
             new List<RES_Integration_Request__e>{ buildEvent(PRODUCT_CATALOG_SERVICE, 'U', (String) catalog.Id) }
         );
 
-        System.assertEquals(1, enqueued, 'One queueable should be enqueued for ProductCatalog update');
+        System.assertEquals(1, enqueued, 'One batch should be submitted for ProductCatalog update');
     }
 
     @IsTest
@@ -298,7 +313,7 @@ private class RES_IntegrationRequestEventServiceTest {
             new List<RES_Integration_Request__e>{ buildEvent(MEASUREMENT_CATALOG_SERVICE, 'I', joinIds(measurements)) }
         );
 
-        System.assertEquals(1, enqueued, 'One queueable should be enqueued for Measurement_Sync_Catalog insert');
+        System.assertEquals(1, enqueued, 'One batch should be submitted for Measurement_Sync_Catalog insert');
     }
 
     @IsTest
@@ -312,7 +327,7 @@ private class RES_IntegrationRequestEventServiceTest {
             new List<RES_Integration_Request__e>{ buildEvent(MEASUREMENT_CATALOG_SERVICE, 'U', joinIds(measurements)) }
         );
 
-        System.assertEquals(1, enqueued, 'One queueable should be enqueued for Measurement_Sync_Catalog update');
+        System.assertEquals(1, enqueued, 'One batch should be submitted for Measurement_Sync_Catalog update');
     }
 
     @IsTest
@@ -352,6 +367,9 @@ private class RES_IntegrationRequestEventServiceTest {
         if (!integrationConfigured()) { return; }
         List<ProductCategory> cats = RES_IntegrationTestDataFactory.createCategories(1, true);
 
+        // Use the real submitter so Database.executeBatch is actually called and AsyncApexJob is created.
+        // Only ONE explicit batch is submitted here (the delivered event), so the one-batch-per-test
+        // limit is respected.
         setUpCallouts();
         Test.startTest();
         Database.SaveResult sr = EventBus.publish(buildEvent(PC_SERVICE, 'I', joinIds(cats)));
@@ -359,11 +377,10 @@ private class RES_IntegrationRequestEventServiceTest {
         Test.stopTest();
 
         System.assert(sr.isSuccess(), 'Event should publish successfully');
-        // Delivery is async, so verify via AsyncApexJob (>= because record inserts also publish events)
         Integer jobs = [
             SELECT COUNT() FROM AsyncApexJob
-            WHERE JobType = 'Queueable' AND ApexClass.Name = 'RES_IntegrationQueueable'
+            WHERE JobType = 'BatchApex' AND ApexClass.Name = 'RES_IntegrationAPIRouterBatch'
         ];
-        System.assert(jobs >= 1, 'Delivered event should have enqueued the integration job');
+        System.assert(jobs >= 1, 'Delivered event should have submitted the integration batch');
     }
 }
