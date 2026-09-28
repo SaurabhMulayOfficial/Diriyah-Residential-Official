@@ -122,6 +122,7 @@ private class RES_ProductApprovalControllerTest {
 
     @isTest
     static void testApproveProducts_withIds_delegatesToService() {
+        RES_IntegrationRequestEventService.batchSubmitter = new RES_IntegrationRequestEventService.CountingBatchSubmitter();
         Product2 product = new Product2(Name = 'Controller Approve Candidate', IsActive = false, RES_Unit_Status__c = 'Draft');
         insert product;
         User admin = RES_TestDataFactory.createGenericUser('System Administrator');
@@ -177,6 +178,7 @@ private class RES_ProductApprovalControllerTest {
 
     @isTest
     static void testRejectProducts_withIds_delegatesToService() {
+        RES_IntegrationRequestEventService.batchSubmitter = new RES_IntegrationRequestEventService.CountingBatchSubmitter();
         Product2 product = new Product2(Name = 'Controller Reject Candidate', IsActive = false, RES_Unit_Status__c = 'Draft');
         insert product;
         User admin = RES_TestDataFactory.createGenericUser('System Administrator');
@@ -227,6 +229,7 @@ private class RES_ProductApprovalControllerTest {
 
     @isTest
     static void testResubmitProducts_withIds_delegatesToService() {
+        RES_IntegrationRequestEventService.batchSubmitter = new RES_IntegrationRequestEventService.CountingBatchSubmitter();
         Product2 product = new Product2(
             Name = 'Controller Resubmit Candidate',
             IsActive = false,

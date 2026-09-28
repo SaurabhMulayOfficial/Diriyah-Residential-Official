@@ -32,6 +32,7 @@
 private class RES_ProductApprovalServiceTest {
 
     private static Id deletedProductId() {
+        RES_IntegrationRequestEventService.batchSubmitter = new RES_IntegrationRequestEventService.CountingBatchSubmitter();
         Product2 throwaway = new Product2(Name = 'Throwaway', IsActive = false, RES_Unit_Status__c = 'Draft');
         insert throwaway;
         Id result = throwaway.Id;
@@ -549,6 +550,7 @@ private class RES_ProductApprovalServiceTest {
             return; // Skip if no final-approval config exists
         }
 
+        RES_IntegrationRequestEventService.batchSubmitter = new RES_IntegrationRequestEventService.CountingBatchSubmitter();
         // Create product with update flag and comments
         Product2 updateProduct = new Product2(
             Name = 'Updated Product Test',
@@ -589,6 +591,7 @@ private class RES_ProductApprovalServiceTest {
      */
     @isTest
     static void testApproveProducts_reApprovalFlow_goesDirectlyToAvailable() {
+        RES_IntegrationRequestEventService.batchSubmitter = new RES_IntegrationRequestEventService.CountingBatchSubmitter();
         // Create product at Pending DevCo Approval with update flag
         Product2 reApprovalProduct = new Product2(
             Name = 'Re-Approval Product Test',
@@ -643,6 +646,7 @@ private class RES_ProductApprovalServiceTest {
             return; // Skip if no config exists
         }
 
+        RES_IntegrationRequestEventService.batchSubmitter = new RES_IntegrationRequestEventService.CountingBatchSubmitter();
         // Create normal product without update flag
         Product2 normalProduct = new Product2(
             Name = 'Normal Product Test',

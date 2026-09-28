@@ -448,6 +448,7 @@ static void testBulkProcessing() {
     static void testContractsCancelledWhenOpportunityClosedLost() {
         Id standardPricebookId = Test.getStandardPricebookId();
 
+        RES_IntegrationRequestEventService.batchSubmitter = new RES_IntegrationRequestEventService.CountingBatchSubmitter();
         // Create a dedicated product for this test to avoid conflicts with setup data
         Product2 product = new Product2(
             Name = 'Unit Contract Test',
