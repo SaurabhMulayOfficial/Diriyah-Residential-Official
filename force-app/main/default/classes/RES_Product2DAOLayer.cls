@@ -380,7 +380,7 @@ public List<Product2> getRejectedProducts(String status,String searchTerm,Intege
         String soql = 'SELECT Id, Name, RecordTypeId, Type, ConfigureDuringSale, RES_CIP_Type__c, RES_No_of_Years__c, RES_Catalog__c, RES_Business_Entity__c, RES_Price_Option__c, CurrencyIsoCode, AvailabilityDate, RES_Validity_End_Date__c, IsActive, Description, IsAssetizable, RES_Version__c, ' +
                       '(SELECT Id, Name, RES_Parent_Payment_Plan__c, RES_Version__c FROM ParentPaymentPlan__r WHERE RES_Version__c > 0 ORDER BY RES_Version__c DESC) ' +
         			  'FROM Product2 ' +
-                      'WHERE RES_Catalog__c IN : productCatalogIdSet AND '
+                      'WHERE RES_Catalog__c IN : productCatalogIdSet AND ' +
                       'RecordType.DeveloperName =: recordTypeDeveloperName AND ' +
                       'IsActive = TRUE AND ' +
                       'RES_Version__c = NULL';
