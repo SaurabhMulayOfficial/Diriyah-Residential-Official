@@ -50,4 +50,23 @@ public with sharing class RES_ContractDAOLayer extends RES_BaseDAOLayer {
 
         return (List<Contract>) executeQuery(soql, '', false, bindVars, AccessLevel.SYSTEM_MODE);
     }
+    
+   public Map<Id, Contract> getContractsForFinalPayment(Set<Id> contractIds) {
+    if (contractIds == null || contractIds.isEmpty()) {
+        return new Map<Id, Contract>();
+    }
+
+    Map<String, Object> bindVars = new Map<String, Object>{
+        'contractIds' => contractIds
+    };
+
+    String soql =
+        'SELECT Id, RES_Final_Payment__c ' +
+        'FROM Contract ' +
+        'WHERE Id IN :contractIds';
+
+    return new Map<Id, Contract>(
+        (List<Contract>) executeQuery(soql, '', false, bindVars, AccessLevel.SYSTEM_MODE)
+    );
+}
 }
