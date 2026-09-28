@@ -131,10 +131,9 @@ private class RES_MeasurementServicesTest {
         Integer before = spy.callCount;
 
         RES_MeasurementServices.syncMeasurements(records, oldMap);
-        Test.getEventBus().deliver();          // deliver the event published by the service
+        Test.stopTest();                        // stopTest delivers events published by the service
 
         Integer after = spy.callCount;
-        Test.stopTest();
         return after - before;
     }
 

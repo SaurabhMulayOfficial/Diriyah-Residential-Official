@@ -463,6 +463,7 @@ private class RES_IntegrationRequestEventServiceTest {
         // Use the real submitter so Database.executeBatch is actually called and AsyncApexJob is created.
         // Only ONE explicit batch is submitted here (the delivered event), so the one-batch-per-test
         // limit is respected.
+        RES_IntegrationRequestEventService.batchSubmitter = new RES_IntegrationRequestEventService.DefaultBatchSubmitter();
         setUpCallouts();
         Test.startTest();
         Database.SaveResult sr = EventBus.publish(buildEvent(PC_SERVICE, 'I', joinIds(cats)));

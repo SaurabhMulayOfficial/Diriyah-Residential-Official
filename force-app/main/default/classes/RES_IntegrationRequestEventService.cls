@@ -22,6 +22,7 @@ public with sharing class RES_IntegrationRequestEventService {
         Id submit(Database.Batchable<SObject> batchable, Integer batchSize);
     }
 
+    @TestVisible
     private class DefaultBatchSubmitter implements IBatchSubmitter {
         public Id submit(Database.Batchable<SObject> batchable, Integer batchSize) {
             return Database.executeBatch(batchable, batchSize);
