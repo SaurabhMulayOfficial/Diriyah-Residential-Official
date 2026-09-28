@@ -356,6 +356,99 @@ private class RES_IntegrationRequestEventServiceTest {
         System.assertEquals(0, enqueued, 'No job when the DAO returns no Measurement_Sync_Catalog records');
     }
 
+    // ------------------------------------------------------------------
+    // Sales_Contract_Creation / Sales_Contract_Update / Sales_Contract_Termination
+    // ------------------------------------------------------------------
+
+    @IsTest
+    static void handleIntegrations_contractInsert_noMatchingRecord_enqueuesNothing() {
+        Id fakeId = Id.valueOf(Contract.SObjectType.getDescribe().getKeyPrefix() + '000000000001');
+
+        Integer enqueued = handleAndCountJobs(
+            new List<RES_Integration_Request__e>{ buildEvent('Sales_Contract_Creation', 'I', (String) fakeId) }
+        );
+
+        System.assertEquals(0, enqueued, 'No batch when DAO returns no Contract records for Sales_Contract_Creation');
+    }
+
+    @IsTest
+    static void handleIntegrations_contractUpdate_noMatchingRecord_enqueuesNothing() {
+        Id fakeId = Id.valueOf(Contract.SObjectType.getDescribe().getKeyPrefix() + '000000000002');
+
+        Integer enqueued = handleAndCountJobs(
+            new List<RES_Integration_Request__e>{ buildEvent('Sales_Contract_Update', 'U', (String) fakeId) }
+        );
+
+        System.assertEquals(0, enqueued, 'No batch when DAO returns no Contract records for Sales_Contract_Update');
+    }
+
+    @IsTest
+    static void handleIntegrations_contractTermination_noMatchingRecord_enqueuesNothing() {
+        Id fakeId = Id.valueOf(Contract.SObjectType.getDescribe().getKeyPrefix() + '000000000003');
+
+        Integer enqueued = handleAndCountJobs(
+            new List<RES_Integration_Request__e>{ buildEvent('Sales_Contract_Termination', 'U', (String) fakeId) }
+        );
+
+        System.assertEquals(0, enqueued, 'No batch when DAO returns no Contract records for Sales_Contract_Termination');
+    }
+
+    // ------------------------------------------------------------------
+    // Payment_Plan
+    // ------------------------------------------------------------------
+
+    @IsTest
+    static void handleIntegrations_paymentPlanInsert_noMatchingRecord_enqueuesNothing() {
+        Id fakeId = Id.valueOf(Contract.SObjectType.getDescribe().getKeyPrefix() + '000000000004');
+
+        Integer enqueued = handleAndCountJobs(
+            new List<RES_Integration_Request__e>{ buildEvent('Payment_Plan', 'I', (String) fakeId) }
+        );
+
+        System.assertEquals(0, enqueued, 'No batch when DAO returns no records for Payment_Plan insert');
+    }
+
+    @IsTest
+    static void handleIntegrations_paymentPlanUpdate_noMatchingRecord_enqueuesNothing() {
+        Id fakeId = Id.valueOf(Contract.SObjectType.getDescribe().getKeyPrefix() + '000000000005');
+
+        Integer enqueued = handleAndCountJobs(
+            new List<RES_Integration_Request__e>{ buildEvent('Payment_Plan', 'U', (String) fakeId) }
+        );
+
+        System.assertEquals(0, enqueued, 'No batch when DAO returns no records for Payment_Plan update');
+    }
+
+    // ------------------------------------------------------------------
+    // Installments
+    // ------------------------------------------------------------------
+
+    @IsTest
+    static void handleIntegrations_installmentInsert_noMatchingRecord_enqueuesNothing() {
+        Id fakeId = Id.valueOf(Contract.SObjectType.getDescribe().getKeyPrefix() + '000000000006');
+
+        Integer enqueued = handleAndCountJobs(
+            new List<RES_Integration_Request__e>{ buildEvent('Installments', 'I', (String) fakeId) }
+        );
+
+        System.assertEquals(0, enqueued, 'No batch when DAO returns no records for Installments insert');
+    }
+
+    @IsTest
+    static void handleIntegrations_installmentUpdate_noMatchingRecord_enqueuesNothing() {
+        Id fakeId = Id.valueOf(Contract.SObjectType.getDescribe().getKeyPrefix() + '000000000007');
+
+        Integer enqueued = handleAndCountJobs(
+            new List<RES_Integration_Request__e>{ buildEvent('Installments', 'U', (String) fakeId) }
+        );
+
+        System.assertEquals(0, enqueued, 'No batch when DAO returns no records for Installments update');
+    }
+
+    // ------------------------------------------------------------------
+    // Constructor / misc
+    // ------------------------------------------------------------------
+
     @IsTest
     static void constructor_canBeInstantiated() {
         System.assertNotEquals(null, new RES_IntegrationRequestEventService());
