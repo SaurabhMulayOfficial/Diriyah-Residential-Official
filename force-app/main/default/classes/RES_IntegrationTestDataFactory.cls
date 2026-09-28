@@ -89,11 +89,6 @@ public class RES_IntegrationTestDataFactory {
      */
     public static void primeSapToken() {
         RES_SAPTokenProvider.SAP_TOKEN = MOCK_ACCESS_TOKEN;
-        // Ensure the integration trigger gate is open so platform event delivery
-        // calls RES_IntegrationRequestEventHandler.run() during tests.
-        RES_Config_Switch__c cfg = RES_Config_Switch__c.getOrgDefaults();
-        cfg.RES_Switch_Off_Integrations__c = false;
-        upsert cfg;
     }
 
     /** Clears the cached token so the token callout path is exercised. */
