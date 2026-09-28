@@ -377,10 +377,10 @@ public List<Product2> getRejectedProducts(String status,String searchTerm,Intege
          * Product2 acting as a ProductRelatedComponent parent, and RecordTypeId drives every
          * "RecordType.DeveloperName = ..." filter this feature relies on elsewhere.
          */
-        String soql = 'SELECT Id, Name, RecordTypeId, Type, ConfigureDuringSale, RES_CIP_Type__c, RES_No_of_Years__c, RES_Business_Entity__c, RES_Price_Option__c, CurrencyIsoCode, AvailabilityDate, RES_Validity_End_Date__c, IsActive, Description, IsAssetizable, RES_Version__c, ' +
+        String soql = 'SELECT Id, Name, RecordTypeId, Type, ConfigureDuringSale, RES_CIP_Type__c, RES_No_of_Years__c, RES_Catalog__c, RES_Business_Entity__c, RES_Price_Option__c, CurrencyIsoCode, AvailabilityDate, RES_Validity_End_Date__c, IsActive, Description, IsAssetizable, RES_Version__c, ' +
                       '(SELECT Id, Name, RES_Parent_Payment_Plan__c, RES_Version__c FROM ParentPaymentPlan__r WHERE RES_Version__c > 0 ORDER BY RES_Version__c DESC) ' +
         			  'FROM Product2 ' +
-                      'WHERE RES_Business_Entity__c IN : productCatalogIdSet AND ' +
+                      'WHERE RES_Catalog__c IN : productCatalogIdSet AND ' +
                       'RecordType.DeveloperName =: recordTypeDeveloperName AND ' +
                       'IsActive = TRUE AND ' +
                       'RES_Version__c = NULL';
@@ -391,17 +391,25 @@ public List<Product2> getRejectedProducts(String status,String searchTerm,Intege
         if (productIds == null || productIds.isEmpty()) return new List<Product2>();
         Map<String, Object> bindVars = new Map<String, Object>{ 'productIds' => productIds };
         String soql = 'SELECT Id, Name, ProductCode, StockKeepingUnit, Description, Family, ' +
+                      'RES_Product_External_ID__c, ' +
                       'AvailabilityDate, DiscontinuedDate, ' +
-                      'RES_Business_Entity__c, RES_Building__c, RES_Floor__c, RES_Profit_Center__c, ' +
+                      'RES_Business_Entity__c, RES_Business_Entity__r.RES_Business_Entity_Id__c, ' +
+                      'RES_Business_Entity__r.RES_Company_Code__c, ' +
+                      'RES_Building__c, RES_Building__r.RES_Property_Id__c, ' +
+                      'RES_Floor__c, RES_Profit_Center__c, ' +
                       'RES_Unit_Status__c, RES_Area__c, RES_Area_Type__c, ' +
-                      'RES_Type__c, RES_Style__c, RES_Unit_Size__c, RES_Unit_Share__c, ' +
+                      'RES_Type__c, RES_Style__c, RES_Unit_Size__c, RES_Net_Saleable_Area__c, RES_Unit_Share__c, ' +
                       'RES_Unit_Handover_Date__c, RES_Unit_Virtual_IBAN__c, RES_Virtual_Bank_Account__c, ' +
-                      'RES_Building_Number__c, RES_Product_Address__c, RES_Additional_Number__c, ' +
+                      'RES_Building_Number__c, RES_Additional_Number__c, ' +
+                      'RES_Product_Address__Street__s, RES_Product_Address__City__s, ' +
+                      'RES_Product_Address__PostalCode__s, RES_Product_Address__CountryCode__s, ' +
+                      'RES_Product_Address__StateCode__s, ' +
                       'RES_Orientation__c, RES_Storeroom__c, RES_Elevated__c, RES_Terrace__c, ' +
                       'RES_Roof_Terrace__c, RES_Entry_Courtyard__c, RES_Garage__c, RES_Pool__c, ' +
                       'RES_ID_Finish__c, RES_Drivers_Room__c, RES_Maids_Room__c, RES_Wadi_View__c, ' +
                       'RES_Golf_View__c, RES_Panoramic_View__c, RES_Private__c, RES_Condition__c, ' +
                       'RES_Furnished__c, ' +
+                      'RES_Last_Sync_DateTime__c, ' +
                       'RecordType.DeveloperName ' +
                       'FROM Product2 WHERE Id IN :productIds';
         return (List<Product2>) executeQuery(soql, '', false, bindVars, AccessLevel.SYSTEM_MODE);
