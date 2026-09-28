@@ -101,8 +101,14 @@ public class RES_IntegrationTestDataFactory {
      * ==================================================================== */
 
     public static ProductCatalog createCatalog() {
+        RES_Config_Switch__c config = RES_Config_Switch__c.getOrgDefaults();
+        Boolean wasOff = config.RES_Triggers_Off__c;
+        config.RES_Triggers_Off__c = true;
+        upsert config;
         ProductCatalog catalog = new ProductCatalog(Name = 'RES Test Catalog');
         insert catalog;
+        config.RES_Triggers_Off__c = wasOff;
+        upsert config;
         return catalog;
     }
 
