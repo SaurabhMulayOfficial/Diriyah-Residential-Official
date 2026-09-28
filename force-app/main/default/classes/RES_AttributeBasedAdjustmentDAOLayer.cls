@@ -15,4 +15,13 @@ public without sharing class RES_AttributeBasedAdjustmentDAOLayer extends RES_Ba
                       'ORDER BY EffectiveFrom DESC NULLS LAST';
         return (List<AttributeBasedAdjustment>) executeQuery(soql, '', false, bindVars, AccessLevel.SYSTEM_MODE);
     }
+
+    public List<AttributeBasedAdjustment> getByProductIds(Set<Id> productIds) {
+        if (productIds == null || productIds.isEmpty()) return new List<AttributeBasedAdjustment>();
+        Map<String, Object> bindVars = new Map<String, Object>{ 'productIds' => productIds };
+        String soql = 'SELECT Id, ProductId, AttributeBasedAdjRuleId, AdjustmentValue, AdjustmentType, ' +
+                      'EffectiveFrom, EffectiveTo, SellingModelType ' +
+                      'FROM AttributeBasedAdjustment WHERE ProductId IN :productIds';
+        return (List<AttributeBasedAdjustment>) executeQuery(soql, '', false, bindVars, AccessLevel.SYSTEM_MODE);
+    }
 }
