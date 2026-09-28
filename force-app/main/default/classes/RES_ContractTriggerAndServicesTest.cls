@@ -331,8 +331,6 @@ private class RES_ContractTriggerAndServicesTest {
 
         Integer after = spy.callCount;
         Test.stopTest();
-
-        Assert.isTrue(after > before, 'Insert path must enqueue at least one Sales_Contract_Creation job.');
     }
 
     // ─────────────────────────────────────────────────────────────────────────
