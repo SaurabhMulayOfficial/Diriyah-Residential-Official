@@ -9,6 +9,10 @@
         <enabled>true</enabled>
         <name>RES_Generate_SPA_Button_Visibility</name>
     </customPermissions>
+      <customPermissions>
+        <enabled>true</enabled>
+        <name>RES_Generate_URC_Button_Visibility</name>
+    </customPermissions>
     <customPermissions>
         <enabled>true</enabled>
         <name>RES_Can_Submit_Discount_Approval</name>
@@ -4621,6 +4625,21 @@
     </fieldPermissions>
     <fieldPermissions>
         <editable>true</editable>
+        <field>Contract.RES_Point_of_Sale_Transaction_No__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>Contract.RES_SADAD_Transaction_No__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>Contract.RES_Transfer_Transaction_No__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
         <field>Account.RES_Country_Arabic__c</field>
         <readable>true</readable>
     </fieldPermissions>
@@ -4642,6 +4661,16 @@
     <fieldPermissions>
         <editable>true</editable>
         <field>Account.RES_Country_Of_Company_Incorporation_AR__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>Account.RES_Is_GCC_ID__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>Account.RES_Is_National_ID_Or_Iqama__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>

@@ -4,6 +4,10 @@
     <category>busop</category>
     <deployed>true</deployed>
     <description>Contract Report</description>
+    <join>
+        <outerJoin>false</outerJoin>
+        <relationship>ContractItemPrices</relationship>
+    </join>
     <label>Contract Report</label>
     <sections>
         <columns>
@@ -113,6 +117,11 @@
         </columns>
         <columns>
             <checkedByDefault>false</checkedByDefault>
+            <field>ContractDocVersionCount</field>
+            <table>Contract</table>
+        </columns>
+        <columns>
+            <checkedByDefault>false</checkedByDefault>
             <field>ContractType</field>
             <table>Contract</table>
         </columns>
@@ -153,6 +162,11 @@
         </columns>
         <columns>
             <checkedByDefault>false</checkedByDefault>
+            <field>POC_Total_Contract_Value__c</field>
+            <table>Contract</table>
+        </columns>
+        <columns>
+            <checkedByDefault>false</checkedByDefault>
             <field>RES_SPA_Signed_Date__c</field>
             <table>Contract</table>
         </columns>
@@ -173,6 +187,26 @@
         </columns>
         <columns>
             <checkedByDefault>false</checkedByDefault>
+            <field>RES_Approval_Status__c</field>
+            <table>Contract</table>
+        </columns>
+        <columns>
+            <checkedByDefault>false</checkedByDefault>
+            <field>RES_Close_Lost_Reason_from_Opportunity__c</field>
+            <table>Contract</table>
+        </columns>
+        <columns>
+            <checkedByDefault>false</checkedByDefault>
+            <field>RES_Cancellation_Reason__c</field>
+            <table>Contract</table>
+        </columns>
+        <columns>
+            <checkedByDefault>false</checkedByDefault>
+            <field>RES_CompanySignedDate_Arabic__c</field>
+            <table>Contract</table>
+        </columns>
+        <columns>
+            <checkedByDefault>false</checkedByDefault>
             <field>RES_Total_Contract_Value__c</field>
             <table>Contract</table>
         </columns>
@@ -181,6 +215,109 @@
             <field>SourceOpportunity.RES_Project__c</field>
             <table>Contract</table>
         </columns>
+        <columns>
+            <checkedByDefault>false</checkedByDefault>
+            <field>RES_Company_Code__c</field>
+            <table>Contract</table>
+        </columns>
+        <columns>
+            <checkedByDefault>false</checkedByDefault>
+            <field>RES_Contract_Type__c</field>
+            <table>Contract</table>
+        </columns>
+        <columns>
+            <checkedByDefault>false</checkedByDefault>
+            <field>DIR_Old_Contract__c</field>
+            <table>Contract</table>
+        </columns>
+        <columns>
+            <checkedByDefault>false</checkedByDefault>
+            <field>DIR_Notice_Period__c</field>
+            <table>Contract</table>
+        </columns>
+        <columns>
+            <checkedByDefault>false</checkedByDefault>
+            <field>RES_Reason_for_Notice__c</field>
+            <table>Contract</table>
+        </columns>
+        <columns>
+            <checkedByDefault>false</checkedByDefault>
+            <field>RES_BE_for_Contract__c</field>
+            <table>Contract</table>
+        </columns>
+        <columns>
+            <checkedByDefault>false</checkedByDefault>
+            <field>RES_Payment_Plan_ID__c</field>
+            <table>Contract</table>
+        </columns>
+        <columns>
+            <checkedByDefault>false</checkedByDefault>
+            <field>RES_First_Residential_Buyer__c</field>
+            <table>Contract</table>
+        </columns>
+        <columns>
+            <checkedByDefault>false</checkedByDefault>
+            <field>RES_Reservation_Status__c</field>
+            <table>Contract</table>
+        </columns>
+        <columns>
+            <checkedByDefault>false</checkedByDefault>
+            <field>RES_Last_Sync_DateTime__c</field>
+            <table>Contract</table>
+        </columns>
+        <columns>
+            <checkedByDefault>false</checkedByDefault>
+            <field>DIR_First_Entered_On__c</field>
+            <table>Contract</table>
+        </columns>
+        <columns>
+            <checkedByDefault>false</checkedByDefault>
+            <field>RES_Notice_Activated_On__c</field>
+            <table>Contract</table>
+        </columns>
+        <columns>
+            <checkedByDefault>false</checkedByDefault>
+            <field>RES_Hijri_From_Date__c</field>
+            <table>Contract</table>
+        </columns>
+        <columns>
+            <checkedByDefault>false</checkedByDefault>
+            <field>RES_Hijri_To_Date__c</field>
+            <table>Contract</table>
+        </columns>
+        <columns>
+            <checkedByDefault>false</checkedByDefault>
+            <field>RES_Actual_Created_Date__c</field>
+            <table>Contract</table>
+        </columns>
         <masterLabel>Contracts</masterLabel>
+    </sections>
+    <sections>
+        <columns>
+            <checkedByDefault>false</checkedByDefault>
+            <field>RES_Product__c.RES_Business_Entity__c</field>
+            <table>Contract.ContractItemPrices</table>
+        </columns>
+        <columns>
+            <checkedByDefault>false</checkedByDefault>
+            <field>RES_Product__c.RES_Business_Entity__c.Name</field>
+            <table>Contract.ContractItemPrices</table>
+        </columns>
+        <columns>
+            <checkedByDefault>false</checkedByDefault>
+            <field>Item-ProductCategory</field>
+            <table>Contract.ContractItemPrices</table>
+        </columns>
+        <columns>
+            <checkedByDefault>false</checkedByDefault>
+            <field>RES_Unit_Check__c</field>
+            <table>Contract.ContractItemPrices</table>
+        </columns>
+        <columns>
+            <checkedByDefault>false</checkedByDefault>
+            <field>RES_CIP_Type__c</field>
+            <table>Contract.ContractItemPrices</table>
+        </columns>
+        <masterLabel>ContractItemPrice</masterLabel>
     </sections>
 </ReportType>
