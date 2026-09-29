@@ -82,6 +82,8 @@ private class RES_ProductCatalogIntegrationServiceTest {
     static void hydrateBody_multipleCatalogs_returnsArrayJson() {
         RES_IntegrationTestDataFactory.primeSapToken();
         Test.setMock(HttpCalloutMock.class, new RES_IntegrationTestDataFactory.EndpointRoutingMock());
+        RES_IntegrationRequestEventService.batchSubmitter =
+            new RES_IntegrationRequestEventService.CountingBatchSubmitter();
         ProductCatalog pc1 = buildCatalog();
         ProductCatalog pc2 = new ProductCatalog(Name = 'Second Test Catalog');
         insert pc2;
@@ -143,6 +145,8 @@ private class RES_ProductCatalogIntegrationServiceTest {
     static void hydrateMeasurements_happyPath_returnsCatalogWithMeasurements() {
         RES_IntegrationTestDataFactory.primeSapToken();
         Test.setMock(HttpCalloutMock.class, new RES_IntegrationTestDataFactory.EndpointRoutingMock());
+        RES_IntegrationRequestEventService.batchSubmitter =
+            new RES_IntegrationRequestEventService.CountingBatchSubmitter();
         ProductCatalog catalog = buildCatalog();
         List<RES_Measurement__c> measurements =
             RES_IntegrationTestDataFactory.createMeasurementsForCatalog(catalog.Id, 2);
@@ -191,6 +195,8 @@ private class RES_ProductCatalogIntegrationServiceTest {
     static void hydrateMeasurements_multipleCatalogs_returnsArray() {
         RES_IntegrationTestDataFactory.primeSapToken();
         Test.setMock(HttpCalloutMock.class, new RES_IntegrationTestDataFactory.EndpointRoutingMock());
+        RES_IntegrationRequestEventService.batchSubmitter =
+            new RES_IntegrationRequestEventService.CountingBatchSubmitter();
         ProductCatalog cat1 = buildCatalog();
         ProductCatalog cat2 = new ProductCatalog(Name = 'Second Catalog For Measurement');
         insert cat2;

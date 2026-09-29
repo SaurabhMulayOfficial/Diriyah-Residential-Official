@@ -4,6 +4,10 @@
     <category>busop</category>
     <deployed>true</deployed>
     <description>Contract Report</description>
+    <join>
+        <outerJoin>false</outerJoin>
+        <relationship>ContractItemPrices</relationship>
+    </join>
     <label>Contract Report</label>
     <sections>
         <columns>
@@ -182,5 +186,33 @@
             <table>Contract</table>
         </columns>
         <masterLabel>Contracts</masterLabel>
+    </sections>
+    <sections>
+        <columns>
+            <checkedByDefault>false</checkedByDefault>
+            <field>RES_Product__c.RES_Business_Entity__c</field>
+            <table>Contract.ContractItemPrices</table>
+        </columns>
+        <columns>
+            <checkedByDefault>false</checkedByDefault>
+            <field>RES_Product__c.RES_Business_Entity__c.Name</field>
+            <table>Contract.ContractItemPrices</table>
+        </columns>
+        <columns>
+            <checkedByDefault>false</checkedByDefault>
+            <field>Item-ProductCategory</field>
+            <table>Contract.ContractItemPrices</table>
+        </columns>
+        <columns>
+            <checkedByDefault>false</checkedByDefault>
+            <field>RES_Unit_Check__c</field>
+            <table>Contract.ContractItemPrices</table>
+        </columns>
+        <columns>
+            <checkedByDefault>false</checkedByDefault>
+            <field>RES_CIP_Type__c</field>
+            <table>Contract.ContractItemPrices</table>
+        </columns>
+        <masterLabel>ContractItemPrice</masterLabel>
     </sections>
 </ReportType>

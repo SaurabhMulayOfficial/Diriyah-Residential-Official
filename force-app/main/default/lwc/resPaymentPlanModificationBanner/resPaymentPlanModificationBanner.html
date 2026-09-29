@@ -1,0 +1,17 @@
+<template>
+    <template if:true={isPending}>
+        <div class="slds-notify slds-notify_alert slds-theme_alert-texture slds-p-around_medium slds-theme_warning" role="alert">
+            <lightning-icon
+                icon-name="utility:warning"
+                alternative-text="Pending Modification Approval"
+                size="small"
+                class="slds-m-right_medium">
+            </lightning-icon>
+            <div class="slds-grow">
+                <template for:each={bannerLines} for:item="line">
+                    <p key={line} class="slds-text-heading_small">{line}</p>
+                </template>
+            </div>
+        </div>
+    </template>
+</template>

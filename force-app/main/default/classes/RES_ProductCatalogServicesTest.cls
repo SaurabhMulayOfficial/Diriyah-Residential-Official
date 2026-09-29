@@ -42,18 +42,11 @@ private class RES_ProductCatalogServicesTest {
         return fields;
     }
 
-    private static Integer queueableJobCount() {
-        return [
-            SELECT COUNT()
-            FROM AsyncApexJob
-            WHERE JobType = 'Queueable'
-            AND ApexClass.Name = 'RES_IntegrationQueueable'
-        ];
-    }
-
     /**
      * Calls syncProductCatalog, delivers the event bus, and returns the
-     * delta in RES_IntegrationQueueable jobs caused by that call.
+     * delta in batch submissions caused by that call.
+     * Uses CountingBatchSubmitter to avoid hitting the one-executeBatch-per-test limit and
+     * to count the correct job type (BatchApex / RES_IntegrationAPIRouterBatch).
      */
     private static Integer syncAndCountJobs(
         List<ProductCatalog> catalogs,
@@ -64,14 +57,18 @@ private class RES_ProductCatalogServicesTest {
             new RES_IntegrationTestDataFactory.EndpointRoutingMock();
         Test.setMock(HttpCalloutMock.class, mock);
 
+        RES_IntegrationRequestEventService.CountingBatchSubmitter spy =
+            new RES_IntegrationRequestEventService.CountingBatchSubmitter();
+        RES_IntegrationRequestEventService.batchSubmitter = spy;
+
         Test.startTest();
         Test.getEventBus().deliver();   // flush events from test-data inserts
-        Integer before = queueableJobCount();
+        Integer before = spy.callCount;
 
         RES_ProductCatalogServices.syncProductCatalog(catalogs, oldMap);
         Test.getEventBus().deliver();   // deliver the event published by the service
 
-        Integer after = queueableJobCount();
+        Integer after = spy.callCount;
         Test.stopTest();
         return after - before;
     }

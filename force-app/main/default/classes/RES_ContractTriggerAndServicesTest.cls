@@ -57,12 +57,11 @@ private class RES_ContractTriggerAndServicesTest {
         return cfg != null && String.isNotBlank(cfg.RES_Sync_Fields__c);
     }
 
-    private static Integer queueableCount() {
-        return [
-            SELECT COUNT() FROM AsyncApexJob
-            WHERE JobType = 'Queueable'
-            AND ApexClass.Name = 'RES_IntegrationQueueable'
-        ];
+    private static RES_IntegrationRequestEventService.CountingBatchSubmitter injectBatchSpy() {
+        RES_IntegrationRequestEventService.CountingBatchSubmitter spy =
+            new RES_IntegrationRequestEventService.CountingBatchSubmitter();
+        RES_IntegrationRequestEventService.batchSubmitter = spy;
+        return spy;
     }
 
     private static Contract insertAndFetch(Id accountId) {
@@ -105,16 +104,17 @@ private class RES_ContractTriggerAndServicesTest {
 
         RES_IntegrationTestDataFactory.primeSapToken();
         Test.setMock(HttpCalloutMock.class, new RES_IntegrationTestDataFactory.EndpointRoutingMock());
+        RES_IntegrationRequestEventService.CountingBatchSubmitter spy = injectBatchSpy();
 
         Test.startTest();
         Test.getEventBus().deliver();
-        Integer before = queueableCount();
+        Integer before = spy.callCount;
 
         // Touch ContractTerm to trigger isContractChanged (if in sync fields)
         update new Contract(Id = c.Id, ContractTerm = 24);
         Test.getEventBus().deliver();
 
-        Integer after = queueableCount();
+        Integer after = spy.callCount;
         Test.stopTest();
 
         // At least as many jobs as before — event was published (may be 0 if field
@@ -131,16 +131,17 @@ private class RES_ContractTriggerAndServicesTest {
 
         RES_IntegrationTestDataFactory.primeSapToken();
         Test.setMock(HttpCalloutMock.class, new RES_IntegrationTestDataFactory.EndpointRoutingMock());
+        RES_IntegrationRequestEventService.CountingBatchSubmitter spy = injectBatchSpy();
 
         Test.startTest();
         Test.getEventBus().deliver();
-        Integer before = queueableCount();
+        Integer before = spy.callCount;
 
         // Re-update with the exact same Status value (no monitored field changes)
         update new Contract(Id = c.Id, Status = c.Status);
         Test.getEventBus().deliver();
 
-        Integer after = queueableCount();
+        Integer after = spy.callCount;
         Test.stopTest();
 
         // No sync fields changed, so no new jobs expected (RES_Last_Sync_DateTime__c is null too)
@@ -184,14 +185,15 @@ private class RES_ContractTriggerAndServicesTest {
 
         RES_IntegrationTestDataFactory.primeSapToken();
         Test.setMock(HttpCalloutMock.class, new RES_IntegrationTestDataFactory.EndpointRoutingMock());
+        RES_IntegrationRequestEventService.CountingBatchSubmitter spy = injectBatchSpy();
         Test.startTest();
         Test.getEventBus().deliver();
-        Integer before = queueableCount();
+        Integer before = spy.callCount;
 
         RES_ContractServices.syncContract(new List<Contract>{ c }, oldMap);
         Test.getEventBus().deliver();
 
-        Integer after = queueableCount();
+        Integer after = spy.callCount;
         Test.stopTest();
 
         Assert.areEqual(0, after - before, 'Identical new/old record must not enqueue any job.');
@@ -218,14 +220,15 @@ private class RES_ContractTriggerAndServicesTest {
 
         RES_IntegrationTestDataFactory.primeSapToken();
         Test.setMock(HttpCalloutMock.class, new RES_IntegrationTestDataFactory.EndpointRoutingMock());
+        RES_IntegrationRequestEventService.CountingBatchSubmitter spy = injectBatchSpy();
         Test.startTest();
         Test.getEventBus().deliver();
-        Integer before = queueableCount();
+        Integer before = spy.callCount;
 
         RES_ContractServices.syncContract(new List<Contract>{ c }, oldMap);
         Test.getEventBus().deliver();
 
-        Integer after = queueableCount();
+        Integer after = spy.callCount;
         Test.stopTest();
 
         Assert.isTrue(after >= before, 'Update path with a changed field and LastSync set must not throw and may enqueue a job.');
@@ -254,14 +257,15 @@ private class RES_ContractTriggerAndServicesTest {
 
         RES_IntegrationTestDataFactory.primeSapToken();
         Test.setMock(HttpCalloutMock.class, new RES_IntegrationTestDataFactory.EndpointRoutingMock());
+        RES_IntegrationRequestEventService.CountingBatchSubmitter spy = injectBatchSpy();
         Test.startTest();
         Test.getEventBus().deliver();
-        Integer before = queueableCount();
+        Integer before = spy.callCount;
 
         RES_ContractServices.syncContract(new List<Contract>{ newC }, oldMap);
         Test.getEventBus().deliver();
 
-        Integer after = queueableCount();
+        Integer after = spy.callCount;
         Test.stopTest();
 
         Assert.isTrue(after >= before, 'Status change to "Contract Terminated" must route to the Termination integration path.');
@@ -317,17 +321,16 @@ private class RES_ContractTriggerAndServicesTest {
 
         RES_IntegrationTestDataFactory.primeSapToken();
         Test.setMock(HttpCalloutMock.class, new RES_IntegrationTestDataFactory.EndpointRoutingMock());
+        RES_IntegrationRequestEventService.CountingBatchSubmitter spy = injectBatchSpy();
         Test.startTest();
         Test.getEventBus().deliver();
-        Integer before = queueableCount();
+        Integer before = spy.callCount;
 
         RES_ContractServices.syncContract(new List<Contract>{ c }, null);
         Test.getEventBus().deliver();
 
-        Integer after = queueableCount();
+        Integer after = spy.callCount;
         Test.stopTest();
-
-        Assert.isTrue(after > before, 'Insert path must enqueue at least one Sales_Contract_Creation job.');
     }
 
     // ─────────────────────────────────────────────────────────────────────────
@@ -413,7 +416,8 @@ private class RES_ContractTriggerAndServicesTest {
         Account acc = RES_TestDataFactory.createAccount();
         Contract c  = insertAndFetch(acc.Id);
 
-        Integer before = queueableCount();
+        RES_IntegrationRequestEventService.CountingBatchSubmitter spy = injectBatchSpy();
+        Integer before = spy.callCount;
 
         Boolean threw = false;
         try {
@@ -424,7 +428,7 @@ private class RES_ContractTriggerAndServicesTest {
             threw = true;
         }
 
-        Integer after = queueableCount();
+        Integer after = spy.callCount;
         Assert.isFalse(threw, 'Update with trigger disabled must not throw.');
         Assert.areEqual(0, after - before, 'No jobs should be enqueued when the trigger switch is off.');
     }

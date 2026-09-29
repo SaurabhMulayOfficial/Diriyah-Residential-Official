@@ -24,13 +24,11 @@ private class RES_ContractServicesTest {
         return cfg != null && String.isNotBlank(cfg.RES_Sync_Fields__c);
     }
 
-    private static Integer queueableJobCount() {
-        return [
-            SELECT COUNT()
-            FROM AsyncApexJob
-            WHERE JobType = 'Queueable'
-            AND ApexClass.Name = 'RES_IntegrationQueueable'
-        ];
+    private static RES_IntegrationRequestEventService.CountingBatchSubmitter injectBatchSpy() {
+        RES_IntegrationRequestEventService.CountingBatchSubmitter spy =
+            new RES_IntegrationRequestEventService.CountingBatchSubmitter();
+        RES_IntegrationRequestEventService.batchSubmitter = spy;
+        return spy;
     }
 
     private static Contract createAndFetchContract(Id accountId) {
@@ -89,14 +87,15 @@ private class RES_ContractServicesTest {
 
         RES_IntegrationTestDataFactory.primeSapToken();
         Test.setMock(HttpCalloutMock.class, new RES_IntegrationTestDataFactory.EndpointRoutingMock());
+        RES_IntegrationRequestEventService.CountingBatchSubmitter spy = injectBatchSpy();
         Test.startTest();
         Test.getEventBus().deliver();
-        Integer before = queueableJobCount();
+        Integer before = spy.callCount;
 
         RES_ContractServices.syncContract(new List<Contract>{ c }, null);
         Test.getEventBus().deliver();
 
-        Integer after = queueableJobCount();
+        Integer after = spy.callCount;
         Test.stopTest();
 
         Assert.areEqual(1, after - before, 'A single inserted contract should enqueue one integration job.');
@@ -112,14 +111,15 @@ private class RES_ContractServicesTest {
 
         RES_IntegrationTestDataFactory.primeSapToken();
         Test.setMock(HttpCalloutMock.class, new RES_IntegrationTestDataFactory.EndpointRoutingMock());
+        RES_IntegrationRequestEventService.CountingBatchSubmitter spy = injectBatchSpy();
         Test.startTest();
         Test.getEventBus().deliver();
-        Integer before = queueableJobCount();
+        Integer before = spy.callCount;
 
         RES_ContractServices.syncContract(new List<Contract>{ c1, c2 }, null);
         Test.getEventBus().deliver();
 
-        Integer after = queueableJobCount();
+        Integer after = spy.callCount;
         Test.stopTest();
 
         Assert.areEqual(
@@ -192,14 +192,15 @@ private class RES_ContractServicesTest {
 
         RES_IntegrationTestDataFactory.primeSapToken();
         Test.setMock(HttpCalloutMock.class, new RES_IntegrationTestDataFactory.EndpointRoutingMock());
+        RES_IntegrationRequestEventService.CountingBatchSubmitter spy = injectBatchSpy();
         Test.startTest();
         Test.getEventBus().deliver();
-        Integer before = queueableJobCount();
+        Integer before = spy.callCount;
 
         RES_ContractServices.syncContract(new List<Contract>{ c }, oldMap);
         Test.getEventBus().deliver();
 
-        Integer after = queueableJobCount();
+        Integer after = spy.callCount;
         Test.stopTest();
 
         Assert.areEqual(0, after - before, 'No event should fire when no sync fields changed.');
@@ -223,14 +224,15 @@ private class RES_ContractServicesTest {
 
         RES_IntegrationTestDataFactory.primeSapToken();
         Test.setMock(HttpCalloutMock.class, new RES_IntegrationTestDataFactory.EndpointRoutingMock());
+        RES_IntegrationRequestEventService.CountingBatchSubmitter spy = injectBatchSpy();
         Test.startTest();
         Test.getEventBus().deliver();
-        Integer before = queueableJobCount();
+        Integer before = spy.callCount;
 
         RES_ContractServices.syncContract(new List<Contract>{ newC }, oldMap);
         Test.getEventBus().deliver();
 
-        Integer after = queueableJobCount();
+        Integer after = spy.callCount;
         Test.stopTest();
 
         Assert.areEqual(0, after - before, 'A changed sync field should not enqueue one integration job.');
