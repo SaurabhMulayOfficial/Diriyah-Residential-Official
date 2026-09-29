@@ -129,9 +129,9 @@ private class RES_AttrBasedAdjTriggerHandlerTest {
             AdjustmentValue           = 1500000,
             EffectiveFrom             = Datetime.newInstanceGmt(Date.today(), Time.newInstance(0, 0, 0, 0))
         );
-        insert aba;
+        Database.insert(new List<AttributeBasedAdjustment>{ aba }, false, AccessLevel.SYSTEM_MODE);
         aba.AdjustmentValue = 1600000;
-        update aba;
+        Database.update(new List<AttributeBasedAdjustment>{ aba }, false, AccessLevel.SYSTEM_MODE);
         Test.getEventBus().deliver();
         Test.stopTest();
 
