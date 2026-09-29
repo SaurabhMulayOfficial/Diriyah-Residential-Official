@@ -13,7 +13,7 @@ public with sharing class RES_ContractDAOLayer extends RES_BaseDAOLayer {
     protected override String getSObjectName() {
         return 'Contract';
     }
-
+    
     /**
      * Get contracts by opportunity IDs
      * @param opportunityIds Set of opportunity IDs
@@ -25,48 +25,48 @@ public with sharing class RES_ContractDAOLayer extends RES_BaseDAOLayer {
         }
         Map<String, Object> bindVars = new Map<String, Object>();
         bindVars.put('opportunityIds', opportunityIds);
-
+        
         String soql = 'SELECT Id, Status, SourceOpportunityId ' +
-                    'FROM Contract ' +
-                    'WHERE SourceOpportunityId IN :opportunityIds';
+            'FROM Contract ' +
+            'WHERE SourceOpportunityId IN :opportunityIds';
         return (List<Contract>) executeQuery(soql, '', false, bindVars, AccessLevel.SYSTEM_MODE);
     }
-
+    
     public List<Contract> getContractsByIds(Set<Id> contractIds) {
         if (contractIds == null || contractIds.isEmpty()) {
             return new List<Contract>();
         }
-
+        
         Map<String, Object> bindVars = new Map<String, Object>{
             'contractIds' => contractIds
-        };
-
-        String soql =
-            'SELECT Id, OwnerId, StartDate, Status, RES_Company_Code__c, RES_Approval_Status__c, EndDate, RES_External_ID__c, ContractNumber, Owner.Name, CompanySignedDate, RES_Last_Sync_DateTime__c, ' +
-            '       RES_Contract_Type__c, TerminationDateTime, TerminationReason, TerminationType, RES_First_Residential_Buyer__c, DIR_Old_Contract__c, RES_S4_Contract_Id__c, RES_Cancellation_Reason__c, ' +
-            '       Account.RES_BP_Role__c, Account.RES_External_Key__c ' +
-            'FROM Contract ' +
-            'WHERE Id IN :contractIds';
-
+                };
+                    
+                    String soql =
+                    'SELECT Id, OwnerId, StartDate, Status, RES_Company_Code__c, RES_Approval_Status__c, EndDate, RES_External_ID__c, ContractNumber, Owner.Name, CompanySignedDate, RES_Last_Sync_DateTime__c, ' +
+                    '       RES_Contract_Type__c, TerminationDateTime, TerminationReason, TerminationType, RES_First_Residential_Buyer__c, DIR_Old_Contract__c, RES_S4_Contract_Id__c, RES_Cancellation_Reason__c, ' +
+                    '       Account.RES_BP_Role__c, Account.RES_External_Key__c ' +
+                    'FROM Contract ' +
+                    'WHERE Id IN :contractIds';
+        
         return (List<Contract>) executeQuery(soql, '', false, bindVars, AccessLevel.SYSTEM_MODE);
     }
     
-   public Map<Id, Contract> getContractsForFinalPayment(Set<Id> contractIds) {
-    if (contractIds == null || contractIds.isEmpty()) {
-        return new Map<Id, Contract>();
+    public Map<Id, Contract> getContractsForFinalPayment(Set<Id> contractIds) {
+        if (contractIds == null || contractIds.isEmpty()) {
+            return new Map<Id, Contract>();
+        }
+        
+        Map<String, Object> bindVars = new Map<String, Object>{
+            'contractIds' => contractIds
+                };
+                    
+                    String soql =
+                    'SELECT Id, RES_Final_Payment__c ' +
+                    'FROM Contract ' +
+                    'WHERE Id IN :contractIds';
+        
+        return new Map<Id, Contract>(
+            (List<Contract>) executeQuery(soql, '', false, bindVars, AccessLevel.SYSTEM_MODE)
+        );
     }
-
-    Map<String, Object> bindVars = new Map<String, Object>{
-        'contractIds' => contractIds
-    };
-
-    String soql =
-        'SELECT Id, RES_Final_Payment__c ' +
-        'FROM Contract ' +
-        'WHERE Id IN :contractIds';
-
-    return new Map<Id, Contract>(
-        (List<Contract>) executeQuery(soql, '', false, bindVars, AccessLevel.SYSTEM_MODE)
-    );
-}
 }
