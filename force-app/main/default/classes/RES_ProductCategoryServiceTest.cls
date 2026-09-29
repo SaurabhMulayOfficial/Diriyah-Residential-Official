@@ -110,17 +110,26 @@ private class RES_ProductCategoryServiceTest {
     }
 
     /**
-     * Calls syncProductCategories and returns how many batch submissions that call caused.
-     * Uses CountingBatchSubmitter to avoid hitting the one-executeBatch-per-test limit and
-     * to count the correct job type (BatchApex / RES_IntegrationAPIRouterBatch).
+     * Injects CountingBatchSubmitter and returns it.  Must be called BEFORE any DML so that
+     * any synchronous enqueueService calls fired by QA-deployed triggers are absorbed.
      */
-    private static Integer syncAndCountJobs(
-        List<ProductCategory> records, Map<Id, ProductCategory> oldMap
-    ) {
-        setUpCallouts();
+    private static RES_IntegrationRequestEventService.CountingBatchSubmitter injectSpy() {
         RES_IntegrationRequestEventService.CountingBatchSubmitter spy =
             new RES_IntegrationRequestEventService.CountingBatchSubmitter();
         RES_IntegrationRequestEventService.batchSubmitter = spy;
+        return spy;
+    }
+
+    /**
+     * Calls syncProductCategories and returns how many batch submissions that call caused.
+     * Caller must have already called injectSpy() and passed the returned spy here.
+     */
+    private static Integer syncAndCountJobs(
+        List<ProductCategory> records,
+        Map<Id, ProductCategory> oldMap,
+        RES_IntegrationRequestEventService.CountingBatchSubmitter spy
+    ) {
+        setUpCallouts();
 
         Test.startTest();
         Test.getEventBus().deliver();          // flush events fired by the test-data inserts
@@ -140,9 +149,10 @@ private class RES_ProductCategoryServiceTest {
     @IsTest
     static void sync_insert_publishesEventForAllRecords() {
         if (!canRun()) { return; }
+        RES_IntegrationRequestEventService.CountingBatchSubmitter spy = injectSpy();
         List<ProductCategory> categories = RES_IntegrationTestDataFactory.createCategories(2, true);
 
-        Integer jobs = syncAndCountJobs(categories, null);
+        Integer jobs = syncAndCountJobs(categories, null, spy);
 
         Assert.areEqual(1, jobs, 'A single event / job should cover all inserted categories');
         Assert.areEqual(0, mock.tokenCallCount, 'Primed token should avoid the token callout');
@@ -154,11 +164,12 @@ private class RES_ProductCategoryServiceTest {
     @IsTest
     static void sync_update_syncFieldChanged_publishesEvent() {
         if (!canRun()) { return; }
+        RES_IntegrationRequestEventService.CountingBatchSubmitter spy = injectSpy();
         List<ProductCategory> categories = RES_IntegrationTestDataFactory.createCategories(2, true);
         String field = findPopulatedSyncField(categories[0]);
         if (field == null) { return; }
 
-        Integer jobs = syncAndCountJobs(categories, buildOldMap(categories, field, categories.size()));
+        Integer jobs = syncAndCountJobs(categories, buildOldMap(categories, field, categories.size()), spy);
 
         Assert.areEqual(1, jobs, 'A changed sync field should publish an event');
     }
@@ -166,9 +177,10 @@ private class RES_ProductCategoryServiceTest {
     @IsTest
     static void sync_update_noChanges_publishesNothing() {
         if (!canRun()) { return; }
+        RES_IntegrationRequestEventService.CountingBatchSubmitter spy = injectSpy();
         List<ProductCategory> categories = RES_IntegrationTestDataFactory.createCategories(2, true);
 
-        Integer jobs = syncAndCountJobs(categories, buildOldMap(categories, null, 0));
+        Integer jobs = syncAndCountJobs(categories, buildOldMap(categories, null, 0), spy);
 
         Assert.areEqual(0, jobs, 'Identical old/new values should not publish an event');
     }
@@ -176,11 +188,12 @@ private class RES_ProductCategoryServiceTest {
     @IsTest
     static void sync_update_onlyNonSyncFieldChanged_publishesNothing() {
         if (!canRun()) { return; }
+        RES_IntegrationRequestEventService.CountingBatchSubmitter spy = injectSpy();
         List<ProductCategory> categories = RES_IntegrationTestDataFactory.createCategories(2, true);
         String field = findPopulatedNonSyncField(categories[0]);
         if (field == null) { return; }
 
-        Integer jobs = syncAndCountJobs(categories, buildOldMap(categories, field, categories.size()));
+        Integer jobs = syncAndCountJobs(categories, buildOldMap(categories, field, categories.size()), spy);
 
         Assert.areEqual(0, jobs, 'A change to a field outside RES_Sync_Fields__c must be ignored');
     }
@@ -188,12 +201,13 @@ private class RES_ProductCategoryServiceTest {
     @IsTest
     static void sync_update_mixedChangedAndUnchanged_publishesSingleEvent() {
         if (!canRun()) { return; }
+        RES_IntegrationRequestEventService.CountingBatchSubmitter spy = injectSpy();
         List<ProductCategory> categories = RES_IntegrationTestDataFactory.createCategories(3, true);
         String field = findPopulatedSyncField(categories[0]);
         if (field == null) { return; }
 
         // Only the first record differs from its "old" version
-        Integer jobs = syncAndCountJobs(categories, buildOldMap(categories, field, 1));
+        Integer jobs = syncAndCountJobs(categories, buildOldMap(categories, field, 1), spy);
 
         Assert.areEqual(1, jobs, 'Only changed records are synced, in one event');
     }
@@ -201,10 +215,11 @@ private class RES_ProductCategoryServiceTest {
     @IsTest
     static void sync_update_recordMissingFromOldMap_treatedAsChanged() {
         if (!canRun()) { return; }
+        RES_IntegrationRequestEventService.CountingBatchSubmitter spy = injectSpy();
         List<ProductCategory> categories = RES_IntegrationTestDataFactory.createCategories(1, true);
 
         // Non-null but empty oldMap -> oldMap.get(Id) is null -> isCategoryChanged returns true
-        Integer jobs = syncAndCountJobs(categories, new Map<Id, ProductCategory>());
+        Integer jobs = syncAndCountJobs(categories, new Map<Id, ProductCategory>(), spy);
 
         Assert.areEqual(1, jobs, 'A record absent from oldMap should be treated as changed');
     }
@@ -215,8 +230,9 @@ private class RES_ProductCategoryServiceTest {
     @IsTest
     static void sync_emptyList_insertContext_publishesNothing() {
         if (!canRun()) { return; }
+        RES_IntegrationRequestEventService.CountingBatchSubmitter spy = injectSpy();
 
-        Integer jobs = syncAndCountJobs(new List<ProductCategory>(), null);
+        Integer jobs = syncAndCountJobs(new List<ProductCategory>(), null, spy);
 
         Assert.areEqual(0, jobs, 'Empty input should not publish an event');
     }
@@ -224,8 +240,9 @@ private class RES_ProductCategoryServiceTest {
     @IsTest
     static void sync_emptyList_updateContext_publishesNothing() {
         if (!canRun()) { return; }
+        RES_IntegrationRequestEventService.CountingBatchSubmitter spy = injectSpy();
 
-        Integer jobs = syncAndCountJobs(new List<ProductCategory>(), new Map<Id, ProductCategory>());
+        Integer jobs = syncAndCountJobs(new List<ProductCategory>(), new Map<Id, ProductCategory>(), spy);
 
         Assert.areEqual(0, jobs, 'Empty input should not publish an event');
     }
