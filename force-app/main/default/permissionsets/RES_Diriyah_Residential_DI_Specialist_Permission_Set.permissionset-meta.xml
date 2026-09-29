@@ -19,6 +19,14 @@ Sales – DI – Relationship Manager</description>
         <enabled>true</enabled>
         <name>RES_Show_Document_Section</name>
     </customPermissions>
+    <customPermissions>
+        <enabled>true</enabled>
+        <name>RES_Generate_SPA_Button_Visibility</name>
+    </customPermissions>
+    <customPermissions>
+        <enabled>true</enabled>
+        <name>RES_Generate_URC_Button_Visibility</name>
+    </customPermissions>
         <fieldPermissions>
         <editable>false</editable>
         <field>ContractItemPrice.RES_Product__c</field>
@@ -2989,6 +2997,21 @@ Sales – DI – Relationship Manager</description>
         <field>Contract.RES_First_Residential_Buyer__c</field>
         <readable>true</readable>
     </fieldPermissions>
+        <fieldPermissions>
+            <editable>false</editable>
+            <field>Contract.RES_Point_of_Sale_Transaction_No__c</field>
+            <readable>true</readable>
+        </fieldPermissions>
+        <fieldPermissions>
+            <editable>false</editable>
+            <field>Contract.RES_SADAD_Transaction_No__c</field>
+            <readable>true</readable>
+        </fieldPermissions>
+        <fieldPermissions>
+            <editable>false</editable>
+            <field>Contract.RES_Transfer_Transaction_No__c</field>
+            <readable>true</readable>
+        </fieldPermissions>
     <fieldPermissions>
         <editable>false</editable>
         <field>ApprovalWorkItem.RES_SLA_End_Date__c</field>

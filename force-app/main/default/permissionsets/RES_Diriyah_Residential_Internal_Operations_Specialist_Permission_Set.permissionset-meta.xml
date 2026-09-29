@@ -32,6 +32,14 @@
         <enabled>true</enabled>
         <name>RES_Update_Unit_Visibility</name>
     </customPermissions>
+    <customPermissions>
+        <enabled>true</enabled>
+        <name>RES_Generate_SPA_Button_Visibility</name>
+    </customPermissions>
+    <customPermissions>
+        <enabled>true</enabled>
+        <name>RES_Generate_URC_Button_Visibility</name>
+    </customPermissions>
     <description>Permission Set for Internal Operations – Operations – Specialist</description>
     <classAccesses>
         <apexClass>RES_BulkFolderUploaderController</apexClass>
@@ -3284,6 +3292,21 @@
         <field>Contract.RES_First_Residential_Buyer__c</field>
         <readable>true</readable>
     </fieldPermissions>
+        <fieldPermissions>
+            <editable>false</editable>
+            <field>Contract.RES_Point_of_Sale_Transaction_No__c</field>
+            <readable>true</readable>
+        </fieldPermissions>
+        <fieldPermissions>
+            <editable>false</editable>
+            <field>Contract.RES_SADAD_Transaction_No__c</field>
+            <readable>true</readable>
+        </fieldPermissions>
+        <fieldPermissions>
+            <editable>false</editable>
+            <field>Contract.RES_Transfer_Transaction_No__c</field>
+            <readable>true</readable>
+        </fieldPermissions>
     <fieldPermissions>
         <editable>false</editable>
         <field>ApprovalWorkItem.RES_SLA_End_Date__c</field>
