@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>RES_Is_GCC_ID_or_Passport_Num__c</fullName>
+    <description>Check for Passport and GCCId</description>
+    <formula>ISPICKVAL(RES_Identification_Type__c, &apos;ZIT03&apos;) || ISPICKVAL(RES_Identification_Type__c, &apos;GCC ID&apos;)</formula>
+    <label>Is GCC ID or Passport Num</label>
+    <trackHistory>false</trackHistory>
+    <type>Checkbox</type>
+</CustomField>
