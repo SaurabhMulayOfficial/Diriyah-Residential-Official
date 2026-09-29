@@ -245,9 +245,13 @@ public with sharing class RES_UnifiedIngestionEngine implements Database.Batchab
 
         Id recordTypeId = productRecordTypeId();
         List<Product2> products = new List<Product2>();
+        List<String> attemptedCodes = new List<String>();
 
         for (String code : codes) {
             List<RES_Product_Staging__c> rows = rowsByCode.get(code);
+            // resolveCatalogs/resolveCategories already recorded the row error; a referenced-but-missing catalog or category fails the product, not just the link.
+            if (catalogOrCategoryUnresolved(rows)) continue;
+            attemptedCodes.add(code);
             Product2 existing         = existingByExtId.get(code);
             Boolean isNew             = existing == null;
             if (isNew) newProductCodes.add(code);
@@ -298,7 +302,7 @@ public with sharing class RES_UnifiedIngestionEngine implements Database.Batchab
             Database.upsert(products, Product2.Fields.RES_Product_External_ID__c, false);
 
         for (Integer i = 0; i < saves.size(); i++) {
-            String code = codes[i];
+            String code = attemptedCodes[i];
             if (saves[i].isSuccess()) {
                 productIdByCode.put(code, saves[i].getId());
                 totalProducts++;
@@ -309,6 +313,17 @@ public with sharing class RES_UnifiedIngestionEngine implements Database.Batchab
             }
         }
         return productIdByCode;
+    }
+
+    /** True when any row's referenced catalog or category code is present but didn't resolve to an existing record. */
+    private Boolean catalogOrCategoryUnresolved(List<RES_Product_Staging__c> rows) {
+        for (RES_Product_Staging__c row : rows) {
+            String catCode = catalogCode(row);
+            if (catCode != null && !catalogIdByCode.containsKey(catCode)) return true;
+            String catgCode = categoryCode(row);
+            if (catgCode != null && !categoryIdByCode.containsKey(catgCode)) return true;
+        }
+        return false;
     }
 
     private Id productRecordTypeId() {

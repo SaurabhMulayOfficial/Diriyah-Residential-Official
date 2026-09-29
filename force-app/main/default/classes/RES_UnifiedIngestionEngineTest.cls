@@ -473,8 +473,8 @@ private class RES_UnifiedIngestionEngineTest {
     // ==================================================================
     // Missing catalog/category: resolveCatalogs/resolveCategories must no longer create
     // these on the fly. A staging row naming a catalog or category external identifier
-    // that doesn't already exist must fail with a row error, and no ProductCatalog/
-    // ProductCategory record may be created for it.
+    // that doesn't already exist must fail the row entirely - no ProductCatalog/
+    // ProductCategory, and no Product2 either, rather than silently proceeding.
     // ==================================================================
     @IsTest
     static void testMissingCatalogAndCategory_RecordsRowErrorAndCreatesNothing() {
@@ -497,6 +497,8 @@ private class RES_UnifiedIngestionEngineTest {
             'A referenced-but-missing catalog must not be created');
         Assert.areEqual(0, [SELECT COUNT() FROM ProductCategory WHERE Code = 'BLD-PartialCatalog-NoSuchBuilding2'],
             'A referenced-but-missing category must not be created, even when its catalog exists');
+        Assert.areEqual(0, [SELECT COUNT() FROM Product2 WHERE RES_Product_External_ID__c IN ('UNIT-700', 'UNIT-800')],
+            'The product itself must not be created when its catalog or category is missing, not just the link');
 
         Map<Id, RES_Product_Staging__c> finalRows = new Map<Id, RES_Product_Staging__c>(
             [SELECT Id, RES_Processing_Status__c, RES_Error_Log__c FROM RES_Product_Staging__c WHERE Id IN :scope]
@@ -714,6 +716,9 @@ private class RES_UnifiedIngestionEngineTest {
         RES_IngestionConfig.Layout layout = RES_IngestionConfig.layoutByCode(LAYOUT_CODE);
         delete [SELECT Id FROM ProductClassification WHERE Name = :layout.productClassification];
 
+        ProductCatalog clsCatalog = ensureCatalog('ClsCat');
+        ensureCategory(clsCatalog.Id, 'ClsCat', 'ClsBldg');
+
         // Attribute_Based_Adjustment (non-primary), no price anywhere on the row.
         RES_Product_Staging__c noPriceAdjustment = baseRow('CLS-100', 'ClsCat', 'ClsBldg');
         noPriceAdjustment.RES_Condition_Type__c = 'Y101';
@@ -764,6 +769,9 @@ private class RES_UnifiedIngestionEngineTest {
             IsActive                   = true
         );
         insert existing;
+
+        ProductCatalog wadiSafar2Catalog = ensureCatalog('WadiSafar2');
+        ensureCategory(wadiSafar2Catalog.Id, 'WadiSafar2', 'Villa Type C');
 
         RES_Product_Staging__c row = baseRow('UNIT-500', 'WadiSafar2', 'Villa Type C');
         row.RES_Product_Name__c = 'Updated Name';
