@@ -11,14 +11,8 @@
     <columns>PRODUCT2.LAST_UPDATE</columns>
     <columns>UPDATEDBY_USER.ALIAS</columns>
     <filterScope>Everything</filterScope>
-    <filters>
-        <field>PRODUCT2.RECORD_TYPE</field>
-        <operation>equals</operation>
-        <value>Product2.RES_Residential_Sales</value>
-    </filters>
     <label>All Products</label>
     <sharedTo>
-        <role>RES_Technology_Engineering_Head</role>
-        <roleAndSubordinatesInternal>RES_Sales_Operations_Executive_Director</roleAndSubordinatesInternal>
+        <group>RES_System_Administrator_Users</group>
     </sharedTo>
 </ListView>
