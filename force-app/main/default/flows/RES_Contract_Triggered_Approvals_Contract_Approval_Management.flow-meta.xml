@@ -40,6 +40,11 @@
     </decisions>
     <environments>Default</environments>
     <formulas>
+        <name>CancellationReason</name>
+        <dataType>String</dataType>
+        <expression>TEXT({!$Record.RES_Cancellation_Reasons__c})</expression>
+    </formulas>
+    <formulas>
         <name>RejectComments</name>
         <dataType>String</dataType>
         <expression>IF(
@@ -136,7 +141,7 @@
             <inputParameters>
                 <name>cancellationReason</name>
                 <value>
-                    <elementReference>$Record.RES_Cancellation_Reason__c</elementReference>
+                    <elementReference>CancellationReason</elementReference>
                 </value>
             </inputParameters>
             <inputParameters>
@@ -248,7 +253,7 @@
             <inputParameters>
                 <name>cancellationReason</name>
                 <value>
-                    <elementReference>$Record.RES_Cancellation_Reason__c</elementReference>
+                    <elementReference>CancellationReason</elementReference>
                 </value>
             </inputParameters>
             <inputParameters>
@@ -360,7 +365,7 @@
             <inputParameters>
                 <name>cancellationReason</name>
                 <value>
-                    <elementReference>$Record.RES_Cancellation_Reason__c</elementReference>
+                    <elementReference>CancellationReason</elementReference>
                 </value>
             </inputParameters>
             <inputParameters>
@@ -406,7 +411,7 @@
             <inputParameters>
                 <name>cancellationReason</name>
                 <value>
-                    <elementReference>$Record.RES_Cancellation_Reason__c</elementReference>
+                    <elementReference>CancellationReason</elementReference>
                 </value>
             </inputParameters>
             <inputParameters>
@@ -474,7 +479,7 @@
             <inputParameters>
                 <name>cancellationReason</name>
                 <value>
-                    <elementReference>$Record.RES_Cancellation_Reason__c</elementReference>
+                    <elementReference>CancellationReason</elementReference>
                 </value>
             </inputParameters>
             <inputParameters>

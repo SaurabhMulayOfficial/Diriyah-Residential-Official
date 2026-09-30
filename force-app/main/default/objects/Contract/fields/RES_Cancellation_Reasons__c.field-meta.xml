@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
-    <fullName>RES_Contract_Type__c</fullName>
-    <label>Contract Type</label>
+    <fullName>RES_Cancellation_Reasons__c</fullName>
+    <label>Cancellation Reason</label>
     <required>false</required>
     <trackFeedHistory>false</trackFeedHistory>
     <trackHistory>false</trackHistory>
@@ -11,79 +11,74 @@
         <valueSetDefinition>
             <sorted>false</sorted>
             <value>
-                <fullName>R001</fullName>
+                <fullName>14</fullName>
                 <default>false</default>
-                <label>Retail Leasing</label>
+                <label>Delay in Payment</label>
             </value>
             <value>
-                <fullName>R002</fullName>
+                <fullName>15</fullName>
                 <default>false</default>
-                <label>Specialty Leasing</label>
+                <label>Employment Termination</label>
             </value>
             <value>
-                <fullName>Y001</fullName>
+                <fullName>16</fullName>
                 <default>false</default>
-                <label>Residential Sales</label>
+                <label>Prohibited Behavior</label>
             </value>
             <value>
-                <fullName>Y002</fullName>
+                <fullName>17</fullName>
                 <default>false</default>
-                <label>Branded Residential</label>
+                <label>Renewal Not Approved</label>
             </value>
             <value>
-                <fullName>Y003</fullName>
+                <fullName>18</fullName>
                 <default>false</default>
-                <label>Land/Plot Sales</label>
+                <label>Legal Reason</label>
             </value>
             <value>
-                <fullName>Y004</fullName>
+                <fullName>19</fullName>
                 <default>false</default>
-                <label>Rental Pool Agreement</label>
+                <label>Tenant Won&apos;t Renew</label>
             </value>
             <value>
-                <fullName>Z001</fullName>
+                <fullName>20</fullName>
                 <default>false</default>
-                <label>Office Lease</label>
+                <label>Rent Increase</label>
             </value>
             <value>
-                <fullName>Z002</fullName>
+                <fullName>21</fullName>
                 <default>false</default>
-                <label>Residential Lease</label>
+                <label>Bankruptcy</label>
             </value>
             <value>
-                <fullName>Z003</fullName>
+                <fullName>22</fullName>
                 <default>false</default>
-                <label>Parking Lease</label>
+                <label>Private Reason</label>
             </value>
             <value>
-                <fullName>Z004</fullName>
+                <fullName>23</fullName>
                 <default>false</default>
-                <label>Driver Room Lease</label>
+                <label>Forced Majeure</label>
             </value>
             <value>
-                <fullName>Z005</fullName>
+                <fullName>24</fullName>
                 <default>false</default>
-                <label>Common Area Lease</label>
+                <label>Management Decision</label>
             </value>
             <value>
-                <fullName>Z006</fullName>
+                <fullName>25</fullName>
                 <default>false</default>
-                <label>Storage Lease</label>
+                <label>Delay in Handover</label>
             </value>
             <value>
-                <fullName>Z007</fullName>
+                <fullName>26</fullName>
                 <default>false</default>
-                <label>Utilities Charges</label>
+                <label>Downgrade</label>
             </value>
             <value>
-                <fullName>Z008</fullName>
+                <fullName>27</fullName>
                 <default>false</default>
-                <label>Service Charges</label>
-            </value>
-            <value>
-                <fullName>Z009</fullName>
-                <default>false</default>
-                <label>Educational Lease</label>
+                <label>Upgrade</label>
             </value>
         </valueSetDefinition>
     </valueSet>

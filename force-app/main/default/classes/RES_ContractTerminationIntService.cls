@@ -49,17 +49,32 @@ public with sharing class RES_ContractTerminationIntService extends RES_BaseInte
         setRequestName('Sales_Contract_Termination');
     }
 
-    private static RES_ContractTerminationWrapper buildTerminationWrapper(Contract c) {
+    private static RES_ContractTerminationWrapper buildTerminationWrapper(
+        Contract c,
+        Map<Id, String> contractToRequestedDate,
+        Map<String, String> contractStatusMapping
+    ) {
         RES_ContractTerminationWrapper wrapper = new RES_ContractTerminationWrapper();
         RES_ContractTerminationWrapper.ContractTerminationPayload payload = new RES_ContractTerminationWrapper.ContractTerminationPayload();
 
+        Boolean isCanceled = c.Status == 'Canceled';
+
+        String mappedStatus;
+        if (isCanceled) {
+            mappedStatus = contractStatusMapping.get('Canceled');
+        } else {
+            mappedStatus = contractStatusMapping.containsKey('Termination Rejected')
+                ? contractStatusMapping.get('Termination Rejected')
+                : 'TMRJ';
+        }
+
         payload.IV_COMPANY_CODE           = c.RES_Company_Code__c;
-        payload.IV_CONTRACT               = c.RES_S4_Contract_Id__c;
+        payload.IV_CONTRACT               = c.RES_External_ID__c;
         payload.IV_ENTRY_DATE             = null;
-        payload.IV_REQUESTED_DATE         = null;
-        payload.IV_FINAL_TERMINATION_DATE = null;
-        payload.IV_CONTRACT_STATUS        = c.RES_Approval_Status__c;
-        payload.IV_TERMINATION_REASON     = c.RES_Cancellation_Reason__c;
+        payload.IV_REQUESTED_DATE         = contractToRequestedDate.get(c.Id);
+        payload.IV_FINAL_TERMINATION_DATE = isCanceled ? String.valueOf(Date.today()) : null;
+        payload.IV_CONTRACT_STATUS        = mappedStatus;
+        payload.IV_TERMINATION_REASON     = c.RES_Cancellation_Reasons__c;
         payload.IV_NOTE                   = null;
         payload.IV_C4CUSR                 = null;
         payload.IV_CONTRACT_OBJECT_ID     = null;
@@ -81,10 +96,31 @@ public with sharing class RES_ContractTerminationIntService extends RES_BaseInte
             throw new RES_IntegrationException('No Contract records provided for Contract Termination integration.');
         }
 
+        Set<Id> contractIds = new Map<Id, Contract>(contracts).keySet();
+
+        // Latest approved work item assigned to Finance Team -> CreatedDate as IV_REQUESTED_DATE
+        Map<Id, String> contractToRequestedDate = new Map<Id, String>();
+        RES_ApprovalWorkItemDAOLayer approvalDao = new RES_ApprovalWorkItemDAOLayer();
+        for (ApprovalWorkItem awi : approvalDao.getApprovedFinanceWorkItemsByContractIds(contractIds)) {
+            if (!contractToRequestedDate.containsKey(awi.RelatedRecordId)) {
+                contractToRequestedDate.put(awi.RelatedRecordId, String.valueOf(awi.CreatedDate.date()));
+            }
+        }
+
+        // SAP value mappings for Contract_Status and Cancellation_Reason
+        RES_SAPValueMappingDAOLayer sapDao = new RES_SAPValueMappingDAOLayer();
+        Map<String, Map<String, String>> sapMappings = sapDao.getMappingByObjectsAndFields(
+            new Set<String>{ 'Contract' },
+            new Set<String>{ 'Contract_Status' }
+        );
+        Map<String, String> contractStatusMapping = sapMappings.containsKey('ContractContract_Status')
+            ? sapMappings.get('ContractContract_Status')
+            : new Map<String, String>();
+
         List<RES_ContractTerminationWrapper> wrapperList = new List<RES_ContractTerminationWrapper>();
 
         for (Contract c : contracts) {
-            wrapperList.add(buildTerminationWrapper(c));
+            wrapperList.add(buildTerminationWrapper(c, contractToRequestedDate, contractStatusMapping));
         }
 
         if (wrapperList.isEmpty()) {
@@ -136,6 +172,7 @@ public with sharing class RES_ContractTerminationIntService extends RES_BaseInte
                 'Client Side'
             );
             RES_ResponseWrapper.logError(log);
+            return false;
         }
 
         return isSuccess;

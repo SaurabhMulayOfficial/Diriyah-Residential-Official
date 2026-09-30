@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <label>Contract Status</label>
+    <protected>false</protected>
+    <values>
+        <field>RES_Category__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>RES_Field_Name__c</field>
+        <value xsi:type="xsd:string">Status</value>
+    </values>
+    <values>
+        <field>RES_Json_Mapping__c</field>
+        <value xsi:type="xsd:string">{
+&quot;Draft&quot;: &quot;CRTE&quot;,
+&quot;In Approval Process&quot; : &quot;INAP&quot;,
+&quot;Activated&quot; : &quot;REL&quot;,
+&quot;Pending Cancellation Approval&quot;: &quot;CNRQ&quot;,
+&quot;Canceled&quot; : &quot;CANC&quot;,
+&quot;Reservation Cancelation&quot;: &quot;OFRJ&quot;,
+&quot;Termination Rejected&quot; : &quot;TMRJ&quot;
+}</value>
+    </values>
+    <values>
+        <field>RES_Object_Name__c</field>
+        <value xsi:type="xsd:string">Contract</value>
+    </values>
+</CustomMetadata>

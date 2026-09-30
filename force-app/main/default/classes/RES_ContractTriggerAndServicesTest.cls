@@ -79,7 +79,8 @@ private class RES_ContractTriggerAndServicesTest {
         return [
             SELECT Id, AccountId, Status, ContractNumber,
                    RES_Company_Code__c, RES_Approval_Status__c,
-                   RES_S4_Contract_Id__c, RES_Cancellation_Reason__c,
+                   RES_S4_Contract_Id__c, RES_Cancellation_Reasons__c,
+                   RES_External_ID__c, RES_Contract_Type__c,
                    RES_Last_Sync_DateTime__c, TerminationDateTime,
                    StartDate, EndDate, ContractTerm
             FROM Contract
