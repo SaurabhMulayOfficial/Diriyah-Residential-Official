@@ -114,6 +114,31 @@
         </value>
     </choices>
     <decisions>
+        <name>Check_Access</name>
+        <label>Check Access</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnector>
+            <targetReference>Access_Denied_Screen</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>No Access</defaultConnectorLabel>
+        <rules>
+            <name>Has_Access</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Permission.RES_Can_Submit_Payment_Plan_Approval</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Get_Active_Catalogs</targetReference>
+            </connector>
+            <label>Has Access</label>
+        </rules>
+    </decisions>
+    <decisions>
         <name>Decision_Success_Or_Fail</name>
         <label>Success or Fail?</label>
         <locationX>0</locationX>
@@ -178,6 +203,22 @@
         <storeOutputAutomatically>true</storeOutputAutomatically>
     </recordLookups>
     <runInMode>DefaultMode</runInMode>
+    <screens>
+        <name>Access_Denied_Screen</name>
+        <label>Access Denied</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <allowBack>false</allowBack>
+        <allowFinish>true</allowFinish>
+        <allowPause>false</allowPause>
+        <fields>
+            <name>Access_Denied_Message</name>
+            <fieldText>&lt;p&gt;You don&apos;t have access to create a Payment Plan. Contact your administrator if you believe this is incorrect.&lt;/p&gt;</fieldText>
+            <fieldType>DisplayText</fieldType>
+        </fields>
+        <showFooter>true</showFooter>
+        <showHeader>true</showHeader>
+    </screens>
     <screens>
         <name>Screen_Confirmation</name>
         <label>Payment Plan Created</label>
@@ -439,7 +480,7 @@
                     <name>IsActive</name>
                     <dataType>Boolean</dataType>
                     <defaultValue>
-                        <booleanValue>true</booleanValue>
+                        <booleanValue>false</booleanValue>
                     </defaultValue>
                     <fieldText>Active</fieldText>
                     <fieldType>InputField</fieldType>
@@ -493,7 +534,7 @@
         <locationX>0</locationX>
         <locationY>0</locationY>
         <connector>
-            <targetReference>Get_Active_Catalogs</targetReference>
+            <targetReference>Check_Access</targetReference>
         </connector>
     </start>
     <status>Active</status>

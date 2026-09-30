@@ -213,7 +213,7 @@ public with sharing class RES_PaymentPlanConfiguratorService {
             CurrencyIsoCode = String.isNotBlank(req.currencyIsoCode) ? req.currencyIsoCode : UserInfo.getDefaultCurrency(),
             AvailabilityDate = req.validFromDate,
             RES_Validity_End_Date__c = req.validToDate,
-            IsActive = req.isActive != null ? req.isActive : true,
+            IsActive = req.isActive != null ? req.isActive : false,
             Description = req.description,
             IsAssetizable = req.isAssetizable != null ? req.isAssetizable : false
         );
