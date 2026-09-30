@@ -99,6 +99,7 @@ private class RES_ApplyApprovedPOCToPPTest {
             RecordTypeId = paymentPlanRecordTypeId,
             Type = 'Bundle',
             RES_Business_Entity__c = catalogId,
+            RES_Catalog__c = catalogId,
             RES_Price_Option__c = 'Option 1'
         );
         insert plan;

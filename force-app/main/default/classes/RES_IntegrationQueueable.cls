@@ -75,21 +75,24 @@ public with sharing class RES_IntegrationQueueable implements Queueable, Databas
             RES_PaymentPlanIntegrationService.syncPaymentPlans(installments, requestMethod, triggerContext);
         }
 
-        else if(serviceName == 'Account_Sync'){
-            List<Account> accounts = new List<Account>();
-            for (SObject record : records) {
-                accounts.add((Account) record);
-            }
-            //RES_AccountIntegrationService.syncAccounts(accounts, requestMethod, triggerContext);
-        }
+        // else if(serviceName == 'Account_Sync'){
+        //     List<Account> accounts = new List<Account>();
+        //     for (SObject record : records) {
+        //         accounts.add((Account) record);
+        //     }
+        //     RES_AccountIntegrationService.syncAccounts(accounts, requestMethod, triggerContext);
+        // }
         
         else if(serviceName == 'Unit_Sync'){
-            System.debug('### [RES_IntegrationQueueable] Unit_Sync executing | Records: ' + records.size() + ' | Context: ' + triggerContext);
             List<Product2> products = new List<Product2>();
             for (SObject record : records) {
                 products.add((Product2) record);
             }
-            //RES_ProductIntegrationService.syncProducts(products, requestMethod, triggerContext);
+            try {
+                RES_ProductIntegrationService.syncProducts(products, requestMethod, triggerContext);
+            } catch (Exception e) {
+                System.debug('[Unit_Sync] syncProducts error: ' + e.getMessage());
+            }
         }
         
         else if(serviceName == 'ProductCategory_Sync'){

@@ -82,12 +82,11 @@ private class RES_ContractServicesTest {
     static void syncContract_insert_singleContract_publishesEvent() {
         if (!configReady()) { return; }
 
-        Account acc = RES_TestDataFactory.createAccount();
-        Contract c  = createAndFetchContract(acc.Id);
-
         RES_IntegrationTestDataFactory.primeSapToken();
         Test.setMock(HttpCalloutMock.class, new RES_IntegrationTestDataFactory.EndpointRoutingMock());
         RES_IntegrationRequestEventService.CountingBatchSubmitter spy = injectBatchSpy();
+        Account acc = RES_TestDataFactory.createAccount();
+        Contract c  = createAndFetchContract(acc.Id);
         Test.startTest();
         Test.getEventBus().deliver();
         Integer before = spy.callCount;
@@ -105,13 +104,12 @@ private class RES_ContractServicesTest {
     static void syncContract_insert_multipleContracts_publishesMultipleEvents() {
         if (!configReady()) { return; }
 
-        Account acc  = RES_TestDataFactory.createAccount();
-        Contract c1  = createAndFetchContract(acc.Id);
-        Contract c2  = createAndFetchContract(acc.Id);
-
         RES_IntegrationTestDataFactory.primeSapToken();
         Test.setMock(HttpCalloutMock.class, new RES_IntegrationTestDataFactory.EndpointRoutingMock());
         RES_IntegrationRequestEventService.CountingBatchSubmitter spy = injectBatchSpy();
+        Account acc  = RES_TestDataFactory.createAccount();
+        Contract c1  = createAndFetchContract(acc.Id);
+        Contract c2  = createAndFetchContract(acc.Id);
         Test.startTest();
         Test.getEventBus().deliver();
         Integer before = spy.callCount;
@@ -132,11 +130,12 @@ private class RES_ContractServicesTest {
     static void syncContract_insert_doesNotThrow() {
         if (!configReady()) { return; }
 
+        RES_IntegrationTestDataFactory.primeSapToken();
+        Test.setMock(HttpCalloutMock.class, new RES_IntegrationTestDataFactory.EndpointRoutingMock());
+        injectBatchSpy();
         Account acc = RES_TestDataFactory.createAccount();
         Contract c  = createAndFetchContract(acc.Id);
 
-        RES_IntegrationTestDataFactory.primeSapToken();
-        Test.setMock(HttpCalloutMock.class, new RES_IntegrationTestDataFactory.EndpointRoutingMock());
         Boolean threw = false;
         try {
             Test.startTest();
@@ -184,15 +183,14 @@ private class RES_ContractServicesTest {
     static void syncContract_update_noFieldChange_doesNotPublishEvent() {
         if (!configReady()) { return; }
 
+        RES_IntegrationTestDataFactory.primeSapToken();
+        Test.setMock(HttpCalloutMock.class, new RES_IntegrationTestDataFactory.EndpointRoutingMock());
+        RES_IntegrationRequestEventService.CountingBatchSubmitter spy = injectBatchSpy();
         Account acc = RES_TestDataFactory.createAccount();
         Contract c  = createAndFetchContract(acc.Id);
 
         // Pass the same contract as both new and old → isContractChanged returns false
         Map<Id, Contract> oldMap = new Map<Id, Contract>{ c.Id => c };
-
-        RES_IntegrationTestDataFactory.primeSapToken();
-        Test.setMock(HttpCalloutMock.class, new RES_IntegrationTestDataFactory.EndpointRoutingMock());
-        RES_IntegrationRequestEventService.CountingBatchSubmitter spy = injectBatchSpy();
         Test.startTest();
         Test.getEventBus().deliver();
         Integer before = spy.callCount;
@@ -214,6 +212,9 @@ private class RES_ContractServicesTest {
     static void syncContract_update_fieldChanged_publishesEvent() {
         if (!configReady()) { return; }
 
+        RES_IntegrationTestDataFactory.primeSapToken();
+        Test.setMock(HttpCalloutMock.class, new RES_IntegrationTestDataFactory.EndpointRoutingMock());
+        RES_IntegrationRequestEventService.CountingBatchSubmitter spy = injectBatchSpy();
         Account acc  = RES_TestDataFactory.createAccount();
         Contract newC = createAndFetchContract(acc.Id);
 
@@ -221,10 +222,6 @@ private class RES_ContractServicesTest {
         // oldMap.get(newC.Id) returns null → isContractChanged returns true
         // immediately (oldRecord == null branch), regardless of sync field config.
         Map<Id, Contract> oldMap = new Map<Id, Contract>();
-
-        RES_IntegrationTestDataFactory.primeSapToken();
-        Test.setMock(HttpCalloutMock.class, new RES_IntegrationTestDataFactory.EndpointRoutingMock());
-        RES_IntegrationRequestEventService.CountingBatchSubmitter spy = injectBatchSpy();
         Test.startTest();
         Test.getEventBus().deliver();
         Integer before = spy.callCount;
@@ -246,6 +243,9 @@ private class RES_ContractServicesTest {
     static void syncContract_update_allUnchanged_returnsEarly() {
         if (!configReady()) { return; }
 
+        RES_IntegrationTestDataFactory.primeSapToken();
+        Test.setMock(HttpCalloutMock.class, new RES_IntegrationTestDataFactory.EndpointRoutingMock());
+        injectBatchSpy();
         Account acc = RES_TestDataFactory.createAccount();
         Contract c1 = createAndFetchContract(acc.Id);
         Contract c2 = createAndFetchContract(acc.Id);
@@ -255,9 +255,6 @@ private class RES_ContractServicesTest {
             c1.Id => c1,
             c2.Id => c2
         };
-
-        RES_IntegrationTestDataFactory.primeSapToken();
-        Test.setMock(HttpCalloutMock.class, new RES_IntegrationTestDataFactory.EndpointRoutingMock());
         Boolean threw = false;
         try {
             Test.startTest();

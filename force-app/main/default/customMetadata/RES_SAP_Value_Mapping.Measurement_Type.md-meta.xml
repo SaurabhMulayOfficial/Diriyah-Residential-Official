@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <label>Measurement Type</label>
+    <protected>false</protected>
+    <values>
+        <field>RES_Object_Name__c</field>
+        <value xsi:type="xsd:string">RES_Measurement__c</value>
+    </values>
+    <values>
+        <field>RES_Field_Name__c</field>
+        <value xsi:type="xsd:string">RES_Measurement_Type__c</value>
+    </values>
+    <values>
+        <field>RES_Json_Mapping__c</field>
+        <value xsi:type="xsd:string">{"Z001":"NLA (Net Leasable Area)","Z002":"Common Area","Z003":"GLA (Gross Leasing Area)","Z004":"Number of Dedicated Parking","Z005":"GFA (Gross Floor Area)","Z006":"BUA (Build up Area)","Z007":"Net Saleable Area","Z008":"No. of rooms","Z009":"Plot Area","Z010":"Extra Parking","Z011":"No. of Bathrooms","Z012":"No. of Powder Rooms","Z013":"Internal Buildup Area","Y011":"Internal Area (GF)","Y012":"Internal Area (B1)","Y013":"Internal Area (B2)","Y014":"Internal Area (+1)","Y015":"Internal Area (+2)","Y016":"Internal Area (+3)","Y020":"Total Internal Area","Y021":"External Area (GF)","Y022":"External Area (B1)","Y023":"External Area (B2)","Y024":"External Area (+1)","Y025":"External Area (+2)","Y026":"External Area (+3)","Y030":"Total External Area","Y035":"Total Internal (Incl Storage)","Y040":"Total Internal &amp; Exernal Area","Y042":"Roof Area-External","Y050":"Total Roof Area","Y055":"Total Area","Y060":"Total Internal Area+Storage","M005":"Number of Parking Spaces","M006":"No. of Parking Garage","M007":"No. of Enclosed Parking Spaces","M090":"Co-Ownership Share","Y090":"Total GLA (Gross Leasing Area)","Z050":"Total Saleable Area","Z060":"Total GLA","Z070":"Reservation Amount","Z071":"Reservation Amount %"}</value>
+    </values>
+</CustomMetadata>

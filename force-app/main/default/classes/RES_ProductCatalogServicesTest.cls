@@ -43,23 +43,30 @@ private class RES_ProductCatalogServicesTest {
     }
 
     /**
+     * Injects CountingBatchSubmitter and returns it.  Must be called BEFORE any DML so that
+     * any synchronous enqueueService calls fired by QA-deployed triggers are absorbed.
+     */
+    private static RES_IntegrationRequestEventService.CountingBatchSubmitter injectSpy() {
+        RES_IntegrationRequestEventService.CountingBatchSubmitter spy =
+            new RES_IntegrationRequestEventService.CountingBatchSubmitter();
+        RES_IntegrationRequestEventService.batchSubmitter = spy;
+        return spy;
+    }
+
+    /**
      * Calls syncProductCatalog, delivers the event bus, and returns the
      * delta in batch submissions caused by that call.
-     * Uses CountingBatchSubmitter to avoid hitting the one-executeBatch-per-test limit and
-     * to count the correct job type (BatchApex / RES_IntegrationAPIRouterBatch).
+     * Caller must have already called injectSpy() and passed the returned spy here.
      */
     private static Integer syncAndCountJobs(
         List<ProductCatalog> catalogs,
-        Map<Id, ProductCatalog> oldMap
+        Map<Id, ProductCatalog> oldMap,
+        RES_IntegrationRequestEventService.CountingBatchSubmitter spy
     ) {
         RES_IntegrationTestDataFactory.primeSapToken();
         RES_IntegrationTestDataFactory.EndpointRoutingMock mock =
             new RES_IntegrationTestDataFactory.EndpointRoutingMock();
         Test.setMock(HttpCalloutMock.class, mock);
-
-        RES_IntegrationRequestEventService.CountingBatchSubmitter spy =
-            new RES_IntegrationRequestEventService.CountingBatchSubmitter();
-        RES_IntegrationRequestEventService.batchSubmitter = spy;
 
         Test.startTest();
         Test.getEventBus().deliver();   // flush events from test-data inserts
@@ -104,13 +111,14 @@ private class RES_ProductCatalogServicesTest {
     static void sync_insert_allCatalogsAreQueued() {
         if (!configReady()) { return; }
 
+        RES_IntegrationRequestEventService.CountingBatchSubmitter spy = injectSpy();
         List<ProductCatalog> catalogs = new List<ProductCatalog>{
             new ProductCatalog(Name = 'Catalog A'),
             new ProductCatalog(Name = 'Catalog B')
         };
         insert catalogs;
 
-        Integer jobs = syncAndCountJobs(catalogs, null);
+        Integer jobs = syncAndCountJobs(catalogs, null, spy);
 
         Assert.areEqual(1, jobs, 'A single job should cover all inserted catalogs');
     }
@@ -123,6 +131,7 @@ private class RES_ProductCatalogServicesTest {
     static void sync_update_syncFieldChanged_publishesEvent() {
         if (!configReady()) { return; }
 
+        RES_IntegrationRequestEventService.CountingBatchSubmitter spy = injectSpy();
         ProductCatalog catalog = new ProductCatalog(Name = 'Catalog Changed');
         insert catalog;
 
@@ -136,7 +145,7 @@ private class RES_ProductCatalogServicesTest {
         oldCatalog.put(changedField, null);
         oldMap.put(oldCatalog.Id, oldCatalog);
 
-        Integer jobs = syncAndCountJobs(new List<ProductCatalog>{ catalog }, oldMap);
+        Integer jobs = syncAndCountJobs(new List<ProductCatalog>{ catalog }, oldMap, spy);
 
         Assert.areEqual(1, jobs, 'A changed sync field should publish an event and create a job');
     }
@@ -145,6 +154,7 @@ private class RES_ProductCatalogServicesTest {
     static void sync_update_noChanges_publishesNothing() {
         if (!configReady()) { return; }
 
+        RES_IntegrationRequestEventService.CountingBatchSubmitter spy = injectSpy();
         ProductCatalog catalog = new ProductCatalog(Name = 'Catalog Unchanged');
         insert catalog;
 
@@ -152,7 +162,7 @@ private class RES_ProductCatalogServicesTest {
             catalog.Id => catalog.clone(true)
         };
 
-        Integer jobs = syncAndCountJobs(new List<ProductCatalog>{ catalog }, oldMap);
+        Integer jobs = syncAndCountJobs(new List<ProductCatalog>{ catalog }, oldMap, spy);
 
         Assert.areEqual(0, jobs, 'Identical old/new values must not publish an event');
     }
@@ -161,13 +171,15 @@ private class RES_ProductCatalogServicesTest {
     static void sync_update_recordMissingFromOldMap_treatedAsChanged() {
         if (!configReady()) { return; }
 
+        RES_IntegrationRequestEventService.CountingBatchSubmitter spy = injectSpy();
         ProductCatalog catalog = new ProductCatalog(Name = 'Catalog Missing From OldMap');
         insert catalog;
 
         // Non-null but empty oldMap -> oldMap.get(Id) returns null -> treated as changed
         Integer jobs = syncAndCountJobs(
             new List<ProductCatalog>{ catalog },
-            new Map<Id, ProductCatalog>()
+            new Map<Id, ProductCatalog>(),
+            spy
         );
 
         Assert.areEqual(1, jobs, 'A record absent from oldMap should be treated as changed');
@@ -180,8 +192,9 @@ private class RES_ProductCatalogServicesTest {
     @IsTest
     static void sync_emptyList_insertContext_publishesNothing() {
         if (!configReady()) { return; }
+        RES_IntegrationRequestEventService.CountingBatchSubmitter spy = injectSpy();
 
-        Integer jobs = syncAndCountJobs(new List<ProductCatalog>(), null);
+        Integer jobs = syncAndCountJobs(new List<ProductCatalog>(), null, spy);
 
         Assert.areEqual(0, jobs, 'Empty catalog list should not publish an event');
     }
@@ -189,10 +202,12 @@ private class RES_ProductCatalogServicesTest {
     @IsTest
     static void sync_emptyList_updateContext_publishesNothing() {
         if (!configReady()) { return; }
+        RES_IntegrationRequestEventService.CountingBatchSubmitter spy = injectSpy();
 
         Integer jobs = syncAndCountJobs(
             new List<ProductCatalog>(),
-            new Map<Id, ProductCatalog>()
+            new Map<Id, ProductCatalog>(),
+            spy
         );
 
         Assert.areEqual(0, jobs, 'Empty catalog list in update context should not publish an event');
@@ -206,6 +221,7 @@ private class RES_ProductCatalogServicesTest {
     static void sync_insertContext_setsInsertTriggerLabel() {
         if (!configReady()) { return; }
 
+        injectSpy();
         // Verifying insert path does not throw; trigger context 'I' is set internally
         ProductCatalog catalog = new ProductCatalog(Name = 'Context Label Test');
         insert catalog;

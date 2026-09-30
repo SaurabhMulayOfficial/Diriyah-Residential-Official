@@ -10,6 +10,11 @@ private class RES_BundlePricingHookMatchingTest {
 
     /** Creates the bundle + Premium option, relationship type, and price book entries (not @testSetup - called per test). */
     private static void setupCoreData() {
+        // Intercept all executeBatch calls so multi-key event scenarios (Unit_Sync I from inserts +
+        // Unit_Sync U from insertServiceChargeRateAttribute updates) don't exceed the one-executeBatch
+        // governor limit. All tests here test synchronous pricing logic, not integration sync.
+        RES_IntegrationRequestEventService.batchSubmitter =
+            new RES_IntegrationRequestEventService.CountingBatchSubmitter();
         // Product2 insert enqueues an async SAP sync (RES_IntegrationQueueable); mock the callout so
         // Test.stopTest() doesn't surface the real-callout NPE documented in RES_SAPTokenProviderTest.
         Test.setMock(HttpCalloutMock.class, new RES_IntegrationTestDataFactory.EndpointRoutingMock());

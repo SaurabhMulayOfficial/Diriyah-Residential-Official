@@ -20,6 +20,7 @@ private class RES_ServiceChargeBundleProvisionerTest {
     }
 
     private static void setUpRecordTypeIds() {
+        RES_IntegrationRequestEventService.batchSubmitter = new RES_IntegrationRequestEventService.CountingBatchSubmitter();
         Map<String, Schema.RecordTypeInfo> infos = Schema.SObjectType.Product2.getRecordTypeInfosByDeveloperName();
         unitRecordTypeId = infos.get('RES_Residential_Sales').getRecordTypeId();
     }

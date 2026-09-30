@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <label>Measurement Custom Field</label>
+    <protected>false</protected>
+    <values>
+        <field>RES_Object_Name__c</field>
+        <value xsi:type="xsd:string">RES_Measurement__c</value>
+    </values>
+    <values>
+        <field>RES_Field_Name__c</field>
+        <value xsi:type="xsd:string">RES_Measurement_Type__c</value>
+    </values>
+    <values>
+        <field>RES_Json_Mapping__c</field>
+        <value xsi:type="xsd:string">{"Z004":"RES_Dedicated_Parking","Z006":"RES_BUA","Z007":"RES_NSA","Z008":"RES_No_Of_BedRooms","Z009":"RES_Plot_Area","Z013":"RES_Internal_BUA"}</value>
+    </values>
+</CustomMetadata>

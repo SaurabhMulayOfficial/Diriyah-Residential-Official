@@ -26,12 +26,18 @@ private class RES_ProductCatalogIntegrationServiceTest {
     }
 
     private static ProductCatalog buildCatalog() {
+        RES_Config_Switch__c cfg = RES_Config_Switch__c.getOrgDefaults();
+        Boolean wasOff = cfg.RES_Triggers_Off__c;
+        cfg.RES_Triggers_Off__c = true;
+        upsert cfg;
         ProductCatalog pc = new ProductCatalog(
             Name = 'Integration Test Catalog',
             RES_Name_AR__c = 'Test Arabic Name',
             RES_Master_Plan__c = 'Test Master Plan'
         );
         insert pc;
+        cfg.RES_Triggers_Off__c = wasOff;
+        upsert cfg;
         return pc;
     }
 
@@ -85,8 +91,13 @@ private class RES_ProductCatalogIntegrationServiceTest {
         RES_IntegrationRequestEventService.batchSubmitter =
             new RES_IntegrationRequestEventService.CountingBatchSubmitter();
         ProductCatalog pc1 = buildCatalog();
+        RES_Config_Switch__c cfg2 = RES_Config_Switch__c.getOrgDefaults();
+        cfg2.RES_Triggers_Off__c = true;
+        upsert cfg2;
         ProductCatalog pc2 = new ProductCatalog(Name = 'Second Test Catalog');
         insert pc2;
+        cfg2.RES_Triggers_Off__c = false;
+        upsert cfg2;
 
         Test.startTest();
         String body = RES_ProductCatalogIntegrationService.hydrateProductCatalogBody(
@@ -198,8 +209,13 @@ private class RES_ProductCatalogIntegrationServiceTest {
         RES_IntegrationRequestEventService.batchSubmitter =
             new RES_IntegrationRequestEventService.CountingBatchSubmitter();
         ProductCatalog cat1 = buildCatalog();
+        RES_Config_Switch__c cfg2 = RES_Config_Switch__c.getOrgDefaults();
+        cfg2.RES_Triggers_Off__c = true;
+        upsert cfg2;
         ProductCatalog cat2 = new ProductCatalog(Name = 'Second Catalog For Measurement');
         insert cat2;
+        cfg2.RES_Triggers_Off__c = false;
+        upsert cfg2;
 
         List<RES_Measurement__c> m1 =
             RES_IntegrationTestDataFactory.createMeasurementsForCatalog(cat1.Id, 1);
