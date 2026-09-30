@@ -8,7 +8,39 @@ public with sharing class RES_MeasurementTriggerHandler extends RES_BaseTriggerH
     }
 
     protected override void afterInsert(){
-        RES_MeasurementServices.syncMeasurements((List<RES_Measurement__c>) Trigger.new, null);
+        List<RES_Measurement__c> newMeasurements = (List<RES_Measurement__c>) Trigger.new;
+
+        // Only pass measurements to the service for units that already have a SAP ExternalId.
+        // New units (ExternalId blank) are being INSERTed to SAP right now via Unit_Sync —
+        // that payload already includes all measurements, so firing Measurement_Sync here
+        // would duplicate the sync.
+        Set<Id> productIds = new Set<Id>();
+        for (RES_Measurement__c m : newMeasurements) {
+            if (m.RES_Product__c != null) productIds.add(m.RES_Product__c);
+        }
+
+        Set<Id> productsWithExternalId = new Set<Id>();
+        if (!productIds.isEmpty()) {
+            for (Product2 p : [
+                SELECT Id FROM Product2
+                WHERE Id IN :productIds
+                  AND RES_Product_External_ID__c != null
+                  AND RES_Product_External_ID__c != ''
+            ]) {
+                productsWithExternalId.add(p.Id);
+            }
+        }
+
+        List<RES_Measurement__c> measurementsForExistingUnits = new List<RES_Measurement__c>();
+        for (RES_Measurement__c m : newMeasurements) {
+            if (m.RES_Product__c == null || productsWithExternalId.contains(m.RES_Product__c)) {
+                measurementsForExistingUnits.add(m);
+            }
+        }
+
+        if (!measurementsForExistingUnits.isEmpty()) {
+            RES_MeasurementServices.syncMeasurements(measurementsForExistingUnits, null);
+        }
     }
 
     protected override void beforeUpdate() {

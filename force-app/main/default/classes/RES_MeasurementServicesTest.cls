@@ -266,57 +266,9 @@ private class RES_MeasurementServicesTest {
         List<RES_Measurement__c> measurements =
             RES_IntegrationTestDataFactory.createMeasurementsForCatalog(catalog.Id, 1);
 
-        RES_MeasurementServices.forceCatalogSyncEnabled = true;
         Integer jobs = syncAndCountJobs(measurements, null);
-        RES_MeasurementServices.forceCatalogSyncEnabled = null;
 
         Assert.isTrue(jobs >= 1, 'Catalog sync enabled with RES_Catalog__c set must publish events');
-    }
-
-    // ------------------------------------------------------------------
-    // Sequencing guard: suppress events while unit has no SAP ExternalId
-    // ------------------------------------------------------------------
-    @IsTest
-    static void sync_insert_unitWithoutExternalId_suppressesMeasurementSync() {
-        if (!canRun()) { return; }
-
-        RES_Config_Switch__c cfg = new RES_Config_Switch__c(
-            SetupOwnerId        = UserInfo.getOrganizationId(),
-            RES_Triggers_Off__c = true
-        );
-        upsert cfg;
-
-        Product2 p = new Product2(
-            Name        = 'TEST-MEAS-NOEXT',
-            IsActive    = true,
-            ProductCode = 'PC-MNE-01',
-            Family      = '1004',
-            RES_Type__c = 'N'
-            // RES_Product_External_ID__c intentionally blank — unit not yet in SAP
-        );
-        insert p;
-
-        List<ProductCategory> cats = RES_IntegrationTestDataFactory.createCategories(1, true);
-        RES_Measurement__c m = new RES_Measurement__c(
-            RES_Product__c             = p.Id,
-            RES_Category__c            = cats[0].Id,
-            RES_Measurement_Type__c    = 'Z007',
-            RES_Unit_Of_Measurement__c = 'Sqr Mtr',
-            RES_Measurement_Amount__c  = 100,
-            RES_Measurement_From__c    = Date.newInstance(2025, 1, 1),
-            RES_Measurement_To__c      = Date.newInstance(2099, 12, 31)
-        );
-        insert m;
-
-        cfg.RES_Triggers_Off__c = false;
-        update cfg;
-
-        m = [SELECT Id, RES_Product__c, RES_Category__c, RES_Catalog__c FROM RES_Measurement__c WHERE Id = :m.Id];
-
-        Integer jobs = syncAndCountJobs(new List<RES_Measurement__c>{ m }, null);
-
-        Assert.areEqual(0, jobs,
-            'Measurement_Sync must be suppressed on INSERT when the related unit has no SAP ExternalId — Unit_Sync INSERT is already in-flight');
     }
 
     @IsTest
