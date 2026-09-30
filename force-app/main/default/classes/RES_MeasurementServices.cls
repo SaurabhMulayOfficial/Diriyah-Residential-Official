@@ -84,6 +84,13 @@ public with sharing class RES_MeasurementServices {
         }
     }
 
+    public static void setMeasurementDefaults(List<RES_Measurement__c> measurements) {
+        Date defaultTo = Date.newInstance(2099, 12, 31);
+        for (RES_Measurement__c m : measurements) {
+            if (m.RES_Measurement_To__c == null) m.RES_Measurement_To__c = defaultTo;
+        }
+    }
+
     private static Boolean isMeasurementChanged(RES_Measurement__c newMeasurement, RES_Measurement__c oldMeasurement, Set<String> syncFields) {
         if (oldMeasurement == null) {
             return true;

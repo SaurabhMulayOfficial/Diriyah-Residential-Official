@@ -3,7 +3,7 @@ public class RES_OpportunityStageUpdateValidationTest {
 
     @testSetup
     public static void setupTestData() {
-
+        RES_IntegrationRequestEventService.batchSubmitter = new RES_IntegrationRequestEventService.CountingBatchSubmitter();
         Test.startTest();
 
         Id quoteRecordTypeId = Schema.SObjectType.Quote
@@ -95,7 +95,7 @@ public class RES_OpportunityStageUpdateValidationTest {
 
     @isTest
     public static void validateOpportunityTest() {
-
+        RES_IntegrationRequestEventService.batchSubmitter = new RES_IntegrationRequestEventService.CountingBatchSubmitter();
         Test.startTest();
 
         List<RES_OpportunityStageUpdateValidation.Input> inputs =
@@ -217,6 +217,7 @@ public class RES_OpportunityStageUpdateValidationTest {
             100
         );
 
+        RES_IntegrationRequestEventService.batchSubmitter = new RES_IntegrationRequestEventService.CountingBatchSubmitter();
         Test.startTest();
 
         opp.SyncedQuoteId = negotiatingQuote.Id;
@@ -272,6 +273,7 @@ public class RES_OpportunityStageUpdateValidationTest {
          * without a Quote Line Item.
          */
 
+        RES_IntegrationRequestEventService.batchSubmitter = new RES_IntegrationRequestEventService.CountingBatchSubmitter();
         Test.startTest();
 
         opp.SyncedQuoteId = negotiatingQuote.Id;
@@ -354,6 +356,7 @@ public class RES_OpportunityStageUpdateValidationTest {
         input.opportunityRecord = baselineOpp;
         input.quoteRecord = nonSyncingQuote;
 
+        RES_IntegrationRequestEventService.batchSubmitter = new RES_IntegrationRequestEventService.CountingBatchSubmitter();
         Test.startTest();
 
         RES_OpportunityStageUpdateValidation.validateOpportunity(
