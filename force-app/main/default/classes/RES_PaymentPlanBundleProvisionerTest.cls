@@ -48,9 +48,13 @@ private class RES_PaymentPlanBundleProvisionerTest {
     }
 
     private static Product2 createUnit(Id catalogId) {
+        return createUnit(catalogId, true);
+    }
+
+    private static Product2 createUnit(Id catalogId, Boolean isActive) {
         Product2 unit = new Product2(
             Name = 'Test Unit',
-            IsActive = true,
+            IsActive = isActive,
             RecordTypeId = unitRecordTypeId,
             RES_Business_Entity__c = catalogId,
             Type = 'Bundle'
@@ -111,6 +115,27 @@ private class RES_PaymentPlanBundleProvisionerTest {
             System.assertEquals('Test Price Option', component.RES_Price_Option__c,
                 'RES_ResidentialBundlePricingHook prices the Unit off this field - it must be carried over from the Payment Plan');
         }
+    }
+
+    @isTest
+    static void provisionsInactiveUnitsToo() {
+        setUpRecordTypeIds();
+        ProductCatalog catalog = createCatalog();
+        Product2 activeUnit = createUnit(catalog.Id);
+        Product2 inactiveUnit = createUnit(catalog.Id, false);
+        Product2 plan = createPaymentPlan(catalog.Id);
+
+        RES_PaymentPlanBundleProvisioner.Request req = new RES_PaymentPlanBundleProvisioner.Request();
+        req.paymentPlanId = plan.Id;
+
+        Test.startTest();
+        RES_PaymentPlanBundleProvisioner.provision(new List<RES_PaymentPlanBundleProvisioner.Request>{ req });
+        Test.stopTest();
+
+        System.assertEquals(1, [SELECT COUNT() FROM ProductComponentGroup WHERE ParentProductId = :inactiveUnit.Id],
+            'DIR-1907: an inactive Unit must still get a Payment Plan group');
+        System.assertEquals(1, [SELECT COUNT() FROM ProductRelatedComponent WHERE ParentProductId = :inactiveUnit.Id AND ChildProductId = :plan.Id],
+            'DIR-1907: an inactive Unit must still get tagged with the Payment Plan');
     }
 
     @isTest
