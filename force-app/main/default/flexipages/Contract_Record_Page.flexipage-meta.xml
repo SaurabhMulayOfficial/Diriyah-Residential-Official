@@ -514,8 +514,18 @@
                     <name>uiBehavior</name>
                     <value>none</value>
                 </fieldInstanceProperties>
-                <fieldItem>Record.CustomerSignedDate</fieldItem>
-                <identifier>RecordCustomerSignedDateField</identifier>
+                <fieldItem>Record.CompanySignedDate</fieldItem>
+                <identifier>RecordCompanySignedDateField</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.CompanySignedId</fieldItem>
+                <identifier>RecordCompanySignedIdField</identifier>
             </fieldInstance>
         </itemInstances>
         <name>Facet-ffcf710a-3217-4ca1-83e0-c230389d9a05</name>
@@ -528,8 +538,8 @@
                     <name>uiBehavior</name>
                     <value>none</value>
                 </fieldInstanceProperties>
-                <fieldItem>Record.CompanySignedId</fieldItem>
-                <identifier>RecordCompanySignedIdField</identifier>
+                <fieldItem>Record.CustomerSignedDate</fieldItem>
+                <identifier>RecordCustomerSignedDateField</identifier>
             </fieldInstance>
         </itemInstances>
         <itemInstances>
@@ -538,8 +548,8 @@
                     <name>uiBehavior</name>
                     <value>none</value>
                 </fieldInstanceProperties>
-                <fieldItem>Record.CompanySignedDate</fieldItem>
-                <identifier>RecordCompanySignedDateField</identifier>
+                <fieldItem>Record.RES_CompanySignedDate_Arabic__c</fieldItem>
+                <identifier>RecordRES_CompanySignedDate_Arabic_cField</identifier>
             </fieldInstance>
         </itemInstances>
         <name>Facet-3aeb3933-c147-4bc4-9aab-be555e026822</name>
@@ -567,6 +577,108 @@
             </componentInstance>
         </itemInstances>
         <name>Facet-793174e6-e1b9-44bb-ba31-aae5db91be02</name>
+        <type>Facet</type>
+    </flexiPageRegions>
+    <flexiPageRegions>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.RES_PAR_Name__c</fieldItem>
+                <identifier>RecordRES_PAR_Name_cField</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.RES_PAR_Nationality__c</fieldItem>
+                <identifier>RecordRES_PAR_Nationality_cField</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.RES_PAR_ID_Number__c</fieldItem>
+                <identifier>RecordRES_PAR_ID_Number_cField</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.RES_PAR_POA_Date__c</fieldItem>
+                <identifier>RecordRES_PAR_POA_Date_cField</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <name>Facet-c0e4555a-79f3-4097-9f77-203b2f199aaa</name>
+        <type>Facet</type>
+    </flexiPageRegions>
+    <flexiPageRegions>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.RES_PAR_Name_Arabic__c</fieldItem>
+                <identifier>RecordRES_PAR_Name_Arabic_cField</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.RES_PAR_Nationality_Arabic__c</fieldItem>
+                <identifier>RecordRES_PAR_Nationality_Arabic_cField</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.RES_PAR_POA_Number__c</fieldItem>
+                <identifier>RecordRES_PAR_POA_Number_cField</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <name>Facet-a1f36a45-94e7-416c-883d-49b7bb244766</name>
+        <type>Facet</type>
+    </flexiPageRegions>
+    <flexiPageRegions>
+        <itemInstances>
+            <componentInstance>
+                <componentInstanceProperties>
+                    <name>body</name>
+                    <value>Facet-c0e4555a-79f3-4097-9f77-203b2f199aaa</value>
+                </componentInstanceProperties>
+                <componentName>flexipage:column</componentName>
+                <identifier>flexipage_column3</identifier>
+            </componentInstance>
+        </itemInstances>
+        <itemInstances>
+            <componentInstance>
+                <componentInstanceProperties>
+                    <name>body</name>
+                    <value>Facet-a1f36a45-94e7-416c-883d-49b7bb244766</value>
+                </componentInstanceProperties>
+                <componentName>flexipage:column</componentName>
+                <identifier>flexipage_column4</identifier>
+            </componentInstance>
+        </itemInstances>
+        <name>Facet-393ea386-4540-4d41-ac8e-8eba9c7e6bf4</name>
         <type>Facet</type>
     </flexiPageRegions>
     <flexiPageRegions>
@@ -676,6 +788,24 @@
                 </componentInstanceProperties>
                 <componentName>flexipage:fieldSection</componentName>
                 <identifier>flexipage_fieldSection4</identifier>
+            </componentInstance>
+        </itemInstances>
+        <itemInstances>
+            <componentInstance>
+                <componentInstanceProperties>
+                    <name>columns</name>
+                    <value>Facet-393ea386-4540-4d41-ac8e-8eba9c7e6bf4</value>
+                </componentInstanceProperties>
+                <componentInstanceProperties>
+                    <name>horizontalAlignment</name>
+                    <value>false</value>
+                </componentInstanceProperties>
+                <componentInstanceProperties>
+                    <name>label</name>
+                    <value>Purchaser Authorized Representative Information</value>
+                </componentInstanceProperties>
+                <componentName>flexipage:fieldSection</componentName>
+                <identifier>flexipage_fieldSection2</identifier>
             </componentInstance>
         </itemInstances>
         <itemInstances>
