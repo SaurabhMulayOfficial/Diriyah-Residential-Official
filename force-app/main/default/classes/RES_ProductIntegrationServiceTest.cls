@@ -95,7 +95,8 @@ private class RES_ProductIntegrationServiceTest {
         Product2 p = makeProduct();
 
         List<Map<String, Object>> result =
-            RES_ProductIntegrationService.buildCustomFields(p, new Set<String>{ 'StockKeepingUnit' }, makeInventoryTypeMap());
+            RES_ProductIntegrationService.buildCustomFields(p, new Set<String>{ 'StockKeepingUnit' }, makeInventoryTypeMap(),
+                new List<RES_Measurement__c>(), new Map<String, String>());
 
         Map<String, String> byName = toNameValueMap(result);
         Assert.isTrue(byName.containsKey('StockKeepingUnit'), 'StockKeepingUnit must be in CustomFields');
@@ -107,7 +108,8 @@ private class RES_ProductIntegrationServiceTest {
         Product2 p = makeProduct();
 
         List<Map<String, Object>> result =
-            RES_ProductIntegrationService.buildCustomFields(p, CUSTOM_ONLY_FIELDS, makeInventoryTypeMap());
+            RES_ProductIntegrationService.buildCustomFields(p, CUSTOM_ONLY_FIELDS, makeInventoryTypeMap(),
+                new List<RES_Measurement__c>(), new Map<String, String>());
 
         Map<String, String> byName = toNameValueMap(result);
         Assert.areEqual('SKU-001',  byName.get('StockKeepingUnit'),       'StockKeepingUnit');
@@ -124,7 +126,8 @@ private class RES_ProductIntegrationServiceTest {
 
         List<Map<String, Object>> result =
             RES_ProductIntegrationService.buildCustomFields(
-                p, new Set<String>{ 'StockKeepingUnit', 'RES_Type__c', 'RES_Style__c' }, makeInventoryTypeMap()
+                p, new Set<String>{ 'StockKeepingUnit', 'RES_Type__c', 'RES_Style__c' }, makeInventoryTypeMap(),
+                new List<RES_Measurement__c>(), new Map<String, String>()
             );
 
         Map<String, String> byName = toNameValueMap(result);
@@ -139,7 +142,8 @@ private class RES_ProductIntegrationServiceTest {
 
         List<Map<String, Object>> result =
             RES_ProductIntegrationService.buildCustomFields(
-                p, new Set<String>{ 'RES_Type__c', 'RES_Style__c', 'RES_Building_Number__c' }, makeInventoryTypeMap()
+                p, new Set<String>{ 'RES_Type__c', 'RES_Style__c', 'RES_Building_Number__c' }, makeInventoryTypeMap(),
+                new List<RES_Measurement__c>(), new Map<String, String>()
             );
 
         Assert.isTrue(result.isEmpty(),
@@ -151,7 +155,8 @@ private class RES_ProductIntegrationServiceTest {
         Product2 p = makeProduct();
 
         List<Map<String, Object>> result =
-            RES_ProductIntegrationService.buildCustomFields(p, MIXED_FIELDS, makeInventoryTypeMap());
+            RES_ProductIntegrationService.buildCustomFields(p, MIXED_FIELDS, makeInventoryTypeMap(),
+                new List<RES_Measurement__c>(), new Map<String, String>());
 
         Set<String> names = new Set<String>();
         for (Map<String, Object> e : result) names.add((String) e.get('name'));
@@ -168,7 +173,8 @@ private class RES_ProductIntegrationServiceTest {
         Product2 p = makeProduct();
 
         List<Map<String, Object>> result =
-            RES_ProductIntegrationService.buildCustomFields(p, MIXED_FIELDS, makeInventoryTypeMap());
+            RES_ProductIntegrationService.buildCustomFields(p, MIXED_FIELDS, makeInventoryTypeMap(),
+                new List<RES_Measurement__c>(), new Map<String, String>());
 
         Set<String> names = new Set<String>();
         for (Map<String, Object> e : result) names.add((String) e.get('name'));
@@ -186,7 +192,8 @@ private class RES_ProductIntegrationServiceTest {
 
         List<Map<String, Object>> result =
             RES_ProductIntegrationService.buildCustomFields(
-                p, new Set<String>{ 'RES_Unit_Handover_Date__c' }, makeInventoryTypeMap()
+                p, new Set<String>{ 'RES_Unit_Handover_Date__c' }, makeInventoryTypeMap(),
+                new List<RES_Measurement__c>(), new Map<String, String>()
             );
 
         Map<String, String> byName = toNameValueMap(result);
@@ -200,7 +207,8 @@ private class RES_ProductIntegrationServiceTest {
 
         List<Map<String, Object>> result =
             RES_ProductIntegrationService.buildCustomFields(
-                p, new Set<String>{ 'RES_Style__c', 'StockKeepingUnit' }, makeInventoryTypeMap()
+                p, new Set<String>{ 'RES_Style__c', 'StockKeepingUnit' }, makeInventoryTypeMap(),
+                new List<RES_Measurement__c>(), new Map<String, String>()
             );
 
         Set<String> names = new Set<String>();
@@ -420,27 +428,25 @@ private class RES_ProductIntegrationServiceTest {
         for (Map<String, Object> f : fixtures) {
             if ('Z005'.equals(String.valueOf(f.get('RES_Fixtures_Fittings_Characteristics')))) {
                 foundZ005 = true;
-                Assert.areEqual('I', f.get('Change_Indicator'), 'CI must equal triggerContext');
+                Assert.areEqual('I', f.get('Change_Indicator'), 'Must use Change_Indicator I');
             }
         }
-        Assert.isTrue(foundZ005, 'RES_Storeroom__c=true must produce Z005 fixture entry');
+        Assert.isTrue(foundZ005, 'Storeroom true must produce Z005 fixture entry');
     }
 
     @isTest
     static void testBuildFixturesFittingsStoreroomFalse() {
+        // false must NOT produce a No code — absence already signals "not present" to SAP
         Product2 p = new Product2(RES_Storeroom__c = false);
 
         List<Map<String, Object>> fixtures =
-            RES_ProductIntegrationService.buildFixturesFittings(p, 'U', makeFixtureBoolTrueMap(), makeFixtureBoolFalseMap());
+            RES_ProductIntegrationService.buildFixturesFittings(p, 'I', makeFixtureBoolTrueMap(), makeFixtureBoolFalseMap());
 
-        Boolean foundZ006 = false;
         for (Map<String, Object> f : fixtures) {
-            if ('Z006'.equals(String.valueOf(f.get('RES_Fixtures_Fittings_Characteristics')))) {
-                foundZ006 = true;
-                Assert.areEqual('U', f.get('Change_Indicator'), 'CI must propagate through to each entry');
-            }
+            String code = String.valueOf(f.get('RES_Fixtures_Fittings_Characteristics'));
+            Assert.isTrue(!'Z005'.equals(code) && !'Z006'.equals(code),
+                'Storeroom false must not produce Z005 or Z006 — got: ' + code);
         }
-        Assert.isTrue(foundZ006, 'RES_Storeroom__c=false must produce Z006 fixture entry');
     }
 
     @isTest
@@ -454,6 +460,7 @@ private class RES_ProductIntegrationServiceTest {
         for (Map<String, Object> f : fixtures) {
             if ('Z001'.equals(String.valueOf(f.get('RES_Fixtures_Fittings_Characteristics')))) {
                 foundZ001 = true;
+                Assert.areEqual('I', f.get('Change_Indicator'), 'Must use Change_Indicator I');
             }
         }
         Assert.isTrue(foundZ001, 'Orientation=North must produce Z001 fixture characteristic');
@@ -470,9 +477,26 @@ private class RES_ProductIntegrationServiceTest {
         for (Map<String, Object> f : fixtures) {
             if ('Z021'.equals(String.valueOf(f.get('RES_Fixtures_Fittings_Characteristics')))) {
                 foundZ021 = true;
+                Assert.areEqual('I', f.get('Change_Indicator'), 'Must use Change_Indicator I');
             }
         }
         Assert.isTrue(foundZ021, 'ID_Finish=Contemporary must produce Z021 fixture characteristic');
+    }
+
+    @isTest
+    static void testBuildFixturesFittingsUpdateContext() {
+        Product2 p = new Product2(RES_Storeroom__c = true);
+
+        List<Map<String, Object>> fixtures =
+            RES_ProductIntegrationService.buildFixturesFittings(p, 'U', makeFixtureBoolTrueMap(), makeFixtureBoolFalseMap());
+
+        Boolean foundZ005WithU = false;
+        for (Map<String, Object> f : fixtures) {
+            if ('Z005'.equals(String.valueOf(f.get('RES_Fixtures_Fittings_Characteristics')))) {
+                foundZ005WithU = 'U'.equals(String.valueOf(f.get('Change_Indicator')));
+            }
+        }
+        Assert.isTrue(foundZ005WithU, 'Update context must produce Z005 with Change_Indicator U');
     }
 
     @isTest
@@ -501,7 +525,8 @@ private class RES_ProductIntegrationServiceTest {
     }
 
     @isTest
-    static void testHydrateBodyUpdateExcludesFixtures() {
+    static void testHydrateBodyUpdateIncludesFixtures() {
+        // UPDATE with no prior fixture sync (null RES_Fixtures_Last_Sync__c) → fixtureCtx='I', fixtures included
         Product2 p = new Product2(
             Name                       = 'HRB-FIX-UPDATE',
             IsActive                   = true,
@@ -519,8 +544,11 @@ private class RES_ProductIntegrationServiceTest {
         Test.stopTest();
 
         Map<String, Object> parsed = (Map<String, Object>) JSON.deserializeUntyped(body);
-        Assert.isFalse(parsed.containsKey('RES_Fixtures_Fittings'),
-            'UPDATE payload must NOT include RES_Fixtures_Fittings — SAP already holds them');
+        Assert.isTrue(parsed.containsKey('RES_Fixtures_Fittings'),
+            'UPDATE payload must include RES_Fixtures_Fittings when RES_Fixtures_Last_Sync__c is null');
+        List<Object> fixtures = (List<Object>) parsed.get('RES_Fixtures_Fittings');
+        Assert.isTrue(fixtures != null && !fixtures.isEmpty(),
+            'RES_Fixtures_Fittings must be non-empty when Storeroom is checked');
     }
 
     @isTest
@@ -649,6 +677,7 @@ private class RES_ProductIntegrationServiceTest {
                                   RES_Floor__c, RES_Area_Type__c, RES_Area__c,
                                   RES_Unit_Status__c, RES_Type__c, StockKeepingUnit,
                                   RES_Product_External_ID__c, RES_Last_Sync_DateTime__c,
+                                  RES_Fixtures_Last_Sync__c,
                                   RES_Profit_Center__c, AvailabilityDate, DiscontinuedDate,
                                   RES_Orientation__c, RES_Storeroom__c, RES_Elevated__c,
                                   RES_Terrace__c, RES_Roof_Terrace__c, RES_Entry_Courtyard__c,
@@ -707,6 +736,7 @@ private class RES_ProductIntegrationServiceTest {
                                   RES_Floor__c, RES_Area_Type__c, RES_Area__c,
                                   RES_Unit_Status__c, RES_Type__c, StockKeepingUnit,
                                   RES_Product_External_ID__c, RES_Last_Sync_DateTime__c,
+                                  RES_Fixtures_Last_Sync__c,
                                   RES_Profit_Center__c, AvailabilityDate, DiscontinuedDate,
                                   RES_Orientation__c, RES_Storeroom__c, RES_Elevated__c,
                                   RES_Terrace__c, RES_Roof_Terrace__c, RES_Entry_Courtyard__c,
@@ -731,6 +761,33 @@ private class RES_ProductIntegrationServiceTest {
         Product2 after = [SELECT RES_Last_Sync_DateTime__c FROM Product2 WHERE Id = :p.Id];
         Assert.isNull(after.RES_Last_Sync_DateTime__c,
             'RES_Last_Sync_DateTime__c must NOT be stamped when SAP returns an error');
+    }
+
+    @isTest
+    static void testSyncProductsMultiRecordThrows() {
+        if (!canConstruct()) return;
+
+        Product2 p1 = new Product2(Name = 'MULTI-A', IsActive = true, StockKeepingUnit = 'SKU-MA', RES_Type__c = 'N');
+        Product2 p2 = new Product2(Name = 'MULTI-B', IsActive = true, StockKeepingUnit = 'SKU-MB', RES_Type__c = 'N');
+        RES_Config_Switch__c cfg = new RES_Config_Switch__c(
+            SetupOwnerId = UserInfo.getOrganizationId(), RES_Triggers_Off__c = true
+        );
+        upsert cfg;
+        insert new List<Product2>{ p1, p2 };
+        cfg.RES_Triggers_Off__c = false;
+        update cfg;
+
+        RES_IntegrationTestDataFactory.primeSapToken();
+
+        Test.startTest();
+        try {
+            RES_ProductIntegrationService.syncProducts(new List<Product2>{ p1, p2 }, 'GET', 'I');
+            Assert.fail('Expected RES_IntegrationException for multi-record call');
+        } catch (RES_IntegrationException ex) {
+            Assert.isTrue(ex.getMessage().containsIgnoreCase('exactly 1'),
+                'Exception must enforce the single-record contract');
+        }
+        Test.stopTest();
     }
 
     @isTest
@@ -763,6 +820,7 @@ private class RES_ProductIntegrationServiceTest {
                                       RES_Floor__c, RES_Area_Type__c, RES_Area__c,
                                       RES_Unit_Status__c, RES_Type__c, StockKeepingUnit,
                                       RES_Product_External_ID__c, RES_Last_Sync_DateTime__c,
+                                      RES_Fixtures_Last_Sync__c,
                                       RES_Profit_Center__c, AvailabilityDate, DiscontinuedDate,
                                       RES_Orientation__c, RES_Storeroom__c, RES_Elevated__c,
                                       RES_Terrace__c, RES_Roof_Terrace__c, RES_Entry_Courtyard__c,
@@ -786,5 +844,143 @@ private class RES_ProductIntegrationServiceTest {
             Assert.fail('syncProducts must not propagate callout exceptions: ' + ex.getMessage());
         }
         Test.stopTest();
+    }
+
+    // ── Change A: ExternalId format validation ────────────────────────────────
+
+    @isTest
+    static void testValidateSapExternalIdValidFormat() {
+        String err = RES_ProductIntegrationService.validateSapExternalIdFormat('1000/140/11002912');
+        Assert.isNull(err, 'Valid SAP ExternalId must return null (no error)');
+    }
+
+    @isTest
+    static void testValidateSapExternalIdProductCodeFails() {
+        String err = RES_ProductIntegrationService.validateSapExternalIdFormat('WS-FN-6BV-Rj-005');
+        Assert.isNotNull(err, 'ProductCode-style ExternalId must be rejected');
+        Assert.isTrue(err.containsIgnoreCase('format'), 'Error must mention the format requirement');
+    }
+
+    @isTest
+    static void testValidateSapExternalIdNoSlashFails() {
+        String err = RES_ProductIntegrationService.validateSapExternalIdFormat('11002912');
+        Assert.isNotNull(err, 'A bare number without slashes must be rejected as invalid SAP format');
+    }
+
+    @isTest
+    static void testValidateSapExternalIdBlankAllowed() {
+        Assert.isNull(
+            RES_ProductIntegrationService.validateSapExternalIdFormat(''),
+            'Blank ExternalId must return null — blank signals an INSERT, not a format error'
+        );
+        Assert.isNull(
+            RES_ProductIntegrationService.validateSapExternalIdFormat(null),
+            'Null ExternalId must return null — null signals an INSERT, not a format error'
+        );
+    }
+
+    @isTest
+    static void testHydrateBodyThrowsForMalformedExternalId() {
+        Product2 p = new Product2(
+            Name                       = 'BAD-EXT-ID',
+            IsActive                   = true,
+            StockKeepingUnit           = 'SKU-BADID',
+            RES_Type__c                = 'N',
+            RES_Product_External_ID__c = 'WS-FN-6BV-Rj-005'  // ProductCode pre-set by upload sheet
+        );
+        insertProductWithoutTrigger(p);
+
+        Test.startTest();
+        try {
+            RES_ProductIntegrationService.hydrateRequestBody(new List<Product2>{ p }, 'U');
+            Assert.fail('Expected RES_IntegrationException for ExternalId that does not match SAP format');
+        } catch (RES_IntegrationException ex) {
+            Assert.isTrue(ex.getMessage().containsIgnoreCase('validation failed'),
+                'Exception message must describe the ExternalId format problem');
+        }
+        Test.stopTest();
+    }
+
+    // ── Change B: UOM mapping enforcement ────────────────────────────────────
+
+    @isTest
+    static void testMeasurementWithKnownUomIsMappedAndIncluded() {
+        Product2 p = new Product2(
+            Name               = 'UOM-SQRMTR',
+            IsActive           = true,
+            StockKeepingUnit   = 'SKU-M2',
+            RES_Type__c        = 'N',
+            RES_Unit_Status__c = 'Available'
+        );
+        insertProductWithoutTrigger(p);
+
+        // insertProductWithoutTrigger already created the config switch; query and reuse it
+        RES_Config_Switch__c cfg = [SELECT Id FROM RES_Config_Switch__c
+                                    WHERE SetupOwnerId = :UserInfo.getOrganizationId() LIMIT 1];
+        cfg.RES_Triggers_Off__c = true;
+        update cfg;
+        RES_Measurement__c m = new RES_Measurement__c(
+            RES_Product__c             = p.Id,
+            RES_Measurement_Type__c    = 'Z008',
+            RES_Measurement_Amount__c  = 75.0,
+            RES_Measurement_From__c    = Date.newInstance(2026, 1, 1),
+            RES_Measurement_To__c      = Date.newInstance(2099, 12, 31),
+            RES_Unit_Of_Measurement__c = 'Sqr Mtr'
+        );
+        insert m;
+        cfg.RES_Triggers_Off__c = false;
+        update cfg;
+
+        Test.startTest();
+        String body = RES_ProductIntegrationService.hydrateRequestBody(new List<Product2>{ p }, 'I');
+        Test.stopTest();
+
+        Map<String, Object> parsed = (Map<String, Object>) JSON.deserializeUntyped(body);
+        Assert.isTrue(parsed.containsKey('RES_Measurements'),
+            'Payload must include RES_Measurements when a valid-UOM measurement exists');
+        List<Object> mList = (List<Object>) parsed.get('RES_Measurements');
+        Assert.isFalse(mList.isEmpty(), 'Measurement list must not be empty');
+        Map<String, Object> mPayload = (Map<String, Object>) mList[0];
+        Assert.areEqual('M2', mPayload.get('RES_Unit_Of_Measurement'),
+            'Sqr Mtr must be mapped to SAP UOM code M2 via the UOM MDT entry');
+    }
+
+    // ── Change C: "Already Exist" reconciliation label ────────────────────────
+
+    @isTest
+    static void testAlreadyExistResponseLogsReconciliationRequired() {
+        if (!canConstruct()) return;
+
+        Product2 p = new Product2(
+            Name             = 'RECON-TEST',
+            IsActive         = true,
+            StockKeepingUnit = 'SKU-RECON',
+            RES_Type__c      = 'N'
+        );
+        insertProductWithoutTrigger(p);
+
+        RES_IntegrationTestDataFactory.primeSapToken();
+
+        Test.startTest();
+        RES_ProductIntegrationService svc = new RES_ProductIntegrationService('GET');
+        String alreadyExistBody =
+            '{"Return":{"item":{"Type":"E","Message":"Number of Rental Unit Already Exist"}}}';
+        Boolean result = RES_ProductIntegrationService.processResponse(
+            alreadyExistBody, svc, p.Id, 'Product2'
+        );
+        Test.stopTest();
+
+        Assert.isFalse(result, 'SAP error response must return false');
+        List<RES_Integration_Log__c> logs = [
+            SELECT RES_Type_of_Failure__c
+            FROM   RES_Integration_Log__c
+            WHERE  RES_Record_Id__c    = :p.Id
+            AND    RES_Request_Name__c = 'Unit_Sync'
+            LIMIT  1
+        ];
+        Assert.isFalse(logs.isEmpty(),
+            'An integration error log must be created for the Already Exist response');
+        Assert.areEqual('Reconciliation Required', logs[0].RES_Type_of_Failure__c,
+            'SAP "Already Exist" error must be classified as Reconciliation Required, not Client Side');
     }
 }

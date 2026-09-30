@@ -75,13 +75,13 @@ public with sharing class RES_IntegrationQueueable implements Queueable, Databas
             RES_PaymentPlanIntegrationService.syncPaymentPlans(installments, requestMethod, triggerContext);
         }
 
-        else if(serviceName == 'Account_Sync'){
-            List<Account> accounts = new List<Account>();
-            for (SObject record : records) {
-                accounts.add((Account) record);
-            }
-            //RES_AccountIntegrationService.syncAccounts(accounts, requestMethod, triggerContext);
-        }
+        // else if(serviceName == 'Account_Sync'){
+        //     List<Account> accounts = new List<Account>();
+        //     for (SObject record : records) {
+        //         accounts.add((Account) record);
+        //     }
+        //     RES_AccountIntegrationService.syncAccounts(accounts, requestMethod, triggerContext);
+        // }
         
         else if(serviceName == 'Unit_Sync'){
             List<Product2> products = new List<Product2>();

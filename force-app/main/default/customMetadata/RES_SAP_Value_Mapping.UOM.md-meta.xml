@@ -3,19 +3,15 @@
     <label>UOM</label>
     <protected>false</protected>
     <values>
-        <field>RES_Category__c</field>
-        <value xsi:type="xsd:string">UOM</value>
+        <field>RES_Object_Name__c</field>
+        <value xsi:type="xsd:string">RES_Measurement__c</value>
+    </values>
+    <values>
+        <field>RES_Field_Name__c</field>
+        <value xsi:type="xsd:string">RES_Unit_Of_Measurement__c</value>
     </values>
     <values>
         <field>RES_Json_Mapping__c</field>
-        <value xsi:type="xsd:string">{"Sqr Mtr":"M2","Pcs":"PC"}</value>
-    </values>
-    <values>
-        <field>RES_Json_False_Mapping__c</field>
-        <value xsi:nil="true"/>
-    </values>
-    <values>
-        <field>RES_Is_Active__c</field>
-        <value xsi:type="xsd:boolean">true</value>
+        <value xsi:type="xsd:string">{"Sqr Mtr":"M2","Pcs":"PC","EA":"EA"}</value>
     </values>
 </CustomMetadata>

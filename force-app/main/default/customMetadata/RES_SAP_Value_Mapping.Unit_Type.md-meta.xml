@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-    <label>Inventory Type</label>
+    <label>Unit Type</label>
     <protected>false</protected>
     <values>
         <field>RES_Object_Name__c</field>
-        <value xsi:type="xsd:string">RES_Product_Staging__c</value>
+        <value xsi:type="xsd:string">Lead</value>
     </values>
     <values>
         <field>RES_Field_Name__c</field>
-        <value xsi:type="xsd:string">RES_Inventory_Type__c</value>
+        <value xsi:type="xsd:string">RES_Unit_Type__c</value>
     </values>
     <values>
         <field>RES_Json_Mapping__c</field>
-        <value xsi:type="xsd:string">{"RES_Residential_Sales":"Y01","DEFAULT":"Z01"}</value>
+        <value xsi:type="xsd:string">{"Apartment":"1002","Penthouse":"1009","Villa":"1003","Plots":"1013"}</value>
     </values>
 </CustomMetadata>
