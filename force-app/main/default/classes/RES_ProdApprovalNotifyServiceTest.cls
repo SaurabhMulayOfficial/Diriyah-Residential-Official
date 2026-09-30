@@ -123,6 +123,7 @@ private class RES_ProdApprovalNotifyServiceTest {
     static void testNotifyNextApprovalTeam_withValidData() {
         List<Product2> products = createTestProducts();
 
+        RES_IntegrationRequestEventService.batchSubmitter = new RES_IntegrationRequestEventService.CountingBatchSubmitter();
         Test.startTest();
         RES_ProductApprovalNotificationService.notifyNextApprovalTeam(
             products,
@@ -137,6 +138,7 @@ private class RES_ProdApprovalNotifyServiceTest {
 
     @isTest
     static void testNotifyNextApprovalTeam_nullProducts() {
+        RES_IntegrationRequestEventService.batchSubmitter = new RES_IntegrationRequestEventService.CountingBatchSubmitter();
         Test.startTest();
         RES_ProductApprovalNotificationService.notifyNextApprovalTeam(
             null,
@@ -151,6 +153,7 @@ private class RES_ProdApprovalNotifyServiceTest {
 
     @isTest
     static void testNotifyNextApprovalTeam_emptyProducts() {
+        RES_IntegrationRequestEventService.batchSubmitter = new RES_IntegrationRequestEventService.CountingBatchSubmitter();
         Test.startTest();
         RES_ProductApprovalNotificationService.notifyNextApprovalTeam(
             new List<Product2>(),
@@ -167,6 +170,7 @@ private class RES_ProdApprovalNotifyServiceTest {
     static void testNotifyNextApprovalTeam_blankGroupName() {
         List<Product2> products = createTestProducts();
 
+        RES_IntegrationRequestEventService.batchSubmitter = new RES_IntegrationRequestEventService.CountingBatchSubmitter();
         Test.startTest();
         RES_ProductApprovalNotificationService.notifyNextApprovalTeam(
             products,
@@ -183,6 +187,7 @@ private class RES_ProdApprovalNotifyServiceTest {
     static void testNotifyFinalApproval_withValidData() {
         List<Product2> products = createTestProducts();
 
+        RES_IntegrationRequestEventService.batchSubmitter = new RES_IntegrationRequestEventService.CountingBatchSubmitter();
         Test.startTest();
         RES_ProductApprovalNotificationService.notifyFinalApproval(
             products,
@@ -195,6 +200,7 @@ private class RES_ProdApprovalNotifyServiceTest {
 
     @isTest
     static void testNotifyFinalApproval_nullProducts() {
+        RES_IntegrationRequestEventService.batchSubmitter = new RES_IntegrationRequestEventService.CountingBatchSubmitter();
         Test.startTest();
         RES_ProductApprovalNotificationService.notifyFinalApproval(
             null,
@@ -209,6 +215,7 @@ private class RES_ProdApprovalNotifyServiceTest {
     static void testNotifyProductRejection_withValidData() {
         List<Product2> products = createTestProducts();
 
+        RES_IntegrationRequestEventService.batchSubmitter = new RES_IntegrationRequestEventService.CountingBatchSubmitter();
         Test.startTest();
         RES_ProductApprovalNotificationService.notifyProductRejection(
             products,
@@ -224,6 +231,7 @@ private class RES_ProdApprovalNotifyServiceTest {
     static void testNotifyProductRejection_withHtmlInReason() {
         List<Product2> products = createTestProducts();
 
+        RES_IntegrationRequestEventService.batchSubmitter = new RES_IntegrationRequestEventService.CountingBatchSubmitter();
         Test.startTest();
         RES_ProductApprovalNotificationService.notifyProductRejection(
             products,
@@ -237,6 +245,7 @@ private class RES_ProdApprovalNotifyServiceTest {
 
     @isTest
     static void testNotifyProductRejection_nullProducts() {
+        RES_IntegrationRequestEventService.batchSubmitter = new RES_IntegrationRequestEventService.CountingBatchSubmitter();
         Test.startTest();
         RES_ProductApprovalNotificationService.notifyProductRejection(
             null,
@@ -265,6 +274,7 @@ private class RES_ProdApprovalNotifyServiceTest {
 
         inputList.add(input);
 
+        RES_IntegrationRequestEventService.batchSubmitter = new RES_IntegrationRequestEventService.CountingBatchSubmitter();
         Test.startTest();
         RES_SendEmailInvocable.sendEmails(inputList);
         Test.stopTest();
@@ -289,6 +299,7 @@ private class RES_ProdApprovalNotifyServiceTest {
 
         inputList.add(input);
 
+        RES_IntegrationRequestEventService.batchSubmitter = new RES_IntegrationRequestEventService.CountingBatchSubmitter();
         Test.startTest();
         RES_SendEmailInvocable.sendEmails(inputList);
         Test.stopTest();
@@ -304,6 +315,7 @@ private class RES_ProdApprovalNotifyServiceTest {
     static void testSpecialCharactersInTeamNames() {
         List<Product2> products = createTestProducts();
 
+        RES_IntegrationRequestEventService.batchSubmitter = new RES_IntegrationRequestEventService.CountingBatchSubmitter();
         Test.startTest();
         RES_ProductApprovalNotificationService.notifyNextApprovalTeam(
             products,
@@ -330,6 +342,7 @@ private class RES_ProdApprovalNotifyServiceTest {
         }
         insert products;
 
+        RES_IntegrationRequestEventService.batchSubmitter = new RES_IntegrationRequestEventService.CountingBatchSubmitter();
         Test.startTest();
         RES_ProductApprovalNotificationService.notifyNextApprovalTeam(
             products,
@@ -351,6 +364,7 @@ private class RES_ProdApprovalNotifyServiceTest {
         );
         insert product;
 
+        RES_IntegrationRequestEventService.batchSubmitter = new RES_IntegrationRequestEventService.CountingBatchSubmitter();
         Test.startTest();
         RES_ProductApprovalNotificationService.notifyFinalApproval(
             new List<Product2>{ product },
