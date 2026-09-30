@@ -55,12 +55,19 @@ private class RES_CsvIngestionControllerTest {
     static void testStartBatchFromCsvOperationInsertAlreadyExists() {
         setUpCallouts();
 
+        // Disable triggers so beforeInsert doesn't clear RES_Product_External_ID__c
+        RES_Config_Switch__c cfg = new RES_Config_Switch__c(
+            SetupOwnerId = UserInfo.getOrganizationId(), RES_Triggers_Off__c = true
+        );
+        upsert cfg;
         Product2 prod = new Product2(
             Name = 'Existing Unit',
             RES_Product_External_ID__c = 'EXISTS-UNIT-100',
             IsActive = true
         );
         insert prod;
+        cfg.RES_Triggers_Off__c = false;
+        update cfg;
 
         String validCode = getLayoutCodeWithMappings();
         if (String.isBlank(validCode)) return;
