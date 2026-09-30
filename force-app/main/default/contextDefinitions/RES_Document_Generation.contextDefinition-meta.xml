@@ -402,18 +402,6 @@
                     <contextAttrHydrationDetails>
                         <contextAttrHydrationDetails>
                             <objectName>Contact</objectName>
-                            <queryAttribute>RES_Company_Representative_Name_Arabic__c</queryAttribute>
-                        </contextAttrHydrationDetails>
-                        <objectName>Contract</objectName>
-                        <queryAttribute>CustomerSigned</queryAttribute>
-                    </contextAttrHydrationDetails>
-                    <contextAttribute>RES_Company_Rep_NameAR</contextAttribute>
-                    <contextInputAttributeName>RES_Company_Rep_NameAR</contextInputAttributeName>
-                </contextAttributeMappings>
-                <contextAttributeMappings>
-                    <contextAttrHydrationDetails>
-                        <contextAttrHydrationDetails>
-                            <objectName>Contact</objectName>
                             <queryAttribute>Email</queryAttribute>
                         </contextAttrHydrationDetails>
                         <objectName>Contract</objectName>
@@ -618,7 +606,7 @@
                     <contextAttrHydrationDetails>
                         <contextAttrHydrationDetails>
                             <objectName>Account</objectName>
-                            <queryAttribute>DIR_Country__c</queryAttribute>
+                            <queryAttribute>BillingCountry</queryAttribute>
                         </contextAttrHydrationDetails>
                         <objectName>Contract</objectName>
                         <queryAttribute>Account</queryAttribute>
@@ -1557,19 +1545,6 @@
             </contextAttributes>
             <contextAttributes>
                 <contextTags>
-                    <title>RES_Company_Rep_NameAR</title>
-                </contextTags>
-                <customMappingAllowed>false</customMappingAllowed>
-                <dataType>string</dataType>
-                <fieldType>inputoutput</fieldType>
-                <key>false</key>
-                <localizationDisabled>false</localizationDisabled>
-                <title>RES_Company_Rep_NameAR</title>
-                <transient>false</transient>
-                <value>false</value>
-            </contextAttributes>
-            <contextAttributes>
-                <contextTags>
                     <title>RES_Email</title>
                 </contextTags>
                 <customMappingAllowed>false</customMappingAllowed>
@@ -1604,19 +1579,6 @@
                 <key>false</key>
                 <localizationDisabled>false</localizationDisabled>
                 <title>RES_CR_number</title>
-                <transient>false</transient>
-                <value>false</value>
-            </contextAttributes>
-            <contextAttributes>
-                <contextTags>
-                    <title>RES_Country</title>
-                </contextTags>
-                <customMappingAllowed>false</customMappingAllowed>
-                <dataType>picklist</dataType>
-                <fieldType>inputoutput</fieldType>
-                <key>false</key>
-                <localizationDisabled>false</localizationDisabled>
-                <title>RES_Country</title>
                 <transient>false</transient>
                 <value>false</value>
             </contextAttributes>
@@ -2728,9 +2690,9 @@
             <title>ContractItemPrice</title>
             <transposable>false</transposable>
         </contextNodes>
-        <isActive>true</isActive>
+        <isActive>false</isActive>
         <startDate>2026-09-21 00:00:00</startDate>
-        <versionNumber>2</versionNumber>
+        <versionNumber>49</versionNumber>
     </contextDefinitionVersions>
     <contextTtl>10</contextTtl>
     <hasSystemTags>false</hasSystemTags>
