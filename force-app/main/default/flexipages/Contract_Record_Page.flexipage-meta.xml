@@ -7,6 +7,16 @@
                     <name>actionNames</name>
                     <valueList>
                         <valueListItems>
+                            <value>Contract.RES_Generate_URC</value>
+                            <visibilityRule>
+                                <criteria>
+                                    <leftValue>{!$Permission.CustomPermission.RES_Generate_URC_Button_Visibility}</leftValue>
+                                    <operator>EQUAL</operator>
+                                    <rightValue>true</rightValue>
+                                </criteria>
+                            </visibilityRule>
+                        </valueListItems>
+                        <valueListItems>
                             <value>Contract.RES_Generate_SPA</value>
                             <visibilityRule>
                                 <booleanFilter>1 AND 2</booleanFilter>
