@@ -236,6 +236,163 @@ private class RES_ContractServicesTest {
     }
 
     // ─────────────────────────────────────────────────────────────────────────
+    // Update path — lastSyncSet + field changed → Sales_Contract_Update event
+    // ─────────────────────────────────────────────────────────────────────────
+
+    @isTest
+    static void syncContract_update_lastSyncSet_fieldChanged_publishesUpdateEvent() {
+        if (!configReady()) { return; }
+
+        RES_IntegrationTestDataFactory.primeSapToken();
+        Test.setMock(HttpCalloutMock.class, new RES_IntegrationTestDataFactory.EndpointRoutingMock());
+        RES_IntegrationRequestEventService.CountingBatchSubmitter spy = injectBatchSpy();
+        Account acc  = RES_TestDataFactory.createAccount();
+        Contract c   = createAndFetchContract(acc.Id);
+
+        // Stamp a past sync date so the condition contract.RES_Last_Sync_DateTime__c != null is met
+        Database.update(
+            new Contract(Id = c.Id, RES_Last_Sync_DateTime__c = System.now().addDays(-1)),
+            false, AccessLevel.SYSTEM_MODE
+        );
+        c = [SELECT Id, AccountId, Status, RES_Contract_Type__c,
+                    RES_First_Residential_Buyer__c, CompanySignedDate,
+                    DIR_Old_Contract__c, RES_Last_Sync_DateTime__c,
+                    Account.RES_BP_Role__c
+             FROM Contract WHERE Id = :c.Id];
+
+        // oldMap.get(c.Id) == null → isContractChanged returns true immediately
+        Map<Id, Contract> emptyOld = new Map<Id, Contract>();
+
+        Test.startTest();
+        Test.getEventBus().deliver();
+        Integer before = spy.callCount;
+        RES_ContractServices.syncContract(new List<Contract>{ c }, emptyOld);
+        Test.getEventBus().deliver();
+        Integer after = spy.callCount;
+        Test.stopTest();
+
+        Assert.areEqual(1, after - before,
+            'A changed contract with RES_Last_Sync_DateTime__c set should publish one Sales_Contract_Update event.');
+    }
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // Update path — Canceled + Approved status → Sales_Contract_Termination event
+    // ─────────────────────────────────────────────────────────────────────────
+
+    @isTest
+    static void syncContract_update_canceledAndApproved_publishesTerminationEvent() {
+        if (!configReady()) { return; }
+
+        RES_IntegrationTestDataFactory.primeSapToken();
+        Test.setMock(HttpCalloutMock.class, new RES_IntegrationTestDataFactory.EndpointRoutingMock());
+        RES_IntegrationRequestEventService.CountingBatchSubmitter spy = injectBatchSpy();
+        Account acc = RES_TestDataFactory.createAccount();
+        Contract c  = createAndFetchContract(acc.Id);
+
+        // Stamp sync date and set Canceled + Approved in System mode (bypasses process rules)
+        Database.update(
+            new Contract(
+                Id = c.Id,
+                RES_Last_Sync_DateTime__c = System.now().addDays(-1),
+                Status                    = 'Canceled',
+                RES_Approval_Status__c    = 'Approved'
+            ),
+            false, AccessLevel.SYSTEM_MODE
+        );
+        Contract newC = [SELECT Id, AccountId, Status, RES_Approval_Status__c,
+                                RES_Contract_Type__c, RES_First_Residential_Buyer__c,
+                                CompanySignedDate, DIR_Old_Contract__c,
+                                RES_Last_Sync_DateTime__c, Account.RES_BP_Role__c
+                         FROM Contract WHERE Id = :c.Id];
+
+        // Old record has Draft status — ensures isStatusChanged returns true
+        Contract oldC = new Contract(Id = c.Id, Status = 'Draft', RES_Approval_Status__c = null);
+        Map<Id, Contract> oldMap = new Map<Id, Contract>{ c.Id => oldC };
+
+        Test.startTest();
+        Test.getEventBus().deliver();
+        Integer before = spy.callCount;
+        RES_ContractServices.syncContract(new List<Contract>{ newC }, oldMap);
+        Test.getEventBus().deliver();
+        Integer after = spy.callCount;
+        Test.stopTest();
+
+        Assert.areEqual(1, after - before,
+            'A Canceled+Approved contract with sync date set must publish one Sales_Contract_Termination event.');
+    }
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // @InvocableMethod — syncContractTermination
+    // ─────────────────────────────────────────────────────────────────────────
+
+    @isTest
+    static void syncContractTermination_withRequests_publishesTerminationEvent() {
+        RES_IntegrationTestDataFactory.primeSapToken();
+        Test.setMock(HttpCalloutMock.class, new RES_IntegrationTestDataFactory.EndpointRoutingMock());
+        RES_IntegrationRequestEventService.CountingBatchSubmitter spy = injectBatchSpy();
+        Account acc = RES_TestDataFactory.createAccount();
+        Contract c  = createAndFetchContract(acc.Id);
+
+        RES_ContractServices.ContractTerminationRequest req = new RES_ContractServices.ContractTerminationRequest();
+        req.contractId = c.Id;
+
+        Test.startTest();
+        Test.getEventBus().deliver();
+        Integer before = spy.callCount;
+        RES_ContractServices.syncContractTermination(
+            new List<RES_ContractServices.ContractTerminationRequest>{ req }
+        );
+        Test.getEventBus().deliver();
+        Integer after = spy.callCount;
+        Test.stopTest();
+
+        Assert.areEqual(1, after - before,
+            'syncContractTermination must publish one termination event per request.');
+    }
+
+    @isTest
+    static void syncContractTermination_multipleRequests_publishesMultipleEvents() {
+        RES_IntegrationTestDataFactory.primeSapToken();
+        Test.setMock(HttpCalloutMock.class, new RES_IntegrationTestDataFactory.EndpointRoutingMock());
+        RES_IntegrationRequestEventService.CountingBatchSubmitter spy = injectBatchSpy();
+        Account acc = RES_TestDataFactory.createAccount();
+        Contract c1 = createAndFetchContract(acc.Id);
+        Contract c2 = createAndFetchContract(acc.Id);
+
+        RES_ContractServices.ContractTerminationRequest r1 = new RES_ContractServices.ContractTerminationRequest();
+        r1.contractId = c1.Id;
+        RES_ContractServices.ContractTerminationRequest r2 = new RES_ContractServices.ContractTerminationRequest();
+        r2.contractId = c2.Id;
+
+        Test.startTest();
+        Test.getEventBus().deliver();
+        Integer before = spy.callCount;
+        RES_ContractServices.syncContractTermination(
+            new List<RES_ContractServices.ContractTerminationRequest>{ r1, r2 }
+        );
+        Test.getEventBus().deliver();
+        Integer after = spy.callCount;
+        Test.stopTest();
+
+        Assert.isTrue(after > before, 'syncContractTermination must publish events for multiple requests.');
+    }
+
+    @isTest
+    static void syncContractTermination_emptyRequests_doesNotThrow() {
+        Boolean threw = false;
+        try {
+            Test.startTest();
+            RES_ContractServices.syncContractTermination(
+                new List<RES_ContractServices.ContractTerminationRequest>()
+            );
+            Test.stopTest();
+        } catch (Exception e) {
+            threw = true;
+        }
+        Assert.isFalse(threw, 'syncContractTermination with an empty list must not throw.');
+    }
+
+    // ─────────────────────────────────────────────────────────────────────────
     // Update path — empty contractsToSync → returns early without publishing
     // ─────────────────────────────────────────────────────────────────────────
 
