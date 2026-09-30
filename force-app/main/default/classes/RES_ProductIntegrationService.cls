@@ -522,7 +522,7 @@ public without sharing class RES_ProductIntegrationService extends RES_BaseInteg
                     + ' Full SAP response: ' + responseBody);
             }
             RES_IntegrationErrorLogger log = new RES_IntegrationErrorLogger(
-                'Unit_Sync', '', responseBody,
+                'Unit_Sync', '', errorMessage,
                 JSON.serialize(service.getHeaders()), objectType, recordId,
                 String.valueOf(service.getRequestBody()), service.getRequestMethod(),
                 'Unit_Sync', service.getRetryCount(),

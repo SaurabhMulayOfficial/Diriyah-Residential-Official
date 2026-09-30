@@ -2934,7 +2934,17 @@
         <field>RES_Lead_Conversion_Event__e.Opportunity_Id__c</field>
         <readable>true</readable>
     </fieldPermissions>
-     <fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>Product2.RES_Fixtures_Last_Sync__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>Product2.RES_Last_Sync_DateTime__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
         <editable>true</editable>
         <field>Product2.RES_Usage_Type_Arabic__c</field>
         <readable>true</readable>
@@ -4646,11 +4656,6 @@
     <fieldPermissions>
         <editable>true</editable>
         <field>Account.RES_Country_Of_Company_Incorporation_AR__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>false</editable>
-        <field>Account.RES_Is_GCC_ID__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
