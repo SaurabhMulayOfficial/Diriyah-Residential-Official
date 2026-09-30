@@ -44,6 +44,8 @@ private class RES_ContractServicesTest {
                    RES_First_Residential_Buyer__c,
                    CompanySignedDate, DIR_Old_Contract__c,
                    RES_Last_Sync_DateTime__c,
+                   RES_Company_Code__c, RES_External_ID__c,
+                   RES_Approval_Status__c,
                    Account.RES_BP_Role__c
             FROM Contract WHERE Id = :c.Id
         ];
@@ -254,19 +256,23 @@ private class RES_ContractServicesTest {
             new Contract(Id = c.Id, RES_Last_Sync_DateTime__c = System.now().addDays(-1)),
             false, AccessLevel.SYSTEM_MODE
         );
-        c = [SELECT Id, AccountId, Status, RES_Contract_Type__c,
+        c = [SELECT Id, AccountId, OwnerId, Status, StartDate,
+                    ContractNumber, RES_Contract_Type__c,
                     RES_First_Residential_Buyer__c, CompanySignedDate,
                     DIR_Old_Contract__c, RES_Last_Sync_DateTime__c,
-                    Account.RES_BP_Role__c
+                    RES_Company_Code__c, RES_External_ID__c,
+                    RES_Approval_Status__c, Account.RES_BP_Role__c
              FROM Contract WHERE Id = :c.Id];
 
-        // oldMap.get(c.Id) == null → isContractChanged returns true immediately
-        Map<Id, Contract> emptyOld = new Map<Id, Contract>();
+        // Old record has a different Status so isContractChanged returns true,
+        // and new Status is 'Draft' (not 'Canceled') so isStatusChanged returns false → update list
+        Contract oldC = new Contract(Id = c.Id, Status = 'Activated');
+        Map<Id, Contract> oldMap = new Map<Id, Contract>{ c.Id => oldC };
 
         Test.startTest();
         Test.getEventBus().deliver();
         Integer before = spy.callCount;
-        RES_ContractServices.syncContract(new List<Contract>{ c }, emptyOld);
+        RES_ContractServices.syncContract(new List<Contract>{ c }, oldMap);
         Test.getEventBus().deliver();
         Integer after = spy.callCount;
         Test.stopTest();
