@@ -1,0 +1,980 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <label>Integration Log</label>
+    <protected>false</protected>
+    <values>
+        <field>Html_Body__c</field>
+        <value xsi:type="xsd:string">&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;head&gt;
+&lt;meta charset=&quot;UTF-8&quot;&gt;
+&lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1.0&quot;&gt;
+
+&lt;style&gt;
+/* =========================================================
+   BASE
+   ========================================================= */
+
+html,
+body {
+    margin: 0 !important;
+    padding: 0 !important;
+    width: 100% !important;
+    background: #ffffff;
+    font-family: Arial, Helvetica, sans-serif;
+    -webkit-text-size-adjust: 100%;
+    -ms-text-size-adjust: 100%;
+}
+
+table {
+    border-collapse: collapse;
+    border-spacing: 0;
+}
+
+img {
+    border: 0;
+    outline: none;
+    text-decoration: none;
+    display: block;
+}
+
+td {
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+
+/* =========================================================
+   PAGE
+   ========================================================= */
+
+.page {
+    width: 100%;
+    background: #ffffff;
+    padding: 25px 10px;
+}
+
+.main {
+    width: 600px;
+    max-width: 600px;
+    background: #ffffff;
+    border: 1px solid #ffffff;
+    border-radius: 24px;
+    overflow: hidden;
+}
+
+
+/* =========================================================
+   HERO
+   ========================================================= */
+
+.hero {
+    background: #f4f8ff;
+    padding: 30px 34px 25px;
+}
+
+.hero-table {
+    width: 100%;
+}
+
+.hero-left {
+    width: 62%;
+    padding-right: 12px;
+    vertical-align: middle;
+}
+
+.hero-right {
+    width: 38%;
+    text-align: right;
+    vertical-align: middle;
+}
+
+.brand {
+    font-size: 15px;
+    line-height: 31px;
+    font-weight: 600;
+    color: #5269a1;
+    white-space: nowrap;
+}
+
+.cloud {
+    display: inline-block;
+    width: 31px;
+    height: 31px;
+    line-height: 31px;
+    text-align: center;
+    background: #4d9df7;
+    color: #ffffff;
+    border-radius: 10px;
+    margin-right: 8px;
+    font-size: 16px;
+    vertical-align: middle;
+}
+
+.hero-title {
+    margin-top: 18px;
+    font-size: 27px;
+    line-height: 34px;
+    font-weight: 800;
+    color: #17245c;
+}
+
+.hero-title .oops {
+    color: #ef4768;
+}
+
+.hero-description {
+    margin-top: 10px;
+    font-size: 14px;
+    line-height: 22px;
+    color: #5c6e9f;
+    max-width: 370px;
+}
+
+
+/* =========================================================
+   HERO ILLUSTRATION
+   ========================================================= */
+
+.illustration {
+    text-align: right;
+    font-size: 0;
+}
+
+.laptop-wrap {
+    display: inline-block;
+    position: relative;
+    width: 150px;
+    height: 100px;
+}
+
+.laptop {
+    position: absolute;
+    left: 0;
+    top: 10px;
+    width: 150px;
+    height: 92px;
+    background: #443de0;
+    border-radius: 10px 10px 5px 5px;
+    box-shadow: 0 8px 18px rgba(55, 60, 160, 0.20);
+}
+
+.screen {
+    position: absolute;
+    left: 8px;
+    top: 8px;
+    width: 134px;
+    height: 72px;
+    background: #fff0f7;
+    border-radius: 5px;
+}
+
+.sad {
+    font-size: 29px;
+    color: #17245c;
+    line-height: 45px;
+    text-align: center;
+    padding-top: 8px;
+}
+
+.sad-face {
+    font-size: 22px;
+    line-height: 20px;
+}
+
+.keyboard {
+    position: absolute;
+    bottom: -8px;
+    left: -15px;
+    width: 180px;
+    height: 12px;
+    background: #3834b7;
+    border-radius: 0 0 12px 12px;
+}
+
+.alert {
+    position: absolute;
+    right: -8px;
+    top: 0;
+    width: 45px;
+    height: 45px;
+    line-height: 45px;
+    text-align: center;
+    border-radius: 50%;
+    background: #f04468;
+    border: 5px solid #ffffff;
+    color: #ffffff;
+    font-size: 23px;
+    font-weight: bold;
+    box-shadow: 0 5px 15px rgba(240, 68, 104, 0.20);
+}
+
+
+/* =========================================================
+   CONTENT
+   ========================================================= */
+
+.content {
+    padding: 26px 34px 30px;
+}
+
+
+/* =========================================================
+   INTEGRATION CARD
+   ========================================================= */
+
+.integration {
+    width: 100%;
+    padding: 18px;
+    background: #ffffff;
+}
+
+.integration-icon-cell {
+    width: 60px;
+    vertical-align: middle;
+}
+
+.integration-icon {
+    width: 48px;
+    height: 48px;
+    line-height: 48px;
+    text-align: center;
+    border-radius: 14px;
+    background: #28395f;
+    color: #ffffff;
+    font-size: 23px;
+}
+
+.integration-info {
+    vertical-align: middle;
+}
+
+.label {
+    font-size: 10px;
+    line-height: 14px;
+    letter-spacing: 1.3px;
+    font-weight: bold;
+    color: #6174aa;
+    text-transform: uppercase;
+}
+
+.integration-name {
+    margin-top: 4px;
+    font-size: 21px;
+    line-height: 26px;
+    font-weight: 800;
+    color: #17245c;
+
+    overflow-wrap: anywhere;
+    word-break: break-word;
+}
+
+.service {
+    margin-top: 5px;
+    font-size: 12px;
+    line-height: 18px;
+    color: #6677a5;
+
+    overflow-wrap: anywhere;
+    word-break: break-word;
+}
+
+.status-cell {
+    width: 75px;
+    text-align: right;
+    vertical-align: middle;
+}
+
+.failed {
+    display: inline-block;
+    padding: 7px 11px;
+    border-radius: 20px;
+    background: #ffe8ef;
+    color: #e84263;
+    font-size: 12px;
+    line-height: 14px;
+    font-weight: bold;
+    white-space: nowrap;
+}
+
+
+/* =========================================================
+   ERROR
+   ========================================================= */
+
+.error {
+    margin-top: 20px;
+    padding: 18px;
+    border-radius: 15px;
+    background: #fff3f6;
+}
+
+.error-title {
+    color: #c52c50;
+    font-size: 11px;
+    line-height: 15px;
+    letter-spacing: 1.2px;
+    font-weight: bold;
+    text-transform: uppercase;
+    margin-bottom: 7px;
+}
+
+.error-text {
+    color: #18285f;
+    font-size: 14px;
+    line-height: 21px;
+
+    overflow-wrap: anywhere;
+    word-break: break-word;
+}
+
+
+/* =========================================================
+   OBJECT DETAILS
+   ========================================================= */
+
+.details {
+    margin-top: 20px;
+    padding: 18px;
+    border-radius: 15px;
+    background: #f4f7ff;
+}
+
+.details-title {
+    color: #5068a2;
+    font-size: 11px;
+    line-height: 15px;
+    letter-spacing: 1.2px;
+    font-weight: bold;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+}
+
+.details-table {
+    width: 100%;
+    background: #ffffff;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.details-table td {
+    padding: 11px 13px;
+    border-bottom: 1px solid #edf0f6;
+    font-size: 12px;
+    line-height: 17px;
+}
+
+.details-table tr:last-child td {
+    border-bottom: none;
+}
+
+.detail-label {
+    width: 32%;
+    color: #7381a6;
+    vertical-align: top;
+}
+
+.detail-value {
+    width: 68%;
+    color: #17245c;
+    font-weight: bold;
+    vertical-align: top;
+
+    overflow-wrap: anywhere;
+    word-break: break-word;
+}
+
+
+/* =========================================================
+   BUTTON
+   ========================================================= */
+
+.button-area {
+    text-align: center;
+    padding: 25px 0 8px;
+}
+
+.button {
+    display: inline-block;
+    padding: 14px 26px;
+    border-radius: 11px;
+    background: #5148ff;
+    color: #ffffff !important;
+    text-decoration: none;
+    font-size: 14px;
+    line-height: 18px;
+    font-weight: bold;
+}
+
+.arrow {
+    font-size: 18px;
+    margin-left: 8px;
+    vertical-align: -1px;
+}
+
+
+/* =========================================================
+   FOOTER
+   ========================================================= */
+
+.footer {
+    background: #f2f6ff;
+    padding: 23px 30px;
+    text-align: center;
+}
+
+.footer-symbol {
+    font-size: 20px;
+    line-height: 22px;
+    margin-bottom: 6px;
+    color: #7588c0;
+}
+
+.footer-message {
+    font-size: 11px;
+    line-height: 18px;
+    color: #7180a5;
+}
+
+.footer-message strong {
+    color: #52658e;
+}
+
+
+/* =========================================================
+   MOBILE
+   ========================================================= */
+
+@media only screen and (max-width: 620px) {
+
+    .page {
+        padding: 8px 4px !important;
+    }
+
+    .main {
+        width: 100% !important;
+        max-width: 100% !important;
+        border-radius: 16px !important;
+    }
+
+
+    /* -------------------------
+       HERO
+       ------------------------- */
+
+    .hero {
+        padding: 22px 16px 20px !important;
+    }
+
+    .hero-left {
+        width: 61% !important;
+        padding-right: 6px !important;
+    }
+
+    .hero-right {
+        width: 39% !important;
+        padding-left: 0 !important;
+    }
+
+    .brand {
+        font-size: 11px !important;
+        line-height: 25px !important;
+    }
+
+    .cloud {
+        width: 25px !important;
+        height: 25px !important;
+        line-height: 25px !important;
+        font-size: 13px !important;
+        border-radius: 7px !important;
+        margin-right: 5px !important;
+    }
+
+    .hero-title {
+        margin-top: 12px !important;
+        font-size: 20px !important;
+        line-height: 25px !important;
+    }
+
+    .hero-description {
+        margin-top: 7px !important;
+        font-size: 11px !important;
+        line-height: 17px !important;
+        max-width: 100% !important;
+    }
+
+
+    /* -------------------------
+       HERO ILLUSTRATION
+       ------------------------- */
+
+    .laptop-wrap {
+        width: 105px !important;
+        height: 75px !important;
+    }
+
+    .laptop {
+        width: 105px !important;
+        height: 65px !important;
+        top: 5px !important;
+    }
+
+    .screen {
+        left: 6px !important;
+        top: 6px !important;
+        width: 93px !important;
+        height: 51px !important;
+    }
+
+    .sad {
+        font-size: 20px !important;
+        line-height: 30px !important;
+        padding-top: 5px !important;
+    }
+
+    .sad-face {
+        font-size: 17px !important;
+        line-height: 16px !important;
+    }
+
+    .keyboard {
+        width: 125px !important;
+        height: 9px !important;
+        left: -10px !important;
+        bottom: -6px !important;
+    }
+
+    .alert {
+        width: 31px !important;
+        height: 31px !important;
+        line-height: 31px !important;
+        font-size: 16px !important;
+        border-width: 3px !important;
+        right: -7px !important;
+        top: -3px !important;
+    }
+
+
+    /* -------------------------
+       CONTENT
+       ------------------------- */
+
+    .content {
+        padding: 20px 14px 24px !important;
+    }
+
+
+    /* -------------------------
+       INTEGRATION CARD
+       ------------------------- */
+
+    .integration {
+        padding: 12px !important;
+    }
+
+    .integration-icon-cell {
+        width: 45px !important;
+    }
+
+    .integration-icon {
+        width: 36px !important;
+        height: 36px !important;
+        line-height: 36px !important;
+        font-size: 17px !important;
+        border-radius: 10px !important;
+    }
+
+    .integration-name {
+        font-size: 15px !important;
+        line-height: 19px !important;
+    }
+
+    .label {
+        font-size: 9px !important;
+        line-height: 12px !important;
+    }
+
+    .service {
+        font-size: 9px !important;
+        line-height: 14px !important;
+    }
+
+    .status-cell {
+        width: 60px !important;
+    }
+
+    .failed {
+        padding: 5px 7px !important;
+        font-size: 9px !important;
+        line-height: 12px !important;
+    }
+
+
+    /* -------------------------
+       ERROR
+       ------------------------- */
+
+    .error {
+        margin-top: 14px !important;
+        padding: 14px !important;
+    }
+
+    .error-title {
+        font-size: 10px !important;
+        line-height: 14px !important;
+    }
+
+    .error-text {
+        font-size: 12px !important;
+        line-height: 18px !important;
+    }
+
+
+    /* -------------------------
+       DETAILS
+       ------------------------- */
+
+    .details {
+        margin-top: 14px !important;
+        padding: 14px !important;
+    }
+
+    .details-title {
+        font-size: 10px !important;
+        line-height: 14px !important;
+        margin-bottom: 10px !important;
+    }
+
+    .details-table td {
+        padding: 9px 9px !important;
+        font-size: 10px !important;
+        line-height: 15px !important;
+    }
+
+    .detail-label {
+        width: 30% !important;
+    }
+
+    .detail-value {
+        width: 70% !important;
+    }
+
+
+    /* -------------------------
+       BUTTON
+       ------------------------- */
+
+    .button-area {
+        padding: 20px 0 5px !important;
+    }
+
+    .button {
+        padding: 12px 18px !important;
+        font-size: 12px !important;
+        line-height: 16px !important;
+    }
+
+    .arrow {
+        font-size: 16px !important;
+        margin-left: 5px !important;
+    }
+
+
+    /* -------------------------
+       FOOTER
+       ------------------------- */
+
+    .footer {
+        padding: 18px 14px !important;
+    }
+
+    .footer-message {
+        font-size: 10px !important;
+        line-height: 16px !important;
+    }
+}
+
+&lt;/style&gt;
+&lt;/head&gt;
+
+
+&lt;body&gt;
+
+&lt;table width=&quot;100%&quot; cellpadding=&quot;0&quot; cellspacing=&quot;0&quot; border=&quot;0&quot;&gt;
+&lt;tr&gt;
+&lt;td class=&quot;page&quot; align=&quot;center&quot;&gt;
+
+&lt;table class=&quot;main&quot; cellpadding=&quot;0&quot; cellspacing=&quot;0&quot; border=&quot;0&quot;&gt;
+
+
+&lt;!-- =========================================================
+     HERO
+     ========================================================= --&gt;
+
+&lt;tr&gt;
+&lt;td class=&quot;hero&quot;&gt;
+
+&lt;table class=&quot;hero-table&quot; width=&quot;100%&quot; cellpadding=&quot;0&quot; cellspacing=&quot;0&quot; border=&quot;0&quot;&gt;
+&lt;tr&gt;
+
+&lt;!-- HERO LEFT --&gt;
+
+&lt;td class=&quot;hero-left&quot; valign=&quot;middle&quot;&gt;
+
+&lt;div class=&quot;brand&quot;&gt;
+&lt;span class=&quot;cloud&quot;&gt;☁&lt;/span&gt;
+Integration Monitor
+&lt;/div&gt;
+
+&lt;div class=&quot;hero-title&quot;&gt;
+&lt;span class=&quot;oops&quot;&gt;Oops!&lt;/span&gt;&lt;br&gt;
+Something went wrong&lt;br&gt;
+with your integration.
+&lt;/div&gt;
+
+&lt;div class=&quot;hero-description&quot;&gt;
+An integration request encountered an error
+and needs your attention.
+&lt;/div&gt;
+
+&lt;/td&gt;
+
+
+&lt;!-- HERO RIGHT --&gt;
+
+&lt;td class=&quot;hero-right&quot; valign=&quot;middle&quot;&gt;
+
+&lt;div class=&quot;illustration&quot;&gt;
+
+&lt;div class=&quot;laptop-wrap&quot;&gt;
+
+&lt;div class=&quot;laptop&quot;&gt;
+
+&lt;div class=&quot;screen&quot;&gt;
+
+&lt;div class=&quot;sad&quot;&gt;
+× &amp;nbsp; ×
+&lt;br&gt;
+&lt;span class=&quot;sad-face&quot;&gt;⌣&lt;/span&gt;
+&lt;/div&gt;
+
+&lt;/div&gt;
+
+&lt;div class=&quot;keyboard&quot;&gt;&lt;/div&gt;
+
+&lt;/div&gt;
+
+&lt;div class=&quot;alert&quot;&gt;
+!
+&lt;/div&gt;
+
+&lt;/div&gt;
+
+&lt;/div&gt;
+
+&lt;/td&gt;
+
+&lt;/tr&gt;
+&lt;/table&gt;
+
+&lt;/td&gt;
+&lt;/tr&gt;
+
+
+&lt;!-- =========================================================
+     CONTENT
+     ========================================================= --&gt;
+
+&lt;tr&gt;
+&lt;td class=&quot;content&quot;&gt;
+
+
+&lt;!-- =========================================================
+     INTEGRATION
+     ========================================================= --&gt;
+
+&lt;table class=&quot;integration&quot; width=&quot;100%&quot; cellpadding=&quot;0&quot; cellspacing=&quot;0&quot; border=&quot;0&quot;&gt;
+&lt;tr&gt;
+
+&lt;td class=&quot;integration-icon-cell&quot;&gt;
+
+&lt;div class=&quot;integration-icon&quot;&gt;
+🔗
+&lt;/div&gt;
+
+&lt;/td&gt;
+
+
+&lt;td class=&quot;integration-info&quot;&gt;
+
+&lt;div class=&quot;label&quot;&gt;
+Integration
+&lt;/div&gt;
+
+&lt;div class=&quot;integration-name&quot;&gt;
+{0}
+&lt;/div&gt;
+
+&lt;div class=&quot;service&quot;&gt;
+☁ Service:
+{1}
+&amp;nbsp;&amp;nbsp;|&amp;nbsp;&amp;nbsp;
+Method:
+{2}
+&lt;/div&gt;
+
+&lt;/td&gt;
+
+
+&lt;td class=&quot;status-cell&quot;&gt;
+
+&lt;span class=&quot;failed&quot;&gt;
+● Failed
+&lt;/span&gt;
+
+&lt;/td&gt;
+
+&lt;/tr&gt;
+&lt;/table&gt;
+
+
+&lt;!-- =========================================================
+     ERROR
+     ========================================================= --&gt;
+
+&lt;div class=&quot;error&quot;&gt;
+
+&lt;div class=&quot;error-title&quot;&gt;
+⚠ &amp;nbsp; Error Message
+&lt;/div&gt;
+
+&lt;div class=&quot;error-text&quot;&gt;
+{3}
+&lt;/div&gt;
+
+&lt;/div&gt;
+
+
+&lt;!-- =========================================================
+     OBJECT DETAILS
+     ========================================================= --&gt;
+
+&lt;div class=&quot;details&quot;&gt;
+
+&lt;div class=&quot;details-title&quot;&gt;
+◈ &amp;nbsp; Object Details
+&lt;/div&gt;
+
+&lt;table class=&quot;details-table&quot;
+       width=&quot;100%&quot;
+       cellpadding=&quot;0&quot;
+       cellspacing=&quot;0&quot;
+       border=&quot;0&quot;&gt;
+
+&lt;tr&gt;
+
+&lt;td class=&quot;detail-label&quot;&gt;
+Object
+&lt;/td&gt;
+
+&lt;td class=&quot;detail-value&quot;&gt;
+{4}
+&lt;/td&gt;
+
+&lt;/tr&gt;
+
+
+&lt;tr&gt;
+
+&lt;td class=&quot;detail-label&quot;&gt;
+Record
+&lt;/td&gt;
+
+&lt;td class=&quot;detail-value&quot;&gt;
+{5}
+&lt;/td&gt;
+
+&lt;/tr&gt;
+
+
+&lt;tr&gt;
+
+&lt;td class=&quot;detail-label&quot;&gt;
+Record ID
+&lt;/td&gt;
+
+&lt;td class=&quot;detail-value&quot;
+    style=&quot;font-family:monospace;&quot;&gt;
+{6}
+&lt;/td&gt;
+
+&lt;/tr&gt;
+
+&lt;/table&gt;
+
+&lt;/div&gt;
+
+
+&lt;!-- =========================================================
+     BUTTON
+     ========================================================= --&gt;
+
+&lt;div class=&quot;button-area&quot;&gt;
+
+&lt;a class=&quot;button&quot;
+   href=&quot;{7}&quot;
+   target=&quot;_blank&quot;&gt;
+
+Open Integration Log
+&lt;span class=&quot;arrow&quot;&gt;→&lt;/span&gt;
+
+&lt;/a&gt;
+
+&lt;/div&gt;
+
+
+&lt;/td&gt;
+&lt;/tr&gt;
+
+
+&lt;!-- =========================================================
+     FOOTER
+     ========================================================= --&gt;
+
+&lt;tr&gt;
+
+&lt;td class=&quot;footer&quot;&gt;
+
+&lt;div class=&quot;footer-symbol&quot;&gt;
+♢
+&lt;/div&gt;
+
+&lt;div class=&quot;footer-message&quot;&gt;
+
+This notification was generated automatically by the
+&lt;strong&gt;Integration Monitoring System&lt;/strong&gt;.
+
+&lt;br&gt;
+
+Please review the integration log for additional details.
+
+&lt;/div&gt;
+
+&lt;/td&gt;
+
+&lt;/tr&gt;
+
+
+&lt;/table&gt;
+
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/table&gt;
+
+&lt;/body&gt;
+&lt;/html&gt;</value>
+    </values>
+    <values>
+        <field>Subject__c</field>
+        <value xsi:type="xsd:string">Integration request encountered an error</value>
+    </values>
+</CustomMetadata>
