@@ -34,4 +34,33 @@ public with sharing class RES_ApprovalWorkItemDAOLayer extends RES_BaseDAOLayer 
                       'GROUP BY RelatedRecordId';
         return (List<AggregateResult>) executeQuery(soql, '', false, bindVars, AccessLevel.SYSTEM_MODE);
     }
+
+    public List<ApprovalWorkItem> getApprovedWorkItemsByContractIds(Set<Id> contractIds) {
+        if (contractIds == null || contractIds.isEmpty()) {
+            return new List<ApprovalWorkItem>();
+        }
+        Map<String, Object> bindVars = new Map<String, Object>{ 'contractIds' => contractIds };
+        String soql = 'SELECT Id, RelatedRecordId, Status, ReviewedById, ReviewedBy.Name, LastModifiedDate ' +
+                      'FROM ApprovalWorkItem ' +
+                      'WHERE RelatedRecordId IN :contractIds ' +
+                      'AND RelatedRecordObjectName = \'Contract\' ' +
+                      'AND Status = \'Approved\' ' +
+                      'ORDER BY LastModifiedDate DESC';
+        return (List<ApprovalWorkItem>) executeQuery(soql, '', false, bindVars, AccessLevel.SYSTEM_MODE);
+    }
+
+    public List<ApprovalWorkItem> getApprovedFinanceWorkItemsByContractIds(Set<Id> contractIds) {
+        if (contractIds == null || contractIds.isEmpty()) {
+            return new List<ApprovalWorkItem>();
+        }
+        Map<String, Object> bindVars = new Map<String, Object>{ 'contractIds' => contractIds };
+        String soql = 'SELECT Id, RelatedRecordId, Status, CreatedDate ' +
+                      'FROM ApprovalWorkItem ' +
+                      'WHERE RelatedRecordId IN :contractIds ' +
+                      'AND RelatedRecordObjectName = \'Contract\' ' +
+                      'AND Status = \'Approved\' ' +
+                      'AND AssignedTo.Name = \'Finance Team\' ' +
+                      'ORDER BY CreatedDate DESC';
+        return (List<ApprovalWorkItem>) executeQuery(soql, '', false, bindVars, AccessLevel.SYSTEM_MODE);
+    }
 }

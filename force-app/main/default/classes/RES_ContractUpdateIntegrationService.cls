@@ -49,19 +49,28 @@ public with sharing class RES_ContractUpdateIntegrationService extends RES_BaseI
         setRequestName('Sales_Contract_Update');
     }
 
-    private static RES_ContractUpdateWrapper buildUpdateWrapper(Contract c) {
+    private static RES_ContractUpdateWrapper buildUpdateWrapper(
+        Contract c,
+        Map<Id, DateTime> contractToHardBlockDate,
+        Map<Id, String> contractToApprovedByName,
+        Map<String, String> contractStatusMapping
+    ) {
         RES_ContractUpdateWrapper wrapper = new RES_ContractUpdateWrapper();
         RES_ContractUpdateWrapper.ContractUpdatePayload payload = new RES_ContractUpdateWrapper.ContractUpdatePayload();
 
+        DateTime hardBlockStart = contractToHardBlockDate.get(c.Id);
+        String statusKey = c.Status == 'Canceled' ? 'Reservation Cancelation' : c.Status;
+        String mappedStatus = contractStatusMapping.get(statusKey);
+
         payload.IV_COMPANY_CODE    = c.RES_Company_Code__c;
-        payload.IV_CONTRACT        = null;
-        payload.IV_CONTRACT_STATUS = c.RES_Approval_Status__c;
-        payload.IV_WF_TYPE         = 'SCAC';
-        payload.IV_C4C_USER        = null;
-        payload.IV_NOTICE_DATE     = c.TerminationDateTime != null ? String.valueOf(c.TerminationDateTime) : null;
+        payload.IV_CONTRACT        = c.RES_External_ID__c;
+        payload.IV_CONTRACT_STATUS = mappedStatus;
+        payload.IV_WF_TYPE         = c.RES_Contract_Type__c;
+        payload.IV_C4C_USER        = contractToApprovedByName.get(c.Id);
+        payload.IV_NOTICE_DATE     = null;
         payload.IV_CN_OFFR         = null;
         payload.IV_RETAIL          = null;
-        payload.IV_RESERVDATE      = null;
+        payload.IV_RESERVDATE      = hardBlockStart != null ? String.valueOf(hardBlockStart) : null;
         payload.IV_CT_FLAG         = false;
         payload.TEST_RUN           = false;
 
@@ -81,10 +90,42 @@ public with sharing class RES_ContractUpdateIntegrationService extends RES_BaseI
             throw new RES_IntegrationException('No Contract records provided for Contract Update integration.');
         }
 
+        Set<Id> contractIds = new Map<Id, Contract>(contracts).keySet();
+
+        // Build contractId -> hard block start date from the Unit CIP
+        Map<Id, DateTime> contractToHardBlockDate = new Map<Id, DateTime>();
+        RES_ContractItemPriceDAOLayer cipDao = new RES_ContractItemPriceDAOLayer();
+        for (ContractItemPrice cip : cipDao.getCIPByContractIds(contractIds)) {
+            if (cip.RES_CIP_Type__c == 'Unit' && cip.RES_Product__r != null &&
+                cip.RES_Product__r.RES_HardBlock_Start__c != null) {
+                contractToHardBlockDate.put(cip.ContractId, cip.RES_Product__r.RES_HardBlock_Start__c);
+            }
+        }
+
+        // Build contractId -> latest approved reviewer name
+        Map<Id, String> contractToApprovedByName = new Map<Id, String>();
+        RES_ApprovalWorkItemDAOLayer approvalDao = new RES_ApprovalWorkItemDAOLayer();
+        for (ApprovalWorkItem awi : approvalDao.getApprovedWorkItemsByContractIds(contractIds)) {
+            // ORDER BY LastModifiedDate DESC — first hit per contract is the latest
+            if (!contractToApprovedByName.containsKey(awi.RelatedRecordId)) {
+                contractToApprovedByName.put(awi.RelatedRecordId, awi.ReviewedBy.Name);
+            }
+        }
+
+        // Fetch Contract_Status SAP value mapping (Object: Contract, Field: Contract_Status)
+        RES_SAPValueMappingDAOLayer sapDao = new RES_SAPValueMappingDAOLayer();
+        Map<String, Map<String, String>> sapMappings = sapDao.getMappingByObjectsAndFields(
+            new Set<String>{ 'Contract' },
+            new Set<String>{ 'Contract_Status' }
+        );
+        Map<String, String> contractStatusMapping = sapMappings.containsKey('ContractContract_Status')
+            ? sapMappings.get('ContractContract_Status')
+            : new Map<String, String>();
+
         List<RES_ContractUpdateWrapper> wrapperList = new List<RES_ContractUpdateWrapper>();
 
         for (Contract c : contracts) {
-            wrapperList.add(buildUpdateWrapper(c));
+            wrapperList.add(buildUpdateWrapper(c, contractToHardBlockDate, contractToApprovedByName, contractStatusMapping));
         }
 
         if (wrapperList.isEmpty()) {

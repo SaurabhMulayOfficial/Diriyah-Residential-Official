@@ -35,15 +35,13 @@ public with sharing class RES_ContractServices {
         for (Contract contract : contracts) {
             if (oldMap == null) {
                 contractsToSync_insert.add(contract);
-            }
-
-            else if(isContractChanged(contract, oldMap.get(contract.Id), syncFields) && contract.RES_Last_Sync_DateTime__c != null){
-                if(isStatusChanged(contract, oldMap.get(contract.Id))){
+            } 
+            else if (isContractChanged(contract, oldMap.get(contract.Id), syncFields) && contract.RES_Last_Sync_DateTime__c != null) {
+                if (isStatusChanged(contract, oldMap.get(contract.Id))) {
                     contractsToSync_Termination.add(contract);
-                }
-                else{
+                } else {
                     contractsToSync_update.add(contract);
-                }   
+                }
             }
         }
 
@@ -72,7 +70,7 @@ public with sharing class RES_ContractServices {
             integrationRequestEventList.add(req);
         }
 
-        for (Contract c : contractsToSync_update) {
+        for (Contract c : contractsToSync_Termination) {
             RES_Integration_Request__e req = new RES_Integration_Request__e();
             req.RES_RecordIds__c = String.valueOf(c.Id);
             req.RES_Request_Method__c = 'GET';
@@ -91,8 +89,34 @@ public with sharing class RES_ContractServices {
         }
     }
 
+    public class ContractTerminationRequest {
+        @InvocableVariable(label='Contract Id' required=true)
+        public Id contractId;
+    }
+
+    @InvocableMethod(label='Sync Contract Termination' description='Fires Sales_Contract_Termination integration events for the given Contract Ids')
+    public static void syncContractTermination(List<ContractTerminationRequest> requests) {
+        List<RES_Integration_Request__e> integrationRequestEventList = new List<RES_Integration_Request__e>();
+        for (ContractTerminationRequest request : requests) {
+            RES_Integration_Request__e req = new RES_Integration_Request__e();
+            Id contractId = request.contractId;
+            req.RES_RecordIds__c = String.valueOf(contractId);
+            req.RES_Request_Method__c = 'GET';
+            req.RES_Triggering_Context__c = 'U';
+            req.RES_Service_Name__c = 'Sales_Contract_Termination';
+            integrationRequestEventList.add(req);
+        }
+        try {
+            if (!integrationRequestEventList.isEmpty()) {
+                EventBus.publish(integrationRequestEventList);
+            }
+        } catch (Exception e) {
+            System.debug('Exception Firing Integration Request Event for Termination: ' + e.getMessage());
+        }
+    }
+
     private static boolean isStatusChanged(Contract newRecord, Contract oldRecord){
-        if(newRecord.Status != oldRecord.Status && newRecord.Status == 'Contract Terminated'){
+        if(newRecord.Status != oldRecord.Status && newRecord.Status == 'Canceled' && newRecord.RES_Approval_Status__c == 'Approved'){
             return true;
         }
 

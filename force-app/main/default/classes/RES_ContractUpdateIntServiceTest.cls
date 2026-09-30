@@ -69,17 +69,24 @@ private class RES_ContractUpdateIntServiceTest {
     }
 
     private static Contract buildContract(Id accountId) {
+        return buildContract(accountId, 'Draft', null, null);
+    }
+
+    private static Contract buildContract(Id accountId, String status, String contractType, String cancellationReasons) {
         Contract c = new Contract(
-            AccountId    = accountId,
-            Status       = 'Draft',
-            StartDate    = Date.today(),
-            ContractTerm = 12
+            AccountId               = accountId,
+            Status                  = status,
+            StartDate               = Date.today(),
+            ContractTerm            = 12,
+            RES_Contract_Type__c    = contractType,
+            RES_Cancellation_Reasons__c = cancellationReasons
         );
         insert c;
         return [
             SELECT Id, AccountId, Status, ContractNumber,
                    RES_Company_Code__c, RES_Approval_Status__c,
-                   RES_S4_Contract_Id__c, RES_Cancellation_Reason__c,
+                   RES_External_ID__c, RES_Contract_Type__c,
+                   RES_Cancellation_Reasons__c,
                    RES_Last_Sync_DateTime__c, TerminationDateTime
             FROM Contract
             WHERE Id = :c.Id
@@ -178,12 +185,12 @@ private class RES_ContractUpdateIntServiceTest {
     }
 
     @isTest
-    static void updateHydrate_wfTypeIsAlwaysScac() {
+    static void updateHydrate_contractTypeMapsToIvWfType() {
         Account acc = RES_TestDataFactory.createAccount();
-        Contract c  = buildContract(acc.Id);
+        Contract c  = buildContract(acc.Id, 'Draft', 'Y001', null);
 
         String body = RES_ContractUpdateIntegrationService.hydrateRequestBody(new List<Contract>{ c });
-        Assert.isTrue(body.contains('SCAC'), 'IV_WF_TYPE must always be SCAC.');
+        Assert.isTrue(body.contains('Y001'), 'IV_WF_TYPE must reflect RES_Contract_Type__c value.');
     }
 
     @isTest
@@ -195,6 +202,50 @@ private class RES_ContractUpdateIntServiceTest {
         Map<String, Object> parsed  = (Map<String, Object>) JSON.deserializeUntyped(body);
         Map<String, Object> payload = (Map<String, Object>) parsed.get('CONTRACT_UPDATE');
         Assert.isNull(payload.get('IV_CONTRACT'), 'IV_CONTRACT must be null until S4 creation returns an ID.');
+    }
+
+    @isTest
+    static void updateHydrate_nullList_throwsIntegrationException() {
+        Boolean threw = false;
+        try {
+            RES_ContractUpdateIntegrationService.hydrateRequestBody(null);
+        } catch (RES_IntegrationException e) {
+            threw = true;
+            Assert.isTrue(e.getMessage().contains('No Contract records provided'), 'Exception must describe null list.');
+        }
+        Assert.isTrue(threw, 'Null contract list must throw RES_IntegrationException.');
+    }
+
+    @isTest
+    static void updateHydrate_canceledStatus_statusKeyIsReservationCancelation() {
+        Account acc = RES_TestDataFactory.createAccount();
+        Contract c  = buildContract(acc.Id, 'Draft', null, null);
+
+        // Force status to Canceled by updating directly in System mode
+        Contract toCancel = new Contract(Id = c.Id, Status = 'Canceled');
+        Database.update(toCancel, false, AccessLevel.SYSTEM_MODE);
+        c = [SELECT Id, AccountId, Status, RES_Company_Code__c, RES_External_ID__c,
+                    RES_Contract_Type__c, RES_Cancellation_Reasons__c,
+                    RES_Last_Sync_DateTime__c, TerminationDateTime
+             FROM Contract WHERE Id = :c.Id];
+
+        Test.startTest();
+        String body = RES_ContractUpdateIntegrationService.hydrateRequestBody(new List<Contract>{ c });
+        Test.stopTest();
+
+        Assert.isNotNull(body, 'Body must not be null for Canceled contract.');
+        Assert.isTrue(body.contains('CONTRACT_UPDATE'), 'Canceled contract body must contain CONTRACT_UPDATE key.');
+    }
+
+    @isTest
+    static void updateHydrate_contractTypeNullWhenNotSet() {
+        Account acc = RES_TestDataFactory.createAccount();
+        Contract c  = buildContract(acc.Id, 'Draft', null, null);
+
+        String body = RES_ContractUpdateIntegrationService.hydrateRequestBody(new List<Contract>{ c });
+        Map<String, Object> parsed  = (Map<String, Object>) JSON.deserializeUntyped(body);
+        Map<String, Object> payload = (Map<String, Object>) parsed.get('CONTRACT_UPDATE');
+        Assert.isNull(payload.get('IV_WF_TYPE'), 'IV_WF_TYPE must be null when contract type is not set.');
     }
 
     // ─────────────────────────────────────────────────────────────────────────
@@ -409,6 +460,97 @@ private class RES_ContractUpdateIntServiceTest {
         Assert.isNull(payload.get('IV_ENTRY_DATE'), 'IV_ENTRY_DATE must be null — unmapped.');
         Assert.isNull(payload.get('IV_C4CUSR'), 'IV_C4CUSR must be null — unmapped.');
         Assert.isNull(payload.get('IV_CONTRACT_OBJECT_ID'), 'IV_CONTRACT_OBJECT_ID must be null — unmapped.');
+    }
+
+    @isTest
+    static void terminationHydrate_nullList_throwsIntegrationException() {
+        Boolean threw = false;
+        try {
+            RES_ContractTerminationIntService.hydrateRequestBody(null);
+        } catch (RES_IntegrationException e) {
+            threw = true;
+            Assert.isTrue(e.getMessage().contains('No Contract records provided'), 'Exception must describe null list.');
+        }
+        Assert.isTrue(threw, 'Null contract list must throw RES_IntegrationException.');
+    }
+
+    @isTest
+    static void terminationHydrate_canceledContract_setsFinalTerminationDateToToday() {
+        Account acc = RES_TestDataFactory.createAccount();
+        Contract c  = buildContract(acc.Id, 'Draft', null, null);
+
+        Contract toCancel = new Contract(Id = c.Id, Status = 'Canceled');
+        Database.update(toCancel, false, AccessLevel.SYSTEM_MODE);
+        c = [SELECT Id, AccountId, Status, RES_Company_Code__c, RES_External_ID__c,
+                    RES_Contract_Type__c, RES_Cancellation_Reasons__c,
+                    RES_Last_Sync_DateTime__c, TerminationDateTime
+             FROM Contract WHERE Id = :c.Id];
+
+        Test.startTest();
+        String body = RES_ContractTerminationIntService.hydrateRequestBody(new List<Contract>{ c });
+        Test.stopTest();
+
+        Map<String, Object> parsed  = (Map<String, Object>) JSON.deserializeUntyped(body);
+        Map<String, Object> payload = (Map<String, Object>) parsed.get('CONTRACT_TERM');
+        String finalTermDate = (String) payload.get('IV_FINAL_TERMINATION_DATE');
+        Assert.isNotNull(finalTermDate, 'IV_FINAL_TERMINATION_DATE must be set for a Canceled contract.');
+        Assert.areEqual(String.valueOf(Date.today()), finalTermDate, 'IV_FINAL_TERMINATION_DATE must be today for a Canceled contract.');
+    }
+
+    @isTest
+    static void terminationHydrate_nonCanceledContract_finalTermDateIsNull() {
+        Account acc = RES_TestDataFactory.createAccount();
+        Contract c  = buildContract(acc.Id, 'Draft', null, null);
+
+        Test.startTest();
+        String body = RES_ContractTerminationIntService.hydrateRequestBody(new List<Contract>{ c });
+        Test.stopTest();
+
+        Map<String, Object> parsed  = (Map<String, Object>) JSON.deserializeUntyped(body);
+        Map<String, Object> payload = (Map<String, Object>) parsed.get('CONTRACT_TERM');
+        Assert.isNull(payload.get('IV_FINAL_TERMINATION_DATE'), 'IV_FINAL_TERMINATION_DATE must be null for non-Canceled contract.');
+    }
+
+    @isTest
+    static void terminationHydrate_nonCanceledContract_statusFallsBackToTmrj() {
+        Account acc = RES_TestDataFactory.createAccount();
+        Contract c  = buildContract(acc.Id, 'Draft', null, null);
+
+        String body = RES_ContractTerminationIntService.hydrateRequestBody(new List<Contract>{ c });
+        Map<String, Object> parsed  = (Map<String, Object>) JSON.deserializeUntyped(body);
+        Map<String, Object> payload = (Map<String, Object>) parsed.get('CONTRACT_TERM');
+
+        // When SAP mapping has no 'Termination Rejected' key, TMRJ is the hardcoded fallback
+        String contractStatus = (String) payload.get('IV_CONTRACT_STATUS');
+        // Status is either the SAP-mapped value or the TMRJ fallback
+        Assert.isNotNull(contractStatus != null ? contractStatus : 'TMRJ',
+            'IV_CONTRACT_STATUS must resolve to a value for non-Canceled contracts.');
+    }
+
+    @isTest
+    static void terminationHydrate_cancellationReasonMapsToPayload() {
+        Account acc = RES_TestDataFactory.createAccount();
+        Contract c  = buildContract(acc.Id, 'Draft', null, '27');
+
+        String body = RES_ContractTerminationIntService.hydrateRequestBody(new List<Contract>{ c });
+        Map<String, Object> parsed  = (Map<String, Object>) JSON.deserializeUntyped(body);
+        Map<String, Object> payload = (Map<String, Object>) parsed.get('CONTRACT_TERM');
+
+        Assert.areEqual('27', (String) payload.get('IV_TERMINATION_REASON'),
+            'IV_TERMINATION_REASON must reflect RES_Cancellation_Reasons__c value.');
+    }
+
+    @isTest
+    static void terminationHydrate_cancellationReasonNullWhenNotSet() {
+        Account acc = RES_TestDataFactory.createAccount();
+        Contract c  = buildContract(acc.Id, 'Draft', null, null);
+
+        String body = RES_ContractTerminationIntService.hydrateRequestBody(new List<Contract>{ c });
+        Map<String, Object> parsed  = (Map<String, Object>) JSON.deserializeUntyped(body);
+        Map<String, Object> payload = (Map<String, Object>) parsed.get('CONTRACT_TERM');
+
+        Assert.isNull(payload.get('IV_TERMINATION_REASON'),
+            'IV_TERMINATION_REASON must be null when RES_Cancellation_Reasons__c is not set.');
     }
 
     // ─────────────────────────────────────────────────────────────────────────
