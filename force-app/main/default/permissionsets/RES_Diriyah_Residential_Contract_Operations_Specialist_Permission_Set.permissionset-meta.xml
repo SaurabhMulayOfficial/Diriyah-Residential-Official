@@ -62,6 +62,46 @@
         <field>ContractItemPrice.RES_Product__c</field>
         <readable>true</readable>
     </fieldPermissions>
+        <fieldPermissions>
+            <editable>false</editable>
+            <field>ContractItemPrice.RES_Installment_Percentage__c</field>
+            <readable>true</readable>
+        </fieldPermissions>
+        <fieldPermissions>
+            <editable>false</editable>
+            <field>ContractItemPrice.RES_Unit_Check__c</field>
+            <readable>true</readable>
+        </fieldPermissions>
+        <fieldPermissions>
+            <editable>false</editable>
+            <field>ContractItemPrice.RES_Service_Charge_Check__c</field>
+            <readable>true</readable>
+        </fieldPermissions>
+        <fieldPermissions>
+            <editable>false</editable>
+            <field>ContractItemPrice.RES_Payment_Plan_Check__c</field>
+            <readable>true</readable>
+        </fieldPermissions>
+        <fieldPermissions>
+            <editable>false</editable>
+            <field>ContractItemPrice.RES_Installments_Check__c</field>
+            <readable>true</readable>
+        </fieldPermissions>
+        <fieldPermissions>
+            <editable>false</editable>
+            <field>ContractItemPrice.RES_CIP_Type__c</field>
+            <readable>true</readable>
+        </fieldPermissions>
+        <fieldPermissions>
+            <editable>false</editable>
+            <field>ContractItemPrice.RES_Discount_Amount__c</field>
+            <readable>true</readable>
+        </fieldPermissions>
+        <fieldPermissions>
+            <editable>false</editable>
+            <field>ContractItemPrice.RES_Discount_Type__c</field>
+            <readable>true</readable>
+        </fieldPermissions>
 <fieldPermissions>
         <editable>true</editable>
         <field>ProductAttributeDefinition.RES_Area_Type__c</field>
@@ -3368,6 +3408,26 @@
         <allowRead>true</allowRead>
         <modifyAllRecords>false</modifyAllRecords>
         <object>Lead</object>
+        <viewAllFields>false</viewAllFields>
+        <viewAllRecords>false</viewAllRecords>
+    </objectPermissions>
+    <objectPermissions>
+        <allowCreate>false</allowCreate>
+        <allowDelete>false</allowDelete>
+        <allowEdit>false</allowEdit>
+        <allowRead>true</allowRead>
+        <modifyAllRecords>false</modifyAllRecords>
+        <object>Contract</object>
+        <viewAllFields>false</viewAllFields>
+        <viewAllRecords>false</viewAllRecords>
+    </objectPermissions>
+    <objectPermissions>
+        <allowCreate>false</allowCreate>
+        <allowDelete>false</allowDelete>
+        <allowEdit>false</allowEdit>
+        <allowRead>true</allowRead>
+        <modifyAllRecords>false</modifyAllRecords>
+        <object>ContractItemPrice</object>
         <viewAllFields>false</viewAllFields>
         <viewAllRecords>false</viewAllRecords>
     </objectPermissions>
