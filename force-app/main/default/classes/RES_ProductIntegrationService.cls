@@ -121,6 +121,7 @@ public without sharing class RES_ProductIntegrationService extends RES_BaseInteg
         Map<String, String> inventoryTypeMap       = allSapMappings.containsKey('Inventory_Type')          ? allSapMappings.get('Inventory_Type')          : new Map<String, String>();
         Map<String, String> fixtureBoolTrueMap     = allSapMappings.containsKey('Fixture_Boolean')         ? allSapMappings.get('Fixture_Boolean')         : new Map<String, String>();
         Map<String, String> measTypeCustomFieldMap = allSapMappings.containsKey('Measurement_CustomField') ? allSapMappings.get('Measurement_CustomField') : new Map<String, String>();
+        Map<String, String> floorCodeMap           = allSapMappings.containsKey('Floor')                   ? allSapMappings.get('Floor')                   : new Map<String, String>();
 
         List<RES_Condition_Mapping__mdt> condMappings = new RES_ConditionMappingDAOLayer().getAllActive();
         List<AttributeBasedAdjustment> allAbaList = new RES_AttributeBasedAdjustmentDAOLayer().getByProductIds(productIds);
@@ -192,7 +193,12 @@ public without sharing class RES_ProductIntegrationService extends RES_BaseInteg
                 try {
                     String padded = String.valueOf(Integer.valueOf(floorCode));
                     while (padded.length() < 3) padded = '0' + padded;
-                    floorCode = padded;
+                    if (!floorCodeMap.containsKey(padded)) {
+                        System.debug('### [Unit_Sync] Invalid SAP floor code "' + padded + '" on Product ' + p.Id + ' — not in Floor_Code MDT; omitting floor field.');
+                        floorCode = null;
+                    } else {
+                        floorCode = padded;
+                    }
                 } catch (Exception e) {
                     System.debug('### [Unit_Sync] Non-numeric RES_Floor__c "' + floorCode + '" on Product ' + p.Id + ' — omitting floor field; map to numeric code before syncing.');
                     floorCode = null;
