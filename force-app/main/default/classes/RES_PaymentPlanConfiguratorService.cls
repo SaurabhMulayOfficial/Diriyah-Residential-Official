@@ -121,8 +121,9 @@ public with sharing class RES_PaymentPlanConfiguratorService {
 
             List<Id> allProductIds = new List<Id>{ paymentPlanId };
             allProductIds.addAll(installmentIds);
-            insertPricebookEntries(allProductIds);
-            insertSellingModelOptions(allProductIds);
+            Id sellingModelId = oneTimeSellingModelId();
+            insertSellingModelOptions(allProductIds, sellingModelId);
+            insertPricebookEntries(allProductIds, sellingModelId);
 
             res.isSuccess = true;
             res.paymentPlanId = paymentPlanId;
@@ -286,7 +287,7 @@ public with sharing class RES_PaymentPlanConfiguratorService {
         insert components;
     }
 
-    private static void insertPricebookEntries(List<Id> productIds) {
+    private static void insertPricebookEntries(List<Id> productIds, Id sellingModelId) {
         Id standardPricebookId = Test.isRunningTest() ? Test.getStandardPricebookId() : standardPricebookId();
         Id residentialSalesPricebookId = pricebookId(RESIDENTIAL_SALES_PRICEBOOK_NAME);
 
@@ -295,6 +296,7 @@ public with sharing class RES_PaymentPlanConfiguratorService {
             standardEntries.add(new PricebookEntry(
                 Pricebook2Id = standardPricebookId,
                 Product2Id = productId,
+                ProductSellingModelId = sellingModelId,
                 UnitPrice = 0,
                 IsActive = true
             ));
@@ -307,6 +309,7 @@ public with sharing class RES_PaymentPlanConfiguratorService {
                 customEntries.add(new PricebookEntry(
                     Pricebook2Id = residentialSalesPricebookId,
                     Product2Id = productId,
+                    ProductSellingModelId = sellingModelId,
                     UnitPrice = 0,
                     IsActive = true,
                     UseStandardPrice = false
@@ -316,8 +319,7 @@ public with sharing class RES_PaymentPlanConfiguratorService {
         }
     }
 
-    private static void insertSellingModelOptions(List<Id> productIds) {
-        Id sellingModelId = oneTimeSellingModelId();
+    private static void insertSellingModelOptions(List<Id> productIds, Id sellingModelId) {
         if (sellingModelId == null) {
             return;
         }

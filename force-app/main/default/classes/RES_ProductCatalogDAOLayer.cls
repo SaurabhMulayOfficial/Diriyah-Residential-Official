@@ -10,7 +10,8 @@ public without sharing class RES_ProductCatalogDAOLayer extends RES_BaseDAOLayer
     public List<ProductCatalog> getCatalogsByCodes(Set<String> codes) {
         if (codes == null || codes.isEmpty()) return new List<ProductCatalog>();
         Map<String, Object> bindVars = new Map<String, Object>{ 'codes' => codes };
-        String soql = 'SELECT Id, Code, RES_Geo_Location__c FROM ProductCatalog WHERE Code IN :codes';
+        // RES_Business_Entity_Id__c is the real external identifier synced from source; the standard Code field is not reliably populated.
+        String soql = 'SELECT Id, RES_Business_Entity_Id__c, RES_Geo_Location__c FROM ProductCatalog WHERE RES_Business_Entity_Id__c IN :codes';
         return (List<ProductCatalog>) executeQuery(soql, '', false, bindVars, AccessLevel.SYSTEM_MODE);
     }
 

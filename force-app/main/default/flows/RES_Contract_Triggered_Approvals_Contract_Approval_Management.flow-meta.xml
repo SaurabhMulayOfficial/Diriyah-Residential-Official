@@ -128,6 +128,12 @@
             <name>Send_Emails_to_Finance</name>
             <actionName>RES_Contract_Autolaunch_Flow_Cancel_Contract_Approval_Emails</actionName>
             <actionType>stepBackground</actionType>
+            <assignees>
+                <assignee>
+                    <elementReference>$Label.RES_Admin_Username</elementReference>
+                </assignee>
+                <assigneeType>User</assigneeType>
+            </assignees>
             <canAssigneeEdit>false</canAssigneeEdit>
             <debugSimulateStep>false</debugSimulateStep>
             <entryConditionLogic>and</entryConditionLogic>
@@ -158,7 +164,7 @@
             </inputParameters>
             <label>Send Emails to Finance</label>
             <requiresAsyncProcessing>false</requiresAsyncProcessing>
-            <runAsUser>false</runAsUser>
+            <runAsUser>true</runAsUser>
             <shouldLock>false</shouldLock>
             <stepSubtype>BackgroundStep</stepSubtype>
         </stageSteps>
@@ -232,6 +238,12 @@
             <name>Send_Emails_to_EDT</name>
             <actionName>RES_Contract_Autolaunch_Flow_Cancel_Contract_Approval_Emails</actionName>
             <actionType>stepBackground</actionType>
+            <assignees>
+                <assignee>
+                    <elementReference>$Label.RES_Admin_Username</elementReference>
+                </assignee>
+                <assigneeType>User</assigneeType>
+            </assignees>
             <canAssigneeEdit>false</canAssigneeEdit>
             <debugSimulateStep>false</debugSimulateStep>
             <entryConditionLogic>and</entryConditionLogic>
@@ -270,7 +282,7 @@
             </inputParameters>
             <label>Send Emails to EDT</label>
             <requiresAsyncProcessing>false</requiresAsyncProcessing>
-            <runAsUser>false</runAsUser>
+            <runAsUser>true</runAsUser>
             <shouldLock>false</shouldLock>
             <stepSubtype>BackgroundStep</stepSubtype>
         </stageSteps>
@@ -344,6 +356,12 @@
             <name>Send_Emails_to_CBDO</name>
             <actionName>RES_Contract_Autolaunch_Flow_Cancel_Contract_Approval_Emails</actionName>
             <actionType>stepBackground</actionType>
+            <assignees>
+                <assignee>
+                    <elementReference>$Label.RES_Admin_Username</elementReference>
+                </assignee>
+                <assigneeType>User</assigneeType>
+            </assignees>
             <canAssigneeEdit>false</canAssigneeEdit>
             <debugSimulateStep>false</debugSimulateStep>
             <entryConditionLogic>and</entryConditionLogic>
@@ -382,7 +400,7 @@
             </inputParameters>
             <label>Send Emails to CBDO</label>
             <requiresAsyncProcessing>false</requiresAsyncProcessing>
-            <runAsUser>false</runAsUser>
+            <runAsUser>true</runAsUser>
             <shouldLock>false</shouldLock>
             <stepSubtype>BackgroundStep</stepSubtype>
         </stageSteps>
@@ -390,6 +408,12 @@
             <name>Send_Emails_to_Finance_for_Refunds</name>
             <actionName>RES_Contract_Autolaunch_Flow_Cancel_Contract_Approval_Emails</actionName>
             <actionType>stepBackground</actionType>
+            <assignees>
+                <assignee>
+                    <elementReference>$Label.RES_Admin_Username</elementReference>
+                </assignee>
+                <assigneeType>User</assigneeType>
+            </assignees>
             <canAssigneeEdit>false</canAssigneeEdit>
             <debugSimulateStep>false</debugSimulateStep>
             <entryConditionLogic>and</entryConditionLogic>
@@ -428,7 +452,7 @@
             </inputParameters>
             <label>Send Emails to Finance for Refunds</label>
             <requiresAsyncProcessing>false</requiresAsyncProcessing>
-            <runAsUser>false</runAsUser>
+            <runAsUser>true</runAsUser>
             <shouldLock>false</shouldLock>
             <stepSubtype>BackgroundStep</stepSubtype>
         </stageSteps>
@@ -436,6 +460,12 @@
             <name>Send_Emails_to_Inform_User_about_Rejection</name>
             <actionName>RES_Contract_Autolaunch_Flow_Cancel_Contract_Approval_Emails</actionName>
             <actionType>stepBackground</actionType>
+            <assignees>
+                <assignee>
+                    <elementReference>$Label.RES_Admin_Username</elementReference>
+                </assignee>
+                <assigneeType>User</assigneeType>
+            </assignees>
             <canAssigneeEdit>false</canAssigneeEdit>
             <debugSimulateStep>false</debugSimulateStep>
             <entryConditionLogic>or</entryConditionLogic>
@@ -490,7 +520,7 @@
             </inputParameters>
             <label>Send Emails to Inform User about Rejection</label>
             <requiresAsyncProcessing>false</requiresAsyncProcessing>
-            <runAsUser>false</runAsUser>
+            <runAsUser>true</runAsUser>
             <shouldLock>false</shouldLock>
             <stepSubtype>BackgroundStep</stepSubtype>
         </stageSteps>

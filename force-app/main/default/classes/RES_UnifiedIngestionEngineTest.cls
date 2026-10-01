@@ -154,13 +154,14 @@ private class RES_UnifiedIngestionEngineTest {
      * The ingestion framework no longer creates ProductCatalog/ProductCategory
      * records on the fly (see resolveCatalogs/resolveCategories) - every
      * external identifier a staging row references must already exist.
-     * Tests that need a row to resolve successfully must pre-create these
-     * with the exact same Code formula the engine itself uses.
+     * Matching is on RES_Business_Entity_Id__c/RES_Property_Id__c (the real
+     * external identifiers), not the standard Code field, and uses the raw
+     * CSV values with no BE-/BLD- prefixing.
      */
     private static ProductCatalog ensureCatalog(String catalogName) {
         ProductCatalog cat = new ProductCatalog(
-            Code = 'BE-' + catalogName,
-            Name = 'Business Entity ' + catalogName
+            RES_Business_Entity_Id__c  = catalogName,
+            Name                       = 'Business Entity ' + catalogName
         );
         insert cat;
         return cat;
@@ -168,10 +169,11 @@ private class RES_UnifiedIngestionEngineTest {
 
     private static ProductCategory ensureCategory(Id catalogId, String catalogName, String buildingName) {
         ProductCategory cat = new ProductCategory(
-            Code           = 'BLD-' + catalogName + '-' + buildingName,
-            Name           = 'Building ' + buildingName,
-            CatalogId      = catalogId,
-            IsNavigational = true
+            RES_Business_Entity_Id__c = catalogName,
+            RES_Property_Id__c        = buildingName,
+            Name                      = 'Building ' + buildingName,
+            CatalogId                 = catalogId,
+            IsNavigational            = true
         );
         insert cat;
         return cat;
@@ -255,12 +257,12 @@ private class RES_UnifiedIngestionEngineTest {
 
         // ---- ProductCatalog / ProductCategory: pre-created above, the engine must resolve
         // them (not create duplicates) since it no longer creates catalogs/categories itself ----
-        List<ProductCatalog> catalogs = [SELECT Id, Code FROM ProductCatalog WHERE Code = :('BE-' + catalog)];
+        List<ProductCatalog> catalogs = [SELECT Id FROM ProductCatalog WHERE RES_Business_Entity_Id__c = :catalog];
         Assert.areEqual(1, catalogs.size(), 'The pre-existing catalog must be reused, not duplicated');
 
         List<ProductCategory> categories = [
-            SELECT Id, Code FROM ProductCategory
-            WHERE Code IN (:('BLD-' + catalog + '-' + building), :('BLD-' + catalog + '-Villa Type B'))
+            SELECT Id FROM ProductCategory
+            WHERE RES_Business_Entity_Id__c = :catalog AND RES_Property_Id__c IN (:building, 'Villa Type B')
         ];
         Assert.areEqual(2, categories.size(), 'The pre-existing categories must be reused, not duplicated');
 
@@ -392,10 +394,10 @@ private class RES_UnifiedIngestionEngineTest {
         RES_UnifiedIngestionEngine secondEngine = new RES_UnifiedIngestionEngine(LAYOUT_CODE);
         secondEngine.execute(null, new List<RES_Product_Staging__c>{ product3 });
 
-        Assert.areEqual(1, [SELECT COUNT() FROM ProductCatalog WHERE Code = :('BE-' + catalog)],
+        Assert.areEqual(1, [SELECT COUNT() FROM ProductCatalog WHERE RES_Business_Entity_Id__c = :catalog],
             'Catalog should be reused, not duplicated, across a fresh engine instance');
         Assert.areEqual(1, [
-            SELECT COUNT() FROM ProductCategory WHERE Code = :('BLD-' + catalog + '-' + building)
+            SELECT COUNT() FROM ProductCategory WHERE RES_Business_Entity_Id__c = :catalog AND RES_Property_Id__c = :building
         ], 'Category should be reused, not duplicated');
         Assert.areEqual(1, [SELECT COUNT() FROM ProductSellingModel WHERE Name LIKE 'SAP Y100%'],
             'Selling model should be reused (found via DAO query on a fresh engine instance), not duplicated');
@@ -493,10 +495,11 @@ private class RES_UnifiedIngestionEngineTest {
         engine.execute(null, scope);
         Test.stopTest();
 
-        Assert.areEqual(0, [SELECT COUNT() FROM ProductCatalog WHERE Code = 'BE-NoSuchCatalog'],
+        Assert.areEqual(0, [SELECT COUNT() FROM ProductCatalog WHERE RES_Business_Entity_Id__c = 'NoSuchCatalog'],
             'A referenced-but-missing catalog must not be created');
-        Assert.areEqual(0, [SELECT COUNT() FROM ProductCategory WHERE Code = 'BLD-PartialCatalog-NoSuchBuilding2'],
-            'A referenced-but-missing category must not be created, even when its catalog exists');
+        Assert.areEqual(0, [
+            SELECT COUNT() FROM ProductCategory WHERE RES_Business_Entity_Id__c = 'PartialCatalog' AND RES_Property_Id__c = 'NoSuchBuilding2'
+        ], 'A referenced-but-missing category must not be created, even when its catalog exists');
         Assert.areEqual(0, [SELECT COUNT() FROM Product2 WHERE RES_Product_External_ID__c IN ('UNIT-700', 'UNIT-800')],
             'The product itself must not be created when its catalog or category is missing, not just the link');
 
@@ -505,13 +508,13 @@ private class RES_UnifiedIngestionEngineTest {
         );
         Assert.areEqual('Error', finalRows.get(missingCatalog.Id).RES_Processing_Status__c);
         Assert.isTrue(
-            finalRows.get(missingCatalog.Id).RES_Error_Log__c.contains('ProductCatalog with external identifier "BE-NoSuchCatalog" does not exist'),
+            finalRows.get(missingCatalog.Id).RES_Error_Log__c.contains('ProductCatalog with external identifier "NoSuchCatalog" does not exist'),
             'Missing catalog must record its own row error'
         );
 
         Assert.areEqual('Error', finalRows.get(missingCategory.Id).RES_Processing_Status__c);
         Assert.isTrue(
-            finalRows.get(missingCategory.Id).RES_Error_Log__c.contains('ProductCategory with external identifier "BLD-PartialCatalog-NoSuchBuilding2" does not exist'),
+            finalRows.get(missingCategory.Id).RES_Error_Log__c.contains('ProductCategory with business entity "PartialCatalog" and building/land "NoSuchBuilding2" does not exist'),
             'Missing category must record its own row error even when its catalog exists'
         );
     }

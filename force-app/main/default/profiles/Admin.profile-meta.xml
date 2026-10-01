@@ -1081,6 +1081,11 @@
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
+        <editable>false</editable>
+        <field>Quote.RES_Product_Unit_Status__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
         <editable>true</editable>
         <field>Quote.RES_Product_Soft_Held__c</field>
         <readable>true</readable>
@@ -3665,6 +3670,11 @@
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
+        <editable>false</editable>
+        <field>Contract.RES_Product_Unit_Status__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
         <editable>true</editable>
         <field>Contract.RES_Product_Soft_Held__c</field>
         <readable>true</readable>
@@ -4222,6 +4232,11 @@
     <fieldPermissions>
         <editable>true</editable>
         <field>Contract.SourceQuoteId</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>Contract.RES_Product_Unit_Status__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
