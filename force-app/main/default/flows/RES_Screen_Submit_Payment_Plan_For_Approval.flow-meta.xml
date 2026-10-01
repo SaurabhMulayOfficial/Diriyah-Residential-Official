@@ -27,7 +27,7 @@
             <label>Has Access</label>
         </rules>
     </decisions>
-    <description>DIR-1258: "Submit for Approval" quick action screen for a Residential Payment Plan Product2 record. Enforces access (RES_Can_Submit_Payment_Plan_Approval custom permission) internally, warns inline when the plan isn't tagged to a project/catalog (Solution Design bullet 3), captures an optional comment, then flags the plan for the New Submission / Modification Flow Orchestration to pick up. Reset_Flag_First and Submit_Payment_Plan route DML faults (e.g. the plan already has an approval in progress) to Pending_Approval_Screen instead of surfacing the raw platform error.</description>
+    <description>DIR-1258: &quot;Submit for Approval&quot; quick action screen for a Residential Payment Plan Product2 record. Enforces access (RES_Can_Submit_Payment_Plan_Approval custom permission) internally, warns inline when the plan isn&apos;t tagged to a project/catalog (Solution Design bullet 3), captures an optional comment, then flags the plan for the New Submission / Modification Flow Orchestration to pick up. Reset_Flag_First and Submit_Payment_Plan route DML faults (e.g. the plan already has an approval in progress) to Pending_Approval_Screen instead of surfacing the raw platform error.</description>
     <environments>Default</environments>
     <interviewLabel>Submit Payment Plan for Approval {!$Flow.CurrentDateTime}</interviewLabel>
     <label>Submit Payment Plan for Approval</label>
@@ -230,6 +230,7 @@
         <showFooter>true</showFooter>
         <showHeader>true</showHeader>
     </screens>
+    <runInMode>SystemModeWithoutSharing</runInMode>
     <start>
         <locationX>0</locationX>
         <locationY>0</locationY>
