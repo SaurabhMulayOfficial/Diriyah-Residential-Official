@@ -11,16 +11,11 @@
 &lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1.0&quot;&gt;
 
 &lt;style&gt;
-/* =========================================================
-   BASE
-   ========================================================= */
-
-html,
-body {
+html, body {
     margin: 0 !important;
     padding: 0 !important;
     width: 100% !important;
-    background: #ffffff;
+    background: #eef1f6;
     font-family: Arial, Helvetica, sans-serif;
     -webkit-text-size-adjust: 100%;
     -ms-text-size-adjust: 100%;
@@ -31,423 +26,498 @@ table {
     border-spacing: 0;
 }
 
-img {
-    border: 0;
-    outline: none;
-    text-decoration: none;
-    display: block;
-}
-
 td {
     font-family: Arial, Helvetica, sans-serif;
 }
 
+a {
+    text-decoration: none;
+}
 
 /* =========================================================
    PAGE
-   ========================================================= */
+========================================================= */
 
 .page {
     width: 100%;
-    background: #ffffff;
-    padding: 25px 10px;
+    background: #eef1f6;
+    padding: 35px 10px;
 }
 
 .main {
     width: 600px;
     max-width: 600px;
     background: #ffffff;
-    border: 1px solid #ffffff;
-    border-radius: 24px;
+    border-radius: 22px;
     overflow: hidden;
+    border: 1px solid #dfe4ec;
 }
 
+/* =========================================================
+   TOP NAV
+========================================================= */
+
+.nav {
+    background: #10162b;
+    padding: 16px 28px;
+}
+
+.nav-brand {
+    color: #ffffff;
+    font-size: 11px;
+    line-height: 16px;
+    font-weight: 800;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+}
+
+.nav-brand span {
+    color: #7885ff;
+}
+
+.nav-right {
+    color: #747d99;
+    font-size: 9px;
+    line-height: 14px;
+    text-align: right;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
 
 /* =========================================================
    HERO
-   ========================================================= */
+========================================================= */
 
 .hero {
-    background: #f4f8ff;
-    padding: 30px 34px 25px;
-}
-
-.hero-table {
-    width: 100%;
+    background: #10162b;
+    padding: 30px 30px 34px;
 }
 
 .hero-left {
-    width: 62%;
-    padding-right: 12px;
+    width: 67%;
     vertical-align: middle;
 }
 
 .hero-right {
-    width: 38%;
+    width: 33%;
+    vertical-align: middle;
     text-align: right;
-    vertical-align: middle;
 }
 
-.brand {
-    font-size: 15px;
-    line-height: 31px;
-    font-weight: 600;
-    color: #5269a1;
-    white-space: nowrap;
+.eyebrow {
+    color: #8c97ff;
+    font-size: 10px;
+    line-height: 15px;
+    font-weight: bold;
+    letter-spacing: 1.8px;
+    text-transform: uppercase;
 }
 
-.cloud {
-    display: inline-block;
-    width: 31px;
-    height: 31px;
-    line-height: 31px;
-    text-align: center;
-    background: #4d9df7;
+.title {
+    margin-top: 9px;
     color: #ffffff;
-    border-radius: 10px;
-    margin-right: 8px;
-    font-size: 16px;
-    vertical-align: middle;
-}
-
-.hero-title {
-    margin-top: 18px;
-    font-size: 27px;
-    line-height: 34px;
+    font-size: 30px;
+    line-height: 37px;
     font-weight: 800;
-    color: #17245c;
 }
 
-.hero-title .oops {
-    color: #ef4768;
+.title .accent {
+    color: #ff7187;
 }
 
-.hero-description {
-    margin-top: 10px;
-    font-size: 14px;
-    line-height: 22px;
-    color: #5c6e9f;
-    max-width: 370px;
+.subtitle {
+    margin-top: 11px;
+    color: #a8b0c5;
+    font-size: 12px;
+    line-height: 20px;
+    max-width: 355px;
 }
-
 
 /* =========================================================
-   HERO ILLUSTRATION
-   ========================================================= */
+   FUNNY BUT SOPHISTICATED ILLUSTRATION
+========================================================= */
 
-.illustration {
-    text-align: right;
-    font-size: 0;
-}
-
-.laptop-wrap {
-    display: inline-block;
+.scene {
     position: relative;
-    width: 150px;
-    height: 100px;
+    display: inline-block;
+    width: 145px;
+    height: 125px;
 }
 
-.laptop {
+.shadow {
     position: absolute;
-    left: 0;
-    top: 10px;
-    width: 150px;
-    height: 92px;
-    background: #443de0;
-    border-radius: 10px 10px 5px 5px;
-    box-shadow: 0 8px 18px rgba(55, 60, 160, 0.20);
-}
-
-.screen {
-    position: absolute;
-    left: 8px;
-    top: 8px;
-    width: 134px;
-    height: 72px;
-    background: #fff0f7;
-    border-radius: 5px;
-}
-
-.sad {
-    font-size: 29px;
-    color: #17245c;
-    line-height: 45px;
-    text-align: center;
-    padding-top: 8px;
-}
-
-.sad-face {
-    font-size: 22px;
-    line-height: 20px;
-}
-
-.keyboard {
-    position: absolute;
-    bottom: -8px;
-    left: -15px;
-    width: 180px;
+    right: 8px;
+    bottom: 4px;
+    width: 105px;
     height: 12px;
-    background: #3834b7;
-    border-radius: 0 0 12px 12px;
-}
-
-.alert {
-    position: absolute;
-    right: -8px;
-    top: 0;
-    width: 45px;
-    height: 45px;
-    line-height: 45px;
-    text-align: center;
+    background: #0a0f20;
     border-radius: 50%;
-    background: #f04468;
-    border: 5px solid #ffffff;
-    color: #ffffff;
-    font-size: 23px;
-    font-weight: bold;
-    box-shadow: 0 5px 15px rgba(240, 68, 104, 0.20);
 }
 
+/* monitor */
+
+.monitor {
+    position: absolute;
+    right: 13px;
+    top: 10px;
+    width: 104px;
+    height: 76px;
+    background: #ffffff;
+    border-radius: 11px;
+    box-shadow: 0 14px 30px rgba(0,0,0,0.24);
+}
+
+.monitor-screen {
+    position: absolute;
+    left: 7px;
+    top: 7px;
+    width: 90px;
+    height: 61px;
+    background: #f1f3ff;
+    border-radius: 6px;
+}
+
+.screen-top {
+    position: absolute;
+    left: 10px;
+    top: 10px;
+    width: 70px;
+    height: 5px;
+    background: #dce0f7;
+    border-radius: 4px;
+}
+
+.screen-line-1,
+.screen-line-2,
+.screen-line-3 {
+    position: absolute;
+    left: 10px;
+    height: 5px;
+    border-radius: 4px;
+}
+
+.screen-line-1 {
+    top: 24px;
+    width: 47px;
+    background: #cbd1ed;
+}
+
+.screen-line-2 {
+    top: 34px;
+    width: 61px;
+    background: #d9ddf2;
+}
+
+.screen-line-3 {
+    top: 44px;
+    width: 38px;
+    background: #e0e3f4;
+}
+
+.monitor-stand {
+    position: absolute;
+    right: 55px;
+    top: 86px;
+    width: 9px;
+    height: 17px;
+    background: #d8dce8;
+}
+
+.monitor-base {
+    position: absolute;
+    right: 42px;
+    top: 101px;
+    width: 35px;
+    height: 6px;
+    background: #c9cedb;
+    border-radius: 6px;
+}
+
+/* alert bubble */
+
+.alert-bubble {
+    position: absolute;
+    right: -2px;
+    top: 0;
+    width: 39px;
+    height: 39px;
+    line-height: 39px;
+    text-align: center;
+    background: #ff627b;
+    color: #ffffff;
+    border-radius: 50%;
+    border: 4px solid #10162b;
+    font-size: 19px;
+    font-weight: bold;
+}
+
+/* little notification */
+
+.notification {
+    position: absolute;
+    left: 2px;
+    bottom: 21px;
+    width: 58px;
+    height: 37px;
+    background: #ffffff;
+    border-radius: 9px;
+    box-shadow: 0 9px 20px rgba(0,0,0,0.18);
+}
+
+.notification-line {
+    position: absolute;
+    left: 9px;
+    top: 9px;
+    width: 35px;
+    height: 5px;
+    background: #dce1ee;
+    border-radius: 4px;
+}
+
+.notification-dot {
+    position: absolute;
+    left: 9px;
+    top: 21px;
+    width: 8px;
+    height: 8px;
+    background: #ff627b;
+    border-radius: 50%;
+}
+
+.notification-text {
+    position: absolute;
+    left: 23px;
+    top: 20px;
+    width: 27px;
+    height: 5px;
+    background: #e1e4ed;
+    border-radius: 4px;
+}
 
 /* =========================================================
    CONTENT
-   ========================================================= */
+========================================================= */
 
 .content {
-    padding: 26px 34px 30px;
+    padding: 28px 30px 30px;
 }
 
-
 /* =========================================================
-   INTEGRATION CARD
-   ========================================================= */
+   INTEGRATION HEADER
+========================================================= */
 
 .integration {
     width: 100%;
-    padding: 18px;
-    background: #ffffff;
+    padding-bottom: 21px;
+    border-bottom: 1px solid #e8ebf1;
 }
 
-.integration-icon-cell {
-    width: 60px;
-    vertical-align: middle;
-}
-
-.integration-icon {
-    width: 48px;
-    height: 48px;
-    line-height: 48px;
-    text-align: center;
-    border-radius: 14px;
-    background: #28395f;
-    color: #ffffff;
-    font-size: 23px;
-}
-
-.integration-info {
-    vertical-align: middle;
-}
-
-.label {
-    font-size: 10px;
-    line-height: 14px;
-    letter-spacing: 1.3px;
+.integration-label {
+    color: #8a92a6;
+    font-size: 9px;
+    line-height: 13px;
     font-weight: bold;
-    color: #6174aa;
+    letter-spacing: 1.5px;
     text-transform: uppercase;
 }
 
 .integration-name {
-    margin-top: 4px;
-    font-size: 21px;
+    margin-top: 5px;
+    color: #1c2338;
+    font-size: 20px;
     line-height: 26px;
     font-weight: 800;
-    color: #17245c;
-
     overflow-wrap: anywhere;
     word-break: break-word;
 }
 
-.service {
+.integration-meta {
     margin-top: 5px;
-    font-size: 12px;
-    line-height: 18px;
-    color: #6677a5;
-
+    color: #7c8499;
+    font-size: 11px;
+    line-height: 17px;
     overflow-wrap: anywhere;
     word-break: break-word;
-}
-
-.status-cell {
-    width: 75px;
-    text-align: right;
-    vertical-align: middle;
 }
 
 .failed {
     display: inline-block;
     padding: 7px 11px;
+    background: #fff0f2;
+    color: #d74861;
     border-radius: 20px;
-    background: #ffe8ef;
-    color: #e84263;
-    font-size: 12px;
-    line-height: 14px;
+    font-size: 10px;
+    line-height: 13px;
     font-weight: bold;
     white-space: nowrap;
 }
 
-
 /* =========================================================
-   ERROR
-   ========================================================= */
+   ERROR MESSAGE
+========================================================= */
 
 .error {
-    margin-top: 20px;
-    padding: 18px;
-    border-radius: 15px;
-    background: #fff3f6;
+    margin-top: 23px;
 }
 
-.error-title {
-    color: #c52c50;
-    font-size: 11px;
-    line-height: 15px;
-    letter-spacing: 1.2px;
+.section-label {
+    color: #4c556c;
+    font-size: 10px;
+    line-height: 14px;
     font-weight: bold;
+    letter-spacing: 1.3px;
     text-transform: uppercase;
-    margin-bottom: 7px;
+    margin-bottom: 9px;
+}
+
+.error-card {
+    background: #fff8f9;
+    border: 1px solid #f3dfe4;
+    border-radius: 14px;
+    padding: 16px;
+}
+
+.error-icon {
+    width: 31px;
+    vertical-align: top;
+}
+
+.error-icon-box {
+    width: 27px;
+    height: 27px;
+    line-height: 27px;
+    text-align: center;
+    background: #ffe4e9;
+    color: #d74760;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: bold;
 }
 
 .error-text {
-    color: #18285f;
-    font-size: 14px;
+    padding-left: 11px;
+    color: #2b3043;
+    font-size: 13px;
     line-height: 21px;
-
     overflow-wrap: anywhere;
     word-break: break-word;
 }
 
-
 /* =========================================================
-   OBJECT DETAILS
-   ========================================================= */
+   DETAILS
+========================================================= */
 
 .details {
-    margin-top: 20px;
-    padding: 18px;
-    border-radius: 15px;
-    background: #f4f7ff;
+    margin-top: 23px;
 }
 
-.details-title {
-    color: #5068a2;
-    font-size: 11px;
-    line-height: 15px;
-    letter-spacing: 1.2px;
-    font-weight: bold;
-    text-transform: uppercase;
-    margin-bottom: 12px;
-}
-
-.details-table {
+.details-card {
     width: 100%;
-    background: #ffffff;
-    border-radius: 10px;
+    border: 1px solid #e4e8ef;
+    border-radius: 14px;
     overflow: hidden;
 }
 
-.details-table td {
-    padding: 11px 13px;
-    border-bottom: 1px solid #edf0f6;
-    font-size: 12px;
+.details-card td {
+    padding: 12px 14px;
+    border-bottom: 1px solid #edf0f4;
+    font-size: 11px;
     line-height: 17px;
 }
 
-.details-table tr:last-child td {
+.details-card tr:last-child td {
     border-bottom: none;
 }
 
 .detail-label {
-    width: 32%;
-    color: #7381a6;
+    width: 28%;
+    background: #fafbfc;
+    color: #8a92a6;
     vertical-align: top;
 }
 
 .detail-value {
-    width: 68%;
-    color: #17245c;
+    width: 72%;
+    color: #222a3f;
     font-weight: bold;
     vertical-align: top;
-
     overflow-wrap: anywhere;
     word-break: break-word;
 }
 
-
 /* =========================================================
-   BUTTON
-   ========================================================= */
+   CTA
+========================================================= */
 
-.button-area {
-    text-align: center;
-    padding: 25px 0 8px;
+.cta {
+    margin-top: 24px;
+    background: #f3f4ff;
+    border-radius: 15px;
+    padding: 17px 18px;
+    border: 1px solid #e0e3fb;
 }
 
-.button {
-    display: inline-block;
-    padding: 14px 26px;
-    border-radius: 11px;
-    background: #5148ff;
-    color: #ffffff !important;
-    text-decoration: none;
-    font-size: 14px;
-    line-height: 18px;
+.cta-title {
+    color: #252c46;
+    font-size: 12px;
+    line-height: 17px;
     font-weight: bold;
 }
 
-.arrow {
-    font-size: 18px;
-    margin-left: 8px;
-    vertical-align: -1px;
+.cta-text {
+    margin-top: 3px;
+    color: #858da1;
+    font-size: 10px;
+    line-height: 15px;
 }
 
+.cta-button-cell {
+    width: 150px;
+    text-align: right;
+    vertical-align: middle;
+}
+
+.cta-button {
+    display: inline-block;
+    padding: 11px 15px;
+    background: #5965dc;
+    color: #ffffff !important;
+    border-radius: 9px;
+    font-size: 10px;
+    line-height: 15px;
+    font-weight: bold;
+    white-space: nowrap;
+}
 
 /* =========================================================
    FOOTER
-   ========================================================= */
+========================================================= */
 
 .footer {
-    background: #f2f6ff;
-    padding: 23px 30px;
+    padding: 19px 25px;
+    background: #f7f8fa;
+    border-top: 1px solid #e8ebf0;
     text-align: center;
 }
 
-.footer-symbol {
-    font-size: 20px;
-    line-height: 22px;
-    margin-bottom: 6px;
-    color: #7588c0;
+.footer-text {
+    color: #8a92a5;
+    font-size: 10px;
+    line-height: 17px;
 }
 
-.footer-message {
-    font-size: 11px;
-    line-height: 18px;
-    color: #7180a5;
+.footer-text strong {
+    color: #596177;
 }
-
-.footer-message strong {
-    color: #52658e;
-}
-
 
 /* =========================================================
    MOBILE
-   ========================================================= */
+========================================================= */
 
 @media only screen and (max-width: 620px) {
 
     .page {
-        padding: 8px 4px !important;
+        padding: 7px 4px !important;
     }
 
     .main {
@@ -456,246 +526,153 @@ td {
         border-radius: 16px !important;
     }
 
+    .nav {
+        padding: 12px 15px !important;
+    }
 
-    /* -------------------------
-       HERO
-       ------------------------- */
+    .nav-brand {
+        font-size: 8px !important;
+    }
+
+    .nav-right {
+        font-size: 7px !important;
+    }
 
     .hero {
-        padding: 22px 16px 20px !important;
+        padding: 22px 16px 25px !important;
     }
 
     .hero-left {
-        width: 61% !important;
-        padding-right: 6px !important;
+        width: 67% !important;
     }
 
     .hero-right {
-        width: 39% !important;
-        padding-left: 0 !important;
+        width: 33% !important;
     }
 
-    .brand {
-        font-size: 11px !important;
-        line-height: 25px !important;
+    .eyebrow {
+        font-size: 8px !important;
+        line-height: 12px !important;
+        letter-spacing: 1px !important;
     }
 
-    .cloud {
-        width: 25px !important;
-        height: 25px !important;
-        line-height: 25px !important;
-        font-size: 13px !important;
-        border-radius: 7px !important;
-        margin-right: 5px !important;
+    .title {
+        margin-top: 6px !important;
+        font-size: 21px !important;
+        line-height: 26px !important;
     }
 
-    .hero-title {
-        margin-top: 12px !important;
-        font-size: 20px !important;
-        line-height: 25px !important;
-    }
-
-    .hero-description {
+    .subtitle {
         margin-top: 7px !important;
-        font-size: 11px !important;
-        line-height: 17px !important;
-        max-width: 100% !important;
-    }
-
-
-    /* -------------------------
-       HERO ILLUSTRATION
-       ------------------------- */
-
-    .laptop-wrap {
-        width: 105px !important;
-        height: 75px !important;
-    }
-
-    .laptop {
-        width: 105px !important;
-        height: 65px !important;
-        top: 5px !important;
-    }
-
-    .screen {
-        left: 6px !important;
-        top: 6px !important;
-        width: 93px !important;
-        height: 51px !important;
-    }
-
-    .sad {
-        font-size: 20px !important;
-        line-height: 30px !important;
-        padding-top: 5px !important;
-    }
-
-    .sad-face {
-        font-size: 17px !important;
+        font-size: 10px !important;
         line-height: 16px !important;
     }
 
-    .keyboard {
-        width: 125px !important;
-        height: 9px !important;
-        left: -10px !important;
-        bottom: -6px !important;
+    .scene {
+        transform: scale(0.70);
+        transform-origin: center right;
+        margin-right: -17px;
     }
-
-    .alert {
-        width: 31px !important;
-        height: 31px !important;
-        line-height: 31px !important;
-        font-size: 16px !important;
-        border-width: 3px !important;
-        right: -7px !important;
-        top: -3px !important;
-    }
-
-
-    /* -------------------------
-       CONTENT
-       ------------------------- */
 
     .content {
-        padding: 20px 14px 24px !important;
+        padding: 20px 13px 23px !important;
     }
-
-
-    /* -------------------------
-       INTEGRATION CARD
-       ------------------------- */
 
     .integration {
-        padding: 12px !important;
+        padding-bottom: 15px !important;
     }
 
-    .integration-icon-cell {
-        width: 45px !important;
-    }
-
-    .integration-icon {
-        width: 36px !important;
-        height: 36px !important;
-        line-height: 36px !important;
-        font-size: 17px !important;
-        border-radius: 10px !important;
+    .integration-label {
+        font-size: 8px !important;
     }
 
     .integration-name {
         font-size: 15px !important;
-        line-height: 19px !important;
+        line-height: 20px !important;
     }
 
-    .label {
-        font-size: 9px !important;
-        line-height: 12px !important;
-    }
-
-    .service {
-        font-size: 9px !important;
-        line-height: 14px !important;
-    }
-
-    .status-cell {
-        width: 60px !important;
+    .integration-meta {
+        font-size: 8px !important;
+        line-height: 13px !important;
     }
 
     .failed {
         padding: 5px 7px !important;
-        font-size: 9px !important;
-        line-height: 12px !important;
+        font-size: 8px !important;
     }
 
-
-    /* -------------------------
-       ERROR
-       ------------------------- */
-
-    .error {
-        margin-top: 14px !important;
-        padding: 14px !important;
+    .error,
+    .details {
+        margin-top: 15px !important;
     }
 
-    .error-title {
-        font-size: 10px !important;
-        line-height: 14px !important;
+    .section-label {
+        font-size: 8px !important;
+        margin-bottom: 7px !important;
+    }
+
+    .error-card {
+        padding: 12px !important;
+    }
+
+    .error-icon {
+        width: 27px !important;
+    }
+
+    .error-icon-box {
+        width: 23px !important;
+        height: 23px !important;
+        line-height: 23px !important;
+        font-size: 11px !important;
     }
 
     .error-text {
-        font-size: 12px !important;
+        padding-left: 8px !important;
+        font-size: 11px !important;
         line-height: 18px !important;
     }
 
-
-    /* -------------------------
-       DETAILS
-       ------------------------- */
-
-    .details {
-        margin-top: 14px !important;
-        padding: 14px !important;
+    .details-card td {
+        padding: 9px !important;
+        font-size: 9px !important;
+        line-height: 14px !important;
     }
 
-    .details-title {
+    .cta {
+        margin-top: 17px !important;
+        padding: 12px !important;
+    }
+
+    .cta-title {
         font-size: 10px !important;
         line-height: 14px !important;
-        margin-bottom: 10px !important;
     }
 
-    .details-table td {
+    .cta-text {
+        font-size: 8px !important;
+        line-height: 13px !important;
+    }
+
+    .cta-button-cell {
+        width: 106px !important;
+    }
+
+    .cta-button {
         padding: 9px 9px !important;
-        font-size: 10px !important;
-        line-height: 15px !important;
+        font-size: 8px !important;
     }
-
-    .detail-label {
-        width: 30% !important;
-    }
-
-    .detail-value {
-        width: 70% !important;
-    }
-
-
-    /* -------------------------
-       BUTTON
-       ------------------------- */
-
-    .button-area {
-        padding: 20px 0 5px !important;
-    }
-
-    .button {
-        padding: 12px 18px !important;
-        font-size: 12px !important;
-        line-height: 16px !important;
-    }
-
-    .arrow {
-        font-size: 16px !important;
-        margin-left: 5px !important;
-    }
-
-
-    /* -------------------------
-       FOOTER
-       ------------------------- */
 
     .footer {
-        padding: 18px 14px !important;
+        padding: 15px 12px !important;
     }
 
-    .footer-message {
-        font-size: 10px !important;
-        line-height: 16px !important;
+    .footer-text {
+        font-size: 8px !important;
+        line-height: 14px !important;
     }
 }
-
 &lt;/style&gt;
 &lt;/head&gt;
-
 
 &lt;body&gt;
 
@@ -705,67 +682,88 @@ td {
 
 &lt;table class=&quot;main&quot; cellpadding=&quot;0&quot; cellspacing=&quot;0&quot; border=&quot;0&quot;&gt;
 
+&lt;!-- =========================================================
+     TOP NAV
+========================================================= --&gt;
+
+&lt;tr&gt;
+&lt;td class=&quot;nav&quot;&gt;
+
+&lt;table width=&quot;100%&quot; cellpadding=&quot;0&quot; cellspacing=&quot;0&quot; border=&quot;0&quot;&gt;
+&lt;tr&gt;
+
+&lt;td class=&quot;nav-brand&quot;&gt;
+&lt;span&gt;●&lt;/span&gt;&amp;nbsp; Integration Monitoring
+&lt;/td&gt;
+
+&lt;td class=&quot;nav-right&quot;&gt;
+System Notification
+&lt;/td&gt;
+
+&lt;/tr&gt;
+&lt;/table&gt;
+
+&lt;/td&gt;
+&lt;/tr&gt;
 
 &lt;!-- =========================================================
      HERO
-     ========================================================= --&gt;
+========================================================= --&gt;
 
 &lt;tr&gt;
 &lt;td class=&quot;hero&quot;&gt;
 
-&lt;table class=&quot;hero-table&quot; width=&quot;100%&quot; cellpadding=&quot;0&quot; cellspacing=&quot;0&quot; border=&quot;0&quot;&gt;
+&lt;table width=&quot;100%&quot; cellpadding=&quot;0&quot; cellspacing=&quot;0&quot; border=&quot;0&quot;&gt;
 &lt;tr&gt;
-
-&lt;!-- HERO LEFT --&gt;
 
 &lt;td class=&quot;hero-left&quot; valign=&quot;middle&quot;&gt;
 
-&lt;div class=&quot;brand&quot;&gt;
-&lt;span class=&quot;cloud&quot;&gt;☁&lt;/span&gt;
-Integration Monitor
+&lt;div class=&quot;eyebrow&quot;&gt;
+Automated Integration Alert
 &lt;/div&gt;
 
-&lt;div class=&quot;hero-title&quot;&gt;
-&lt;span class=&quot;oops&quot;&gt;Oops!&lt;/span&gt;&lt;br&gt;
-Something went wrong&lt;br&gt;
-with your integration.
+&lt;div class=&quot;title&quot;&gt;
+&lt;span&gt;Attention required.&lt;/span&gt;&lt;br&gt;
+An integration request&lt;br&gt;
+has failed.
 &lt;/div&gt;
 
-&lt;div class=&quot;hero-description&quot;&gt;
-An integration request encountered an error
-and needs your attention.
+&lt;div class=&quot;subtitle&quot;&gt;
+The request could not be completed successfully.
+The relevant details and integration log are available below.
 &lt;/div&gt;
 
 &lt;/td&gt;
 
-
-&lt;!-- HERO RIGHT --&gt;
-
 &lt;td class=&quot;hero-right&quot; valign=&quot;middle&quot;&gt;
 
-&lt;div class=&quot;illustration&quot;&gt;
+&lt;div class=&quot;scene&quot;&gt;
 
-&lt;div class=&quot;laptop-wrap&quot;&gt;
+&lt;div class=&quot;shadow&quot;&gt;&lt;/div&gt;
 
-&lt;div class=&quot;laptop&quot;&gt;
+&lt;div class=&quot;monitor&quot;&gt;
 
-&lt;div class=&quot;screen&quot;&gt;
+&lt;div class=&quot;monitor-screen&quot;&gt;
 
-&lt;div class=&quot;sad&quot;&gt;
-× &amp;nbsp; ×
-&lt;br&gt;
-&lt;span class=&quot;sad-face&quot;&gt;⌣&lt;/span&gt;
-&lt;/div&gt;
-
-&lt;/div&gt;
-
-&lt;div class=&quot;keyboard&quot;&gt;&lt;/div&gt;
+&lt;div class=&quot;screen-top&quot;&gt;&lt;/div&gt;
+&lt;div class=&quot;screen-line-1&quot;&gt;&lt;/div&gt;
+&lt;div class=&quot;screen-line-2&quot;&gt;&lt;/div&gt;
+&lt;div class=&quot;screen-line-3&quot;&gt;&lt;/div&gt;
 
 &lt;/div&gt;
 
-&lt;div class=&quot;alert&quot;&gt;
-!
 &lt;/div&gt;
+
+&lt;div class=&quot;monitor-stand&quot;&gt;&lt;/div&gt;
+&lt;div class=&quot;monitor-base&quot;&gt;&lt;/div&gt;
+
+&lt;div class=&quot;alert-bubble&quot;&gt;!&lt;/div&gt;
+
+&lt;div class=&quot;notification&quot;&gt;
+
+&lt;div class=&quot;notification-line&quot;&gt;&lt;/div&gt;
+&lt;div class=&quot;notification-dot&quot;&gt;&lt;/div&gt;
+&lt;div class=&quot;notification-text&quot;&gt;&lt;/div&gt;
 
 &lt;/div&gt;
 
@@ -779,34 +777,26 @@ and needs your attention.
 &lt;/td&gt;
 &lt;/tr&gt;
 
-
 &lt;!-- =========================================================
      CONTENT
-     ========================================================= --&gt;
+========================================================= --&gt;
 
 &lt;tr&gt;
 &lt;td class=&quot;content&quot;&gt;
 
+&lt;!-- INTEGRATION --&gt;
 
-&lt;!-- =========================================================
-     INTEGRATION
-     ========================================================= --&gt;
+&lt;table class=&quot;integration&quot;
+width=&quot;100%&quot;
+cellpadding=&quot;0&quot;
+cellspacing=&quot;0&quot;
+border=&quot;0&quot;&gt;
 
-&lt;table class=&quot;integration&quot; width=&quot;100%&quot; cellpadding=&quot;0&quot; cellspacing=&quot;0&quot; border=&quot;0&quot;&gt;
 &lt;tr&gt;
 
-&lt;td class=&quot;integration-icon-cell&quot;&gt;
+&lt;td valign=&quot;middle&quot;&gt;
 
-&lt;div class=&quot;integration-icon&quot;&gt;
-🔗
-&lt;/div&gt;
-
-&lt;/td&gt;
-
-
-&lt;td class=&quot;integration-info&quot;&gt;
-
-&lt;div class=&quot;label&quot;&gt;
+&lt;div class=&quot;integration-label&quot;&gt;
 Integration
 &lt;/div&gt;
 
@@ -814,61 +804,77 @@ Integration
 {0}
 &lt;/div&gt;
 
-&lt;div class=&quot;service&quot;&gt;
-☁ Service:
-{1}
-&amp;nbsp;&amp;nbsp;|&amp;nbsp;&amp;nbsp;
-Method:
-{2}
+&lt;div class=&quot;integration-meta&quot;&gt;
+Service: {1}
+&amp;nbsp;&amp;nbsp;•&amp;nbsp;&amp;nbsp;
+Method: {2}
 &lt;/div&gt;
 
 &lt;/td&gt;
 
-
-&lt;td class=&quot;status-cell&quot;&gt;
+&lt;td width=&quot;80&quot;
+align=&quot;right&quot;
+valign=&quot;middle&quot;&gt;
 
 &lt;span class=&quot;failed&quot;&gt;
-● Failed
+● FAILED
 &lt;/span&gt;
 
 &lt;/td&gt;
 
 &lt;/tr&gt;
+
 &lt;/table&gt;
 
-
-&lt;!-- =========================================================
-     ERROR
-     ========================================================= --&gt;
+&lt;!-- ERROR --&gt;
 
 &lt;div class=&quot;error&quot;&gt;
 
-&lt;div class=&quot;error-title&quot;&gt;
-⚠ &amp;nbsp; Error Message
+&lt;div class=&quot;section-label&quot;&gt;
+Error Message
 &lt;/div&gt;
 
-&lt;div class=&quot;error-text&quot;&gt;
+&lt;table class=&quot;error-card&quot;
+width=&quot;100%&quot;
+cellpadding=&quot;0&quot;
+cellspacing=&quot;0&quot;
+border=&quot;0&quot;&gt;
+
+&lt;tr&gt;
+
+&lt;td class=&quot;error-icon&quot;&gt;
+
+&lt;div class=&quot;error-icon-box&quot;&gt;
+!
+&lt;/div&gt;
+
+&lt;/td&gt;
+
+&lt;td class=&quot;error-text&quot;&gt;
+
 {3}
-&lt;/div&gt;
+
+&lt;/td&gt;
+
+&lt;/tr&gt;
+
+&lt;/table&gt;
 
 &lt;/div&gt;
 
-
-&lt;!-- =========================================================
-     OBJECT DETAILS
-     ========================================================= --&gt;
+&lt;!-- DETAILS --&gt;
 
 &lt;div class=&quot;details&quot;&gt;
 
-&lt;div class=&quot;details-title&quot;&gt;
-◈ &amp;nbsp; Object Details
+&lt;div class=&quot;section-label&quot;&gt;
+Object Details
 &lt;/div&gt;
 
-&lt;table class=&quot;details-table&quot;
-       width=&quot;100%&quot;
-       cellpadding=&quot;0&quot;
-       cellspacing=&quot;0&quot;
-       border=&quot;0&quot;&gt;
+&lt;table class=&quot;details-card&quot;
+width=&quot;100%&quot;
+cellpadding=&quot;0&quot;
+cellspacing=&quot;0&quot;
+border=&quot;0&quot;&gt;
 
 &lt;tr&gt;
 
@@ -882,7 +888,6 @@ Object
 
 &lt;/tr&gt;
 
-
 &lt;tr&gt;
 
 &lt;td class=&quot;detail-label&quot;&gt;
@@ -895,15 +900,13 @@ Record
 
 &lt;/tr&gt;
 
-
 &lt;tr&gt;
 
 &lt;td class=&quot;detail-label&quot;&gt;
 Record ID
 &lt;/td&gt;
 
-&lt;td class=&quot;detail-value&quot;
-    style=&quot;font-family:monospace;&quot;&gt;
+&lt;td class=&quot;detail-value&quot; style=&quot;font-family:monospace;&quot;&gt;
 {6}
 &lt;/td&gt;
 
@@ -913,56 +916,63 @@ Record ID
 
 &lt;/div&gt;
 
+&lt;!-- CTA --&gt;
 
-&lt;!-- =========================================================
-     BUTTON
-     ========================================================= --&gt;
-
-&lt;div class=&quot;button-area&quot;&gt;
-
-&lt;a class=&quot;button&quot;
-   href=&quot;{7}&quot;
-   target=&quot;_blank&quot;&gt;
-
-Open Integration Log
-&lt;span class=&quot;arrow&quot;&gt;→&lt;/span&gt;
-
-&lt;/a&gt;
-
-&lt;/div&gt;
-
-
-&lt;/td&gt;
-&lt;/tr&gt;
-
-
-&lt;!-- =========================================================
-     FOOTER
-     ========================================================= --&gt;
+&lt;table class=&quot;cta&quot;
+width=&quot;100%&quot;
+cellpadding=&quot;0&quot;
+cellspacing=&quot;0&quot;
+border=&quot;0&quot;&gt;
 
 &lt;tr&gt;
 
-&lt;td class=&quot;footer&quot;&gt;
+&lt;td valign=&quot;middle&quot;&gt;
 
-&lt;div class=&quot;footer-symbol&quot;&gt;
-♢
+&lt;div class=&quot;cta-title&quot;&gt;
+Review the integration log
 &lt;/div&gt;
 
-&lt;div class=&quot;footer-message&quot;&gt;
-
-This notification was generated automatically by the
-&lt;strong&gt;Integration Monitoring System&lt;/strong&gt;.
-
-&lt;br&gt;
-
-Please review the integration log for additional details.
-
+&lt;div class=&quot;cta-text&quot;&gt;
+Inspect the complete request, response and error details.
 &lt;/div&gt;
+
+&lt;/td&gt;
+
+&lt;td class=&quot;cta-button-cell&quot;&gt;
+
+&lt;a class=&quot;cta-button&quot;
+href=&quot;{7}&quot;
+target=&quot;_blank&quot;&gt;
+
+Open Integration Log&amp;nbsp; →
+
+&lt;/a&gt;
 
 &lt;/td&gt;
 
 &lt;/tr&gt;
 
+&lt;/table&gt;
+
+&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;!-- =========================================================
+     FOOTER
+========================================================= --&gt;
+
+&lt;tr&gt;
+&lt;td class=&quot;footer&quot;&gt;
+
+&lt;div class=&quot;footer-text&quot;&gt;
+This notification was generated automatically by the
+&lt;strong&gt;Integration Monitoring System&lt;/strong&gt;.
+&lt;br&gt;
+Please review the integration log for additional details.
+&lt;/div&gt;
+
+&lt;/td&gt;
+&lt;/tr&gt;
 
 &lt;/table&gt;
 
