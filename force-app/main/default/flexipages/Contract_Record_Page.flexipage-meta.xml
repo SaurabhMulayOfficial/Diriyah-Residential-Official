@@ -175,12 +175,12 @@
                 <visibilityRule>
                     <booleanFilter>1 OR 2</booleanFilter>
                     <criteria>
-                        <leftValue>{!Record.RES_Quote_Id__r.RES_Product__r.RES_Unit_Status__c}</leftValue>
+                        <leftValue>{!Record.RES_Product_Unit_Status__c}</leftValue>
                         <operator>EQUAL</operator>
                         <rightValue>Draft</rightValue>
                     </criteria>
                     <criteria>
-                        <leftValue>{!Record.RES_Quote_Id__r.RES_Product__r.RES_Unit_Status__c}</leftValue>
+                        <leftValue>{!Record.RES_Product_Unit_Status__c}</leftValue>
                         <operator>EQUAL</operator>
                         <rightValue>Pending DevCo Approval</rightValue>
                     </criteria>
@@ -428,26 +428,6 @@
                 </fieldInstanceProperties>
                 <fieldItem>Record.RES_S4_Sync_Date__c</fieldItem>
                 <identifier>RecordRES_S4_Sync_Date_cField</identifier>
-            </fieldInstance>
-        </itemInstances>
-        <itemInstances>
-            <fieldInstance>
-                <fieldInstanceProperties>
-                    <name>uiBehavior</name>
-                    <value>readonly</value>
-                </fieldInstanceProperties>
-                <fieldItem>Record.RES_Last_Amount_Received__c</fieldItem>
-                <identifier>RecordRES_Last_Amount_Received_cField</identifier>
-            </fieldInstance>
-        </itemInstances>
-        <itemInstances>
-            <fieldInstance>
-                <fieldInstanceProperties>
-                    <name>uiBehavior</name>
-                    <value>readonly</value>
-                </fieldInstanceProperties>
-                <fieldItem>Record.RES_Last_Amount_Received_Date__c</fieldItem>
-                <identifier>RecordRES_Last_Amount_Received_Date_cField</identifier>
             </fieldInstance>
         </itemInstances>
         <itemInstances>
@@ -1354,6 +1334,12 @@
                 </componentInstanceProperties>
                 <componentName>lst:dynamicRelatedList</componentName>
                 <identifier>lst_dynamicRelatedList</identifier>
+            </componentInstance>
+        </itemInstances>
+        <itemInstances>
+            <componentInstance>
+                <componentName>resToastMessage</componentName>
+                <identifier>c_resToastMessage</identifier>
             </componentInstance>
         </itemInstances>
         <mode>Replace</mode>
