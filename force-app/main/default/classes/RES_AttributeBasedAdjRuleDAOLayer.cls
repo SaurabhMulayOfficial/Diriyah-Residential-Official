@@ -20,4 +20,5 @@ public without sharing class RES_AttributeBasedAdjRuleDAOLayer extends RES_BaseD
         String soql = 'SELECT Id, Name FROM AttributeBasedAdjRule WHERE Id IN :ruleIds';
         return (List<AttributeBasedAdjRule>) executeQuery(soql, '', false, bindVars, AccessLevel.SYSTEM_MODE);
     }
+
 }
