@@ -56,4 +56,5 @@ private class RES_AttributeBasedAdjRuleDAOLayerTest {
         Assert.areEqual(1, result.size(), 'Must return 1 matching rule by Id');
         Assert.areEqual(rule.Id, result[0].Id, 'Returned rule Id must match');
     }
+
 }
