@@ -76,15 +76,6 @@ private class RES_ProductIntegrationServiceTest {
         };
     }
 
-    private static Map<String, String> makeFixtureBoolFalseMap() {
-        return new Map<String, String>{
-            'RES_Storeroom__c' => 'Z006', 'RES_Elevated__c' => 'Z008', 'RES_Terrace__c' => 'Z010',
-            'RES_Roof_Terrace__c' => 'Z012', 'RES_Entry_Courtyard__c' => 'Z014', 'RES_Garage__c' => 'Z016',
-            'RES_Pool__c' => 'Z018', 'RES_Drivers_Room__c' => 'Z023', 'RES_Maids_Room__c' => 'Z025',
-            'RES_Wadi_View__c' => 'Z027', 'RES_Golf_View__c' => 'Z029', 'RES_Panoramic_View__c' => 'Z031',
-            'RES_Private__c' => 'Z033', 'RES_Furnished__c' => 'Z043'
-        };
-    }
 
     private static Boolean canConstruct() {
         return !new RES_APIConfigurationsDAO().getAPIConfiguration('GET', 'Unit_API').isEmpty();
@@ -422,7 +413,7 @@ private class RES_ProductIntegrationServiceTest {
         Product2 p = new Product2(RES_Storeroom__c = true);
 
         List<Map<String, Object>> fixtures =
-            RES_ProductIntegrationService.buildFixturesFittings(p, 'I', makeFixtureBoolTrueMap(), makeFixtureBoolFalseMap());
+            RES_ProductIntegrationService.buildFixturesFittings(p, 'I', makeFixtureBoolTrueMap());
 
         Boolean foundZ005 = false;
         for (Map<String, Object> f : fixtures) {
@@ -440,7 +431,7 @@ private class RES_ProductIntegrationServiceTest {
         Product2 p = new Product2(RES_Storeroom__c = false);
 
         List<Map<String, Object>> fixtures =
-            RES_ProductIntegrationService.buildFixturesFittings(p, 'I', makeFixtureBoolTrueMap(), makeFixtureBoolFalseMap());
+            RES_ProductIntegrationService.buildFixturesFittings(p, 'I', makeFixtureBoolTrueMap());
 
         for (Map<String, Object> f : fixtures) {
             String code = String.valueOf(f.get('RES_Fixtures_Fittings_Characteristics'));
@@ -454,7 +445,7 @@ private class RES_ProductIntegrationServiceTest {
         Product2 p = new Product2(RES_Orientation__c = 'Z001');
 
         List<Map<String, Object>> fixtures =
-            RES_ProductIntegrationService.buildFixturesFittings(p, 'I', makeFixtureBoolTrueMap(), makeFixtureBoolFalseMap());
+            RES_ProductIntegrationService.buildFixturesFittings(p, 'I', makeFixtureBoolTrueMap());
 
         Boolean foundZ001 = false;
         for (Map<String, Object> f : fixtures) {
@@ -471,7 +462,7 @@ private class RES_ProductIntegrationServiceTest {
         Product2 p = new Product2(RES_ID_Finish__c = 'Z021');
 
         List<Map<String, Object>> fixtures =
-            RES_ProductIntegrationService.buildFixturesFittings(p, 'I', makeFixtureBoolTrueMap(), makeFixtureBoolFalseMap());
+            RES_ProductIntegrationService.buildFixturesFittings(p, 'I', makeFixtureBoolTrueMap());
 
         Boolean foundZ021 = false;
         for (Map<String, Object> f : fixtures) {
@@ -488,7 +479,7 @@ private class RES_ProductIntegrationServiceTest {
         Product2 p = new Product2(RES_Storeroom__c = true);
 
         List<Map<String, Object>> fixtures =
-            RES_ProductIntegrationService.buildFixturesFittings(p, 'U', makeFixtureBoolTrueMap(), makeFixtureBoolFalseMap());
+            RES_ProductIntegrationService.buildFixturesFittings(p, 'U', makeFixtureBoolTrueMap());
 
         Boolean foundZ005WithU = false;
         for (Map<String, Object> f : fixtures) {

@@ -115,13 +115,42 @@ public without sharing class RES_ProductIntegrationService extends RES_BaseInteg
             measurementsByProduct.get(m.RES_Product__c).add(m);
         }
 
-        RES_SAPValueMappingDAOLayer mappingDAO   = new RES_SAPValueMappingDAOLayer();
-        Map<String, String> unitStatusMap       = mappingDAO.getMappingAsMap('Unit_Status');
-        Map<String, String> uomCodeMap          = mappingDAO.getMappingAsMap('UOM');
-        Map<String, String> inventoryTypeMap    = mappingDAO.getMappingAsMap('Inventory_Type');
-        Map<String, String> fixtureBoolTrueMap  = mappingDAO.getMappingAsMap('Fixture_Boolean');
-        Map<String, String> fixtureBoolFalseMap    = mappingDAO.getFalseMappingAsMap('Fixture_Boolean');
-        Map<String, String> measTypeCustomFieldMap = mappingDAO.getMappingAsMap('Measurement_CustomField');
+        Map<String, Map<String, String>> allSapMappings = new RES_SAPValueMappingDAOLayer().getAllMappingsAsMap();
+        Map<String, String> unitStatusMap           = allSapMappings.containsKey('Unit_Status')            ? allSapMappings.get('Unit_Status')            : new Map<String, String>();
+        Map<String, String> uomCodeMap             = allSapMappings.containsKey('UOM')                     ? allSapMappings.get('UOM')                     : new Map<String, String>();
+        Map<String, String> inventoryTypeMap       = allSapMappings.containsKey('Inventory_Type')          ? allSapMappings.get('Inventory_Type')          : new Map<String, String>();
+        Map<String, String> fixtureBoolTrueMap     = allSapMappings.containsKey('Fixture_Boolean')         ? allSapMappings.get('Fixture_Boolean')         : new Map<String, String>();
+        Map<String, String> measTypeCustomFieldMap = allSapMappings.containsKey('Measurement_CustomField') ? allSapMappings.get('Measurement_CustomField') : new Map<String, String>();
+        Map<String, String> floorCodeMap           = allSapMappings.containsKey('Floor')                   ? allSapMappings.get('Floor')                   : new Map<String, String>();
+
+        List<RES_Condition_Mapping__mdt> condMappings = new RES_ConditionMappingDAOLayer().getAllActive();
+        List<AttributeBasedAdjustment> allAbaList = new RES_AttributeBasedAdjustmentDAOLayer().getByProductIds(productIds);
+        Set<Id> abaRuleIds = new Set<Id>();
+        for (AttributeBasedAdjustment aba : allAbaList) {
+            if (aba.AttributeBasedAdjRuleId != null) abaRuleIds.add(aba.AttributeBasedAdjRuleId);
+        }
+        Map<Id, String> ruleSelectorMap = new Map<Id, String>();
+        if (!abaRuleIds.isEmpty()) {
+            for (AttributeBasedAdjRule rule : new RES_AttributeBasedAdjRuleDAOLayer().getRulesByIds(abaRuleIds)) {
+                String sel = rule.Name.contains(' :: ') ? rule.Name.substringAfterLast(' :: ') : rule.Name;
+                ruleSelectorMap.put(rule.Id, sel);
+            }
+        }
+        Map<Id, List<AttributeBasedAdjustment>> abaByProduct = new Map<Id, List<AttributeBasedAdjustment>>();
+        for (AttributeBasedAdjustment aba : allAbaList) {
+            if (!abaByProduct.containsKey(aba.ProductId)) {
+                abaByProduct.put(aba.ProductId, new List<AttributeBasedAdjustment>());
+            }
+            abaByProduct.get(aba.ProductId).add(aba);
+        }
+        List<ProductAttributeDefinition> allPadList = new RES_ProductAttributeDefinitionDAOLayer().getByProductIds(productIds);
+        Map<Id, List<ProductAttributeDefinition>> padByProduct = new Map<Id, List<ProductAttributeDefinition>>();
+        for (ProductAttributeDefinition pad : allPadList) {
+            if (!padByProduct.containsKey(pad.Product2Id)) {
+                padByProduct.put(pad.Product2Id, new List<ProductAttributeDefinition>());
+            }
+            padByProduct.get(pad.Product2Id).add(pad);
+        }
 
         includedMeasurementIds.clear();
         fixtureIdsToStamp.clear();
@@ -129,7 +158,6 @@ public without sharing class RES_ProductIntegrationService extends RES_BaseInteg
 
         for (Product2 p : products) {
 
-            // SAP external ID present → UPDATE; blank → CREATE even on afterUpdate (retry scenario)
             String effectiveContext = String.isNotBlank(p.RES_Product_External_ID__c) ? 'U' : 'I';
             if (effectiveContext == 'U') {
                 String idFormatErr = validateSapExternalIdFormat(p.RES_Product_External_ID__c);
@@ -152,7 +180,6 @@ public without sharing class RES_ProductIntegrationService extends RES_BaseInteg
                 p.RES_Business_Entity__r != null ? p.RES_Business_Entity__r.RES_Business_Entity_Id__c : null);
             payload.put('RES_Building',
                 p.RES_Building__r != null ? p.RES_Building__r.RES_Property_Id__c : null);
-            // substring(0,10) strips timezone offset that Date.valueOf appends under certain org locale settings
             payload.put('AvailabilityDate',
                 p.AvailabilityDate != null
                     ? String.valueOf(p.AvailabilityDate).substring(0, 10) + 'T00:00:00Z'
@@ -161,13 +188,17 @@ public without sharing class RES_ProductIntegrationService extends RES_BaseInteg
                 p.DiscontinuedDate != null
                     ? String.valueOf(p.DiscontinuedDate).substring(0, 10) + 'T00:00:00Z'
                     : '9999-12-31T18:00:00Z');
-            // SAP expects 3-digit zero-padded floor code (e.g. "4" → "004")
             String floorCode = p.RES_Floor__c;
             if (String.isNotBlank(floorCode)) {
                 try {
                     String padded = String.valueOf(Integer.valueOf(floorCode));
                     while (padded.length() < 3) padded = '0' + padded;
-                    floorCode = padded;
+                    if (!floorCodeMap.containsKey(padded)) {
+                        System.debug('### [Unit_Sync] Invalid SAP floor code "' + padded + '" on Product ' + p.Id + ' — not in Floor_Code MDT; omitting floor field.');
+                        floorCode = null;
+                    } else {
+                        floorCode = padded;
+                    }
                 } catch (Exception e) {
                     System.debug('### [Unit_Sync] Non-numeric RES_Floor__c "' + floorCode + '" on Product ' + p.Id + ' — omitting floor field; map to numeric code before syncing.');
                     floorCode = null;
@@ -181,11 +212,8 @@ public without sharing class RES_ProductIntegrationService extends RES_BaseInteg
                 : p.RES_Unit_Status__c;
             payload.put('RES_Unit_Status',     sapStatus);
             payload.put('RES_Profit_Center',   p.RES_Profit_Center__c);
-            // Description always flows from ProductCode — SAP enforces a 20-character limit.
-            // String.left(n) returns the full value when length ≤ n, so no conditional needed.
             payload.put('Description', String.isNotBlank(p.ProductCode) ? p.ProductCode.left(20) : p.ProductCode);
             payload.put('Change_Indicator',    effectiveContext);
-            // INSERT: empty string so SAP registers no existing rental object; UPDATE: last segment of external ID
             String rentalObject = '';
             if (effectiveContext == 'U' && String.isNotBlank(p.RES_Product_External_ID__c)) {
                 rentalObject = p.RES_Product_External_ID__c.contains('/')
@@ -263,23 +291,24 @@ public without sharing class RES_ProductIntegrationService extends RES_BaseInteg
                 payload.put('RES_Measurements', measList);
             }
 
-            // null DateTime = never synced → INSERT all as "I"; set DateTime = previously synced → UPDATE all as "U"
             String fixtureCtx = p.RES_Fixtures_Last_Sync__c != null ? 'U' : 'I';
-            List<Map<String, Object>> fixtures = buildFixturesFittings(p, fixtureCtx, fixtureBoolTrueMap, fixtureBoolFalseMap);
+            List<Map<String, Object>> fixtures = buildFixturesFittings(p, fixtureCtx, fixtureBoolTrueMap);
             if (!fixtures.isEmpty()) {
                 payload.put('RES_Fixtures_Fittings', fixtures);
                 fixtureIdsToStamp.add(p.Id);
             }
 
-            System.debug('### [Unit_Sync] Product: ' + p.Id
-                + ' | SAP Rental Object: ' + p.RES_Product_External_ID__c
-                + ' | triggerContext: ' + triggerContext
-                + ' | effectiveContext: ' + effectiveContext
-                + ' | Business Entity: ' + (p.RES_Business_Entity__r != null ? p.RES_Business_Entity__r.RES_Business_Entity_Id__c : 'null')
-                + ' | Building: ' + (p.RES_Building__r != null ? p.RES_Building__r.RES_Property_Id__c : 'null')
-                + ' | Measurements fetched: ' + measurements.size()
-                + ' | Measurements in payload: ' + measList.size()
-                + ' | Fixtures/Area included: ' + (effectiveContext == 'I'));
+            if (!condMappings.isEmpty()) {
+                List<AttributeBasedAdjustment> abaForProduct = abaByProduct.containsKey(p.Id)
+                    ? abaByProduct.get(p.Id) : new List<AttributeBasedAdjustment>();
+                List<ProductAttributeDefinition> padForProduct = padByProduct.containsKey(p.Id)
+                    ? padByProduct.get(p.Id) : new List<ProductAttributeDefinition>();
+                List<Map<String, Object>> conditions = buildConditions(condMappings, abaForProduct, ruleSelectorMap, padForProduct, effectiveContext);
+                if (!conditions.isEmpty()) {
+                    payload.put('RES_Conditions', conditions);
+                }
+            }
+
 
             payloads.add(stripNulls(payload));
         }
@@ -321,7 +350,6 @@ public without sharing class RES_ProductIntegrationService extends RES_BaseInteg
             condMap.put('Change_Indicator',       triggerContext);
             if (mapping.RES_Formula__c == 'D') {
                 condMap.put('RES_Parameter_1', mapping.RES_Parameter_1__c);
-                // RES_Parameter_2 sent as empty string when null — SAP requires the key to be present
                 condMap.put('RES_Parameter_2', mapping.RES_Parameter_2__c != null ? mapping.RES_Parameter_2__c : '');
             }
 
@@ -330,8 +358,11 @@ public without sharing class RES_ProductIntegrationService extends RES_BaseInteg
                     String selector = ruleSelectorMap.get(aba.AttributeBasedAdjRuleId);
                     if (selector == null || selector != mapping.RES_Selector_Value__c) continue;
                     condMap.put('RES_Condition_Price',      aba.AdjustmentValue);
-                    condMap.put('RES_Condition_Valid_From', aba.EffectiveFrom != null ? String.valueOf(aba.EffectiveFrom.date()) : null);
-                    condMap.put('RES_Condition_Valid_To',   aba.EffectiveTo   != null ? String.valueOf(aba.EffectiveTo.date())   : null);
+                    Date validFrom = aba.EffectiveFrom != null ? aba.EffectiveFrom.date() : Date.today();
+                    if (validFrom < Date.today()) validFrom = Date.today();
+                    Date validTo = aba.EffectiveTo != null ? aba.EffectiveTo.date() : Date.newInstance(9999, 12, 31);
+                    condMap.put('RES_Condition_Valid_From', String.valueOf(validFrom));
+                    condMap.put('RES_Condition_Valid_To',   String.valueOf(validTo));
                     break;
                 }
             } else if (mapping.RES_Handling__c == 'Product_Attribute') {
@@ -345,8 +376,8 @@ public without sharing class RES_ProductIntegrationService extends RES_BaseInteg
                             condMap.put('RES_Condition_Price', pad.DefaultValue);
                         }
                     }
-                    condMap.put('RES_Condition_Valid_From', pad.RES_Valid_From__c != null ? String.valueOf(pad.RES_Valid_From__c) : null);
-                    condMap.put('RES_Condition_Valid_To',   pad.RES_Valid_To__c   != null ? String.valueOf(pad.RES_Valid_To__c)   : null);
+                    condMap.put('RES_Condition_Valid_From', pad.RES_Valid_From__c != null ? String.valueOf(pad.RES_Valid_From__c) : String.valueOf(Date.today()));
+                    condMap.put('RES_Condition_Valid_To',   pad.RES_Valid_To__c   != null ? String.valueOf(pad.RES_Valid_To__c)   : '9999-12-31');
                 }
             } else {
                 continue;
@@ -397,7 +428,6 @@ public without sharing class RES_ProductIntegrationService extends RES_BaseInteg
             }
         }
 
-        // Measurement amounts → CustomFields via Measurement_CustomField SAP value mapping
         if (measurements != null && measTypeCustomFieldMap != null
                 && !measurements.isEmpty() && !measTypeCustomFieldMap.isEmpty()) {
             for (RES_Measurement__c m : measurements) {
@@ -411,7 +441,6 @@ public without sharing class RES_ProductIntegrationService extends RES_BaseInteg
             }
         }
 
-        // RES_Type__c holds SF-internal type values; SAP expects Y01/Z01 derived from RecordType
         if (!addedSapNames.contains('RES_Type') && p.RecordType != null && String.isNotBlank(p.RecordType.DeveloperName)) {
             String rtName = p.RecordType.DeveloperName;
             String invType = inventoryTypeMap.containsKey(rtName)
@@ -452,39 +481,33 @@ public without sharing class RES_ProductIntegrationService extends RES_BaseInteg
     @TestVisible
     private static List<Map<String, Object>> buildFixturesFittings(
         Product2 p, String triggerContext,
-        Map<String, String> boolTrueCodes,
-        Map<String, String> boolFalseCodes
+        Map<String, String> boolTrueCodes
     ) {
         List<Map<String, Object>> result = new List<Map<String, Object>>();
         if (String.isNotBlank(p.RES_Orientation__c))  addChar(result, p.RES_Orientation__c, triggerContext);
-        addBoolFixture(result, p.RES_Storeroom__c,       'RES_Storeroom__c',       boolTrueCodes, boolFalseCodes, triggerContext);
-        addBoolFixture(result, p.RES_Elevated__c,        'RES_Elevated__c',        boolTrueCodes, boolFalseCodes, triggerContext);
-        addBoolFixture(result, p.RES_Terrace__c,         'RES_Terrace__c',         boolTrueCodes, boolFalseCodes, triggerContext);
-        addBoolFixture(result, p.RES_Roof_Terrace__c,    'RES_Roof_Terrace__c',    boolTrueCodes, boolFalseCodes, triggerContext);
-        addBoolFixture(result, p.RES_Entry_Courtyard__c, 'RES_Entry_Courtyard__c', boolTrueCodes, boolFalseCodes, triggerContext);
-        addBoolFixture(result, p.RES_Garage__c,          'RES_Garage__c',          boolTrueCodes, boolFalseCodes, triggerContext);
-        addBoolFixture(result, p.RES_Pool__c,            'RES_Pool__c',            boolTrueCodes, boolFalseCodes, triggerContext);
+        addBoolFixture(result, p.RES_Storeroom__c,       'RES_Storeroom__c',       boolTrueCodes, triggerContext);
+        addBoolFixture(result, p.RES_Elevated__c,        'RES_Elevated__c',        boolTrueCodes, triggerContext);
+        addBoolFixture(result, p.RES_Terrace__c,         'RES_Terrace__c',         boolTrueCodes, triggerContext);
+        addBoolFixture(result, p.RES_Roof_Terrace__c,    'RES_Roof_Terrace__c',    boolTrueCodes, triggerContext);
+        addBoolFixture(result, p.RES_Entry_Courtyard__c, 'RES_Entry_Courtyard__c', boolTrueCodes, triggerContext);
+        addBoolFixture(result, p.RES_Garage__c,          'RES_Garage__c',          boolTrueCodes, triggerContext);
+        addBoolFixture(result, p.RES_Pool__c,            'RES_Pool__c',            boolTrueCodes, triggerContext);
         if (String.isNotBlank(p.RES_ID_Finish__c))    addChar(result, p.RES_ID_Finish__c, triggerContext);
-        addBoolFixture(result, p.RES_Drivers_Room__c,    'RES_Drivers_Room__c',    boolTrueCodes, boolFalseCodes, triggerContext);
-        addBoolFixture(result, p.RES_Maids_Room__c,      'RES_Maids_Room__c',      boolTrueCodes, boolFalseCodes, triggerContext);
-        addBoolFixture(result, p.RES_Wadi_View__c,       'RES_Wadi_View__c',       boolTrueCodes, boolFalseCodes, triggerContext);
-        addBoolFixture(result, p.RES_Golf_View__c,       'RES_Golf_View__c',       boolTrueCodes, boolFalseCodes, triggerContext);
-        addBoolFixture(result, p.RES_Panoramic_View__c,  'RES_Panoramic_View__c',  boolTrueCodes, boolFalseCodes, triggerContext);
-        addBoolFixture(result, p.RES_Private__c,         'RES_Private__c',         boolTrueCodes, boolFalseCodes, triggerContext);
+        addBoolFixture(result, p.RES_Drivers_Room__c,    'RES_Drivers_Room__c',    boolTrueCodes, triggerContext);
+        addBoolFixture(result, p.RES_Maids_Room__c,      'RES_Maids_Room__c',      boolTrueCodes, triggerContext);
+        addBoolFixture(result, p.RES_Wadi_View__c,       'RES_Wadi_View__c',       boolTrueCodes, triggerContext);
+        addBoolFixture(result, p.RES_Golf_View__c,       'RES_Golf_View__c',       boolTrueCodes, triggerContext);
+        addBoolFixture(result, p.RES_Panoramic_View__c,  'RES_Panoramic_View__c',  boolTrueCodes, triggerContext);
+        addBoolFixture(result, p.RES_Private__c,         'RES_Private__c',         boolTrueCodes, triggerContext);
         if (String.isNotBlank(p.RES_Condition__c))    addChar(result, p.RES_Condition__c, triggerContext);
-        addBoolFixture(result, p.RES_Furnished__c,       'RES_Furnished__c',       boolTrueCodes, boolFalseCodes, triggerContext);
+        addBoolFixture(result, p.RES_Furnished__c,       'RES_Furnished__c',       boolTrueCodes, triggerContext);
         return result;
     }
 
     private static void addBoolFixture(List<Map<String, Object>> r, Boolean val, String sfField,
-                                       Map<String, String> boolTrueCodes, Map<String, String> boolFalseCodes, String ctx) {
-        String trueCode  = boolTrueCodes.get(sfField);
-        String falseCode = boolFalseCodes.get(sfField);
-        if (trueCode != null && falseCode != null) addBool(r, val, trueCode, falseCode, ctx);
-    }
-
-    private static void addBool(List<Map<String, Object>> r, Boolean val, String trueCode, String falseCode, String ctx) {
-        if (val == true) addChar(r, trueCode, ctx);
+                                       Map<String, String> boolTrueCodes, String ctx) {
+        String trueCode = boolTrueCodes.get(sfField);
+        if (trueCode != null && val == true) addChar(r, trueCode, ctx);
     }
 
     private static void addChar(List<Map<String, Object>> r, String code, String ctx) {
@@ -500,18 +523,20 @@ public without sharing class RES_ProductIntegrationService extends RES_BaseInteg
         if (String.isBlank(responseBody)) return false;
 
         RES_ResponseWrapper responseWrapper = RES_ResponseWrapper.deserialize(responseBody);
-        String errorMessage = '';
-        Boolean isSuccess   = false;
+        List<String> errorParts = new List<String>();
+        Boolean isSuccess       = false;
 
         if (responseWrapper != null && responseWrapper.responseReturn != null && responseWrapper.responseReturn.item != null) {
             for (RES_ResponseWrapper.ItemWrapper item : responseWrapper.responseReturn.item) {
                 if (item.type == 'E' && String.isNotBlank(item.message)) {
-                    errorMessage += item.message;
+                    errorParts.add(item.message);
                 } else if (item.type == 'S') {
                     isSuccess = true;
                 }
             }
         }
+
+        String errorMessage = String.join(errorParts, '\n');
 
         if (String.isNotBlank(errorMessage)) {
             Boolean isReconciliationNeeded = errorMessage.containsIgnoreCase('already exist');
@@ -644,8 +669,6 @@ public without sharing class RES_ProductIntegrationService extends RES_BaseInteg
         service.setRecordId(String.valueOf(products[0].Id));
         service.setBody(body);
 
-        System.debug('### [Unit_Sync] Final JSON Payload: ' + body);
-
         try {
             Map<String, Object> parsedBody = (Map<String, Object>) JSON.deserializeUntyped(body);
             Object measObj = parsedBody.get('RES_Measurements');
@@ -673,10 +696,6 @@ public without sharing class RES_ProductIntegrationService extends RES_BaseInteg
         try {
             RES_IntegrationResponse response = service.sendRequest();
 
-            System.debug('### [Unit_Sync] SAP Response | StatusCode: ' + response.statusCode
-                + ' | Status: ' + response.status
-                + ' | Body: ' + response.responseBody);
-
             Boolean isSuccess = processResponse(response.responseBody, service, products[0].Id, 'Product2');
 
             if (isSuccess) {
@@ -695,10 +714,7 @@ public without sharing class RES_ProductIntegrationService extends RES_BaseInteg
                 }
                 List<Database.SaveResult> results = Database.update(toUpdate, false, AccessLevel.SYSTEM_MODE);
                 for (Integer i = 0; i < results.size(); i++) {
-                    if (results[i].isSuccess()) {
-                        System.debug('### [Unit_Sync] External ID saved: ' + toUpdate[i].RES_Product_External_ID__c
-                            + ' | Product: ' + toUpdate[i].Id);
-                    } else {
+                    if (!results[i].isSuccess()) {
                         System.debug('### [Unit_Sync] ERROR saving External ID for Product ' + toUpdate[i].Id
                             + ' | Errors: ' + results[i].getErrors());
                     }
@@ -716,11 +732,8 @@ public without sharing class RES_ProductIntegrationService extends RES_BaseInteg
                                 + ' | Errors: ' + measResults[i].getErrors());
                         }
                     }
-                    System.debug('### [Unit_Sync] Stamped RES_Last_Sync_DateTime__c on ' + measToStamp.size() + ' Measurement(s)');
                 }
 
-                // After INSERT success: fire Measurement_Sync events for all related measurements with context 'I'.
-                // Suppressed in RES_MeasurementServices while ExternalId was absent; SAP can now link them to the rental object.
                 if (String.isNotBlank(sapExternalId)) {
                     List<RES_Measurement__c> relatedMeasurements = [
                         SELECT Id, RES_Category__c, RES_Catalog__c

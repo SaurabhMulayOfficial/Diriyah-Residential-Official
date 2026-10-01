@@ -7,33 +7,25 @@
 private class RES_SAPValueMappingDAOLayerTest {
 
     @isTest
-    static void testGetMappingAsMap_returnsEmptyWhenCategoryMissing() {
-        Map<String, String> result = new RES_SAPValueMappingDAOLayer()
-            .getMappingAsMap('NONEXISTENT_CATEGORY_XYZ');
-        Assert.isNotNull(result, 'Should return an empty map, not null');
-        Assert.isTrue(result.isEmpty(), 'Should be empty when no matching CMT record exists');
+    static void testGetAllMappingsAsMap_returnsNonNullMap() {
+        Map<String, Map<String, String>> result = new RES_SAPValueMappingDAOLayer()
+            .getAllMappingsAsMap();
+        Assert.isNotNull(result, 'getAllMappingsAsMap should never return null');
     }
 
     @isTest
-    static void testGetFalseMappingAsMap_returnsEmptyWhenCategoryMissing() {
-        Map<String, String> result = new RES_SAPValueMappingDAOLayer()
-            .getFalseMappingAsMap('NONEXISTENT_CATEGORY_XYZ');
-        Assert.isNotNull(result, 'Should return an empty map, not null');
-        Assert.isTrue(result.isEmpty(), 'Should be empty when no matching CMT record exists');
+    static void testGetAllMappingsAsMap_unitStatusKeyPresent() {
+        Map<String, Map<String, String>> result = new RES_SAPValueMappingDAOLayer()
+            .getAllMappingsAsMap();
+        Assert.isTrue(result.containsKey('Unit_Status'), 'Unit_Status key should be present');
+        Assert.isNotNull(result.get('Unit_Status'), 'Unit_Status map should not be null');
     }
 
     @isTest
-    static void testGetMappingAsMap_returnsValuesForDeployedCategory() {
-        Map<String, String> result = new RES_SAPValueMappingDAOLayer()
-            .getMappingAsMap('Unit_Status');
-        Assert.isNotNull(result, 'Unit_Status mapping should not be null');
-    }
-
-    @isTest
-    static void testGetFalseMappingAsMap_returnsValuesForDeployedCategory() {
-        Map<String, String> result = new RES_SAPValueMappingDAOLayer()
-            .getFalseMappingAsMap('Fixture_Boolean');
-        Assert.isNotNull(result, 'Fixture_Boolean false mapping should not be null');
+    static void testGetAllMappingsAsMap_fixtureKeyPresent() {
+        Map<String, Map<String, String>> result = new RES_SAPValueMappingDAOLayer()
+            .getAllMappingsAsMap();
+        Assert.isTrue(result.containsKey('Fixture_Boolean'), 'Fixture_Boolean key should be present');
     }
 
     @isTest
@@ -73,11 +65,11 @@ private class RES_SAPValueMappingDAOLayerTest {
     static void getMappingByObjectsAndFields_validInputs_returnsMap() {
         Map<String, Map<String, String>> result = new RES_SAPValueMappingDAOLayer()
             .getMappingByObjectsAndFields(
-                new Set<String>{ 'Contract' },
-                new Set<String>{ 'Contract_Status' }
+                new Set<String>{ 'Product2' },
+                new Set<String>{ 'RES_Unit_Status__c' }
             );
         Assert.isNotNull(result, 'Result must not be null for valid inputs.');
-        // The map may or may not have entries depending on deployed CMT records
+        Assert.isFalse(result.isEmpty(), 'Unit_Status MDT record must be found for Product2/RES_Unit_Status__c.');
     }
 
     @isTest
@@ -89,5 +81,38 @@ private class RES_SAPValueMappingDAOLayerTest {
             );
         Assert.isNotNull(result, 'Result must not be null for non-existent category.');
         Assert.isTrue(result.isEmpty(), 'Result must be empty when no CMT record matches.');
+    }
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // deserializeJsonMapping — covers blank JSON and malformed JSON paths
+    // ─────────────────────────────────────────────────────────────────────────
+
+    @isTest
+    static void deserializeJsonMapping_blankJson_returnsEmptyMap() {
+        Map<String, String> result = RES_SAPValueMappingDAOLayer.deserializeJsonMapping('Test_Key', '');
+        Assert.isNotNull(result, 'Must return empty map, never null');
+        Assert.isTrue(result.isEmpty(), 'Blank JSON must return empty map');
+    }
+
+    @isTest
+    static void deserializeJsonMapping_nullJson_returnsEmptyMap() {
+        Map<String, String> result = RES_SAPValueMappingDAOLayer.deserializeJsonMapping('Test_Key', null);
+        Assert.isNotNull(result, 'Must return empty map, never null');
+        Assert.isTrue(result.isEmpty(), 'Null JSON must return empty map');
+    }
+
+    @isTest
+    static void deserializeJsonMapping_malformedJson_returnsEmptyMap() {
+        Map<String, String> result = RES_SAPValueMappingDAOLayer.deserializeJsonMapping('Test_Key', '{not valid json!!!}');
+        Assert.isNotNull(result, 'Must return empty map on parse failure');
+        Assert.isTrue(result.isEmpty(), 'Malformed JSON must return empty map');
+    }
+
+    @isTest
+    static void deserializeJsonMapping_validJson_returnsPopulatedMap() {
+        Map<String, String> result = RES_SAPValueMappingDAOLayer.deserializeJsonMapping('Test_Key', '{"Available":"E0010","Sold":"E0011"}');
+        Assert.isNotNull(result, 'Must return populated map');
+        Assert.areEqual('E0010', result.get('Available'), 'Available must map to E0010');
+        Assert.areEqual('E0011', result.get('Sold'), 'Sold must map to E0011');
     }
 }
