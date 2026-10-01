@@ -126,8 +126,8 @@ public with sharing class RES_UnifiedIngestionEngine implements Database.Batchab
 
         List<ProductCatalog> existingCatalogs = new RES_ProductCatalogDAOLayer().getCatalogsByCodes(rowsByCode.keySet());
         for (ProductCatalog existing : existingCatalogs) {
-            catalogIdByCode.put(existing.Code, existing.Id);
-            rowsByCode.remove(existing.Code);
+            catalogIdByCode.put(existing.RES_Business_Entity_Id__c, existing.Id);
+            rowsByCode.remove(existing.RES_Business_Entity_Id__c);
         }
         if (rowsByCode.isEmpty()) return;
 
@@ -150,14 +150,24 @@ public with sharing class RES_UnifiedIngestionEngine implements Database.Batchab
         }
         if (rowsByCode.isEmpty()) return;
 
-        List<ProductCategory> existingCategories = new RES_ProductCategoryDAOLayer().getCategoriesByCodes(rowsByCode.keySet());
+        Set<String> businessEntityIds = new Set<String>();
+        Set<String> propertyIds = new Set<String>();
+        for (String code : rowsByCode.keySet()) {
+            List<String> parts = code.split('::', 2);
+            businessEntityIds.add(parts[0]);
+            propertyIds.add(parts[1]);
+        }
+
+        List<ProductCategory> existingCategories =
+            new RES_ProductCategoryDAOLayer().getCategoriesByBusinessEntityAndProperty(businessEntityIds, propertyIds);
         for (ProductCategory existing : existingCategories) {
-            categoryIdByCode.put(existing.Code, existing.Id);
-            rowsByCode.remove(existing.Code);
+            String key = existing.RES_Business_Entity_Id__c + '::' + existing.RES_Property_Id__c;
+            categoryIdByCode.put(key, existing.Id);
+            rowsByCode.remove(key);
         }
         if (rowsByCode.isEmpty()) return;
 
-        // Every category code left unmatched here must already exist - the framework no longer creates categories on the fly.
+        // Every category left unmatched here must already exist - the framework no longer creates categories on the fly.
         for (String code : rowsByCode.keySet()) {
             List<RES_Product_Staging__c> rows = rowsByCode.get(code);
             if (catalogIdByCode.get(catalogCode(rows[0])) == null) {
@@ -168,7 +178,8 @@ public with sharing class RES_UnifiedIngestionEngine implements Database.Batchab
                  */
                 continue;
             }
-            String msg = 'ProductCategory with external identifier "' + code +
+            String msg = 'ProductCategory with business entity "' + code.split('::', 2)[0] +
+                         '" and building/land "' + code.split('::', 2)[1] +
                          '" does not exist. Create it before running ingestion.';
             recordError(msg);
             for (RES_Product_Staging__c stg : rows) addRowError(rowErrors, stg.Id, msg);
@@ -848,24 +859,18 @@ public with sharing class RES_UnifiedIngestionEngine implements Database.Batchab
         return textOf(stg, F_CATEGORY_NAME);
     }
 
-    private static String categoryKind(RES_Product_Staging__c stg) {
-        if (String.isNotBlank(textOf(stg, F_BUILDING_NAME))) return 'Building';
-        if (String.isNotBlank(textOf(stg, F_LAND)))          return 'Land';
-        return 'Building';
-    }
-
     private static String catalogCode(RES_Product_Staging__c stg) {
         String be = textOf(stg, F_CATALOG_NAME);
         if (String.isBlank(be)) return null;
-        return truncate('BE-' + be.trim(), 255);
+        return truncate(be.trim(), 255);
     }
 
+    // Internal map key only (business entity id + '::' + building/land id, no prefixes) - never sent to Salesforce as-is; resolveCategories splits it back into the two raw CSV values used to match RES_Business_Entity_Id__c/RES_Property_Id__c.
     private static String categoryCode(RES_Product_Staging__c stg) {
         String be    = textOf(stg, F_CATALOG_NAME);
         String value = categoryValue(stg);
         if (String.isBlank(be) || String.isBlank(value)) return null;
-        String prefix = categoryKind(stg) == 'Land' ? 'LND-' : 'BLD-';
-        return truncate(prefix + be.trim() + '-' + value.trim(), 255);
+        return truncate(be.trim() + '::' + value.trim(), 255);
     }
 
     private static String sellingModelKey(String type, Integer term, String unit) {
