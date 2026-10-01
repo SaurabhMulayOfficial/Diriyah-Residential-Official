@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Layout xmlns="http://soap.sforce.com/2006/04/metadata">
     <excludeButtons>Delete</excludeButtons>
-    <excludeButtons>OpenSlackRecordChannel</excludeButtons>
     <excludeButtons>SmartFillEnrich</excludeButtons>
     <layoutSections>
         <customLabel>true</customLabel>
@@ -193,11 +192,10 @@
     </relatedLists>
     <relatedLists>
         <fields>ParentProductName</fields>
-        <fields>ParentSellingModel</fields>
-        <fields>Quantity</fields>
         <fields>ProductComponentGroup</fields>
-        <fields>MinQuantity</fields>
-        <fields>MaxQuantity</fields>
+        <fields>ParentProductType</fields>
+        <fields>Quantity</fields>
+        <fields>ParentSellingModel</fields>
         <relatedList>RelatedParentProduct</relatedList>
     </relatedLists>
     <relatedLists>
