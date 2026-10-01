@@ -7,33 +7,25 @@
 private class RES_SAPValueMappingDAOLayerTest {
 
     @isTest
-    static void testGetMappingAsMap_returnsEmptyWhenCategoryMissing() {
-        Map<String, String> result = new RES_SAPValueMappingDAOLayer()
-            .getMappingAsMap('NONEXISTENT_CATEGORY_XYZ');
-        Assert.isNotNull(result, 'Should return an empty map, not null');
-        Assert.isTrue(result.isEmpty(), 'Should be empty when no matching CMT record exists');
+    static void testGetAllMappingsAsMap_returnsNonNullMap() {
+        Map<String, Map<String, String>> result = new RES_SAPValueMappingDAOLayer()
+            .getAllMappingsAsMap();
+        Assert.isNotNull(result, 'getAllMappingsAsMap should never return null');
     }
 
     @isTest
-    static void testGetFalseMappingAsMap_returnsEmptyWhenCategoryMissing() {
-        Map<String, String> result = new RES_SAPValueMappingDAOLayer()
-            .getFalseMappingAsMap('NONEXISTENT_CATEGORY_XYZ');
-        Assert.isNotNull(result, 'Should return an empty map, not null');
-        Assert.isTrue(result.isEmpty(), 'Should be empty when no matching CMT record exists');
+    static void testGetAllMappingsAsMap_unitStatusKeyPresent() {
+        Map<String, Map<String, String>> result = new RES_SAPValueMappingDAOLayer()
+            .getAllMappingsAsMap();
+        Assert.isTrue(result.containsKey('Unit_Status'), 'Unit_Status key should be present');
+        Assert.isNotNull(result.get('Unit_Status'), 'Unit_Status map should not be null');
     }
 
     @isTest
-    static void testGetMappingAsMap_returnsValuesForDeployedCategory() {
-        Map<String, String> result = new RES_SAPValueMappingDAOLayer()
-            .getMappingAsMap('Unit_Status');
-        Assert.isNotNull(result, 'Unit_Status mapping should not be null');
-    }
-
-    @isTest
-    static void testGetFalseMappingAsMap_returnsValuesForDeployedCategory() {
-        Map<String, String> result = new RES_SAPValueMappingDAOLayer()
-            .getFalseMappingAsMap('Fixture_Boolean');
-        Assert.isNotNull(result, 'Fixture_Boolean false mapping should not be null');
+    static void testGetAllMappingsAsMap_fixtureKeyPresent() {
+        Map<String, Map<String, String>> result = new RES_SAPValueMappingDAOLayer()
+            .getAllMappingsAsMap();
+        Assert.isTrue(result.containsKey('Fixture_Boolean'), 'Fixture_Boolean key should be present');
     }
 
     @isTest
