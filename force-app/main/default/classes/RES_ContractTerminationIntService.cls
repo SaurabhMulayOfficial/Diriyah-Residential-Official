@@ -137,6 +137,20 @@ public with sharing class RES_ContractTerminationIntService extends RES_BaseInte
         String objectType
     ) {
         if (String.isBlank(responseBody)) {
+            RES_IntegrationErrorLogger log = new RES_IntegrationErrorLogger(
+                'Sales_Contract_Termination',
+                '',
+                'Empty response body received from SAP for Contract Termination.',
+                JSON.serialize(service.getHeaders()),
+                objectType,
+                recordId,
+                String.valueOf(service.getRequestBody()),
+                service.getRequestMethod(),
+                'Sales_Contract_Termination',
+                service.getRetryCount(),
+                'Client Side'
+            );
+            RES_ResponseWrapper.logError(log);
             return false;
         }
 
@@ -144,16 +158,29 @@ public with sharing class RES_ContractTerminationIntService extends RES_BaseInte
         String errorMessage = '';
         Boolean isSuccess   = false;
 
-        if (responseWrapper != null &&
-            responseWrapper.responseReturn != null &&
-            responseWrapper.responseReturn.item != null) {
+        if (responseWrapper == null || responseWrapper.responseReturn == null || responseWrapper.responseReturn.item == null) {
+            RES_IntegrationErrorLogger log = new RES_IntegrationErrorLogger(
+                'Sales_Contract_Termination',
+                '',
+                'SAP returned an empty or unrecognised ET_RETURN. Response body: ' + responseBody,
+                JSON.serialize(service.getHeaders()),
+                objectType,
+                recordId,
+                String.valueOf(service.getRequestBody()),
+                service.getRequestMethod(),
+                'Sales_Contract_Termination',
+                service.getRetryCount(),
+                'Client Side'
+            );
+            RES_ResponseWrapper.logError(log);
+            return false;
+        }
 
-            for (RES_ResponseWrapper.ItemWrapper item : responseWrapper.responseReturn.item) {
-                if (item.type == 'E' && String.isNotBlank(item.message)) {
-                    errorMessage += item.message;
-                } else if (item.type == 'S') {
-                    isSuccess = true;
-                }
+        for (RES_ResponseWrapper.ItemWrapper item : responseWrapper.responseReturn.item) {
+            if (item.type == 'E' && String.isNotBlank(item.message)) {
+                errorMessage += item.message;
+            } else if (item.type == 'S') {
+                isSuccess = true;
             }
         }
 

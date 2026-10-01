@@ -43,11 +43,15 @@ public class RES_ResponseWrapper {
         Map<String, Object> root =
             (Map<String, Object>) JSON.deserializeUntyped(responseBody);
 
-        Map<String, Object> sapReturn = (Map<String, Object>) root.remove('Return');
-
-        if (sapReturn == null) {
-            sapReturn = (Map<String, Object>) root.remove('ET_RETURN');
+        Object rawReturn = root.remove('Return');
+        if (rawReturn == null) {
+            rawReturn = root.remove('ET_RETURN');
         }
+
+        // Guard against SAP returning ET_RETURN as an empty string instead of an object
+        Map<String, Object> sapReturn = (rawReturn instanceof Map<String, Object>)
+            ? (Map<String, Object>) rawReturn
+            : null;
 
         if (sapReturn == null) {
             return null;
