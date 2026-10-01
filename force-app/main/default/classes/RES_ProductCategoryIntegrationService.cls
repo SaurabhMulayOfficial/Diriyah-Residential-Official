@@ -124,7 +124,8 @@ public with sharing class RES_ProductCategoryIntegrationService extends RES_Base
                 wrapper.RES_Valid_To_Date = category.RES_Valid_To_Date__c;
                 wrapper.RES_Profit_Center = category.RES_Profit_Center__c;
                 wrapper.RES_Property_Type = category.RES_Property_Type__c;
-                wrapper.Change_Indicator = triggerContext;
+                // First-time sync → INSERT ('I'); subsequent → UPDATE ('U')
+                wrapper.Change_Indicator = (category.RES_Last_Sync_DateTime__c == null) ? 'I' : 'U';
 
                 List<RES_ProductCategoryRequestWrapper.Measurement> measurementWrappers = new List<RES_ProductCategoryRequestWrapper.Measurement>();
                 for(RES_Measurement__c measurement: measurementMap.get(categoryId)){
