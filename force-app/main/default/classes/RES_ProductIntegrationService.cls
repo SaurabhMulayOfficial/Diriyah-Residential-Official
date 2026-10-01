@@ -205,7 +205,7 @@ public without sharing class RES_ProductIntegrationService extends RES_BaseInteg
                 }
             }
             payload.put('RES_Floor', floorCode);
-            payload.put('RES_Area_Type',       p.RES_Area_Type__c);
+            payload.put('RES_Area_Typec',      p.RES_Area_Type__c);
             payload.put('RES_Area',            p.RES_Area__c);
             String sapStatus = unitStatusMap.containsKey(p.RES_Unit_Status__c)
                 ? unitStatusMap.get(p.RES_Unit_Status__c)
@@ -257,11 +257,6 @@ public without sharing class RES_ProductIntegrationService extends RES_BaseInteg
                         + ' (' + m.Name + ') — RES_Measurement_Type__c is blank; cannot send to SAP without a type code.');
                     continue;
                 }
-                if (String.isBlank(m.RES_Unit_Of_Measurement__c)) {
-                    System.debug('### [Unit_Sync] Skipping measurement ' + m.Id
-                        + ' (' + m.Name + ') — RES_Unit_Of_Measurement__c is blank; SAP requires a UOM.');
-                    continue;
-                }
                 if (m.RES_Measurement_Amount__c == null) {
                     System.debug('### [Unit_Sync] Skipping measurement ' + m.Id
                         + ' (' + m.Name + ') — RES_Measurement_Amount__c is null; SAP requires a numeric amount.');
@@ -274,14 +269,16 @@ public without sharing class RES_ProductIntegrationService extends RES_BaseInteg
                 mMap.put('RES_Measurement_Amount',  m.RES_Measurement_Amount__c);
                 mMap.put('RES_Measurement_From',    m.RES_Measurement_From__c != null ? String.valueOf(m.RES_Measurement_From__c) : null);
                 mMap.put('RES_Measurement_To',      m.RES_Measurement_To__c   != null ? String.valueOf(m.RES_Measurement_To__c)   : null);
-                String uomCode = m.RES_Unit_Of_Measurement__c;
-                if (!uomCodeMap.containsKey(uomCode)) {
-                    System.debug('### [Unit_Sync] Skipping measurement ' + m.Id
-                        + ' (' + m.Name + ') — no SAP UOM mapping found for "'
-                        + uomCode + '". Add an entry to RES_SAP_Value_Mapping.UOM MDT.');
-                    continue;
+                String uomCode = '';
+                if (String.isNotBlank(m.RES_Unit_Of_Measurement__c)) {
+                    if (!uomCodeMap.containsKey(m.RES_Unit_Of_Measurement__c)) {
+                        System.debug('### [Unit_Sync] Skipping measurement ' + m.Id
+                            + ' (' + m.Name + ') — no SAP UOM mapping found for "'
+                            + m.RES_Unit_Of_Measurement__c + '". Add an entry to RES_SAP_Value_Mapping.UOM MDT.');
+                        continue;
+                    }
+                    uomCode = uomCodeMap.get(m.RES_Unit_Of_Measurement__c);
                 }
-                uomCode = uomCodeMap.get(uomCode);
                 mMap.put('RES_Unit_Of_Measurement', uomCode);
                 mMap.put('Change_Indicator',        measCI);
                 measList.add(stripNulls(mMap));
