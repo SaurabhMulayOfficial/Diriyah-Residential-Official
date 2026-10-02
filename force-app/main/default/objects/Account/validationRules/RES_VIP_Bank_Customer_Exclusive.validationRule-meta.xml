@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>RES_VIP_Bank_Customer_Exclusive</fullName>
+    <active>true</active>
+    <errorConditionFormula>AND(
+    NOT($Setup.RES_Config_Switch__c.RES_Validation_Rules_Off__c),
+    RES_VIP_Customer__c,
+    RES_Bank_Customer__c
+)</errorConditionFormula>
+    <errorMessage>An account cannot be both a VIP Customer and a Bank Customer at the same time. Please deselect one before selecting the other.</errorMessage>
+</ValidationRule>

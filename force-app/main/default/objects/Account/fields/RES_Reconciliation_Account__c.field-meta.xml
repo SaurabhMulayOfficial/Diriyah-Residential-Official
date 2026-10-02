@@ -1,12 +1,121 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
     <fullName>RES_Reconciliation_Account__c</fullName>
-    <externalId>false</externalId>
     <label>Reconciliation Account</label>
-    <length>80</length>
     <required>false</required>
     <trackFeedHistory>false</trackFeedHistory>
     <trackHistory>false</trackHistory>
-    <type>Text</type>
-    <unique>false</unique>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>153001</fullName>
+                <default>false</default>
+                <label>Trade Receivables</label>
+            </value>
+            <value>
+                <fullName>153002</fullName>
+                <default>false</default>
+                <label>GCC Receivables</label>
+            </value>
+            <value>
+                <fullName>153004</fullName>
+                <default>false</default>
+                <label>TR-Residential Lease</label>
+            </value>
+            <value>
+                <fullName>153005</fullName>
+                <default>false</default>
+                <label>Local Receivables</label>
+            </value>
+            <value>
+                <fullName>153006</fullName>
+                <default>false</default>
+                <label>TR-Facilities Management</label>
+            </value>
+            <value>
+                <fullName>153009</fullName>
+                <default>false</default>
+                <label>TR-Room Revenue</label>
+            </value>
+            <value>
+                <fullName>153010</fullName>
+                <default>false</default>
+                <label>TR-F&amp;B Revenue</label>
+            </value>
+            <value>
+                <fullName>153011</fullName>
+                <default>false</default>
+                <label>TR-Tution Fee</label>
+            </value>
+            <value>
+                <fullName>153012</fullName>
+                <default>false</default>
+                <label>TR-Registration Fee</label>
+            </value>
+            <value>
+                <fullName>153013</fullName>
+                <default>false</default>
+                <label>TR-Transportation Fee</label>
+            </value>
+            <value>
+                <fullName>153014</fullName>
+                <default>false</default>
+                <label>TR-Membership Fee</label>
+            </value>
+            <value>
+                <fullName>153015</fullName>
+                <default>false</default>
+                <label>TR-Utilities</label>
+            </value>
+            <value>
+                <fullName>153016</fullName>
+                <default>false</default>
+                <label>TR-Suppliers &amp; contractors</label>
+            </value>
+            <value>
+                <fullName>153019</fullName>
+                <default>false</default>
+                <label>TR-Sale of property</label>
+            </value>
+            <value>
+                <fullName>153020</fullName>
+                <default>false</default>
+                <label>TR-Lease of property</label>
+            </value>
+            <value>
+                <fullName>153030</fullName>
+                <default>false</default>
+                <label>IC Receivables</label>
+            </value>
+            <value>
+                <fullName>313001</fullName>
+                <default>false</default>
+                <label>(ADV (L))Customers (313001)</label>
+            </value>
+            <value>
+                <fullName>313003</fullName>
+                <default>false</default>
+                <label>(ADV (L))Customers (313003)</label>
+            </value>
+            <value>
+                <fullName>314004</fullName>
+                <default>false</default>
+                <label>DEP (L)-Customers</label>
+            </value>
+            <value>
+                <fullName>314006</fullName>
+                <default>false</default>
+                <label>Advance From Customer</label>
+            </value>
+            <value>
+                <fullName>null</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>null</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
 </CustomField>
