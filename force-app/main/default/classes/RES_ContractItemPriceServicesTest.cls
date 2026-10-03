@@ -399,7 +399,7 @@ private class RES_ContractItemPriceServicesTest {
         };
 
         Test.startTest();
-        RES_ContractItemPriceService.updateFinalPaymentOnContract(cipInput);
+        RES_ContractItemPriceServices.updateFinalPaymentOnContract(cipInput);
         Test.stopTest();
 
         Contract updated = [SELECT RES_Final_Payment__c FROM Contract WHERE Id = :con.Id];
@@ -421,7 +421,7 @@ private class RES_ContractItemPriceServicesTest {
         };
 
         Test.startTest();
-        RES_ContractItemPriceService.updateFinalPaymentOnContract(cipInput);
+        RES_ContractItemPriceServices.updateFinalPaymentOnContract(cipInput);
         Test.stopTest();
 
         Contract updated = [SELECT RES_Final_Payment__c FROM Contract WHERE Id = :con.Id];
@@ -442,7 +442,7 @@ private class RES_ContractItemPriceServicesTest {
         };
 
         Test.startTest();
-        RES_ContractItemPriceService.updateFinalPaymentOnContract(cipInput);
+        RES_ContractItemPriceServices.updateFinalPaymentOnContract(cipInput);
         Test.stopTest();
 
         Contract updated = [SELECT RES_Final_Payment__c FROM Contract WHERE Id = :con.Id];
@@ -453,7 +453,7 @@ private class RES_ContractItemPriceServicesTest {
     @IsTest
     static void testUpdateFinalPayment_emptyList() {
         Test.startTest();
-        RES_ContractItemPriceService.updateFinalPaymentOnContract(new List<ContractItemPrice>());
+        RES_ContractItemPriceServices.updateFinalPaymentOnContract(new List<ContractItemPrice>());
         Test.stopTest();
         System.assert(true, 'Empty list should return without error');
     }
@@ -461,7 +461,7 @@ private class RES_ContractItemPriceServicesTest {
     @IsTest
     static void testUpdateFinalPayment_nullList() {
         Test.startTest();
-        RES_ContractItemPriceService.updateFinalPaymentOnContract(null);
+        RES_ContractItemPriceServices.updateFinalPaymentOnContract(null);
         Test.stopTest();
         System.assert(true, 'Null list should return without error');
     }
@@ -475,7 +475,7 @@ private class RES_ContractItemPriceServicesTest {
         RES_ContractItemPriceServices.mockExistingCIPs = new List<ContractItemPrice>{
             makeCip(con.Id, 'WS PP01 Installment 1', 7777)
         };
-        RES_ContractItemPriceService.updateFinalPaymentOnContract(
+        RES_ContractItemPriceServices.updateFinalPaymentOnContract(
             new List<ContractItemPrice>{ makeCip(con.Id, 'X', 0) }
         );
 
@@ -484,7 +484,7 @@ private class RES_ContractItemPriceServicesTest {
         };
 
         Test.startTest();
-        RES_ContractItemPriceService.updateFinalPaymentOnContract(
+        RES_ContractItemPriceServices.updateFinalPaymentOnContract(
             new List<ContractItemPrice>{ makeCip(con.Id, 'X', 0) }
         );
         Test.stopTest();
@@ -512,7 +512,7 @@ private class RES_ContractItemPriceServicesTest {
         RES_ContractItemPriceServices.mockExistingCIPs = new List<ContractItemPrice>();
 
         Test.startTest();
-        RES_ContractItemPriceService.updateFinalPaymentOnContract(
+        RES_ContractItemPriceServices.updateFinalPaymentOnContract(
             new List<ContractItemPrice>{ makeCip(con.Id, 'WS PP01 Installment 2', 5000) }
         );
         Test.stopTest();
@@ -537,7 +537,7 @@ private class RES_ContractItemPriceServicesTest {
 
         Test.startTest();
        
-        RES_ContractItemPriceService.updateFinalPaymentOnContract(
+        RES_ContractItemPriceServices.updateFinalPaymentOnContract(
             new List<ContractItemPrice>{ makeCip(con.Id, 'WS PP01 Installment 5', 8888) }
         );
         Test.stopTest();
