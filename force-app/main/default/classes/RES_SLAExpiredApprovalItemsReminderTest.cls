@@ -2,6 +2,8 @@
 public class RES_SLAExpiredApprovalItemsReminderTest {
 	@testSetup
     public static void setupData(){
+        RES_IntegrationTestDataFactory.primeSapToken();
+        Test.setMock(HttpCalloutMock.class, new RES_IntegrationTestDataFactory.EndpointRoutingMock());
         Test.startTest();
         Account companyAccount = RES_TestDataFactory.createCompanyRTAccount('Globant', '1212121212');
         Id contractRecordTypeId = Schema.SObjectType.Contract

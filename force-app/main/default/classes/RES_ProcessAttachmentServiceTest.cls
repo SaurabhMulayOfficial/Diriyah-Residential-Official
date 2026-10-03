@@ -2,6 +2,8 @@
 private class RES_ProcessAttachmentServiceTest {
     @testSetup
     public static void setupTestData(){
+        RES_IntegrationTestDataFactory.primeSapToken();
+        Test.setMock(HttpCalloutMock.class, new RES_IntegrationTestDataFactory.EndpointRoutingMock());
         Test.startTest();
         Account companyAccount = RES_TestDataFactory.createCompanyRTAccount('Globant', '1212121212');
         Id contractRecordTypeId = Schema.SObjectType.Contract

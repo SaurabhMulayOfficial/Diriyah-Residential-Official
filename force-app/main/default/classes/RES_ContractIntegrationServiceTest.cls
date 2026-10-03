@@ -120,6 +120,8 @@ private class RES_ContractIntegrationServiceTest {
 
     @isTest
     static void hydrateRequestBodyReturnsSingleObjectJsonForOneContract() {
+        RES_IntegrationTestDataFactory.primeSapToken();
+        Test.setMock(HttpCalloutMock.class, new RES_IntegrationTestDataFactory.EndpointRoutingMock());
         Account acc = RES_TestDataFactory.createAccount();
         Contract c  = buildContract(acc.Id);
 

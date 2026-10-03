@@ -2,6 +2,8 @@
 public class RES_SendEmailToGroupMembersTest {
 	@testSetup
     public static void setupTestData(){
+        RES_IntegrationTestDataFactory.primeSapToken();
+        Test.setMock(HttpCalloutMock.class, new RES_IntegrationTestDataFactory.EndpointRoutingMock());
         Test.startTest();
         Account companyAccount = RES_TestDataFactory.createCompanyRTAccount('Globant', '1212121212');
         Id contractRecordTypeId = Schema.SObjectType.Contract
@@ -18,6 +20,8 @@ public class RES_SendEmailToGroupMembersTest {
     }
     @isTest
     public static void sendEmailNotificationToGroupMembersTest(){
+        RES_IntegrationTestDataFactory.primeSapToken();
+        Test.setMock(HttpCalloutMock.class, new RES_IntegrationTestDataFactory.EndpointRoutingMock());
         Test.startTest();
         List<RES_SendEmailNotificationToGroupMembers.Input> inputsLst = new List<RES_SendEmailNotificationToGroupMembers.Input>();
         List<Contract> contractLst = [ SELECT Id, ContractNumber 

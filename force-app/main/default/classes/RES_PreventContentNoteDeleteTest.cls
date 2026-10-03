@@ -11,6 +11,8 @@ public class RES_PreventContentNoteDeleteTest {
     
     @testSetup
     public static void setup() {
+        RES_IntegrationTestDataFactory.primeSapToken();
+        Test.setMock(HttpCalloutMock.class, new RES_IntegrationTestDataFactory.EndpointRoutingMock());
         Test.startTest();
         
         User testUser = RES_TestDataFactory.createSalesRepUser();

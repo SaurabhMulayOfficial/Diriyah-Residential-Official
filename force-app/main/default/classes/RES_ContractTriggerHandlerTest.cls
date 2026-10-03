@@ -43,6 +43,8 @@ private class RES_ContractTriggerHandlerTest {
 
     @isTest
     static void afterInsert_contractInsert_firesTrigger() {
+        RES_IntegrationTestDataFactory.primeSapToken();
+        Test.setMock(HttpCalloutMock.class, new RES_IntegrationTestDataFactory.EndpointRoutingMock());
         Account acc = RES_TestDataFactory.createAccount();
         Boolean threw = false;
         try {
@@ -57,6 +59,8 @@ private class RES_ContractTriggerHandlerTest {
 
     @isTest
     static void afterUpdate_contractUpdate_firesTrigger() {
+        RES_IntegrationTestDataFactory.primeSapToken();
+        Test.setMock(HttpCalloutMock.class, new RES_IntegrationTestDataFactory.EndpointRoutingMock());
         Account acc = RES_TestDataFactory.createAccount();
         Contract c = new Contract(AccountId = acc.Id, Status = 'Draft', StartDate = Date.today());
         insert c;
