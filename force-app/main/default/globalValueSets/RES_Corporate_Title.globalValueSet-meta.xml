@@ -1,6 +1,56 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <GlobalValueSet xmlns="http://soap.sforce.com/2006/04/metadata">
     <customValue>
+        <fullName>0001</fullName>
+        <default>false</default>
+        <label>Ms.</label>
+    </customValue>
+    <customValue>
+        <fullName>0002</fullName>
+        <default>false</default>
+        <label>Mr.</label>
+    </customValue>
+    <customValue>
+        <fullName>0004</fullName>
+        <default>false</default>
+        <label>Mr. and Mrs.</label>
+    </customValue>
+    <customValue>
+        <fullName>Z001</fullName>
+        <default>false</default>
+        <label>Dr.</label>
+    </customValue>
+    <customValue>
+        <fullName>Z002</fullName>
+        <default>false</default>
+        <label>Prof.</label>
+    </customValue>
+    <customValue>
+        <fullName>Z003</fullName>
+        <default>false</default>
+        <label>HRH</label>
+    </customValue>
+    <customValue>
+        <fullName>Z004</fullName>
+        <default>false</default>
+        <label>HH</label>
+    </customValue>
+    <customValue>
+        <fullName>Z005</fullName>
+        <default>false</default>
+        <label>HE</label>
+    </customValue>
+    <customValue>
+        <fullName>Z006</fullName>
+        <default>false</default>
+        <label>Prince</label>
+    </customValue>
+    <customValue>
+        <fullName>Z008</fullName>
+        <default>false</default>
+        <label>Princess</label>
+    </customValue>
+    <customValue>
         <fullName>Z009</fullName>
         <default>false</default>
         <label>Company</label>
@@ -24,6 +74,46 @@
         <fullName>Z013</fullName>
         <default>false</default>
         <label>Other Entity</label>
+    </customValue>
+    <customValue>
+        <fullName>Z014</fullName>
+        <default>false</default>
+        <label>Local Supplier-Company</label>
+    </customValue>
+    <customValue>
+        <fullName>Z015</fullName>
+        <default>false</default>
+        <label>Government</label>
+    </customValue>
+    <customValue>
+        <fullName>Z016</fullName>
+        <default>false</default>
+        <label>Semi-Government</label>
+    </customValue>
+    <customValue>
+        <fullName>Z017</fullName>
+        <default>false</default>
+        <label>PIF Intercompany entity</label>
+    </customValue>
+    <customValue>
+        <fullName>Z018</fullName>
+        <default>false</default>
+        <label>PIF Related party</label>
+    </customValue>
+    <customValue>
+        <fullName>Z019</fullName>
+        <default>false</default>
+        <label>Local Supplier-Non-Profit Org</label>
+    </customValue>
+    <customValue>
+        <fullName>Z020</fullName>
+        <default>false</default>
+        <label>International Supplier-Company</label>
+    </customValue>
+    <customValue>
+        <fullName>Z021</fullName>
+        <default>false</default>
+        <label>International Supplier-NPO</label>
     </customValue>
     <description>Picklist option lead, account</description>
     <masterLabel>Corporate Title</masterLabel>

@@ -10,9 +10,444 @@
         <valueSetDefinition>
             <sorted>false</sorted>
             <value>
-                <fullName>None</fullName>
+                <fullName>FBBP002</fullName>
                 <default>false</default>
-                <label>None</label>
+                <label>Has the Invoicing Party</label>
+            </value>
+            <value>
+                <fullName>FBUR001</fullName>
+                <default>false</default>
+                <label>Has Contact Person</label>
+            </value>
+            <value>
+                <fullName>FBUR002</fullName>
+                <default>false</default>
+                <label>Has Activity Partner</label>
+            </value>
+            <value>
+                <fullName>FBUR011</fullName>
+                <default>false</default>
+                <label>Has the Employee Responsible</label>
+            </value>
+            <value>
+                <fullName>FBUR013</fullName>
+                <default>false</default>
+                <label>Is Replaced By</label>
+            </value>
+            <value>
+                <fullName>FBUR021</fullName>
+                <default>false</default>
+                <label>Has Child</label>
+            </value>
+            <value>
+                <fullName>FBUR022</fullName>
+                <default>false</default>
+                <label>Is Guardian</label>
+            </value>
+            <value>
+                <fullName>FBURC01</fullName>
+                <default>false</default>
+                <label>Is Shareholder Of</label>
+            </value>
+            <value>
+                <fullName>FCHM005</fullName>
+                <default>false</default>
+                <label>Has the Responsible Partner Contact</label>
+            </value>
+            <value>
+                <fullName>FCRMD01</fullName>
+                <default>false</default>
+                <label>Is Sales Partner Of</label>
+            </value>
+            <value>
+                <fullName>FCRME01</fullName>
+                <default>false</default>
+                <label>Is Trader For</label>
+            </value>
+            <value>
+                <fullName>FCRME02</fullName>
+                <default>false</default>
+                <label>Has End Customer</label>
+            </value>
+            <value>
+                <fullName>FCRME03</fullName>
+                <default>false</default>
+                <label>Is Service Center</label>
+            </value>
+            <value>
+                <fullName>FCRMH00</fullName>
+                <default>false</default>
+                <label>Has an Undefined Relationship With</label>
+            </value>
+            <value>
+                <fullName>FCRMH02</fullName>
+                <default>false</default>
+                <label>Has the Ship-To Party/Recipient</label>
+            </value>
+            <value>
+                <fullName>FCRMH03</fullName>
+                <default>false</default>
+                <label>Has the Payer</label>
+            </value>
+            <value>
+                <fullName>FCRMH04</fullName>
+                <default>false</default>
+                <label>Has the Bill-To Party</label>
+            </value>
+            <value>
+                <fullName>FCRMH06</fullName>
+                <default>false</default>
+                <label>Has the Responsible Business Partner</label>
+            </value>
+            <value>
+                <fullName>FCRMH07</fullName>
+                <default>false</default>
+                <label>Has the Wholesaler</label>
+            </value>
+            <value>
+                <fullName>FCRMI01</fullName>
+                <default>false</default>
+                <label>Has the Personal Contact</label>
+            </value>
+            <value>
+                <fullName>FCRMM01</fullName>
+                <default>false</default>
+                <label>Has the Alternative Payer</label>
+            </value>
+            <value>
+                <fullName>FCRMM02</fullName>
+                <default>false</default>
+                <label>Has the Payee</label>
+            </value>
+            <value>
+                <fullName>FCRMM03</fullName>
+                <default>false</default>
+                <label>Has Correspondence Recipient</label>
+            </value>
+            <value>
+                <fullName>FCRMM04</fullName>
+                <default>false</default>
+                <label>Has Dunning Recipient</label>
+            </value>
+            <value>
+                <fullName>FCRMS01</fullName>
+                <default>false</default>
+                <label>Has the Carrier</label>
+            </value>
+            <value>
+                <fullName>FCRMS02</fullName>
+                <default>false</default>
+                <label>Manages Entitlements From</label>
+            </value>
+            <value>
+                <fullName>FCRMS03</fullName>
+                <default>false</default>
+                <label>Is the Responsible Scrapper For</label>
+            </value>
+            <value>
+                <fullName>FFS0030</fullName>
+                <default>false</default>
+                <label>Borrower Entity Member</label>
+            </value>
+            <value>
+                <fullName>FFSB001</fullName>
+                <default>false</default>
+                <label>is a shareholder of</label>
+            </value>
+            <value>
+                <fullName>FICM001</fullName>
+                <default>false</default>
+                <label>Has the Responsible Organization</label>
+            </value>
+            <value>
+                <fullName>FICM002</fullName>
+                <default>false</default>
+                <label>Has the External Organization</label>
+            </value>
+            <value>
+                <fullName>FICM003</fullName>
+                <default>false</default>
+                <label>Has External Person</label>
+            </value>
+            <value>
+                <fullName>FTM0002</fullName>
+                <default>false</default>
+                <label>Has Communication Partner</label>
+            </value>
+            <value>
+                <fullName>FUDM001</fullName>
+                <default>false</default>
+                <label>has Collection contact person</label>
+            </value>
+            <value>
+                <fullName>FUKM001</fullName>
+                <default>false</default>
+                <label>Superordinate Credit Account From</label>
+            </value>
+            <value>
+                <fullName>FUKMSB0</fullName>
+                <default>false</default>
+                <label>managed in Credit Management</label>
+            </value>
+            <value>
+                <fullName>NBUR004</fullName>
+                <default>false</default>
+                <label>Is Married To</label>
+            </value>
+            <value>
+                <fullName>NBUR006</fullName>
+                <default>false</default>
+                <label>Is Identical To</label>
+            </value>
+            <value>
+                <fullName>NBUR023</fullName>
+                <default>false</default>
+                <label>Is Related To</label>
+            </value>
+            <value>
+                <fullName>NBUR998</fullName>
+                <default>false</default>
+                <label>Is Partner of</label>
+            </value>
+            <value>
+                <fullName>TBUR001</fullName>
+                <default>false</default>
+                <label>Is Contact Person For (1)</label>
+            </value>
+            <value>
+                <fullName>TBUR002</fullName>
+                <default>false</default>
+                <label>Is Activity Partner For</label>
+            </value>
+            <value>
+                <fullName>TBUR003</fullName>
+                <default>false</default>
+                <label>Belongs to Shared Living Arrangement</label>
+            </value>
+            <value>
+                <fullName>TBUR010</fullName>
+                <default>false</default>
+                <label>Is Employee of</label>
+            </value>
+            <value>
+                <fullName>TBUR011</fullName>
+                <default>false</default>
+                <label>Is the Employee Responsible For</label>
+            </value>
+            <value>
+                <fullName>TBUR013</fullName>
+                <default>false</default>
+                <label>Replaces</label>
+            </value>
+            <value>
+                <fullName>TBUR021</fullName>
+                <default>false</default>
+                <label>Is Child Of</label>
+            </value>
+            <value>
+                <fullName>TBUR022</fullName>
+                <default>false</default>
+                <label>Has Guardian</label>
+            </value>
+            <value>
+                <fullName>TBUR024</fullName>
+                <default>false</default>
+                <label>Belongs to Marriage Partnership</label>
+            </value>
+            <value>
+                <fullName>TBUR025</fullName>
+                <default>false</default>
+                <label>Is Service Performer For</label>
+            </value>
+            <value>
+                <fullName>TBUR028</fullName>
+                <default>false</default>
+                <label>Is Collaboration User for</label>
+            </value>
+            <value>
+                <fullName>TCHM003</fullName>
+                <default>false</default>
+                <label>Is Member of Corporate Family</label>
+            </value>
+            <value>
+                <fullName>TCHM004</fullName>
+                <default>false</default>
+                <label>Is Third Party Of</label>
+            </value>
+            <value>
+                <fullName>TCHM005</fullName>
+                <default>false</default>
+                <label>Is Responsible Partner Contact For</label>
+            </value>
+            <value>
+                <fullName>TCRMD01</fullName>
+                <default>false</default>
+                <label>Has Sales Partner</label>
+            </value>
+            <value>
+                <fullName>TCRME01</fullName>
+                <default>false</default>
+                <label>Has Trader</label>
+            </value>
+            <value>
+                <fullName>TCRME02</fullName>
+                <default>false</default>
+                <label>Is End Customer Of</label>
+            </value>
+            <value>
+                <fullName>TCRME03</fullName>
+                <default>false</default>
+                <label>Has Service Center</label>
+            </value>
+            <value>
+                <fullName>TCRMH00</fullName>
+                <default>false</default>
+                <label>Is the Undefined Partner Of</label>
+            </value>
+            <value>
+                <fullName>TCRMH02</fullName>
+                <default>false</default>
+                <label>Is the Ship-To Party/Recipient Of</label>
+            </value>
+            <value>
+                <fullName>TCRMH03</fullName>
+                <default>false</default>
+                <label>Is the Payer Of</label>
+            </value>
+            <value>
+                <fullName>TCRMH04</fullName>
+                <default>false</default>
+                <label>Is the Bill-To Party Of</label>
+            </value>
+            <value>
+                <fullName>TCRMH06</fullName>
+                <default>false</default>
+                <label>Is Responsible Business Partner For</label>
+            </value>
+            <value>
+                <fullName>TCRMH07</fullName>
+                <default>false</default>
+                <label>Is Wholesaler For</label>
+            </value>
+            <value>
+                <fullName>TCRMI01</fullName>
+                <default>false</default>
+                <label>Is Personal Contact Of</label>
+            </value>
+            <value>
+                <fullName>TCRMM01</fullName>
+                <default>false</default>
+                <label>Is Alternative Payer For</label>
+            </value>
+            <value>
+                <fullName>TCRMM02</fullName>
+                <default>false</default>
+                <label>Is Payee For</label>
+            </value>
+            <value>
+                <fullName>TCRMM03</fullName>
+                <default>false</default>
+                <label>Is Correspondence Recipient For</label>
+            </value>
+            <value>
+                <fullName>TCRMM04</fullName>
+                <default>false</default>
+                <label>Is Dunning Recipient For</label>
+            </value>
+            <value>
+                <fullName>TCRMS01</fullName>
+                <default>false</default>
+                <label>Is the Carrier For</label>
+            </value>
+            <value>
+                <fullName>TCRMS02</fullName>
+                <default>false</default>
+                <label>Entitlements Are Managed By</label>
+            </value>
+            <value>
+                <fullName>TCRMS03</fullName>
+                <default>false</default>
+                <label>Has the Responsible Scrapper</label>
+            </value>
+            <value>
+                <fullName>TCRMS09</fullName>
+                <default>false</default>
+                <label>Has the Remanufacturer</label>
+            </value>
+            <value>
+                <fullName>TEWM001</fullName>
+                <default>false</default>
+                <label>Is the Dock Appointment Scheduling Planner Of</label>
+            </value>
+            <value>
+                <fullName>THEA010</fullName>
+                <default>false</default>
+                <label>Is employed in (THEA010)</label>
+            </value>
+            <value>
+                <fullName>THEA020</fullName>
+                <default>false</default>
+                <label>Is employed in (THEA020)</label>
+            </value>
+            <value>
+                <fullName>TICM003</fullName>
+                <default>false</default>
+                <label>Is the External Person For</label>
+            </value>
+            <value>
+                <fullName>TIHS001</fullName>
+                <default>false</default>
+                <label>Is medical address</label>
+            </value>
+            <value>
+                <fullName>TJIT001</fullName>
+                <default>false</default>
+                <label>(No text description)</label>
+            </value>
+            <value>
+                <fullName>TLM0001</fullName>
+                <default>false</default>
+                <label>Is a Processor Of</label>
+            </value>
+            <value>
+                <fullName>TLM0002</fullName>
+                <default>false</default>
+                <label>Is Responsible for Group</label>
+            </value>
+            <value>
+                <fullName>TSCM001</fullName>
+                <default>false</default>
+                <label>Is the SNC User Of</label>
+            </value>
+            <value>
+                <fullName>TSNC001</fullName>
+                <default>false</default>
+                <label>Is Activated SNC User For</label>
+            </value>
+            <value>
+                <fullName>TTM0002</fullName>
+                <default>false</default>
+                <label>Is Communication Partner of</label>
+            </value>
+            <value>
+                <fullName>TUDM001</fullName>
+                <default>false</default>
+                <label>is Collection contact person for</label>
+            </value>
+            <value>
+                <fullName>TUKM001</fullName>
+                <default>false</default>
+                <label>Subordinate Credit Account To</label>
+            </value>
+            <value>
+                <fullName>TUKMSB0</fullName>
+                <default>false</default>
+                <label>in Credit Management is managed by</label>
+            </value>
+            <value>
+                <fullName>TUKMSBG</fullName>
+                <default>false</default>
+                <label>is in credit analyst group</label>
             </value>
         </valueSetDefinition>
     </valueSet>

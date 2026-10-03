@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
-    <fullName>RES_Planning_Group__c</fullName>
-    <label>Planning Group</label>
+    <fullName>RES_Account_Group__c</fullName>
+    <label>Account Group</label>
     <required>false</required>
     <trackFeedHistory>false</trackFeedHistory>
     <trackHistory>false</trackHistory>
@@ -10,19 +10,19 @@
         <valueSetDefinition>
             <sorted>false</sorted>
             <value>
-                <fullName>Y1</fullName>
+                <fullName>Z001</fullName>
                 <default>false</default>
-                <label>Domestic</label>
+                <label>Local Customers</label>
             </value>
             <value>
-                <fullName>Y2</fullName>
+                <fullName>Z002</fullName>
                 <default>false</default>
-                <label>GCC</label>
+                <label>GCC Customers</label>
             </value>
             <value>
-                <fullName>Y3</fullName>
+                <fullName>Z003</fullName>
                 <default>false</default>
-                <label>Foreign</label>
+                <label>Foreign Customers</label>
             </value>
         </valueSetDefinition>
     </valueSet>

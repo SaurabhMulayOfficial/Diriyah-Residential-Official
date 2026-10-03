@@ -1,9 +1,30 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
     <fullName>RES_SIMAH_Consent__c</fullName>
-    <defaultValue>false</defaultValue>
     <label>SIMAH Consent</label>
+    <required>false</required>
     <trackFeedHistory>false</trackFeedHistory>
     <trackHistory>false</trackHistory>
-    <type>Checkbox</type>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>101</fullName>
+                <default>false</default>
+                <label>Yes</label>
+            </value>
+            <value>
+                <fullName>111</fullName>
+                <default>false</default>
+                <label>No</label>
+            </value>
+            <value>
+                <fullName>121</fullName>
+                <default>false</default>
+                <label>Exception</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
 </CustomField>
