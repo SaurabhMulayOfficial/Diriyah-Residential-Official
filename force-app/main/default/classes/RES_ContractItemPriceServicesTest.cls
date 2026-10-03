@@ -505,7 +505,7 @@ private class RES_ContractItemPriceServicesTest {
         RES_ContractItemPriceServices.mockExistingCIPs = new List<ContractItemPrice>{
             makeCip(con.Id, 'WS PP01 Installment 2', 5000)
         };
-        RES_ContractItemPriceService.updateFinalPaymentOnContract(
+        RES_ContractItemPriceServices.updateFinalPaymentOnContract(
             new List<ContractItemPrice>{ makeCip(con.Id, 'WS PP01 Installment 2', 5000) }
         );
 
