@@ -620,7 +620,7 @@
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
-        <editable>true</editable>
+        <editable>false</editable>
         <field>Account.RES_External_Key__c</field>
         <readable>true</readable>
     </fieldPermissions>
@@ -831,11 +831,6 @@
     </fieldPermissions>
         <fieldPermissions>
             <editable>true</editable>
-            <field>Account.RES_Date_of_Birth__pc</field>
-            <readable>true</readable>
-        </fieldPermissions>
-        <fieldPermissions>
-            <editable>true</editable>
             <field>Account.RES_Account_Group__c</field>
             <readable>true</readable>
         </fieldPermissions>
@@ -855,7 +850,7 @@
             <readable>true</readable>
         </fieldPermissions>
         <fieldPermissions>
-            <editable>true</editable>
+            <editable>false</editable>
             <field>Account.RES_SAP_ADDR_NUMBER__c</field>
             <readable>true</readable>
         </fieldPermissions>
@@ -1127,6 +1122,11 @@
         <fieldPermissions>
             <editable>true</editable>
             <field>Contact.RES_Contact_Person_End_Date__c</field>
+            <readable>true</readable>
+        </fieldPermissions>
+        <fieldPermissions>
+            <editable>false</editable>
+            <field>Contact.RES_SAP_Contact_Id__c</field>
             <readable>true</readable>
         </fieldPermissions>
     <fieldPermissions>

@@ -56,4 +56,26 @@ public without sharing class RES_ContactDAOLayer extends RES_BaseDAOLayer {
         List<SObject> results = executeQuery(soql, '', true, bindVars, AccessLevel.SYSTEM_MODE);
         return results != null && !results.isEmpty() ? (Contact) results[0] : null;
     }
+
+    // Returns all contacts related to the given accounts, grouped by AccountId.
+    public Map<Id, List<Contact>> getContactsByAccountIds(Set<Id> accountIds) {
+        Map<String, Object> bindVars = new Map<String, Object>();
+        bindVars.put('accountIds', accountIds);
+        String soql = 'SELECT Id, AccountId, LastName, Salutation, RES_Contact_Person_End_Date__c, RES_SAP_Contact_Id__c ' +
+                      'FROM Contact ' +
+                      'WHERE AccountId IN :accountIds ' +
+                      'ORDER BY CreatedDate ASC';
+        List<SObject> results = executeQuery(soql, '', false, bindVars, AccessLevel.SYSTEM_MODE);
+        Map<Id, List<Contact>> contactsByAccountId = new Map<Id, List<Contact>>();
+        if (results != null) {
+            for (SObject s : results) {
+                Contact c = (Contact) s;
+                if (!contactsByAccountId.containsKey(c.AccountId)) {
+                    contactsByAccountId.put(c.AccountId, new List<Contact>());
+                }
+                contactsByAccountId.get(c.AccountId).add(c);
+            }
+        }
+        return contactsByAccountId;
+    }
 }
