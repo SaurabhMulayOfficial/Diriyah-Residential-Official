@@ -93,6 +93,8 @@ private class RES_ContractItemPriceServicesTest {
     @isTest
     static void syncContracts_noMatchingCIPType_skipsSync() {
         // CIPs with an unrecognised type — contractIds set stays empty
+        RES_IntegrationTestDataFactory.primeSapToken();
+        Test.setMock(HttpCalloutMock.class, new RES_IntegrationTestDataFactory.EndpointRoutingMock());
         Account acc = RES_TestDataFactory.createAccount();
         Contract c  = createAndFetchContract(acc.Id);
 
@@ -137,6 +139,8 @@ private class RES_ContractItemPriceServicesTest {
     static void syncContracts_onlyUnitCIP_doesNotSync() {
         if (!configReady()) { return; }
 
+        RES_IntegrationTestDataFactory.primeSapToken();
+        Test.setMock(HttpCalloutMock.class, new RES_IntegrationTestDataFactory.EndpointRoutingMock());
         Account acc = RES_TestDataFactory.createAccount();
         Contract c  = createAndFetchContract(acc.Id);
 
@@ -166,6 +170,8 @@ private class RES_ContractItemPriceServicesTest {
     static void syncContracts_onlyPaymentPlanCIP_doesNotSync() {
         if (!configReady()) { return; }
 
+        RES_IntegrationTestDataFactory.primeSapToken();
+        Test.setMock(HttpCalloutMock.class, new RES_IntegrationTestDataFactory.EndpointRoutingMock());
         Account acc = RES_TestDataFactory.createAccount();
         Contract c  = createAndFetchContract(acc.Id);
 
@@ -195,6 +201,8 @@ private class RES_ContractItemPriceServicesTest {
     static void syncContracts_mixedContracts_onlyEligibleSyncs() {
         if (!configReady()) { return; }
 
+        RES_IntegrationTestDataFactory.primeSapToken();
+        Test.setMock(HttpCalloutMock.class, new RES_IntegrationTestDataFactory.EndpointRoutingMock());
         Account acc      = RES_TestDataFactory.createAccount();
         Contract cFull   = createAndFetchContract(acc.Id); // will have both types (via DAO)
         Contract cUnit   = createAndFetchContract(acc.Id); // only Unit
@@ -229,6 +237,8 @@ private class RES_ContractItemPriceServicesTest {
         // Pass a trigger input that will reach the syncContract call path.
         // If the config is missing, syncContract throws — the catch block
         // in syncContracts must absorb it.
+        RES_IntegrationTestDataFactory.primeSapToken();
+        Test.setMock(HttpCalloutMock.class, new RES_IntegrationTestDataFactory.EndpointRoutingMock());
         Account acc = RES_TestDataFactory.createAccount();
         Contract c  = createAndFetchContract(acc.Id);
 
@@ -309,6 +319,8 @@ private class RES_ContractItemPriceServicesTest {
 
     @isTest
     static void syncContracts_mockOnlyUnit_notEligible() {
+        RES_IntegrationTestDataFactory.primeSapToken();
+        Test.setMock(HttpCalloutMock.class, new RES_IntegrationTestDataFactory.EndpointRoutingMock());
         Account acc = RES_TestDataFactory.createAccount();
         Contract c  = createAndFetchContract(acc.Id);
 
@@ -341,6 +353,8 @@ private class RES_ContractItemPriceServicesTest {
 
     @isTest
     static void syncContracts_mockOnlyPaymentPlan_notEligible() {
+        RES_IntegrationTestDataFactory.primeSapToken();
+        Test.setMock(HttpCalloutMock.class, new RES_IntegrationTestDataFactory.EndpointRoutingMock());
         Account acc = RES_TestDataFactory.createAccount();
         Contract c  = createAndFetchContract(acc.Id);
 
@@ -369,6 +383,8 @@ private class RES_ContractItemPriceServicesTest {
    
     @IsTest
     static void testUpdateFinalPayment_picksLastInstallment() {
+        RES_IntegrationTestDataFactory.primeSapToken();
+        Test.setMock(HttpCalloutMock.class, new RES_IntegrationTestDataFactory.EndpointRoutingMock());
         Contract con = createTestContract();
 
         // Inject three installments: 3, 9, 10 — service must pick Installment 10
@@ -393,6 +409,8 @@ private class RES_ContractItemPriceServicesTest {
 
     @IsTest
     static void testUpdateFinalPayment_singleInstallment() {
+        RES_IntegrationTestDataFactory.primeSapToken();
+        Test.setMock(HttpCalloutMock.class, new RES_IntegrationTestDataFactory.EndpointRoutingMock());
         Contract con = createTestContract();
 
         RES_ContractItemPriceServices.mockExistingCIPs = new List<ContractItemPrice>{
@@ -413,6 +431,8 @@ private class RES_ContractItemPriceServicesTest {
 
     @IsTest
     static void testUpdateFinalPayment_noInstallmentRecords() {
+        RES_IntegrationTestDataFactory.primeSapToken();
+        Test.setMock(HttpCalloutMock.class, new RES_IntegrationTestDataFactory.EndpointRoutingMock());
         Contract con = createTestContract();
 
         // Override returns empty — no installments → Final Payment should stay null
@@ -448,6 +468,8 @@ private class RES_ContractItemPriceServicesTest {
 
     @IsTest
     static void testUpdateFinalPayment_noChangeSkipsDml() {
+        RES_IntegrationTestDataFactory.primeSapToken();
+        Test.setMock(HttpCalloutMock.class, new RES_IntegrationTestDataFactory.EndpointRoutingMock());
         Contract con = createTestContract();
 
         RES_ContractItemPriceServices.mockExistingCIPs = new List<ContractItemPrice>{
@@ -475,6 +497,8 @@ private class RES_ContractItemPriceServicesTest {
 
     @IsTest
     static void testUpdateFinalPayment_installmentDeleteClearsPayment() {
+        RES_IntegrationTestDataFactory.primeSapToken();
+        Test.setMock(HttpCalloutMock.class, new RES_IntegrationTestDataFactory.EndpointRoutingMock());
         Contract con = createTestContract();
 
         // Set Final Payment to 5000
@@ -500,6 +524,8 @@ private class RES_ContractItemPriceServicesTest {
 
     @IsTest
     static void testTriggerHandler_recursionGuard() {
+        RES_IntegrationTestDataFactory.primeSapToken();
+        Test.setMock(HttpCalloutMock.class, new RES_IntegrationTestDataFactory.EndpointRoutingMock());
         Contract con = createTestContract();
 
 

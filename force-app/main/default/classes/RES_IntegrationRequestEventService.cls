@@ -43,7 +43,7 @@ public with sharing class RES_IntegrationRequestEventService {
     private static final String MEASUREMENT_CATALOG_INTEGRATION = 'Measurement_Sync_Catalog';
     private static final String PRODUCT_CATALOG_INTEGRATION = 'ProductCatalog_Sync';
     private static final String UNIT_INTEGRATION = 'Unit_Sync';
-    //private static final String ACCOUNT_INTEGRATION = 'Account_Sync';
+    private static final String ACCOUNT_INTEGRATION = 'Account_Sync';
     private static final String CONTRACT_INTEGRATION = 'Sales_Contract_Creation';
     private static final String CONTRACT_UPDATE_INTEGRATION = 'Sales_Contract_Update';
     private static final String CONTRACT_TERMINATION_INTEGRATION = 'Sales_Contract_Termination';
@@ -243,44 +243,44 @@ public with sharing class RES_IntegrationRequestEventService {
             }
         }
 
-        // String accountIntegrationKey_onInsert = 'GET' + ACCOUNT_INTEGRATION + 'I';
-        // String accountIntegrationKey_onUpdate = 'GET' + ACCOUNT_INTEGRATION + 'U';
+        String accountIntegrationKey_onInsert = 'GET' + ACCOUNT_INTEGRATION + 'I';
+        String accountIntegrationKey_onUpdate = 'GET' + ACCOUNT_INTEGRATION + 'U';
 
-        // if (results.containsKey(accountIntegrationKey_onInsert) && results.get(accountIntegrationKey_onInsert).size() > 0) {
-        //     Set<Id> accountIds = new Set<Id>();
-        //     for (RES_Integration_Request__e e : results.get(accountIntegrationKey_onInsert)) {
-        //         if (String.isBlank(e.RES_RecordIds__c)) continue;
-        //         for (String recordId : e.RES_RecordIds__c.split(',')) {
-        //             if (String.isNotBlank(recordId)) {
-        //                 accountIds.add((Id) recordId.trim());
-        //             }
-        //         }
-        //     }
+        if (results.containsKey(accountIntegrationKey_onInsert) && results.get(accountIntegrationKey_onInsert).size() > 0) {
+            Set<Id> accountIds = new Set<Id>();
+            for (RES_Integration_Request__e e : results.get(accountIntegrationKey_onInsert)) {
+                if (String.isBlank(e.RES_RecordIds__c)) continue;
+                for (String recordId : e.RES_RecordIds__c.split(',')) {
+                    if (String.isNotBlank(recordId)) {
+                        accountIds.add((Id) recordId.trim());
+                    }
+                }
+            }
 
-        //     if (!accountIds.isEmpty()) {
-        //         List<sObject> records = new List<sObject>();
-        //         records.addAll(new RES_AccountDAOLayer().getAccountsByIds(accountIds).values());
-        //         enqueueService(ACCOUNT_INTEGRATION, records, 'I', 'GET');
-        //     }
-        // }
+            if (!accountIds.isEmpty()) {
+                List<sObject> records = new List<sObject>();
+                records.addAll(new RES_AccountDAOLayer().getAccountsByIds(accountIds).values());
+                enqueueService(ACCOUNT_INTEGRATION, records, 'I', 'GET');
+            }
+        }
 
-        // if (results.containsKey(accountIntegrationKey_onUpdate) && results.get(accountIntegrationKey_onUpdate).size() > 0) {
-        //     Set<Id> accountIds = new Set<Id>();
-        //     for (RES_Integration_Request__e e : results.get(accountIntegrationKey_onUpdate)) {
-        //         if (String.isBlank(e.RES_RecordIds__c)) continue;
-        //         for (String recordId : e.RES_RecordIds__c.split(',')) {
-        //             if (String.isNotBlank(recordId)) {
-        //                 accountIds.add((Id) recordId.trim());
-        //             }
-        //         }
-        //     }
+        if (results.containsKey(accountIntegrationKey_onUpdate) && results.get(accountIntegrationKey_onUpdate).size() > 0) {
+            Set<Id> accountIds = new Set<Id>();
+            for (RES_Integration_Request__e e : results.get(accountIntegrationKey_onUpdate)) {
+                if (String.isBlank(e.RES_RecordIds__c)) continue;
+                for (String recordId : e.RES_RecordIds__c.split(',')) {
+                    if (String.isNotBlank(recordId)) {
+                        accountIds.add((Id) recordId.trim());
+                    }
+                }
+            }
 
-        //     if (!accountIds.isEmpty()) {
-        //         List<sObject> records = new List<sObject>();
-        //         records.addAll(new RES_AccountDAOLayer().getAccountsByIds(accountIds).values());
-        //         enqueueService(ACCOUNT_INTEGRATION, records, 'U', 'GET');
-        //     }
-        // }
+            if (!accountIds.isEmpty()) {
+                List<sObject> records = new List<sObject>();
+                records.addAll(new RES_AccountDAOLayer().getAccountsByIds(accountIds).values());
+                enqueueService(ACCOUNT_INTEGRATION, records, 'U', 'GET');
+            }
+        }
     
         String contractIntegrationKey_onInsert = 'GET' + CONTRACT_INTEGRATION + 'I';
 
@@ -344,7 +344,7 @@ public with sharing class RES_IntegrationRequestEventService {
                     if (String.isNotBlank(recordId)) paymentPlanIds.add((Id) recordId.trim());
                 }
             }
-
+            
             if (!paymentPlanIds.isEmpty()) {
                 List<SObject> records = (List<SObject>) new RES_PaymentPlanDAOLayer().getPaymentPlansByIds(paymentPlanIds);
                 enqueueService(PAYMENT_PLAN_INTEGRATION, records, 'I', 'GET');

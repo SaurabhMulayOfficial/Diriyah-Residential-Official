@@ -158,6 +158,8 @@ private class RES_ContractUpdateIntServiceTest {
 
     @isTest
     static void updateHydrate_singleContract_producesObjectJson() {
+        RES_IntegrationTestDataFactory.primeSapToken();
+        Test.setMock(HttpCalloutMock.class, new RES_IntegrationTestDataFactory.EndpointRoutingMock());
         Account acc = RES_TestDataFactory.createAccount();
         Contract c  = buildContract(acc.Id);
 
@@ -172,6 +174,8 @@ private class RES_ContractUpdateIntServiceTest {
 
     @isTest
     static void updateHydrate_multipleContracts_producesArrayJson() {
+        RES_IntegrationTestDataFactory.primeSapToken();
+        Test.setMock(HttpCalloutMock.class, new RES_IntegrationTestDataFactory.EndpointRoutingMock());
         Account acc = RES_TestDataFactory.createAccount();
         Contract c1 = buildContract(acc.Id);
         Contract c2 = buildContract(acc.Id);
@@ -218,6 +222,8 @@ private class RES_ContractUpdateIntServiceTest {
 
     @isTest
     static void updateHydrate_canceledStatus_statusKeyIsReservationCancelation() {
+        RES_IntegrationTestDataFactory.primeSapToken();
+        Test.setMock(HttpCalloutMock.class, new RES_IntegrationTestDataFactory.EndpointRoutingMock());
         Account acc = RES_TestDataFactory.createAccount();
         Contract c  = buildContract(acc.Id, 'Draft', null, null);
 
@@ -419,6 +425,8 @@ private class RES_ContractUpdateIntServiceTest {
 
     @isTest
     static void terminationHydrate_singleContract_producesObjectJson() {
+        RES_IntegrationTestDataFactory.primeSapToken();
+        Test.setMock(HttpCalloutMock.class, new RES_IntegrationTestDataFactory.EndpointRoutingMock());
         Account acc = RES_TestDataFactory.createAccount();
         Contract c  = buildContract(acc.Id);
 
@@ -433,6 +441,8 @@ private class RES_ContractUpdateIntServiceTest {
 
     @isTest
     static void terminationHydrate_multipleContracts_producesArrayJson() {
+        RES_IntegrationTestDataFactory.primeSapToken();
+        Test.setMock(HttpCalloutMock.class, new RES_IntegrationTestDataFactory.EndpointRoutingMock());
         Account acc = RES_TestDataFactory.createAccount();
         Contract c1 = buildContract(acc.Id);
         Contract c2 = buildContract(acc.Id);
@@ -476,6 +486,8 @@ private class RES_ContractUpdateIntServiceTest {
 
     @isTest
     static void terminationHydrate_canceledContract_setsFinalTerminationDateToToday() {
+        RES_IntegrationTestDataFactory.primeSapToken();
+        Test.setMock(HttpCalloutMock.class, new RES_IntegrationTestDataFactory.EndpointRoutingMock());
         Account acc = RES_TestDataFactory.createAccount();
         Contract c  = buildContract(acc.Id, 'Draft', null, null);
 
@@ -499,6 +511,8 @@ private class RES_ContractUpdateIntServiceTest {
 
     @isTest
     static void terminationHydrate_nonCanceledContract_finalTermDateIsNull() {
+        RES_IntegrationTestDataFactory.primeSapToken();
+        Test.setMock(HttpCalloutMock.class, new RES_IntegrationTestDataFactory.EndpointRoutingMock());
         Account acc = RES_TestDataFactory.createAccount();
         Contract c  = buildContract(acc.Id, 'Draft', null, null);
 

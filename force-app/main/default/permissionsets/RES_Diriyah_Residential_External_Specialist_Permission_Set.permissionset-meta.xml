@@ -1403,7 +1403,7 @@ Sales – External – Relationship Manager</description>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
-        <editable>false</editable>
+        <editable>true</editable>
         <field>Account.RES_BP_Role__c</field>
         <readable>true</readable>
     </fieldPermissions>
@@ -2295,6 +2295,96 @@ Sales – External – Relationship Manager</description>
         <field>Account.RES_Country_Of_Company_Incorporation_AR__c</field>
         <readable>true</readable>
     </fieldPermissions>
+        <fieldPermissions>
+            <editable>true</editable>
+            <field>Account.RES_Account_Group__c</field>
+            <readable>true</readable>
+        </fieldPermissions>
+        <fieldPermissions>
+            <editable>true</editable>
+            <field>Account.RES_Tax_Category__c</field>
+            <readable>true</readable>
+        </fieldPermissions>
+        <fieldPermissions>
+            <editable>true</editable>
+            <field>Account.RES_Tax_Number__c</field>
+            <readable>true</readable>
+        </fieldPermissions>
+        <fieldPermissions>
+            <editable>true</editable>
+            <field>Account.RES_Relationship_Type__c</field>
+            <readable>true</readable>
+        </fieldPermissions>
+        <fieldPermissions>
+            <editable>false</editable>
+            <field>Account.RES_SAP_ADDR_NUMBER__c</field>
+            <readable>true</readable>
+        </fieldPermissions>
+        <fieldPermissions>
+            <editable>true</editable>
+            <field>Account.RES_Language__pc</field>
+            <readable>true</readable>
+        </fieldPermissions>
+        <fieldPermissions>
+            <editable>true</editable>
+            <field>Account.RES_Extension__c</field>
+            <readable>true</readable>
+        </fieldPermissions>
+        <fieldPermissions>
+            <editable>true</editable>
+            <field>Account.RES_Reconciliation_Account__c</field>
+            <readable>true</readable>
+        </fieldPermissions>
+        <fieldPermissions>
+            <editable>true</editable>
+            <field>Account.RES_Company_Code__c</field>
+            <readable>true</readable>
+        </fieldPermissions>
+        <fieldPermissions>
+            <editable>true</editable>
+            <field>Account.RES_Planning_Group__c</field>
+            <readable>true</readable>
+        </fieldPermissions>
+        <fieldPermissions>
+            <editable>true</editable>
+            <field>Account.RES_ID_Entry_Date__c</field>
+            <readable>true</readable>
+        </fieldPermissions>
+        <fieldPermissions>
+            <editable>true</editable>
+            <field>Account.RES_ID_Valid_From_Date__c</field>
+            <readable>true</readable>
+        </fieldPermissions>
+        <fieldPermissions>
+            <editable>true</editable>
+            <field>Account.RES_ID_Valid_to_Date__c</field>
+            <readable>true</readable>
+        </fieldPermissions>
+        <fieldPermissions>
+            <editable>true</editable>
+            <field>Account.RES_Full_Arabic_Name__pc</field>
+            <readable>true</readable>
+        </fieldPermissions>
+        <fieldPermissions>
+            <editable>true</editable>
+            <field>Account.RES_SIMAH_Consent__c</field>
+            <readable>true</readable>
+        </fieldPermissions>
+        <fieldPermissions>
+            <editable>true</editable>
+            <field>Account.RES_VIP_Customer__c</field>
+            <readable>true</readable>
+        </fieldPermissions>
+        <fieldPermissions>
+            <editable>true</editable>
+            <field>Account.RES_Bank_Customer__c</field>
+            <readable>true</readable>
+        </fieldPermissions>
+        <fieldPermissions>
+            <editable>true</editable>
+            <field>Account.RES_Consent_Form_Received_Date__c</field>
+            <readable>true</readable>
+        </fieldPermissions>
     <fieldPermissions>
         <editable>true</editable>
         <field>Contact.DIR_Country__c</field>
@@ -2325,6 +2415,16 @@ Sales – External – Relationship Manager</description>
         <field>Contact.RES_City_Arabic__c</field>
         <readable>true</readable>
     </fieldPermissions>
+        <fieldPermissions>
+            <editable>true</editable>
+            <field>Contact.RES_Contact_Person_End_Date__c</field>
+            <readable>true</readable>
+        </fieldPermissions>
+        <fieldPermissions>
+            <editable>false</editable>
+            <field>Contact.RES_SAP_Contact_Id__c</field>
+            <readable>true</readable>
+        </fieldPermissions>
 
     <fieldPermissions>
         <editable>true</editable>
