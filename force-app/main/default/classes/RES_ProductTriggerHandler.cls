@@ -55,6 +55,5 @@ public with sharing class RES_ProductTriggerHandler extends RES_BaseTriggerHandl
     protected override void afterUpdate() {
         System.debug('### [RES_ProductTriggerHandler] afterUpdate | Records: ' + Trigger.new.size());
         RES_ProductService.syncProducts((List<Product2>) Trigger.new, (Map<Id, Product2>) Trigger.oldMap);
-        RES_PaymentPlanServices.syncPaymentPlans((List<Product2>) Trigger.new, (Map<Id, Product2>) Trigger.oldMap);
     }
 }
