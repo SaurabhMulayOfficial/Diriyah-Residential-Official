@@ -769,7 +769,8 @@ private class RES_UnifiedIngestionEngineTest {
             RES_Product_External_ID__c = 'UNIT-500',
             ProductCode                = 'UNIT-500',
             Name                       = 'Original Name',
-            IsActive                   = true
+            IsActive                   = true,
+            RES_Unit_Status__c         = 'Available'
         );
         insert existing;
 
@@ -788,6 +789,8 @@ private class RES_UnifiedIngestionEngineTest {
         Product2 updated = [SELECT IsActive, Name, RES_Unit_Status__c FROM Product2 WHERE Id = :existing.Id];
         Assert.areEqual(true, updated.IsActive, 'IsActive literal (skipOnUpdate) must not override an existing product');
         Assert.areEqual('Updated Name', updated.Name, 'Non-skip Direct mapping should still apply on update');
+        Assert.areEqual('Available', updated.RES_Unit_Status__c,
+            'A re-upload (e.g. a price update) must not reset an existing unit back to Draft');
 
         Assert.areEqual(0, [SELECT COUNT() FROM ProductDisqualification WHERE ProductId = :existing.Id],
             'Existing (non-new) products must not get a disqualification record');
