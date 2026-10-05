@@ -356,11 +356,10 @@ jobs:
 
   delta-deploy-uat:
     runs-on: ubuntu-24.04
-    needs: [setup, delta-validate-uat]
+    needs: setup
     environment: env
 
     if: |
-      needs.delta-validate-uat.result == 'success' &&
       github.event_name == 'pull_request' &&
       github.event.pull_request.merged == true &&
       contains(github.event.pull_request.labels.*.name, 'UAT-Delta')
@@ -413,6 +412,14 @@ jobs:
             --username "${{ secrets.SF_USERNAME_UAT }}" \
             --instance-url https://test.salesforce.com \
             --set-default
+
+      - name: Validate UAT - Delta 🐥
+        if: steps.delta.outputs.has_changes == 'true'
+        run: |
+          sf project deploy validate \
+            --source-dir delta/force-app \
+            --test-level RunRelevantTests \
+            --wait 30
 
       - name: Deploy UAT - Delta 🦧
         if: steps.delta.outputs.has_changes == 'true'
