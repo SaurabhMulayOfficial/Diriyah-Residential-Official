@@ -105,6 +105,16 @@
             <fieldInstance>
                 <fieldInstanceProperties>
                     <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.Family</fieldItem>
+                <identifier>RecordFamilyField</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
                     <value>readonly</value>
                 </fieldInstanceProperties>
                 <fieldItem>Record.RES_HardBlock_Start__c</fieldItem>
@@ -144,6 +154,23 @@
                     <name>uiBehavior</name>
                     <value>none</value>
                 </fieldInstanceProperties>
+                <fieldItem>Record.RES_Rejection_Comment__c</fieldItem>
+                <identifier>RecordRES_Rejection_Comment__cField</identifier>
+                <visibilityRule>
+                    <criteria>
+                        <leftValue>{!Record.RES_Unit_Status__c}</leftValue>
+                        <operator>EQUAL</operator>
+                        <rightValue>Rejected</rightValue>
+                    </criteria>
+                </visibilityRule>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
                 <fieldItem>Record.RES_Business_Entity__c</fieldItem>
                 <identifier>RecordRES_Business_Entity_cField</identifier>
             </fieldInstance>
@@ -166,10 +193,10 @@
             <fieldInstance>
                 <fieldInstanceProperties>
                     <name>uiBehavior</name>
-                    <value>none</value>
+                    <value>readonly</value>
                 </fieldInstanceProperties>
-                <fieldItem>Record.Family</fieldItem>
-                <identifier>RecordFamilyField</identifier>
+                <fieldItem>Record.RES_Unit_Status__c</fieldItem>
+                <identifier>RecordRES_Unit_Status_cField</identifier>
             </fieldInstance>
         </itemInstances>
         <itemInstances>
@@ -186,10 +213,10 @@
             <fieldInstance>
                 <fieldInstanceProperties>
                     <name>uiBehavior</name>
-                    <value>readonly</value>
+                    <value>none</value>
                 </fieldInstanceProperties>
-                <fieldItem>Record.RES_Unit_Status__c</fieldItem>
-                <identifier>RecordRES_Unit_Status_cField</identifier>
+                <fieldItem>Record.RES_Floor_Arabic__c</fieldItem>
+                <identifier>RecordRES_Floor_Arabic_cField</identifier>
             </fieldInstance>
         </itemInstances>
         <itemInstances>
@@ -210,23 +237,6 @@
                 </fieldInstanceProperties>
                 <fieldItem>Record.RES_Last_Sync_DateTime__c</fieldItem>
                 <identifier>RecordRES_Last_Sync_DateTime__cField</identifier>
-            </fieldInstance>
-        </itemInstances>
-        <itemInstances>
-            <fieldInstance>
-                <fieldInstanceProperties>
-                    <name>uiBehavior</name>
-                    <value>none</value>
-                </fieldInstanceProperties>
-                <fieldItem>Record.RES_Rejection_Comment__c</fieldItem>
-                <identifier>RecordRES_Rejection_Comment__cField</identifier>
-                <visibilityRule>
-                    <criteria>
-                        <leftValue>{!Record.RES_Unit_Status__c}</leftValue>
-                        <operator>EQUAL</operator>
-                        <rightValue>Rejected</rightValue>
-                    </criteria>
-                </visibilityRule>
             </fieldInstance>
         </itemInstances>
         <itemInstances>

@@ -36,12 +36,11 @@ private class RES_ContractItemPriceServicesTest {
         return RES_TestDataFactory.createContract(companyAccount.Id, 'Draft', contractRtId);
     }
 
-    private static ContractItemPrice makeCip(Id contractId, String productName, Decimal price) {
-   
-        Product2 fakeProd = new Product2(Name = productName);
+    private static ContractItemPrice makeCip(Id contractId, Integer sequence, Decimal price) {
+        Product2 fakeProd = new Product2(Name = 'Installment ' + sequence, RES_Sequence__c = sequence);
         ContractItemPrice cip = new ContractItemPrice(
-            ContractId  = contractId,
-            Price       = price
+            ContractId = contractId,
+            Price      = price
         );
         cip.putSObject('RES_Product__r', fakeProd);
         return cip;
@@ -387,15 +386,15 @@ private class RES_ContractItemPriceServicesTest {
         Test.setMock(HttpCalloutMock.class, new RES_IntegrationTestDataFactory.EndpointRoutingMock());
         Contract con = createTestContract();
 
-        // Inject three installments: 3, 9, 10 — service must pick Installment 10
+        // Inject three installments: seq 3, 9, 10 — service must pick sequence 10
         RES_ContractItemPriceServices.mockExistingCIPs = new List<ContractItemPrice>{
-            makeCip(con.Id, 'WS PP01 Installment 3',  1000),
-            makeCip(con.Id, 'WS PP01 Installment 9',  5000),
-            makeCip(con.Id, 'WS PP01 Installment 10', 9999)
+            makeCip(con.Id, 3,  1000),
+            makeCip(con.Id, 9,  5000),
+            makeCip(con.Id, 10, 9999)
         };
 
         List<ContractItemPrice> cipInput = new List<ContractItemPrice>{
-            makeCip(con.Id, 'WS PP01 Installment 9', 5000)
+            makeCip(con.Id, 9, 5000)
         };
 
         Test.startTest();
@@ -414,10 +413,10 @@ private class RES_ContractItemPriceServicesTest {
         Contract con = createTestContract();
 
         RES_ContractItemPriceServices.mockExistingCIPs = new List<ContractItemPrice>{
-            makeCip(con.Id, 'WS PP01 Installment 1', 3333)
+            makeCip(con.Id, 1, 3333)
         };
         List<ContractItemPrice> cipInput = new List<ContractItemPrice>{
-            makeCip(con.Id, 'WS PP01 Installment 1', 3333)
+            makeCip(con.Id, 1, 3333)
         };
 
         Test.startTest();
@@ -438,7 +437,7 @@ private class RES_ContractItemPriceServicesTest {
         // Override returns empty — no installments → Final Payment should stay null
         RES_ContractItemPriceServices.mockExistingCIPs = new List<ContractItemPrice>();
         List<ContractItemPrice> cipInput = new List<ContractItemPrice>{
-            makeCip(con.Id, 'WS PP01 Installment 1', 1000)
+            makeCip(con.Id, 1, 1000)
         };
 
         Test.startTest();
@@ -473,19 +472,19 @@ private class RES_ContractItemPriceServicesTest {
         Contract con = createTestContract();
 
         RES_ContractItemPriceServices.mockExistingCIPs = new List<ContractItemPrice>{
-            makeCip(con.Id, 'WS PP01 Installment 1', 7777)
+            makeCip(con.Id, 1, 7777)
         };
         RES_ContractItemPriceServices.updateFinalPaymentOnContract(
-            new List<ContractItemPrice>{ makeCip(con.Id, 'X', 0) }
+            new List<ContractItemPrice>{ makeCip(con.Id, 1, 0) }
         );
 
         RES_ContractItemPriceServices.mockExistingCIPs = new List<ContractItemPrice>{
-            makeCip(con.Id, 'WS PP01 Installment 1', 7777)
+            makeCip(con.Id, 1, 7777)
         };
 
         Test.startTest();
         RES_ContractItemPriceServices.updateFinalPaymentOnContract(
-            new List<ContractItemPrice>{ makeCip(con.Id, 'X', 0) }
+            new List<ContractItemPrice>{ makeCip(con.Id, 1, 0) }
         );
         Test.stopTest();
 
@@ -503,17 +502,17 @@ private class RES_ContractItemPriceServicesTest {
 
         // Set Final Payment to 5000
         RES_ContractItemPriceServices.mockExistingCIPs = new List<ContractItemPrice>{
-            makeCip(con.Id, 'WS PP01 Installment 2', 5000)
+            makeCip(con.Id, 2, 5000)
         };
         RES_ContractItemPriceServices.updateFinalPaymentOnContract(
-            new List<ContractItemPrice>{ makeCip(con.Id, 'WS PP01 Installment 2', 5000) }
+            new List<ContractItemPrice>{ makeCip(con.Id, 2, 5000) }
         );
 
         RES_ContractItemPriceServices.mockExistingCIPs = new List<ContractItemPrice>();
 
         Test.startTest();
         RES_ContractItemPriceServices.updateFinalPaymentOnContract(
-            new List<ContractItemPrice>{ makeCip(con.Id, 'WS PP01 Installment 2', 5000) }
+            new List<ContractItemPrice>{ makeCip(con.Id, 2, 5000) }
         );
         Test.stopTest();
 
@@ -530,15 +529,15 @@ private class RES_ContractItemPriceServicesTest {
 
 
         RES_ContractItemPriceServices.mockExistingCIPs = new List<ContractItemPrice>{
-            makeCip(con.Id, 'WS PP01 Installment 5', 8888)
+            makeCip(con.Id, 5, 8888)
         };
 
         RES_ContractItemPriceTriggerHandler handler = new RES_ContractItemPriceTriggerHandler();
 
         Test.startTest();
-       
+
         RES_ContractItemPriceServices.updateFinalPaymentOnContract(
-            new List<ContractItemPrice>{ makeCip(con.Id, 'WS PP01 Installment 5', 8888) }
+            new List<ContractItemPrice>{ makeCip(con.Id, 5, 8888) }
         );
         Test.stopTest();
 

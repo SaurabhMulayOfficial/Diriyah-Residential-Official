@@ -394,6 +394,26 @@
                     <name>uiBehavior</name>
                     <value>readonly</value>
                 </fieldInstanceProperties>
+                <fieldItem>Record.TotalPrice</fieldItem>
+                <identifier>RecordTotalPriceField</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.RES_Total_Price_In_Words__c</fieldItem>
+                <identifier>RecordRES_Total_Price_In_Words_cField</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>readonly</value>
+                </fieldInstanceProperties>
                 <fieldItem>Record.AppliedDiscount</fieldItem>
                 <identifier>RecordAppliedDiscountField</identifier>
             </fieldInstance>
@@ -404,8 +424,8 @@
                     <name>uiBehavior</name>
                     <value>readonly</value>
                 </fieldInstanceProperties>
-                <fieldItem>Record.AppliedDiscountAmount</fieldItem>
-                <identifier>RecordAppliedDiscountAmountField</identifier>
+                <fieldItem>Record.CalculationStatus</fieldItem>
+                <identifier>RecordCalculationStatusField</identifier>
             </fieldInstance>
         </itemInstances>
         <name>Facet-2773b5d9-d04c-48ae-82ea-0cae3eb575b6</name>
@@ -418,8 +438,18 @@
                     <name>uiBehavior</name>
                     <value>readonly</value>
                 </fieldInstanceProperties>
-                <fieldItem>Record.CalculationStatus</fieldItem>
-                <identifier>RecordCalculationStatusField</identifier>
+                <fieldItem>Record.GrandTotal</fieldItem>
+                <identifier>RecordGrandTotalField</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.RES_Total_Price_In_Words_Arabic__c</fieldItem>
+                <identifier>RecordRES_Total_Price_In_Words_Arabic_cField</identifier>
             </fieldInstance>
         </itemInstances>
         <itemInstances>
@@ -428,8 +458,8 @@
                     <name>uiBehavior</name>
                     <value>readonly</value>
                 </fieldInstanceProperties>
-                <fieldItem>Record.GrandTotal</fieldItem>
-                <identifier>RecordGrandTotalField</identifier>
+                <fieldItem>Record.AppliedDiscountAmount</fieldItem>
+                <identifier>RecordAppliedDiscountAmountField</identifier>
             </fieldInstance>
         </itemInstances>
         <name>Facet-1413893b-c3b2-45e4-9edb-41211b560398</name>

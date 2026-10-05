@@ -8,7 +8,7 @@ public without sharing class RES_ContractItemPriceDAOLayer extends RES_BaseDAOLa
     }
 
     public List<ContractItemPrice> getInstallmentsByContractIds(Set<Id> contractIds) {
-        String soql = 'SELECT Id, Name, Price, ContractId, RES_Product__r.Name ' +
+        String soql = 'SELECT Id, Name, Price, ContractId, RES_Product__r.Name, RES_Product__r.RES_Sequence__c ' +
                         'FROM ContractItemPrice ' +
                         'WHERE ContractId IN :contractIds ' +
                         'AND RES_Installments_Check__c = true';

@@ -83,11 +83,11 @@ public with sharing class RES_ContractItemPriceServices {
         Map<Id, Integer> maxNumberByContract = new Map<Id, Integer>();
 
         for (ContractItemPrice cip : lineItems) {
-            String productName = cip.RES_Product__r != null ? cip.RES_Product__r.Name : cip.Name;
-            Integer installmentNumber = parseInstallmentNumber(productName);
+            if (cip.RES_Product__r == null || cip.RES_Product__r.RES_Sequence__c == null) continue;
+            Integer sequence = cip.RES_Product__r.RES_Sequence__c.intValue();
             Integer currentMax = maxNumberByContract.get(cip.ContractId);
-            if (currentMax == null || installmentNumber > currentMax) {
-                maxNumberByContract.put(cip.ContractId, installmentNumber);
+            if (currentMax == null || sequence > currentMax) {
+                maxNumberByContract.put(cip.ContractId, sequence);
                 lastInstallmentByContract.put(cip.ContractId, cip);
             }
         }

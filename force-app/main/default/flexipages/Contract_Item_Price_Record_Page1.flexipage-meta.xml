@@ -52,16 +52,6 @@
                     <name>uiBehavior</name>
                     <value>none</value>
                 </fieldInstanceProperties>
-                <fieldItem>Record.RES_Unit_Check__c</fieldItem>
-                <identifier>RecordRES_Unit_Check_cField</identifier>
-            </fieldInstance>
-        </itemInstances>
-        <itemInstances>
-            <fieldInstance>
-                <fieldInstanceProperties>
-                    <name>uiBehavior</name>
-                    <value>none</value>
-                </fieldInstanceProperties>
                 <fieldItem>Record.RES_Product__c</fieldItem>
                 <identifier>RecordRES_Product_cField</identifier>
             </fieldInstance>
@@ -74,6 +64,16 @@
                 </fieldInstanceProperties>
                 <fieldItem>Record.ItemId</fieldItem>
                 <identifier>RecordItemIdField</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>required</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.StartDate</fieldItem>
+                <identifier>RecordStartDateField</identifier>
             </fieldInstance>
         </itemInstances>
         <itemInstances>
@@ -96,16 +96,6 @@
                 <identifier>RecordDiscountTypeField</identifier>
             </fieldInstance>
         </itemInstances>
-        <itemInstances>
-            <fieldInstance>
-                <fieldInstanceProperties>
-                    <name>uiBehavior</name>
-                    <value>required</value>
-                </fieldInstanceProperties>
-                <fieldItem>Record.StartDate</fieldItem>
-                <identifier>RecordStartDateField</identifier>
-            </fieldInstance>
-        </itemInstances>
         <name>Facet-fa8f6035-6591-47a1-9f55-ff3d78d256f2</name>
         <type>Facet</type>
     </flexiPageRegions>
@@ -118,16 +108,6 @@
                 </fieldInstanceProperties>
                 <fieldItem>Record.ContractId</fieldItem>
                 <identifier>RecordContractIdField</identifier>
-            </fieldInstance>
-        </itemInstances>
-        <itemInstances>
-            <fieldInstance>
-                <fieldInstanceProperties>
-                    <name>uiBehavior</name>
-                    <value>none</value>
-                </fieldInstanceProperties>
-                <fieldItem>Record.RES_CIP_Type__c</fieldItem>
-                <identifier>RecordRES_CIP_Type__cField</identifier>
             </fieldInstance>
         </itemInstances>
         <itemInstances>
@@ -205,6 +185,88 @@
             </componentInstance>
         </itemInstances>
         <name>Facet-685d6ea1-1159-45ff-bf5e-27f8301ff768</name>
+        <type>Facet</type>
+    </flexiPageRegions>
+    <flexiPageRegions>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.RES_CIP_Type__c</fieldItem>
+                <identifier>RecordRES_CIP_Type__cField</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.RES_Unit_Check__c</fieldItem>
+                <identifier>RecordRES_Unit_Check_cField</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.RES_Installments_Check__c</fieldItem>
+                <identifier>RecordRES_Installments_Check_cField</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <name>Facet-7de3ee6d-02e6-469a-ad8c-a727119d643a</name>
+        <type>Facet</type>
+    </flexiPageRegions>
+    <flexiPageRegions>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.RES_Payment_Plan_Check__c</fieldItem>
+                <identifier>RecordRES_Payment_Plan_Check_cField</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.RES_Service_Charge_Check__c</fieldItem>
+                <identifier>RecordRES_Service_Charge_Check_cField</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <name>Facet-20e05069-db4e-4a7d-8f23-59b08c026ff1</name>
+        <type>Facet</type>
+    </flexiPageRegions>
+    <flexiPageRegions>
+        <itemInstances>
+            <componentInstance>
+                <componentInstanceProperties>
+                    <name>body</name>
+                    <value>Facet-7de3ee6d-02e6-469a-ad8c-a727119d643a</value>
+                </componentInstanceProperties>
+                <componentName>flexipage:column</componentName>
+                <identifier>flexipage_column5</identifier>
+            </componentInstance>
+        </itemInstances>
+        <itemInstances>
+            <componentInstance>
+                <componentInstanceProperties>
+                    <name>body</name>
+                    <value>Facet-20e05069-db4e-4a7d-8f23-59b08c026ff1</value>
+                </componentInstanceProperties>
+                <componentName>flexipage:column</componentName>
+                <identifier>flexipage_column6</identifier>
+            </componentInstance>
+        </itemInstances>
+        <name>Facet-8fd582bb-2e73-4ae4-8984-bd92e3266191</name>
         <type>Facet</type>
     </flexiPageRegions>
     <flexiPageRegions>
@@ -296,6 +358,24 @@
                 </componentInstanceProperties>
                 <componentName>flexipage:fieldSection</componentName>
                 <identifier>flexipage_fieldSection</identifier>
+            </componentInstance>
+        </itemInstances>
+        <itemInstances>
+            <componentInstance>
+                <componentInstanceProperties>
+                    <name>columns</name>
+                    <value>Facet-8fd582bb-2e73-4ae4-8984-bd92e3266191</value>
+                </componentInstanceProperties>
+                <componentInstanceProperties>
+                    <name>horizontalAlignment</name>
+                    <value>false</value>
+                </componentInstanceProperties>
+                <componentInstanceProperties>
+                    <name>label</name>
+                    <value>Contract Item Price Type Information</value>
+                </componentInstanceProperties>
+                <componentName>flexipage:fieldSection</componentName>
+                <identifier>flexipage_fieldSection3</identifier>
             </componentInstance>
         </itemInstances>
         <itemInstances>
