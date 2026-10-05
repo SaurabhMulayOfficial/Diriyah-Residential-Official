@@ -1,8 +1,21 @@
 @IsTest
 private class RES_OpportunityClosedLostServiceTest {
 
-    @testSetup
-    static void createTestData() {
+    // Holds the Ids createTestData() creates, so callers never have to re-query generic
+    // fixture Names (e.g. 'Unit A101', 'Test Opportunity') - under SeeAllData=true those
+    // aren't guaranteed unique against real org data, making a LIMIT 1 re-query non-deterministic.
+    private class TestDataIds {
+        Id unitProductId;
+        Id testOpportunityId;
+        Id pendingApprovalOpportunityId;
+        Id pendingApprovalQuoteId;
+    }
+
+    // Not @testSetup - a class containing @testSetup can't have any method annotated
+    // @isTest(SeeAllData=true), which the Service Charge Rate override methods below need
+    // (to safely reuse the org's real AttributeDefinition rather than risk a duplicate
+    // DeveloperName insert) - so this is called explicitly by each test that needs it instead.
+    private static TestDataIds createTestData() {
 
         Account acc = new Account(Name = 'Test Account');
         insert acc;
@@ -21,15 +34,8 @@ private class RES_OpportunityClosedLostServiceTest {
         // =========================================================
         // Standard Pricebook
         // =========================================================
-        Id standardPricebookId = Test.getStandardPricebookId();
-
-        PricebookEntry pbe = new PricebookEntry(
-            Pricebook2Id = standardPricebookId,
-            Product2Id = product.Id,
-            UnitPrice = 100,
-            IsActive = true
-        );
-        insert pbe;
+        Id standardPricebookId = resolvePricebookId();
+        PricebookEntry pbe = insertTargetPricebookEntry(product.Id, 100);
 
         // =========================================================
         // Opportunity
@@ -95,19 +101,109 @@ private class RES_OpportunityClosedLostServiceTest {
             RES_System_Status_Update__c = true
             );
         insert pendingQuote;
+
+        TestDataIds ids = new TestDataIds();
+        ids.unitProductId = product.Id;
+        ids.testOpportunityId = opp.Id;
+        ids.pendingApprovalOpportunityId = pendingOpp.Id;
+        ids.pendingApprovalQuoteId = pendingQuote.Id;
+        return ids;
+    }
+
+    /** Resolves the Pricebook2Id to use for test Quotes/PricebookEntries. RES_Quote_Before_Insert_Set_Pricebook
+     *  (a pre-existing, active flow) force-reassigns every new Quote's Pricebook2Id to whichever Pricebook2
+     *  shares a Name with the Quote's (sole, default) RecordType - "Residential Sales" in this org. Under a
+     *  plain @isTest context that real Pricebook2 is invisible (not SeeAllData), so the flow's lookup finds
+     *  nothing and silently no-ops, leaving Test.getStandardPricebookId() as the only usable value. Under
+     *  SeeAllData=true it IS visible, so the flow fires - this resolves to that same pricebook so the
+     *  PricebookEntry/Quote/QuoteLineItem the test creates match what the flow will force anyway. */
+    private static Id resolvePricebookId() {
+        List<Pricebook2> residentialSalesPricebooks = [SELECT Id FROM Pricebook2 WHERE Name = 'Residential Sales' LIMIT 1];
+        return residentialSalesPricebooks.isEmpty() ? Test.getStandardPricebookId() : residentialSalesPricebooks[0].Id;
+    }
+
+    /** The real Standard Price Book's Id - direct query works once SeeAllData=true makes it visible; falls back to
+     *  Test.getStandardPricebookId() under a plain @isTest context where a direct Pricebook2 query returns 0 rows. */
+    private static Id standardPricebookId() {
+        List<Pricebook2> standardPricebooks = [SELECT Id FROM Pricebook2 WHERE IsStandard = true LIMIT 1];
+        return standardPricebooks.isEmpty() ? Test.getStandardPricebookId() : standardPricebooks[0].Id;
+    }
+
+    /** Inserts and returns the PricebookEntry a Quote/QuoteLineItem should reference for this product, on
+     *  whatever pricebook resolvePricebookId() targets. A custom (non-standard) pricebook entry requires a
+     *  standard price to already exist for the same product/selling model/currency, so when the target
+     *  pricebook isn't the Standard Price Book, a standard-priced entry is inserted first. */
+    private static PricebookEntry insertTargetPricebookEntry(Id productId, Decimal unitPrice) {
+        Id targetId = resolvePricebookId();
+        Id standardId = standardPricebookId();
+        if (targetId != standardId) {
+            insert new PricebookEntry(Pricebook2Id = standardId, Product2Id = productId, UnitPrice = unitPrice, IsActive = true);
+        }
+        PricebookEntry pbe = new PricebookEntry(Pricebook2Id = targetId, Product2Id = productId, UnitPrice = unitPrice, IsActive = true);
+        insert pbe;
+        return pbe;
+    }
+
+    /** Configures the Service Charge Rate attribute override (RES_ProductSCRateValidation requires this before a Residential Sales unit can transition to Available) on the given product, reusing the org's real AttributeDefinition/ProductClassificationAttr - DeveloperName is unique org-wide, so this must run under SeeAllData=true. */
+    private static void insertServiceChargeRateOverride(Id productId) {
+        String scRateDeveloperName = Label.RES_Service_Charge_Rate_Attribute;
+
+        List<AttributeDefinition> existingScRateAttrs = [
+            SELECT Id FROM AttributeDefinition WHERE DeveloperName = :scRateDeveloperName LIMIT 1
+        ];
+        AttributeDefinition scRateAttr;
+        if (!existingScRateAttrs.isEmpty()) {
+            scRateAttr = existingScRateAttrs[0];
+        } else {
+            scRateAttr = new AttributeDefinition(
+                Name = 'RES Test OppClosedLost SC Rate Attribute', Label = 'RES Test OppClosedLost SC Rate Attribute',
+                DeveloperName = scRateDeveloperName, DataType = 'Number', IsActive = true
+            );
+            insert scRateAttr;
+        }
+
+        List<ProductClassificationAttr> existingClassificationAttrs = [
+            SELECT Id, ProductClassificationId FROM ProductClassificationAttr WHERE AttributeDefinitionId = :scRateAttr.Id LIMIT 1
+        ];
+        ProductClassificationAttr classificationAttr;
+        if (!existingClassificationAttrs.isEmpty()) {
+            classificationAttr = existingClassificationAttrs[0];
+        } else {
+            ProductClassification classification = new ProductClassification(
+                Code = 'RES_TEST_OPPCLOSEDLOST_' + String.valueOf(Crypto.getRandomInteger()).right(8),
+                Name = 'RES Test OppClosedLost Classification',
+                Status = 'Active'
+            );
+            insert classification;
+            classificationAttr = new ProductClassificationAttr(
+                Name = 'RES Test OppClosedLost Classification Attr',
+                ProductClassificationId = classification.Id,
+                AttributeDefinitionId = scRateAttr.Id
+            );
+            insert classificationAttr;
+        }
+
+        // Product2.BasedOnId must match the ProductClassificationAttr's own classification
+        update new Product2(Id = productId, BasedOnId = classificationAttr.ProductClassificationId);
+
+        insert new ProductAttributeDefinition(
+            Name = 'RES Test OppClosedLost SC Rate Override',
+            ProductClassificationAttributeId = classificationAttr.Id,
+            Product2Id = productId,
+            AttributeDefinitionId = scRateAttr.Id,
+            DefaultValue = '120'
+        );
     }
 
 
-    @IsTest
+    @isTest(SeeAllData=true)
     static void testReleaseUnits() {
-        Opportunity opp = [SELECT Id
-            FROM Opportunity
-            LIMIT 1
-        ];
+        TestDataIds ids = createTestData();
+        insertServiceChargeRateOverride(ids.unitProductId);
 
         RES_OpportunityClosedLostService.Input input =
             new RES_OpportunityClosedLostService.Input();
-        input.opportunityId = opp.Id;
+        input.opportunityId = ids.testOpportunityId;
         Test.startTest();
         List<RES_OpportunityClosedLostService.Output> results =
             RES_OpportunityClosedLostService.releaseUnits(
@@ -135,7 +231,7 @@ private class RES_OpportunityClosedLostServiceTest {
         List<Quote> quotes = [
             SELECT Id, Status
             FROM Quote
-            WHERE OpportunityId = :opp.Id
+            WHERE OpportunityId = :ids.testOpportunityId
         ];
 
 
@@ -165,7 +261,7 @@ private class RES_OpportunityClosedLostServiceTest {
                 RES_Unit_Status__c,
                 RES_HardBlock_Start__c
             FROM Product2
-            LIMIT 1
+            WHERE Id = :ids.unitProductId
         ];
 
 
@@ -274,16 +370,14 @@ private class RES_OpportunityClosedLostServiceTest {
     }
 
 
-    @IsTest
+    @isTest(SeeAllData=true)
 static void testBulkProcessing() {
-    List<Opportunity> opps = [SELECT Id FROM Opportunity WHERE Name != 'Pending Approval Test Opportunity'];
+    TestDataIds ids = createTestData();
+    insertServiceChargeRateOverride(ids.unitProductId);
 
-    List<RES_OpportunityClosedLostService.Input> inputs = new List<RES_OpportunityClosedLostService.Input>();
-    for (Opportunity opp : opps) {
-        RES_OpportunityClosedLostService.Input input = new RES_OpportunityClosedLostService.Input();
-        input.opportunityId = opp.Id;
-        inputs.add(input);
-    }
+    RES_OpportunityClosedLostService.Input input = new RES_OpportunityClosedLostService.Input();
+    input.opportunityId = ids.testOpportunityId;
+    List<RES_OpportunityClosedLostService.Input> inputs = new List<RES_OpportunityClosedLostService.Input>{ input };
 
 
     Test.startTest();
@@ -292,8 +386,8 @@ static void testBulkProcessing() {
     Test.stopTest();
 
     System.assertEquals(true,results[0].unitsReleased,'Unit should be released during bulk processing.');
-    // Verify Product
-    List<Product2> products = [SELECT Id, RES_Unit_Status__c, RES_HardBlock_Start__c FROM Product2];
+    // Verify Product - scoped to this test's own product by Id, not by ambiguous Name
+    List<Product2> products = [SELECT Id, RES_Unit_Status__c, RES_HardBlock_Start__c FROM Product2 WHERE Id = :ids.unitProductId];
     for (Product2 product : products) {
         System.assertEquals(
             'Available',
@@ -307,14 +401,11 @@ static void testBulkProcessing() {
         );
     }
 
-        // Verify Quotes — excludes the dedicated Pending Approval test Quote,
-        // which is intentionally never cancelled by this service
+        // Verify Quotes — scoped to this test's own Opportunity by Id, not by ambiguous Name
         List<Quote> quotes = [
             SELECT Id, Status
             FROM Quote
-            WHERE OpportunityId IN (
-                SELECT Id FROM Opportunity WHERE Name != 'Pending Approval Test Opportunity'
-            )
+            WHERE OpportunityId = :ids.testOpportunityId
         ];
         for (Quote quote : quotes) {
             System.assertEquals(
@@ -332,7 +423,8 @@ static void testBulkProcessing() {
 
     @IsTest
     static void testProductStillHeldByAnotherOpportunity() {
-        Product2 product = [SELECT Id, RES_Unit_Status__c FROM Product2 LIMIT 1];
+        TestDataIds ids = createTestData();
+        Product2 product = [SELECT Id, RES_Unit_Status__c FROM Product2 WHERE Id = :ids.unitProductId];
         Id standardPricebookId = Test.getStandardPricebookId();
 
         // Second, unrelated Opportunity + Quote referencing the SAME product,
@@ -365,11 +457,8 @@ static void testBulkProcessing() {
             UnitPrice = 100
         );
 
-        // Now close the ORIGINAL Opportunity (the one from testSetup)
-        Opportunity originalOpp = [SELECT Id FROM Opportunity WHERE Id != :opp2.Id LIMIT 1];
-
         RES_OpportunityClosedLostService.Input input = new RES_OpportunityClosedLostService.Input();
-        input.opportunityId = originalOpp.Id;
+        input.opportunityId = ids.testOpportunityId;
 
         Test.startTest();
         RES_OpportunityClosedLostService.releaseUnits(
@@ -386,10 +475,12 @@ static void testBulkProcessing() {
         );
     }
 
-    @IsTest
+    @isTest(SeeAllData=true)
     static void testProductReleasedWhenOtherQuoteIsCancelled() {
-        Product2 product = [SELECT Id, RES_Unit_Status__c FROM Product2 LIMIT 1];
-        Id standardPricebookId = Test.getStandardPricebookId();
+        TestDataIds ids = createTestData();
+        Product2 product = [SELECT Id, RES_Unit_Status__c FROM Product2 WHERE Id = :ids.unitProductId];
+        insertServiceChargeRateOverride(product.Id);
+        Id standardPricebookId = resolvePricebookId();
 
         Account acc2 = new Account(Name = 'Test Account 3');
         insert acc2;
@@ -411,7 +502,7 @@ static void testBulkProcessing() {
         );
         insert quote2;
 
-        PricebookEntry pbe = [SELECT Id FROM PricebookEntry WHERE Product2Id = :product.Id LIMIT 1];
+        PricebookEntry pbe = [SELECT Id FROM PricebookEntry WHERE Product2Id = :product.Id AND Pricebook2Id = :standardPricebookId LIMIT 1];
         insert new QuoteLineItem(
             QuoteId = quote2.Id,
             PricebookEntryId = pbe.Id,
@@ -424,10 +515,8 @@ static void testBulkProcessing() {
         quote2.RES_Cancellation_Reason__c = 'Test Cancellation';
         update quote2;
 
-        Opportunity originalOpp = [SELECT Id FROM Opportunity WHERE Id != :opp2.Id LIMIT 1];
-
         RES_OpportunityClosedLostService.Input input = new RES_OpportunityClosedLostService.Input();
-        input.opportunityId = originalOpp.Id;
+        input.opportunityId = ids.testOpportunityId;
 
         Test.startTest();
         RES_OpportunityClosedLostService.releaseUnits(
@@ -444,9 +533,9 @@ static void testBulkProcessing() {
         );
     }
 
-    @IsTest
+    @isTest(SeeAllData=true)
     static void testContractsCancelledWhenOpportunityClosedLost() {
-        Id standardPricebookId = Test.getStandardPricebookId();
+        Id standardPricebookId = resolvePricebookId();
 
         RES_IntegrationRequestEventService.batchSubmitter = new RES_IntegrationRequestEventService.CountingBatchSubmitter();
         // Create a dedicated product for this test to avoid conflicts with setup data
@@ -457,14 +546,9 @@ static void testBulkProcessing() {
             RES_HardBlock_Start__c = System.now()
         );
         insert product;
+        insertServiceChargeRateOverride(product.Id);
 
-        PricebookEntry pbe = new PricebookEntry(
-            Pricebook2Id = standardPricebookId,
-            Product2Id = product.Id,
-            UnitPrice = 100,
-            IsActive = true
-        );
-        insert pbe;
+        PricebookEntry pbe = insertTargetPricebookEntry(product.Id, 100);
 
         Account testAcc = new Account(Name = 'Test Account for Contract');
         insert testAcc;
@@ -544,15 +628,10 @@ static void testBulkProcessing() {
 
     @IsTest
     static void testPendingApprovalQuoteWithNoLiveWorkItem() {
-    Opportunity pendingOpp = [
-        SELECT Id FROM Opportunity WHERE Name = 'Pending Approval Test Opportunity' LIMIT 1
-    ];
-    Quote pendingQuote = [
-        SELECT Id, Status FROM Quote WHERE OpportunityId = :pendingOpp.Id LIMIT 1
-    ];
+    TestDataIds ids = createTestData();
 
     RES_OpportunityClosedLostService.Input input = new RES_OpportunityClosedLostService.Input();
-    input.opportunityId = pendingOpp.Id;
+    input.opportunityId = ids.pendingApprovalOpportunityId;
 
     Test.startTest();
     List<RES_OpportunityClosedLostService.Output> results =
@@ -565,23 +644,18 @@ static void testBulkProcessing() {
     System.assertEquals(0, results[0].pendingApprovalQuoteIds.size(),'No pending approval quote Ids found');
     System.assertEquals(0, results[0].pendingWorkItemIds.size(),'No pending work item Ids found');
 
-    Quote unchanged = [SELECT Status FROM Quote WHERE Id = :pendingQuote.Id];
+    Quote unchanged = [SELECT Status FROM Quote WHERE Id = :ids.pendingApprovalQuoteId];
     System.assertEquals('Pending Approval', unchanged.Status,
         'Quote in Pending Approval must not be cancelled by this run.');
     }
 
     @IsTest
     static void testPendingApprovalQuoteWithLiveWorkItem() {
-        Opportunity pendingOpp = [
-            SELECT Id FROM Opportunity WHERE Name = 'Pending Approval Test Opportunity' LIMIT 1
-        ];
-        Quote pendingQuote = [
-            SELECT Id, Status FROM Quote WHERE OpportunityId = :pendingOpp.Id LIMIT 1
-        ];
+        TestDataIds ids = createTestData();
 
         ApprovalWorkItem fakeWorkItem = new ApprovalWorkItem(
             Id = '9jR000000000001AAA',
-            RelatedRecordId = pendingQuote.Id,
+            RelatedRecordId = ids.pendingApprovalQuoteId,
             RelatedRecordObjectName = 'Quote',
             Status = 'Assigned'
         );
@@ -589,7 +663,7 @@ static void testBulkProcessing() {
             new List<ApprovalWorkItem>{ fakeWorkItem };
 
         RES_OpportunityClosedLostService.Input input = new RES_OpportunityClosedLostService.Input();
-        input.opportunityId = pendingOpp.Id;
+        input.opportunityId = ids.pendingApprovalOpportunityId;
 
         Test.startTest();
         List<RES_OpportunityClosedLostService.Output> results =
@@ -600,7 +674,7 @@ static void testBulkProcessing() {
 
         System.assertEquals(true, results[0].pendingApprovalQuotesFound,'Pending approval quotes should be found');
         System.assertEquals(1, results[0].pendingApprovalQuoteIds.size(),'One pending approval quote Id should be found');
-        System.assertEquals(pendingQuote.Id, results[0].pendingApprovalQuoteIds[0],'Pending approval quote Id should match the expected quote');
+        System.assertEquals(ids.pendingApprovalQuoteId, results[0].pendingApprovalQuoteIds[0],'Pending approval quote Id should match the expected quote');
         System.assertEquals(1, results[0].pendingWorkItemIds.size(),'One pending work item Id should be found');
         System.assertEquals('9jR000000000001AAA', results[0].pendingWorkItemIds[0],'Pending work item Id should match the expected work item');
     }
