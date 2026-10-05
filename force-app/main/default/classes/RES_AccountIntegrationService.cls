@@ -86,7 +86,7 @@ public with sharing class RES_AccountIntegrationService extends RES_BaseIntegrat
         wrapper.PersonGenderIdentity = blankIfNull(acc.PersonGenderIdentity);
         wrapper.RES_Marital_Status = blankIfNull(acc.RES_Marital_Status__pc);
         wrapper.RES_Nationality = blankIfNull(acc.RES_Nationality__pc);
-        wrapper.RES_Date_of_Birth = acc.RES_Date_of_Birth__pc != null ? String.valueOf(acc.RES_Date_of_Birth__pc) : '';
+        wrapper.RES_Date_of_Birth = isPersonAccount && acc.PersonBirthdate != null ? String.valueOf(acc.PersonBirthdate) : '';
         wrapper.RES_Company_Additional_Name = ''; // always blank per payload spec
         wrapper.RES_OBJECT_TASK = triggerContext;
         // RES_BP_NUMBER: blank on first insert; pass RES_External_Key__c on update (must not be null)
@@ -174,9 +174,9 @@ public with sharing class RES_AccountIntegrationService extends RES_BaseIntegrat
             identItem.OBJECT_TASK = triggerContext;
             identItem.IDENTIFICATIONCATEGORY = acc.RES_Identification_Type__c;
             identItem.IDENTIFICATIONNUMBER = acc.RES_Identification_Number__c;
-            identItem.IDENTRYDATE = acc.RES_ID_Entry_Date__c != null ? String.valueOf(acc.RES_ID_Entry_Date__c) : null;
-            identItem.IDVALIDFROMDATE = acc.RES_ID_Valid_From_Date__c != null ? String.valueOf(acc.RES_ID_Valid_From_Date__c) : null;
-            identItem.IDVALIDTODATE = acc.RES_ID_Valid_to_Date__c != null ? String.valueOf(acc.RES_ID_Valid_to_Date__c) : null;
+            identItem.IDENTRYDATE = acc.RES_ID_Entry_Date__c != null ? String.valueOf(acc.RES_ID_Entry_Date__c) : '';
+            identItem.IDVALIDFROMDATE = acc.RES_ID_Valid_From_Date__c != null ? String.valueOf(acc.RES_ID_Valid_From_Date__c) : '';
+            identItem.IDVALIDTODATE = acc.RES_ID_Valid_to_Date__c != null ? String.valueOf(acc.RES_ID_Valid_to_Date__c) : '';
             RES_AccountRequestWrapper.Identifications identifications = new RES_AccountRequestWrapper.Identifications();
             identifications.item = identItem;
             wrapper.TT_IDENTIFICATIONS = identifications;
@@ -230,14 +230,14 @@ public with sharing class RES_AccountIntegrationService extends RES_BaseIntegrat
             'RES_Full_Arabic_Name',
             blankIfNull(isPersonAccount ? acc.RES_Full_Arabic_Name__pc : acc.RES_Full_Arabic_Name__c)
         ));
-        customFields.add(new RES_AccountRequestWrapper.CustomField('RES_SIMAH_Consent', acc.RES_SIMAH_Consent__c));
+        customFields.add(new RES_AccountRequestWrapper.CustomField('RES_SIMAH_Consent', blankIfNull(acc.RES_SIMAH_Consent__c)));
         customFields.add(new RES_AccountRequestWrapper.CustomField('RES_VIP_Customer', acc.RES_VIP_Customer__c));
         customFields.add(new RES_AccountRequestWrapper.CustomField('RES_Bank_Customer', acc.RES_Bank_Customer__c));
         customFields.add(new RES_AccountRequestWrapper.CustomField(
             'RES_Consent_Form_Received_Date',
             acc.RES_Consent_Form_Received_Date__c != null
                 ? acc.RES_Consent_Form_Received_Date__c.formatGmt('yyyy-MM-dd\'T\'HH:mm:ss\'Z\'')
-                : null
+                : ''
         ));
         return customFields;
     }
