@@ -34,7 +34,7 @@ public with sharing class RES_ProductTriggerHandler extends RES_BaseTriggerHandl
         RES_ProductService.syncProducts((List<Product2>) Trigger.new, null);
     }
 
-    /** @description Restores Description from Name when cleared; re-defaults AvailabilityDate/DiscontinuedDate if explicitly cleared. */
+    /** @description Restores Description from Name when cleared; re-defaults AvailabilityDate/DiscontinuedDate if explicitly cleared; blocks a Residential Sales unit from being set Active or Available without its Service Charge Rate attribute override. */
     protected override void beforeUpdate() {
         Date today = Date.today();
         for (Product2 p : (List<Product2>) Trigger.new) {
@@ -48,11 +48,13 @@ public with sharing class RES_ProductTriggerHandler extends RES_BaseTriggerHandl
                 p.DiscontinuedDate = DISCONTINUED_DEFAULT;
             }
         }
+        RES_ProductSCRateValidation.validate((List<Product2>) Trigger.new, (Map<Id, Product2>) Trigger.oldMap);
     }
 
     /** @description Publishes Unit_Sync event for updated products whose sync fields changed. */
     protected override void afterUpdate() {
         System.debug('### [RES_ProductTriggerHandler] afterUpdate | Records: ' + Trigger.new.size());
         RES_ProductService.syncProducts((List<Product2>) Trigger.new, (Map<Id, Product2>) Trigger.oldMap);
+        RES_PaymentPlanServices.syncPaymentPlans((List<Product2>) Trigger.new, (Map<Id, Product2>) Trigger.oldMap);
     }
 }
