@@ -121,9 +121,14 @@ public with sharing class RES_PaymentPlanConfiguratorService {
 
             List<Id> allProductIds = new List<Id>{ paymentPlanId };
             allProductIds.addAll(installmentIds);
+            // Installments are always inserted active; the Payment Plan itself may not be - an active PricebookEntry on an inactive product throws FIELD_INTEGRITY_EXCEPTION
+            Set<Id> activeProductIds = new Set<Id>(installmentIds);
+            if (req.isActive == true) {
+                activeProductIds.add(paymentPlanId);
+            }
             Id sellingModelId = oneTimeSellingModelId();
             insertSellingModelOptions(allProductIds, sellingModelId);
-            insertPricebookEntries(allProductIds, sellingModelId);
+            insertPricebookEntries(allProductIds, activeProductIds, sellingModelId);
 
             res.isSuccess = true;
             res.paymentPlanId = paymentPlanId;
@@ -287,7 +292,7 @@ public with sharing class RES_PaymentPlanConfiguratorService {
         insert components;
     }
 
-    private static void insertPricebookEntries(List<Id> productIds, Id sellingModelId) {
+    private static void insertPricebookEntries(List<Id> productIds, Set<Id> activeProductIds, Id sellingModelId) {
         Id standardPricebookId = Test.isRunningTest() ? Test.getStandardPricebookId() : standardPricebookId();
         Id residentialSalesPricebookId = pricebookId(RESIDENTIAL_SALES_PRICEBOOK_NAME);
 
@@ -298,7 +303,7 @@ public with sharing class RES_PaymentPlanConfiguratorService {
                 Product2Id = productId,
                 ProductSellingModelId = sellingModelId,
                 UnitPrice = 0,
-                IsActive = true
+                IsActive = activeProductIds.contains(productId)
             ));
         }
         insert standardEntries;
@@ -311,7 +316,7 @@ public with sharing class RES_PaymentPlanConfiguratorService {
                     Product2Id = productId,
                     ProductSellingModelId = sellingModelId,
                     UnitPrice = 0,
-                    IsActive = true,
+                    IsActive = activeProductIds.contains(productId),
                     UseStandardPrice = false
                 ));
             }
