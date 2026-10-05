@@ -218,7 +218,7 @@ private class RES_ApplyApprovedPOCToPPTest {
         Test.stopTest();
 
         List<Product2> newVersions = [
-            SELECT Id, RES_Version__c, RES_Price_Option__c, RES_Business_Entity__c
+            SELECT Id, RES_Version__c, RES_Price_Option__c, RES_Business_Entity__c, RES_Approval_Status__c
             FROM Product2
             WHERE RES_Parent_Payment_Plan__c = :ids.get('plan')
         ];
@@ -226,6 +226,7 @@ private class RES_ApplyApprovedPOCToPPTest {
         Product2 newVersion = newVersions[0];
         System.assertEquals(1, newVersion.RES_Version__c);
         System.assertEquals('Option 1', newVersion.RES_Price_Option__c, 'Price Option must carry over to the new version');
+        System.assertEquals('Approved', newVersion.RES_Approval_Status__c, 'A new version is created because the POC was approved, so it should start out Approved rather than needing its own re-approval');
 
         List<ProductComponentGroup> newGroups = [
             SELECT Id, Name, MinBundleComponents, MaxBundleComponents

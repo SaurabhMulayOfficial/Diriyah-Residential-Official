@@ -62,6 +62,7 @@ public with sharing class RES_ApplyApprovedPOCToFuturePaymentPlan {
         for(Product2 productObj : productsLst){
             Product2 clonedProduct = productObj.clone(false, true, false, false);
             clonedProduct.RES_Parent_Payment_Plan__c = productObj.Id;
+            clonedProduct.RES_Approval_Status__c = 'Approved';
             system.debug('productObj.ParentPaymentPlan__r ==> '+productObj.ParentPaymentPlan__r);
             Set<Id> supersededIds = new Set<Id>{ productObj.Id };
             if(productObj.ParentPaymentPlan__r != null && !productObj.ParentPaymentPlan__r.isEmpty()){
