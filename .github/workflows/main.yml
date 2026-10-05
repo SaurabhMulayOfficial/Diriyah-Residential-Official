@@ -12,6 +12,7 @@ on:
     branches:
       - develop
       - 'feature/QADIR/**'
+      - 'release/uat/**'
 
 jobs:
   setup:
@@ -60,7 +61,9 @@ jobs:
     if: |
       github.event_name == 'pull_request' &&
       github.base_ref == 'develop' &&
-      startsWith(github.head_ref, 'feature/')
+      startsWith(github.head_ref, 'feature/') &&
+      (contains(github.event.pull_request.labels.*.name, 'QA-Delta') ||
+       contains(github.event.pull_request.labels.*.name, 'QA-Full'))
 
     steps:
       - uses: actions/checkout@v4
@@ -179,7 +182,9 @@ jobs:
       github.event_name == 'pull_request' &&
       github.event.pull_request.merged == true &&
       github.base_ref == 'develop' &&
-      startsWith(github.head_ref, 'feature/')
+      startsWith(github.head_ref, 'feature/') &&
+      (contains(github.event.pull_request.labels.*.name, 'QA-Delta') ||
+       contains(github.event.pull_request.labels.*.name, 'QA-Full'))
 
     steps:
       - uses: actions/checkout@v4
@@ -275,6 +280,85 @@ jobs:
 
       - name: Deploy QA - Full 🦧
         if: steps.deployment-mode.outputs.deployment_type == 'full'
+        run: |
+          sf project deploy start \
+            --source-dir force-app \
+            --test-level RunLocalTests \
+            --ignore-conflicts \
+            --wait 30
+
+
+  validate-qa-push:
+    runs-on: ubuntu-24.04
+    needs: setup
+    environment: env
+
+    if: |
+      github.event_name == 'push' &&
+      startsWith(github.ref, 'refs/heads/feature/QADIR/')
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: lts/*
+
+      - name: Install Salesforce CLI
+        run: npm install -g @salesforce/cli
+
+      - name: Authenticate QA 🐒
+        run: |
+          echo "${{ secrets.SF_JWT_KEY_QA }}" > server.key
+          sf org login jwt \
+            --client-id "${{ secrets.SF_CLIENT_ID_QA }}" \
+            --jwt-key-file server.key \
+            --username "${{ secrets.SF_USERNAME_QA }}" \
+            --instance-url https://login.salesforce.com \
+            --set-default
+
+      - name: Validate QA - Full 🐥
+        run: |
+          sf project deploy validate \
+            --source-dir force-app \
+            --test-level RunLocalTests \
+            --wait 30
+
+  deploy-qa-push:
+    runs-on: ubuntu-24.04
+    needs: [setup, validate-qa-push]
+    environment: env
+
+    if: |
+      needs.validate-qa-push.result == 'success' &&
+      github.event_name == 'push' &&
+      startsWith(github.ref, 'refs/heads/feature/QADIR/')
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: lts/*
+
+      - name: Install Salesforce CLI
+        run: npm install -g @salesforce/cli
+
+      - name: Authenticate QA 🐒
+        run: |
+          echo "${{ secrets.SF_JWT_KEY_QA }}" > server.key
+          sf org login jwt \
+            --client-id "${{ secrets.SF_CLIENT_ID_QA }}" \
+            --jwt-key-file server.key \
+            --username "${{ secrets.SF_USERNAME_QA }}" \
+            --instance-url https://login.salesforce.com \
+            --set-default
+
+      - name: Deploy QA - Full 🦧
         run: |
           sf project deploy start \
             --source-dir force-app \
