@@ -2239,6 +2239,11 @@
             <field>Account.RES_Consent_Form_Received_Date__c</field>
             <readable>true</readable>
         </fieldPermissions>
+        <fieldPermissions>
+            <editable>false</editable>
+            <field>Account.RES_Last_Sync_DateTime__c</field>
+            <readable>true</readable>
+        </fieldPermissions>
     <fieldPermissions>
         <editable>true</editable>
         <field>Contact.DIR_Country__c</field>
@@ -2277,6 +2282,11 @@
         <fieldPermissions>
             <editable>false</editable>
             <field>Contact.RES_SAP_Contact_Id__c</field>
+            <readable>true</readable>
+        </fieldPermissions>
+        <fieldPermissions>
+            <editable>true</editable>
+            <field>Contact.RES_Date_of_Birth__c</field>
             <readable>true</readable>
         </fieldPermissions>
     <fieldPermissions>

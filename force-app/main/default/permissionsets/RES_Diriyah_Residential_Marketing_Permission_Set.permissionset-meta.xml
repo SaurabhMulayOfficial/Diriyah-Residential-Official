@@ -749,6 +749,11 @@
         <field>Account.RES_Country_Of_Company_Incorporation_AR__c</field>
         <readable>true</readable>
     </fieldPermissions>
+        <fieldPermissions>
+            <editable>false</editable>
+            <field>Account.RES_Last_Sync_DateTime__c</field>
+            <readable>true</readable>
+        </fieldPermissions>
     <fieldPermissions>
     <editable>true</editable>
     <field>Contract.ActivatedDate</field>
@@ -1055,6 +1060,11 @@
         <field>Contact.RES_City_Arabic__c</field>
         <readable>true</readable>
     </fieldPermissions>
+        <fieldPermissions>
+            <editable>true</editable>
+            <field>Contact.RES_Date_of_Birth__c</field>
+            <readable>true</readable>
+        </fieldPermissions>
     <fieldPermissions>
         <editable>false</editable>
         <field>Lead.RES_Owner_Assignment_Date__c</field>
