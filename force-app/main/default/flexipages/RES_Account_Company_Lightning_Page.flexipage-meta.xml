@@ -60,16 +60,6 @@
             <fieldInstance>
                 <fieldInstanceProperties>
                     <name>uiBehavior</name>
-                    <value>none</value>
-                </fieldInstanceProperties>
-                <fieldItem>Record.RES_Corporate_Title__c</fieldItem>
-                <identifier>RecordRES_Corporate_Title_cField</identifier>
-            </fieldInstance>
-        </itemInstances>
-        <itemInstances>
-            <fieldInstance>
-                <fieldInstanceProperties>
-                    <name>uiBehavior</name>
                     <value>required</value>
                 </fieldInstanceProperties>
                 <fieldItem>Record.Name</fieldItem>
@@ -82,32 +72,8 @@
                     <name>uiBehavior</name>
                     <value>none</value>
                 </fieldInstanceProperties>
-                <fieldItem>Record.RES_Full_Arabic_Name__c</fieldItem>
-                <identifier>RecordRES_Full_Arabic_Name_cField</identifier>
-            </fieldInstance>
-        </itemInstances>
-        <name>Facet-9317228b-9000-4df5-9218-7d1560529bcc</name>
-        <type>Facet</type>
-    </flexiPageRegions>
-    <flexiPageRegions>
-        <itemInstances>
-            <fieldInstance>
-                <fieldInstanceProperties>
-                    <name>uiBehavior</name>
-                    <value>readonly</value>
-                </fieldInstanceProperties>
-                <fieldItem>Record.OwnerId</fieldItem>
-                <identifier>RecordOwnerIdField</identifier>
-            </fieldInstance>
-        </itemInstances>
-        <itemInstances>
-            <fieldInstance>
-                <fieldInstanceProperties>
-                    <name>uiBehavior</name>
-                    <value>readonly</value>
-                </fieldInstanceProperties>
-                <fieldItem>Record.RecordTypeId</fieldItem>
-                <identifier>RecordRecordTypeIdField</identifier>
+                <fieldItem>Record.RES_Corporate_Title__c</fieldItem>
+                <identifier>RecordRES_Corporate_Title_cField</identifier>
             </fieldInstance>
         </itemInstances>
         <itemInstances>
@@ -135,6 +101,40 @@
                         <rightValue>Cityscape</rightValue>
                     </criteria>
                 </visibilityRule>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>readonly</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.RecordTypeId</fieldItem>
+                <identifier>RecordRecordTypeIdField</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <name>Facet-9317228b-9000-4df5-9218-7d1560529bcc</name>
+        <type>Facet</type>
+    </flexiPageRegions>
+    <flexiPageRegions>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.RES_Full_Arabic_Name__c</fieldItem>
+                <identifier>RecordRES_Full_Arabic_Name_cField</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>readonly</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.OwnerId</fieldItem>
+                <identifier>RecordOwnerIdField</identifier>
             </fieldInstance>
         </itemInstances>
         <name>Facet-7694101d-91be-4643-bfaa-6b6ef83dbb25</name>
@@ -227,7 +227,41 @@
                 <identifier>RecordBillingAddressField</identifier>
             </fieldInstance>
         </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.RES_PO_Box__c</fieldItem>
+                <identifier>RecordRES_PO_Box_cField</identifier>
+            </fieldInstance>
+        </itemInstances>
         <name>Facet-df0b0c0c-4ed5-4b7c-8471-185f8c96eceb</name>
+        <type>Facet</type>
+    </flexiPageRegions>
+    <flexiPageRegions>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.RES_City_Arabic__c</fieldItem>
+                <identifier>RecordRES_City_Arabic_cField</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.RES_Country_Arabic__c</fieldItem>
+                <identifier>RecordRES_Country_Arabic_cField</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <name>Facet-c1a7cde6-082f-431d-b082-e99f218d982c</name>
         <type>Facet</type>
     </flexiPageRegions>
     <flexiPageRegions>
@@ -239,6 +273,16 @@
                 </componentInstanceProperties>
                 <componentName>flexipage:column</componentName>
                 <identifier>flexipage_column2</identifier>
+            </componentInstance>
+        </itemInstances>
+        <itemInstances>
+            <componentInstance>
+                <componentInstanceProperties>
+                    <name>body</name>
+                    <value>Facet-c1a7cde6-082f-431d-b082-e99f218d982c</value>
+                </componentInstanceProperties>
+                <componentName>flexipage:column</componentName>
+                <identifier>flexipage_column5</identifier>
             </componentInstance>
         </itemInstances>
         <name>Facet-a5232ef2-050a-4584-96f2-d9fa0846b508</name>
@@ -323,6 +367,26 @@
                 <identifier>RecordTypeField</identifier>
             </fieldInstance>
         </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.RES_VAT_Registration_Number__c</fieldItem>
+                <identifier>RecordRES_VAT_Registration_Number_cField</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.RES_Company_Organization__c</fieldItem>
+                <identifier>RecordRES_Company_Organization_cField</identifier>
+            </fieldInstance>
+        </itemInstances>
         <name>Facet-c4d8a41f-3c71-4252-9abb-2582988963f7</name>
         <type>Facet</type>
     </flexiPageRegions>
@@ -345,6 +409,26 @@
                 </fieldInstanceProperties>
                 <fieldItem>Record.Rating</fieldItem>
                 <identifier>RecordRatingField</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.RES_Company_Type__c</fieldItem>
+                <identifier>RecordRES_Company_Type_cField</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.RES_Company_Organization_Arabic__c</fieldItem>
+                <identifier>RecordRES_Company_Organization_Arabic_cField</identifier>
             </fieldInstance>
         </itemInstances>
         <name>Facet-b5114906-aff5-45ea-8b75-bb2b2ff14765</name>

@@ -102,6 +102,11 @@
             <field>ContractItemPrice.RES_Discount_Type__c</field>
             <readable>true</readable>
         </fieldPermissions>
+        <fieldPermissions>
+            <editable>false</editable>
+            <field>ContractItemPrice.Price</field>
+            <readable>true</readable>
+        </fieldPermissions>
 <fieldPermissions>
         <editable>true</editable>
         <field>ProductAttributeDefinition.RES_Area_Type__c</field>
