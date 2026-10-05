@@ -21,6 +21,19 @@
     <apiVersion>67.0</apiVersion>
     <areMetricsLoggedToDataCloud>false</areMetricsLoggedToDataCloud>
     <assignments>
+        <name>Fault_Message</name>
+        <label>Fault Message</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignmentItems>
+            <assignToReference>faultMessage</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>$Flow.FaultMessage</elementReference>
+            </value>
+        </assignmentItems>
+    </assignments>
+    <assignments>
         <name>Hydrate_Merge_Fields</name>
         <label>Hydrate Merge Fields</label>
         <locationX>0</locationX>
@@ -271,6 +284,28 @@
             <label>Not Null</label>
         </rules>
     </decisions>
+    <decisions>
+        <name>If_QLI_Not_null</name>
+        <label>If QLI Not null</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Not_Null_QLI</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>Get_QLI</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Update_Product</targetReference>
+            </connector>
+            <label>Not Null</label>
+        </rules>
+    </decisions>
     <environments>Default</environments>
     <formulas>
         <name>awiURL</name>
@@ -435,6 +470,34 @@
         <object>Group</object>
         <storeOutputAutomatically>true</storeOutputAutomatically>
     </recordLookups>
+    <recordLookups>
+        <name>Get_QLI</name>
+        <label>Get QLI</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>If_QLI_Not_null</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>RES_CIP_Type__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <stringValue>Unit</stringValue>
+            </value>
+        </filters>
+        <filters>
+            <field>QuoteId</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>get_Contract.SourceQuoteId</elementReference>
+            </value>
+        </filters>
+        <getFirstRecordOnly>true</getFirstRecordOnly>
+        <object>QuoteLineItem</object>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
     <recordUpdates>
         <name>Update_Contract_As_Approval_Rejected</name>
         <label>Update Contract As &quot;Approval Rejected&quot;</label>
@@ -443,6 +506,10 @@
         <connector>
             <targetReference>Mark_S4_Contract_as_Termination_Rejected</targetReference>
         </connector>
+        <faultConnector>
+            <isGoTo>true</isGoTo>
+            <targetReference>Fault_Message</targetReference>
+        </faultConnector>
         <filterLogic>and</filterLogic>
         <filters>
             <field>Id</field>
@@ -464,6 +531,12 @@
         <label>Update contract to Cancelled</label>
         <locationX>0</locationX>
         <locationY>0</locationY>
+        <connector>
+            <targetReference>Get_QLI</targetReference>
+        </connector>
+        <faultConnector>
+            <targetReference>Fault_Message</targetReference>
+        </faultConnector>
         <filterLogic>and</filterLogic>
         <filters>
             <field>Id</field>
@@ -479,6 +552,49 @@
             </value>
         </inputAssignments>
         <object>Contract</object>
+    </recordUpdates>
+    <recordUpdates>
+        <name>Update_Product</name>
+        <label>Update Product</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <faultConnector>
+            <isGoTo>true</isGoTo>
+            <targetReference>Fault_Message</targetReference>
+        </faultConnector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Id</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>Get_QLI.Product2Id</elementReference>
+            </value>
+        </filters>
+        <inputAssignments>
+            <field>RES_Is_In_Soft_Hold_Extension__c</field>
+            <value>
+                <booleanValue>false</booleanValue>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>RES_Reserved_By_Contract__c</field>
+        </inputAssignments>
+        <inputAssignments>
+            <field>RES_Reserved_By_Quote__c</field>
+        </inputAssignments>
+        <inputAssignments>
+            <field>RES_Soft_Hold_Start__c</field>
+        </inputAssignments>
+        <inputAssignments>
+            <field>RES_Soft_Hold_Until__c</field>
+        </inputAssignments>
+        <inputAssignments>
+            <field>RES_Unit_Status__c</field>
+            <value>
+                <stringValue>Available</stringValue>
+            </value>
+        </inputAssignments>
+        <object>Product2</object>
     </recordUpdates>
     <start>
         <locationX>0</locationX>
@@ -640,6 +756,13 @@
         <dataType>String</dataType>
         <isCollection>false</isCollection>
         <isInput>true</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <name>faultMessage</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
         <isOutput>false</isOutput>
     </variables>
     <variables>

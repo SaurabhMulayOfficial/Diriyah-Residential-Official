@@ -35,6 +35,7 @@ private class RES_SoftHoldPostApprovalActionsTest {
         Product2 product1 = new Product2(
             Name = 'Unit A101',
             IsActive = true,
+            RES_CIP_Type__c = 'Unit',
             RES_Unit_Status__c = 'Soft Hold',
             RES_Soft_Hold_Until__c = System.now().addHours(2),
             RES_Is_In_Soft_Hold_Extension__c = true,
@@ -45,6 +46,7 @@ private class RES_SoftHoldPostApprovalActionsTest {
         Product2 product2 = new Product2(
             Name = 'Unit A102',
             IsActive = true,
+            RES_CIP_Type__c = 'Unit',
             RES_Unit_Status__c = 'Soft Hold',
             RES_Soft_Hold_Until__c = System.now().addHours(-2),
             RES_Is_In_Soft_Hold_Extension__c = true
@@ -54,6 +56,7 @@ private class RES_SoftHoldPostApprovalActionsTest {
         Product2 product3 = new Product2(
             Name = 'Unit A103',
             IsActive = true,
+            RES_CIP_Type__c = 'Unit',
             RES_Unit_Status__c = 'Soft Hold',
             RES_Soft_Hold_Until__c = System.now().addHours(-2),
             RES_Is_In_Soft_Hold_Extension__c = true
@@ -473,6 +476,7 @@ private class RES_SoftHoldPostApprovalActionsTest {
         Product2 product = new Product2(
             Name = 'Unit A104',
             IsActive = true,
+            RES_CIP_Type__c = 'Unit',
             RES_Unit_Status__c = 'Soft Hold',
             RES_Soft_Hold_Until__c = System.now().addHours(5),
             RES_Is_In_Soft_Hold_Extension__c = true
