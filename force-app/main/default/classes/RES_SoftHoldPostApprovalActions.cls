@@ -24,7 +24,9 @@ public with sharing class RES_SoftHoldPostApprovalActions {
         Map<Id, QuoteLineItem> productToQuoteMap = new Map<Id, QuoteLineItem>();
 
         for(QuoteLineItem quoteLineItem : quoteLineItems){
-            productToQuoteMap.put(quoteLineItem.QuoteId, quoteLineItem);
+            if(quoteLineItem.RES_CIP_Type__c == 'Unit'){
+                productToQuoteMap.put(quoteLineItem.QuoteId, quoteLineItem);
+            }   
         }
 
         List<Product2> productsToUpdate = new List<Product2>();
