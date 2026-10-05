@@ -346,12 +346,6 @@
             <name>Update_Approval_Status_Approved</name>
             <actionName>RES_POC_Update_Approval_Status_Autolaunched_Flow</actionName>
             <actionType>stepBackground</actionType>
-            <assignees>
-                <assignee>
-                    <elementReference>$Label.RES_Admin_Username</elementReference>
-                </assignee>
-                <assigneeType>User</assigneeType>
-            </assignees>
             <canAssigneeEdit>false</canAssigneeEdit>
             <debugSimulateStep>false</debugSimulateStep>
             <entryConditionLogic>and</entryConditionLogic>
@@ -370,7 +364,7 @@
             </inputParameters>
             <label>Update Approval Status - Approved</label>
             <requiresAsyncProcessing>false</requiresAsyncProcessing>
-            <runAsUser>true</runAsUser>
+            <runAsUser>false</runAsUser>
             <shouldLock>false</shouldLock>
             <stepSubtype>BackgroundStep</stepSubtype>
         </stageSteps>
