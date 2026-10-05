@@ -266,6 +266,127 @@ jobs:
             --wait 30
 
 
+  delta-validate-uat:
+    runs-on: ubuntu-24.04
+    needs: setup
+    environment: env
+
+    if: |
+      github.event_name == 'pull_request' &&
+      github.event.pull_request.merged == false &&
+      contains(github.event.pull_request.labels.*.name, 'UAT-Delta')
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: ${{ github.event.pull_request.head.sha }}
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: lts/*
+
+      - name: Install Salesforce CLI
+        run: npm install -g @salesforce/cli
+
+      - name: Install sfdx-git-delta
+        run: |
+          echo "y" | sf plugins install sfdx-git-delta
+
+      - name: Generate Delta Package
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          echo "BASE: $BASE_SHA"
+          echo "HEAD: $HEAD_SHA"
+
+          mkdir -p delta
+
+          sf sgd source delta \
+            --from "$BASE_SHA" \
+            --to "$HEAD_SHA" \
+            --output-dir delta \
+            --generate-delta
+
+      - name: Authenticate UAT 🐒
+        run: |
+          echo "${{ secrets.SF_JWT_KEY_UAT }}" > server.key
+
+          sf org login jwt \
+            --client-id "${{ secrets.SF_CLIENT_ID_UAT }}" \
+            --jwt-key-file server.key \
+            --username "${{ secrets.SF_USERNAME_UAT }}" \
+            --instance-url https://test.salesforce.com \
+            --set-default
+
+      - name: Validate UAT - Delta 🐥
+        run: |
+          sf project deploy validate \
+            --source-dir delta/force-app \
+            --test-level RunRelevantTests \
+            --wait 30
+
+  delta-deploy-uat:
+    runs-on: ubuntu-24.04
+    needs: [setup, delta-validate-uat]
+    environment: env
+
+    if: |
+      needs.delta-validate-uat.result == 'success' &&
+      github.event_name == 'pull_request' &&
+      github.event.pull_request.merged == true &&
+      contains(github.event.pull_request.labels.*.name, 'UAT-Delta')
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: ${{ github.event.pull_request.head.sha }}
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: lts/*
+
+      - name: Install Salesforce CLI
+        run: npm install -g @salesforce/cli
+
+      - name: Install sfdx-git-delta
+        run: |
+          echo "y" | sf plugins install sfdx-git-delta
+
+      - name: Generate Delta Package
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          mkdir -p delta
+          sf sgd source delta \
+            --from "$BASE_SHA" \
+            --to "$HEAD_SHA" \
+            --output-dir delta \
+            --generate-delta
+
+      - name: Authenticate UAT 🐒
+        run: |
+          echo "${{ secrets.SF_JWT_KEY_UAT }}" > server.key
+
+          sf org login jwt \
+            --client-id "${{ secrets.SF_CLIENT_ID_UAT }}" \
+            --jwt-key-file server.key \
+            --username "${{ secrets.SF_USERNAME_UAT }}" \
+            --instance-url https://test.salesforce.com \
+            --set-default
+
+      - name: Deploy UAT - Delta 🦧
+        run: |
+          sf project deploy start \
+            --source-dir delta/force-app \
+            --test-level RunRelevantTests \
+            --ignore-conflicts \
+            --wait 30
+
+
   validate-uat:
     runs-on: ubuntu-24.04
     needs: setup
