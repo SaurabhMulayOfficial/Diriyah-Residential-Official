@@ -72,7 +72,7 @@ public with sharing class RES_IntegrationQueueable implements Queueable, Databas
             for (SObject record : records) {
                 accounts.add((Account) record);
             }
-            RES_AccountIntegrationService.syncAccounts(accounts, requestMethod, triggerContext);
+            //RES_AccountIntegrationService.syncAccounts(accounts, requestMethod, triggerContext);
         }
         
         else if(serviceName == 'Unit_Sync'){
