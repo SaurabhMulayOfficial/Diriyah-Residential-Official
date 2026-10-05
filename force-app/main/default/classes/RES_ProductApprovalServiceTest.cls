@@ -40,6 +40,57 @@ private class RES_ProductApprovalServiceTest {
         return result;
     }
 
+    /** Configures the Service Charge Rate attribute override (RES_ProductSCRateValidation requires this before a Residential Sales unit can go Active/Available) on the given product, reusing the org's real AttributeDefinition/ProductClassificationAttr - DeveloperName is unique org-wide, so this must run under SeeAllData=true. */
+    private static void insertServiceChargeRateOverride(Id productId) {
+        String scRateDeveloperName = Label.RES_Service_Charge_Rate_Attribute;
+
+        List<AttributeDefinition> existingScRateAttrs = [
+            SELECT Id FROM AttributeDefinition WHERE DeveloperName = :scRateDeveloperName LIMIT 1
+        ];
+        AttributeDefinition scRateAttr;
+        if (!existingScRateAttrs.isEmpty()) {
+            scRateAttr = existingScRateAttrs[0];
+        } else {
+            scRateAttr = new AttributeDefinition(
+                Name = 'RES Test ProductApproval SC Rate Attribute', Label = 'RES Test ProductApproval SC Rate Attribute',
+                DeveloperName = scRateDeveloperName, DataType = 'Number', IsActive = true
+            );
+            insert scRateAttr;
+        }
+
+        List<ProductClassificationAttr> existingClassificationAttrs = [
+            SELECT Id, ProductClassificationId FROM ProductClassificationAttr WHERE AttributeDefinitionId = :scRateAttr.Id LIMIT 1
+        ];
+        ProductClassificationAttr classificationAttr;
+        if (!existingClassificationAttrs.isEmpty()) {
+            classificationAttr = existingClassificationAttrs[0];
+        } else {
+            ProductClassification classification = new ProductClassification(
+                Code = 'RES_TEST_PRODAPPROVAL_' + String.valueOf(Crypto.getRandomInteger()).right(8),
+                Name = 'RES Test ProductApproval Classification',
+                Status = 'Active'
+            );
+            insert classification;
+            classificationAttr = new ProductClassificationAttr(
+                Name = 'RES Test ProductApproval Classification Attr',
+                ProductClassificationId = classification.Id,
+                AttributeDefinitionId = scRateAttr.Id
+            );
+            insert classificationAttr;
+        }
+
+        // Product2.BasedOnId must match the ProductClassificationAttr's own classification
+        update new Product2(Id = productId, BasedOnId = classificationAttr.ProductClassificationId);
+
+        insert new ProductAttributeDefinition(
+            Name = 'RES Test ProductApproval SC Rate Override',
+            ProductClassificationAttributeId = classificationAttr.Id,
+            Product2Id = productId,
+            AttributeDefinitionId = scRateAttr.Id,
+            DefaultValue = '120'
+        );
+    }
+
     // ============================================================
     // getUserApprovalAccess
     // ============================================================
@@ -536,7 +587,7 @@ private class RES_ProductApprovalServiceTest {
      * Test that when a product with RES_Update_Requested__c = true
      * is approved and moves to Available, both update fields are cleared.
      */
-    @isTest
+    @isTest(SeeAllData=true)
     static void testApproveProducts_withUpdateFlag_clearsUpdateFields() {
         // Get existing approval config
         List<RES_Product_Approval_Config__mdt> configs = [
@@ -560,6 +611,7 @@ private class RES_ProductApprovalServiceTest {
             RES_Update_Comments__c = 'Test update comments'
         );
         insert updateProduct;
+        insertServiceChargeRateOverride(updateProduct.Id);
 
         User admin = RES_TestDataFactory.createGenericUser('System Administrator');
 
@@ -589,7 +641,7 @@ private class RES_ProductApprovalServiceTest {
      * is approved at DevCo level (re-approval flow), it goes directly
      * to Available and update fields are cleared.
      */
-    @isTest
+    @isTest(SeeAllData=true)
     static void testApproveProducts_reApprovalFlow_goesDirectlyToAvailable() {
         RES_IntegrationRequestEventService.batchSubmitter = new RES_IntegrationRequestEventService.CountingBatchSubmitter();
         // Create product at Pending DevCo Approval with update flag
@@ -601,6 +653,7 @@ private class RES_ProductApprovalServiceTest {
             RES_Update_Comments__c = 'Unit updated after initial approval'
         );
         insert reApprovalProduct;
+        insertServiceChargeRateOverride(reApprovalProduct.Id);
 
         User admin = RES_TestDataFactory.createGenericUser('System Administrator');
 
