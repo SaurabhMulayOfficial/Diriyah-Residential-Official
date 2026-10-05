@@ -118,6 +118,7 @@ jobs:
 
       - name: Generate Delta Package
         if: steps.deployment-mode.outputs.deployment_type == 'delta'
+        id: delta
         env:
           BASE_SHA: ${{ github.event.pull_request.base.sha }}
           HEAD_SHA: ${{ github.event.pull_request.head.sha }}
@@ -133,6 +134,14 @@ jobs:
             --output-dir delta \
             --generate-delta
 
+          if [ -d "delta/force-app" ] && [ "$(find delta/force-app -mindepth 1 | head -1)" ]; then
+            echo "has_changes=true" >> "$GITHUB_OUTPUT"
+            echo "Delta has changes."
+          else
+            echo "has_changes=false" >> "$GITHUB_OUTPUT"
+            echo "Delta is empty — nothing to deploy."
+          fi
+
       - name: Authenticate QA 🐒
         run: |
           echo "${{ secrets.SF_JWT_KEY_QA }}" > server.key
@@ -145,7 +154,7 @@ jobs:
             --set-default
 
       - name: Validate QA - Delta 🐥
-        if: steps.deployment-mode.outputs.deployment_type == 'delta'
+        if: steps.deployment-mode.outputs.deployment_type == 'delta' && steps.delta.outputs.has_changes == 'true'
         run: |
           sf project deploy validate \
             --source-dir delta/force-app \
@@ -224,17 +233,25 @@ jobs:
 
       - name: Generate Delta Package
         if: steps.deployment-mode.outputs.deployment_type == 'delta'
+        id: delta
         env:
           BASE_SHA: ${{ github.event.pull_request.base.sha }}
           HEAD_SHA: ${{ github.event.pull_request.head.sha }}
         run: |
-        
           mkdir -p delta
           sf sgd source delta \
             --from "$BASE_SHA" \
             --to "$HEAD_SHA" \
             --output-dir delta \
             --generate-delta
+
+          if [ -d "delta/force-app" ] && [ "$(find delta/force-app -mindepth 1 | head -1)" ]; then
+            echo "has_changes=true" >> "$GITHUB_OUTPUT"
+            echo "Delta has changes."
+          else
+            echo "has_changes=false" >> "$GITHUB_OUTPUT"
+            echo "Delta is empty — nothing to deploy."
+          fi
 
       - name: Authenticate QA 🐒
         run: |
@@ -248,7 +265,7 @@ jobs:
             --set-default
 
       - name: Deploy QA - Delta 🦧
-        if: steps.deployment-mode.outputs.deployment_type == 'delta'
+        if: steps.deployment-mode.outputs.deployment_type == 'delta' && steps.delta.outputs.has_changes == 'true'
         run: |
           sf project deploy start \
             --source-dir delta/force-app \
@@ -294,6 +311,7 @@ jobs:
           echo "y" | sf plugins install sfdx-git-delta
 
       - name: Generate Delta Package
+        id: delta
         env:
           BASE_SHA: ${{ github.event.pull_request.base.sha }}
           HEAD_SHA: ${{ github.event.pull_request.head.sha }}
@@ -309,6 +327,14 @@ jobs:
             --output-dir delta \
             --generate-delta
 
+          if [ -d "delta/force-app" ] && [ "$(find delta/force-app -mindepth 1 | head -1)" ]; then
+            echo "has_changes=true" >> "$GITHUB_OUTPUT"
+            echo "Delta has changes."
+          else
+            echo "has_changes=false" >> "$GITHUB_OUTPUT"
+            echo "Delta is empty — nothing to deploy."
+          fi
+
       - name: Authenticate UAT 🐒
         run: |
           echo "${{ secrets.SF_JWT_KEY_UAT }}" > server.key
@@ -321,6 +347,7 @@ jobs:
             --set-default
 
       - name: Validate UAT - Delta 🐥
+        if: steps.delta.outputs.has_changes == 'true'
         run: |
           sf project deploy validate \
             --source-dir delta/force-app \
@@ -356,6 +383,7 @@ jobs:
           echo "y" | sf plugins install sfdx-git-delta
 
       - name: Generate Delta Package
+        id: delta
         env:
           BASE_SHA: ${{ github.event.pull_request.base.sha }}
           HEAD_SHA: ${{ github.event.pull_request.head.sha }}
@@ -366,6 +394,14 @@ jobs:
             --to "$HEAD_SHA" \
             --output-dir delta \
             --generate-delta
+
+          if [ -d "delta/force-app" ] && [ "$(find delta/force-app -mindepth 1 | head -1)" ]; then
+            echo "has_changes=true" >> "$GITHUB_OUTPUT"
+            echo "Delta has changes."
+          else
+            echo "has_changes=false" >> "$GITHUB_OUTPUT"
+            echo "Delta is empty — nothing to deploy."
+          fi
 
       - name: Authenticate UAT 🐒
         run: |
@@ -379,6 +415,7 @@ jobs:
             --set-default
 
       - name: Deploy UAT - Delta 🦧
+        if: steps.delta.outputs.has_changes == 'true'
         run: |
           sf project deploy start \
             --source-dir delta/force-app \
