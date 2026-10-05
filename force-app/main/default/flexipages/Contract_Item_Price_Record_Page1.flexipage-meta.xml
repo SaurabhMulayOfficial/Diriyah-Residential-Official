@@ -82,8 +82,8 @@
                     <name>uiBehavior</name>
                     <value>none</value>
                 </fieldInstanceProperties>
-                <fieldItem>Record.ProductSellingModelId</fieldItem>
-                <identifier>RecordProductSellingModelIdField</identifier>
+                <fieldItem>Record.DiscountType</fieldItem>
+                <identifier>RecordDiscountTypeField</identifier>
             </fieldInstance>
         </itemInstances>
         <itemInstances>
@@ -92,8 +92,8 @@
                     <name>uiBehavior</name>
                     <value>none</value>
                 </fieldInstanceProperties>
-                <fieldItem>Record.DiscountType</fieldItem>
-                <identifier>RecordDiscountTypeField</identifier>
+                <fieldItem>Record.ProductSellingModelId</fieldItem>
+                <identifier>RecordProductSellingModelIdField</identifier>
             </fieldInstance>
         </itemInstances>
         <name>Facet-fa8f6035-6591-47a1-9f55-ff3d78d256f2</name>
@@ -124,10 +124,20 @@
             <fieldInstance>
                 <fieldInstanceProperties>
                     <name>uiBehavior</name>
-                    <value>readonly</value>
+                    <value>none</value>
                 </fieldInstanceProperties>
-                <fieldItem>Record.SellingModelType</fieldItem>
-                <identifier>RecordSellingModelTypeField</identifier>
+                <fieldItem>Record.AdjustmentMethod</fieldItem>
+                <identifier>RecordAdjustmentMethodField</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.EndDate</fieldItem>
+                <identifier>RecordEndDateField</identifier>
             </fieldInstance>
         </itemInstances>
         <itemInstances>
@@ -144,20 +154,10 @@
             <fieldInstance>
                 <fieldInstanceProperties>
                     <name>uiBehavior</name>
-                    <value>none</value>
+                    <value>readonly</value>
                 </fieldInstanceProperties>
-                <fieldItem>Record.AdjustmentMethod</fieldItem>
-                <identifier>RecordAdjustmentMethodField</identifier>
-            </fieldInstance>
-        </itemInstances>
-        <itemInstances>
-            <fieldInstance>
-                <fieldInstanceProperties>
-                    <name>uiBehavior</name>
-                    <value>none</value>
-                </fieldInstanceProperties>
-                <fieldItem>Record.EndDate</fieldItem>
-                <identifier>RecordEndDateField</identifier>
+                <fieldItem>Record.SellingModelType</fieldItem>
+                <identifier>RecordSellingModelTypeField</identifier>
             </fieldInstance>
         </itemInstances>
         <name>Facet-adff529c-3a55-40a2-ac1f-436427ab1522</name>
