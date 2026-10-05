@@ -258,7 +258,7 @@ public with sharing class RES_IntegrationRequestEventService {
 
             if (!accountIds.isEmpty()) {
                 List<sObject> records = new List<sObject>();
-                records.addAll(new RES_AccountDAOLayer().getAccountsByIds(accountIds).values());
+                //records.addAll(new RES_AccountDAOLayer().getAccountsByIds(accountIds).values());
                 enqueueService(ACCOUNT_INTEGRATION, records, 'I', 'GET');
             }
         }
@@ -276,7 +276,7 @@ public with sharing class RES_IntegrationRequestEventService {
 
             if (!accountIds.isEmpty()) {
                 List<sObject> records = new List<sObject>();
-                records.addAll(new RES_AccountDAOLayer().getAccountsByIds(accountIds).values());
+                //records.addAll(new RES_AccountDAOLayer().getAccountsByIds(accountIds).values());
                 enqueueService(ACCOUNT_INTEGRATION, records, 'U', 'GET');
             }
         }
