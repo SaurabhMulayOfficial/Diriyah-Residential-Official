@@ -1,15 +1,30 @@
 @IsTest
 private class RES_SoftHoldPostApprovalActionsTest {
 
-    @TestSetup
-    static void createTestData() {
+    // Holds the Ids createTestData() creates, so SeeAllData=true callers never have to
+    // re-query generic fixture Names (e.g. 'Unit A102', 'Test Quote 2') - those aren't
+    // guaranteed unique against real org data, making a LIMIT 1 re-query non-deterministic.
+    private class TestDataIds {
+        Id product1Id;
+        Id product2Id;
+        Id product3Id;
+        Id quote1Id;
+        Id quote2Id;
+        Id quote3Id;
+    }
+
+    /** Not @TestSetup: testApproveExpiredSoftHold/testRejectExpiredSoftHold need SeeAllData=true to safely reuse the org's real Service Charge Rate AttributeDefinition, and a class can't mix @TestSetup with any SeeAllData=true method. Every test method calls this explicitly instead. */
+    static TestDataIds createTestData() {
+        RES_Config_Switch__c config = RES_Config_Switch__c.getOrgDefaults();
+        config.RES_Triggers_Off__c = true;
+        upsert config;
 
         Account acc = new Account(
             Name = 'Test Account'
         );
         insert acc;
 
-        Id standardPricebookId = Test.getStandardPricebookId();
+        Id targetPricebookId = resolvePricebookId();
 
         Id recordTypeId = Schema.SObjectType.Product2
             .getRecordTypeInfosByDeveloperName()
@@ -51,29 +66,9 @@ private class RES_SoftHoldPostApprovalActionsTest {
         };
 
         List<PricebookEntry> pbes = new List<PricebookEntry>();
-
-        pbes.add(new PricebookEntry(
-            Pricebook2Id = standardPricebookId,
-            Product2Id = product1.Id,
-            UnitPrice = 100,
-            IsActive = true
-        ));
-
-        pbes.add(new PricebookEntry(
-            Pricebook2Id = standardPricebookId,
-            Product2Id = product2.Id,
-            UnitPrice = 100,
-            IsActive = true
-        ));
-
-        pbes.add(new PricebookEntry(
-            Pricebook2Id = standardPricebookId,
-            Product2Id = product3.Id,
-            UnitPrice = 100,
-            IsActive = true
-        ));
-
-        insert pbes;
+        pbes.add(insertTargetPricebookEntry(product1.Id, 100));
+        pbes.add(insertTargetPricebookEntry(product2.Id, 100));
+        pbes.add(insertTargetPricebookEntry(product3.Id, 100));
 
         // Opportunity 1
         Opportunity opp1 = new Opportunity(
@@ -81,7 +76,7 @@ private class RES_SoftHoldPostApprovalActionsTest {
             AccountId = acc.Id,
             StageName = 'Proposal',
             CloseDate = Date.today(),
-            Pricebook2Id = standardPricebookId
+            Pricebook2Id = targetPricebookId
         );
         insert opp1;
 
@@ -91,7 +86,7 @@ private class RES_SoftHoldPostApprovalActionsTest {
             AccountId = acc.Id,
             StageName = 'Proposal',
             CloseDate = Date.today(),
-            Pricebook2Id = standardPricebookId
+            Pricebook2Id = targetPricebookId
         );
         insert opp2;
 
@@ -101,7 +96,7 @@ private class RES_SoftHoldPostApprovalActionsTest {
             AccountId = acc.Id,
             StageName = 'Proposal',
             CloseDate = Date.today(),
-            Pricebook2Id = standardPricebookId
+            Pricebook2Id = targetPricebookId
         );
         insert opp3;
 
@@ -109,21 +104,21 @@ private class RES_SoftHoldPostApprovalActionsTest {
         Quote quote1 = new Quote(
             Name = 'Test Quote 1',
             OpportunityId = opp1.Id,
-            Pricebook2Id = standardPricebookId,
+            Pricebook2Id = targetPricebookId,
             RES_Extend_Soft_Hold_By_Hours__c = 8
         );
 
         Quote quote2 = new Quote(
             Name = 'Test Quote 2',
             OpportunityId = opp2.Id,
-            Pricebook2Id = standardPricebookId,
+            Pricebook2Id = targetPricebookId,
             RES_Extend_Soft_Hold_By_Hours__c = 8
         );
 
         Quote quote3 = new Quote(
             Name = 'Test Quote 3',
             OpportunityId = opp3.Id,
-            Pricebook2Id = standardPricebookId,
+            Pricebook2Id = targetPricebookId,
             RES_Extend_Soft_Hold_By_Hours__c = 8
         );
 
@@ -162,6 +157,90 @@ private class RES_SoftHoldPostApprovalActionsTest {
             qli2,
             qli3
         };
+
+        TestDataIds ids = new TestDataIds();
+        ids.product1Id = product1.Id;
+        ids.product2Id = product2.Id;
+        ids.product3Id = product3.Id;
+        ids.quote1Id = quote1.Id;
+        ids.quote2Id = quote2.Id;
+        ids.quote3Id = quote3.Id;
+        return ids;
+    }
+
+    /** Resolves the Pricebook2Id to use for test Quotes/PricebookEntries. RES_Quote_Before_Insert_Set_Pricebook (a pre-existing, active flow) force-reassigns every new Quote's Pricebook2Id to whichever Pricebook2 shares a Name with the Quote's (sole, default) RecordType - "Residential Sales" in this org. Under a plain @isTest context that real Pricebook2 is invisible (not SeeAllData), so the flow's lookup finds nothing and silently no-ops, leaving Test.getStandardPricebookId() as the only usable value. Under SeeAllData=true it IS visible, so the flow fires - this resolves to that same pricebook so the PricebookEntry/Quote/QuoteLineItem the test creates match what the flow will force anyway. */
+    private static Id resolvePricebookId() {
+        List<Pricebook2> residentialSalesPricebooks = [SELECT Id FROM Pricebook2 WHERE Name = 'Residential Sales' LIMIT 1];
+        return residentialSalesPricebooks.isEmpty() ? Test.getStandardPricebookId() : residentialSalesPricebooks[0].Id;
+    }
+
+    /** The real Standard Price Book's Id - direct query works once SeeAllData=true makes it visible; falls back to Test.getStandardPricebookId() under a plain @isTest context where a direct Pricebook2 query returns 0 rows. */
+    private static Id standardPricebookId() {
+        List<Pricebook2> standardPricebooks = [SELECT Id FROM Pricebook2 WHERE IsStandard = true LIMIT 1];
+        return standardPricebooks.isEmpty() ? Test.getStandardPricebookId() : standardPricebooks[0].Id;
+    }
+
+    /** Inserts and returns the PricebookEntry a Quote/QuoteLineItem should reference for this product, on whatever pricebook resolvePricebookId() targets. A custom (non-standard) pricebook entry requires a standard price to already exist for the same product/selling model/currency, so when the target pricebook isn't the Standard Price Book, a standard-priced entry is inserted first. */
+    private static PricebookEntry insertTargetPricebookEntry(Id productId, Decimal unitPrice) {
+        Id targetId = resolvePricebookId();
+        Id standardId = standardPricebookId();
+        if (targetId != standardId) {
+            insert new PricebookEntry(Pricebook2Id = standardId, Product2Id = productId, UnitPrice = unitPrice, IsActive = true);
+        }
+        PricebookEntry pbe = new PricebookEntry(Pricebook2Id = targetId, Product2Id = productId, UnitPrice = unitPrice, IsActive = true);
+        insert pbe;
+        return pbe;
+    }
+
+    /** Configures the Service Charge Rate attribute override (RES_ProductSCRateValidation requires this before a Residential Sales unit can go Available) on the given product, reusing the org's real AttributeDefinition/ProductClassificationAttr - DeveloperName is unique org-wide, so this must run under SeeAllData=true. */
+    private static void insertServiceChargeRateOverride(Id productId) {
+        String scRateDeveloperName = Label.RES_Service_Charge_Rate_Attribute;
+
+        List<AttributeDefinition> existingScRateAttrs = [
+            SELECT Id FROM AttributeDefinition WHERE DeveloperName = :scRateDeveloperName LIMIT 1
+        ];
+        AttributeDefinition scRateAttr;
+        if (!existingScRateAttrs.isEmpty()) {
+            scRateAttr = existingScRateAttrs[0];
+        } else {
+            scRateAttr = new AttributeDefinition(
+                Name = 'RES Test SoftHold SC Rate Attribute', Label = 'RES Test SoftHold SC Rate Attribute',
+                DeveloperName = scRateDeveloperName, DataType = 'Number', IsActive = true
+            );
+            insert scRateAttr;
+        }
+
+        List<ProductClassificationAttr> existingClassificationAttrs = [
+            SELECT Id, ProductClassificationId FROM ProductClassificationAttr WHERE AttributeDefinitionId = :scRateAttr.Id LIMIT 1
+        ];
+        ProductClassificationAttr classificationAttr;
+        if (!existingClassificationAttrs.isEmpty()) {
+            classificationAttr = existingClassificationAttrs[0];
+        } else {
+            ProductClassification classification = new ProductClassification(
+                Code = 'RES_TEST_SOFTHOLD_' + String.valueOf(Crypto.getRandomInteger()).right(8),
+                Name = 'RES Test SoftHold Classification',
+                Status = 'Active'
+            );
+            insert classification;
+            classificationAttr = new ProductClassificationAttr(
+                Name = 'RES Test SoftHold Classification Attr',
+                ProductClassificationId = classification.Id,
+                AttributeDefinitionId = scRateAttr.Id
+            );
+            insert classificationAttr;
+        }
+
+        // Product2.BasedOnId must match the ProductClassificationAttr's own classification
+        update new Product2(Id = productId, BasedOnId = classificationAttr.ProductClassificationId);
+
+        insert new ProductAttributeDefinition(
+            Name = 'RES Test SoftHold SC Rate Override',
+            ProductClassificationAttributeId = classificationAttr.Id,
+            Product2Id = productId,
+            AttributeDefinitionId = scRateAttr.Id,
+            DefaultValue = '120'
+        );
     }
 
 
@@ -178,6 +257,7 @@ private class RES_SoftHoldPostApprovalActionsTest {
      */
     @IsTest
     static void testApproveFutureSoftHold() {
+        createTestData();
 
         Quote quote = [
             SELECT Id,
@@ -253,16 +333,18 @@ private class RES_SoftHoldPostApprovalActionsTest {
      * Product becomes Available if the resulting date
      * is not in the future.
      */
-    @IsTest
+    @IsTest(SeeAllData=true)
     static void testApproveExpiredSoftHold() {
+        TestDataIds ids = createTestData();
 
         Quote quote = [
             SELECT Id,
                     RES_Extend_Soft_Hold_By_Hours__c
             FROM Quote
-            WHERE Name = 'Test Quote 2'
-            LIMIT 1
+            WHERE Id = :ids.quote2Id
         ];
+
+        insertServiceChargeRateOverride(ids.product2Id);
 
         // Make the extension sufficiently negative/short so
         // the resulting date is in the past.
@@ -290,8 +372,7 @@ private class RES_SoftHoldPostApprovalActionsTest {
                     RES_Unit_Status__c,
                     RES_Is_In_Soft_Hold_Extension__c
             FROM Product2
-            WHERE Name = 'Unit A102'
-            LIMIT 1
+            WHERE Id = :ids.product2Id
         ];
 
         System.assertEquals(
@@ -317,16 +398,18 @@ private class RES_SoftHoldPostApprovalActionsTest {
      * - Extension flag = false
      * - Unit Status = Available
      */
-    @IsTest
+    @IsTest(SeeAllData=true)
     static void testRejectExpiredSoftHold() {
+        TestDataIds ids = createTestData();
 
         Quote quote = [
             SELECT Id,
                     RES_Extend_Soft_Hold_By_Hours__c
             FROM Quote
-            WHERE Name = 'Test Quote 3'
-            LIMIT 1
+            WHERE Id = :ids.quote3Id
         ];
+
+        insertServiceChargeRateOverride(ids.product3Id);
 
         RES_SoftHoldPostApprovalActions.input inputObj =
             new RES_SoftHoldPostApprovalActions.input();
@@ -349,8 +432,7 @@ private class RES_SoftHoldPostApprovalActionsTest {
                     RES_Unit_Status__c,
                     RES_Is_In_Soft_Hold_Extension__c
             FROM Product2
-            WHERE Name = 'Unit A103'
-            LIMIT 1
+            WHERE Id = :ids.product3Id
         ];
 
         System.assertEquals(
@@ -378,6 +460,7 @@ private class RES_SoftHoldPostApprovalActionsTest {
      */
     @IsTest
     static void testRejectActiveSoftHold() {
+        createTestData();
 
         Account acc = [
             SELECT Id
@@ -475,6 +558,7 @@ private class RES_SoftHoldPostApprovalActionsTest {
      */
     @IsTest
     static void testInvalidAction() {
+        createTestData();
 
         Quote quote = [
             SELECT Id,
@@ -538,6 +622,7 @@ private class RES_SoftHoldPostApprovalActionsTest {
      */
     @IsTest
     static void testBulkProcessing() {
+        createTestData();
 
         List<Quote> quotes = [
             SELECT Id,
