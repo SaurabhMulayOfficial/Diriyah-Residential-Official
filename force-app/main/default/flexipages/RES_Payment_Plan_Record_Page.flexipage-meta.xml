@@ -200,6 +200,36 @@
                 <identifier>RecordRES_Parent_Payment_Plan_cField</identifier>
             </fieldInstance>
         </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.RES_Status_Role__c</fieldItem>
+                <identifier>RecordRES_Status_Role_cField</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.RES_Note__c</fieldItem>
+                <identifier>RecordRES_Note_cField</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.RES_Product_External_ID__c</fieldItem>
+                <identifier>RecordRES_Product_External_ID_cField</identifier>
+            </fieldInstance>
+        </itemInstances>
         <name>Facet-9b6b8057-c9bd-4708-bdbf-0fc4a1e0a71e</name>
         <type>Facet</type>
     </flexiPageRegions>
@@ -251,6 +281,16 @@
                         <rightValue>Rejected</rightValue>
                     </criteria>
                 </visibilityRule>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.RES_No_of_Months__c</fieldItem>
+                <identifier>RecordRES_No_of_Months_cField</identifier>
             </fieldInstance>
         </itemInstances>
         <itemInstances>
@@ -317,6 +357,36 @@
                 </fieldInstanceProperties>
                 <fieldItem>Record.RES_Price_Option__c</fieldItem>
                 <identifier>RecordRES_Price_Option_cField</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.RES_Status_Role_Description__c</fieldItem>
+                <identifier>RecordRES_Status_Role_Description_cField</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.RES_Review__c</fieldItem>
+                <identifier>RecordRES_Review_cField</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.RES_Last_Sync_DateTime__c</fieldItem>
+                <identifier>RecordRES_Last_Sync_DateTime_cField</identifier>
             </fieldInstance>
         </itemInstances>
         <name>Facet-8c111148-f536-47ee-a362-e9f864031955</name>

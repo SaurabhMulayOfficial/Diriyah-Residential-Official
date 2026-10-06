@@ -51,8 +51,8 @@
                     <name>uiBehavior</name>
                     <value>none</value>
                 </fieldInstanceProperties>
-                <fieldItem>Record.RecordTypeId</fieldItem>
-                <identifier>RecordRecordTypeIdField</identifier>
+                <fieldItem>Record.ProductCode</fieldItem>
+                <identifier>RecordProductCodeField</identifier>
             </fieldInstance>
         </itemInstances>
         <itemInstances>
@@ -81,8 +81,8 @@
                     <name>uiBehavior</name>
                     <value>none</value>
                 </fieldInstanceProperties>
-                <fieldItem>Record.ProductCode</fieldItem>
-                <identifier>RecordProductCodeField</identifier>
+                <fieldItem>Record.RES_Installment_Percentage__c</fieldItem>
+                <identifier>RecordRES_Installment_Percentage_cField</identifier>
             </fieldInstance>
         </itemInstances>
         <itemInstances>
@@ -95,28 +95,14 @@
                 <identifier>RecordRES_Instalment_DueDate_cField</identifier>
             </fieldInstance>
         </itemInstances>
-        <name>Facet-9c101e11-5cc0-45f6-a9e0-6d479ea1ede8</name>
-        <type>Facet</type>
-    </flexiPageRegions>
-    <flexiPageRegions>
         <itemInstances>
             <fieldInstance>
                 <fieldInstanceProperties>
                     <name>uiBehavior</name>
                     <value>none</value>
                 </fieldInstanceProperties>
-                <fieldItem>Record.IsActive</fieldItem>
-                <identifier>RecordIsActiveField</identifier>
-            </fieldInstance>
-        </itemInstances>
-        <itemInstances>
-            <fieldInstance>
-                <fieldInstanceProperties>
-                    <name>uiBehavior</name>
-                    <value>none</value>
-                </fieldInstanceProperties>
-                <fieldItem>Record.RES_Installment_Percentage__c</fieldItem>
-                <identifier>RecordRES_Installment_Percentage_cField</identifier>
+                <fieldItem>Record.RES_Installment_Construction_Progress__c</fieldItem>
+                <identifier>RecordRES_Installment_Construction_Progress__cField</identifier>
             </fieldInstance>
         </itemInstances>
         <itemInstances>
@@ -135,8 +121,32 @@
                     <name>uiBehavior</name>
                     <value>none</value>
                 </fieldInstanceProperties>
-                <fieldItem>Record.RES_Installment_Amount__c</fieldItem>
-                <identifier>RecordRES_Installment_Amount_cField</identifier>
+                <fieldItem>Record.RES_Condition_Months__c</fieldItem>
+                <identifier>RecordRES_Condition_Months_cField</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.RES_Product_External_ID__c</fieldItem>
+                <identifier>RecordRES_Product_External_ID_cField</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <name>Facet-9c101e11-5cc0-45f6-a9e0-6d479ea1ede8</name>
+        <type>Facet</type>
+    </flexiPageRegions>
+    <flexiPageRegions>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.RecordTypeId</fieldItem>
+                <identifier>RecordRecordTypeIdField</identifier>
             </fieldInstance>
         </itemInstances>
         <itemInstances>
@@ -155,8 +165,58 @@
                     <name>uiBehavior</name>
                     <value>none</value>
                 </fieldInstanceProperties>
+                <fieldItem>Record.IsActive</fieldItem>
+                <identifier>RecordIsActiveField</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
                 <fieldItem>Record.RES_Price_Option__c</fieldItem>
                 <identifier>RecordRES_Price_Option_cField</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.RES_Installment_Amount__c</fieldItem>
+                <identifier>RecordRES_Installment_Amount_cField</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.RES_Installment_Payment_Type__c</fieldItem>
+                <identifier>RecordRES_Installment_Payment_Type_cField</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.RES_Installment_Accumulative_Payments__c</fieldItem>
+                <identifier>RecordRES_Installment_Accumulative_Payments_cField</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.RES_Condition_Days__c</fieldItem>
+                <identifier>RecordRES_Condition_Days_cField</identifier>
             </fieldInstance>
         </itemInstances>
         <name>Facet-16e03d02-5fef-4356-bedf-aeb201f16586</name>
