@@ -343,6 +343,7 @@ public with sharing class RES_IntegrationRequestEventService {
                     if (String.isNotBlank(recordId)) paymentPlanIds.add((Id) recordId.trim());
                 }
             }
+			system.debug('paymentPlanIds ==> '+paymentPlanIds);
             
             if (!paymentPlanIds.isEmpty()) {
                 List<SObject> records = (List<SObject>) new RES_Product2DAOLayer().getProductsForSync(paymentPlanIds);
