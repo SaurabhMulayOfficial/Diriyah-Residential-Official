@@ -91,6 +91,41 @@ public with sharing class RES_MeasurementServices {
         }
     }
 
+    /**
+     * @description Re-syncs the measurement-derived Product2 fields (DIR-1797) for every product touched by the change:
+     *              the current product, and the previous product when a measurement was re-parented or its values changed.
+     * @param measurements Trigger.new (or Trigger.old for delete)
+     * @param oldMap       Trigger.oldMap for update, null otherwise
+     */
+    public static void syncActiveMeasurementsToProduct(List<RES_Measurement__c> measurements, Map<Id, RES_Measurement__c> oldMap) {
+        Set<String> trackedTypes = RES_ProductMeasurementSyncService.getTrackedTypes();
+        Set<Id> productIds = new Set<Id>();
+
+        for (RES_Measurement__c m : measurements) {
+            RES_Measurement__c old = oldMap == null ? null : oldMap.get(m.Id);
+            if (old != null && !isActiveRelevantChange(m, old)) {
+                continue;
+            }
+            if (trackedTypes.contains(m.RES_Measurement_Type__c) && m.RES_Product__c != null) {
+                productIds.add(m.RES_Product__c);
+            }
+            if (old != null && trackedTypes.contains(old.RES_Measurement_Type__c) && old.RES_Product__c != null) {
+                productIds.add(old.RES_Product__c);
+            }
+        }
+
+        RES_ProductMeasurementSyncService.syncProducts(productIds);
+    }
+
+    private static Boolean isActiveRelevantChange(RES_Measurement__c n, RES_Measurement__c o) {
+        return n.RES_Product__c != o.RES_Product__c
+            || n.RES_Measurement_Type__c != o.RES_Measurement_Type__c
+            || n.RES_Measurement_Amount__c != o.RES_Measurement_Amount__c
+            || n.RES_Unit_Of_Measurement__c != o.RES_Unit_Of_Measurement__c
+            || n.RES_Measurement_From__c != o.RES_Measurement_From__c
+            || n.RES_Measurement_To__c != o.RES_Measurement_To__c;
+    }
+
     private static Boolean isMeasurementChanged(RES_Measurement__c newMeasurement, RES_Measurement__c oldMeasurement, Set<String> syncFields) {
         if (oldMeasurement == null) {
             return true;

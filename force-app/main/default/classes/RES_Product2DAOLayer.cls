@@ -415,4 +415,36 @@ public List<Product2> getRejectedProducts(String status,String searchTerm,Intege
                       'FROM Product2 WHERE Id IN :productIds';
         return (List<Product2>) executeQuery(soql, '', false, bindVars, AccessLevel.SYSTEM_MODE);
     }
+
+    /** @description Current values of the measurement-derived fields, used to skip no-op updates. */
+    public List<Product2> getMeasurementFieldsByIds(Set<Id> productIds) {
+        if (productIds == null || productIds.isEmpty()) return new List<Product2>();
+        Map<String, Object> bindVars = new Map<String, Object>{ 'productIds' => productIds };
+        String soql = 'SELECT Id, RES_Build_up_area__c, RES_Unit_Total_Area__c, RES_Unit_Plot_Area__c, ' +
+                      'RES_Internal_unit_Area__c, RES_No_of_Bedrooms__c ' +
+                      'FROM Product2 WHERE Id IN :productIds';
+        return (List<Product2>) executeQuery(soql, '', false, bindVars, AccessLevel.SYSTEM_MODE);
+    }
+
+    /** @description Every product that has a measurement of one of the given types (one-off full backfill). */
+    public Database.QueryLocator getProductsWithMeasurementsLocator(Set<String> measurementTypes) {
+        Map<String, Object> bindVars = new Map<String, Object>{ 'measurementTypes' => measurementTypes };
+        String soql = 'SELECT Id FROM Product2 WHERE Id IN (' +
+                      'SELECT RES_Product__c FROM RES_Measurement__c ' +
+                      'WHERE RES_Product__c != null AND RES_Measurement_Type__c IN :measurementTypes)';
+        return executeBatchQuery(soql, bindVars, AccessLevel.SYSTEM_MODE);
+    }
+
+    /** @description Products having a measurement of the given types whose From or To date falls in [fromDate, toDate]. */
+    public Database.QueryLocator getProductsWithMeasurementBoundaryLocator(Set<String> measurementTypes, Date fromDate, Date toDate) {
+        Map<String, Object> bindVars = new Map<String, Object>{
+            'measurementTypes' => measurementTypes, 'fromDate' => fromDate, 'toDate' => toDate
+        };
+        String soql = 'SELECT Id FROM Product2 WHERE Id IN (' +
+                      'SELECT RES_Product__c FROM RES_Measurement__c ' +
+                      'WHERE RES_Product__c != null AND RES_Measurement_Type__c IN :measurementTypes ' +
+                      'AND ((RES_Measurement_From__c >= :fromDate AND RES_Measurement_From__c <= :toDate) ' +
+                      'OR (RES_Measurement_To__c >= :fromDate AND RES_Measurement_To__c <= :toDate)))';
+        return executeBatchQuery(soql, bindVars, AccessLevel.SYSTEM_MODE);
+    }
 }

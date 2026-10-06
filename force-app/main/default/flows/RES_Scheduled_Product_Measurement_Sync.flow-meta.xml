@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <actionCalls>
+        <name>Run_Product_Measurement_Sync_Batch</name>
+        <label>Run Product Measurement Sync Batch</label>
+        <locationX>176</locationX>
+        <locationY>158</locationY>
+        <actionName>RES_ProductMeasurementSyncInvocable</actionName>
+        <actionType>apex</actionType>
+        <flowTransactionModel>CurrentTransaction</flowTransactionModel>
+        <nameSegment>RES_ProductMeasurementSyncInvocable</nameSegment>
+        <versionSegment>1</versionSegment>
+    </actionCalls>
+    <apiVersion>67.0</apiVersion>
+    <areMetricsLoggedToDataCloud>false</areMetricsLoggedToDataCloud>
+    <description>DIR-1797: Daily scheduled job. Launches RES_ProductMeasurementSyncBatch so Product2 fields derived from active Measurements are refreshed when a measurement starts or expires on a date boundary (no record save involved). Scheduled flows are deployable metadata, unlike Apex System.schedule.</description>
+    <environments>Default</environments>
+    <interviewLabel>RES Scheduled Product Measurement Sync {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>RES Scheduled Product Measurement Sync</label>
+    <processType>AutoLaunchedFlow</processType>
+    <start>
+        <locationX>50</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Run_Product_Measurement_Sync_Batch</targetReference>
+        </connector>
+        <schedule>
+            <frequency>Daily</frequency>
+            <startDate>2026-10-06</startDate>
+            <startTime>00:30:00.000Z</startTime>
+        </schedule>
+        <triggerType>Scheduled</triggerType>
+    </start>
+    <status>Active</status>
+</Flow>
