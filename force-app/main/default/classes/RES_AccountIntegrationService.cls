@@ -276,11 +276,15 @@ public with sharing class RES_AccountIntegrationService extends RES_BaseIntegrat
         return JSON.serialize(wrappers, true);
     }
 
+    // Set by processResponse when it has already written an integration error log.
+    private static Boolean errorLogged = false;
+
     private static Boolean processResponse(
         String responseBody,
         RES_AccountIntegrationService service,
         Id recordId
     ) {
+        errorLogged = false;
         if (String.isBlank(responseBody)) {
             return false;
         }
@@ -317,6 +321,7 @@ public with sharing class RES_AccountIntegrationService extends RES_BaseIntegrat
                 'Client Side'
             );
             RES_ResponseWrapper.logError(log);
+            errorLogged = true;
         }
 
         return isSuccess;
@@ -363,16 +368,23 @@ public with sharing class RES_AccountIntegrationService extends RES_BaseIntegrat
     private static String extractAddrNumber(String responseBody) {
         try {
             Map<String, Object> item = extractResultItem(responseBody);
-            if (item != null) {
-                Object addrKeysObj = item.get('TT_ADDRESS_KEYS');
-                if (addrKeysObj != null) {
-                    Object addrItemObj = ((Map<String, Object>) addrKeysObj).get('item');
-                    if (addrItemObj != null) {
-                        String val = String.valueOf(((Map<String, Object>) addrItemObj).get('ADDRNUMBER'));
-                        if (String.isNotBlank(val)) {
-                            return val;
-                        }
-                    }
+            if (item == null) {
+                return null;
+            }
+            // SAP returns TT_ADDRESS_KEYS as an empty string on failure, so guard the casts.
+            Object addrKeysObj = item.get('TT_ADDRESS_KEYS');
+            if (!(addrKeysObj instanceof Map<String, Object>)) {
+                return null;
+            }
+            Object addrItemObj = ((Map<String, Object>) addrKeysObj).get('item');
+            if (addrItemObj instanceof List<Object>) {
+                List<Object> addrItems = (List<Object>) addrItemObj;
+                addrItemObj = addrItems.isEmpty() ? null : addrItems[0];
+            }
+            if (addrItemObj instanceof Map<String, Object>) {
+                Object addrNumber = ((Map<String, Object>) addrItemObj).get('ADDRNUMBER');
+                if (addrNumber != null && String.isNotBlank(String.valueOf(addrNumber))) {
+                    return String.valueOf(addrNumber);
                 }
             }
         } catch (Exception e) {
@@ -393,8 +405,9 @@ public with sharing class RES_AccountIntegrationService extends RES_BaseIntegrat
         return false;
     }
 
-    // Extracts error messages from TT_MESSAGES within ET_RESULTS.item.
-    private static String extractTtMessages(String responseBody) {
+    // Extracts messages from TT_MESSAGES within ET_RESULTS.item.
+    // errorsOnly = true returns only TYPE 'E' messages; false returns the text of every message.
+    private static String extractTtMessages(String responseBody, Boolean errorsOnly) {
         try {
             Map<String, Object> item = extractResultItem(responseBody);
             if (item == null) {
@@ -417,7 +430,7 @@ public with sharing class RES_AccountIntegrationService extends RES_BaseIntegrat
                 Map<String, Object> msg = (Map<String, Object>) msgObj;
                 String msgType = msg.containsKey('TYPE') ? String.valueOf(msg.get('TYPE')) : '';
                 String msgText = msg.containsKey('MESSAGE') ? String.valueOf(msg.get('MESSAGE')) : '';
-                if (msgType == 'E' && String.isNotBlank(msgText)) {
+                if ((!errorsOnly || msgType == 'E') && String.isNotBlank(msgText)) {
                     errorMessages += msgText + ' ';
                 }
             }
@@ -490,25 +503,30 @@ public with sharing class RES_AccountIntegrationService extends RES_BaseIntegrat
                 || extractOverallStatus(response.responseBody);
 
             // If processResponse did not log an error (e.g. RES_ResponseWrapper couldn't parse
-            // the nested TT_MESSAGES structure), fall back to extracting errors directly.
-            if (!isSuccess) {
-                String ttError = extractTtMessages(response.responseBody);
-                if (String.isNotBlank(ttError)) {
-                    RES_IntegrationErrorLogger log = new RES_IntegrationErrorLogger(
-                        'Account_Sync',
-                        '',
-                        ttError,
-                        JSON.serialize(service.getHeaders()),
-                        'Account',
-                        accounts[0].Id,
-                        String.valueOf(service.getRequestBody()),
-                        service.getRequestMethod(),
-                        'Account_Sync',
-                        service.getRetryCount(),
-                        'Client Side'
-                    );
-                    RES_ResponseWrapper.logError(log);
+            // the nested TT_MESSAGES structure), log the failure directly. OVERALL_STATUS != 'S'
+            // is a failure even when the HTTP status is 200 and no TYPE 'E' message is present.
+            if (!isSuccess && !errorLogged) {
+                String ttError = extractTtMessages(response.responseBody, true);
+                if (String.isBlank(ttError)) {
+                    ttError = extractTtMessages(response.responseBody, false);
                 }
+                if (String.isBlank(ttError)) {
+                    ttError = 'SAP returned OVERALL_STATUS=E';
+                }
+                RES_IntegrationErrorLogger log = new RES_IntegrationErrorLogger(
+                    'Account_Sync',
+                    '',
+                    ttError,
+                    JSON.serialize(service.getHeaders()),
+                    'Account',
+                    accounts[0].Id,
+                    String.valueOf(service.getRequestBody()),
+                    service.getRequestMethod(),
+                    'Account_Sync',
+                    service.getRetryCount(),
+                    'Client Side'
+                );
+                RES_ResponseWrapper.logError(log);
             }
 
             if (isSuccess) {
