@@ -119,7 +119,8 @@ public without sharing class RES_ProductIntegrationService extends RES_BaseInteg
         Map<String, String> unitStatusMap           = allSapMappings.containsKey('Unit_Status')            ? allSapMappings.get('Unit_Status')            : new Map<String, String>();
         Map<String, String> uomCodeMap             = allSapMappings.containsKey('UOM')                     ? allSapMappings.get('UOM')                     : new Map<String, String>();
         Map<String, String> inventoryTypeMap       = allSapMappings.containsKey('Inventory_Type')          ? allSapMappings.get('Inventory_Type')          : new Map<String, String>();
-        Map<String, String> fixtureBoolTrueMap     = allSapMappings.containsKey('Fixture_Boolean')         ? allSapMappings.get('Fixture_Boolean')         : new Map<String, String>();
+        Map<String, String> fixtureBoolTrueMap      = allSapMappings.containsKey('Fixture_Boolean')         ? allSapMappings.get('Fixture_Boolean')         : new Map<String, String>();
+        Map<String, String> fixtureBoolFalseMap     = allSapMappings.containsKey('Fixture_Boolean_False')   ? allSapMappings.get('Fixture_Boolean_False')   : new Map<String, String>();
         Map<String, String> measTypeCustomFieldMap = allSapMappings.containsKey('Measurement_CustomField') ? allSapMappings.get('Measurement_CustomField') : new Map<String, String>();
         Map<String, String> floorCodeMap           = allSapMappings.containsKey('Floor')                   ? allSapMappings.get('Floor')                   : new Map<String, String>();
 
@@ -289,7 +290,7 @@ public without sharing class RES_ProductIntegrationService extends RES_BaseInteg
             }
 
             String fixtureCtx = p.RES_Fixtures_Last_Sync__c != null ? 'U' : 'I';
-            List<Map<String, Object>> fixtures = buildFixturesFittings(p, fixtureCtx, fixtureBoolTrueMap);
+            List<Map<String, Object>> fixtures = buildFixturesFittings(p, fixtureCtx, fixtureBoolTrueMap, fixtureBoolFalseMap);
             if (!fixtures.isEmpty()) {
                 payload.put('RES_Fixtures_Fittings', fixtures);
                 fixtureIdsToStamp.add(p.Id);
@@ -478,33 +479,40 @@ public without sharing class RES_ProductIntegrationService extends RES_BaseInteg
     @TestVisible
     private static List<Map<String, Object>> buildFixturesFittings(
         Product2 p, String triggerContext,
-        Map<String, String> boolTrueCodes
+        Map<String, String> boolTrueCodes,
+        Map<String, String> boolFalseCodes
     ) {
         List<Map<String, Object>> result = new List<Map<String, Object>>();
         if (String.isNotBlank(p.RES_Orientation__c))  addChar(result, p.RES_Orientation__c, triggerContext);
-        addBoolFixture(result, p.RES_Storeroom__c,       'RES_Storeroom__c',       boolTrueCodes, triggerContext);
-        addBoolFixture(result, p.RES_Elevated__c,        'RES_Elevated__c',        boolTrueCodes, triggerContext);
-        addBoolFixture(result, p.RES_Terrace__c,         'RES_Terrace__c',         boolTrueCodes, triggerContext);
-        addBoolFixture(result, p.RES_Roof_Terrace__c,    'RES_Roof_Terrace__c',    boolTrueCodes, triggerContext);
-        addBoolFixture(result, p.RES_Entry_Courtyard__c, 'RES_Entry_Courtyard__c', boolTrueCodes, triggerContext);
-        addBoolFixture(result, p.RES_Garage__c,          'RES_Garage__c',          boolTrueCodes, triggerContext);
-        addBoolFixture(result, p.RES_Pool__c,            'RES_Pool__c',            boolTrueCodes, triggerContext);
+        addBoolFixture(result, p.RES_Storeroom__c,       'RES_Storeroom__c',       boolTrueCodes, boolFalseCodes, triggerContext);
+        addBoolFixture(result, p.RES_Elevated__c,        'RES_Elevated__c',        boolTrueCodes, boolFalseCodes, triggerContext);
+        addBoolFixture(result, p.RES_Terrace__c,         'RES_Terrace__c',         boolTrueCodes, boolFalseCodes, triggerContext);
+        addBoolFixture(result, p.RES_Roof_Terrace__c,    'RES_Roof_Terrace__c',    boolTrueCodes, boolFalseCodes, triggerContext);
+        addBoolFixture(result, p.RES_Entry_Courtyard__c, 'RES_Entry_Courtyard__c', boolTrueCodes, boolFalseCodes, triggerContext);
+        addBoolFixture(result, p.RES_Garage__c,          'RES_Garage__c',          boolTrueCodes, boolFalseCodes, triggerContext);
+        addBoolFixture(result, p.RES_Pool__c,            'RES_Pool__c',            boolTrueCodes, boolFalseCodes, triggerContext);
         if (String.isNotBlank(p.RES_ID_Finish__c))    addChar(result, p.RES_ID_Finish__c, triggerContext);
-        addBoolFixture(result, p.RES_Drivers_Room__c,    'RES_Drivers_Room__c',    boolTrueCodes, triggerContext);
-        addBoolFixture(result, p.RES_Maids_Room__c,      'RES_Maids_Room__c',      boolTrueCodes, triggerContext);
-        addBoolFixture(result, p.RES_Wadi_View__c,       'RES_Wadi_View__c',       boolTrueCodes, triggerContext);
-        addBoolFixture(result, p.RES_Golf_View__c,       'RES_Golf_View__c',       boolTrueCodes, triggerContext);
-        addBoolFixture(result, p.RES_Panoramic_View__c,  'RES_Panoramic_View__c',  boolTrueCodes, triggerContext);
-        addBoolFixture(result, p.RES_Private__c,         'RES_Private__c',         boolTrueCodes, triggerContext);
+        addBoolFixture(result, p.RES_Drivers_Room__c,    'RES_Drivers_Room__c',    boolTrueCodes, boolFalseCodes, triggerContext);
+        addBoolFixture(result, p.RES_Maids_Room__c,      'RES_Maids_Room__c',      boolTrueCodes, boolFalseCodes, triggerContext);
+        addBoolFixture(result, p.RES_Wadi_View__c,       'RES_Wadi_View__c',       boolTrueCodes, boolFalseCodes, triggerContext);
+        addBoolFixture(result, p.RES_Golf_View__c,       'RES_Golf_View__c',       boolTrueCodes, boolFalseCodes, triggerContext);
+        addBoolFixture(result, p.RES_Panoramic_View__c,  'RES_Panoramic_View__c',  boolTrueCodes, boolFalseCodes, triggerContext);
+        addBoolFixture(result, p.RES_Private__c,         'RES_Private__c',         boolTrueCodes, boolFalseCodes, triggerContext);
         if (String.isNotBlank(p.RES_Condition__c))    addChar(result, p.RES_Condition__c, triggerContext);
-        addBoolFixture(result, p.RES_Furnished__c,       'RES_Furnished__c',       boolTrueCodes, triggerContext);
+        addBoolFixture(result, p.RES_Furnished__c,       'RES_Furnished__c',       boolTrueCodes, boolFalseCodes, triggerContext);
         return result;
     }
 
     private static void addBoolFixture(List<Map<String, Object>> r, Boolean val, String sfField,
-                                       Map<String, String> boolTrueCodes, String ctx) {
-        String trueCode = boolTrueCodes.get(sfField);
-        if (trueCode != null && val == true) addChar(r, trueCode, ctx);
+                                       Map<String, String> boolTrueCodes, Map<String, String> boolFalseCodes, String ctx) {
+        if (val == true) {
+            String trueCode = boolTrueCodes.get(sfField);
+            if (trueCode != null) addChar(r, trueCode, ctx);
+        } else if (ctx == 'U') {
+            // On UPDATE, send the "No" code so SAP removes the previously set fixture
+            String falseCode = boolFalseCodes.get(sfField);
+            if (falseCode != null) addChar(r, falseCode, ctx);
+        }
     }
 
     private static void addChar(List<Map<String, Object>> r, String code, String ctx) {
