@@ -127,6 +127,12 @@
             <name>Update_Status_Approved</name>
             <actionName>RES_Autolaunched_Update_Payment_Plan_Approval_Status</actionName>
             <actionType>stepBackground</actionType>
+            <assignees>
+                <assignee>
+                    <elementReference>$Label.RES_Admin_Username</elementReference>
+                </assignee>
+                <assigneeType>User</assigneeType>
+            </assignees>
             <canAssigneeEdit>false</canAssigneeEdit>
             <debugSimulateStep>false</debugSimulateStep>
             <entryConditionLogic>and</entryConditionLogic>
@@ -157,13 +163,13 @@
             </inputParameters>
             <label>Update Status - Approved</label>
             <requiresAsyncProcessing>false</requiresAsyncProcessing>
-            <runAsUser>false</runAsUser>
+            <runAsUser>true</runAsUser>
             <shouldLock>false</shouldLock>
             <stepSubtype>BackgroundStep</stepSubtype>
         </stageSteps>
         <stageSteps>
-            <name>Activate_Plan</name>
-            <actionName>RES_Autolaunched_Activate_Payment_Plan</actionName>
+            <name>Notify_Submitter_Approved</name>
+            <actionName>RES_Payment_Plan_Send_Notification_To_Submitter</actionName>
             <actionType>stepBackground</actionType>
             <canAssigneeEdit>false</canAssigneeEdit>
             <debugSimulateStep>false</debugSimulateStep>
@@ -178,33 +184,11 @@
             </entryConditions>
             <exitConditionLogic>and</exitConditionLogic>
             <inputParameters>
-                <name>recordId</name>
+                <name>approverRemarks</name>
                 <value>
-                    <elementReference>$Record.Id</elementReference>
+                    <elementReference>CFO_Approval_Step.Outputs.approvalComments</elementReference>
                 </value>
             </inputParameters>
-            <label>Activate Plan</label>
-            <requiresAsyncProcessing>false</requiresAsyncProcessing>
-            <runAsUser>false</runAsUser>
-            <shouldLock>false</shouldLock>
-            <stepSubtype>BackgroundStep</stepSubtype>
-        </stageSteps>
-        <stageSteps>
-            <name>Notify_Submitter_Approved</name>
-            <actionName>RES_Payment_Plan_Send_Notification_To_Submitter</actionName>
-            <actionType>stepBackground</actionType>
-            <canAssigneeEdit>false</canAssigneeEdit>
-            <debugSimulateStep>false</debugSimulateStep>
-            <entryConditionLogic>and</entryConditionLogic>
-            <entryConditions>
-                <conditionType>EntryCondition</conditionType>
-                <leftValueReference>Activate_Plan.Status</leftValueReference>
-                <operator>EqualTo</operator>
-                <rightValue>
-                    <stringValue>Completed</stringValue>
-                </rightValue>
-            </entryConditions>
-            <exitConditionLogic>and</exitConditionLogic>
             <inputParameters>
                 <name>bellNotificationBody</name>
                 <value>
@@ -245,12 +229,6 @@
                 <name>teamName</name>
                 <value>
                     <stringValue>CFO Team</stringValue>
-                </value>
-            </inputParameters>
-            <inputParameters>
-                <name>approverRemarks</name>
-                <value>
-                    <elementReference>CFO_Approval_Step.Outputs.approvalComments</elementReference>
                 </value>
             </inputParameters>
             <label>Notify Submitter - Approved</label>

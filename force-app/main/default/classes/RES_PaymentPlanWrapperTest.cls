@@ -25,7 +25,6 @@ private class RES_PaymentPlanWrapperTest {
             '"RES_Z_RBEAR": "RBEAR",' +
             '"RES_Z_DBEAR": "DBEAR",' +
             '"RES_Z_TBEAR": "TBEAR",' +
-            '"RES_CustomFields": [{"name": "field1", "value": "val1"}],' +
             '"RES_Plan_Installments": [{' +
                 '"Change_Indicator": "I",' +
                 '"RES_Product_External_ID": "PP-001",' +
@@ -79,16 +78,6 @@ private class RES_PaymentPlanWrapperTest {
     }
 
     @isTest
-    static void testCustomFields() {
-        RES_PaymentPlanWrapper wrapper = RES_PaymentPlanWrapper.parse(buildJson());
-
-        System.assertNotEquals(null, wrapper.RES_CustomFields);
-        System.assertEquals(1, wrapper.RES_CustomFields.size());
-        System.assertEquals('field1', wrapper.RES_CustomFields[0].name);
-        System.assertEquals('val1', wrapper.RES_CustomFields[0].value);
-    }
-
-    @isTest
     static void testPlanInstallments() {
         RES_PaymentPlanWrapper wrapper = RES_PaymentPlanWrapper.parse(buildJson());
 
@@ -132,7 +121,6 @@ private class RES_PaymentPlanWrapperTest {
 
         System.assertEquals('I', wrapper.Change_Indicator);
         System.assertEquals('PP-002', wrapper.RES_Product_External_ID);
-        System.assertEquals(null, wrapper.RES_CustomFields);
         System.assertEquals(null, wrapper.RES_Plan_Installments);
         System.assertEquals(null, wrapper.RES_Payment_Plan_Assignments);
     }
