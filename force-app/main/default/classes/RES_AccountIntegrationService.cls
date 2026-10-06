@@ -83,7 +83,8 @@ public with sharing class RES_AccountIntegrationService extends RES_BaseIntegrat
             : (firstRelatedContact != null ? blankIfNull(firstRelatedContact.LastName) : '');
         wrapper.Name = isPersonAccount ? blankIfNull(acc.Name) : '';
         wrapper.RES_Language = mapLanguageCode(acc.RES_Language__pc);
-        wrapper.PersonGenderIdentity = blankIfNull(acc.PersonGenderIdentity);
+        wrapper.Phone = blankIfNull(acc.Phone);
+        wrapper.PersonGenderIdentity =blankIfNull(acc.PersonGenderIdentity);
         wrapper.RES_Marital_Status = blankIfNull(acc.RES_Marital_Status__pc);
         wrapper.RES_Nationality = blankIfNull(acc.RES_Nationality__pc);
         wrapper.RES_Date_of_Birth = isPersonAccount && acc.PersonBirthdate != null ? String.valueOf(acc.PersonBirthdate) : '';
@@ -151,36 +152,31 @@ public with sharing class RES_AccountIntegrationService extends RES_BaseIntegrat
         addresses.item = addressItem;
         wrapper.TT_ADDRESSES = addresses;
 
-        if (String.isNotBlank(acc.RES_BP_Role__c)) {
-            RES_AccountRequestWrapper.RoleItem roleItem = new RES_AccountRequestWrapper.RoleItem();
-            roleItem.OBJECT_TASK = triggerContext;
-            roleItem.DATA_KEY = acc.RES_BP_Role__c;
-            RES_AccountRequestWrapper.Roles roles = new RES_AccountRequestWrapper.Roles();
-            roles.item = new List<RES_AccountRequestWrapper.RoleItem>{ roleItem };
-            wrapper.TT_ROLES = roles;
-        }
+        RES_AccountRequestWrapper.RoleItem roleItem = new RES_AccountRequestWrapper.RoleItem();
+        roleItem.OBJECT_TASK = triggerContext;
+        roleItem.DATA_KEY = blankIfNull(acc.RES_BP_Role__c);
+        RES_AccountRequestWrapper.Roles roles = new RES_AccountRequestWrapper.Roles();
+        roles.item = new List<RES_AccountRequestWrapper.RoleItem>{ roleItem };
+        wrapper.TT_ROLES = roles;
 
-        if (String.isNotBlank(acc.RES_Company_Code__c)) {
-            RES_AccountRequestWrapper.CompanyCodeWrapper ccWrapper = new RES_AccountRequestWrapper.CompanyCodeWrapper();
-            ccWrapper.RES_Company_Code = acc.RES_Company_Code__c;
-            ccWrapper.RES_Reconciliation_Account = acc.RES_Reconciliation_Account__c;
-            ccWrapper.RES_Planning_Group = acc.RES_Planning_Group__c;
-            ccWrapper.Company_Code_Change_Indicator = triggerContext;
-            wrapper.RES_Company_Codes = new List<RES_AccountRequestWrapper.CompanyCodeWrapper>{ ccWrapper };
-        }
+        // Always send Company Code and Identification blocks; blank values are passed as ""
+        RES_AccountRequestWrapper.CompanyCodeWrapper ccWrapper = new RES_AccountRequestWrapper.CompanyCodeWrapper();
+        ccWrapper.RES_Company_Code = blankIfNull(acc.RES_Company_Code__c);
+        ccWrapper.RES_Reconciliation_Account = blankIfNull(acc.RES_Reconciliation_Account__c);
+        ccWrapper.RES_Planning_Group = blankIfNull(acc.RES_Planning_Group__c);
+        ccWrapper.Company_Code_Change_Indicator = triggerContext;
+        wrapper.RES_Company_Codes = new List<RES_AccountRequestWrapper.CompanyCodeWrapper>{ ccWrapper };
 
-        if (String.isNotBlank(acc.RES_Identification_Type__c) || String.isNotBlank(acc.RES_Identification_Number__c)) {
-            RES_AccountRequestWrapper.IdentificationItem identItem = new RES_AccountRequestWrapper.IdentificationItem();
-            identItem.OBJECT_TASK = triggerContext;
-            identItem.IDENTIFICATIONCATEGORY = acc.RES_Identification_Type__c;
-            identItem.IDENTIFICATIONNUMBER = acc.RES_Identification_Number__c;
-            identItem.IDENTRYDATE = acc.RES_ID_Entry_Date__c != null ? String.valueOf(acc.RES_ID_Entry_Date__c) : '';
-            identItem.IDVALIDFROMDATE = acc.RES_ID_Valid_From_Date__c != null ? String.valueOf(acc.RES_ID_Valid_From_Date__c) : '';
-            identItem.IDVALIDTODATE = acc.RES_ID_Valid_to_Date__c != null ? String.valueOf(acc.RES_ID_Valid_to_Date__c) : '';
-            RES_AccountRequestWrapper.Identifications identifications = new RES_AccountRequestWrapper.Identifications();
-            identifications.item = identItem;
-            wrapper.TT_IDENTIFICATIONS = identifications;
-        }
+        RES_AccountRequestWrapper.IdentificationItem identItem = new RES_AccountRequestWrapper.IdentificationItem();
+        identItem.OBJECT_TASK = triggerContext;
+        identItem.IDENTIFICATIONCATEGORY = blankIfNull(acc.RES_Identification_Type__c);
+        identItem.IDENTIFICATIONNUMBER = blankIfNull(acc.RES_Identification_Number__c);
+        identItem.IDENTRYDATE = acc.RES_ID_Entry_Date__c != null ? String.valueOf(acc.RES_ID_Entry_Date__c) : '';
+        identItem.IDVALIDFROMDATE = acc.RES_ID_Valid_From_Date__c != null ? String.valueOf(acc.RES_ID_Valid_From_Date__c) : '';
+        identItem.IDVALIDTODATE = acc.RES_ID_Valid_to_Date__c != null ? String.valueOf(acc.RES_ID_Valid_to_Date__c) : '';
+        RES_AccountRequestWrapper.Identifications identifications = new RES_AccountRequestWrapper.Identifications();
+        identifications.item = identItem;
+        wrapper.TT_IDENTIFICATIONS = identifications;
 
         // TT_COMPANY_CODES: always two static entries per SAP spec
         RES_AccountRequestWrapper.CompanyCodeItem ccItem1 = new RES_AccountRequestWrapper.CompanyCodeItem();
@@ -276,11 +272,15 @@ public with sharing class RES_AccountIntegrationService extends RES_BaseIntegrat
         return JSON.serialize(wrappers, true);
     }
 
+    // Set by processResponse when it has already written an integration error log.
+    private static Boolean errorLogged = false;
+
     private static Boolean processResponse(
         String responseBody,
         RES_AccountIntegrationService service,
         Id recordId
     ) {
+        errorLogged = false;
         if (String.isBlank(responseBody)) {
             return false;
         }
@@ -317,6 +317,7 @@ public with sharing class RES_AccountIntegrationService extends RES_BaseIntegrat
                 'Client Side'
             );
             RES_ResponseWrapper.logError(log);
+            errorLogged = true;
         }
 
         return isSuccess;
@@ -363,16 +364,23 @@ public with sharing class RES_AccountIntegrationService extends RES_BaseIntegrat
     private static String extractAddrNumber(String responseBody) {
         try {
             Map<String, Object> item = extractResultItem(responseBody);
-            if (item != null) {
-                Object addrKeysObj = item.get('TT_ADDRESS_KEYS');
-                if (addrKeysObj != null) {
-                    Object addrItemObj = ((Map<String, Object>) addrKeysObj).get('item');
-                    if (addrItemObj != null) {
-                        String val = String.valueOf(((Map<String, Object>) addrItemObj).get('ADDRNUMBER'));
-                        if (String.isNotBlank(val)) {
-                            return val;
-                        }
-                    }
+            if (item == null) {
+                return null;
+            }
+            // SAP returns TT_ADDRESS_KEYS as an empty string on failure, so guard the casts.
+            Object addrKeysObj = item.get('TT_ADDRESS_KEYS');
+            if (!(addrKeysObj instanceof Map<String, Object>)) {
+                return null;
+            }
+            Object addrItemObj = ((Map<String, Object>) addrKeysObj).get('item');
+            if (addrItemObj instanceof List<Object>) {
+                List<Object> addrItems = (List<Object>) addrItemObj;
+                addrItemObj = addrItems.isEmpty() ? null : addrItems[0];
+            }
+            if (addrItemObj instanceof Map<String, Object>) {
+                Object addrNumber = ((Map<String, Object>) addrItemObj).get('ADDRNUMBER');
+                if (addrNumber != null && String.isNotBlank(String.valueOf(addrNumber))) {
+                    return String.valueOf(addrNumber);
                 }
             }
         } catch (Exception e) {
@@ -393,8 +401,9 @@ public with sharing class RES_AccountIntegrationService extends RES_BaseIntegrat
         return false;
     }
 
-    // Extracts error messages from TT_MESSAGES within ET_RESULTS.item.
-    private static String extractTtMessages(String responseBody) {
+    // Extracts messages from TT_MESSAGES within ET_RESULTS.item.
+    // errorsOnly = true returns only TYPE 'E' messages; false returns the text of every message.
+    private static String extractTtMessages(String responseBody, Boolean errorsOnly) {
         try {
             Map<String, Object> item = extractResultItem(responseBody);
             if (item == null) {
@@ -417,7 +426,7 @@ public with sharing class RES_AccountIntegrationService extends RES_BaseIntegrat
                 Map<String, Object> msg = (Map<String, Object>) msgObj;
                 String msgType = msg.containsKey('TYPE') ? String.valueOf(msg.get('TYPE')) : '';
                 String msgText = msg.containsKey('MESSAGE') ? String.valueOf(msg.get('MESSAGE')) : '';
-                if (msgType == 'E' && String.isNotBlank(msgText)) {
+                if ((!errorsOnly || msgType == 'E') && String.isNotBlank(msgText)) {
                     errorMessages += msgText + ' ';
                 }
             }
@@ -490,25 +499,30 @@ public with sharing class RES_AccountIntegrationService extends RES_BaseIntegrat
                 || extractOverallStatus(response.responseBody);
 
             // If processResponse did not log an error (e.g. RES_ResponseWrapper couldn't parse
-            // the nested TT_MESSAGES structure), fall back to extracting errors directly.
-            if (!isSuccess) {
-                String ttError = extractTtMessages(response.responseBody);
-                if (String.isNotBlank(ttError)) {
-                    RES_IntegrationErrorLogger log = new RES_IntegrationErrorLogger(
-                        'Account_Sync',
-                        '',
-                        ttError,
-                        JSON.serialize(service.getHeaders()),
-                        'Account',
-                        accounts[0].Id,
-                        String.valueOf(service.getRequestBody()),
-                        service.getRequestMethod(),
-                        'Account_Sync',
-                        service.getRetryCount(),
-                        'Client Side'
-                    );
-                    RES_ResponseWrapper.logError(log);
+            // the nested TT_MESSAGES structure), log the failure directly. OVERALL_STATUS != 'S'
+            // is a failure even when the HTTP status is 200 and no TYPE 'E' message is present.
+            if (!isSuccess && !errorLogged) {
+                String ttError = extractTtMessages(response.responseBody, true);
+                if (String.isBlank(ttError)) {
+                    ttError = extractTtMessages(response.responseBody, false);
                 }
+                if (String.isBlank(ttError)) {
+                    ttError = 'SAP returned OVERALL_STATUS=E';
+                }
+                RES_IntegrationErrorLogger log = new RES_IntegrationErrorLogger(
+                    'Account_Sync',
+                    '',
+                    ttError,
+                    JSON.serialize(service.getHeaders()),
+                    'Account',
+                    accounts[0].Id,
+                    String.valueOf(service.getRequestBody()),
+                    service.getRequestMethod(),
+                    'Account_Sync',
+                    service.getRetryCount(),
+                    'Client Side'
+                );
+                RES_ResponseWrapper.logError(log);
             }
 
             if (isSuccess) {
