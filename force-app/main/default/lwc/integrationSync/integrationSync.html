@@ -1,0 +1,128 @@
+<template>
+    <div class="panel">
+        <header class="banner">
+            <div class="banner-text">
+                <span class="eyebrow">Integration Console</span>
+                <h1 class="title">Integration Sync Engine</h1>
+                <p class="subtitle">Trigger an integration for one or more records on demand.</p>
+            </div>
+            <svg class="banner-art" viewBox="0 0 240 120" aria-hidden="true" focusable="false">
+                <g stroke="#7fd1c7" stroke-width="1.5" opacity="0.55" fill="none">
+                    <path d="M30 90 L80 40 L140 70 L200 25"></path>
+                    <path d="M80 40 L110 100 L140 70"></path>
+                    <path d="M140 70 L205 95"></path>
+                </g>
+                <g fill="#0f2a43" stroke="#7fd1c7" stroke-width="2">
+                    <circle cx="30" cy="90" r="7"></circle>
+                    <circle cx="80" cy="40" r="9"></circle>
+                    <circle cx="110" cy="100" r="6"></circle>
+                    <circle cx="200" cy="25" r="7"></circle>
+                    <circle cx="205" cy="95" r="8"></circle>
+                </g>
+                <circle cx="140" cy="70" r="22" fill="#14b8a6" opacity="0.18"></circle>
+                <circle cx="140" cy="70" r="15" fill="#0f2a43" stroke="#2dd4bf" stroke-width="2.5"></circle>
+                <g fill="none" stroke="#2dd4bf" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M133 68 a8 8 0 0 1 14 -3"></path>
+                    <path d="M147 72 a8 8 0 0 1 -14 3"></path>
+                    <path d="M147 60 v5 h-5"></path>
+                    <path d="M133 80 v-5 h5"></path>
+                </g>
+            </svg>
+        </header>
+
+        <div class="body">
+            <div class="row">
+                <div class="field-wrap">
+                    <lightning-combobox
+                        class="field"
+                        label="Service Name"
+                        value={serviceName}
+                        options={serviceOptions}
+                        placeholder="Select a service"
+                        data-field="serviceName"
+                        onchange={handleChange}
+                        required>
+                    </lightning-combobox>
+                </div>
+                <div class="field-wrap">
+                    <lightning-combobox
+                        class="field"
+                        label="Request Method"
+                        value={requestMethod}
+                        options={methodOptions}
+                        data-field="requestMethod"
+                        onchange={handleChange}
+                        required>
+                    </lightning-combobox>
+                </div>
+            </div>
+
+            <div class="section-label">Triggering Context</div>
+            <div class="ctx-row">
+                <button type="button" class={insertClass} data-value="I" onclick={handleContext}>
+                    <svg viewBox="0 0 24 24" class="ctx-icon" aria-hidden="true" focusable="false">
+                        <circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.8"></circle>
+                        <path d="M12 8v8M8 12h8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"></path>
+                    </svg>
+                    <span class="ctx-text"><strong>Insert</strong><small>Context I</small></span>
+                </button>
+                <button type="button" class={updateClass} data-value="U" onclick={handleContext}>
+                    <svg viewBox="0 0 24 24" class="ctx-icon" aria-hidden="true" focusable="false">
+                        <path d="M4 20h4L19 9a2.1 2.1 0 0 0-3-3L5 17z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"></path>
+                        <path d="M14 7l3 3" stroke="currentColor" stroke-width="1.8"></path>
+                    </svg>
+                    <span class="ctx-text"><strong>Update</strong><small>Context U</small></span>
+                </button>
+            </div>
+
+            <div class="field-wrap full">
+                <lightning-textarea
+                    class="field"
+                    label="Record Id(s)"
+                    value={recordIds}
+                    placeholder="Enter one Id, or several separated by commas"
+                    message-when-value-missing="Enter at least one record Id."
+                    data-field="recordIds"
+                    onchange={handleChange}
+                    required>
+                </lightning-textarea>
+                <p class="hint">
+                    <svg viewBox="0 0 24 24" class="hint-icon" aria-hidden="true" focusable="false">
+                        <circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.8"></circle>
+                        <path d="M12 11v5M12 8v.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"></path>
+                    </svg>
+                    <template lwc:if={idCount}>{idCount} event(s) will be fired, one per Id.</template>
+                    <template lwc:else>One event is fired per Id. Bulk requests are not supported.</template>
+                </p>
+            </div>
+
+            <template lwc:if={message}>
+                <div class={messageClass} role="status">
+                    <svg viewBox="0 0 24 24" class="notice-icon" aria-hidden="true" focusable="false">
+                        <template lwc:if={isError}>
+                            <circle cx="12" cy="12" r="10" fill="currentColor"></circle>
+                            <path d="M12 7v6M12 16v.01" stroke="#fff" stroke-width="2.2" stroke-linecap="round"></path>
+                        </template>
+                        <template lwc:else>
+                            <circle cx="12" cy="12" r="10" fill="currentColor"></circle>
+                            <path d="M7.5 12.5l3 3 6-6.5" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"></path>
+                        </template>
+                    </svg>
+                    <span>{message}</span>
+                </div>
+            </template>
+        </div>
+
+        <footer class="footer">
+            <button type="button" class="submit" onclick={handleSubmit} disabled={isBusy}>
+                <template lwc:if={isBusy}>Submitting…</template>
+                <template lwc:else>
+                    Submit
+                    <svg viewBox="0 0 24 24" class="submit-icon" aria-hidden="true" focusable="false">
+                        <path d="M4 12l16-8-6 16-3-7z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"></path>
+                    </svg>
+                </template>
+            </button>
+        </footer>
+    </div>
+</template>
