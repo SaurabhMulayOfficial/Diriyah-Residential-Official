@@ -48,7 +48,6 @@ public with sharing class RES_IntegrationRequestEventService {
     private static final String CONTRACT_UPDATE_INTEGRATION = 'Sales_Contract_Update';
     private static final String CONTRACT_TERMINATION_INTEGRATION = 'Sales_Contract_Termination';
     private static final String PAYMENT_PLAN_INTEGRATION = 'Payment_Plan';
-    private static final String INSTALLMENT_INTEGRATION = 'Installments';
     
     public RES_IntegrationRequestEventService() {}
 
@@ -344,9 +343,10 @@ public with sharing class RES_IntegrationRequestEventService {
                     if (String.isNotBlank(recordId)) paymentPlanIds.add((Id) recordId.trim());
                 }
             }
+			system.debug('paymentPlanIds ==> '+paymentPlanIds);
             
             if (!paymentPlanIds.isEmpty()) {
-                List<SObject> records = (List<SObject>) new RES_PaymentPlanDAOLayer().getPaymentPlansByIds(paymentPlanIds);
+                List<SObject> records = (List<SObject>) new RES_Product2DAOLayer().getProductsForSync(paymentPlanIds);
                 enqueueService(PAYMENT_PLAN_INTEGRATION, records, 'I', 'GET');
             }
         }
@@ -361,41 +361,8 @@ public with sharing class RES_IntegrationRequestEventService {
             }
 
             if (!paymentPlanIds.isEmpty()) {
-                List<SObject> records = (List<SObject>) new RES_PaymentPlanDAOLayer().getPaymentPlansByIds(paymentPlanIds);
+                List<SObject> records = (List<SObject>) new RES_Product2DAOLayer().getProductsForSync(paymentPlanIds);
                 enqueueService(PAYMENT_PLAN_INTEGRATION, records, 'U', 'GET');
-            }
-        }
-
-        String installmentIntegrationKey_onInsert = 'GET' + INSTALLMENT_INTEGRATION + 'I';
-        String installmentIntegrationKey_onUpdate = 'GET' + INSTALLMENT_INTEGRATION + 'U';
-
-        if (results.containsKey(installmentIntegrationKey_onInsert) && results.get(installmentIntegrationKey_onInsert).size() > 0) {
-            Set<Id> installmentIds = new Set<Id>();
-            for (RES_Integration_Request__e e : results.get(installmentIntegrationKey_onInsert)) {
-                if (String.isBlank(e.RES_RecordIds__c)) continue;
-                for (String recordId : e.RES_RecordIds__c.split(',')) {
-                    if (String.isNotBlank(recordId)) installmentIds.add((Id) recordId.trim());
-                }
-            }
-
-            if (!installmentIds.isEmpty()) {
-                List<SObject> records = (List<SObject>) new RES_InstallmentDAOLayer().getInstallmentsByIds(installmentIds);
-                enqueueService(INSTALLMENT_INTEGRATION, records, 'I', 'GET');
-            }
-        }
-
-        if (results.containsKey(installmentIntegrationKey_onUpdate) && results.get(installmentIntegrationKey_onUpdate).size() > 0) {
-            Set<Id> installmentIds = new Set<Id>();
-            for (RES_Integration_Request__e e : results.get(installmentIntegrationKey_onUpdate)) {
-                if (String.isBlank(e.RES_RecordIds__c)) continue;
-                for (String recordId : e.RES_RecordIds__c.split(',')) {
-                    if (String.isNotBlank(recordId)) installmentIds.add((Id) recordId.trim());
-                }
-            }
-
-            if (!installmentIds.isEmpty()) {
-                List<SObject> records = (List<SObject>) new RES_InstallmentDAOLayer().getInstallmentsByIds(installmentIds);
-                enqueueService(INSTALLMENT_INTEGRATION, records, 'U', 'GET');
             }
         }
     }
@@ -403,6 +370,7 @@ public with sharing class RES_IntegrationRequestEventService {
     public static void enqueueService(String serviceName, List<sObject> records, String triggeringContext, String requestMethod){
         if(String.isNotBlank(serviceName) && !records.isEmpty() && String.isNotBlank(triggeringContext) &&  String.isNotBlank(requestMethod)){
             try{
+                
                 Id jobId = batchSubmitter.submit(
                     new RES_IntegrationAPIRouterBatch(
                         records,

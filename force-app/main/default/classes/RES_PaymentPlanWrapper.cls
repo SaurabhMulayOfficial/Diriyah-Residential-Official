@@ -23,14 +23,8 @@ public class RES_PaymentPlanWrapper {
     public String RES_Z_DBEAR;
     public String RES_Z_TBEAR;
 
-    public List<CustomField> RES_CustomFields;
     public List<PlanInstallment> RES_Plan_Installments;
     public List<PaymentPlanAssignment> RES_Payment_Plan_Assignments;
-
-    public class CustomField {
-        public String name;
-        public String value;
-    }
 
     public class PlanInstallment {
         public String Change_Indicator;

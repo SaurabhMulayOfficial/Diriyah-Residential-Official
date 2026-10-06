@@ -689,4 +689,125 @@ public class RES_TestDataFactory {
         return members;
     }
     
+    // ═══════════════════════════════════════════════════════════════════════
+    // ContractItemPrice Creation Methods
+    // ═══════════════════════════════════════════════════════════════════════
+	/**
+     * @description Creates a test ContractItemPrice
+     * @param contractId - contractId
+     * @param productId - productId
+     * @param price - price
+     * @param cipType - cipType
+     * @return ContractItemPrice
+     */
+    public static ContractItemPrice createContractItemPrice(Id contractId, Id productId, double price, String cipType) {
+        ContractItemPrice cip = new ContractItemPrice(
+            ContractId = contractId,
+            RES_Product__c = productId,
+            Price = price,
+            RES_CIP_Type__c = cipType,
+            ItemId = productId,
+            StartDate = System.now()
+        );
+        insert cip;
+        return cip;
+    }
+    
+    // ═══════════════════════════════════════════════════════════════════════
+    // Product Creation Methods
+    // ═══════════════════════════════════════════════════════════════════════
+	/**
+     * @description Creates a test Product
+     * @param name - name
+     * @return Product2
+     */
+    public static Product2 createPaymentPlan(String name, Id recordTypeId) {
+        Product2 prod = new Product2(
+            Name = name,
+            IsActive = false,
+            RecordTypeId = recordTypeId,
+             RES_CIP_Type__c  = 'Payment Plan',
+            UsageModelType = 'Pack',
+            Type = 'Bundle',
+            RES_No_of_Years__c = 1,
+            RES_No_of_Months__c = 3,
+            DiscontinuedDate = Date.today().addDays(31),
+            AvailabilityDate = System.Now(),
+            RES_Product_External_ID__c = 'S000523',
+            RES_Status_Role__c = 'REL',
+            RES_Status_Role_Description__c = 'Release'
+        );
+        insert prod;
+        return prod;
+    }
+    
+    public static Product2 createPaymentPlanAssignment(String name, Id recordTypeId) {
+        Product2 prod = new Product2(
+            Name = name,
+            IsActive = true,
+            RecordTypeId = recordTypeId,
+            Family = '1003',
+            RES_CIP_Type__c = 'Unit',
+            UsageModelType = 'Pack'
+        );
+        insert prod;
+        return prod;
+    }
+    
+    public static Product2 createInstallment(String name, Id recordTypeId) {
+        Product2 prod = new Product2(
+            Name = name,
+            IsActive = true,
+            RecordTypeId = recordTypeId,
+             RES_CIP_Type__c  = 'Installment',
+            RES_Sequence__c = 1,
+            RES_Installment_Percentage__c = 100,
+            RES_POC_Percentage__c = 100,
+            RES_Product_External_ID__c = 'S000523',
+            RES_Installment_Amount__c = 15000,
+            Family = 'Options'
+        );
+        insert prod;
+        return prod;
+    }
+    
+    public static ProductRelatedComponent createPRC(Product2 parent, Product2 child) {
+           ProductRelationshipType prt = new ProductRelationshipType(
+            Name = 'Test Component Relationship', 
+            MainProductRoleCat = 'Bundle',
+            AssociatedProductRoleCat = 'BundleComponent'
+        );
+        insert prt;
+        
+        ProductRelatedComponent prc = new ProductRelatedComponent(
+           ParentProductId = parent.Id, 
+            ChildProductId  = child.Id, 
+            ProductRelationshipTypeId = prt.Id,
+            Quantity = 1, 
+            QuoteVisibility = 'Always',
+            IsDefaultComponent = true
+        );
+        insert prc;
+        return prc;
+    }
+    
+    public static ProductRelatedComponent createPaymentPlanAssignmentPRC(Product2 parent, Product2 child) {
+           ProductRelationshipType prt = new ProductRelationshipType(
+            Name = 'Test Component Relationship 2', 
+            MainProductRoleCat = 'Bundle',
+            AssociatedProductRoleCat = 'BundleComponent'
+        );
+        insert prt;
+        
+        ProductRelatedComponent prc = new ProductRelatedComponent(
+           ParentProductId = parent.Id, 
+            ChildProductId  = child.Id, 
+            ProductRelationshipTypeId = prt.Id,
+            Quantity = 1, 
+            QuoteVisibility = 'Always',
+            IsDefaultComponent = true
+        );
+        insert prc;
+        return prc;
+    }
 }
