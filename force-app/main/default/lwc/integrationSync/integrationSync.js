@@ -19,6 +19,7 @@ export default class IntegrationSync extends LightningElement {
         'Sales_Contract_Creation',
         'Sales_Contract_Update',
         'Sales_Contract_Termination',
+        'Payment_Plan',
         'Account_Sync',
         'Unit_Sync',
         'ProductCategory_Sync',

@@ -59,13 +59,13 @@ public with sharing class RES_IntegrationQueueable implements Queueable, Databas
             RES_ContractTerminationIntService.syncContracts(contracts, requestMethod);
         }
 
-         else if (serviceName == 'Payment_Plan') {
-             List<Product2> paymentPlans = new List<Product2>();
-             for (SObject record : records) {
-                 paymentPlans.add((Product2) record);
-             }
-             RES_PaymentPlanIntegrationService.syncPaymentPlans(paymentPlans, requestMethod, triggerContext);
-         }
+        else if (serviceName == 'Payment_Plan') {
+            List<Product2> paymentPlans = new List<Product2>();
+            for (SObject record : records) {
+                paymentPlans.add((Product2) record);
+            }
+            RES_PaymentPlanIntegrationService.syncPaymentPlans(paymentPlans, requestMethod, triggerContext);
+        }
 
         else if(serviceName == 'Account_Sync'){
             List<Account> accounts = new List<Account>();
