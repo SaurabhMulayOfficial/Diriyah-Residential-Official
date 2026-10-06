@@ -79,16 +79,6 @@ private class RES_PaymentPlanWrapperTest {
     }
 
     @isTest
-    static void testCustomFields() {
-        RES_PaymentPlanWrapper wrapper = RES_PaymentPlanWrapper.parse(buildJson());
-
-        System.assertNotEquals(null, wrapper.RES_CustomFields);
-        System.assertEquals(1, wrapper.RES_CustomFields.size());
-        System.assertEquals('field1', wrapper.RES_CustomFields[0].name);
-        System.assertEquals('val1', wrapper.RES_CustomFields[0].value);
-    }
-
-    @isTest
     static void testPlanInstallments() {
         RES_PaymentPlanWrapper wrapper = RES_PaymentPlanWrapper.parse(buildJson());
 

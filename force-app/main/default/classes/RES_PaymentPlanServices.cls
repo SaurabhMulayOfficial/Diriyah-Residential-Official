@@ -5,11 +5,11 @@
  *
  * @author Saurabh Mulay
  */
-public with sharing class RES_PaymentPlanServices {
+public with sharing class RES_PaymentPlanServices { 
     public RES_PaymentPlanServices() {}
 
-    public static void syncPaymentPlans(List<RES_Payment_Plan__c> paymentPlans, Map<Id, RES_Payment_Plan__c> oldMap) {
-        List<RES_Payment_Plan__c> paymentPlansToSync = new List<RES_Payment_Plan__c>();
+    public static void syncPaymentPlans(List<Product2> paymentPlans, Map<Id, Product2> oldMap) {
+        List<Product2> paymentPlansToSync = new List<Product2>();
 
         RES_SAP_Integration_Config__mdt paymentPlanMDT =
             new RES_SAPIntegrationConfigDAO()
@@ -30,23 +30,28 @@ public with sharing class RES_PaymentPlanServices {
             }
         }
 
-        String triggerContext = (oldMap == null ? 'I' : 'U');
+        String triggerContext = '';
 
-        for (RES_Payment_Plan__c paymentPlan : paymentPlans) {
+        for (Product2 paymentPlan : paymentPlans) {
             if (oldMap == null) {
                 paymentPlansToSync.add(paymentPlan);
-            } else if (isPaymentPlanChanged(paymentPlan, oldMap.get(paymentPlan.Id), syncFields) && paymentPlan.RES_Last_Sync_DateTime__c != null) {
+            } 
+            else if(isPaymentPlanApproved(paymentPlan, oldMap.get(paymentPlan.Id))){
                 paymentPlansToSync.add(paymentPlan);
+                triggerContext = 'I';
+            }
+            else if (isPaymentPlanChanged(paymentPlan, oldMap.get(paymentPlan.Id), syncFields) && paymentPlan.RES_Last_Sync_DateTime__c != null) {
+                paymentPlansToSync.add(paymentPlan);
+                triggerContext = 'U';
             }
         }
-
         if (paymentPlansToSync.isEmpty()) {
             return;
         }
 
         List<RES_Integration_Request__e> integrationRequestEventList = new List<RES_Integration_Request__e>();
 
-        for (RES_Payment_Plan__c pp : paymentPlansToSync) {
+        for (Product2 pp : paymentPlansToSync) {
             RES_Integration_Request__e req = new RES_Integration_Request__e();
             req.RES_RecordIds__c = String.valueOf(pp.Id);
             req.RES_Request_Method__c = 'GET';
@@ -54,7 +59,6 @@ public with sharing class RES_PaymentPlanServices {
             req.RES_Service_Name__c = 'Payment_Plan';
             integrationRequestEventList.add(req);
         }
-
         try {
             if (!integrationRequestEventList.isEmpty()) {
                 EventBus.publish(integrationRequestEventList);
@@ -64,7 +68,7 @@ public with sharing class RES_PaymentPlanServices {
         }
     }
 
-    private static Boolean isPaymentPlanChanged(RES_Payment_Plan__c newRecord, RES_Payment_Plan__c oldRecord, Set<String> syncFields) {
+    private static Boolean isPaymentPlanChanged(Product2 newRecord, Product2 oldRecord, Set<String> syncFields) {
         if (oldRecord == null) {
             return true;
         }
@@ -77,6 +81,14 @@ public with sharing class RES_PaymentPlanServices {
                 return true;
             }
         }
+        return false;
+    }
+    
+    private static Boolean isPaymentPlanApproved(Product2 newRecord, Product2 oldRecord) {
+        if ((newRecord.RES_Approval_Status__c == 'Approved' && newRecord.RES_Approval_Status__c != oldRecord.RES_Approval_Status__c) && 
+            (newRecord.IsActive  == true && newRecord.IsActive  != oldRecord.IsActive)) {
+                return true;
+            }
         return false;
     }
 }

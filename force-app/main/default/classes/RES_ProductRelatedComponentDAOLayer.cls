@@ -45,13 +45,24 @@ public without sharing class RES_ProductRelatedComponentDAOLayer extends RES_Bas
         if (parentProductIds == null || parentProductIds.isEmpty()) {
             return new List<ProductRelatedComponent>();
         }
-        String soql = 'SELECT Id, ParentProductId, ParentProduct.RES_Business_Entity__c, ChildProductId, Quantity, IsComponentRequired, IsDefaultComponent, IsQuantityEditable, DoesBundlePriceIncludeChild, QuoteVisibility, ChildProduct.RES_POC_Percentage__c, ChildProduct.RES_Installment_Percentage__c, ChildProduct.Name, ChildProduct.RecordTypeId, ChildProduct.RES_CIP_Type__c, ChildProduct.RES_Sequence__c, ChildProduct.ProductCode, ChildProduct.RES_Instalment_DueDate__c, ChildProduct.RES_Installment_Accumulative_Payments__c, ChildProduct.RES_Installment_Construction_Progress__c, ChildProduct.Description, ChildProduct.IsActive, ChildProduct.RES_Installment_Amount__c, ChildProduct.CurrencyIsoCode ' +
+        String recordTypeDeveloperName = System.Label.RES_Product_Installment_RT;
+        Map<String, Object> bindVars = new Map<String, Object>{
+            'parentProductIds' => parentProductIds,
+            'recordTypeDeveloperName' => recordTypeDeveloperName
+        };
+        String soql = 'SELECT Id, ParentProductId, ParentProduct.RES_Business_Entity__c, ChildProductId, Quantity, '+ 
+                      'IsComponentRequired, IsDefaultComponent, IsQuantityEditable, DoesBundlePriceIncludeChild, '+ 
+                      'QuoteVisibility, ChildProduct.RES_POC_Percentage__c, ChildProduct.RES_Installment_Percentage__c, '+ 
+                      'ChildProduct.Name, ChildProduct.RecordTypeId, ChildProduct.RES_CIP_Type__c, ChildProduct.RES_Sequence__c, '+ 
+                      'ChildProduct.ProductCode, ChildProduct.RES_Instalment_DueDate__c, ChildProduct.RES_Installment_Accumulative_Payments__c, '+ 
+                      'ChildProduct.RES_Installment_Construction_Progress__c, ChildProduct.Description, ChildProduct.IsActive, '+ 
+                      'ChildProduct.RES_Installment_Amount__c, ChildProduct.CurrencyIsoCode, ChildProduct.RES_Installment_Payment_Type__c, ' +
+                      'ChildProduct.RES_Condition_Months__c, ChildProduct.RES_Condition_Days__c ' +
                       'FROM ProductRelatedComponent ' +
                       'WHERE ParentProductId IN : parentProductIds AND ' +
-                      'ChildProductId != NULL ORDER BY ChildProduct.RES_Sequence__c ASC';
-        Map<String, Object> bindVars = new Map<String, Object>{
-            'parentProductIds' => parentProductIds
-        };
+                      'ChildProductId != NULL AND ' + 
+                      'ChildProduct.RecordType.DeveloperName =: recordTypeDeveloperName ORDER BY ChildProduct.RES_Sequence__c ASC';
+        
         return (List<ProductRelatedComponent>) executeQuery(soql, '', false, bindVars, AccessLevel.SYSTEM_MODE);
     }
 
@@ -69,6 +80,32 @@ public without sharing class RES_ProductRelatedComponentDAOLayer extends RES_Bas
                       'FROM ProductRelatedComponent ' +
                       'WHERE ChildProductId IN :childProductIds';
         Map<String, Object> bindVars = new Map<String, Object>{ 'childProductIds' => childProductIds };
+        return (List<ProductRelatedComponent>) executeQuery(soql, '', false, bindVars, AccessLevel.SYSTEM_MODE);
+    }
+    
+    public List<ProductRelatedComponent> getPaymentPlanAssignments(Set<Id> childProductIds) {
+        if (childProductIds == null || childProductIds.isEmpty()) {
+            return new List<ProductRelatedComponent>();
+        }
+        String recordTypeDeveloperName = System.Label.RES_Product_Payment_Plan_RT;
+        Map<String, Object> bindVars = new Map<String, Object>{
+            'childProductIds' => childProductIds,
+            'recordTypeDeveloperName' => recordTypeDeveloperName
+        };
+        String soql = 'SELECT Id, ParentProductId, ParentProduct.RES_Business_Entity__c, ChildProductId, Quantity, '+ 
+                      'IsComponentRequired, IsDefaultComponent, IsQuantityEditable, DoesBundlePriceIncludeChild, '+ 
+                      'QuoteVisibility, ChildProduct.RES_POC_Percentage__c, ChildProduct.RES_Installment_Percentage__c, '+ 
+                      'ChildProduct.Name, ChildProduct.RecordTypeId, ChildProduct.RES_CIP_Type__c, ChildProduct.RES_Sequence__c, '+ 
+                      'ChildProduct.ProductCode, ChildProduct.RES_Instalment_DueDate__c, ChildProduct.RES_Installment_Accumulative_Payments__c, '+ 
+                      'ChildProduct.RES_Installment_Construction_Progress__c, ChildProduct.Description, ChildProduct.IsActive, '+ 
+                      'ChildProduct.RES_Installment_Amount__c, ChildProduct.CurrencyIsoCode, ChildProduct.RES_Installment_Payment_Type__c, ' +
+                      'ChildProduct.RES_Condition_Months__c, ChildProduct.RES_Condition_Days__c, ' +
+                      'ParentProduct.RES_Business_Entity__r.Name, ParentProduct.RES_Construction_Phase__c, ParentProduct.RES_Company_Code__c, ParentProduct.RES_Product_External_ID__c, ParentProduct.RES_Business_Entity__r.RES_Business_Entity_Id__c ' +
+                      'FROM ProductRelatedComponent ' +
+                      'WHERE ChildProductId IN : childProductIds AND ' +
+                      'ChildProductId != NULL AND ' + 
+                      'ChildProduct.RecordType.DeveloperName =: recordTypeDeveloperName ORDER BY ChildProduct.RES_Sequence__c ASC';
+        
         return (List<ProductRelatedComponent>) executeQuery(soql, '', false, bindVars, AccessLevel.SYSTEM_MODE);
     }
 }
