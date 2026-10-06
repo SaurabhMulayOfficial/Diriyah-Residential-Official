@@ -5,25 +5,19 @@
         <default>true</default>
         <visible>true</visible>
     </applicationVisibilities>
-    <applicationVisibilities>
-        <application>standard__AllTabSet</application>
-        <default>false</default>
-        <visible>true</visible>
-    </applicationVisibilities>
+
     <customPermissions>
         <enabled>true</enabled>
         <name>RES_Marketing_Dashboard_Visibility</name>
     </customPermissions>
+    <customPermissions>
+        <enabled>true</enabled>
+        <name>RES_Admin_Dashboard_Visibility</name>
+    </customPermissions>
+
+
     <layoutAssignments>
         <layout>Global-Global Layout</layout>
-    </layoutAssignments>
-    <layoutAssignments>
-        <layout>Quote-Residential Sales</layout>
-        <recordType>Quote.RES_Residential_Sales</recordType>
-    </layoutAssignments>
-    <layoutAssignments>
-        <layout>Contract-Residential Sales</layout>
-        <recordType>Contract.RES_Residential_Sales</recordType>
     </layoutAssignments>
     <layoutAssignments>
         <layout>Opportunity-RES Residential Multi Buyer</layout>
@@ -37,13 +31,15 @@
         <layout>Lead-Lead Layout</layout>
     </layoutAssignments>
     <layoutAssignments>
-            <layout>Lead-RES Company</layout>
-            <recordType>Lead.RES_Company</recordType>
+        <layout>Lead-RES Company</layout>
+        <recordType>Lead.RES_Company</recordType>
     </layoutAssignments>
     <layoutAssignments>
-            <layout>Lead-RES Individual</layout>
-            <recordType>Lead.RES_Individual</recordType>
+        <layout>Lead-RES Individual</layout>
+        <recordType>Lead.RES_Individual</recordType>
     </layoutAssignments>
+
+
     <fieldPermissions>
         <editable>false</editable>
         <field>Lead.RES_Owner_Assignment_Date__c</field>
@@ -196,11 +192,6 @@
     </fieldPermissions>
     <fieldPermissions>
         <editable>false</editable>
-        <field>Lead.Email</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>false</editable>
         <field>Lead.Fax</field>
         <readable>true</readable>
     </fieldPermissions>
@@ -241,17 +232,7 @@
     </fieldPermissions>
     <fieldPermissions>
         <editable>false</editable>
-        <field>Lead.MobilePhone</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>false</editable>
         <field>Lead.NumberOfEmployees</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>false</editable>
-        <field>Lead.Phone</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
@@ -378,16 +359,6 @@
     <fieldPermissions>
         <editable>false</editable>
         <field>Contact.DIR_Country__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>false</editable>
-        <field>Lead.RES_Identification_Number__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>false</editable>
-        <field>Lead.RES_Identification_Type__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
@@ -645,7 +616,62 @@
         <field>Lead.RES_Lead_Response_Time_Seconds__c</field>
         <readable>true</readable>
     </fieldPermissions>
-     <fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>Lead.RES_Approval_Request_Remarks__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>Lead.RES_Autonumber__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>Lead.RES_City_Arabic__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>Lead.RES_Country_Arabic__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>Lead.RES_Employee_ID__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>Lead.RES_Expected_Revenue_Amount_Currency__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>Lead.RES_Nationality_Arabic__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>Lead.RES_PO_Box__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>Lead.RES_Proposed_User__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>Lead.RES_Reassignment_Count__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>Lead.RES_SAP_Lead_Id__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
         <editable>false</editable>
         <field>Opportunity.AccountId</field>
         <readable>true</readable>
@@ -785,25 +811,21 @@
         <field>Opportunity.RES_Opportunity_Mobile__c</field>
         <readable>true</readable>
     </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>Opportunity.RES_Overdue_Severity__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+
     <objectPermissions>
         <allowCreate>false</allowCreate>
         <allowDelete>false</allowDelete>
         <allowEdit>false</allowEdit>
-        <allowRead>false</allowRead>
+        <allowRead>true</allowRead>
         <modifyAllRecords>false</modifyAllRecords>
         <object>Account</object>
         <viewAllFields>false</viewAllFields>
-        <viewAllRecords>false</viewAllRecords>
-    </objectPermissions>
-    <objectPermissions>
-        <allowCreate>false</allowCreate>
-        <allowDelete>false</allowDelete>
-        <allowEdit>false</allowEdit>
-        <allowRead>false</allowRead>
-        <modifyAllRecords>false</modifyAllRecords>
-        <object>Contact</object>
-        <viewAllFields>false</viewAllFields>
-        <viewAllRecords>false</viewAllRecords>
+        <viewAllRecords>true</viewAllRecords>
     </objectPermissions>
     <objectPermissions>
         <allowCreate>false</allowCreate>
@@ -813,7 +835,7 @@
         <modifyAllRecords>false</modifyAllRecords>
         <object>Opportunity</object>
         <viewAllFields>false</viewAllFields>
-        <viewAllRecords>false</viewAllRecords>
+        <viewAllRecords>true</viewAllRecords>
     </objectPermissions>
     <objectPermissions>
         <allowCreate>false</allowCreate>
@@ -823,8 +845,10 @@
         <modifyAllRecords>false</modifyAllRecords>
         <object>Lead</object>
         <viewAllFields>false</viewAllFields>
-        <viewAllRecords>false</viewAllRecords>
+        <viewAllRecords>true</viewAllRecords>
     </objectPermissions>
+
+
     <pageAccesses>
         <apexPage>AnswersHome</apexPage>
         <enabled>false</enabled>
@@ -917,101 +941,16 @@
         <apexPage>UnderConstruction</apexPage>
         <enabled>false</enabled>
     </pageAccesses>
-    <recordTypeVisibilities>
-        <default>false</default>
-        <recordType>Account.RES_Company</recordType>
-        <visible>false</visible>
-    </recordTypeVisibilities>
-    <recordTypeVisibilities>
-        <default>false</default>
-        <recordType>Contact.RES_Company</recordType>
-        <visible>false</visible>
-    </recordTypeVisibilities>
-    <recordTypeVisibilities>
-        <default>false</default>
-        <recordType>Lead.RES_Company</recordType>
-        <visible>true</visible>
-    </recordTypeVisibilities>
-    <recordTypeVisibilities>
-        <default>true</default>
-        <recordType>Lead.RES_Individual</recordType>
-        <visible>true</visible>
-    </recordTypeVisibilities>
-    <recordTypeVisibilities>
-        <default>false</default>
-        <recordType>Opportunity.RES_Residential_Multi_Buyer</recordType>
-        <visible>true</visible>
-    </recordTypeVisibilities>
-    <recordTypeVisibilities>
-        <default>true</default>
-        <recordType>Opportunity.RES_Residential_Single_Buyer</recordType>
-        <visible>true</visible>
-    </recordTypeVisibilities>
-    <recordTypeVisibilities>
-        <default>false</default>
-        <recordType>PersonAccount.PersonAccount</recordType>
-        <visible>false</visible>
-    </recordTypeVisibilities>
+
     <tabVisibilities>
-        <tab>Converted_Leads</tab>
-        <visibility>Hidden</visibility>
+        <tab>standard-Home</tab>
+        <visibility>DefaultOn</visibility>
     </tabVisibilities>
     <tabVisibilities>
-        <tab>RES_Account_Converted_Leads</tab>
-        <visibility>Hidden</visibility>
+        <tab>standard-MobileHome</tab>
+        <visibility>DefaultOn</visibility>
     </tabVisibilities>
-    <tabVisibilities>
-        <tab>RES_Assignment_Config__c</tab>
-        <visibility>Hidden</visibility>
-    </tabVisibilities>
-    <tabVisibilities>
-        <tab>RES_Assignment_Rule__c</tab>
-        <visibility>Hidden</visibility>
-    </tabVisibilities>
-    <tabVisibilities>
-        <tab>User_Availability_Status</tab>
-        <visibility>Hidden</visibility>
-    </tabVisibilities>
-    <tabVisibilities>
-        <tab>standard-Account</tab>
-        <visibility>Hidden</visibility>
-    </tabVisibilities>
-    <tabVisibilities>
-        <tab>standard-ApprovalWorkItem</tab>
-        <visibility>Hidden</visibility>
-    </tabVisibilities>
-    <tabVisibilities>
-        <tab>standard-Contact</tab>
-        <visibility>Hidden</visibility>
-    </tabVisibilities>
-    <tabVisibilities>
-        <tab>standard-Lead</tab>
-        <visibility>Hidden</visibility>
-    </tabVisibilities>
-    <tabVisibilities>
-        <tab>standard-Opportunity</tab>
-        <visibility>Hidden</visibility>
-    </tabVisibilities>
-    <tabVisibilities>
-    <tab>standard-Dashboard</tab>
-    <visibility>DefaultOn</visibility>
-    </tabVisibilities>
-    <tabVisibilities>
-    <tab>standard-Report</tab>
-    <visibility>DefaultOn</visibility>
-    </tabVisibilities>
-    <tabVisibilities>
-    <tab>standard-Home</tab>
-    <visibility>DefaultOn</visibility>
-    </tabVisibilities>
-    <tabVisibilities>
-    <tab>standard-MobileHome</tab>
-    <visibility>DefaultOn</visibility>
-    </tabVisibilities>
-    <tabVisibilities>
-        <tab>standard-Event</tab>
-        <visibility>Hidden</visibility>
-    </tabVisibilities>
+
     <userLicense>Salesforce</userLicense>
     <userPermissions>
         <enabled>true</enabled>
