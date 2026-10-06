@@ -86,7 +86,6 @@ private class RES_AccountIntegrationServiceTest {
         acc.BillingCountryCode                = 'SA';
         acc.RES_Language__pc                  = 'EN';
         acc.RES_Marital_Status__pc            = '1';
-        acc.RES_Nationality__pc               = firstActivePicklistValue(Account.RES_Nationality__pc.getDescribe());
         acc.RES_Date_of_Birth__pc             = Date.valueOf('1990-05-15');
         acc.RES_Full_Arabic_Name__pc          = 'نيتين ماراتي';
         acc.RES_Corporate_Title__c            = 'Z001';
