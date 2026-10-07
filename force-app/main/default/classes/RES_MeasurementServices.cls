@@ -92,13 +92,12 @@ public with sharing class RES_MeasurementServices {
     }
 
     /**
-     * @description Re-syncs the measurement-derived Product2 fields (DIR-1797) for every product touched by the change:
+     * @description Re-syncs RES_Active__c on the product's measurements and the measurement-derived Product2 fields (DIR-1797) for every product touched by the change:
      *              the current product, and the previous product when a measurement was re-parented or its values changed.
      * @param measurements Trigger.new (or Trigger.old for delete)
      * @param oldMap       Trigger.oldMap for update, null otherwise
      */
     public static void syncActiveMeasurementsToProduct(List<RES_Measurement__c> measurements, Map<Id, RES_Measurement__c> oldMap) {
-        Set<String> trackedTypes = RES_ProductMeasurementSyncService.getTrackedTypes();
         Set<Id> productIds = new Set<Id>();
 
         for (RES_Measurement__c m : measurements) {
@@ -106,10 +105,10 @@ public with sharing class RES_MeasurementServices {
             if (old != null && !isActiveRelevantChange(m, old)) {
                 continue;
             }
-            if (trackedTypes.contains(m.RES_Measurement_Type__c) && m.RES_Product__c != null) {
+            if (m.RES_Product__c != null) {
                 productIds.add(m.RES_Product__c);
             }
-            if (old != null && trackedTypes.contains(old.RES_Measurement_Type__c) && old.RES_Product__c != null) {
+            if (old != null && old.RES_Product__c != null) {
                 productIds.add(old.RES_Product__c);
             }
         }

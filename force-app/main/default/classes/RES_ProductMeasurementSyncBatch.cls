@@ -1,6 +1,6 @@
 /**
  * @description Daily job (DIR-1797). A measurement becoming active or expiring on a date boundary involves no record save,
- *              so the trigger path never sees it. This batch re-syncs every product that has a tracked measurement whose
+ *              so the trigger path never sees it. This batch re-syncs every product that has a measurement whose
  *              From or To date is yesterday or today.
  *
  *              Schedule (daily 00:10):  System.schedule('RES Product Measurement Sync', '0 10 0 * * ?', new RES_ProductMeasurementSyncBatch());
@@ -10,7 +10,7 @@ public without sharing class RES_ProductMeasurementSyncBatch implements Database
 
     private static final Integer BATCH_SIZE = 200;
 
-    /** When true, processes EVERY product that has a tracked measurement (one-off backfill), not just date-boundary ones. */
+    /** When true, processes EVERY product that has a measurement (one-off backfill), not just date-boundary ones. */
     private final Boolean fullSync;
 
     public RES_ProductMeasurementSyncBatch() {
@@ -26,13 +26,12 @@ public without sharing class RES_ProductMeasurementSyncBatch implements Database
     }
 
     public Database.QueryLocator start(Database.BatchableContext bc) {
-        Set<String> measurementTypes = RES_ProductMeasurementSyncService.getTrackedTypes();
         RES_Product2DAOLayer dao = new RES_Product2DAOLayer();
         if (fullSync) {
-            return dao.getProductsWithMeasurementsLocator(measurementTypes);
+            return dao.getProductsWithMeasurementsLocator();
         }
         Date toDate = RES_ProductMeasurementSyncService.today();
-        return dao.getProductsWithMeasurementBoundaryLocator(measurementTypes, toDate.addDays(-1), toDate);
+        return dao.getProductsWithMeasurementBoundaryLocator(toDate.addDays(-1), toDate);
     }
 
     public void execute(Database.BatchableContext bc, List<Product2> scope) {
