@@ -24,19 +24,46 @@ public without sharing class RES_ProductStagingDAOLayer extends RES_BaseDAOLayer
         return (List<AggregateResult>) results;
     }
 
-    public Database.QueryLocator getPendingStagingRecordsBatch(String batchId) {
+    /** Distinct unit codes still pending for one import, so the batch can chunk by unit rather than by row. */
+    public List<String> getPendingUnitCodes(String batchId) {
+        List<String> codes = new List<String>();
+        if (String.isBlank(batchId)) return codes;
+
+        Map<String, Object> bindVars = new Map<String, Object>{'batchId' => batchId};
+
+        String soql =
+            'SELECT RES_Product_Code__c code ' +
+            'FROM RES_Product_Staging__c ' +
+            'WHERE RES_Processing_Status__c = \'Pending\' ' +
+            'AND RES_Batch_Id__c = :batchId ' +
+            'AND RES_Product_Code__c != null ' +
+            'GROUP BY RES_Product_Code__c ' +
+            'ORDER BY RES_Product_Code__c';
+
+        for (SObject ar : executeQuery(soql, '', false, bindVars, AccessLevel.SYSTEM_MODE)) {
+            codes.add((String) ar.get('code'));
+        }
+        return codes;
+    }
+
+    /** Every pending staging row (all conditions) for the given units within one import. */
+    public List<RES_Product_Staging__c> getPendingStagingRecordsByCodes(String batchId, List<String> codes) {
+        if (String.isBlank(batchId) || codes == null || codes.isEmpty()) return new List<RES_Product_Staging__c>();
+
         List<String> fields = new List<String>(
             RES_Product_Staging__c.SObjectType.getDescribe().fields.getMap().keySet()
         );
 
-        String safeBatchId = String.escapeSingleQuotes(batchId);
+        Map<String, Object> bindVars = new Map<String, Object>{'batchId' => batchId, 'codes' => codes};
 
         String soql =
             'SELECT ' + String.join(fields, ', ') +
             ' FROM RES_Product_Staging__c' +
             ' WHERE RES_Processing_Status__c = \'Pending\'' +
-            ' AND RES_Batch_Id__c = \'' + safeBatchId + '\'' +
+            ' AND RES_Batch_Id__c = :batchId' +
+            ' AND RES_Product_Code__c IN :codes' +
             ' ORDER BY RES_Product_Code__c, RES_Condition_Type__c';
-        return Database.getQueryLocator(soql);
+
+        return (List<RES_Product_Staging__c>) executeQuery(soql, '', false, bindVars, AccessLevel.SYSTEM_MODE);
     }
 }

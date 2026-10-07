@@ -4,7 +4,8 @@
 public with sharing class RES_CsvIngestionController {
 
     private static final String TAB = '\t';
-    private static final Integer BATCH_SIZE = 200;
+    // Maximum data rows (header and blank lines excluded) accepted in a single upload. Larger files must be split.
+    private static final Integer MAX_DATA_ROWS = 250;
     private static final Integer MAX_REPORTED_ERRORS = 25;
 
     private static final String STAGING_OBJECT = 'RES_Product_Staging__c';
@@ -18,6 +19,11 @@ public with sharing class RES_CsvIngestionController {
     @AuraEnabled(cacheable=true)
     public static List<RES_IngestionConfig.Layout> getLayouts() {
         return RES_IngestionConfig.activeLayouts();
+    }
+
+    @AuraEnabled(cacheable=true)
+    public static Integer getMaxDataRows() {
+        return MAX_DATA_ROWS;
     }
 
     @AuraEnabled
@@ -109,6 +115,19 @@ public with sharing class RES_CsvIngestionController {
         }
         if (headerLineNo == -1) {
             result.errors.add('The file contains no readable lines.');
+            return result;
+        }
+
+        Integer dataRowCount = 0;
+        for (Integer i = headerLineNo + 1; i < lines.size(); i++) {
+            if (String.isNotBlank(lines[i])) dataRowCount++;
+        }
+        if (dataRowCount > MAX_DATA_ROWS) {
+            result.errors.add(
+                'The file contains ' + dataRowCount + ' data rows, which is more than the ' + MAX_DATA_ROWS +
+                ' row limit for a single upload. Please split the file into smaller files of ' + MAX_DATA_ROWS +
+                ' rows or fewer and upload them separately.'
+            );
             return result;
         }
 
@@ -277,7 +296,7 @@ public with sharing class RES_CsvIngestionController {
         if (result.rowsInserted > 0) {
             Id jobId = Database.executeBatch(
                 new RES_UnifiedIngestionEngine(layoutCode, importBatchId),
-                BATCH_SIZE
+                RES_UnifiedIngestionEngine.UNIT_CHUNK_SIZE
             );
             result.jobId = jobId;
         }
