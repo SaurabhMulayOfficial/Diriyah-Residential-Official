@@ -38,4 +38,20 @@ public without sharing class RES_ContractItemPriceDAOLayer extends RES_BaseDAOLa
 
         return (List<ContractItemPrice>) executeQuery(soql, '', false, bindVars, AccessLevel.SYSTEM_MODE);
     }
+
+    public List<ContractItemPrice> getOpenCIPByProductIds(Set<Id> productIds, Set<String> excludedContractStatuses) {
+        if (productIds == null || productIds.isEmpty()) {
+            return new List<ContractItemPrice>();
+        }
+        Map<String, Object> bindVars = new Map<String, Object>{
+            'productIds' => productIds,
+            'excludedStatuses' => excludedContractStatuses
+        };
+        String soql =
+            'SELECT Id, ContractId ' +
+            'FROM ContractItemPrice ' +
+            'WHERE (ItemId IN :productIds OR RES_Product__c IN :productIds) ' +
+            'AND Contract.Status NOT IN :excludedStatuses';
+        return (List<ContractItemPrice>) executeQuery(soql, '', false, bindVars, AccessLevel.SYSTEM_MODE);
+    }
 }

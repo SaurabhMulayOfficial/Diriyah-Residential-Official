@@ -153,4 +153,21 @@ public Without sharing class RES_QuoteLineItemDAO extends RES_BaseDAOLayer {
             return (List<QuoteLineItem>) executeQuery(soql, '', false, bindVars, AccessLevel.SYSTEM_MODE);
         }
 
+
+    // Lines on still-open quotes for the given units; used to cancel quotes when a unit moves back to Draft.
+    public List<QuoteLineItem> getOpenQuoteLineItemsByProductIds(Set<Id> productIds, Set<String> excludedStatuses) {
+        if (productIds == null || productIds.isEmpty()) {
+            return new List<QuoteLineItem>();
+        }
+        Map<String, Object> bindVars = new Map<String, Object>{
+            'productIds' => productIds,
+            'excludedStatuses' => excludedStatuses
+        };
+        String soql = 'SELECT Id, QuoteId, Product2Id, Quote.OpportunityId, Quote.IsSyncing, Quote.ContractId, Quote.Contract.Status ' +
+                    'FROM QuoteLineItem ' +
+                    'WHERE Product2Id IN :productIds ' +
+                    'AND Quote.Status NOT IN :excludedStatuses';
+        return (List<QuoteLineItem>) executeQuery(soql, '', false, bindVars, AccessLevel.SYSTEM_MODE);
+    }
+
 }
