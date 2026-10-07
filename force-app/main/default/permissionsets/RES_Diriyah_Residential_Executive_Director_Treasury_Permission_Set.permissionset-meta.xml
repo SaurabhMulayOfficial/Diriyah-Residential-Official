@@ -21,7 +21,12 @@
         <enabled>true</enabled>
         <name>RES_Hide_Dashboards</name>
     </customPermissions>
-        <fieldPermissions>
+                <fieldPermissions>
+            <editable>false</editable>
+            <field>RES_Measurement__c.RES_Active__c</field>
+            <readable>true</readable>
+        </fieldPermissions>
+<fieldPermissions>
         <editable>false</editable>
         <field>ContractItemPrice.RES_Product__c</field>
         <readable>true</readable>
@@ -466,6 +471,41 @@
         <field>Product2.RES_SPA_Document_Image_Width__c</field>
         <readable>true</readable>
     </fieldPermissions>
+        <fieldPermissions>
+            <editable>false</editable>
+            <field>Product2.RES_Unit_Facilities_Arabic__c</field>
+            <readable>true</readable>
+        </fieldPermissions>
+        <fieldPermissions>
+            <editable>false</editable>
+            <field>Product2.RES_Unit_Facilities__c</field>
+            <readable>true</readable>
+        </fieldPermissions>
+        <fieldPermissions>
+            <editable>false</editable>
+            <field>Product2.RES_Build_up_area__c</field>
+            <readable>true</readable>
+        </fieldPermissions>
+        <fieldPermissions>
+            <editable>false</editable>
+            <field>Product2.RES_Unit_Total_Area__c</field>
+            <readable>true</readable>
+        </fieldPermissions>
+        <fieldPermissions>
+            <editable>false</editable>
+            <field>Product2.RES_Unit_Plot_Area__c</field>
+            <readable>true</readable>
+        </fieldPermissions>
+        <fieldPermissions>
+            <editable>false</editable>
+            <field>Product2.RES_Internal_unit_Area__c</field>
+            <readable>true</readable>
+        </fieldPermissions>
+        <fieldPermissions>
+            <editable>false</editable>
+            <field>Product2.RES_No_of_Bedrooms__c</field>
+            <readable>true</readable>
+        </fieldPermissions>
     <fieldPermissions>
         <editable>false</editable>
         <field>ContentVersion.RES_Attachment_Type__c</field>

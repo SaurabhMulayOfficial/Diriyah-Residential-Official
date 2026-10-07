@@ -209,4 +209,269 @@ private class RES_ProductMeasurementSyncTest {
         Test.stopTest();
         System.assertEquals('500 Sqr Mtr', reload(p.Id).RES_Unit_Plot_Area__c);
     }
+
+    private static Map<String, Boolean> activeByName(Id productId) {
+        Map<String, Boolean> result = new Map<String, Boolean>();
+        for (RES_Measurement__c m : [SELECT Name, RES_Active__c FROM RES_Measurement__c WHERE RES_Product__c = :productId]) {
+            result.put(m.Name, m.RES_Active__c);
+        }
+        return result;
+    }
+
+    private static RES_Measurement__c named(RES_Measurement__c m, String name) {
+        m.Name = name;
+        return m;
+    }
+
+    @IsTest
+    static void onlyOneActivePerProductAndTypeLatestFromWins() {
+        Product2 p = createProduct('A1');
+        Date today = RES_ProductMeasurementSyncService.today();
+        Test.startTest();
+        insert new List<RES_Measurement__c>{
+            named(build(p.Id, BUA, 100, 'Sqr Mtr', today.addDays(-30), null), 'old'),
+            named(build(p.Id, BUA, 150, 'Sqr Mtr', today.addDays(-2), null), 'newest'),
+            named(build(p.Id, BUA, 120, 'Sqr Mtr', today.addDays(-10), null), 'middle'),
+            named(build(p.Id, PLOT, 300, 'Sqr Mtr', today.addDays(-1), null), 'plot')
+        };
+        Test.stopTest();
+        Map<String, Boolean> a = activeByName(p.Id);
+        System.assertEquals(false, a.get('old'));
+        System.assertEquals(true, a.get('newest'));
+        System.assertEquals(false, a.get('middle'));
+        System.assertEquals(true, a.get('plot'), 'Each type has its own Active record');
+    }
+
+    @IsTest
+    static void outOfWindowRecordsAreNotActive() {
+        Product2 p = createProduct('A2');
+        Date today = RES_ProductMeasurementSyncService.today();
+        Test.startTest();
+        insert new List<RES_Measurement__c>{
+            named(build(p.Id, BUA, 1, 'Sqr Mtr', today.addDays(1), null), 'future'),
+            named(build(p.Id, PLOT, 2, 'Sqr Mtr', today.addDays(-9), today.addDays(-1)), 'expired')
+        };
+        Test.stopTest();
+        Map<String, Boolean> a = activeByName(p.Id);
+        System.assertEquals(false, a.get('future'));
+        System.assertEquals(false, a.get('expired'));
+    }
+
+    @IsTest
+    static void activeFlagMovesWhenDatesChange() {
+        Product2 p = createProduct('A3');
+        Date today = RES_ProductMeasurementSyncService.today();
+        RES_Measurement__c first = named(build(p.Id, BUA, 100, 'Sqr Mtr', today.addDays(-10), null), 'first');
+        RES_Measurement__c second = named(build(p.Id, BUA, 200, 'Sqr Mtr', today.addDays(-1), null), 'second');
+        insert new List<RES_Measurement__c>{ first, second };
+        System.assertEquals(true, activeByName(p.Id).get('second'));
+
+        second.RES_Measurement_To__c = today.addDays(-1); // second expires -> first takes over
+        update second;
+        Map<String, Boolean> a = activeByName(p.Id);
+        System.assertEquals(true, a.get('first'));
+        System.assertEquals(false, a.get('second'));
+        System.assertEquals('100 Sqr Mtr', reload(p.Id).RES_Build_up_area__c);
+
+        delete first; // nothing left in effect
+        System.assertEquals(null, reload(p.Id).RES_Build_up_area__c);
+    }
+
+    @IsTest
+    static void undatedLatestCreatedIsActiveAndDatedBeatsUndated() {
+        Product2 p = createProduct('A4');
+        Date today = RES_ProductMeasurementSyncService.today();
+        RES_Measurement__c older = named(build(p.Id, ROOMS, 5, 'Pcs', null, null), 'older');
+        RES_Measurement__c newer = named(build(p.Id, ROOMS, 9, 'Pcs', null, null), 'newer');
+        insert new List<RES_Measurement__c>{ older, newer };
+        Test.setCreatedDate(older.Id, Datetime.now().addDays(-5));
+        Test.setCreatedDate(newer.Id, Datetime.now().addDays(-1));
+        RES_ProductMeasurementSyncService.syncProducts(new Set<Id>{ p.Id });
+        Map<String, Boolean> a = activeByName(p.Id);
+        System.assertEquals(true, a.get('newer'));
+        System.assertEquals(false, a.get('older'));
+        System.assertEquals(9, reload(p.Id).RES_No_of_Bedrooms__c);
+
+        insert named(build(p.Id, ROOMS, 6, 'Pcs', today, null), 'dated');
+        a = activeByName(p.Id);
+        System.assertEquals(true, a.get('dated'), 'A dated in-range record outranks undated ones');
+        System.assertEquals(false, a.get('newer'));
+        System.assertEquals(6, reload(p.Id).RES_No_of_Bedrooms__c);
+    }
+
+    @IsTest
+    static void untrackedTypeGetsActiveFlagButProductIsUntouched() {
+        Product2 p = createProduct('A5');
+        Test.startTest();
+        insert named(build(p.Id, 'Z004', 2, 'Pcs', null, null), 'parking');
+        Test.stopTest();
+        System.assertEquals(true, activeByName(p.Id).get('parking'));
+        System.assertEquals(null, reload(p.Id).RES_No_of_Bedrooms__c);
+    }
+
+    @IsTest
+    static void fullSyncBatchBackfillsActiveFlag() {
+        Product2 p = createProduct('A6');
+        RES_Measurement__c m = named(build(p.Id, PLOT, 500, 'Sqr Mtr', null, null), 'plot');
+        insert m;
+        update new RES_Measurement__c(Id = m.Id, RES_Active__c = false); // simulate pre-existing record
+        Test.startTest();
+        Database.executeBatch(new RES_ProductMeasurementSyncBatch(true));
+        Test.stopTest();
+        System.assertEquals(true, activeByName(p.Id).get('plot'));
+    }
+
+    // ------------------------------------------------------------------
+    // Scenario matrix (effective start = From start-of-day, or created moment when From is blank)
+    // ------------------------------------------------------------------
+
+    /** Name of the single Active record of the type for the product, or null when none is Active. */
+    private static String activeName(Id productId, String type) {
+        List<RES_Measurement__c> rows = [SELECT Name FROM RES_Measurement__c
+                                         WHERE RES_Product__c = :productId AND RES_Measurement_Type__c = :type AND RES_Active__c = true];
+        System.assert(rows.size() <= 1, 'At most one Active record per product and type');
+        return rows.isEmpty() ? null : rows[0].Name;
+    }
+
+    private static void setCreated(RES_Measurement__c m, Datetime created) {
+        Test.setCreatedDate(m.Id, created);
+    }
+
+    private static void resync(Id productId) {
+        RES_ProductMeasurementSyncService.syncProducts(new Set<Id>{ productId });
+    }
+
+    @IsTest
+    static void scenarioUndatedRecordCreatedAfterDatedFromWins() { // #7
+        Product2 p = createProduct('S7');
+        Date today = RES_ProductMeasurementSyncService.today();
+        RES_Measurement__c dated = named(build(p.Id, ROOMS, 6, 'Pcs', today.addDays(-5), null), 'dated');
+        RES_Measurement__c undated = named(build(p.Id, ROOMS, 9, 'Pcs', null, null), 'undated');
+        insert new List<RES_Measurement__c>{ dated, undated };
+        setCreated(dated, Datetime.now().addDays(-6));
+        setCreated(undated, Datetime.now().addDays(-1));
+        resync(p.Id);
+        System.assertEquals('undated', activeName(p.Id, ROOMS));
+        System.assertEquals(9, reload(p.Id).RES_No_of_Bedrooms__c);
+    }
+
+    @IsTest
+    static void scenarioDatedFromTodayVersusUndatedCreatedToday() { // #8
+        Product2 p = createProduct('S8');
+        Date today = RES_ProductMeasurementSyncService.today();
+        RES_Measurement__c dated = named(build(p.Id, ROOMS, 6, 'Pcs', today, null), 'dated');
+        RES_Measurement__c undated = named(build(p.Id, ROOMS, 9, 'Pcs', null, null), 'undated');
+        insert new List<RES_Measurement__c>{ dated, undated };
+        setCreated(dated, Datetime.now().addDays(-3));
+        setCreated(undated, Datetime.now()); // created today, after the start of today
+        resync(p.Id);
+        System.assertEquals('undated', activeName(p.Id, ROOMS));
+    }
+
+    @IsTest
+    static void scenarioDatedFromTodayVersusUndatedCreatedBeforeToday() { // #9
+        Product2 p = createProduct('S9');
+        Date today = RES_ProductMeasurementSyncService.today();
+        RES_Measurement__c dated = named(build(p.Id, ROOMS, 6, 'Pcs', today, null), 'dated');
+        RES_Measurement__c undated = named(build(p.Id, ROOMS, 9, 'Pcs', null, null), 'undated');
+        insert new List<RES_Measurement__c>{ dated, undated };
+        setCreated(undated, Datetime.now().addDays(-2));
+        resync(p.Id);
+        System.assertEquals('dated', activeName(p.Id, ROOMS));
+        System.assertEquals(6, reload(p.Id).RES_No_of_Bedrooms__c);
+    }
+
+    @IsTest
+    static void scenarioUndatedCreatedBeforeDatedFromLoses() { // #10
+        Product2 p = createProduct('S10');
+        Date today = RES_ProductMeasurementSyncService.today();
+        RES_Measurement__c dated = named(build(p.Id, ROOMS, 6, 'Pcs', today.addDays(-2), null), 'dated');
+        RES_Measurement__c undated = named(build(p.Id, ROOMS, 9, 'Pcs', null, null), 'undated');
+        insert new List<RES_Measurement__c>{ dated, undated };
+        setCreated(undated, Datetime.now().addDays(-10));
+        resync(p.Id);
+        System.assertEquals('dated', activeName(p.Id, ROOMS));
+    }
+
+    @IsTest
+    static void scenarioTwoDatedLatestFromThenLatestCreated() { // #11
+        Product2 p = createProduct('S11');
+        Date today = RES_ProductMeasurementSyncService.today();
+        RES_Measurement__c a = named(build(p.Id, PLOT, 1, 'Sqr Mtr', today.addDays(-5), null), 'a');
+        RES_Measurement__c b = named(build(p.Id, PLOT, 2, 'Sqr Mtr', today.addDays(-5), null), 'b');
+        RES_Measurement__c c = named(build(p.Id, PLOT, 3, 'Sqr Mtr', today.addDays(-9), null), 'c');
+        insert new List<RES_Measurement__c>{ a, b, c };
+        setCreated(a, Datetime.now().addDays(-8));
+        setCreated(b, Datetime.now().addDays(-7));
+        setCreated(c, Datetime.now().addDays(-1));
+        resync(p.Id);
+        System.assertEquals('b', activeName(p.Id, PLOT), 'Same From: latest created; older From loses even if created later');
+    }
+
+    @IsTest
+    static void scenarioExpiredDatedLetsUndatedWinAndViceVersa() { // #12 and #13
+        Product2 p = createProduct('S12');
+        Date today = RES_ProductMeasurementSyncService.today();
+        RES_Measurement__c expiredDated = named(build(p.Id, BUA, 100, 'Sqr Mtr', today.addDays(-9), today.addDays(-1)), 'expiredDated');
+        RES_Measurement__c undated = named(build(p.Id, BUA, 200, 'Sqr Mtr', null, null), 'undated');
+        insert new List<RES_Measurement__c>{ expiredDated, undated };
+        setCreated(undated, Datetime.now().addDays(-30));
+        resync(p.Id);
+        System.assertEquals('undated', activeName(p.Id, BUA));
+
+        Product2 q = createProduct('S13');
+        RES_Measurement__c expiredUndated = named(build(q.Id, BUA, 100, 'Sqr Mtr', null, today.addDays(-1)), 'expiredUndated');
+        RES_Measurement__c dated = named(build(q.Id, BUA, 200, 'Sqr Mtr', today.addDays(-2), null), 'dated');
+        insert new List<RES_Measurement__c>{ expiredUndated, dated };
+        setCreated(expiredUndated, Datetime.now().addDays(-1));
+        resync(q.Id);
+        System.assertEquals('dated', activeName(q.Id, BUA));
+    }
+
+    @IsTest
+    static void scenarioFutureFromWaitsThenTakesOver() { // #14
+        Product2 p = createProduct('S14');
+        Date today = RES_ProductMeasurementSyncService.today();
+        RES_Measurement__c undated = named(build(p.Id, BUA, 100, 'Sqr Mtr', null, null), 'undated');
+        RES_Measurement__c future = named(build(p.Id, BUA, 200, 'Sqr Mtr', today.addDays(3), null), 'future');
+        insert new List<RES_Measurement__c>{ undated, future };
+        setCreated(undated, Datetime.now().addDays(-5));
+        resync(p.Id);
+        System.assertEquals('undated', activeName(p.Id, BUA), 'Future-dated record is not in window yet');
+        System.assertEquals('100 Sqr Mtr', reload(p.Id).RES_Build_up_area__c);
+
+        future.RES_Measurement_From__c = today; // the From date arrives
+        update future;
+        System.assertEquals('future', activeName(p.Id, BUA));
+        System.assertEquals('200 Sqr Mtr', reload(p.Id).RES_Build_up_area__c);
+    }
+
+    @IsTest
+    static void scenarioNothingInWindowClearsEverything() { // #3, #4, #15
+        Product2 p = createProduct('S15');
+        Date today = RES_ProductMeasurementSyncService.today();
+        insert new List<RES_Measurement__c>{
+            named(build(p.Id, BUA, 1, 'Sqr Mtr', today.addDays(2), null), 'future'),
+            named(build(p.Id, BUA, 2, 'Sqr Mtr', today.addDays(-9), today.addDays(-3)), 'expired')
+        };
+        System.assertEquals(null, activeName(p.Id, BUA));
+        System.assertEquals(null, reload(p.Id).RES_Build_up_area__c);
+    }
+
+    @IsTest
+    static void scenarioAddingFromDateToUndatedRecordChangesItsRank() { // #16
+        Product2 p = createProduct('S16');
+        Date today = RES_ProductMeasurementSyncService.today();
+        RES_Measurement__c first = named(build(p.Id, PLOT, 1, 'Sqr Mtr', null, null), 'first');
+        RES_Measurement__c second = named(build(p.Id, PLOT, 2, 'Sqr Mtr', null, null), 'second');
+        insert new List<RES_Measurement__c>{ first, second };
+        setCreated(first, Datetime.now().addDays(-10));
+        setCreated(second, Datetime.now().addDays(-5));
+        resync(p.Id);
+        System.assertEquals('second', activeName(p.Id, PLOT));
+
+        first.RES_Measurement_From__c = today; // starts today -> later than second's creation
+        update first;
+        System.assertEquals('first', activeName(p.Id, PLOT));
+    }
 }

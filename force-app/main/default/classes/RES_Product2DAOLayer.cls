@@ -426,23 +426,18 @@ public List<Product2> getRejectedProducts(String status,String searchTerm,Intege
         return (List<Product2>) executeQuery(soql, '', false, bindVars, AccessLevel.SYSTEM_MODE);
     }
 
-    /** @description Every product that has a measurement of one of the given types (one-off full backfill). */
-    public Database.QueryLocator getProductsWithMeasurementsLocator(Set<String> measurementTypes) {
-        Map<String, Object> bindVars = new Map<String, Object>{ 'measurementTypes' => measurementTypes };
+    /** @description Every product that has at least one measurement (one-off full backfill). */
+    public Database.QueryLocator getProductsWithMeasurementsLocator() {
         String soql = 'SELECT Id FROM Product2 WHERE Id IN (' +
-                      'SELECT RES_Product__c FROM RES_Measurement__c ' +
-                      'WHERE RES_Product__c != null AND RES_Measurement_Type__c IN :measurementTypes)';
-        return executeBatchQuery(soql, bindVars, AccessLevel.SYSTEM_MODE);
+                      'SELECT RES_Product__c FROM RES_Measurement__c WHERE RES_Product__c != null)';
+        return executeBatchQuery(soql, null, AccessLevel.SYSTEM_MODE);
     }
 
-    /** @description Products having a measurement of the given types whose From or To date falls in [fromDate, toDate]. */
-    public Database.QueryLocator getProductsWithMeasurementBoundaryLocator(Set<String> measurementTypes, Date fromDate, Date toDate) {
-        Map<String, Object> bindVars = new Map<String, Object>{
-            'measurementTypes' => measurementTypes, 'fromDate' => fromDate, 'toDate' => toDate
-        };
+    /** @description Products having a measurement whose From or To date falls in [fromDate, toDate]. */
+    public Database.QueryLocator getProductsWithMeasurementBoundaryLocator(Date fromDate, Date toDate) {
+        Map<String, Object> bindVars = new Map<String, Object>{ 'fromDate' => fromDate, 'toDate' => toDate };
         String soql = 'SELECT Id FROM Product2 WHERE Id IN (' +
-                      'SELECT RES_Product__c FROM RES_Measurement__c ' +
-                      'WHERE RES_Product__c != null AND RES_Measurement_Type__c IN :measurementTypes ' +
+                      'SELECT RES_Product__c FROM RES_Measurement__c WHERE RES_Product__c != null ' +
                       'AND ((RES_Measurement_From__c >= :fromDate AND RES_Measurement_From__c <= :toDate) ' +
                       'OR (RES_Measurement_To__c >= :fromDate AND RES_Measurement_To__c <= :toDate)))';
         return executeBatchQuery(soql, bindVars, AccessLevel.SYSTEM_MODE);

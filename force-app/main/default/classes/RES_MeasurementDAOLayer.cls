@@ -22,16 +22,13 @@ public without sharing class RES_MeasurementDAOLayer extends RES_BaseDAOLayer {
         return (List<RES_Measurement__c>) executeQuery(soql, '', false, bindVars, AccessLevel.SYSTEM_MODE);
     }
 
-    /** @description Measurements of the given types for the given products (active-window filtering is done by the caller). */
-    public List<RES_Measurement__c> getMeasurementsByProductIdsAndTypes(Set<Id> productIds, Set<String> measurementTypes) {
-        if (productIds == null || productIds.isEmpty() || measurementTypes == null || measurementTypes.isEmpty()) {
-            return new List<RES_Measurement__c>();
-        }
-        Map<String, Object> bindVars = new Map<String, Object>{ 'productIds' => productIds, 'measurementTypes' => measurementTypes };
+    /** @description All measurements (every type) of the given products, with the fields needed to decide which is Active. */
+    public List<RES_Measurement__c> getMeasurementsForActiveSync(Set<Id> productIds) {
+        if (productIds == null || productIds.isEmpty()) return new List<RES_Measurement__c>();
+        Map<String, Object> bindVars = new Map<String, Object>{ 'productIds' => productIds };
         String soql = 'SELECT Id, CreatedDate, RES_Product__c, RES_Measurement_Type__c, RES_Measurement_Amount__c, ' +
-                      'RES_Measurement_From__c, RES_Measurement_To__c, RES_Unit_Of_Measurement__c ' +
-                      'FROM RES_Measurement__c ' +
-                      'WHERE RES_Product__c IN :productIds AND RES_Measurement_Type__c IN :measurementTypes';
+                      'RES_Measurement_From__c, RES_Measurement_To__c, RES_Unit_Of_Measurement__c, RES_Active__c ' +
+                      'FROM RES_Measurement__c WHERE RES_Product__c IN :productIds';
         return (List<RES_Measurement__c>) executeQuery(soql, '', false, bindVars, AccessLevel.SYSTEM_MODE);
     }
 }
