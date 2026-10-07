@@ -121,6 +121,61 @@ private class RES_CsvIngestionControllerTest {
         Test.stopTest();
     }
 
+    private static String rowsCsv(Integer dataRows) {
+        List<String> lines = new List<String>{ 'InvalidHeader1,InvalidHeader2' };
+        for (Integer i = 0; i < dataRows; i++) lines.add('Val' + i + ',Val2');
+        return String.join(lines, '\n') + '\n\n';
+    }
+
+    @IsTest
+    static void testMaxDataRowsIsExposed() {
+        Assert.areEqual(250, RES_CsvIngestionController.getMaxDataRows());
+    }
+
+    @IsTest
+    static void testFileOverRowLimitIsRejectedBeforeParsing() {
+        String validCode = getLayoutCodeWithMappings();
+        if (String.isBlank(validCode)) return;
+        RES_IngestionConfig.Layout layout = RES_IngestionConfig.layoutByCode(validCode);
+
+        Test.startTest();
+        // The message text is only visible through the parse result; AuraHandledException hides it in Apex tests.
+        RES_CsvIngestionController.UploadResult result = RES_CsvIngestionController.parseToStaging(
+            rowsCsv(251), 'big.csv', layout, RES_IngestionConfig.columnMaps(validCode), 'Insert', validCode
+        );
+        Assert.areEqual(1, result.errors.size());
+        Assert.isTrue(result.errors[0].contains('251 data rows'), result.errors[0]);
+        Assert.isTrue(result.errors[0].contains('split the file'), result.errors[0]);
+        Assert.areEqual(0, result.rowsInserted);
+
+        try {
+            RES_CsvIngestionController.startBatchFromCsv(rowsCsv(251), 'big.csv', validCode, 'Insert');
+            Assert.fail('A file with 251 data rows must be rejected');
+        } catch (AuraHandledException e) {
+            Assert.isNotNull(e);
+        }
+        Test.stopTest();
+
+        Assert.areEqual(0, [SELECT COUNT() FROM RES_Product_Staging__c], 'Nothing may be staged for a rejected file');
+    }
+
+    @IsTest
+    static void testFileAtRowLimitIsNotRejectedForSize() {
+        String validCode = getLayoutCodeWithMappings();
+        if (String.isBlank(validCode)) return;
+        RES_IngestionConfig.Layout layout = RES_IngestionConfig.layoutByCode(validCode);
+
+        Test.startTest();
+        RES_CsvIngestionController.UploadResult result = RES_CsvIngestionController.parseToStaging(
+            rowsCsv(250), 'edge.csv', layout, RES_IngestionConfig.columnMaps(validCode), 'Insert', validCode
+        );
+        Test.stopTest();
+
+        for (String err : result.errors) {
+            Assert.isFalse(err.contains('data rows'), 'Exactly 250 rows must pass the size check: ' + err);
+        }
+    }
+
     @IsTest
     static void testTruncateAndCellHelpers() {
         Test.startTest();

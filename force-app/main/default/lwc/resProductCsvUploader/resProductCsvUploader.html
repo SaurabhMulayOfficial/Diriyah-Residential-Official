@@ -70,6 +70,14 @@
                     <p class="slds-m-top_small"><strong>Selected file:</strong> {fileName}</p>
                 </template>
 
+                <template if:true={hasFileError}>
+                    <div class="slds-notify slds-notify_alert slds-alert_error slds-m-top_small" role="alert">
+                        <lightning-icon icon-name="utility:error" size="x-small" variant="inverse"
+                            class="slds-m-right_x-small"></lightning-icon>
+                        <h2>{fileError}</h2>
+                    </div>
+                </template>
+
                 <div class="slds-m-top_medium">
                     <lightning-button
                         variant="brand"
