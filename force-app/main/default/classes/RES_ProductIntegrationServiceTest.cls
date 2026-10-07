@@ -437,23 +437,29 @@ private class RES_ProductIntegrationServiceTest {
 
     @isTest
     static void testBuildFixturesFittingsStoreroomFalseInsert() {
-        // false on INSERT (ctx=I) must NOT produce any code — No codes only sent on UPDATE
+        // false on INSERT (ctx=I) must produce the No-code (Z006) with Change_Indicator I
         Product2 p = new Product2(RES_Storeroom__c = false);
 
         List<Map<String, Object>> fixtures =
             RES_ProductIntegrationService.buildFixturesFittings(p, 'I', makeFixtureBoolTrueMap(), makeFixtureBoolFalseMap());
 
+        Boolean foundZ006 = false;
         for (Map<String, Object> f : fixtures) {
-            String code = String.valueOf(f.get('RES_Fixtures_Fittings_Characteristics'));
-            Assert.isTrue(!'Z005'.equals(code) && !'Z006'.equals(code),
-                'Storeroom false on INSERT must not produce Z005 or Z006 — got: ' + code);
+            if ('Z006'.equals(String.valueOf(f.get('RES_Fixtures_Fittings_Characteristics')))) {
+                foundZ006 = true;
+                Assert.areEqual('I', f.get('Change_Indicator'), 'Storeroom false on INSERT must use Change_Indicator I');
+            }
         }
+        Assert.isTrue(foundZ006, 'Storeroom false on INSERT must produce Z006 (Storeroom-No) with CI I');
     }
 
     @isTest
     static void testBuildFixturesFittingsStoreroomFalseUpdate() {
-        // false on UPDATE (ctx=U) must send Z006 (Storeroom-No) to tell SAP to remove it
-        Product2 p = new Product2(RES_Storeroom__c = false);
+        // false on UPDATE with prevVal=false (unchanged) must send Z006 with Change_Indicator U
+        Product2 p = new Product2(
+            RES_Storeroom__c = false,
+            RES_Fixture_Prev_Values__c = '{"RES_Storeroom__c":false}'
+        );
 
         List<Map<String, Object>> fixtures =
             RES_ProductIntegrationService.buildFixturesFittings(p, 'U', makeFixtureBoolTrueMap(), makeFixtureBoolFalseMap());
@@ -504,7 +510,11 @@ private class RES_ProductIntegrationServiceTest {
 
     @isTest
     static void testBuildFixturesFittingsUpdateContext() {
-        Product2 p = new Product2(RES_Storeroom__c = true);
+        // true on UPDATE with prevVal=true (unchanged) must produce Z005 with Change_Indicator U
+        Product2 p = new Product2(
+            RES_Storeroom__c = true,
+            RES_Fixture_Prev_Values__c = '{"RES_Storeroom__c":true}'
+        );
 
         List<Map<String, Object>> fixtures =
             RES_ProductIntegrationService.buildFixturesFittings(p, 'U', makeFixtureBoolTrueMap(), makeFixtureBoolFalseMap());
@@ -515,7 +525,7 @@ private class RES_ProductIntegrationServiceTest {
                 foundZ005WithU = 'U'.equals(String.valueOf(f.get('Change_Indicator')));
             }
         }
-        Assert.isTrue(foundZ005WithU, 'Update context must produce Z005 with Change_Indicator U');
+        Assert.isTrue(foundZ005WithU, 'Update context with prevVal=true must produce Z005 with Change_Indicator U');
     }
 
     @isTest
@@ -696,7 +706,7 @@ private class RES_ProductIntegrationServiceTest {
                                   RES_Floor__c, RES_Area_Type__c, RES_Area__c,
                                   RES_Unit_Status__c, RES_Type__c, StockKeepingUnit,
                                   RES_Product_External_ID__c, RES_Last_Sync_DateTime__c,
-                                  RES_Fixtures_Last_Sync__c,
+                                  RES_Fixtures_Last_Sync__c, RES_Fixture_Prev_Values__c,
                                   RES_Profit_Center__c, AvailabilityDate, DiscontinuedDate,
                                   RES_Orientation__c, RES_Storeroom__c, RES_Elevated__c,
                                   RES_Terrace__c, RES_Roof_Terrace__c, RES_Entry_Courtyard__c,
@@ -755,7 +765,7 @@ private class RES_ProductIntegrationServiceTest {
                                   RES_Floor__c, RES_Area_Type__c, RES_Area__c,
                                   RES_Unit_Status__c, RES_Type__c, StockKeepingUnit,
                                   RES_Product_External_ID__c, RES_Last_Sync_DateTime__c,
-                                  RES_Fixtures_Last_Sync__c,
+                                  RES_Fixtures_Last_Sync__c, RES_Fixture_Prev_Values__c,
                                   RES_Profit_Center__c, AvailabilityDate, DiscontinuedDate,
                                   RES_Orientation__c, RES_Storeroom__c, RES_Elevated__c,
                                   RES_Terrace__c, RES_Roof_Terrace__c, RES_Entry_Courtyard__c,
@@ -839,7 +849,7 @@ private class RES_ProductIntegrationServiceTest {
                                       RES_Floor__c, RES_Area_Type__c, RES_Area__c,
                                       RES_Unit_Status__c, RES_Type__c, StockKeepingUnit,
                                       RES_Product_External_ID__c, RES_Last_Sync_DateTime__c,
-                                      RES_Fixtures_Last_Sync__c,
+                                      RES_Fixtures_Last_Sync__c, RES_Fixture_Prev_Values__c,
                                       RES_Profit_Center__c, AvailabilityDate, DiscontinuedDate,
                                       RES_Orientation__c, RES_Storeroom__c, RES_Elevated__c,
                                       RES_Terrace__c, RES_Roof_Terrace__c, RES_Entry_Courtyard__c,
@@ -869,8 +879,10 @@ private class RES_ProductIntegrationServiceTest {
 
     @isTest
     static void testValidateSapExternalIdValidFormat() {
-        String err = RES_ProductIntegrationService.validateSapExternalIdFormat('1000/140/11002912');
-        Assert.isNull(err, 'Valid SAP ExternalId must return null (no error)');
+        Assert.isNull(RES_ProductIntegrationService.validateSapExternalIdFormat('1000/140/11002912'),
+            'Legacy CompanyCode/BE/RO format must be accepted');
+        Assert.isNull(RES_ProductIntegrationService.validateSapExternalIdFormat('11002912'),
+            'Numeric-only RO format (new) must be accepted');
     }
 
     @isTest
@@ -881,9 +893,9 @@ private class RES_ProductIntegrationServiceTest {
     }
 
     @isTest
-    static void testValidateSapExternalIdNoSlashFails() {
+    static void testValidateSapExternalIdNumericOnlyAccepted() {
         String err = RES_ProductIntegrationService.validateSapExternalIdFormat('11002912');
-        Assert.isNotNull(err, 'A bare number without slashes must be rejected as invalid SAP format');
+        Assert.isNull(err, 'Numeric-only SAP RO id (new format from extractSAPExternalId) must be accepted');
     }
 
     @isTest

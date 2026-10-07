@@ -329,10 +329,8 @@ public List<Product2> getRejectedProducts(String status,String searchTerm,Intege
     }
 
     /**
-     * Retrieves Residential Sales Unit Product2 records tagged to a given
-     * catalog (RES_Business_Entity__c), for DIR-1258 bundle provisioning.
-     * DIR-1907: Units are included regardless of IsActive - Payment Plan
-     * tagging must not depend on Unit active status.
+     * Retrieves active Residential Sales Unit Product2 records tagged to a
+     * given catalog (RES_Business_Entity__c), for DIR-1258 bundle provisioning.
      */
     public List<Product2> getUnitsByCatalog(Id catalogId) {
         if (catalogId == null) {
@@ -378,10 +376,10 @@ public List<Product2> getRejectedProducts(String status,String searchTerm,Intege
          * Product2 acting as a ProductRelatedComponent parent, and RecordTypeId drives every
          * "RecordType.DeveloperName = ..." filter this feature relies on elsewhere.
          */
-        String soql = 'SELECT Id, Name, RecordTypeId, Type, ConfigureDuringSale, RES_CIP_Type__c, RES_No_of_Years__c, RES_Business_Entity__c, RES_Price_Option__c, CurrencyIsoCode, AvailabilityDate, RES_Validity_End_Date__c, IsActive, Description, IsAssetizable, RES_Version__c, ' +
+        String soql = 'SELECT Id, Name, RecordTypeId, Type, ConfigureDuringSale, RES_CIP_Type__c, RES_No_of_Years__c, RES_Catalog__c, RES_Business_Entity__c, RES_Price_Option__c, CurrencyIsoCode, AvailabilityDate, RES_Validity_End_Date__c, IsActive, Description, IsAssetizable, RES_Version__c, ' +
                       '(SELECT Id, Name, RES_Parent_Payment_Plan__c, RES_Version__c FROM ParentPaymentPlan__r WHERE RES_Version__c > 0 ORDER BY RES_Version__c DESC) ' +
         			  'FROM Product2 ' +
-                      'WHERE RES_Business_Entity__c IN : productCatalogIdSet AND ' +
+                      'WHERE RES_Catalog__c IN : productCatalogIdSet AND ' +
                       'RecordType.DeveloperName =: recordTypeDeveloperName AND ' +
                       'IsActive = TRUE AND ' +
                       'RES_Version__c = NULL';
@@ -410,9 +408,9 @@ public List<Product2> getRejectedProducts(String status,String searchTerm,Intege
                       'RES_ID_Finish__c, RES_Drivers_Room__c, RES_Maids_Room__c, RES_Wadi_View__c, ' +
                       'RES_Golf_View__c, RES_Panoramic_View__c, RES_Private__c, RES_Condition__c, ' +
                       'RES_Furnished__c, ' +
-                      'RES_Last_Sync_DateTime__c, RES_Fixtures_Last_Sync__c, ' +
+                      'RES_Last_Sync_DateTime__c, RES_Fixtures_Last_Sync__c, RES_Fixture_Prev_Values__c, ' +
                       'RecordType.DeveloperName, RES_No_of_Years__c, RES_Approval_Status__c, RES_Status_Role_Description__c, RES_Status_Role__c, ' +
-                      'RES_Note__c, RES_No_of_Months__c, RES_Review__c, CreatedDate, CreatedBy.Alias, LastModifiedBy.Alias, LastModifiedDate ' + 
+                      'RES_Note__c, RES_No_of_Months__c, RES_Review__c, CreatedDate, CreatedBy.Alias, LastModifiedBy.Alias, LastModifiedDate ' +
                       'FROM Product2 WHERE Id IN :productIds';
         return (List<Product2>) executeQuery(soql, '', false, bindVars, AccessLevel.SYSTEM_MODE);
     }
@@ -422,30 +420,25 @@ public List<Product2> getRejectedProducts(String status,String searchTerm,Intege
         if (productIds == null || productIds.isEmpty()) return new List<Product2>();
         Map<String, Object> bindVars = new Map<String, Object>{ 'productIds' => productIds };
         String soql = 'SELECT Id, RES_Build_up_area__c, RES_Unit_Total_Area__c, RES_Unit_Plot_Area__c, ' +
-                      'RES_Internal_unit_Area__c, RES_No_of_Bedrooms__c ' +
-                      'FROM Product2 WHERE Id IN :productIds';
+                        'RES_Internal_unit_Area__c, RES_No_of_Bedrooms__c ' +
+                        'FROM Product2 WHERE Id IN :productIds';
         return (List<Product2>) executeQuery(soql, '', false, bindVars, AccessLevel.SYSTEM_MODE);
     }
 
-    /** @description Every product that has a measurement of one of the given types (one-off full backfill). */
-    public Database.QueryLocator getProductsWithMeasurementsLocator(Set<String> measurementTypes) {
-        Map<String, Object> bindVars = new Map<String, Object>{ 'measurementTypes' => measurementTypes };
+    /** @description Every product that has at least one measurement (one-off full backfill). */
+    public Database.QueryLocator getProductsWithMeasurementsLocator() {
         String soql = 'SELECT Id FROM Product2 WHERE Id IN (' +
-                      'SELECT RES_Product__c FROM RES_Measurement__c ' +
-                      'WHERE RES_Product__c != null AND RES_Measurement_Type__c IN :measurementTypes)';
-        return executeBatchQuery(soql, bindVars, AccessLevel.SYSTEM_MODE);
+                        'SELECT RES_Product__c FROM RES_Measurement__c WHERE RES_Product__c != null)';
+        return executeBatchQuery(soql, null, AccessLevel.SYSTEM_MODE);
     }
 
-    /** @description Products having a measurement of the given types whose From or To date falls in [fromDate, toDate]. */
-    public Database.QueryLocator getProductsWithMeasurementBoundaryLocator(Set<String> measurementTypes, Date fromDate, Date toDate) {
-        Map<String, Object> bindVars = new Map<String, Object>{
-            'measurementTypes' => measurementTypes, 'fromDate' => fromDate, 'toDate' => toDate
-        };
+    /** @description Products having a measurement whose From or To date falls in [fromDate, toDate]. */
+    public Database.QueryLocator getProductsWithMeasurementBoundaryLocator(Date fromDate, Date toDate) {
+        Map<String, Object> bindVars = new Map<String, Object>{ 'fromDate' => fromDate, 'toDate' => toDate };
         String soql = 'SELECT Id FROM Product2 WHERE Id IN (' +
-                      'SELECT RES_Product__c FROM RES_Measurement__c ' +
-                      'WHERE RES_Product__c != null AND RES_Measurement_Type__c IN :measurementTypes ' +
-                      'AND ((RES_Measurement_From__c >= :fromDate AND RES_Measurement_From__c <= :toDate) ' +
-                      'OR (RES_Measurement_To__c >= :fromDate AND RES_Measurement_To__c <= :toDate)))';
+                        'SELECT RES_Product__c FROM RES_Measurement__c WHERE RES_Product__c != null ' +
+                        'AND ((RES_Measurement_From__c >= :fromDate AND RES_Measurement_From__c <= :toDate) ' +
+                        'OR (RES_Measurement_To__c >= :fromDate AND RES_Measurement_To__c <= :toDate)))';
         return executeBatchQuery(soql, bindVars, AccessLevel.SYSTEM_MODE);
     }
     
