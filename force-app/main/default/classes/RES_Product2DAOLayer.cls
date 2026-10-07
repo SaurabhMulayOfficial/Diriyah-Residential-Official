@@ -340,8 +340,7 @@ public List<Product2> getRejectedProducts(String status,String searchTerm,Intege
             'SELECT Id, Name, RES_Business_Entity__c ' +
             'FROM Product2 ' +
             'WHERE RES_Business_Entity__c = :catalogId ' +
-            'AND RecordType.DeveloperName = \'RES_Residential_Sales\' ' +
-            'AND IsActive = true';
+            'AND RecordType.DeveloperName = \'RES_Residential_Sales\'';
         Map<String, Object> bindVars = new Map<String, Object>{ 'catalogId' => catalogId };
         return (List<Product2>) executeQuery(soql, '', false, bindVars, AccessLevel.SYSTEM_MODE);
     }
