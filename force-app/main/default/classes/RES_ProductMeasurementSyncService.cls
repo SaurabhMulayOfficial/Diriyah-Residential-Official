@@ -8,8 +8,12 @@
  *                Z013 Internal Buildup Area -> RES_Internal_unit_Area__c ("<amount> <UOM>")
  *                Z008 No. of rooms          -> RES_No_of_Bedrooms__c     (whole number)
  *
+ *              Every measurement (any type) also gets RES_Active__c: true only on the one record per product and type
+ *              that is in effect (the winner below), false on all others.
+ *
  *              Active = From <= today <= To (blank From = already started, blank To = no end).
- *              When several records of one type are active, the latest From wins, then the latest CreatedDate.
+ *              When several records of one type are in window, the latest effective start wins: the start of the From
+ *              date, or the creation moment when From is blank. Ties: latest CreatedDate, then higher Id.
  *              When none is active the Product2 field is cleared.
  *
  *              Called from: RES_MeasurementServices.syncActiveMeasurementsToProduct (trigger path)
@@ -39,16 +43,34 @@ public without sharing class RES_ProductMeasurementSyncService {
 
     private static String orgTimeZoneId;
 
+    private static String getOrgTimeZoneId() {
+        if (orgTimeZoneId == null) {
+            orgTimeZoneId = new RES_OrganizationDAO().getTimeZoneSidKey();
+        }
+        return orgTimeZoneId;
+    }
+
     /**
      * @description Today's date in the ORG time zone. Date.today() uses the running user's time zone, which differs per
      *              user (e.g. the user a scheduled flow runs as), so the same instant could be "yesterday" for one run
      *              and "today" for another. The flow schedule start time is org-local, so use the org's calendar day.
      */
     public static Date today() {
-        if (orgTimeZoneId == null) {
-            orgTimeZoneId = new RES_OrganizationDAO().getTimeZoneSidKey();
+        return Date.valueOf(Datetime.now().format('yyyy-MM-dd', getOrgTimeZoneId()));
+    }
+
+    /**
+     * @description The moment a measurement takes effect: the start of its From date (org time zone), or - when From is
+     *              blank - the moment the record was created.
+     */
+    @TestVisible
+    private static Datetime effectiveStart(RES_Measurement__c m) {
+        if (m.RES_Measurement_From__c == null) {
+            return m.CreatedDate;
         }
-        return Date.valueOf(Datetime.now().format('yyyy-MM-dd', orgTimeZoneId));
+        Datetime gmtMidnight = Datetime.newInstanceGmt(m.RES_Measurement_From__c, Time.newInstance(0, 0, 0, 0));
+        Integer offsetMs = TimeZone.getTimeZone(getOrgTimeZoneId()).getOffset(gmtMidnight);
+        return Datetime.newInstance(gmtMidnight.getTime() - offsetMs);
     }
 
     public static void syncProducts(Set<Id> productIds) {
@@ -61,10 +83,11 @@ public without sharing class RES_ProductMeasurementSyncService {
         }
 
         Date today = today();
+        List<RES_Measurement__c> allMeasurements = new RES_MeasurementDAOLayer().getMeasurementsForActiveSync(productIds);
 
-        // productId -> type -> winning active measurement
+        // productId -> measurement type -> the single measurement in effect (all types, DIR-1797 Active flag)
         Map<Id, Map<String, RES_Measurement__c>> winners = new Map<Id, Map<String, RES_Measurement__c>>();
-        for (RES_Measurement__c m : new RES_MeasurementDAOLayer().getMeasurementsByProductIdsAndTypes(productIds, FIELD_BY_TYPE.keySet())) {
+        for (RES_Measurement__c m : allMeasurements) {
             if (!isActive(m, today)) {
                 continue;
             }
@@ -79,6 +102,26 @@ public without sharing class RES_ProductMeasurementSyncService {
             }
         }
 
+        updateActiveFlags(allMeasurements, winners);
+        updateProducts(productIds, winners);
+    }
+
+    /** Sets RES_Active__c = true on each winner and false on every other measurement; only changed rows are updated. */
+    private static void updateActiveFlags(List<RES_Measurement__c> allMeasurements, Map<Id, Map<String, RES_Measurement__c>> winners) {
+        List<RES_Measurement__c> toUpdate = new List<RES_Measurement__c>();
+        for (RES_Measurement__c m : allMeasurements) {
+            Map<String, RES_Measurement__c> byType = winners.get(m.RES_Product__c);
+            RES_Measurement__c winner = byType == null ? null : byType.get(m.RES_Measurement_Type__c);
+            Boolean shouldBeActive = winner != null && winner.Id == m.Id;
+            if (m.RES_Active__c != shouldBeActive) {
+                toUpdate.add(new RES_Measurement__c(Id = m.Id, RES_Active__c = shouldBeActive));
+            }
+        }
+        saveAll(toUpdate, 'RES_Measurement__c');
+    }
+
+    /** Copies the winning value of each tracked type onto Product2 (clears the field when there is no winner). */
+    private static void updateProducts(Set<Id> productIds, Map<Id, Map<String, RES_Measurement__c>> winners) {
         List<Product2> toUpdate = new List<Product2>();
         for (Product2 existing : new RES_Product2DAOLayer().getMeasurementFieldsByIds(productIds)) {
             Map<String, RES_Measurement__c> byType = winners.containsKey(existing.Id)
@@ -97,14 +140,17 @@ public without sharing class RES_ProductMeasurementSyncService {
                 toUpdate.add(upd);
             }
         }
+        saveAll(toUpdate, 'Product2');
+    }
 
-        if (toUpdate.isEmpty()) {
+    /** Partial success: one failing row must not roll back the user's own save. */
+    private static void saveAll(List<SObject> records, String label) {
+        if (records.isEmpty()) {
             return;
         }
-        // Partial success: a product-level failure must not roll back the measurement save
-        for (Database.SaveResult sr : Database.update(toUpdate, false)) {
+        for (Database.SaveResult sr : Database.update(records, false)) {
             if (!sr.isSuccess()) {
-                System.debug(LoggingLevel.ERROR, '### [RES_ProductMeasurementSyncService] Product2 update failed: ' + sr.getErrors()[0].getMessage());
+                System.debug(LoggingLevel.ERROR, '### [RES_ProductMeasurementSyncService] ' + label + ' update failed: ' + sr.getErrors()[0].getMessage());
             }
         }
     }
@@ -115,14 +161,12 @@ public without sharing class RES_ProductMeasurementSyncService {
             && (m.RES_Measurement_To__c == null || m.RES_Measurement_To__c >= today);
     }
 
-    /** Latest From wins (blank From is oldest), then latest CreatedDate, then higher Id. */
+    /** Latest effective start wins (From date start-of-day, or created moment when From is blank), then latest CreatedDate, then higher Id. */
     private static Boolean isBetter(RES_Measurement__c candidate, RES_Measurement__c current) {
-        Date candFrom = candidate.RES_Measurement_From__c;
-        Date currFrom = current.RES_Measurement_From__c;
-        if (candFrom != currFrom) {
-            if (candFrom == null) return false;
-            if (currFrom == null) return true;
-            return candFrom > currFrom;
+        Datetime candStart = effectiveStart(candidate);
+        Datetime currStart = effectiveStart(current);
+        if (candStart != currStart) {
+            return candStart > currStart;
         }
         if (candidate.CreatedDate != current.CreatedDate) {
             return candidate.CreatedDate > current.CreatedDate;

@@ -3550,6 +3550,11 @@
         <field>RES_Measurement__c.RES_Unit_Of_Measurement__c</field>
         <readable>true</readable>
     </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>RES_Measurement__c.RES_Active__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
     <flowAccesses>
         <enabled>true</enabled>
         <flow>RES_Create_Payment_Plan</flow>

@@ -3190,6 +3190,11 @@ Sales – External – Relationship Manager</description>
         <field>RES_Measurement__c.RES_Unit_Of_Measurement__c</field>
         <readable>true</readable>
     </fieldPermissions>
+        <fieldPermissions>
+            <editable>false</editable>
+            <field>RES_Measurement__c.RES_Active__c</field>
+            <readable>true</readable>
+        </fieldPermissions>
     <fieldPermissions>
         <editable>false</editable>
         <field>Product2.RES_Orientation__c</field>
@@ -3275,6 +3280,41 @@ Sales – External – Relationship Manager</description>
         <field>Product2.RES_Furnished__c</field>
         <readable>true</readable>
     </fieldPermissions>
+        <fieldPermissions>
+            <editable>false</editable>
+            <field>Product2.RES_Unit_Facilities_Arabic__c</field>
+            <readable>true</readable>
+        </fieldPermissions>
+        <fieldPermissions>
+            <editable>false</editable>
+            <field>Product2.RES_Unit_Facilities__c</field>
+            <readable>true</readable>
+        </fieldPermissions>
+        <fieldPermissions>
+            <editable>false</editable>
+            <field>Product2.RES_Build_up_area__c</field>
+            <readable>true</readable>
+        </fieldPermissions>
+        <fieldPermissions>
+            <editable>false</editable>
+            <field>Product2.RES_Unit_Total_Area__c</field>
+            <readable>true</readable>
+        </fieldPermissions>
+        <fieldPermissions>
+            <editable>false</editable>
+            <field>Product2.RES_Unit_Plot_Area__c</field>
+            <readable>true</readable>
+        </fieldPermissions>
+        <fieldPermissions>
+            <editable>false</editable>
+            <field>Product2.RES_Internal_unit_Area__c</field>
+            <readable>true</readable>
+        </fieldPermissions>
+        <fieldPermissions>
+            <editable>false</editable>
+            <field>Product2.RES_No_of_Bedrooms__c</field>
+            <readable>true</readable>
+        </fieldPermissions>
     <hasActivationRequired>false</hasActivationRequired>
     <label>Diriyah Residential – External Specialist Permission Set</label>
     <license>Salesforce</license>
