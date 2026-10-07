@@ -767,6 +767,7 @@ private class RES_UnifiedIngestionEngineTest {
     static void testUpdateExistingProduct_SkipOnUpdateLiteralsAreSkipped() {
         Product2 existing = new Product2(
             RES_Product_External_ID__c = 'UNIT-500',
+            StockKeepingUnit           = 'UNIT-500',
             ProductCode                = 'UNIT-500',
             Name                       = 'Original Name',
             IsActive                   = true,

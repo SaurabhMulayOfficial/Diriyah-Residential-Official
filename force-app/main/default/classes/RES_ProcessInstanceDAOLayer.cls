@@ -122,4 +122,18 @@ public without sharing class RES_ProcessInstanceDAOLayer extends RES_BaseDAOLaye
             AccessLevel.SYSTEM_MODE
         );
     }
+
+    // Submission level, so in-progress approvals between steps (no Assigned work item) are found too
+    public List<ApprovalSubmission> getInProgressApprovalSubmissionsByRelatedRecordIds(Set<Id> relatedToIds) {
+        if (relatedToIds == null || relatedToIds.isEmpty()) {
+            return new List<ApprovalSubmission>();
+        }
+        Map<String, Object> bindVars = new Map<String, Object>{ 'relatedToIds' => relatedToIds };
+        String soql =
+            'SELECT Id, RelatedRecordId ' +
+            'FROM ApprovalSubmission ' +
+            'WHERE Status = \'InProgress\' ' +
+            'AND RelatedRecordId IN :relatedToIds';
+        return (List<ApprovalSubmission>) executeQuery(soql, '', false, bindVars, AccessLevel.SYSTEM_MODE);
+    }
 }

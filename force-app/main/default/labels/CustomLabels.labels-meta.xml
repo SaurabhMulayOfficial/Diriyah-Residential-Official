@@ -604,6 +604,22 @@ Do you wish to proceed with the cancellation?</value>
         <value>Quote cancelled by system.</value>
     </labels>
     <labels>
+        <fullName>RES_Unit_Draft_Cancellation_Reason</fullName>
+        <categories>Quote Cancellation</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Unit Moved To Draft Cancellation Reason</shortDescription>
+        <value>System: Cancelled because the unit was moved back to Draft.</value>
+    </labels>
+    <labels>
+        <fullName>RES_Unit_Draft_Approval_Recall_Comment</fullName>
+        <categories>Quote Cancellation</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Unit Moved To Draft Approval Recall Comment</shortDescription>
+        <value>System Recalled: The unit on this record was updated to Draft, so this approval was recalled automatically.</value>
+    </labels>
+    <labels>
         <fullName>RES_Product_Already_Processed</fullName>
         <language>en_US</language>
         <protected>false</protected>
@@ -909,5 +925,12 @@ Do you wish to proceed with the cancellation?</value>
         <protected>false</protected>
         <shortDescription>RES_Product_Installment_RT</shortDescription>
         <value>RES_Residential_Installment</value>
+    </labels>
+    <labels>
+        <fullName>RES_GCC_Country_Codes</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>GCC Country Codes</shortDescription>
+        <value>AE,BH,KW,OM,QA</value>
     </labels>
 </CustomLabels>

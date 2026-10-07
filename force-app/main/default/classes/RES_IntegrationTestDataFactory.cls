@@ -191,6 +191,29 @@ public class RES_IntegrationTestDataFactory {
             .isEmpty();
     }
 
+    /** Same guard for the Account / Business Partner API configuration. */
+    public static Boolean hasAccountApiConfiguration(String requestMethod) {
+        return !new RES_APIConfigurationsDAO()
+            .getAPIConfiguration(requestMethod, 'Business_Partner_API')
+            .isEmpty();
+    }
+
+    /**
+     * Inserts and returns a minimal Account with integration triggers disabled
+     * during the insert, following the same safety pattern as createCatalog().
+     */
+    public static Account createAccount() {
+        RES_Config_Switch__c config = RES_Config_Switch__c.getOrgDefaults();
+        Boolean wasOff = config.RES_Triggers_Off__c;
+        config.RES_Triggers_Off__c = true;
+        upsert config;
+        Account acc = new Account(Name = 'RES Test BP Account');
+        insert acc;
+        config.RES_Triggers_Off__c = wasOff;
+        upsert config;
+        return acc;
+    }
+
     /**
      * Builds (without inserting) a measurement tied to the given ProductCatalog.
      * RES_Catalog__c is required by hydrateCatalogWithMeasurements.

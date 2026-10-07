@@ -43,12 +43,14 @@ public with sharing class RES_ProductTriggerHandler extends RES_BaseTriggerHandl
             }
         }
         RES_ProductSCRateValidation.validate((List<Product2>) Trigger.new, (Map<Id, Product2>) Trigger.oldMap);
+        RES_UnitDraftCancellationService.releaseReservations((List<Product2>) Trigger.new, (Map<Id, Product2>) Trigger.oldMap);
     }
 
-    /** @description Publishes Unit_Sync event for updated products whose sync fields changed. */
+    /** @description Publishes Unit_Sync event for updated products whose sync fields changed; cancels quotes/contracts of bundle units moved back to Draft. */
     protected override void afterUpdate() {
         System.debug('### [RES_ProductTriggerHandler] afterUpdate | Records: ' + Trigger.new.size());
         RES_ProductService.syncProducts((List<Product2>) Trigger.new, (Map<Id, Product2>) Trigger.oldMap);
         RES_PaymentPlanServices.syncPaymentPlans((List<Product2>) Trigger.new, (Map<Id, Product2>) Trigger.oldMap);
+        RES_UnitDraftCancellationService.handleUnitsMovedToDraft((List<Product2>) Trigger.new, (Map<Id, Product2>) Trigger.oldMap);
     }
 }

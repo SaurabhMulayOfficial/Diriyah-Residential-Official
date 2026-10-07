@@ -248,10 +248,13 @@ public with sharing class RES_UnifiedIngestionEngine implements Database.Batchab
 
         List<String> codes = new List<String>(rowsByCode.keySet());
 
-        Map<String, Product2> existingByExtId = new Map<String, Product2>();
-        List<Product2> existingList = new RES_Product2DAOLayer().getProductsByExternalIds(new Set<String>(codes));
+        Map<String, Product2> existingBySku = new Map<String, Product2>();
+        
+        List<Product2> existingList =
+            new RES_Product2DAOLayer().getProductsByStockKeepingUnits(new Set<String>(codes));
+        
         for (Product2 existing : existingList) {
-            existingByExtId.put(existing.RES_Product_External_ID__c, existing);
+            existingBySku.put(existing.StockKeepingUnit, existing);
         }
 
         Id recordTypeId = productRecordTypeId();
@@ -263,11 +266,19 @@ public with sharing class RES_UnifiedIngestionEngine implements Database.Batchab
             // resolveCatalogs/resolveCategories already recorded the row error; a referenced-but-missing catalog or category fails the product, not just the link.
             if (catalogOrCategoryUnresolved(rows)) continue;
             attemptedCodes.add(code);
-            Product2 existing         = existingByExtId.get(code);
+            Product2 existing         = existingBySku.get(code);
             Boolean isNew             = existing == null;
             if (isNew) newProductCodes.add(code);
 
-            Product2 p = new Product2(RES_Product_External_ID__c = truncate(code, 255));
+            Product2 p = new Product2();
+
+            if (isNew) {
+                p.RES_Product_External_ID__c = truncate(code, 255);
+                p.StockKeepingUnit = truncate(code, 255);
+            } else {
+                p.Id = existing.Id;
+            }
+            
             if (isNew && recordTypeId != null) p.RecordTypeId = recordTypeId;
             /*
              * A new Unit is always provisioned with a Service Charge bundle
@@ -310,7 +321,7 @@ public with sharing class RES_UnifiedIngestionEngine implements Database.Batchab
         Map<String, Id> productIdByCode = new Map<String, Id>();
 
         List<Database.UpsertResult> saves =
-            Database.upsert(products, Product2.Fields.RES_Product_External_ID__c, false);
+            Database.upsert(products, false);
 
         for (Integer i = 0; i < saves.size(); i++) {
             String code = attemptedCodes[i];
