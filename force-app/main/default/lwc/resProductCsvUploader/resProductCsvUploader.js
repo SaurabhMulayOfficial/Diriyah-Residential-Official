@@ -2,6 +2,7 @@ import { LightningElement, track, wire } from 'lwc';
 import isInventoryFeatureEnabledLabel from '@salesforce/label/c.RES_Inventory_Config';
 import getLayouts from '@salesforce/apex/RES_CsvIngestionController.getLayouts';
 import startBatchFromCsv from '@salesforce/apex/RES_CsvIngestionController.startBatchFromCsv';
+import getMaxDataRows from '@salesforce/apex/RES_CsvIngestionController.getMaxDataRows';
 import getJobStatus from '@salesforce/apex/RES_CsvIngestionController.getJobStatus';
 import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 
@@ -20,6 +21,8 @@ export default class ResProductCsvUploader extends LightningElement {
     @track isLoading = false;
     @track uploadResult;
     @track jobStatus;
+    @track fileError = '';
+    maxDataRows = 250;
 
     layoutsByCode = {};
     rawCsvContent = '';
@@ -47,6 +50,14 @@ export default class ResProductCsvUploader extends LightningElement {
             }
         } else if (error) {
             this.showToast('Error', this.reduceError(error), 'error');
+        }
+    }
+
+    // Server-side limit, so the browser check and the Apex check can never drift apart.
+    @wire(getMaxDataRows)
+    wiredMaxDataRows({ data }) {
+        if (data) {
+            this.maxDataRows = data;
         }
     }
 
@@ -81,7 +92,17 @@ export default class ResProductCsvUploader extends LightningElement {
         const reader = new FileReader();
 
         reader.onload = () => {
-            this.rawCsvContent = reader.result;
+            const text = reader.result;
+            const rowCount = this.countDataRows(text);
+            if (rowCount > this.maxDataRows) {
+                this.fileError =
+                    `${file.name} has ${rowCount} data rows, which is more than the limit of ` +
+                    `${this.maxDataRows} rows per upload. Please split the file into smaller files ` +
+                    `of ${this.maxDataRows} rows or fewer and upload them separately.`;
+                this.rawCsvContent = '';
+            } else {
+                this.rawCsvContent = text;
+            }
             this.isLoading = false;
         };
         reader.onerror = () => {
@@ -166,6 +187,10 @@ export default class ResProductCsvUploader extends LightningElement {
     // Derived state
     // ------------------------------------------------------------------
 
+    get hasFileError() {
+        return !!this.fileError;
+    }
+
     get isRunDisabled() {
         return this.isLoading || !this.selectedOperation || !this.selectedLayout || !this.rawCsvContent;
     }
@@ -217,6 +242,13 @@ export default class ResProductCsvUploader extends LightningElement {
         this.jobStatus = undefined;
         this.rawCsvContent = '';
         this.fileName = '';
+        this.fileError = '';
+    }
+
+    // Data rows = non-blank lines after the header line (same rule as the Apex check).
+    countDataRows(text) {
+        const lines = (text || '').split(/\r\n|\n|\r/).filter((line) => line.trim() !== '');
+        return Math.max(lines.length - 1, 0);
     }
 
     reduceError(error) {

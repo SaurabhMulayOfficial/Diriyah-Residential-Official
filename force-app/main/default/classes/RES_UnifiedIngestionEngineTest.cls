@@ -955,6 +955,32 @@ private class RES_UnifiedIngestionEngineTest {
     // remaining pure-logic @TestVisible helpers that don't need any DML:
     // isNewer(), adjustmentFrom()/adjustmentTo(), and resolveAdjustmentSchedule().
     // ==================================================================
+    // DIR-1864: the batch chunks by unit, so every condition row of a unit stays in one chunk.
+    @IsTest
+    static void testStartReturnsDistinctUnitCodesAndRowsAreLoadedPerUnit() {
+        String importId = 'TEST_BATCH_UNITS';
+        insert new List<RES_Product_Staging__c>{
+            new RES_Product_Staging__c(Name = 'B / Y100', RES_Batch_Id__c = importId, RES_Processing_Status__c = 'Pending', RES_Product_Code__c = 'UNIT-B', RES_Condition_Type__c = 'Y100'),
+            new RES_Product_Staging__c(Name = 'A / Y100', RES_Batch_Id__c = importId, RES_Processing_Status__c = 'Pending', RES_Product_Code__c = 'UNIT-A', RES_Condition_Type__c = 'Y100'),
+            new RES_Product_Staging__c(Name = 'A / Y101', RES_Batch_Id__c = importId, RES_Processing_Status__c = 'Pending', RES_Product_Code__c = 'UNIT-A', RES_Condition_Type__c = 'Y101'),
+            new RES_Product_Staging__c(Name = 'A / Done', RES_Batch_Id__c = importId, RES_Processing_Status__c = 'Completed', RES_Product_Code__c = 'UNIT-C', RES_Condition_Type__c = 'Y100'),
+            new RES_Product_Staging__c(Name = 'Other import', RES_Batch_Id__c = 'OTHER', RES_Processing_Status__c = 'Pending', RES_Product_Code__c = 'UNIT-D', RES_Condition_Type__c = 'Y100')
+        };
+
+        RES_UnifiedIngestionEngine engine = new RES_UnifiedIngestionEngine(LAYOUT_CODE, importId);
+        List<String> codes = new List<String>();
+        for (String c : engine.start(null)) codes.add(c);
+        Assert.areEqual(new List<String>{ 'UNIT-A', 'UNIT-B' }, codes, 'Only pending units of this import, one entry per unit');
+
+        List<RES_Product_Staging__c> rows =
+            new RES_ProductStagingDAOLayer().getPendingStagingRecordsByCodes(importId, new List<String>{ 'UNIT-A' });
+        Assert.areEqual(2, rows.size(), 'Both condition rows of UNIT-A load together');
+        Assert.areEqual('Y100', rows[0].RES_Condition_Type__c);
+        Assert.areEqual('Y101', rows[1].RES_Condition_Type__c);
+
+        Assert.areEqual(50, RES_UnifiedIngestionEngine.UNIT_CHUNK_SIZE);
+    }
+
     @IsTest
     static void testBatchScaffoldingAndScheduleHelpers() {
         // ---- Zero-arg constructor / finish() ----
@@ -964,8 +990,10 @@ private class RES_UnifiedIngestionEngineTest {
         // ---- start() now requires the import batch ID ----
         RES_UnifiedIngestionEngine batchEngine = new RES_UnifiedIngestionEngine(LAYOUT_CODE, 'TEST_BATCH_START');
         
-        Database.QueryLocator ql = batchEngine.start(null);
-        Assert.isNotNull(ql, 'start() should return a query locator for the specified batch');
+        Iterable<String> unitCodes = batchEngine.start(null);
+        Assert.isNotNull(unitCodes, 'start() should return the unit codes for the specified batch');
+        Assert.isFalse(unitCodes.iterator().hasNext(), 'A batch with no staged rows has no units');
+        batchEngine.execute(null, new List<String>());
         batchEngine.finish(null);
 
         // ---- isNewer(): null candidate, null current, candidate newer, candidate older ----

@@ -1,7 +1,14 @@
 /**
  * Stage 2 of the product import pipeline: RES_Product_Staging__c -> Revenue Cloud object graph.
  */
-public with sharing class RES_UnifiedIngestionEngine implements Database.Batchable<sObject>, Database.Stateful {
+public with sharing class RES_UnifiedIngestionEngine implements Database.Batchable<String>, Database.Stateful {
+
+    /**
+     * Units processed per batch transaction. Each unit fans out into many Revenue Cloud records,
+     * so a larger chunk breaches the 10,000 DML row limit (DIR-1864). A unit's condition rows
+     * always travel together in one chunk.
+     */
+    public static final Integer UNIT_CHUNK_SIZE = 50;
 
     private final String layoutCode;
     private final String batchId;
@@ -67,11 +74,15 @@ public with sharing class RES_UnifiedIngestionEngine implements Database.Batchab
         this.batchId   = null;
     }
 
-    public Database.QueryLocator start(Database.BatchableContext bc) {        
-        return new RES_ProductStagingDAOLayer().getPendingStagingRecordsBatch(batchId);
+    public Iterable<String> start(Database.BatchableContext bc) {
+        return new RES_ProductStagingDAOLayer().getPendingUnitCodes(batchId);
     }
 
-    public void execute(Database.BatchableContext bc, List<RES_Product_Staging__c> scope) {      
+    public void execute(Database.BatchableContext bc, List<String> unitCodes) {
+        execute(bc, new RES_ProductStagingDAOLayer().getPendingStagingRecordsByCodes(batchId, unitCodes));
+    }
+
+    public void execute(Database.BatchableContext bc, List<RES_Product_Staging__c> scope) {
         Map<Id, List<String>> rowErrors = new Map<Id, List<String>>();
         for (RES_Product_Staging__c stg : scope) {
             rowErrors.put(stg.Id, new List<String>());
