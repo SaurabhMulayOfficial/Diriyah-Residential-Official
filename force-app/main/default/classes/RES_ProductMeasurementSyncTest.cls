@@ -474,4 +474,44 @@ private class RES_ProductMeasurementSyncTest {
         update first;
         System.assertEquals('first', activeName(p.Id, PLOT));
     }
+
+    @IsTest
+    static void daoMeasurementsLocatorReturnsOnlyProductsWithMeasurements() {
+        Product2 withMeasurement = createProduct('P10');
+        Product2 withoutMeasurement = createProduct('P11');
+        insert build(withMeasurement.Id, BUA, 100, 'Sqr Mtr', null, null);
+
+        Test.startTest();
+        Database.QueryLocator locator = new RES_Product2DAOLayer().getProductsWithMeasurementsLocator();
+        Test.stopTest();
+
+        Database.QueryLocatorIterator it = locator.iterator();
+        Set<Id> ids = new Set<Id>();
+        while (it.hasNext()) {
+            ids.add(((Product2) it.next()).Id);
+        }
+        System.assert(ids.contains(withMeasurement.Id), 'Product with a measurement should be returned');
+        System.assert(!ids.contains(withoutMeasurement.Id), 'Product without any measurement should be excluded');
+    }
+
+    @IsTest
+    static void daoBoundaryLocatorReturnsOnlyProductsWithDatesInWindow() {
+        Date today = RES_ProductMeasurementSyncService.today();
+        Product2 inWindow = createProduct('P12');
+        Product2 outside = createProduct('P13'); // no measurements at all
+        insert build(inWindow.Id, BUA, 100, 'Sqr Mtr', today.addDays(-10), today.addDays(-1));
+
+        Test.startTest();
+        Database.QueryLocator locator = new RES_Product2DAOLayer().getProductsWithMeasurementBoundaryLocator(today.addDays(-1), today);
+        Test.stopTest();
+
+        System.assertNotEquals(null, locator);
+        Database.QueryLocatorIterator it = locator.iterator();
+        Set<Id> ids = new Set<Id>();
+        while (it.hasNext()) {
+            ids.add(((Product2) it.next()).Id);
+        }
+        System.assert(ids.contains(inWindow.Id), 'Product whose To date is yesterday should be returned');
+        System.assert(!ids.contains(outside.Id), 'Product without any measurement dates in the window should be excluded');
+    }
 }
