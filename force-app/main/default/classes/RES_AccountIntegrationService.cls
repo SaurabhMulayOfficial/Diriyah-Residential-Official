@@ -154,7 +154,8 @@ public with sharing class RES_AccountIntegrationService extends RES_BaseIntegrat
 
         RES_AccountRequestWrapper.RoleItem roleItem = new RES_AccountRequestWrapper.RoleItem();
         roleItem.OBJECT_TASK = triggerContext;
-        roleItem.DATA_KEY = blankIfNull(acc.RES_BP_Role__c);
+        // Default to ZTR602 (Owner) when no BP Role is selected
+        roleItem.DATA_KEY = String.isBlank(acc.RES_BP_Role__c) ? 'ZTR602' : acc.RES_BP_Role__c;
         RES_AccountRequestWrapper.Roles roles = new RES_AccountRequestWrapper.Roles();
         roles.item = new List<RES_AccountRequestWrapper.RoleItem>{ roleItem };
         wrapper.TT_ROLES = roles;
@@ -170,7 +171,10 @@ public with sharing class RES_AccountIntegrationService extends RES_BaseIntegrat
         RES_AccountRequestWrapper.IdentificationItem identItem = new RES_AccountRequestWrapper.IdentificationItem();
         identItem.OBJECT_TASK = triggerContext;
         identItem.IDENTIFICATIONCATEGORY = blankIfNull(acc.RES_Identification_Type__c);
-        identItem.IDENTIFICATIONNUMBER = blankIfNull(acc.RES_Identification_Number__c);
+        // Person Account -> Identification Number; Company Account -> CR Number; blank is sent as ""
+        identItem.IDENTIFICATIONNUMBER = isPersonAccount
+            ? blankIfNull(acc.RES_Identification_Number__c)
+            : blankIfNull(acc.RES_CR_number__c);
         identItem.IDENTRYDATE = acc.RES_ID_Entry_Date__c != null ? String.valueOf(acc.RES_ID_Entry_Date__c) : '';
         identItem.IDVALIDFROMDATE = acc.RES_ID_Valid_From_Date__c != null ? String.valueOf(acc.RES_ID_Valid_From_Date__c) : '';
         identItem.IDVALIDTODATE = acc.RES_ID_Valid_to_Date__c != null ? String.valueOf(acc.RES_ID_Valid_to_Date__c) : '';
@@ -203,17 +207,28 @@ public with sharing class RES_AccountIntegrationService extends RES_BaseIntegrat
             wrapper.CONTACT_PERSON_END_DATE = '';
         } else {
             Integer contactCount = (relatedContacts != null) ? relatedContacts.size() : 0;
-            wrapper.CONTACT_PERSON_TASK = triggerContext;
-            // CONTACT_PERSON_BP: blank on insert; on update pass SAP contact id from related contact if available
-            wrapper.CONTACT_PERSON_BP = isInsert ? '' : (
-                (firstRelatedContact != null && String.isNotBlank(firstRelatedContact.RES_SAP_Contact_Id__c))
-                    ? firstRelatedContact.RES_SAP_Contact_Id__c : ''
-            );
-            wrapper.HAS_CONTACT_PERSON = (contactCount >= 1) ? 'X' : '';
-            wrapper.CONTACT_PERSON_GROUPING = (contactCount >= 1) ? 'Z009' : '';
-            wrapper.CONTACT_PERSON_TITLE = (firstRelatedContact != null && String.isNotBlank(firstRelatedContact.Salutation)) ? firstRelatedContact.Salutation : '';
-            wrapper.CONTACT_PERSON_END_DATE = (firstRelatedContact != null && firstRelatedContact.RES_Contact_Person_End_Date__c != null)
-                ? String.valueOf(firstRelatedContact.RES_Contact_Person_End_Date__c) : '';
+            if (contactCount == 0) {
+                // No related contact: send all contact person fields blank
+                wrapper.CONTACT_PERSON_TASK = '';
+                wrapper.CONTACT_PERSON_BP = '';
+                wrapper.HAS_CONTACT_PERSON = '';
+                wrapper.CONTACT_PERSON_GROUPING = '';
+                wrapper.CONTACT_PERSON_TITLE = '';
+                wrapper.CONTACT_PERSON_END_DATE = '';
+            } else {
+                wrapper.CONTACT_PERSON_TASK = triggerContext;
+                // CONTACT_PERSON_BP: blank on insert; on update pass SAP contact id from related contact if available
+                wrapper.CONTACT_PERSON_BP = isInsert ? '' : (
+                    (firstRelatedContact != null && String.isNotBlank(firstRelatedContact.RES_SAP_Contact_Id__c))
+                        ? firstRelatedContact.RES_SAP_Contact_Id__c : ''
+                );
+                wrapper.HAS_CONTACT_PERSON = 'X';
+                wrapper.CONTACT_PERSON_GROUPING = 'Z009';
+                wrapper.CONTACT_PERSON_TITLE = (firstRelatedContact != null && String.isNotBlank(firstRelatedContact.Salutation)) ? firstRelatedContact.Salutation : '';
+                // Default end date when not provided
+                wrapper.CONTACT_PERSON_END_DATE = (firstRelatedContact != null && firstRelatedContact.RES_Contact_Person_End_Date__c != null)
+                    ? String.valueOf(firstRelatedContact.RES_Contact_Person_End_Date__c) : '2099-12-31';
+            }
         }
 
         return wrapper;

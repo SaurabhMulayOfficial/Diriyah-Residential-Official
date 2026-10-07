@@ -407,6 +407,16 @@
                     <name>uiBehavior</name>
                     <value>none</value>
                 </fieldInstanceProperties>
+                <fieldItem>Record.Fax</fieldItem>
+                <identifier>RecordFaxField</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
                 <fieldItem>Record.PersonEmail</fieldItem>
                 <identifier>RecordPersonEmailField</identifier>
             </fieldInstance>
@@ -437,46 +447,6 @@
                     <name>uiBehavior</name>
                     <value>none</value>
                 </fieldInstanceProperties>
-                <fieldItem>Record.Type</fieldItem>
-                <identifier>RecordTypeField</identifier>
-            </fieldInstance>
-        </itemInstances>
-        <itemInstances>
-            <fieldInstance>
-                <fieldInstanceProperties>
-                    <name>uiBehavior</name>
-                    <value>none</value>
-                </fieldInstanceProperties>
-                <fieldItem>Record.RES_External_Key__c</fieldItem>
-                <identifier>RecordRES_External_Key_cField</identifier>
-            </fieldInstance>
-        </itemInstances>
-        <itemInstances>
-            <fieldInstance>
-                <fieldInstanceProperties>
-                    <name>uiBehavior</name>
-                    <value>none</value>
-                </fieldInstanceProperties>
-                <fieldItem>Record.RES_Tax_Category__c</fieldItem>
-                <identifier>RecordRES_Tax_Category_cField</identifier>
-            </fieldInstance>
-        </itemInstances>
-        <itemInstances>
-            <fieldInstance>
-                <fieldInstanceProperties>
-                    <name>uiBehavior</name>
-                    <value>none</value>
-                </fieldInstanceProperties>
-                <fieldItem>Record.RES_Tax_Number__c</fieldItem>
-                <identifier>RecordRES_Tax_Number_cField</identifier>
-            </fieldInstance>
-        </itemInstances>
-        <itemInstances>
-            <fieldInstance>
-                <fieldInstanceProperties>
-                    <name>uiBehavior</name>
-                    <value>none</value>
-                </fieldInstanceProperties>
                 <fieldItem>Record.RES_Extension__c</fieldItem>
                 <identifier>RecordRES_Extension_cField</identifier>
             </fieldInstance>
@@ -497,16 +467,6 @@
                     <name>uiBehavior</name>
                     <value>none</value>
                 </fieldInstanceProperties>
-                <fieldItem>Record.RES_Planning_Group__c</fieldItem>
-                <identifier>RecordRES_Planning_Group_cField</identifier>
-            </fieldInstance>
-        </itemInstances>
-        <itemInstances>
-            <fieldInstance>
-                <fieldInstanceProperties>
-                    <name>uiBehavior</name>
-                    <value>none</value>
-                </fieldInstanceProperties>
                 <fieldItem>Record.RES_SIMAH_Consent__c</fieldItem>
                 <identifier>RecordRES_SIMAH_Consent_cField</identifier>
             </fieldInstance>
@@ -519,6 +479,26 @@
                 </fieldInstanceProperties>
                 <fieldItem>Record.RES_Bank_Customer__c</fieldItem>
                 <identifier>RecordRES_Bank_Customer_cField</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.RES_VIP_Customer__c</fieldItem>
+                <identifier>RecordRES_VIP_Customer_cField</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.RES_External_Key__c</fieldItem>
+                <identifier>RecordRES_External_Key_cField</identifier>
             </fieldInstance>
         </itemInstances>
         <name>Facet-c4d8a41f-3c71-4252-9abb-2582988963f7</name>
@@ -591,38 +571,8 @@
                     <name>uiBehavior</name>
                     <value>none</value>
                 </fieldInstanceProperties>
-                <fieldItem>Record.RES_SAP_ADDR_NUMBER__c</fieldItem>
-                <identifier>RecordRES_SAP_ADDR_NUMBER_cField</identifier>
-            </fieldInstance>
-        </itemInstances>
-        <itemInstances>
-            <fieldInstance>
-                <fieldInstanceProperties>
-                    <name>uiBehavior</name>
-                    <value>none</value>
-                </fieldInstanceProperties>
-                <fieldItem>Record.RES_Account_Group__c</fieldItem>
-                <identifier>RecordRES_Account_Group_cField</identifier>
-            </fieldInstance>
-        </itemInstances>
-        <itemInstances>
-            <fieldInstance>
-                <fieldInstanceProperties>
-                    <name>uiBehavior</name>
-                    <value>none</value>
-                </fieldInstanceProperties>
                 <fieldItem>Record.RES_Relationship_Type__c</fieldItem>
                 <identifier>RecordRES_Relationship_Type_cField</identifier>
-            </fieldInstance>
-        </itemInstances>
-        <itemInstances>
-            <fieldInstance>
-                <fieldInstanceProperties>
-                    <name>uiBehavior</name>
-                    <value>none</value>
-                </fieldInstanceProperties>
-                <fieldItem>Record.Fax</fieldItem>
-                <identifier>RecordFaxField</identifier>
             </fieldInstance>
         </itemInstances>
         <itemInstances>
@@ -651,8 +601,8 @@
                     <name>uiBehavior</name>
                     <value>none</value>
                 </fieldInstanceProperties>
-                <fieldItem>Record.RES_VIP_Customer__c</fieldItem>
-                <identifier>RecordRES_VIP_Customer_cField</identifier>
+                <fieldItem>Record.RES_Consent_Form_Received_Date__c</fieldItem>
+                <identifier>RecordRES_Consent_Form_Received_Date_cField</identifier>
             </fieldInstance>
         </itemInstances>
         <itemInstances>
@@ -661,8 +611,8 @@
                     <name>uiBehavior</name>
                     <value>none</value>
                 </fieldInstanceProperties>
-                <fieldItem>Record.RES_Consent_Form_Received_Date__c</fieldItem>
-                <identifier>RecordRES_Consent_Form_Received_Date_cField</identifier>
+                <fieldItem>Record.RES_SAP_ADDR_NUMBER__c</fieldItem>
+                <identifier>RecordRES_SAP_ADDR_NUMBER_cField</identifier>
             </fieldInstance>
         </itemInstances>
         <name>Facet-b5114906-aff5-45ea-8b75-bb2b2ff14765</name>
