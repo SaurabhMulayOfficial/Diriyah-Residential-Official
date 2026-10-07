@@ -213,9 +213,9 @@ public with sharing class RES_CsvIngestionController {
         }
 
         Set<String> existing = new Set<String>();
-        List<Product2> existingProducts = new RES_Product2DAOLayer().getProductsByExternalIds(codes);
+        List<Product2> existingProducts = new RES_Product2DAOLayer().getProductsByStockKeepingUnits(codes);
         for (Product2 p : existingProducts) {
-            existing.add(p.RES_Product_External_ID__c);
+            existing.add(p.StockKeepingUnit);
         }
 
         for (SObject stg : toInsert) {

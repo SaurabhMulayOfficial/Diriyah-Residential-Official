@@ -62,6 +62,7 @@ private class RES_CsvIngestionControllerTest {
         upsert cfg;
         Product2 prod = new Product2(
             Name = 'Existing Unit',
+            StockKeepingUnit = 'EXISTS-UNIT-100',
             RES_Product_External_ID__c = 'EXISTS-UNIT-100',
             IsActive = true
         );
