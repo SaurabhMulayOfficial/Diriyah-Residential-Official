@@ -23,6 +23,7 @@ private class RES_IntegrationRequestEventServiceTest {
     private static final String MEASUREMENT_SERVICE          = 'Measurement_Sync';
     private static final String MEASUREMENT_CATALOG_SERVICE  = 'Measurement_Sync_Catalog';
     private static final String PRODUCT_CATALOG_SERVICE      = 'ProductCatalog_Sync';
+    private static final String ACCOUNT_SERVICE              = 'Account_Sync';
 
     private static RES_IntegrationTestDataFactory.EndpointRoutingMock mock;
 
@@ -354,6 +355,62 @@ private class RES_IntegrationRequestEventServiceTest {
         );
 
         System.assertEquals(0, enqueued, 'No job when the DAO returns no Measurement_Sync_Catalog records');
+    }
+
+    // ------------------------------------------------------------------
+    // Account_Sync
+    // ------------------------------------------------------------------
+
+    @IsTest
+    static void handleIntegrations_accountInsert_enqueuesJob() {
+        if (!integrationConfigured()) { return; }
+        Account acc = new Account(Name = 'Test Account Insert');
+        insert acc;
+
+        Integer enqueued = handleAndCountJobs(
+            new List<RES_Integration_Request__e>{ buildEvent(ACCOUNT_SERVICE, 'I', (String) acc.Id) }
+        );
+
+        System.assertEquals(1, enqueued, 'One batch should be submitted for Account insert');
+    }
+
+    @IsTest
+    static void handleIntegrations_accountUpdate_enqueuesJob() {
+        if (!integrationConfigured()) { return; }
+        Account acc = new Account(Name = 'Test Account Update');
+        insert acc;
+
+        Integer enqueued = handleAndCountJobs(
+            new List<RES_Integration_Request__e>{ buildEvent(ACCOUNT_SERVICE, 'U', (String) acc.Id) }
+        );
+
+        System.assertEquals(1, enqueued, 'One batch should be submitted for Account update');
+    }
+
+    @IsTest
+    static void handleIntegrations_accountMultipleEvents_enqueuesSingleJob() {
+        if (!integrationConfigured()) { return; }
+        Account acc1 = new Account(Name = 'Test Account 1');
+        Account acc2 = new Account(Name = 'Test Account 2');
+        insert new List<Account>{ acc1, acc2 };
+
+        List<RES_Integration_Request__e> events = new List<RES_Integration_Request__e>{
+            buildEvent(ACCOUNT_SERVICE, 'I', (String) acc1.Id),
+            buildEvent(ACCOUNT_SERVICE, 'I', acc1.Id + ',' + acc2.Id)
+        };
+
+        System.assertEquals(1, handleAndCountJobs(events), 'Multiple Account insert events with the same key should batch into one job');
+    }
+
+    @IsTest
+    static void handleIntegrations_accountNoMatchingRecord_enqueuesNothing() {
+        Id fakeId = Id.valueOf(Account.SObjectType.getDescribe().getKeyPrefix() + '000000000001');
+
+        Integer enqueued = handleAndCountJobs(
+            new List<RES_Integration_Request__e>{ buildEvent(ACCOUNT_SERVICE, 'I', (String) fakeId) }
+        );
+
+        System.assertEquals(0, enqueued, 'No job when the DAO returns no Account records');
     }
 
     // ------------------------------------------------------------------
