@@ -3,8 +3,10 @@
  *              so the trigger path never sees it. This batch re-syncs every product that has a measurement whose
  *              From or To date is yesterday or today.
  *
- *              Schedule (daily 00:10):  System.schedule('RES Product Measurement Sync', '0 10 0 * * ?', new RES_ProductMeasurementSyncBatch());
- *              Called from: Salesforce scheduler. Delegates to RES_ProductMeasurementSyncService.
+ *              Scheduled daily by flow RES_Scheduled_Product_Measurement_Sync via RES_ProductMeasurementSyncInvocable.
+ *              One-off full backfill: Database.executeBatch(new RES_ProductMeasurementSyncBatch(true), 200);
+ *              Scope is RES_Measurement__c (not Product2) so this class does not depend on RES_Product2DAOLayer.
+ *              Delegates to RES_ProductMeasurementSyncService.
  */
 public without sharing class RES_ProductMeasurementSyncBatch implements Database.Batchable<SObject>, Schedulable {
 
@@ -26,18 +28,18 @@ public without sharing class RES_ProductMeasurementSyncBatch implements Database
     }
 
     public Database.QueryLocator start(Database.BatchableContext bc) {
-        RES_Product2DAOLayer dao = new RES_Product2DAOLayer();
+        RES_MeasurementDAOLayer dao = new RES_MeasurementDAOLayer();
         if (fullSync) {
-            return dao.getProductsWithMeasurementsLocator();
+            return dao.getProductMeasurementsLocator();
         }
         Date toDate = RES_ProductMeasurementSyncService.today();
-        return dao.getProductsWithMeasurementBoundaryLocator(toDate.addDays(-1), toDate);
+        return dao.getProductMeasurementsBoundaryLocator(toDate.addDays(-1), toDate);
     }
 
-    public void execute(Database.BatchableContext bc, List<Product2> scope) {
+    public void execute(Database.BatchableContext bc, List<RES_Measurement__c> scope) {
         Set<Id> productIds = new Set<Id>();
-        for (Product2 p : scope) {
-            productIds.add(p.Id);
+        for (RES_Measurement__c m : scope) {
+            productIds.add(m.RES_Product__c);
         }
         RES_ProductMeasurementSyncService.syncProducts(productIds);
     }
