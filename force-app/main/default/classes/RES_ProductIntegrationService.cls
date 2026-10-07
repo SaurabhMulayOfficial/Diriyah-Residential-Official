@@ -35,11 +35,11 @@ public without sharing class RES_ProductIntegrationService extends RES_BaseInteg
     @TestVisible
     private static String validateSapExternalIdFormat(String externalId) {
         if (String.isBlank(externalId)) return null;
-        Pattern sapIdPat = Pattern.compile('^\\d+/\\d+/\\d+$');
+        Pattern sapIdPat = Pattern.compile('^(\\d+/\\d+/)?\\d+$');
         if (!sapIdPat.matcher(externalId).matches()) {
             return 'RES_Product_External_ID__c "' + externalId
                 + '" does not match the SAP identifier format'
-                + ' (CompanyCode/BusinessEntity/RentalObject, e.g. "1000/140/11002912").'
+                + ' (e.g. "11002912" or legacy "1000/140/11002912").'
                 + ' This field must contain only SAP-generated identifiers.'
                 + ' Clear the field to trigger an INSERT, or correct it to the exact SAP-provided value.';
         }
@@ -722,7 +722,7 @@ public without sharing class RES_ProductIntegrationService extends RES_BaseInteg
             if (successItem == null) return null;
             String msgV4 = String.valueOf(successItem.get('MessageV4'));
             if (String.isNotBlank(msgV4) && msgV4.contains('/')) {
-                return msgV4.removeStart('RO ').trim();
+                return msgV4.removeStart('RO ').trim().substringAfterLast('/');
             }
         } catch (Exception e) {
             System.debug('extractSAPExternalId error: ' + e.getMessage());
