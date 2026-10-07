@@ -410,8 +410,9 @@ public List<Product2> getRejectedProducts(String status,String searchTerm,Intege
                       'RES_ID_Finish__c, RES_Drivers_Room__c, RES_Maids_Room__c, RES_Wadi_View__c, ' +
                       'RES_Golf_View__c, RES_Panoramic_View__c, RES_Private__c, RES_Condition__c, ' +
                       'RES_Furnished__c, ' +
-                      'RES_Last_Sync_DateTime__c, RES_Fixtures_Last_Sync__c, RES_Fixture_Prev_Values__c, ' +
-                      'RecordType.DeveloperName ' +
+                      'RES_Last_Sync_DateTime__c, RES_Fixtures_Last_Sync__c, ' +
+                      'RecordType.DeveloperName, RES_No_of_Years__c, RES_Approval_Status__c, RES_Status_Role_Description__c, RES_Status_Role__c, ' +
+                      'RES_Note__c, RES_No_of_Months__c, RES_Review__c, CreatedDate, CreatedBy.Alias, LastModifiedBy.Alias, LastModifiedDate ' + 
                       'FROM Product2 WHERE Id IN :productIds';
         return (List<Product2>) executeQuery(soql, '', false, bindVars, AccessLevel.SYSTEM_MODE);
     }
