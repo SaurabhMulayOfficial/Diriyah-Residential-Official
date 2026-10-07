@@ -410,9 +410,8 @@ public List<Product2> getRejectedProducts(String status,String searchTerm,Intege
                       'RES_ID_Finish__c, RES_Drivers_Room__c, RES_Maids_Room__c, RES_Wadi_View__c, ' +
                       'RES_Golf_View__c, RES_Panoramic_View__c, RES_Private__c, RES_Condition__c, ' +
                       'RES_Furnished__c, ' +
-                      'RES_Last_Sync_DateTime__c, RES_Fixtures_Last_Sync__c, ' +
-                      'RecordType.DeveloperName, RES_No_of_Years__c, RES_Approval_Status__c, RES_Status_Role_Description__c, RES_Status_Role__c, ' +
-                      'RES_Note__c, RES_No_of_Months__c, RES_Review__c, CreatedDate, CreatedBy.Alias, LastModifiedBy.Alias, LastModifiedDate ' + 
+                      'RES_Last_Sync_DateTime__c, RES_Fixtures_Last_Sync__c, RES_Fixture_Prev_Values__c, ' +
+                      'RecordType.DeveloperName ' +
                       'FROM Product2 WHERE Id IN :productIds';
         return (List<Product2>) executeQuery(soql, '', false, bindVars, AccessLevel.SYSTEM_MODE);
     }
@@ -427,25 +426,38 @@ public List<Product2> getRejectedProducts(String status,String searchTerm,Intege
         return (List<Product2>) executeQuery(soql, '', false, bindVars, AccessLevel.SYSTEM_MODE);
     }
 
-    /** @description Every product that has a measurement of one of the given types (one-off full backfill). */
-    public Database.QueryLocator getProductsWithMeasurementsLocator(Set<String> measurementTypes) {
-        Map<String, Object> bindVars = new Map<String, Object>{ 'measurementTypes' => measurementTypes };
+    /** @description Every product that has at least one measurement (one-off full backfill). */
+    public Database.QueryLocator getProductsWithMeasurementsLocator() {
         String soql = 'SELECT Id FROM Product2 WHERE Id IN (' +
-                      'SELECT RES_Product__c FROM RES_Measurement__c ' +
-                      'WHERE RES_Product__c != null AND RES_Measurement_Type__c IN :measurementTypes)';
-        return executeBatchQuery(soql, bindVars, AccessLevel.SYSTEM_MODE);
+                      'SELECT RES_Product__c FROM RES_Measurement__c WHERE RES_Product__c != null)';
+        return executeBatchQuery(soql, null, AccessLevel.SYSTEM_MODE);
     }
 
-    /** @description Products having a measurement of the given types whose From or To date falls in [fromDate, toDate]. */
-    public Database.QueryLocator getProductsWithMeasurementBoundaryLocator(Set<String> measurementTypes, Date fromDate, Date toDate) {
-        Map<String, Object> bindVars = new Map<String, Object>{
-            'measurementTypes' => measurementTypes, 'fromDate' => fromDate, 'toDate' => toDate
-        };
+    /** @description Products having a measurement whose From or To date falls in [fromDate, toDate]. */
+    public Database.QueryLocator getProductsWithMeasurementBoundaryLocator(Date fromDate, Date toDate) {
+        Map<String, Object> bindVars = new Map<String, Object>{ 'fromDate' => fromDate, 'toDate' => toDate };
         String soql = 'SELECT Id FROM Product2 WHERE Id IN (' +
-                      'SELECT RES_Product__c FROM RES_Measurement__c ' +
-                      'WHERE RES_Product__c != null AND RES_Measurement_Type__c IN :measurementTypes ' +
+                      'SELECT RES_Product__c FROM RES_Measurement__c WHERE RES_Product__c != null ' +
                       'AND ((RES_Measurement_From__c >= :fromDate AND RES_Measurement_From__c <= :toDate) ' +
                       'OR (RES_Measurement_To__c >= :fromDate AND RES_Measurement_To__c <= :toDate)))';
         return executeBatchQuery(soql, bindVars, AccessLevel.SYSTEM_MODE);
+    }
+    
+    public List<Product2> getProductsByStockKeepingUnits(Set<String> stockKeepingUnits) {
+        if (stockKeepingUnits == null || stockKeepingUnits.isEmpty()) {
+            return new List<Product2>();
+        }
+    
+        Map<String, Object> bindVars = new Map<String, Object>{
+            'stockKeepingUnits' => stockKeepingUnits
+        };
+    
+        String soql =
+            'SELECT Id, StockKeepingUnit, RES_Product_External_ID__c, IsActive ' +
+            'FROM Product2 WHERE StockKeepingUnit IN :stockKeepingUnits';
+    
+        return (List<Product2>) executeQuery(
+            soql, '', false, bindVars, AccessLevel.USER_MODE
+        );
     }
 }

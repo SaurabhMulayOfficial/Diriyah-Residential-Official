@@ -482,36 +482,88 @@ public without sharing class RES_ProductIntegrationService extends RES_BaseInteg
         Map<String, String> boolTrueCodes,
         Map<String, String> boolFalseCodes
     ) {
+        Map<String, Object> prevValues = new Map<String, Object>();
+        if (String.isNotBlank(p.RES_Fixture_Prev_Values__c)) {
+            try {
+                prevValues = (Map<String, Object>) JSON.deserializeUntyped(p.RES_Fixture_Prev_Values__c);
+            } catch (Exception e) {
+                System.debug('### [Unit_Sync] Could not parse RES_Fixture_Prev_Values__c — treating as first sync: ' + e.getMessage());
+            }
+        }
+
         List<Map<String, Object>> result = new List<Map<String, Object>>();
         if (String.isNotBlank(p.RES_Orientation__c))  addChar(result, p.RES_Orientation__c, triggerContext);
-        addBoolFixture(result, p.RES_Storeroom__c,       'RES_Storeroom__c',       boolTrueCodes, boolFalseCodes, triggerContext);
-        addBoolFixture(result, p.RES_Elevated__c,        'RES_Elevated__c',        boolTrueCodes, boolFalseCodes, triggerContext);
-        addBoolFixture(result, p.RES_Terrace__c,         'RES_Terrace__c',         boolTrueCodes, boolFalseCodes, triggerContext);
-        addBoolFixture(result, p.RES_Roof_Terrace__c,    'RES_Roof_Terrace__c',    boolTrueCodes, boolFalseCodes, triggerContext);
-        addBoolFixture(result, p.RES_Entry_Courtyard__c, 'RES_Entry_Courtyard__c', boolTrueCodes, boolFalseCodes, triggerContext);
-        addBoolFixture(result, p.RES_Garage__c,          'RES_Garage__c',          boolTrueCodes, boolFalseCodes, triggerContext);
-        addBoolFixture(result, p.RES_Pool__c,            'RES_Pool__c',            boolTrueCodes, boolFalseCodes, triggerContext);
+        addBoolFixture(result, p.RES_Storeroom__c,       'RES_Storeroom__c',       boolTrueCodes, boolFalseCodes, triggerContext, prevValues);
+        addBoolFixture(result, p.RES_Elevated__c,        'RES_Elevated__c',        boolTrueCodes, boolFalseCodes, triggerContext, prevValues);
+        addBoolFixture(result, p.RES_Terrace__c,         'RES_Terrace__c',         boolTrueCodes, boolFalseCodes, triggerContext, prevValues);
+        addBoolFixture(result, p.RES_Roof_Terrace__c,    'RES_Roof_Terrace__c',    boolTrueCodes, boolFalseCodes, triggerContext, prevValues);
+        addBoolFixture(result, p.RES_Entry_Courtyard__c, 'RES_Entry_Courtyard__c', boolTrueCodes, boolFalseCodes, triggerContext, prevValues);
+        addBoolFixture(result, p.RES_Garage__c,          'RES_Garage__c',          boolTrueCodes, boolFalseCodes, triggerContext, prevValues);
+        addBoolFixture(result, p.RES_Pool__c,            'RES_Pool__c',            boolTrueCodes, boolFalseCodes, triggerContext, prevValues);
         if (String.isNotBlank(p.RES_ID_Finish__c))    addChar(result, p.RES_ID_Finish__c, triggerContext);
-        addBoolFixture(result, p.RES_Drivers_Room__c,    'RES_Drivers_Room__c',    boolTrueCodes, boolFalseCodes, triggerContext);
-        addBoolFixture(result, p.RES_Maids_Room__c,      'RES_Maids_Room__c',      boolTrueCodes, boolFalseCodes, triggerContext);
-        addBoolFixture(result, p.RES_Wadi_View__c,       'RES_Wadi_View__c',       boolTrueCodes, boolFalseCodes, triggerContext);
-        addBoolFixture(result, p.RES_Golf_View__c,       'RES_Golf_View__c',       boolTrueCodes, boolFalseCodes, triggerContext);
-        addBoolFixture(result, p.RES_Panoramic_View__c,  'RES_Panoramic_View__c',  boolTrueCodes, boolFalseCodes, triggerContext);
-        addBoolFixture(result, p.RES_Private__c,         'RES_Private__c',         boolTrueCodes, boolFalseCodes, triggerContext);
+        addBoolFixture(result, p.RES_Drivers_Room__c,    'RES_Drivers_Room__c',    boolTrueCodes, boolFalseCodes, triggerContext, prevValues);
+        addBoolFixture(result, p.RES_Maids_Room__c,      'RES_Maids_Room__c',      boolTrueCodes, boolFalseCodes, triggerContext, prevValues);
+        addBoolFixture(result, p.RES_Wadi_View__c,       'RES_Wadi_View__c',       boolTrueCodes, boolFalseCodes, triggerContext, prevValues);
+        addBoolFixture(result, p.RES_Golf_View__c,       'RES_Golf_View__c',       boolTrueCodes, boolFalseCodes, triggerContext, prevValues);
+        addBoolFixture(result, p.RES_Panoramic_View__c,  'RES_Panoramic_View__c',  boolTrueCodes, boolFalseCodes, triggerContext, prevValues);
+        addBoolFixture(result, p.RES_Private__c,         'RES_Private__c',         boolTrueCodes, boolFalseCodes, triggerContext, prevValues);
         if (String.isNotBlank(p.RES_Condition__c))    addChar(result, p.RES_Condition__c, triggerContext);
-        addBoolFixture(result, p.RES_Furnished__c,       'RES_Furnished__c',       boolTrueCodes, boolFalseCodes, triggerContext);
+        addBoolFixture(result, p.RES_Furnished__c,       'RES_Furnished__c',       boolTrueCodes, boolFalseCodes, triggerContext, prevValues);
         return result;
     }
 
+    /**
+     * Determines the correct Change_Indicator for each fixture boolean field by comparing the
+     * current value against what was last sent to SAP (stored in RES_Fixture_Prev_Values__c).
+     *
+     * SAP characteristic rules:
+     *   CI:"I" — characteristic does not yet exist in SAP → INSERT
+     *   CI:"U" — characteristic already exists in SAP    → UPDATE
+     *   CI:"D" — remove an existing characteristic       → DELETE
+     */
     private static void addBoolFixture(List<Map<String, Object>> r, Boolean val, String sfField,
-                                       Map<String, String> boolTrueCodes, Map<String, String> boolFalseCodes, String ctx) {
+                                       Map<String, String> boolTrueCodes, Map<String, String> boolFalseCodes,
+                                       String ctx, Map<String, Object> prevValues) {
+        Boolean prevVal = prevValues.containsKey(sfField) ? (Boolean) prevValues.get(sfField) : null;
+
+        if (ctx == 'I') {
+            // INSERT context: send Yes-code for true, No-code for false — SAP accepts both with CI:"I".
+            if (val == true) {
+                String trueCode = boolTrueCodes.get(sfField);
+                if (trueCode != null) addChar(r, trueCode, 'I');
+            } else {
+                String falseCode = boolFalseCodes.get(sfField);
+                if (falseCode != null) addChar(r, falseCode, 'I');
+            }
+            return;
+        }
+
+        // UPDATE context — choose CI based on what SAP currently holds (prevVal).
+        String trueCode  = boolTrueCodes.get(sfField);
+        String falseCode = boolFalseCodes.get(sfField);
+
         if (val == true) {
-            String trueCode = boolTrueCodes.get(sfField);
-            if (trueCode != null) addChar(r, trueCode, ctx);
-        } else if (ctx == 'U') {
-            // On UPDATE, send the "No" code so SAP removes the previously set fixture
-            String falseCode = boolFalseCodes.get(sfField);
-            if (falseCode != null) addChar(r, falseCode, ctx);
+            if (prevVal == true) {
+                // Yes-code exists in SAP → UPDATE it
+                if (trueCode != null) addChar(r, trueCode, 'U');
+            } else if (prevVal == false) {
+                // No-code exists in SAP → DELETE No, INSERT Yes
+                if (falseCode != null) addChar(r, falseCode, 'D');
+                if (trueCode  != null) addChar(r, trueCode,  'I');
+            } else {
+                // No prior sync for this field (was false on INSERT, nothing sent to SAP) → INSERT Yes
+                if (trueCode != null) addChar(r, trueCode, 'I');
+            }
+        } else {
+            if (prevVal == true) {
+                // Yes-code exists in SAP → DELETE Yes, INSERT No
+                if (trueCode  != null) addChar(r, trueCode,  'D');
+                if (falseCode != null) addChar(r, falseCode, 'I');
+            } else if (prevVal == false) {
+                // No-code exists in SAP → UPDATE it
+                if (falseCode != null) addChar(r, falseCode, 'U');
+            }
+            // prevVal == null: field was false on INSERT, nothing in SAP — nothing to send
         }
     }
 
@@ -520,6 +572,28 @@ public without sharing class RES_ProductIntegrationService extends RES_BaseInteg
             'RES_Fixtures_Fittings_Characteristics' => code,
             'Change_Indicator' => ctx
         });
+    }
+
+    /** @description Serializes the current fixture boolean values to JSON for storage in RES_Fixture_Prev_Values__c. */
+    @TestVisible
+    private static String buildFixturePrevValuesJson(Product2 p) {
+        Map<String, Object> vals = new Map<String, Object>{
+            'RES_Storeroom__c'       => p.RES_Storeroom__c,
+            'RES_Elevated__c'        => p.RES_Elevated__c,
+            'RES_Terrace__c'         => p.RES_Terrace__c,
+            'RES_Roof_Terrace__c'    => p.RES_Roof_Terrace__c,
+            'RES_Entry_Courtyard__c' => p.RES_Entry_Courtyard__c,
+            'RES_Garage__c'          => p.RES_Garage__c,
+            'RES_Pool__c'            => p.RES_Pool__c,
+            'RES_Drivers_Room__c'    => p.RES_Drivers_Room__c,
+            'RES_Maids_Room__c'      => p.RES_Maids_Room__c,
+            'RES_Wadi_View__c'       => p.RES_Wadi_View__c,
+            'RES_Golf_View__c'       => p.RES_Golf_View__c,
+            'RES_Panoramic_View__c'  => p.RES_Panoramic_View__c,
+            'RES_Private__c'         => p.RES_Private__c,
+            'RES_Furnished__c'       => p.RES_Furnished__c
+        };
+        return JSON.serialize(vals);
     }
 
     /** @description Processes the SAP response body, logs error items, and returns true on success. */
@@ -713,7 +787,8 @@ public without sharing class RES_ProductIntegrationService extends RES_BaseInteg
                         upd.RES_Product_External_ID__c = sapExternalId;
                     }
                     if (fixtureIdsToStamp.contains(p.Id)) {
-                        upd.RES_Fixtures_Last_Sync__c = System.now();
+                        upd.RES_Fixtures_Last_Sync__c  = System.now();
+                        upd.RES_Fixture_Prev_Values__c = buildFixturePrevValuesJson(p);
                     }
                     toUpdate.add(upd);
                 }
