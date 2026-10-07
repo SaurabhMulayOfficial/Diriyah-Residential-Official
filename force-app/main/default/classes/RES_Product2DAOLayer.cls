@@ -448,4 +448,22 @@ public List<Product2> getRejectedProducts(String status,String searchTerm,Intege
                       'OR (RES_Measurement_To__c >= :fromDate AND RES_Measurement_To__c <= :toDate)))';
         return executeBatchQuery(soql, bindVars, AccessLevel.SYSTEM_MODE);
     }
+    
+    public List<Product2> getProductsByStockKeepingUnits(Set<String> stockKeepingUnits) {
+        if (stockKeepingUnits == null || stockKeepingUnits.isEmpty()) {
+            return new List<Product2>();
+        }
+    
+        Map<String, Object> bindVars = new Map<String, Object>{
+            'stockKeepingUnits' => stockKeepingUnits
+        };
+    
+        String soql =
+            'SELECT Id, StockKeepingUnit, RES_Product_External_ID__c, IsActive ' +
+            'FROM Product2 WHERE StockKeepingUnit IN :stockKeepingUnits';
+    
+        return (List<Product2>) executeQuery(
+            soql, '', false, bindVars, AccessLevel.USER_MODE
+        );
+    }
 }
