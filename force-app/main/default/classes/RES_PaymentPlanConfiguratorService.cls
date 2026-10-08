@@ -25,6 +25,7 @@ public with sharing class RES_PaymentPlanConfiguratorService {
     private static final String RESIDENTIAL_SALES_PRICEBOOK_NAME = 'Residential Sales';
     private static final Decimal PERCENTAGE_TOTAL_TOLERANCE = 0.01;
     private static final Decimal PERCENTAGE_TOTAL_TARGET = 100;
+    private static final Integer DAYS_PER_MONTH = 30;
 
     public class PaymentPlanConfiguratorException extends Exception {}
 
@@ -91,6 +92,9 @@ public with sharing class RES_PaymentPlanConfiguratorService {
         public Decimal percentage;
         public Decimal pocPercentage;
         public Date dueDate;
+        public String conditionType;
+        public Integer conditionMonths;
+        public Integer conditionDays;
         public Integer sequence;
     }
 
@@ -173,6 +177,7 @@ public with sharing class RES_PaymentPlanConfiguratorService {
         }
 
         Set<Integer> seenSequences = new Set<Integer>();
+        Map<String, Integer> seenConditionKeys = new Map<String, Integer>();
         Decimal totalPercentage = 0;
         for (InstallmentInput installment : installments) {
             if (String.isBlank(installment.name)) {
@@ -190,6 +195,8 @@ public with sharing class RES_PaymentPlanConfiguratorService {
                 throw new PaymentPlanConfiguratorException('Installment ' + installment.sequence + ' must have a percentage greater than 0 and no more than 100.');
             }
             totalPercentage += installment.percentage;
+
+            validateCondition(installment, seenConditionKeys);
         }
 
         if (Math.abs(totalPercentage - PERCENTAGE_TOTAL_TARGET) > PERCENTAGE_TOTAL_TOLERANCE) {
@@ -199,6 +206,34 @@ public with sharing class RES_PaymentPlanConfiguratorService {
         if (String.isNotBlank(req.productCode) && productCodeInUse(req.productCode)) {
             throw new PaymentPlanConfiguratorException('Product Code "' + req.productCode + '" is already in use by another product.');
         }
+    }
+
+    // Derives days from months when only months is given, then blocks two installments sharing the same condition type and months/days
+    private static void validateCondition(InstallmentInput installment, Map<String, Integer> seenConditionKeys) {
+        if ((installment.conditionMonths != null && installment.conditionMonths < 0) || (installment.conditionDays != null && installment.conditionDays < 0)) {
+            throw new PaymentPlanConfiguratorException('Installment ' + installment.sequence + ' cannot have negative Condition Months or Condition Days.');
+        }
+        if (installment.conditionMonths != null && installment.conditionDays == null) {
+            installment.conditionDays = installment.conditionMonths * DAYS_PER_MONTH;
+        }
+        if (String.isBlank(installment.conditionType) || (installment.conditionMonths == null && installment.conditionDays == null)) {
+            return;
+        }
+        String conditionKey = installment.conditionType + '|' + installment.conditionMonths + '|' + installment.conditionDays;
+        if (seenConditionKeys.containsKey(conditionKey)) {
+            throw new PaymentPlanConfiguratorException('Installments ' + seenConditionKeys.get(conditionKey) + ' and ' + installment.sequence +
+                ' have the same Condition Type (' + conditionTypeLabel(installment.conditionType) + ') and the same Condition Months/Days.');
+        }
+        seenConditionKeys.put(conditionKey, installment.sequence);
+    }
+
+    private static String conditionTypeLabel(String conditionType) {
+        for (Schema.PicklistEntry entry : Product2.RES_Condition_Type__c.getDescribe().getPicklistValues()) {
+            if (entry.getValue() == conditionType) {
+                return entry.getLabel();
+            }
+        }
+        return conditionType;
     }
 
     private static Boolean productCodeInUse(String productCode) {
@@ -254,6 +289,9 @@ public with sharing class RES_PaymentPlanConfiguratorService {
                 RES_POC_Percentage__c = installment.pocPercentage,
                 RES_Installment_Percentage__c = installment.percentage,
                 RES_Instalment_DueDate__c = installment.dueDate,
+                RES_Condition_Type__c = installment.conditionType,
+                RES_Condition_Months__c = installment.conditionMonths,
+                RES_Condition_Days__c = installment.conditionDays,
                 CurrencyIsoCode = currencyIsoCode,
                 IsActive = true,
                 ConfigureDuringSale = 'NotAllowed'

@@ -5,7 +5,8 @@
         </template>
         <p class="slds-text-body_small slds-m-bottom_small slds-text-color_weak">
             Define each installment's share of the payment plan. Percentages must add up to 100%.
-            POC % (construction milestone) and due date are both optional.
+            POC % (construction milestone) and due date are both optional. Condition Days is calculated from
+            Condition Months (30 days per month); two installments with the same Condition Type cannot share the same months/days.
         </p>
 
         <table class="slds-table slds-table_bordered slds-table_cell-buffer" aria-label="Installments">
@@ -16,6 +17,9 @@
                     <th scope="col">Percentage</th>
                     <th scope="col">POC %</th>
                     <th scope="col">Due Date</th>
+                    <th scope="col">Condition Type</th>
+                    <th scope="col">Condition Months</th>
+                    <th scope="col">Condition Days</th>
                     <th scope="col" style="width:6.5rem">Reorder</th>
                     <th scope="col" style="width:3rem"></th>
                 </tr>
@@ -77,6 +81,46 @@
                                 onchange={handleFieldChange}
                                 variant="label-hidden"
                                 label="Due Date"
+                            ></lightning-input>
+                        </td>
+                        <td>
+                            <lightning-combobox
+                                data-key={row.key}
+                                data-field="conditionType"
+                                value={row.conditionType}
+                                options={conditionTypeOptions}
+                                onchange={handleFieldChange}
+                                variant="label-hidden"
+                                label="Condition Type"
+                                placeholder="Select"
+                            ></lightning-combobox>
+                        </td>
+                        <td>
+                            <lightning-input
+                                type="number"
+                                step="1"
+                                min="0"
+                                data-key={row.key}
+                                data-field="conditionMonths"
+                                value={row.conditionMonths}
+                                onchange={handleFieldChange}
+                                variant="label-hidden"
+                                label="Condition Months"
+                                placeholder="e.g. 2"
+                            ></lightning-input>
+                        </td>
+                        <td>
+                            <lightning-input
+                                type="number"
+                                step="1"
+                                min="0"
+                                data-key={row.key}
+                                data-field="conditionDays"
+                                value={row.conditionDays}
+                                onchange={handleFieldChange}
+                                variant="label-hidden"
+                                label="Condition Days"
+                                placeholder="Auto"
                             ></lightning-input>
                         </td>
                         <td>

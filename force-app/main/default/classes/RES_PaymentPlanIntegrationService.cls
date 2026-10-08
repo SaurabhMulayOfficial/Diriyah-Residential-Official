@@ -102,6 +102,7 @@ public with sharing class RES_PaymentPlanIntegrationService extends RES_BaseInte
       			installment.RES_Installment_Amount = (prc.ChildProduct.RES_Installment_Amount__c != null) ? (Decimal) prc.ChildProduct.RES_Installment_Amount__c : 0;
       			installment.Condition_Months = (prc.ChildProduct.RES_Condition_Months__c != null) ? (Integer) prc.ChildProduct.RES_Condition_Months__c : 0;
       			installment.Condition_Days = (prc.ChildProduct.RES_Condition_Days__c != null) ? (Integer) prc.ChildProduct.RES_Condition_Days__c : 0;
+      			installment.Condition_Type = (prc.ChildProduct.RES_Condition_Type__c != null) ? prc.ChildProduct.RES_Condition_Type__c : '';
             	installmentsWrapper.add(installment);
             }
             paymentPlanWrapper.RES_Plan_Installments = (installmentsWrapper != null) ? installmentsWrapper : new List<RES_PaymentPlanWrapper.PlanInstallment>();

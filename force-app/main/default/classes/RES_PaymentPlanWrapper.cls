@@ -37,6 +37,7 @@ public class RES_PaymentPlanWrapper {
         public Decimal RES_Installment_Amount;
         public Integer Condition_Months;
         public Integer Condition_Days;
+        public String Condition_Type;
     }
 
     public class PaymentPlanAssignment {
