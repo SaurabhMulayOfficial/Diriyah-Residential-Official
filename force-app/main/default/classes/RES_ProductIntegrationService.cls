@@ -637,7 +637,7 @@ public without sharing class RES_ProductIntegrationService extends RES_BaseInteg
             RES_ResponseWrapper.logError(log);
         }
 
-        return isSuccess;
+        return isSuccess && errorParts.isEmpty();
     }
 
     /**
