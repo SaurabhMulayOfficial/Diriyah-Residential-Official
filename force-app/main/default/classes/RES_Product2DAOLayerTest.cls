@@ -170,6 +170,27 @@ private class RES_Product2DAOLayerTest {
         Assert.isNotNull(results, 'Oversize pageSize must be capped at 200 and return a valid result');
     }
 
+    @isTest
+    static void testGetApprovalQueueIncludesActiveUnitsWithUpdateRequested() {
+        Product2 activeUpdated = new Product2(
+            Name = 'DAO-ACTIVE-UPDATE',
+            ProductCode = 'DAO-ACTIVE-UPDATE',
+            Family = '1004',
+            RES_Type__c = 'N',
+            IsActive = true,
+            RES_Unit_Status__c = 'Pending DevCo Approval',
+            RES_Update_Requested__c = true
+        );
+        insert activeUpdated;
+
+        List<Product2> results = new RES_Product2DAOLayer()
+            .getApprovalQueue('Pending DevCo Approval', null, 10, null, null);
+
+        Set<Id> resultIds = new Map<Id, Product2>(results).keySet();
+        Assert.isTrue(resultIds.contains(activeUpdated.Id),
+            'Active unit with RES_Update_Requested__c=true must appear in Devco approval queue');
+    }
+
     // ── getRejectedProducts ─────────────────────────────────────────────────
 
     @isTest
