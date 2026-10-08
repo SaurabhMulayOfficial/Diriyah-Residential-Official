@@ -275,6 +275,14 @@ private class RES_ProductCategoryServiceTest {
         Assert.isNotNull(new RES_ProductCategoryService(), 'The no-arg constructor should be usable');
     }
 
+    /** Request method that has a deployed Building_Land_API configuration (GET preferred), or null if none. */
+    private static String apiMethod() {
+        for (String m : new List<String>{ 'GET', 'POST' }) {
+            if (RES_IntegrationTestDataFactory.hasApiConfiguration(m)) { return m; }
+        }
+        return null;
+    }
+
     // ------------------------------------------------------------------
     // processResponse (tested indirectly via syncProductCategories HTTP layer)
     // ------------------------------------------------------------------
@@ -303,14 +311,15 @@ private class RES_ProductCategoryServiceTest {
 
     @IsTest
     static void processResponse_successItem_stampsLastSyncDateTime() {
-        if (!RES_IntegrationTestDataFactory.hasApiConfiguration('POST')) { return; }
+        String method = apiMethod();
+        if (method == null) { return; }
         List<ProductCategory> categories = RES_IntegrationTestDataFactory.createCategories(1, true);
 
         RES_IntegrationTestDataFactory.primeSapToken();
         Test.setMock(HttpCalloutMock.class, new SapSuccessResponseMock());
 
         Test.startTest();
-        RES_ProductCategoryIntegrationService.syncProductCategories(categories, 'POST', 'I');
+        RES_ProductCategoryIntegrationService.syncProductCategories(categories, method, 'I');
         Test.stopTest();
 
         ProductCategory updated = [
@@ -326,14 +335,15 @@ private class RES_ProductCategoryServiceTest {
 
     @IsTest
     static void processResponse_errorItem_doesNotStampLastSyncDateTime() {
-        if (!RES_IntegrationTestDataFactory.hasApiConfiguration('POST')) { return; }
+        String method = apiMethod();
+        if (method == null) { return; }
         List<ProductCategory> categories = RES_IntegrationTestDataFactory.createCategories(1, true);
 
         RES_IntegrationTestDataFactory.primeSapToken();
         Test.setMock(HttpCalloutMock.class, new SapErrorResponseMock());
 
         Test.startTest();
-        RES_ProductCategoryIntegrationService.syncProductCategories(categories, 'POST', 'I');
+        RES_ProductCategoryIntegrationService.syncProductCategories(categories, method, 'I');
         Test.stopTest();
 
         ProductCategory updated = [
@@ -353,7 +363,8 @@ private class RES_ProductCategoryServiceTest {
 
     @IsTest
     static void hydrateRequestBody_withMeasurements_setsPerMeasurementIndicator() {
-        if (!RES_IntegrationTestDataFactory.hasApiConfiguration('POST')) { return; }
+        String method = apiMethod();
+        if (method == null) { return; }
         List<ProductCategory> categories = RES_IntegrationTestDataFactory.createCategories(1, true);
         List<RES_Measurement__c> measurements =
             RES_IntegrationTestDataFactory.createMeasurements(categories[0].Id, 2);
@@ -363,7 +374,7 @@ private class RES_ProductCategoryServiceTest {
         Test.setMock(HttpCalloutMock.class, new SapSuccessResponseMock());
 
         Test.startTest();
-        RES_ProductCategoryIntegrationService service = new RES_ProductCategoryIntegrationService('POST');
+        RES_ProductCategoryIntegrationService service = new RES_ProductCategoryIntegrationService(method);
         String body = service.hydrateRequestBody(categories, 'I');
         Test.stopTest();
 
@@ -382,14 +393,15 @@ private class RES_ProductCategoryServiceTest {
 
     @IsTest
     static void hydrateRequestBody_noMeasurements_omitsMeasurementArray() {
-        if (!RES_IntegrationTestDataFactory.hasApiConfiguration('POST')) { return; }
+        String method = apiMethod();
+        if (method == null) { return; }
         List<ProductCategory> categories = RES_IntegrationTestDataFactory.createCategories(1, true);
 
         RES_IntegrationTestDataFactory.primeSapToken();
         Test.setMock(HttpCalloutMock.class, new SapSuccessResponseMock());
 
         Test.startTest();
-        String body = new RES_ProductCategoryIntegrationService('POST').hydrateRequestBody(categories, 'I');
+        String body = new RES_ProductCategoryIntegrationService(method).hydrateRequestBody(categories, 'I');
         Test.stopTest();
 
         Assert.isFalse(body.contains('RES_Measurements'), 'No measurement array when the category has no measurements');
@@ -397,7 +409,8 @@ private class RES_ProductCategoryServiceTest {
 
     @IsTest
     static void processResponse_successItem_stampsChildMeasurements() {
-        if (!RES_IntegrationTestDataFactory.hasApiConfiguration('POST')) { return; }
+        String method = apiMethod();
+        if (method == null) { return; }
         List<ProductCategory> categories = RES_IntegrationTestDataFactory.createCategories(1, true);
         RES_IntegrationTestDataFactory.createMeasurements(categories[0].Id, 2);
 
@@ -405,7 +418,7 @@ private class RES_ProductCategoryServiceTest {
         Test.setMock(HttpCalloutMock.class, new SapSuccessResponseMock());
 
         Test.startTest();
-        RES_ProductCategoryIntegrationService.syncProductCategories(categories, 'POST', 'I');
+        RES_ProductCategoryIntegrationService.syncProductCategories(categories, method, 'I');
         Test.stopTest();
 
         for (RES_Measurement__c m : [
@@ -417,7 +430,8 @@ private class RES_ProductCategoryServiceTest {
 
     @IsTest
     static void processResponse_errorItem_doesNotStampChildMeasurements() {
-        if (!RES_IntegrationTestDataFactory.hasApiConfiguration('POST')) { return; }
+        String method = apiMethod();
+        if (method == null) { return; }
         List<ProductCategory> categories = RES_IntegrationTestDataFactory.createCategories(1, true);
         RES_IntegrationTestDataFactory.createMeasurements(categories[0].Id, 2);
 
@@ -425,7 +439,7 @@ private class RES_ProductCategoryServiceTest {
         Test.setMock(HttpCalloutMock.class, new SapErrorResponseMock());
 
         Test.startTest();
-        RES_ProductCategoryIntegrationService.syncProductCategories(categories, 'POST', 'I');
+        RES_ProductCategoryIntegrationService.syncProductCategories(categories, method, 'I');
         Test.stopTest();
 
         for (RES_Measurement__c m : [
@@ -433,5 +447,34 @@ private class RES_ProductCategoryServiceTest {
         ]) {
             Assert.isNull(m.RES_Last_Sync_DateTime__c, 'Child measurements must not be stamped on error');
         }
+    }
+
+    @IsTest
+    static void constructor_noApiConfig_throwsIntegrationException() {
+        if (apiMethod() != null) { return; }
+
+        Boolean threw = false;
+        try {
+            new RES_ProductCategoryIntegrationService('GET');
+        } catch (RES_IntegrationException e) {
+            threw = true;
+        }
+        Assert.isTrue(threw, 'Missing API config should raise RES_IntegrationException');
+    }
+
+    @IsTest
+    static void hydrateRequestBody_emptyInput_throwsIntegrationException() {
+        String method = apiMethod();
+        if (method == null) { return; }
+        RES_IntegrationTestDataFactory.primeSapToken();
+        Test.setMock(HttpCalloutMock.class, new SapSuccessResponseMock());
+
+        Boolean threw = false;
+        try {
+            new RES_ProductCategoryIntegrationService(method).hydrateRequestBody(new List<ProductCategory>(), 'I');
+        } catch (RES_IntegrationException e) {
+            threw = true;
+        }
+        Assert.isTrue(threw, 'Empty category list should throw RES_IntegrationException');
     }
 }
