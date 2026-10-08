@@ -11,6 +11,14 @@
 @isTest
 private class RES_ContractServicesTest {
 
+    /** Contracts are only synced once their account has an SAP key. */
+    private static Account withKey(Account a) {
+        Database.update(new Account(Id = a.Id, RES_External_Key__c = '20001999'), false, AccessLevel.SYSTEM_MODE);
+        a.RES_External_Key__c = '20001999';
+        return a;
+    }
+
+
     private static final String CONFIG_NAME = 'Sales_Contract_Creation';
 
     // ─────────────────────────────────────────────────────────────────────────
@@ -31,6 +39,27 @@ private class RES_ContractServicesTest {
         return spy;
     }
 
+
+    /** Queries the contract with the base fields plus every field configured for sync. */
+    private static Contract fetchContract(Id contractId) {
+        Set<String> fields = new Set<String>{
+            'id', 'accountid', 'ownerid', 'status', 'startdate', 'contractnumber',
+            'res_contract_type__c', 'res_first_residential_buyer__c', 'companysigneddate',
+            'dir_old_contract__c', 'res_last_sync_datetime__c', 'res_company_code__c',
+            'res_external_id__c', 'res_approval_status__c', 'account.res_bp_role__c',
+            'account.res_external_key__c'
+        };
+        RES_SAP_Integration_Config__mdt cfg = new RES_SAPIntegrationConfigDAO()
+            .getSAPIntegrationConfigByDeveloperName(CONFIG_NAME);
+        if (cfg != null && String.isNotBlank(cfg.RES_Sync_Fields__c)) {
+            for (String f : cfg.RES_Sync_Fields__c.split(',')) {
+                if (String.isNotBlank(f)) { fields.add(f.trim().toLowerCase()); }
+            }
+        }
+        return Database.query('SELECT ' + String.join(new List<String>(fields), ', ')
+            + ' FROM Contract WHERE Id = :contractId');
+    }
+
     private static Contract createAndFetchContract(Id accountId) {
         Contract c = new Contract(
             AccountId = accountId,
@@ -38,17 +67,7 @@ private class RES_ContractServicesTest {
             StartDate = Date.today()
         );
         insert c;
-        return [
-            SELECT Id, AccountId, OwnerId, Status, StartDate,
-                   ContractNumber, RES_Contract_Type__c,
-                   RES_First_Residential_Buyer__c,
-                   CompanySignedDate, DIR_Old_Contract__c,
-                   RES_Last_Sync_DateTime__c,
-                   RES_Company_Code__c, RES_External_ID__c,
-                   RES_Approval_Status__c,
-                   Account.RES_BP_Role__c
-            FROM Contract WHERE Id = :c.Id
-        ];
+        return fetchContract(c.Id);
     }
 
     // ─────────────────────────────────────────────────────────────────────────
@@ -87,7 +106,7 @@ private class RES_ContractServicesTest {
         RES_IntegrationTestDataFactory.primeSapToken();
         Test.setMock(HttpCalloutMock.class, new RES_IntegrationTestDataFactory.EndpointRoutingMock());
         RES_IntegrationRequestEventService.CountingBatchSubmitter spy = injectBatchSpy();
-        Account acc = RES_TestDataFactory.createAccount();
+        Account acc = withKey(RES_TestDataFactory.createAccount());
         Contract c  = createAndFetchContract(acc.Id);
         Test.startTest();
         Test.getEventBus().deliver();
@@ -109,7 +128,7 @@ private class RES_ContractServicesTest {
         RES_IntegrationTestDataFactory.primeSapToken();
         Test.setMock(HttpCalloutMock.class, new RES_IntegrationTestDataFactory.EndpointRoutingMock());
         RES_IntegrationRequestEventService.CountingBatchSubmitter spy = injectBatchSpy();
-        Account acc  = RES_TestDataFactory.createAccount();
+        Account acc  = withKey(RES_TestDataFactory.createAccount());
         Contract c1  = createAndFetchContract(acc.Id);
         Contract c2  = createAndFetchContract(acc.Id);
         Test.startTest();
@@ -135,7 +154,7 @@ private class RES_ContractServicesTest {
         RES_IntegrationTestDataFactory.primeSapToken();
         Test.setMock(HttpCalloutMock.class, new RES_IntegrationTestDataFactory.EndpointRoutingMock());
         injectBatchSpy();
-        Account acc = RES_TestDataFactory.createAccount();
+        Account acc = withKey(RES_TestDataFactory.createAccount());
         Contract c  = createAndFetchContract(acc.Id);
 
         Boolean threw = false;
@@ -159,7 +178,7 @@ private class RES_ContractServicesTest {
     static void syncContract_realMissingConfig_throwsIntegrationException() {
         if (configReady()) { return; } // only runs when config is truly absent
 
-        Account acc = RES_TestDataFactory.createAccount();
+        Account acc = withKey(RES_TestDataFactory.createAccount());
         Contract c  = createAndFetchContract(acc.Id);
 
         Boolean threw = false;
@@ -188,7 +207,7 @@ private class RES_ContractServicesTest {
         RES_IntegrationTestDataFactory.primeSapToken();
         Test.setMock(HttpCalloutMock.class, new RES_IntegrationTestDataFactory.EndpointRoutingMock());
         RES_IntegrationRequestEventService.CountingBatchSubmitter spy = injectBatchSpy();
-        Account acc = RES_TestDataFactory.createAccount();
+        Account acc = withKey(RES_TestDataFactory.createAccount());
         Contract c  = createAndFetchContract(acc.Id);
 
         // Pass the same contract as both new and old → isContractChanged returns false
@@ -217,7 +236,7 @@ private class RES_ContractServicesTest {
         RES_IntegrationTestDataFactory.primeSapToken();
         Test.setMock(HttpCalloutMock.class, new RES_IntegrationTestDataFactory.EndpointRoutingMock());
         RES_IntegrationRequestEventService.CountingBatchSubmitter spy = injectBatchSpy();
-        Account acc  = RES_TestDataFactory.createAccount();
+        Account acc  = withKey(RES_TestDataFactory.createAccount());
         Contract newC = createAndFetchContract(acc.Id);
 
         // Pass an oldMap that does NOT contain this contract's Id.
@@ -248,21 +267,15 @@ private class RES_ContractServicesTest {
         RES_IntegrationTestDataFactory.primeSapToken();
         Test.setMock(HttpCalloutMock.class, new RES_IntegrationTestDataFactory.EndpointRoutingMock());
         RES_IntegrationRequestEventService.CountingBatchSubmitter spy = injectBatchSpy();
-        Account acc  = RES_TestDataFactory.createAccount();
+        Account acc  = withKey(RES_TestDataFactory.createAccount());
         Contract c   = createAndFetchContract(acc.Id);
 
         // Stamp a past sync date so the condition contract.RES_Last_Sync_DateTime__c != null is met
         Database.update(
-            new Contract(Id = c.Id, RES_Last_Sync_DateTime__c = System.now().addDays(-1)),
+            new Contract(Id = c.Id, RES_External_ID__c = 'EXT-1', RES_Last_Sync_DateTime__c = System.now().addDays(-1)),
             false, AccessLevel.SYSTEM_MODE
         );
-        c = [SELECT Id, AccountId, OwnerId, Status, StartDate,
-                    ContractNumber, RES_Contract_Type__c,
-                    RES_First_Residential_Buyer__c, CompanySignedDate,
-                    DIR_Old_Contract__c, RES_Last_Sync_DateTime__c,
-                    RES_Company_Code__c, RES_External_ID__c,
-                    RES_Approval_Status__c, Account.RES_BP_Role__c
-             FROM Contract WHERE Id = :c.Id];
+        c = fetchContract(c.Id);
 
         // Old record has a different Status so isContractChanged returns true,
         // and new Status is 'Draft' (not 'Canceled') so isStatusChanged returns false → update list
@@ -292,24 +305,20 @@ private class RES_ContractServicesTest {
         RES_IntegrationTestDataFactory.primeSapToken();
         Test.setMock(HttpCalloutMock.class, new RES_IntegrationTestDataFactory.EndpointRoutingMock());
         RES_IntegrationRequestEventService.CountingBatchSubmitter spy = injectBatchSpy();
-        Account acc = RES_TestDataFactory.createAccount();
+        Account acc = withKey(RES_TestDataFactory.createAccount());
         Contract c  = createAndFetchContract(acc.Id);
 
         // Stamp sync date and set Canceled + Approved in System mode (bypasses process rules)
         Database.update(
             new Contract(
                 Id = c.Id,
-                RES_Last_Sync_DateTime__c = System.now().addDays(-1),
+                RES_External_ID__c = 'EXT-1', RES_Last_Sync_DateTime__c = System.now().addDays(-1),
                 Status                    = 'Canceled',
                 RES_Approval_Status__c    = 'Approved'
             ),
             false, AccessLevel.SYSTEM_MODE
         );
-        Contract newC = [SELECT Id, AccountId, Status, RES_Approval_Status__c,
-                                RES_Contract_Type__c, RES_First_Residential_Buyer__c,
-                                CompanySignedDate, DIR_Old_Contract__c,
-                                RES_Last_Sync_DateTime__c, Account.RES_BP_Role__c
-                         FROM Contract WHERE Id = :c.Id];
+        Contract newC = fetchContract(c.Id);
 
         // Old record has Draft status — ensures isStatusChanged returns true
         Contract oldC = new Contract(Id = c.Id, Status = 'Draft', RES_Approval_Status__c = null);
@@ -336,7 +345,7 @@ private class RES_ContractServicesTest {
         RES_IntegrationTestDataFactory.primeSapToken();
         Test.setMock(HttpCalloutMock.class, new RES_IntegrationTestDataFactory.EndpointRoutingMock());
         RES_IntegrationRequestEventService.CountingBatchSubmitter spy = injectBatchSpy();
-        Account acc = RES_TestDataFactory.createAccount();
+        Account acc = withKey(RES_TestDataFactory.createAccount());
         Contract c  = createAndFetchContract(acc.Id);
 
         RES_ContractServices.ContractTerminationRequest req = new RES_ContractServices.ContractTerminationRequest();
@@ -361,7 +370,7 @@ private class RES_ContractServicesTest {
         RES_IntegrationTestDataFactory.primeSapToken();
         Test.setMock(HttpCalloutMock.class, new RES_IntegrationTestDataFactory.EndpointRoutingMock());
         RES_IntegrationRequestEventService.CountingBatchSubmitter spy = injectBatchSpy();
-        Account acc = RES_TestDataFactory.createAccount();
+        Account acc = withKey(RES_TestDataFactory.createAccount());
         Contract c1 = createAndFetchContract(acc.Id);
         Contract c2 = createAndFetchContract(acc.Id);
 
@@ -409,7 +418,7 @@ private class RES_ContractServicesTest {
         RES_IntegrationTestDataFactory.primeSapToken();
         Test.setMock(HttpCalloutMock.class, new RES_IntegrationTestDataFactory.EndpointRoutingMock());
         injectBatchSpy();
-        Account acc = RES_TestDataFactory.createAccount();
+        Account acc = withKey(RES_TestDataFactory.createAccount());
         Contract c1 = createAndFetchContract(acc.Id);
         Contract c2 = createAndFetchContract(acc.Id);
 
