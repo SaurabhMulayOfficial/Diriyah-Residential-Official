@@ -68,7 +68,7 @@ public with sharing class RES_PaymentPlanIntegrationService extends RES_BaseInte
             paymentPlanWrapper.ProductName = paymentPlan.Name;
             paymentPlanWrapper.RES_No_of_Years = (paymentPlan.RES_No_of_Years__c != null) ? (Integer) paymentPlan.RES_No_of_Years__c : 0;
             paymentPlanWrapper.AvailabilityDate = (paymentPlan.AvailabilityDate != null) ? paymentPlan.AvailabilityDate.format('yyyy-MM-dd\'T\'HH:mm:ss\'Z\'', 'UTC') : '';
-            paymentPlanWrapper.DiscontinuedDate = (paymentPlan.DiscontinuedDate != null) ? paymentPlan.DiscontinuedDate.format('yyyy-MM-dd\'T\'HH:mm:ss\'Z\'', 'UTC') : '';
+            paymentPlanWrapper.DiscontinuedDate = (paymentPlan.RES_Validity_End_Date__c != null) ? DateTime.newInstanceGmt(paymentPlan.RES_Validity_End_Date__c, Time.newInstance(0, 0, 0, 0)).format('yyyy-MM-dd\'T\'HH:mm:ss\'Z\'', 'UTC') : '';
             paymentPlanWrapper.RES_Approval_Status = (paymentPlan.RES_Approval_Status__c != null) ? paymentPlan.RES_Approval_Status__c : '';
             paymentPlanWrapper.RES_Status_Role_description = (paymentPlan.RES_Status_Role_Description__c != null) ? paymentPlan.RES_Status_Role_Description__c : '';
             paymentPlanWrapper.RES_Status_Role = (paymentPlan.RES_Status_Role__c != null) ? paymentPlan.RES_Status_Role__c : '';
