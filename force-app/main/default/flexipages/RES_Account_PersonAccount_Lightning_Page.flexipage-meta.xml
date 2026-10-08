@@ -615,6 +615,16 @@
                 <identifier>RecordRES_SAP_ADDR_NUMBER_cField</identifier>
             </fieldInstance>
         </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.RES_Last_Sync_DateTime__c</fieldItem>
+                <identifier>RecordRES_Last_Sync_DateTime_cField</identifier>
+            </fieldInstance>
+        </itemInstances>
         <name>Facet-b5114906-aff5-45ea-8b75-bb2b2ff14765</name>
         <type>Facet</type>
     </flexiPageRegions>
@@ -651,16 +661,6 @@
                 </fieldInstanceProperties>
                 <fieldItem>Record.CreatedById</fieldItem>
                 <identifier>RecordCreatedByIdField</identifier>
-            </fieldInstance>
-        </itemInstances>
-        <itemInstances>
-            <fieldInstance>
-                <fieldInstanceProperties>
-                    <name>uiBehavior</name>
-                    <value>none</value>
-                </fieldInstanceProperties>
-                <fieldItem>Record.RES_Last_Sync_DateTime__c</fieldItem>
-                <identifier>RecordRES_Last_Sync_DateTime_cField</identifier>
             </fieldInstance>
         </itemInstances>
         <name>Facet-740dbf02-7aaf-4b0e-8ad6-a51a9b6fedd3</name>
