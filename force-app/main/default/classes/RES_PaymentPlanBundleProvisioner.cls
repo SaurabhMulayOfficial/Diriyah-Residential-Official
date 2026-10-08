@@ -24,17 +24,32 @@
  */
 public without sharing class RES_PaymentPlanBundleProvisioner {
 
-    private static final String GROUP_NAME = 'Payment Plan';
+    public static final String GROUP_NAME = 'Payment Plan';
     private static final String GROUP_CODE_SUFFIX = '-PP';
     private static final Integer GROUP_SEQUENCE = 10;
     private static final Integer GROUP_MIN_COMPONENTS = 1;
     private static final Integer GROUP_MAX_COMPONENTS = 1;
-    private static final String RELATIONSHIP_TYPE_NAME = 'Bundle to Bundle Component Relationship';
+    @TestVisible
+    private static String relationshipTypeName = 'Bundle to Bundle Component Relationship';
 
     private static final RES_Product2DAOLayer PRODUCT_DAO = new RES_Product2DAOLayer();
     private static final RES_ProductComponentGroupDAOLayer GROUP_DAO = new RES_ProductComponentGroupDAOLayer();
     private static final RES_ProductRelatedComponentDAOLayer COMPONENT_DAO = new RES_ProductRelatedComponentDAOLayer();
     private static final RES_ProductRelationshipTypeDAOLayer RELATIONSHIP_TYPE_DAO = new RES_ProductRelationshipTypeDAOLayer();
+
+    /**
+     * All inserts go through this gateway so tests can force the failure branches, which real data
+     * cannot trigger reliably. Production always uses the default implementation.
+     */
+    @TestVisible
+    public virtual class DmlGateway {
+        public virtual List<Database.SaveResult> insertRecords(List<SObject> records) {
+            return Database.insert(records, false, AccessLevel.SYSTEM_MODE);
+        }
+    }
+
+    @TestVisible
+    private static DmlGateway dml = new DmlGateway();
 
     public class Request {
         @InvocableVariable(required=true label='Payment Plan Product2 Id')
@@ -90,6 +105,15 @@ public without sharing class RES_PaymentPlanBundleProvisioner {
             COMPONENT_DAO.getComponentsByParentProductsAndChild(unitIds, paymentPlanId)
         );
 
+        /*
+         * Units that already have a default Payment Plan option. Revenue Cloud treats a group
+         * with several default components as checkboxes (multi-select), so a newly approved plan
+         * may only become the default on a Unit that has none yet.
+         */
+        Set<Id> unitsWithDefault = mapUnitIdsWithDefault(
+            COMPONENT_DAO.getGroupComponentsByUnits(unitIds, GROUP_NAME)
+        );
+
         Id relationshipTypeId = resolveRelationshipTypeId();
         if (relationshipTypeId == null) {
             /*
@@ -99,7 +123,7 @@ public without sharing class RES_PaymentPlanBundleProvisioner {
              */
             System.debug(
                 'RES_PaymentPlanBundleProvisioner: ProductRelationshipType "' +
-                RELATIONSHIP_TYPE_NAME + '" not found - aborting provisioning for Payment Plan ' + paymentPlanId
+                relationshipTypeName + '" not found - aborting provisioning for Payment Plan ' + paymentPlanId
             );
             return;
         }
@@ -114,7 +138,7 @@ public without sharing class RES_PaymentPlanBundleProvisioner {
         }
 
         if (!groupsToInsert.isEmpty()) {
-            Database.SaveResult[] groupResults = Database.insert(groupsToInsert, false, AccessLevel.SYSTEM_MODE);
+            Database.SaveResult[] groupResults = dml.insertRecords(groupsToInsert);
             for (Integer index = 0; index < groupResults.size(); index++) {
                 if (groupResults[index].isSuccess()) {
                     existingGroupByUnitId.put(
@@ -141,31 +165,60 @@ public without sharing class RES_PaymentPlanBundleProvisioner {
                 continue;
             }
             /*
-             * Revenue Cloud requires every ProductRelatedComponent under a
-             * Static bundle parent to have IsDefaultComponent = true -
-             * confirmed against the real org: both insert AND a follow-up
-             * update to false are rejected with "Child component must be
-             * added by default for a Static Parent Product," for the
-             * first and any later component alike. So every option this
-             * invocable adds simply stays a default component; there is
-             * no way to demote earlier ones via Apex DML, and the
-             * platform enforces this invariant itself.
+             * Only one option per Unit may be the default (see unitsWithDefault above). The
+             * flag is updated in memory so a Unit is never given two defaults in one run.
              */
-            componentsToInsert.add(buildComponent(unitId, componentGroup.Id, paymentPlanId, relationshipTypeId, true, paymentPlan.RES_Price_Option__c));
+            Boolean isDefault = !unitsWithDefault.contains(unitId);
+            unitsWithDefault.add(unitId);
+            componentsToInsert.add(buildComponent(unitId, componentGroup.Id, paymentPlanId, relationshipTypeId, isDefault, paymentPlan.RES_Price_Option__c));
         }
 
         if (!componentsToInsert.isEmpty()) {
-            Database.SaveResult[] componentResults = Database.insert(componentsToInsert, false, AccessLevel.SYSTEM_MODE);
+            Database.SaveResult[] componentResults = dml.insertRecords(componentsToInsert);
+            List<ProductRelatedComponent> retryAsDefault = new List<ProductRelatedComponent>();
             for (Integer index = 0; index < componentResults.size(); index++) {
-                if (!componentResults[index].isSuccess()) {
+                if (componentResults[index].isSuccess()) {
+                    continue;
+                }
+                if (!componentsToInsert[index].IsDefaultComponent && isStaticParentError(componentResults[index].getErrors())) {
+                    /*
+                     * A Static parent product only accepts default components (it cannot offer a
+                     * choice anyway), so keep today's behaviour there rather than losing the plan.
+                     */
+                    ProductRelatedComponent retry = componentsToInsert[index].clone(false, true, false, false);
+                    retry.IsDefaultComponent = true;
+                    retryAsDefault.add(retry);
+                } else {
                     logFailure('ProductRelatedComponent insert', componentsToInsert[index].ParentProductId, componentResults[index].getErrors());
+                }
+            }
+            if (!retryAsDefault.isEmpty()) {
+                Database.SaveResult[] retryResults = dml.insertRecords(retryAsDefault);
+                for (Integer index = 0; index < retryResults.size(); index++) {
+                    if (!retryResults[index].isSuccess()) {
+                        logFailure('ProductRelatedComponent insert (retry as default)', retryAsDefault[index].ParentProductId, retryResults[index].getErrors());
+                    }
                 }
             }
         }
     }
 
+    private static Boolean isStaticParentError(List<Database.Error> errors) {
+        for (Database.Error error : errors) {
+            if (isStaticParentMessage(error.getMessage())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @TestVisible
+    private static Boolean isStaticParentMessage(String message) {
+        return message != null && message.contains('Static Parent Product');
+    }
+
     private static Id resolveRelationshipTypeId() {
-        ProductRelationshipType relationshipType = RELATIONSHIP_TYPE_DAO.getByName(RELATIONSHIP_TYPE_NAME);
+        ProductRelationshipType relationshipType = RELATIONSHIP_TYPE_DAO.getByName(relationshipTypeName);
         return relationshipType == null ? null : relationshipType.Id;
     }
 
@@ -213,6 +266,16 @@ public without sharing class RES_PaymentPlanBundleProvisioner {
         Map<Id, ProductComponentGroup> result = new Map<Id, ProductComponentGroup>();
         for (ProductComponentGroup componentGroup : groups) {
             result.put(componentGroup.ParentProductId, componentGroup);
+        }
+        return result;
+    }
+
+    private static Set<Id> mapUnitIdsWithDefault(List<ProductRelatedComponent> components) {
+        Set<Id> result = new Set<Id>();
+        for (ProductRelatedComponent component : components) {
+            if (component.IsDefaultComponent) {
+                result.add(component.ParentProductId);
+            }
         }
         return result;
     }

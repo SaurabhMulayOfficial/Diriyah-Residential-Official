@@ -83,6 +83,53 @@ public without sharing class RES_ProductRelatedComponentDAOLayer extends RES_Bas
         return (List<ProductRelatedComponent>) executeQuery(soql, '', false, bindVars, AccessLevel.SYSTEM_MODE);
     }
     
+    /**
+     * Retrieves every ProductRelatedComponent inside the named component group (the Unit's
+     * "Payment Plan" group) for the given Units, together with each child Payment Plan's
+     * active flag and validity end date. Ordered by Unit, then CreatedDate/Id so "first in
+     * iteration" is stable between runs. Used by the Payment Plan expiry job to decide
+     * which components to delete and which sibling becomes the new default.
+     */
+    public List<ProductRelatedComponent> getGroupComponentsByUnits(Set<Id> unitIds, String groupName) {
+        if (unitIds == null || unitIds.isEmpty() || String.isBlank(groupName)) {
+            return new List<ProductRelatedComponent>();
+        }
+        String soql =
+            'SELECT Id, ParentProductId, ChildProductId, IsDefaultComponent, ' +
+            'ChildProduct.Name, ChildProduct.IsActive, ChildProduct.RES_Validity_End_Date__c ' +
+            'FROM ProductRelatedComponent ' +
+            'WHERE ParentProductId IN :unitIds ' +
+            'AND ProductComponentGroup.Name = :groupName ' +
+            'ORDER BY ParentProductId, CreatedDate, Id';
+        Map<String, Object> bindVars = new Map<String, Object>{
+            'unitIds' => unitIds,
+            'groupName' => groupName
+        };
+        return (List<ProductRelatedComponent>) executeQuery(soql, '', false, bindVars, AccessLevel.SYSTEM_MODE);
+    }
+
+    /**
+     * Batch scope: Unit-level components (in the named group) whose child Payment Plan has a
+     * validity end date strictly before the given date, i.e. plans that expired as of yesterday
+     * or earlier.
+     */
+    public Database.QueryLocator getExpiredPaymentPlanComponentsLocator(Date today, String groupName) {
+        String recordTypeDeveloperName = System.Label.RES_Product_Payment_Plan_RT;
+        String soql =
+            'SELECT Id, ParentProductId ' +
+            'FROM ProductRelatedComponent ' +
+            'WHERE ProductComponentGroup.Name = :groupName ' +
+            'AND ChildProduct.RecordType.DeveloperName = :recordTypeDeveloperName ' +
+            'AND ChildProduct.RES_Validity_End_Date__c < :today ' +
+            'ORDER BY ParentProductId, Id';
+        Map<String, Object> bindVars = new Map<String, Object>{
+            'today' => today,
+            'groupName' => groupName,
+            'recordTypeDeveloperName' => recordTypeDeveloperName
+        };
+        return executeBatchQuery(soql, bindVars, AccessLevel.SYSTEM_MODE);
+    }
+
     public List<ProductRelatedComponent> getPaymentPlanAssignments(Set<Id> childProductIds) {
         if (childProductIds == null || childProductIds.isEmpty()) {
             return new List<ProductRelatedComponent>();
