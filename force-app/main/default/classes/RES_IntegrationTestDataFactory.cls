@@ -216,7 +216,7 @@ public class RES_IntegrationTestDataFactory {
 
     /**
      * Builds (without inserting) a measurement tied to the given ProductCatalog.
-     * RES_Catalog__c is required by hydrateCatalogWithMeasurements.
+     * RES_Catalog__c links the measurement as a child of the catalog payload.
      */
     public static RES_Measurement__c buildMeasurementForCatalog(Id catalogId, String measurementType) {
         return new RES_Measurement__c(

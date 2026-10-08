@@ -22,6 +22,26 @@ public without sharing class RES_MeasurementDAOLayer extends RES_BaseDAOLayer {
         return (List<RES_Measurement__c>) executeQuery(soql, '', false, bindVars, AccessLevel.SYSTEM_MODE);
     }
 
+    /** @description All measurements linked to the given ProductCategory records (child array of the category payload). */
+    public List<RES_Measurement__c> getMeasurementsByCategoryIds(Set<Id> categoryIds) {
+        if (categoryIds == null || categoryIds.isEmpty()) return new List<RES_Measurement__c>();
+        Map<String, Object> bindVars = new Map<String, Object>{ 'categoryIds' => categoryIds };
+        String soql = 'SELECT Id, RES_Category__c, RES_Measurement_Type__c, RES_Measurement_Amount__c, ' +
+                      'RES_Measurement_From__c, RES_Measurement_To__c, RES_Last_Sync_DateTime__c ' +
+                      'FROM RES_Measurement__c WHERE RES_Category__c IN :categoryIds';
+        return (List<RES_Measurement__c>) executeQuery(soql, '', false, bindVars, AccessLevel.SYSTEM_MODE);
+    }
+
+    /** @description All measurements linked to the given ProductCatalog records (child array of the catalog payload). */
+    public List<RES_Measurement__c> getMeasurementsByCatalogIds(Set<Id> catalogIds) {
+        if (catalogIds == null || catalogIds.isEmpty()) return new List<RES_Measurement__c>();
+        Map<String, Object> bindVars = new Map<String, Object>{ 'catalogIds' => catalogIds };
+        String soql = 'SELECT Id, RES_Catalog__c, RES_Measurement_Type__c, RES_Measurement_Amount__c, ' +
+                      'RES_Measurement_From__c, RES_Measurement_To__c, RES_Last_Sync_DateTime__c ' +
+                      'FROM RES_Measurement__c WHERE RES_Catalog__c IN :catalogIds';
+        return (List<RES_Measurement__c>) executeQuery(soql, '', false, bindVars, AccessLevel.SYSTEM_MODE);
+    }
+
     /** @description All measurements (every type) of the given products, with the fields needed to decide which is Active. */
     public List<RES_Measurement__c> getMeasurementsForActiveSync(Set<Id> productIds) {
         if (productIds == null || productIds.isEmpty()) return new List<RES_Measurement__c>();

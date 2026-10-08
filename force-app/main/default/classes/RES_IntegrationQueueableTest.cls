@@ -84,27 +84,6 @@ private class RES_IntegrationQueueableTest {
         Assert.areEqual(1, mock.businessCallCount, 'The ProductCategory branch should reach the service.');
     }
 
-    @isTest
-    static void executeRoutesMeasurementSync() {
-        RES_IntegrationTestDataFactory.primeSapToken();
-
-        RES_IntegrationTestDataFactory.EndpointRoutingMock mock =
-            new RES_IntegrationTestDataFactory.EndpointRoutingMock();
-        Test.setMock(HttpCalloutMock.class, mock);
-
-        List<ProductCategory> categories = RES_IntegrationTestDataFactory.createCategories(1, true);
-        List<RES_Measurement__c> measurements =
-            RES_IntegrationTestDataFactory.createMeasurements(categories[0].Id, 1);
-
-        Test.startTest();
-        System.enqueueJob(
-            new RES_IntegrationQueueable(measurements, 'Measurement_Sync', METHOD, 'U')
-        );
-        Test.stopTest();
-
-        Assert.areEqual(1, mock.businessCallCount, 'The Measurement branch should reach the service.');
-    }
-
     /* ====================================================================
      *  PLACEHOLDER BRANCHES
      *  These only exercise the cast loops; the service calls are commented
@@ -208,29 +187,6 @@ private class RES_IntegrationQueueableTest {
         Test.stopTest();
 
         Assert.isTrue(threw, 'A mismatched SObject type currently fails hard inside the cast loop.');
-    }
-
-    @isTest
-    static void executeRoutesMeasurementSyncCatalog() {
-        if (!RES_IntegrationTestDataFactory.hasProductCatalogApiConfiguration(METHOD)) { return; }
-
-        RES_IntegrationTestDataFactory.primeSapToken();
-
-        RES_IntegrationTestDataFactory.EndpointRoutingMock mock =
-            new RES_IntegrationTestDataFactory.EndpointRoutingMock();
-        Test.setMock(HttpCalloutMock.class, mock);
-
-        ProductCatalog catalog = RES_IntegrationTestDataFactory.createCatalog();
-        List<RES_Measurement__c> measurements =
-            RES_IntegrationTestDataFactory.createMeasurementsForCatalog(catalog.Id, 1);
-
-        Test.startTest();
-        System.enqueueJob(
-            new RES_IntegrationQueueable(measurements, 'Measurement_Sync_Catalog', METHOD, 'U')
-        );
-        Test.stopTest();
-
-        Assert.areEqual(1, mock.businessCallCount, 'The Measurement_Sync_Catalog branch should reach the integration service.');
     }
 
     @isTest

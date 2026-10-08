@@ -91,80 +91,56 @@ public without sharing class RES_ProductCatalogIntegrationService extends RES_Ba
         return JSON.serialize(wrappers, true);
     }
 
+    /** Measurements sent as children in the last hydrated body; stamped with RES_Last_Sync_DateTime__c on success. */
+    @TestVisible private static Set<Id> includedMeasurementIds = new Set<Id>();
+
     public static String hydrateProductCatalogBody(List<ProductCatalog> catalogs, String triggeringContext){
         if(catalogs == null || catalogs.isEmpty()){
             throw new RES_IntegrationException('No Product Catalog records provided for integration.');
         }
 
-        List<RES_ProductCatalogWrapper> catalogWrapper = new List<RES_ProductCatalogWrapper>();
+        includedMeasurementIds.clear();
 
-        for(ProductCatalog pc: catalogs){
-            catalogWrapper.add(buildCatalogWrapper(pc, triggeringContext));
-        }
-
-        if(catalogWrapper.isEmpty()){
-            throw new RES_IntegrationException('Empty Catalog Wrapper');
-        }
-
-        return serializeWrapper(catalogWrapper);
-    }
-
-    public static String hydrateCatalogWithMeasurements(List<RES_Measurement__c> measurements, String triggeringContext){
         Set<Id> catalogIds = new Set<Id>();
-        for(RES_Measurement__c m :measurements){
-            if(m.RES_Catalog__c != null){
-                catalogIds.add(m.RES_Catalog__c);
-            }
+        for(ProductCatalog pc: catalogs){
+            catalogIds.add(pc.Id);
         }
 
-        if(catalogIds.isEmpty())throw new RES_IntegrationException('No Product Catalog Associated With Measurement.');
-
-        List<ProductCatalog> catalogs = new RES_ProductCatalogDAOLayer().getCatalogByIds(catalogIds);
-        Map<Id, List<RES_Measurement__c>> catalogToMeasurementMapping = new Map<Id, List<RES_Measurement__c>>();
-
-        for(RES_Measurement__c m: measurements){
-            if(m.RES_Catalog__c != null){
-                if(!catalogToMeasurementMapping.containsKey(m.RES_Catalog__c)){
-                    catalogToMeasurementMapping.put(m.RES_Catalog__c, new List<RES_Measurement__c>());
-                }
-                
-                catalogToMeasurementMapping.get(m.RES_Catalog__c).add(m);
+        Map<Id, List<RES_Measurement__c>> measurementsByCatalog = new Map<Id, List<RES_Measurement__c>>();
+        for(RES_Measurement__c m: new RES_MeasurementDAOLayer().getMeasurementsByCatalogIds(catalogIds)){
+            if(!measurementsByCatalog.containsKey(m.RES_Catalog__c)){
+                measurementsByCatalog.put(m.RES_Catalog__c, new List<RES_Measurement__c>());
             }
+            measurementsByCatalog.get(m.RES_Catalog__c).add(m);
         }
 
         List<RES_ProductCatalogWrapper> catalogWrapper = new List<RES_ProductCatalogWrapper>();
 
         for(ProductCatalog pc: catalogs){
-            if(catalogToMeasurementMapping.containsKey(pc.Id) && !catalogToMeasurementMapping.get(pc.Id).isEmpty()){
-                RES_ProductCatalogWrapper w = buildCatalogWrapper(pc, 'U');
+            RES_ProductCatalogWrapper w = buildCatalogWrapper(pc, triggeringContext);
 
-                List<RES_ProductCatalogWrapper.CustomFieldWrapper> customFields = buildCustomFields(pc);
-                if(!customFields.isEmpty()){
-                    w.RES_CustomFields = customFields;
-                }
-                
+            List<RES_Measurement__c> catalogMeasurements = measurementsByCatalog.get(pc.Id);
+            if(catalogMeasurements != null && !catalogMeasurements.isEmpty()){
                 List<RES_ProductCatalogWrapper.MeasurementWrapper> measurementsWrapper = new List<RES_ProductCatalogWrapper.MeasurementWrapper>();
-
-                for(RES_Measurement__c m : catalogToMeasurementMapping.get(pc.Id)){
+                for(RES_Measurement__c m : catalogMeasurements){
                     RES_ProductCatalogWrapper.MeasurementWrapper mW = new RES_ProductCatalogWrapper.MeasurementWrapper();
-                    mW.Measurement_Change_Indicator = triggeringContext;
+                    // Never synced → INSERT ('I'); already synced → UPDATE ('U')
+                    mW.Measurement_Change_Indicator = (m.RES_Last_Sync_DateTime__c == null) ? 'I' : 'U';
                     mW.RES_Measurement_Amount = m.RES_Measurement_Amount__c;
                     mW.RES_Measurement_From = String.valueOf(m.RES_Measurement_From__c);
                     mW.RES_Measurement_To = String.valueOf(m.RES_Measurement_To__c);
                     mW.RES_Measurement_Type = m.RES_Measurement_Type__c;
                     measurementsWrapper.add(mW);
+                    includedMeasurementIds.add(m.Id);
                 }
-                
-                if(measurementsWrapper.size() > 0){
-                    w.RES_Measurements = measurementsWrapper;
-                }
+                w.RES_Measurements = measurementsWrapper;
+            }
 
-                catalogWrapper.add(w);
-            }    
+            catalogWrapper.add(w);
         }
 
-        if(catalogWrapper.size() <= 0){
-            throw new RES_IntegrationException('Empty Request Body: (Measurements w.r.t. Catalog)');
+        if(catalogWrapper.isEmpty()){
+            throw new RES_IntegrationException('Empty Catalog Wrapper');
         }
 
         return serializeWrapper(catalogWrapper);
@@ -248,48 +224,18 @@ public without sharing class RES_ProductCatalogIntegrationService extends RES_Ba
                     RES_Last_Sync_DateTime__c = System.now()
                 );
                 Database.update(toUpdate, false, AccessLevel.SYSTEM_MODE);
+
+                if (!includedMeasurementIds.isEmpty()) {
+                    List<RES_Measurement__c> measToStamp = new List<RES_Measurement__c>();
+                    for (Id mId : includedMeasurementIds) {
+                        measToStamp.add(new RES_Measurement__c(Id = mId, RES_Last_Sync_DateTime__c = System.now()));
+                    }
+                    Database.update(measToStamp, false, AccessLevel.SYSTEM_MODE);
+                }
             }
 
         } catch (Exception e) {
             System.debug('Exception occurred while calling the Product Catalog Integration Service: ' + e.getMessage());
-        }
-    }
-
-    public static void syncMeasurementsWithProductCatalog(List<RES_Measurement__c> measurements, String requestMethod, String triggeringContext){
-        RES_ProductCatalogIntegrationService service = new RES_ProductCatalogIntegrationService(requestMethod);
-        String body = hydrateCatalogWithMeasurements(measurements, triggeringContext);
-        service.setRequestName('Measurement_Sync_Catalog');
-        service.setObjectName('Measurement');
-        service.setBody(body);
-        service.setRecordId(String.valueOf(measurements[0].Id));
-
-        try {
-            RES_IntegrationResponse response = service.sendRequest();
-
-            System.debug(
-                'Product Catalog (Measurement) Integration Service | ' +
-                'Status Code: ' + response.statusCode +
-                ' | Status: ' + response.status +
-                ' | Body: ' + response.responseBody
-            );
-
-            Boolean isSuccess = processResponse(
-                response.responseBody,
-                service,
-                measurements[0].Id,
-                'RES_Measurement__c'
-            );
-
-            if (isSuccess) {
-                RES_Measurement__c toUpdate = new RES_Measurement__c(
-                    Id = measurements[0].Id,
-                    RES_Last_Sync_DateTime__c = System.now()
-                );
-                Database.update(toUpdate, false, AccessLevel.SYSTEM_MODE);
-            }
-
-        } catch (Exception e) {
-            System.debug('Exception occurred while calling the Product Catalog Measurement Integration Service: ' + e.getMessage());
         }
     }
 }

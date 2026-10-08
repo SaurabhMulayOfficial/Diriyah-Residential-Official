@@ -51,9 +51,27 @@ public with sharing class RES_ProductCategoryIntegrationService extends RES_Base
         setTimeout(timeout);
     }
 
+    /** Measurements sent as children in the last hydrated body; stamped with RES_Last_Sync_DateTime__c on success. */
+    @TestVisible private Set<Id> includedMeasurementIds = new Set<Id>();
+
     public String hydrateRequestBody(List<ProductCategory> productCategories, String triggerContext){
         if(productCategories == null || productCategories.isEmpty()){
             throw new RES_IntegrationException('No ProductCategory records provided for integration.');
+        }
+
+        includedMeasurementIds.clear();
+
+        Set<Id> categoryIds = new Set<Id>();
+        for(ProductCategory pc: productCategories){
+            categoryIds.add(pc.Id);
+        }
+
+        Map<Id, List<RES_Measurement__c>> measurementsByCategory = new Map<Id, List<RES_Measurement__c>>();
+        for(RES_Measurement__c m: new RES_MeasurementDAOLayer().getMeasurementsByCategoryIds(categoryIds)){
+            if(!measurementsByCategory.containsKey(m.RES_Category__c)){
+                measurementsByCategory.put(m.RES_Category__c, new List<RES_Measurement__c>());
+            }
+            measurementsByCategory.get(m.RES_Category__c).add(m);
         }
 
         List<RES_ProductCategoryRequestWrapper> requestWrappers  = new List<RES_ProductCategoryRequestWrapper>();
@@ -68,6 +86,23 @@ public with sharing class RES_ProductCategoryIntegrationService extends RES_Base
             wrapper.RES_Profit_Center = pc.RES_Profit_Center__c;
             wrapper.RES_Property_Type = pc.RES_Property_Type__c;
             wrapper.Change_Indicator = triggerContext;
+
+            List<RES_Measurement__c> categoryMeasurements = measurementsByCategory.get(pc.Id);
+            if(categoryMeasurements != null && !categoryMeasurements.isEmpty()){
+                List<RES_ProductCategoryRequestWrapper.Measurement> measurementWrappers = new List<RES_ProductCategoryRequestWrapper.Measurement>();
+                for(RES_Measurement__c m: categoryMeasurements){
+                    RES_ProductCategoryRequestWrapper.Measurement mW = new RES_ProductCategoryRequestWrapper.Measurement();
+                    mW.RES_Measurement_Type = m.RES_Measurement_Type__c;
+                    mW.RES_Measurement_Amount = m.RES_Measurement_Amount__c;
+                    mW.RES_Measurement_From = m.RES_Measurement_From__c;
+                    mW.RES_Measurement_To = m.RES_Measurement_To__c;
+                    // Never synced → INSERT ('I'); already synced → UPDATE ('U')
+                    mW.Measurement_Change_Indicator = (m.RES_Last_Sync_DateTime__c == null) ? 'I' : 'U';
+                    measurementWrappers.add(mW);
+                    includedMeasurementIds.add(m.Id);
+                }
+                wrapper.RES_Measurements = measurementWrappers;
+            }
             requestWrappers.add(wrapper);
         }  
 
@@ -78,78 +113,6 @@ public with sharing class RES_ProductCategoryIntegrationService extends RES_Base
         if(requestWrappers.size() == 1){
             return JSON.serialize(requestWrappers[0], true);
         }
-        return JSON.serialize(requestWrappers, true);
-    }
-
-
-    public String hydrateRequestBodyForMeasurements(List<RES_Measurement__c> measurements, String triggerContext){
-        if(measurements == null || measurements.isEmpty()){
-            throw new RES_IntegrationException('No Measurement records provided for integration.');
-        }
-        
-        Set<Id> categoryIds = new Set<Id>();
-        for(RES_Measurement__c measurement: measurements){
-            if(measurement.RES_Category__c != null){
-                categoryIds.add(measurement.RES_Category__c);
-            }
-        }
-
-        List<ProductCategory> categories = new RES_ProductCategoryDAOLayer().getCategoriesByIds(categoryIds);
-        Map<Id, ProductCategory> categoryMap = new Map<Id, ProductCategory>();
-        for(ProductCategory category: categories){
-            categoryMap.put(category.Id, category);
-        }
-        
-        List<RES_ProductCategoryRequestWrapper> requestWrappers  = new List<RES_ProductCategoryRequestWrapper>();
-        Map<Id, List<RES_Measurement__c>> measurementMap = new Map<Id, List<RES_Measurement__c>>();
-        
-        for(RES_Measurement__c measurement: measurements){
-            if(measurement.RES_Category__c != null){
-                if(!measurementMap.containsKey(measurement.RES_Category__c)){
-                    measurementMap.put(measurement.RES_Category__c, new List<RES_Measurement__c>());
-                }
-                measurementMap.get(measurement.RES_Category__c).add(measurement);
-            }
-        }
-
-        for(Id categoryId: measurementMap.keySet()){
-            ProductCategory category = categoryMap.get(categoryId);
-            if(category != null){
-                RES_ProductCategoryRequestWrapper wrapper = new RES_ProductCategoryRequestWrapper();
-                wrapper.RES_Company_Code = category.RES_Company_Code__c;
-                wrapper.RES_Business_Entity_Id = category.RES_Business_Entity_Id__c;
-                wrapper.RES_Property_ID = category.RES_Property_ID__c;
-                wrapper.Name = category.Name;
-                wrapper.RES_Valid_From_Date = category.RES_Valid_From_Date__c;
-                wrapper.RES_Valid_To_Date = category.RES_Valid_To_Date__c;
-                wrapper.RES_Profit_Center = category.RES_Profit_Center__c;
-                wrapper.RES_Property_Type = category.RES_Property_Type__c;
-                // First-time sync → INSERT ('I'); subsequent → UPDATE ('U')
-                wrapper.Change_Indicator = (category.RES_Last_Sync_DateTime__c == null) ? 'I' : 'U';
-
-                List<RES_ProductCategoryRequestWrapper.Measurement> measurementWrappers = new List<RES_ProductCategoryRequestWrapper.Measurement>();
-                for(RES_Measurement__c measurement: measurementMap.get(categoryId)){
-                    RES_ProductCategoryRequestWrapper.Measurement measurementWrapper = new RES_ProductCategoryRequestWrapper.Measurement();
-                    measurementWrapper.RES_Measurement_Type = measurement.RES_Measurement_Type__c;
-                    measurementWrapper.RES_Measurement_Amount = measurement.RES_Measurement_Amount__c;
-                    measurementWrapper.RES_Measurement_From = measurement.RES_Measurement_From__c;
-                    measurementWrapper.RES_Measurement_To = measurement.RES_Measurement_To__c;
-                    measurementWrapper.Measurement_Change_Indicator = triggerContext;
-                    measurementWrappers.add(measurementWrapper);
-                }
-                wrapper.RES_Measurements = measurementWrappers;
-                requestWrappers.add(wrapper);
-            }
-        }
-
-        if(requestWrappers.isEmpty()){
-            throw new RES_IntegrationException('Empty Request Body while Hydrating measurement Request');
-        }
-
-        if(requestWrappers.size() == 1){
-            return JSON.serialize(requestWrappers[0], true);
-        }
-
         return JSON.serialize(requestWrappers, true);
     }
 
@@ -200,45 +163,6 @@ public with sharing class RES_ProductCategoryIntegrationService extends RES_Base
         return isSuccess;
     }
 
-    public static void syncMeasurements(List<RES_Measurement__c> measurements, String requestMethod, String triggerContext){
-        RES_ProductCategoryIntegrationService service = new RES_ProductCategoryIntegrationService(requestMethod);
-        String body = service.hydrateRequestBodyForMeasurements(measurements, triggerContext);
-        service.setObjectName('Measurement');
-        service.setRequestName('Measurement_Sync_Category');
-        service.setBody(body);
-        service.setRecordId(String.valueOf(measurements[0].Id));
-
-        try{
-            RES_IntegrationResponse response = service.sendRequest();
-
-            System.debug(
-                'Measurement Integration Service | ' +
-                'Status Code: ' + response.statusCode +
-                ' | Status: ' + response.status +
-                ' | Body: ' + response.responseBody
-            );
-
-            Boolean isSuccess = processResponse(
-                response.responseBody,
-                service,
-                measurements[0].Id,
-                'RES_Measurement__c'
-            );
-
-            if (isSuccess) {
-                RES_Measurement__c toUpdate = new RES_Measurement__c(
-                    Id = measurements[0].Id,
-                    RES_Last_Sync_DateTime__c = System.now()
-                );
-                Database.update(toUpdate, false, AccessLevel.SYSTEM_MODE);
-            }
-
-        }catch(Exception e){
-            System.debug('Exception Occur while calling the Measurement Integration Service: ' + e.getMessage());
-        }
-    }
-
-
     public static void syncProductCategories(List<ProductCategory> productCategories, String requestMethod, String triggerContext){
         RES_ProductCategoryIntegrationService service = new RES_ProductCategoryIntegrationService(requestMethod);
         String body = service.hydrateRequestBody(productCategories, triggerContext);
@@ -270,6 +194,14 @@ public with sharing class RES_ProductCategoryIntegrationService extends RES_Base
                     RES_Last_Sync_DateTime__c = System.now()
                 );
                 Database.update(toUpdate, false, AccessLevel.SYSTEM_MODE);
+
+                if(!service.includedMeasurementIds.isEmpty()){
+                    List<RES_Measurement__c> measToStamp = new List<RES_Measurement__c>();
+                    for(Id mId: service.includedMeasurementIds){
+                        measToStamp.add(new RES_Measurement__c(Id = mId, RES_Last_Sync_DateTime__c = System.now()));
+                    }
+                    Database.update(measToStamp, false, AccessLevel.SYSTEM_MODE);
+                }
             }
 
         }catch(Exception e){

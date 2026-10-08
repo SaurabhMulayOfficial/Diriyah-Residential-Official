@@ -95,22 +95,6 @@ public with sharing class RES_IntegrationQueueable implements Queueable, Databas
             RES_ProductCategoryIntegrationService.syncProductCategories(productCategories, requestMethod, triggerContext);
         }
         
-        else if(serviceName == 'Measurement_Sync'){
-            List<RES_Measurement__c> measurements = new List<RES_Measurement__c>();
-            for (SObject record: records){
-                measurements.add((RES_Measurement__c) record);
-            }
-            RES_ProductCategoryIntegrationService.syncMeasurements(measurements, requestMethod, triggerContext);   
-        }
-        
-        else if(serviceName == 'Measurement_Sync_Catalog'){
-            List<RES_Measurement__c> measurements = new List<RES_Measurement__c>();
-            for (SObject record: records){
-                measurements.add((RES_Measurement__c) record);
-            }
-            RES_ProductCatalogIntegrationService.syncMeasurementsWithProductCatalog(measurements, requestMethod, triggerContext);   
-        }
-        
         else if(serviceName == 'ProductCatalog_Sync'){
             List<ProductCatalog> productCatalogs = new List<ProductCatalog>();
             for (SObject record : records) {

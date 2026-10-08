@@ -3,9 +3,9 @@
  *
  *              Covers:
  *              - hydrateProductCatalogBody (single / multiple / empty input)
- *              - hydrateCatalogWithMeasurements (happy path / no catalog linked / empty input)
+ *              - hydrateProductCatalogBody with child measurements (I vs U indicator, none linked)
  *              - syncProductCatalogs end-to-end (success response / blank response)
- *              - syncMeasurementsWithProductCatalog end-to-end
+ *              - syncProductCatalogs stamps RES_Last_Sync_DateTime__c on the child measurements
  *              - Constructor guard (no API config → exception)
  *
  *              The constructor requires a deployed RES_API_Configuration__mdt record
@@ -149,11 +149,35 @@ private class RES_ProductCatalogIntegrationServiceTest {
     }
 
     // ------------------------------------------------------------------
-    // hydrateCatalogWithMeasurements
+    // hydrateProductCatalogBody — child measurements
     // ------------------------------------------------------------------
 
     @IsTest
-    static void hydrateMeasurements_happyPath_returnsCatalogWithMeasurements() {
+    static void hydrateBody_withMeasurements_neverSyncedAreInsert() {
+        RES_IntegrationTestDataFactory.primeSapToken();
+        Test.setMock(HttpCalloutMock.class, new RES_IntegrationTestDataFactory.EndpointRoutingMock());
+        RES_IntegrationRequestEventService.batchSubmitter =
+            new RES_IntegrationRequestEventService.CountingBatchSubmitter();
+        ProductCatalog catalog = buildCatalog();
+        RES_IntegrationTestDataFactory.createMeasurementsForCatalog(catalog.Id, 2);
+
+        Test.startTest();
+        String body = RES_ProductCatalogIntegrationService.hydrateProductCatalogBody(
+            new List<ProductCatalog>{ catalog }, 'I'
+        );
+        Test.stopTest();
+
+        Map<String, Object> parsed = (Map<String, Object>) JSON.deserializeUntyped(body);
+        List<Object> children = (List<Object>) parsed.get('RES_Measurements');
+        Assert.areEqual(2, children.size(), 'Both measurements of the catalog should be sent as children');
+        for (Object o : children) {
+            Assert.areEqual('I', ((Map<String, Object>) o).get('Measurement_Change_Indicator'), 'Never-synced measurement is an insert');
+        }
+        Assert.areEqual(2, RES_ProductCatalogIntegrationService.includedMeasurementIds.size());
+    }
+
+    @IsTest
+    static void hydrateBody_withMeasurements_syncedAreUpdate() {
         RES_IntegrationTestDataFactory.primeSapToken();
         Test.setMock(HttpCalloutMock.class, new RES_IntegrationTestDataFactory.EndpointRoutingMock());
         RES_IntegrationRequestEventService.batchSubmitter =
@@ -161,78 +185,40 @@ private class RES_ProductCatalogIntegrationServiceTest {
         ProductCatalog catalog = buildCatalog();
         List<RES_Measurement__c> measurements =
             RES_IntegrationTestDataFactory.createMeasurementsForCatalog(catalog.Id, 2);
+        update new RES_Measurement__c(Id = measurements[0].Id, RES_Last_Sync_DateTime__c = System.now());
 
         Test.startTest();
-        String body = RES_ProductCatalogIntegrationService.hydrateCatalogWithMeasurements(
-            measurements, 'I'
+        String body = RES_ProductCatalogIntegrationService.hydrateProductCatalogBody(
+            new List<ProductCatalog>{ catalog }, 'U'
         );
         Test.stopTest();
 
-        Assert.isTrue(String.isNotBlank(body), 'Body should not be blank');
-        Assert.isTrue(
-            body.contains('RES_Measurements') || body.contains('Measurement_Change_Indicator'),
-            'Body should contain measurement data'
-        );
-    }
-
-    @IsTest
-    static void hydrateMeasurements_noCatalogLinked_throwsIntegrationException() {
-        RES_Measurement__c m = new RES_Measurement__c(
-            RES_Measurement_Type__c   = 'Z002',
-            RES_Measurement_Amount__c = 100
-        );
-        // RES_Catalog__c intentionally left null
-        // We don't insert to avoid required field errors; pass uninserted with null catalog
-        List<ProductCategory> cats = RES_IntegrationTestDataFactory.createCategories(1, false);
-        m.RES_Category__c = cats[0].Id;
-        insert m;
-
-        Boolean threw = false;
-        try {
-            RES_ProductCatalogIntegrationService.hydrateCatalogWithMeasurements(
-                new List<RES_Measurement__c>{ m }, 'I'
-            );
-        } catch (RES_IntegrationException e) {
-            threw = true;
-            Assert.isTrue(
-                e.getMessage().contains('No Product Catalog Associated'),
-                'Exception should mention missing catalog association'
-            );
+        Integer inserts = 0;
+        Integer updates = 0;
+        Map<String, Object> parsed = (Map<String, Object>) JSON.deserializeUntyped(body);
+        for (Object o : (List<Object>) parsed.get('RES_Measurements')) {
+            String ci = (String) ((Map<String, Object>) o).get('Measurement_Change_Indicator');
+            if (ci == 'I') inserts++;
+            if (ci == 'U') updates++;
         }
-        Assert.isTrue(threw, 'Measurement without RES_Catalog__c should throw RES_IntegrationException');
+        Assert.areEqual(1, inserts, 'The never-synced measurement is an insert');
+        Assert.areEqual(1, updates, 'The already-synced measurement is an update');
     }
 
     @IsTest
-    static void hydrateMeasurements_multipleCatalogs_returnsArray() {
+    static void hydrateBody_noMeasurements_omitsMeasurementArray() {
         RES_IntegrationTestDataFactory.primeSapToken();
         Test.setMock(HttpCalloutMock.class, new RES_IntegrationTestDataFactory.EndpointRoutingMock());
-        RES_IntegrationRequestEventService.batchSubmitter =
-            new RES_IntegrationRequestEventService.CountingBatchSubmitter();
-        ProductCatalog cat1 = buildCatalog();
-        RES_Config_Switch__c cfg2 = RES_Config_Switch__c.getOrgDefaults();
-        cfg2.RES_Triggers_Off__c = true;
-        upsert cfg2;
-        ProductCatalog cat2 = new ProductCatalog(Name = 'Second Catalog For Measurement');
-        insert cat2;
-        cfg2.RES_Triggers_Off__c = false;
-        upsert cfg2;
-
-        List<RES_Measurement__c> m1 =
-            RES_IntegrationTestDataFactory.createMeasurementsForCatalog(cat1.Id, 1);
-        List<RES_Measurement__c> m2 =
-            RES_IntegrationTestDataFactory.createMeasurementsForCatalog(cat2.Id, 1);
-
-        List<RES_Measurement__c> combined = new List<RES_Measurement__c>();
-        combined.addAll(m1);
-        combined.addAll(m2);
+        ProductCatalog catalog = buildCatalog();
 
         Test.startTest();
-        String body = RES_ProductCatalogIntegrationService.hydrateCatalogWithMeasurements(
-            combined, 'U'
+        String body = RES_ProductCatalogIntegrationService.hydrateProductCatalogBody(
+            new List<ProductCatalog>{ catalog }, 'I'
         );
         Test.stopTest();
 
-        Assert.isTrue(body.startsWith('['), 'Multiple catalogs should produce a JSON array');
+        Assert.isFalse(body.contains('RES_Measurements'), 'No measurement array when the catalog has no measurements');
+        Assert.isTrue(RES_ProductCatalogIntegrationService.includedMeasurementIds.isEmpty());
     }
 
     // ------------------------------------------------------------------
@@ -362,11 +348,11 @@ private class RES_ProductCatalogIntegrationServiceTest {
     }
 
     // ------------------------------------------------------------------
-    // syncMeasurementsWithProductCatalog — end-to-end
+    // syncProductCatalogs — child measurements stamping
     // ------------------------------------------------------------------
 
     @IsTest
-    static void syncMeasurementsWithCatalog_successResponse_updatesLastSyncDateTime() {
+    static void syncProductCatalogs_successResponse_stampsChildMeasurements() {
         if (!canConstruct()) { return; }
 
         RES_IntegrationTestDataFactory.primeSapToken();
@@ -377,46 +363,19 @@ private class RES_ProductCatalogIntegrationServiceTest {
 
         ProductCatalog catalog = buildCatalog();
         List<RES_Measurement__c> measurements =
-            RES_IntegrationTestDataFactory.createMeasurementsForCatalog(catalog.Id, 1);
+            RES_IntegrationTestDataFactory.createMeasurementsForCatalog(catalog.Id, 2);
 
         Test.startTest();
-        RES_ProductCatalogIntegrationService.syncMeasurementsWithProductCatalog(
-            measurements, REQUEST_METHOD, 'I'
+        RES_ProductCatalogIntegrationService.syncProductCatalogs(
+            new List<ProductCatalog>{ catalog }, REQUEST_METHOD, 'I'
         );
         Test.stopTest();
 
         Assert.areEqual(1, mock.businessCallCount, 'One business callout should be made');
-        RES_Measurement__c updated = [
-            SELECT RES_Last_Sync_DateTime__c FROM RES_Measurement__c WHERE Id = :measurements[0].Id
-        ];
-        Assert.isNotNull(updated.RES_Last_Sync_DateTime__c, 'Last sync datetime should be stamped on success');
-    }
-
-    @IsTest
-    static void syncMeasurementsWithCatalog_calloutException_doesNotPropagate() {
-        if (!canConstruct()) { return; }
-
-        RES_IntegrationTestDataFactory.primeSapToken();
-        RES_IntegrationTestDataFactory.EndpointRoutingMock mock =
-            new RES_IntegrationTestDataFactory.EndpointRoutingMock();
-        mock.throwOnBusiness = true;
-        Test.setMock(HttpCalloutMock.class, mock);
-
-        ProductCatalog catalog = buildCatalog();
-        List<RES_Measurement__c> measurements =
-            RES_IntegrationTestDataFactory.createMeasurementsForCatalog(catalog.Id, 1);
-
-        Boolean threw = false;
-        Test.startTest();
-        try {
-            RES_ProductCatalogIntegrationService.syncMeasurementsWithProductCatalog(
-                measurements, REQUEST_METHOD, 'I'
-            );
-        } catch (Exception e) {
-            threw = true;
+        for (RES_Measurement__c updated : [
+            SELECT RES_Last_Sync_DateTime__c FROM RES_Measurement__c WHERE RES_Catalog__c = :catalog.Id
+        ]) {
+            Assert.isNotNull(updated.RES_Last_Sync_DateTime__c, 'Last sync datetime should be stamped on success');
         }
-        Test.stopTest();
-
-        Assert.isFalse(threw, 'Callout exception inside syncMeasurementsWithProductCatalog should be caught');
     }
 }

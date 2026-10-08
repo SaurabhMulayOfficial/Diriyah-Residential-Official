@@ -39,28 +39,18 @@ public with sharing class RES_MeasurementServices {
             return;
         }
 
-        String triggerContext = oldMap == null ? 'I' : 'U';
-
         List<RES_Integration_Request__e> integrationRequestEventList = new List<RES_Integration_Request__e>();
         Set<Id> unitProductIds = new Set<Id>();
+        Set<Id> categoryIds = new Set<Id>();
+        Set<Id> catalogIds = new Set<Id>();
 
         for(RES_Measurement__c m : measurementsToSync){
             if(m.RES_Category__c != null){
-                RES_Integration_Request__e req = new RES_Integration_Request__e();
-                req.RES_RecordIds__c = String.valueOf(m.Id);
-                req.RES_Request_Method__c = 'GET';
-                req.RES_Service_Name__c = 'Measurement_Sync';
-                req.RES_Triggering_Context__c = triggerContext;
-                integrationRequestEventList.add(req);
+                categoryIds.add(m.RES_Category__c);
             }
 
             if(m.RES_Catalog__c != null){
-                RES_Integration_Request__e catalogReq = new RES_Integration_Request__e();
-                catalogReq.RES_RecordIds__c = String.valueOf(m.Id);
-                catalogReq.RES_Request_Method__c = 'GET';
-                catalogReq.RES_Service_Name__c = 'Measurement_Sync_Catalog';
-                catalogReq.RES_Triggering_Context__c = triggerContext;
-                integrationRequestEventList.add(catalogReq);
+                catalogIds.add(m.RES_Catalog__c);
             }
 
             if(m.RES_Product__c != null){
@@ -68,6 +58,10 @@ public with sharing class RES_MeasurementServices {
             }
         }
 
+        // Measurements travel as a child array of their Category / Catalog payload, so one event per unique parent.
+        integrationRequestEventList.addAll(buildParentSyncEvents(categoryIds, catalogIds));
+
+        String triggerContext = oldMap == null ? 'I' : 'U';
         for(Id productId : unitProductIds){
             RES_Integration_Request__e unitReq = new RES_Integration_Request__e();
             unitReq.RES_RecordIds__c = String.valueOf(productId);
@@ -82,6 +76,33 @@ public with sharing class RES_MeasurementServices {
         }catch(Exception e){
             System.debug('Exception Firing Integration Request Event ' + e.getMessage());
         }
+    }
+
+    /**
+     * @description Builds ProductCategory_Sync / ProductCatalog_Sync events for the given parents. The triggering context is
+     *              per parent: never synced (RES_Last_Sync_DateTime__c null) → 'I', otherwise 'U'.
+     */
+    public static List<RES_Integration_Request__e> buildParentSyncEvents(Set<Id> categoryIds, Set<Id> catalogIds) {
+        List<RES_Integration_Request__e> events = new List<RES_Integration_Request__e>();
+
+        for (ProductCategory pc : new RES_ProductCategoryDAOLayer().getCategoriesByIds(categoryIds)) {
+            events.add(buildParentEvent(pc.Id, 'ProductCategory_Sync', pc.RES_Last_Sync_DateTime__c));
+        }
+
+        for (ProductCatalog pc : new RES_ProductCatalogDAOLayer().getCatalogByIds(catalogIds)) {
+            events.add(buildParentEvent(pc.Id, 'ProductCatalog_Sync', pc.RES_Last_Sync_DateTime__c));
+        }
+
+        return events;
+    }
+
+    private static RES_Integration_Request__e buildParentEvent(Id parentId, String serviceName, Datetime lastSync) {
+        RES_Integration_Request__e req = new RES_Integration_Request__e();
+        req.RES_RecordIds__c = String.valueOf(parentId);
+        req.RES_Request_Method__c = 'GET';
+        req.RES_Service_Name__c = serviceName;
+        req.RES_Triggering_Context__c = lastSync == null ? 'I' : 'U';
+        return req;
     }
 
     public static void setMeasurementDefaults(List<RES_Measurement__c> measurements) {

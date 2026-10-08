@@ -23,8 +23,6 @@ export default class IntegrationSync extends LightningElement {
         'Account_Sync',
         'Unit_Sync',
         'ProductCategory_Sync',
-        'Measurement_Sync',
-        'Measurement_Sync_Catalog',
         'ProductCatalog_Sync'
     ].map((v) => ({ label: v.replace(/_/g, ' '), value: v }));
 
