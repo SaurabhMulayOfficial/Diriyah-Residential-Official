@@ -3,8 +3,8 @@
     <fullName>RES_Active__c</fullName>
     <defaultValue>false</defaultValue>
     <description>DIR-1797: Set automatically. True on the single measurement per product and measurement type that is currently in effect (date window, then latest From, then latest created). Maintained by RES_ProductMeasurementSyncService.</description>
-    <externalId>false</externalId>
     <label>Active</label>
+    <trackHistory>true</trackHistory>
     <trackTrending>false</trackTrending>
     <type>Checkbox</type>
 </CustomField>
