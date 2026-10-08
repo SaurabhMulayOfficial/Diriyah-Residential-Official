@@ -134,6 +134,13 @@
                 <elementReference>recordId</elementReference>
             </value>
         </filters>
+        <filters>
+            <field>RES_CIP_Type__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <stringValue>Unit</stringValue>
+            </value>
+        </filters>
         <getFirstRecordOnly>true</getFirstRecordOnly>
         <object>QuoteLineItem</object>
         <storeOutputAutomatically>true</storeOutputAutomatically>
