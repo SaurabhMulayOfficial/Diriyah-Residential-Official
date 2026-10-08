@@ -121,6 +121,7 @@ public with sharing class RES_PaymentPlanIntegrationService extends RES_BaseInte
             }
             paymentPlanWrapper.RES_Payment_Plan_Assignments = (assignmentsWrapper != null) ? assignmentsWrapper : new List<RES_PaymentPlanWrapper.PaymentPlanAssignment>();
         }
+        system.debug('JSON ==> ' + JSON.serializePretty(paymentPlanWrapper));
         return JSON.serializePretty(paymentPlanWrapper);
     }
 
