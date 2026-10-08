@@ -738,6 +738,60 @@ private class RES_AccountIntegrationServiceTest {
     }
 
     // ─────────────────────────────────────────────────────────────────────────
+    // syncAccounts — insert: Sales_Contract_Creation fired only for unsynced contracts
+    // ─────────────────────────────────────────────────────────────────────────
+
+    @isTest
+    static void syncAccounts_insertContext_firesContractCreationForUnsyncedContracts() {
+        if (!canConstruct()) { return; }
+
+        RES_IntegrationTestDataFactory.primeSapToken();
+        RES_IntegrationTestDataFactory.EndpointRoutingMock mock =
+            new RES_IntegrationTestDataFactory.EndpointRoutingMock();
+        mock.businessBody = successResponseBody('20001999', '0001234567');
+        Test.setMock(HttpCalloutMock.class, mock);
+
+        Account acc = buildAccount();
+
+        RES_Config_Switch__c cfg = RES_Config_Switch__c.getOrgDefaults();
+        Boolean wasOff = cfg.RES_Triggers_Off__c;
+        cfg.RES_Triggers_Off__c = true;
+        upsert cfg;
+        insert new List<Contract>{
+            new Contract(AccountId = acc.Id, Status = 'Draft'),
+            new Contract(AccountId = acc.Id, Status = 'Draft'),
+            new Contract(AccountId = acc.Id, Status = 'Draft', RES_Last_Sync_DateTime__c = System.now())
+        };
+        cfg.RES_Triggers_Off__c = wasOff;
+        upsert cfg;
+
+        // Two contract events are published; avoid >1 Database.executeBatch in a test.
+        RES_IntegrationRequestEventService.CountingBatchSubmitter spy =
+            new RES_IntegrationRequestEventService.CountingBatchSubmitter();
+        RES_IntegrationRequestEventService.batchSubmitter = spy;
+
+        Test.startTest();
+        RES_AccountIntegrationService.syncAccounts(new List<Account>{ acc }, REQUEST_METHOD, 'I');
+        Test.getEventBus().deliver();
+        Test.stopTest();
+
+        Map<Id, List<Contract>> contractsByAccount =
+            new RES_ContractDAOLayer().getContractsByAccountIds(new Set<Id>{ acc.Id });
+        Assert.areEqual(3, contractsByAccount.get(acc.Id).size(),
+            'DAO must return every contract of the account.');
+        Integer unsynced = 0;
+        for (Contract con : contractsByAccount.get(acc.Id)) {
+            if (con.RES_Last_Sync_DateTime__c == null) {
+                unsynced++;
+            }
+        }
+        Assert.areEqual(2, unsynced, 'Only the two never-synced contracts are eligible for creation events.');
+        Account updated = [SELECT RES_External_Key__c FROM Account WHERE Id = :acc.Id];
+        Assert.areEqual('20001999', updated.RES_External_Key__c,
+            'Account sync must complete and reach the contract event block.');
+    }
+
+    // ─────────────────────────────────────────────────────────────────────────
     // syncAccounts — error response → no timestamp, TT_MESSAGES error logged
     // ─────────────────────────────────────────────────────────────────────────
 

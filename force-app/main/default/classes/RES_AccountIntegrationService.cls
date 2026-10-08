@@ -564,6 +564,27 @@ public with sharing class RES_AccountIntegrationService extends RES_BaseIntegrat
                         toUpdate.RES_SAP_ADDR_NUMBER__c = addrNumber;
                     }
                     Database.update(toUpdate, false, AccessLevel.SYSTEM_MODE);
+                    // Fire Sales_Contract_Creation for the account's contracts not yet synced to SAP
+                    List<Contract> relatedContracts = new RES_ContractDAOLayer()
+                        .getContractsByAccountIds(new Set<Id>{ accounts[0].Id })
+                        .get(accounts[0].Id);
+                    List<RES_Integration_Request__e> contractEvents = new List<RES_Integration_Request__e>();
+                    if (relatedContracts != null) {
+                        for (Contract con : relatedContracts) {
+                            if (con.RES_Last_Sync_DateTime__c != null) {
+                                continue;
+                            }
+                            RES_Integration_Request__e req = new RES_Integration_Request__e();
+                            req.RES_RecordIds__c = String.valueOf(con.Id);
+                            req.RES_Request_Method__c = 'GET';
+                            req.RES_Triggering_Context__c = 'I';
+                            req.RES_Service_Name__c = 'Sales_Contract_Creation';
+                            contractEvents.add(req);
+                        }
+                    }
+                    if (!contractEvents.isEmpty()) {
+                        EventBus.publish(contractEvents);
+                    }
                 }
 
                 // For company account inserts, store the SAP contact person BP on the related contact

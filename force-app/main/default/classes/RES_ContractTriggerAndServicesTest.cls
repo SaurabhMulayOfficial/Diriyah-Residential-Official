@@ -15,6 +15,14 @@
 @isTest
 private class RES_ContractTriggerAndServicesTest {
 
+    /** Contracts are only synced once their account has an SAP key. */
+    private static Account withKey(Account a) {
+        Database.update(new Account(Id = a.Id, RES_External_Key__c = '20001999'), false, AccessLevel.SYSTEM_MODE);
+        a.RES_External_Key__c = '20001999';
+        return a;
+    }
+
+
     // ─────────────────────────────────────────────────────────────────────────
     // Mocks
     // ─────────────────────────────────────────────────────────────────────────
@@ -76,16 +84,22 @@ private class RES_ContractTriggerAndServicesTest {
     }
 
     private static Contract fetchContract(Id contractId) {
-        return [
-            SELECT Id, AccountId, Status, ContractNumber,
-                   RES_Company_Code__c, RES_Approval_Status__c,
-                   RES_S4_Contract_Id__c, RES_Cancellation_Reasons__c,
-                   RES_External_ID__c, RES_Contract_Type__c,
-                   RES_Last_Sync_DateTime__c, TerminationDateTime,
-                   StartDate, EndDate, ContractTerm
-            FROM Contract
-            WHERE Id = :contractId
-        ];
+        Set<String> fields = new Set<String>{
+            'id', 'accountid', 'status', 'contractnumber', 'res_company_code__c',
+            'res_approval_status__c', 'res_s4_contract_id__c', 'res_cancellation_reasons__c',
+            'res_external_id__c', 'res_contract_type__c', 'res_last_sync_datetime__c',
+            'terminationdatetime', 'startdate', 'enddate', 'contractterm',
+            'account.res_external_key__c'
+        };
+        RES_SAP_Integration_Config__mdt cfg = new RES_SAPIntegrationConfigDAO()
+            .getSAPIntegrationConfigByDeveloperName('Sales_Contract_Creation');
+        if (cfg != null && String.isNotBlank(cfg.RES_Sync_Fields__c)) {
+            for (String f : cfg.RES_Sync_Fields__c.split(',')) {
+                if (String.isNotBlank(f)) { fields.add(f.trim().toLowerCase()); }
+            }
+        }
+        return Database.query('SELECT ' + String.join(new List<String>(fields), ', ')
+            + ' FROM Contract WHERE Id = :contractId');
     }
 
     // ─────────────────────────────────────────────────────────────────────────
@@ -96,11 +110,11 @@ private class RES_ContractTriggerAndServicesTest {
     static void trigger_afterUpdate_syncsFieldChange_publishesUpdateEvent() {
         if (!configReady()) { return; }
 
-        Account acc = RES_TestDataFactory.createAccount();
+        Account acc = withKey(RES_TestDataFactory.createAccount());
         Contract c  = insertAndFetch(acc.Id);
 
         // stamp LastSyncDateTime so the update branch triggers
-        update new Contract(Id = c.Id, RES_Last_Sync_DateTime__c = System.now());
+        update new Contract(Id = c.Id, RES_External_ID__c = 'EXT-1', RES_Last_Sync_DateTime__c = System.now());
         c = fetchContract(c.Id);
 
         RES_IntegrationTestDataFactory.primeSapToken();
@@ -127,7 +141,7 @@ private class RES_ContractTriggerAndServicesTest {
     static void trigger_afterUpdate_noChange_doesNotEnqueueJob() {
         if (!configReady()) { return; }
 
-        Account acc = RES_TestDataFactory.createAccount();
+        Account acc = withKey(RES_TestDataFactory.createAccount());
         Contract c  = insertAndFetch(acc.Id);
 
         RES_IntegrationTestDataFactory.primeSapToken();
@@ -153,7 +167,7 @@ private class RES_ContractTriggerAndServicesTest {
     static void trigger_afterUpdate_doesNotThrowOnUpdate() {
         if (!configReady()) { return; }
 
-        Account acc = RES_TestDataFactory.createAccount();
+        Account acc = withKey(RES_TestDataFactory.createAccount());
         Contract c  = insertAndFetch(acc.Id);
 
         RES_IntegrationTestDataFactory.primeSapToken();
@@ -179,7 +193,7 @@ private class RES_ContractTriggerAndServicesTest {
     static void syncContract_update_sameRecord_asOldMap_doesNotPublishEvent() {
         if (!configReady()) { return; }
 
-        Account acc = RES_TestDataFactory.createAccount();
+        Account acc = withKey(RES_TestDataFactory.createAccount());
         Contract c  = insertAndFetch(acc.Id);
 
         Map<Id, Contract> oldMap = new Map<Id, Contract>{ c.Id => c };
@@ -204,11 +218,11 @@ private class RES_ContractTriggerAndServicesTest {
     static void syncContract_update_withLastSyncAndFieldChanged_publishesUpdateEvent() {
         if (!configReady()) { return; }
 
-        Account acc = RES_TestDataFactory.createAccount();
+        Account acc = withKey(RES_TestDataFactory.createAccount());
         Contract c  = insertAndFetch(acc.Id);
 
         // Stamp a LastSyncDateTime so the update branch is eligible
-        update new Contract(Id = c.Id, RES_Last_Sync_DateTime__c = System.now());
+        update new Contract(Id = c.Id, RES_External_ID__c = 'EXT-1', RES_Last_Sync_DateTime__c = System.now());
         c = fetchContract(c.Id);
 
         // Old record has same Status (so isStatusChanged returns false, no NPE)
@@ -239,11 +253,11 @@ private class RES_ContractTriggerAndServicesTest {
     static void syncContract_terminatedStatus_publishesTerminationEvent() {
         if (!configReady()) { return; }
 
-        Account acc = RES_TestDataFactory.createAccount();
+        Account acc = withKey(RES_TestDataFactory.createAccount());
         Contract c  = insertAndFetch(acc.Id);
 
         // Stamp LastSync so termination branch is eligible
-        update new Contract(Id = c.Id, RES_Last_Sync_DateTime__c = System.now());
+        update new Contract(Id = c.Id, RES_External_ID__c = 'EXT-1', RES_Last_Sync_DateTime__c = System.now());
         c = fetchContract(c.Id);
 
         // Create old version with a different status
@@ -276,7 +290,7 @@ private class RES_ContractTriggerAndServicesTest {
     static void syncContract_missingConfig_throwsIntegrationException() {
         if (configReady()) { return; }
 
-        Account acc = RES_TestDataFactory.createAccount();
+        Account acc = withKey(RES_TestDataFactory.createAccount());
         Contract c  = insertAndFetch(acc.Id);
 
         Boolean threw = false;
@@ -317,7 +331,7 @@ private class RES_ContractTriggerAndServicesTest {
     static void syncContract_insert_publishesCreationEvent() {
         if (!configReady()) { return; }
 
-        Account acc = RES_TestDataFactory.createAccount();
+        Account acc = withKey(RES_TestDataFactory.createAccount());
         Contract c  = insertAndFetch(acc.Id);
 
         RES_IntegrationTestDataFactory.primeSapToken();
@@ -340,7 +354,7 @@ private class RES_ContractTriggerAndServicesTest {
 
     @isTest
     static void queueable_salesContractUpdate_routesToUpdateService() {
-        Account acc = RES_TestDataFactory.createAccount();
+        Account acc = withKey(RES_TestDataFactory.createAccount());
         Contract c  = insertAndFetch(acc.Id);
 
         RES_SAPTokenProvider.SAP_TOKEN = 'test_token';
@@ -364,7 +378,7 @@ private class RES_ContractTriggerAndServicesTest {
 
     @isTest
     static void queueable_salesContractTermination_routesToTerminationService() {
-        Account acc = RES_TestDataFactory.createAccount();
+        Account acc = withKey(RES_TestDataFactory.createAccount());
         Contract c  = insertAndFetch(acc.Id);
 
         RES_SAPTokenProvider.SAP_TOKEN = 'test_token';
@@ -414,7 +428,7 @@ private class RES_ContractTriggerAndServicesTest {
         cfg.RES_Triggers_Off__c  = true;
         upsert cfg;
 
-        Account acc = RES_TestDataFactory.createAccount();
+        Account acc = withKey(RES_TestDataFactory.createAccount());
         Contract c  = insertAndFetch(acc.Id);
 
         RES_IntegrationRequestEventService.CountingBatchSubmitter spy = injectBatchSpy();

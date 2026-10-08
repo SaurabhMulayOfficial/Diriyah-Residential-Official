@@ -34,6 +34,9 @@ public with sharing class RES_ContractServices {
 
         for (Contract contract : contracts) {
             if (oldMap == null) {
+                if(contract.Account != null && contract.Account.RES_External_Key__c == null){
+                    continue;
+                }
                 contractsToSync_insert.add(contract);
             } 
             else if (oldMap.get(contract.Id) != null
@@ -42,7 +45,9 @@ public with sharing class RES_ContractServices {
                 // Cancellation request was rejected/reverted; nothing to sync to SAP
                 continue;
             }
-            else if (isContractChanged(contract, oldMap.get(contract.Id), syncFields) && contract.RES_Last_Sync_DateTime__c != null) {
+            else if (isContractChanged(contract, oldMap.get(contract.Id), syncFields)
+                && contract.RES_Last_Sync_DateTime__c != null
+                && String.isNotBlank(contract.RES_External_ID__c)) {
                 if (isStatusChanged(contract, oldMap.get(contract.Id))) {
                     contractsToSync_Termination.add(contract);
                 } else {
