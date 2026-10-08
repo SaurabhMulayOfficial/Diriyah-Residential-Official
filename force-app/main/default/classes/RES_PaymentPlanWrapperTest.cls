@@ -35,7 +35,8 @@ private class RES_PaymentPlanWrapperTest {
                 '"RES_POC_Percentage": 5.0,' +
                 '"RES_Installment_Amount": 50000,' +
                 '"Condition_Months": 3,' +
-                '"Condition_Days": 15' +
+                '"Condition_Days": 15,' +
+                '"Condition_Type": "Y002"' +
             '}],' +
             '"RES_Payment_Plan_Assignments": [{' +
                 '"Change_Indicator": "I",' +
@@ -95,6 +96,7 @@ private class RES_PaymentPlanWrapperTest {
         System.assertEquals(50000, inst.RES_Installment_Amount);
         System.assertEquals(3, inst.Condition_Months);
         System.assertEquals(15, inst.Condition_Days);
+        System.assertEquals('Y002', inst.Condition_Type);
     }
 
     @isTest

@@ -260,4 +260,55 @@ private class RES_PaymentPlanConfiguratorServiceTest {
         System.assertEquals(1, [SELECT COUNT() FROM Product2 WHERE ProductCode = 'TEST-PP-BULK-GOOD']);
         System.assertEquals(0, [SELECT COUNT() FROM Product2 WHERE ProductCode = 'TEST-PP-BULK-BAD']);
     }
+
+    @IsTest
+    static void testCreatePaymentPlan_ConditionFields_PersistedWithDaysDerivedFromMonths() {
+        RES_PaymentPlanConfiguratorService.Request req = baseRequest();
+        req.productCode = 'TEST-PP-COND';
+        req.installmentsJson = '[{"name":"Installment 1","percentage":50,"conditionType":"Y002","conditionMonths":2,"sequence":1},' +
+            '{"name":"Installment 2","percentage":50,"conditionType":"Y002","conditionMonths":1,"conditionDays":30,"sequence":2}]';
+
+        Test.startTest();
+        List<RES_PaymentPlanConfiguratorService.Result> results =
+            RES_PaymentPlanConfiguratorService.createPaymentPlan(new List<RES_PaymentPlanConfiguratorService.Request>{ req });
+        Test.stopTest();
+
+        System.assertEquals(true, results[0].isSuccess, 'Expected success, got: ' + results[0].message);
+        Product2 first = [SELECT RES_Condition_Type__c, RES_Condition_Months__c, RES_Condition_Days__c FROM Product2 WHERE ProductCode = 'TEST-PP-COND-INST1'];
+        System.assertEquals('Y002', first.RES_Condition_Type__c);
+        System.assertEquals(2, first.RES_Condition_Months__c);
+        System.assertEquals(60, first.RES_Condition_Days__c);
+    }
+
+    @IsTest
+    static void testCreatePaymentPlan_DuplicateConditionTypeAndMonths_FailsAndRollsBack() {
+        RES_PaymentPlanConfiguratorService.Request req = baseRequest();
+        req.productCode = 'TEST-PP-COND-DUP';
+        req.installmentsJson = '[{"name":"Installment 1","percentage":50,"conditionType":"Y003","conditionMonths":2,"conditionDays":60,"sequence":1},' +
+            '{"name":"Installment 2","percentage":50,"conditionType":"Y003","conditionMonths":2,"sequence":2}]';
+
+        Test.startTest();
+        List<RES_PaymentPlanConfiguratorService.Result> results =
+            RES_PaymentPlanConfiguratorService.createPaymentPlan(new List<RES_PaymentPlanConfiguratorService.Request>{ req });
+        Test.stopTest();
+
+        System.assertEquals(false, results[0].isSuccess);
+        System.assert(results[0].message.contains('same Condition Type (Installments)'), 'Expected condition error, got: ' + results[0].message);
+        System.assertEquals(0, [SELECT COUNT() FROM Product2 WHERE ProductCode LIKE 'TEST-PP-COND-DUP%']);
+    }
+
+    @IsTest
+    static void testCreatePaymentPlan_SameMonthsDifferentConditionType_Succeeds() {
+        RES_PaymentPlanConfiguratorService.Request req = baseRequest();
+        req.productCode = 'TEST-PP-COND-DIFF';
+        req.installmentsJson = '[{"name":"Installment 1","percentage":50,"conditionType":"Y001","conditionMonths":1,"sequence":1},' +
+            '{"name":"Installment 2","percentage":50,"conditionType":"Y002","conditionMonths":1,"sequence":2}]';
+
+        Test.startTest();
+        List<RES_PaymentPlanConfiguratorService.Result> results =
+            RES_PaymentPlanConfiguratorService.createPaymentPlan(new List<RES_PaymentPlanConfiguratorService.Request>{ req });
+        Test.stopTest();
+
+        System.assertEquals(true, results[0].isSuccess, 'Expected success, got: ' + results[0].message);
+    }
 }

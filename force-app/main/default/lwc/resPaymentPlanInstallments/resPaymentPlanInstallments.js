@@ -4,6 +4,14 @@ const MAX_INSTALLMENTS = 24;
 const MIN_INSTALLMENTS_TO_START = 2;
 const PERCENTAGE_TOLERANCE = 0.01;
 const PERCENTAGE_TARGET = 100;
+const DAYS_PER_MONTH = 30;
+const NUMERIC_FIELDS = ['percentage', 'pocPercentage', 'conditionMonths', 'conditionDays'];
+const CONDITION_TYPE_OPTIONS = [
+    { label: 'Reservation', value: 'Y001' },
+    { label: 'Down payment', value: 'Y002' },
+    { label: 'Installments', value: 'Y003' },
+    { label: 'Final Payment', value: 'Y004' }
+];
 
 /**
  * Flow screen component for the "Create Payment Plan" flow (RES_Create_Payment_Plan).
@@ -47,6 +55,9 @@ export default class ResPaymentPlanInstallments extends LightningElement {
                 percentage: row.percentage != null ? row.percentage : null,
                 pocPercentage: row.pocPercentage != null ? row.pocPercentage : null,
                 dueDate: row.dueDate || null,
+                conditionType: row.conditionType || null,
+                conditionMonths: row.conditionMonths != null ? row.conditionMonths : null,
+                conditionDays: row.conditionDays != null ? row.conditionDays : null,
                 sequence: row.sequence != null ? row.sequence : idx + 1
             }));
         } catch (e) {
@@ -60,7 +71,17 @@ export default class ResPaymentPlanInstallments extends LightningElement {
         }
         this.rows = [
             ...this.rows,
-            { key: this.nextRowKey++, name: '', percentage: null, pocPercentage: null, dueDate: null, sequence: this.rows.length + 1 }
+            {
+                key: this.nextRowKey++,
+                name: '',
+                percentage: null,
+                pocPercentage: null,
+                dueDate: null,
+                conditionType: null,
+                conditionMonths: null,
+                conditionDays: null,
+                sequence: this.rows.length + 1
+            }
         ];
     }
 
@@ -102,11 +123,29 @@ export default class ResPaymentPlanInstallments extends LightningElement {
     handleFieldChange(event) {
         const key = Number(event.target.dataset.key);
         const field = event.target.dataset.field;
-        let value = event.target.value;
-        if (field === 'percentage' || field === 'pocPercentage') {
-            value = value === '' ? null : Number(value);
+        let value = event.detail.value !== undefined ? event.detail.value : event.target.value;
+        if (NUMERIC_FIELDS.includes(field)) {
+            value = value === '' || value == null ? null : Number(value);
         }
-        this.rows = this.rows.map((row) => (row.key === key ? { ...row, [field]: value } : row));
+        this.rows = this.rows.map((row) => {
+            if (row.key !== key) {
+                return row;
+            }
+            const updated = { ...row, [field]: value };
+            if (field === 'conditionMonths') {
+                updated.conditionDays = value != null ? value * DAYS_PER_MONTH : null;
+            }
+            return updated;
+        });
+    }
+
+    get conditionTypeOptions() {
+        return CONDITION_TYPE_OPTIONS;
+    }
+
+    conditionTypeLabel(value) {
+        const option = CONDITION_TYPE_OPTIONS.find((opt) => opt.value === value);
+        return option ? option.label : value;
     }
 
     get totalPercentage() {
@@ -141,6 +180,9 @@ export default class ResPaymentPlanInstallments extends LightningElement {
             percentage: row.percentage,
             pocPercentage: row.pocPercentage,
             dueDate: row.dueDate,
+            conditionType: row.conditionType,
+            conditionMonths: row.conditionMonths,
+            conditionDays: row.conditionDays,
             sequence: row.sequence
         }));
     }
@@ -153,7 +195,25 @@ export default class ResPaymentPlanInstallments extends LightningElement {
             errors.push('Add at least one installment.');
         }
 
+        const seenConditionKeys = new Map();
         this.rows.forEach((row) => {
+            if (row.conditionMonths != null && (row.conditionMonths < 0 || !Number.isInteger(row.conditionMonths))) {
+                errors.push(`Installment ${row.sequence}: Condition Months must be a whole number of 0 or more.`);
+            }
+            if (row.conditionDays != null && (row.conditionDays < 0 || !Number.isInteger(row.conditionDays))) {
+                errors.push(`Installment ${row.sequence}: Condition Days must be a whole number of 0 or more.`);
+            }
+            if (row.conditionType && (row.conditionMonths != null || row.conditionDays != null)) {
+                const conditionKey = `${row.conditionType}|${row.conditionMonths}|${row.conditionDays}`;
+                if (seenConditionKeys.has(conditionKey)) {
+                    errors.push(
+                        `Installments ${seenConditionKeys.get(conditionKey)} and ${row.sequence} have the same Condition Type ` +
+                            `(${this.conditionTypeLabel(row.conditionType)}) and the same Condition Months/Days.`
+                    );
+                } else {
+                    seenConditionKeys.set(conditionKey, row.sequence);
+                }
+            }
             if (!row.name || !row.name.trim()) {
                 errors.push(`Installment ${row.sequence}: enter a name.`);
             }
