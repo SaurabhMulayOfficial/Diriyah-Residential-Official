@@ -190,7 +190,7 @@ public without sharing class RES_Product2DAOLayer extends RES_BaseDAOLayer {
             'Family ' +
             'FROM Product2 ' +
             'WHERE RES_Unit_Status__c IN :statuses ' +
-            'AND IsActive = false ';
+            'AND (IsActive = false OR RES_Update_Requested__c = true) ';
 
         if (!String.isBlank(searchTerm)) {
             String searchPattern ='%' + searchTerm.trim() + '%';
