@@ -5,7 +5,7 @@
     <description>Approval state of a Residential Payment Plan product. Blank = not yet submitted. Set by the Submit for Approval action and the DIR-1258 approval process. The Submit for Approval button is shown only when this is blank or Rejected.</description>
     <inlineHelpText>Approval state of this payment plan. Blank means not yet submitted for approval.</inlineHelpText>
     <required>false</required>
-    <trackHistory>false</trackHistory>
+    <trackHistory>true</trackHistory>
     <trackTrending>false</trackTrending>
     <type>Picklist</type>
     <valueSet>
