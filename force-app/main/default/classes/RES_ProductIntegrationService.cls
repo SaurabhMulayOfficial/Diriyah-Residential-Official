@@ -823,29 +823,18 @@ public without sharing class RES_ProductIntegrationService extends RES_BaseInteg
                     if (!relatedMeasurements.isEmpty()) {
                         Boolean catalogEnabled = new RES_SAPIntegrationConfigDAO()
                             .getSAPIntegrationConfigByDeveloperName('Measurement_Sync_Catalog') != null;
-                        List<RES_Integration_Request__e> measEvents = new List<RES_Integration_Request__e>();
+                        Set<Id> relatedCategoryIds = new Set<Id>();
+                        Set<Id> relatedCatalogIds = new Set<Id>();
                         for (RES_Measurement__c m : relatedMeasurements) {
-                            if (m.RES_Category__c != null) {
-                                RES_Integration_Request__e req = new RES_Integration_Request__e();
-                                req.RES_RecordIds__c = String.valueOf(m.Id);
-                                req.RES_Request_Method__c = 'GET';
-                                req.RES_Service_Name__c = 'Measurement_Sync';
-                                req.RES_Triggering_Context__c = 'I';
-                                measEvents.add(req);
-                            }
-                            if (m.RES_Catalog__c != null && catalogEnabled) {
-                                RES_Integration_Request__e catalogReq = new RES_Integration_Request__e();
-                                catalogReq.RES_RecordIds__c = String.valueOf(m.Id);
-                                catalogReq.RES_Request_Method__c = 'GET';
-                                catalogReq.RES_Service_Name__c = 'Measurement_Sync_Catalog';
-                                catalogReq.RES_Triggering_Context__c = 'I';
-                                measEvents.add(catalogReq);
-                            }
+                            if (m.RES_Category__c != null) relatedCategoryIds.add(m.RES_Category__c);
+                            if (m.RES_Catalog__c != null && catalogEnabled) relatedCatalogIds.add(m.RES_Catalog__c);
                         }
+                        List<RES_Integration_Request__e> measEvents =
+                            RES_MeasurementServices.buildParentSyncEvents(relatedCategoryIds, relatedCatalogIds);
                         if (!measEvents.isEmpty()) {
                             EventBus.publish(measEvents);
                             System.debug('### [Unit_Sync] Published ' + measEvents.size()
-                                + ' Measurement_Sync event(s) after INSERT success for Product ' + products[0].Id);
+                                + ' Category/Catalog sync event(s) after INSERT success for Product ' + products[0].Id);
                         }
                     }
                 }

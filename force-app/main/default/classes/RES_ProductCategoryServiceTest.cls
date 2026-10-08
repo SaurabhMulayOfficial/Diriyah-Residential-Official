@@ -346,4 +346,92 @@ private class RES_ProductCategoryServiceTest {
             'processResponse returning false (error item) must not stamp RES_Last_Sync_DateTime__c'
         );
     }
+
+    // ------------------------------------------------------------------
+    // Child measurements (hydrateRequestBody / stamping)
+    // ------------------------------------------------------------------
+
+    @IsTest
+    static void hydrateRequestBody_withMeasurements_setsPerMeasurementIndicator() {
+        if (!RES_IntegrationTestDataFactory.hasApiConfiguration('POST')) { return; }
+        List<ProductCategory> categories = RES_IntegrationTestDataFactory.createCategories(1, true);
+        List<RES_Measurement__c> measurements =
+            RES_IntegrationTestDataFactory.createMeasurements(categories[0].Id, 2);
+        update new RES_Measurement__c(Id = measurements[0].Id, RES_Last_Sync_DateTime__c = System.now());
+
+        RES_IntegrationTestDataFactory.primeSapToken();
+        Test.setMock(HttpCalloutMock.class, new SapSuccessResponseMock());
+
+        Test.startTest();
+        RES_ProductCategoryIntegrationService service = new RES_ProductCategoryIntegrationService('POST');
+        String body = service.hydrateRequestBody(categories, 'I');
+        Test.stopTest();
+
+        Map<String, Object> parsed = (Map<String, Object>) JSON.deserializeUntyped(body);
+        Integer inserts = 0;
+        Integer updates = 0;
+        for (Object o : (List<Object>) parsed.get('RES_Measurements')) {
+            String ci = (String) ((Map<String, Object>) o).get('Measurement_Change_Indicator');
+            if (ci == 'I') inserts++;
+            if (ci == 'U') updates++;
+        }
+        Assert.areEqual(1, inserts, 'The never-synced measurement is an insert');
+        Assert.areEqual(1, updates, 'The already-synced measurement is an update');
+        Assert.areEqual(2, service.includedMeasurementIds.size());
+    }
+
+    @IsTest
+    static void hydrateRequestBody_noMeasurements_omitsMeasurementArray() {
+        if (!RES_IntegrationTestDataFactory.hasApiConfiguration('POST')) { return; }
+        List<ProductCategory> categories = RES_IntegrationTestDataFactory.createCategories(1, true);
+
+        RES_IntegrationTestDataFactory.primeSapToken();
+        Test.setMock(HttpCalloutMock.class, new SapSuccessResponseMock());
+
+        Test.startTest();
+        String body = new RES_ProductCategoryIntegrationService('POST').hydrateRequestBody(categories, 'I');
+        Test.stopTest();
+
+        Assert.isFalse(body.contains('RES_Measurements'), 'No measurement array when the category has no measurements');
+    }
+
+    @IsTest
+    static void processResponse_successItem_stampsChildMeasurements() {
+        if (!RES_IntegrationTestDataFactory.hasApiConfiguration('POST')) { return; }
+        List<ProductCategory> categories = RES_IntegrationTestDataFactory.createCategories(1, true);
+        RES_IntegrationTestDataFactory.createMeasurements(categories[0].Id, 2);
+
+        RES_IntegrationTestDataFactory.primeSapToken();
+        Test.setMock(HttpCalloutMock.class, new SapSuccessResponseMock());
+
+        Test.startTest();
+        RES_ProductCategoryIntegrationService.syncProductCategories(categories, 'POST', 'I');
+        Test.stopTest();
+
+        for (RES_Measurement__c m : [
+            SELECT RES_Last_Sync_DateTime__c FROM RES_Measurement__c WHERE RES_Category__c = :categories[0].Id
+        ]) {
+            Assert.isNotNull(m.RES_Last_Sync_DateTime__c, 'Child measurements should be stamped on success');
+        }
+    }
+
+    @IsTest
+    static void processResponse_errorItem_doesNotStampChildMeasurements() {
+        if (!RES_IntegrationTestDataFactory.hasApiConfiguration('POST')) { return; }
+        List<ProductCategory> categories = RES_IntegrationTestDataFactory.createCategories(1, true);
+        RES_IntegrationTestDataFactory.createMeasurements(categories[0].Id, 2);
+
+        RES_IntegrationTestDataFactory.primeSapToken();
+        Test.setMock(HttpCalloutMock.class, new SapErrorResponseMock());
+
+        Test.startTest();
+        RES_ProductCategoryIntegrationService.syncProductCategories(categories, 'POST', 'I');
+        Test.stopTest();
+
+        for (RES_Measurement__c m : [
+            SELECT RES_Last_Sync_DateTime__c FROM RES_Measurement__c WHERE RES_Category__c = :categories[0].Id
+        ]) {
+            Assert.isNull(m.RES_Last_Sync_DateTime__c, 'Child measurements must not be stamped on error');
+        }
+    }
 }

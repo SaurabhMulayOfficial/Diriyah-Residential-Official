@@ -8,12 +8,12 @@
  *              syncMeasurements() + Test.getEventBus().deliver(), which ignores jobs
  *              created by events fired from the test-data inserts.
  *
- *              For each changed measurement the service publishes TWO events:
- *              - Measurement_Sync         (for ProductCategory integration)
- *              - Measurement_Sync_Catalog (for ProductCatalog integration)
- *              The subscriber batches all events from a single delivery into one
- *              queueable job, so even with both event types published the delta
- *              in RES_IntegrationQueueable jobs is still 1 per syncMeasurements() call.
+ *              Measurements are sent as a child array of their parent, so the service
+ *              publishes ONE event per unique parent of the changed measurements:
+ *              - ProductCategory_Sync (per unique RES_Category__c)
+ *              - ProductCatalog_Sync  (per unique RES_Catalog__c)
+ *              plus Unit_Sync per unique product. The parent's context is 'I' while its
+ *              RES_Last_Sync_DateTime__c is null, otherwise 'U'.
  *
  *              Dependencies that cannot be created in a test (custom metadata):
  *              - RES_SAP_Integration_Config__mdt 'Measurement_Sync' with RES_Sync_Fields__c
@@ -147,7 +147,7 @@ private class RES_MeasurementServicesTest {
 
         Integer jobs = syncAndCountJobs(measurements, null);
 
-        Assert.areEqual(1, jobs, 'A single job should cover all inserted measurements (both Measurement_Sync and Measurement_Sync_Catalog events are batched by the subscriber)');
+        Assert.areEqual(1, jobs, 'A single job should cover all inserted measurements (parent category events are batched by the subscriber)');
         Assert.areEqual(0, mock.tokenCallCount, 'Primed token should avoid the token callout');
     }
 
@@ -163,7 +163,7 @@ private class RES_MeasurementServicesTest {
 
         Integer jobs = syncAndCountJobs(measurements, buildOldMap(measurements, field, measurements.size()));
 
-        Assert.areEqual(1, jobs, 'A changed sync field should publish an event (subscriber batches both service names into one job)');
+        Assert.areEqual(1, jobs, 'A changed sync field should publish an event (subscriber batches the parent events into one job)');
     }
 
     @IsTest
@@ -198,7 +198,7 @@ private class RES_MeasurementServicesTest {
         // Only the first record differs from its "old" version
         Integer jobs = syncAndCountJobs(measurements, buildOldMap(measurements, field, 1));
 
-        Assert.areEqual(1, jobs, 'Only changed records are synced; subscriber batches both service-name events into one job');
+        Assert.areEqual(1, jobs, 'Only changed records are synced; subscriber batches the parent events into one job');
     }
 
     @IsTest
@@ -272,7 +272,7 @@ private class RES_MeasurementServicesTest {
     }
 
     @IsTest
-    static void sync_insert_unitWithExternalId_publishesMeasurementSync() {
+    static void sync_insert_unitWithExternalId_publishesParentSync() {
         if (!canRun()) { return; }
 
         RES_Config_Switch__c cfg = new RES_Config_Switch__c(
@@ -311,7 +311,40 @@ private class RES_MeasurementServicesTest {
         Integer jobs = syncAndCountJobs(new List<RES_Measurement__c>{ m }, null);
 
         Assert.isTrue(jobs >= 1,
-            'Measurement_Sync must fire on INSERT when the related unit already has a SAP ExternalId');
+            'Parent sync must fire on INSERT when the related unit already has a SAP ExternalId');
+    }
+
+    // ------------------------------------------------------------------
+    // Parent (category / catalog) events
+    // ------------------------------------------------------------------
+    @IsTest
+    static void buildParentSyncEvents_oneEventPerUniqueParent_contextFromLastSync() {
+        List<ProductCategory> cats = RES_IntegrationTestDataFactory.createCategories(2, true);
+        ProductCatalog catalog = RES_IntegrationTestDataFactory.createCatalog();
+
+        update new ProductCategory(Id = cats[1].Id, RES_Last_Sync_DateTime__c = System.now());
+
+        List<RES_Integration_Request__e> events = RES_MeasurementServices.buildParentSyncEvents(
+            new Set<Id>{ cats[0].Id, cats[1].Id },
+            new Set<Id>{ catalog.Id }
+        );
+
+        Assert.areEqual(3, events.size(), 'Two categories + one catalog = three events');
+        Map<String, String> contextByRecord = new Map<String, String>();
+        for (RES_Integration_Request__e e : events) {
+            Assert.areEqual('GET', e.RES_Request_Method__c);
+            Assert.isTrue(e.RES_Service_Name__c == 'ProductCategory_Sync' || e.RES_Service_Name__c == 'ProductCatalog_Sync');
+            contextByRecord.put(e.RES_RecordIds__c, e.RES_Triggering_Context__c);
+        }
+        Assert.areEqual('I', contextByRecord.get(String.valueOf(cats[0].Id)), 'Never-synced category is an insert');
+        Assert.areEqual('U', contextByRecord.get(String.valueOf(cats[1].Id)), 'Already-synced category is an update');
+        Assert.areEqual('I', contextByRecord.get(String.valueOf(catalog.Id)), 'Never-synced catalog is an insert');
+    }
+
+    @IsTest
+    static void buildParentSyncEvents_emptyInput_returnsNoEvents() {
+        Assert.isTrue(RES_MeasurementServices.buildParentSyncEvents(new Set<Id>(), new Set<Id>()).isEmpty());
+        Assert.isTrue(RES_MeasurementServices.buildParentSyncEvents(null, null).isEmpty());
     }
 
     // ------------------------------------------------------------------
