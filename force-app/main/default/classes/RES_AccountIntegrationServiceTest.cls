@@ -94,8 +94,8 @@ private class RES_AccountIntegrationServiceTest {
         acc.RES_Tax_Number__c                 = '345466312345653';
         acc.RES_Extension__c                  = 102;
         acc.RES_BP_Role__c                    = 'ZTR602';
-        acc.RES_Company_Code__c               = '1000';
-        acc.RES_Reconciliation_Account__c     = '153005';
+        acc.RES_Company_Code__c               = '9000';
+        acc.RES_Reconciliation_Account__c     = '153001';
         acc.RES_Planning_Group__c             = 'Y1';
         acc.RES_Identification_Type__c        = 'ZIT03';
         acc.RES_Identification_Number__c      = '91321579236';
@@ -139,16 +139,16 @@ private class RES_AccountIntegrationServiceTest {
             BillingCountryCode            = 'SA',
             RES_Tax_Category__c           = 'SA1',
             RES_Tax_Number__c             = '310123457400003',
-            RES_Identification_Type__c    = 'PHA001',
-            RES_Identification_Number__c  = '9332157452B',
+            RES_Identification_Type__c    = 'ZIT04',
+            RES_CR_number__c              = '9332157452',
             RES_ID_Entry_Date__c          = Date.valueOf('2026-08-05'),
             RES_ID_Valid_From_Date__c     = Date.valueOf('2026-01-02'),
             RES_ID_Valid_to_Date__c       = Date.valueOf('2030-12-31'),
-            RES_Company_Code__c           = '1001',
+            RES_Company_Code__c           = '9000',
             RES_Reconciliation_Account__c = '153001',
             RES_Planning_Group__c         = 'Y1',
             RES_Relationship_Type__c      = 'FBBP002',
-            RES_BP_Role__c                = 'FLCU01',
+            RES_BP_Role__c                = 'ZTR602',
             RES_Full_Arabic_Name__c       = 'نيتين ماراتي',
             RES_SIMAH_Consent__c          = '101',
             RES_VIP_Customer__c           = false,
@@ -1140,8 +1140,11 @@ private class RES_AccountIntegrationServiceTest {
             PersonEmail  = 'blank.fields@test.com' // satisfies RES_Mobile_Or_Email_Mandatory
         );
         insert acc;
-        // RES_Company_Code__c picklist defaults to 9000 on insert; clear it in the DB (service re-queries).
+        // Restricted picklists default on insert (e.g. 9000 / ZTR602); clear them in the DB (service re-queries).
         acc.RES_Company_Code__c = null;
+        acc.RES_BP_Role__c = null;
+        acc.RES_Reconciliation_Account__c = null;
+        acc.RES_Planning_Group__c = null;
         update acc;
 
         cfg.RES_Triggers_Off__c = wasOff;
@@ -1184,7 +1187,7 @@ private class RES_AccountIntegrationServiceTest {
         Map<String, Object> roles = (Map<String, Object>) parsed.get('TT_ROLES');
         Assert.isNotNull(roles, 'TT_ROLES must be sent even when RES_BP_Role__c is blank.');
         Map<String, Object> roleItem = (Map<String, Object>) ((List<Object>) roles.get('item'))[0];
-        Assert.areEqual('', (String) roleItem.get('DATA_KEY'), 'Blank role must be sent as empty string.');
+        Assert.areEqual('ZTR602', (String) roleItem.get('DATA_KEY'), 'Blank role must fall back to default ZTR602.');
 
         List<Object> companyCodes = (List<Object>) parsed.get('RES_Company_Codes');
         Assert.isNotNull(companyCodes, 'RES_Company_Codes must be sent even when blank.');

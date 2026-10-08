@@ -80,7 +80,7 @@ public with sharing class RES_AccountDAOLayer extends RES_BaseDAOLayer{
                         'RES_Full_Arabic_Name__c, RES_Full_Arabic_Name__pc, RES_Company_Additional_Name__c, ' +
                         'RES_Corporate_Title__c, ' +
                         'RES_House_Number__c, RES_District__c, RES_PO_Box__c, RES_Extension__c, ' +
-                        'RES_Identification_Type__c, RES_Identification_Number__c, ' +
+                        'RES_Identification_Type__c, RES_Identification_Number__c, RES_CR_number__c, ' +
                         'RES_ID_Entry_Date__c, RES_ID_Valid_From_Date__c, RES_ID_Valid_to_Date__c, ' +
                         'RES_Company_Code__c, RES_Reconciliation_Account__c, RES_Planning_Group__c, ' +
                         'RES_SIMAH_Consent__c, RES_Consent_Form_Received_Date__c, ' +

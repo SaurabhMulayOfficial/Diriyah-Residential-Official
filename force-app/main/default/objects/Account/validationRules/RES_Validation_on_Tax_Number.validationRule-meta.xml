@@ -4,13 +4,21 @@
     <active>true</active>
     <errorConditionFormula>AND(
     NOT($Setup.RES_Config_Switch__c.RES_Validation_Rules_Off__c),
-    NOT(ISBLANK(RES_Tax_Number__c)),
     OR(
-        LEN(RES_Tax_Number__c) &lt;&gt; 15,
-        LEFT(RES_Tax_Number__c, 1) &lt;&gt; &quot;3&quot;,
-        RIGHT(RES_Tax_Number__c, 1) &lt;&gt; &quot;3&quot;
+        AND(
+            NOT(ISPICKVAL(RES_Tax_Category__c, &quot;&quot;)),
+            ISBLANK(RES_Tax_Number__c)
+        ),
+        AND(
+            NOT(ISBLANK(RES_Tax_Number__c)),
+            OR(
+                LEN(RES_Tax_Number__c) &lt;&gt; 15,
+                LEFT(RES_Tax_Number__c, 1) &lt;&gt; &quot;3&quot;,
+                RIGHT(RES_Tax_Number__c, 1) &lt;&gt; &quot;3&quot;
+            )
+        )
     )
 )</errorConditionFormula>
     <errorDisplayField>RES_Tax_Number__c</errorDisplayField>
-    <errorMessage>Tax Number must be 15 digits, starting and ending with &quot;3&quot;.</errorMessage>
+    <errorMessage>Tax Number is required when a Tax Category is selected. It must be 15 digits, starting and ending with &quot;3&quot;.</errorMessage>
 </ValidationRule>
