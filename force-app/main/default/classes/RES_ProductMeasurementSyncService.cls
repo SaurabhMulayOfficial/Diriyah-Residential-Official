@@ -16,6 +16,8 @@
  *              date, or the creation moment when From is blank. Ties: latest CreatedDate, then higher Id.
  *              When none is active the Product2 field is cleared.
  *
+ *              Total measurement types (RES_Measurement_Total_Rule__mdt) are calculated and flagged by RES_MeasurementTotalService.
+ *
  *              Called from: RES_MeasurementServices.syncActiveMeasurementsToProduct (trigger path)
  *                           RES_ProductMeasurementSyncBatch (daily date-boundary path)
  */
@@ -73,8 +75,11 @@ public without sharing class RES_ProductMeasurementSyncService {
         return Datetime.newInstance(gmtMidnight.getTime() - offsetMs);
     }
 
+    /** Set while syncing so the measurement DML done here does not re-enter through the trigger. */
+    private static Boolean isSyncing = false;
+
     public static void syncProducts(Set<Id> productIds) {
-        if (productIds == null || productIds.isEmpty()) {
+        if (isSyncing || productIds == null || productIds.isEmpty()) {
             return;
         }
         productIds.remove(null);
@@ -102,14 +107,23 @@ public without sharing class RES_ProductMeasurementSyncService {
             }
         }
 
-        updateActiveFlags(allMeasurements, winners);
-        updateProducts(productIds, winners);
+        isSyncing = true;
+        try {
+            RES_MeasurementTotalService.syncTotals(productIds, allMeasurements, winners);
+            updateActiveFlags(allMeasurements, winners);
+            updateProducts(productIds, winners);
+        } finally {
+            isSyncing = false;
+        }
     }
 
-    /** Sets RES_Active__c = true on each winner and false on every other measurement; only changed rows are updated. */
+    /** Sets RES_Active__c = true on each winner and false on every other measurement; only changed rows are updated. Totals are flagged by RES_MeasurementTotalService. */
     private static void updateActiveFlags(List<RES_Measurement__c> allMeasurements, Map<Id, Map<String, RES_Measurement__c>> winners) {
         List<RES_Measurement__c> toUpdate = new List<RES_Measurement__c>();
         for (RES_Measurement__c m : allMeasurements) {
+            if (RES_MeasurementTotalService.isTotalType(m.RES_Measurement_Type__c)) {
+                continue;
+            }
             Map<String, RES_Measurement__c> byType = winners.get(m.RES_Product__c);
             RES_Measurement__c winner = byType == null ? null : byType.get(m.RES_Measurement_Type__c);
             Boolean shouldBeActive = winner != null && winner.Id == m.Id;

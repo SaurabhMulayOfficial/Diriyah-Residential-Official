@@ -109,6 +109,8 @@ public without sharing class RES_ProductIntegrationService extends RES_BaseInteg
 
         Map<Id, List<RES_Measurement__c>> measurementsByProduct = new Map<Id, List<RES_Measurement__c>>();
         for (RES_Measurement__c m : new RES_MeasurementDAOLayer().getMeasurementsByProductIds(productIds)) {
+            // Calculated totals are excluded from the Unit_Sync payload
+            if (RES_MeasurementTotalService.isTotalType(m.RES_Measurement_Type__c)) continue;
             if (!measurementsByProduct.containsKey(m.RES_Product__c)) {
                 measurementsByProduct.put(m.RES_Product__c, new List<RES_Measurement__c>());
             }
@@ -815,10 +817,12 @@ public without sharing class RES_ProductIntegrationService extends RES_BaseInteg
                 }
 
                 if (String.isNotBlank(sapExternalId)) {
+                    Set<String> totalTypes = RES_MeasurementTotalService.getTotalTypes();
                     List<RES_Measurement__c> relatedMeasurements = [
                         SELECT Id, RES_Category__c, RES_Catalog__c
                         FROM RES_Measurement__c
                         WHERE RES_Product__c = :products[0].Id
+                        AND RES_Measurement_Type__c NOT IN :totalTypes
                     ];
                     if (!relatedMeasurements.isEmpty()) {
                         Boolean catalogEnabled = new RES_SAPIntegrationConfigDAO()

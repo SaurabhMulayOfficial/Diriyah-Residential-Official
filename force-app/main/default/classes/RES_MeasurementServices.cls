@@ -30,6 +30,10 @@ public with sharing class RES_MeasurementServices {
         }
 
         for (RES_Measurement__c measurement : measurements) {
+            // Calculated totals are never sent to SAP
+            if (measurement.isSet('RES_Measurement_Type__c') && RES_MeasurementTotalService.isTotalType(measurement.RES_Measurement_Type__c)) {
+                continue;
+            }
             if (oldMap == null || isMeasurementChanged(measurement,oldMap.get(measurement.Id),syncFields)) {
                 measurementsToSync.add(measurement);
             }
