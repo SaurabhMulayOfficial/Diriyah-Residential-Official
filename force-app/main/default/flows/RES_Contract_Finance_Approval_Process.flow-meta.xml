@@ -52,6 +52,12 @@
             <name>Update_Approval_Status_To_Finance_Approved</name>
             <actionName>RES_Autolaunched_Flow_Update_Contract_Approval_Status</actionName>
             <actionType>stepBackground</actionType>
+            <assignees>
+                <assignee>
+                    <elementReference>$Label.RES_Admin_Username</elementReference>
+                </assignee>
+                <assigneeType>User</assigneeType>
+            </assignees>
             <canAssigneeEdit>false</canAssigneeEdit>
             <debugSimulateStep>false</debugSimulateStep>
             <entryConditionLogic>and</entryConditionLogic>
@@ -88,7 +94,7 @@
             </inputParameters>
             <label>Update Approval Status To Finance Approved</label>
             <requiresAsyncProcessing>false</requiresAsyncProcessing>
-            <runAsUser>false</runAsUser>
+            <runAsUser>true</runAsUser>
             <shouldLock>false</shouldLock>
             <stepSubtype>BackgroundStep</stepSubtype>
         </stageSteps>
@@ -106,6 +112,12 @@
             <name>Update_Contract_Approval_Status</name>
             <actionName>RES_Autolaunched_Flow_Update_Contract_Approval_Status</actionName>
             <actionType>stepBackground</actionType>
+            <assignees>
+                <assignee>
+                    <elementReference>$Label.RES_Admin_Username</elementReference>
+                </assignee>
+                <assigneeType>User</assigneeType>
+            </assignees>
             <canAssigneeEdit>false</canAssigneeEdit>
             <debugSimulateStep>false</debugSimulateStep>
             <entryConditionLogic>and</entryConditionLogic>
@@ -124,7 +136,7 @@
             </inputParameters>
             <label>Update Contract Approval Status</label>
             <requiresAsyncProcessing>false</requiresAsyncProcessing>
-            <runAsUser>false</runAsUser>
+            <runAsUser>true</runAsUser>
             <shouldLock>false</shouldLock>
             <stepSubtype>BackgroundStep</stepSubtype>
         </stageSteps>
@@ -198,6 +210,12 @@
             <name>Send_Notification_To_Finance_Team</name>
             <actionName>RES_Contract_Send_Notification_To_Finance_Team</actionName>
             <actionType>stepBackground</actionType>
+            <assignees>
+                <assignee>
+                    <elementReference>$Label.RES_Admin_Username</elementReference>
+                </assignee>
+                <assigneeType>User</assigneeType>
+            </assignees>
             <canAssigneeEdit>false</canAssigneeEdit>
             <debugSimulateStep>false</debugSimulateStep>
             <entryConditionLogic>and</entryConditionLogic>
@@ -224,7 +242,7 @@
             </inputParameters>
             <label>Send Notification To Finance Team</label>
             <requiresAsyncProcessing>false</requiresAsyncProcessing>
-            <runAsUser>false</runAsUser>
+            <runAsUser>true</runAsUser>
             <shouldLock>false</shouldLock>
             <stepSubtype>BackgroundStep</stepSubtype>
         </stageSteps>
@@ -232,6 +250,12 @@
             <name>Set_SLA_End_Date_On_Approval_Work_Item</name>
             <actionName>RES_Autolaunched_Flow_Set_SLA_End_Date_On_Approval_Work_Item</actionName>
             <actionType>stepBackground</actionType>
+            <assignees>
+                <assignee>
+                    <elementReference>$Label.RES_Admin_Username</elementReference>
+                </assignee>
+                <assigneeType>User</assigneeType>
+            </assignees>
             <canAssigneeEdit>false</canAssigneeEdit>
             <debugSimulateStep>false</debugSimulateStep>
             <entryConditionLogic>and</entryConditionLogic>
@@ -264,7 +288,7 @@
             </inputParameters>
             <label>Set SLA End Date On Approval Work Item</label>
             <requiresAsyncProcessing>false</requiresAsyncProcessing>
-            <runAsUser>false</runAsUser>
+            <runAsUser>true</runAsUser>
             <shouldLock>false</shouldLock>
             <stepSubtype>BackgroundStep</stepSubtype>
         </stageSteps>
@@ -279,6 +303,12 @@
             <name>Update_Approval_Status_To_Finance_Rejected</name>
             <actionName>RES_Autolaunched_Flow_Update_Contract_Approval_Status</actionName>
             <actionType>stepBackground</actionType>
+            <assignees>
+                <assignee>
+                    <elementReference>$Label.RES_Admin_Username</elementReference>
+                </assignee>
+                <assigneeType>User</assigneeType>
+            </assignees>
             <canAssigneeEdit>false</canAssigneeEdit>
             <debugSimulateStep>false</debugSimulateStep>
             <entryConditionLogic>and</entryConditionLogic>
@@ -315,7 +345,7 @@
             </inputParameters>
             <label>Update Approval Status To Finance Rejected</label>
             <requiresAsyncProcessing>false</requiresAsyncProcessing>
-            <runAsUser>false</runAsUser>
+            <runAsUser>true</runAsUser>
             <shouldLock>false</shouldLock>
             <stepSubtype>BackgroundStep</stepSubtype>
         </stageSteps>

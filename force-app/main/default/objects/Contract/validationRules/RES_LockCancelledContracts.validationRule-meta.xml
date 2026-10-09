@@ -7,7 +7,12 @@
     RecordType.DeveloperName = &quot;RES_Residential_Sales&quot;,
     NOT(ISNEW()),
     ISPICKVAL(PRIORVALUE(Status), &quot;Canceled&quot;),
-    NOT(ISCHANGED(RES_Product_Soft_Held__c))
+    NOT(
+        OR(
+            ISCHANGED(RES_Product_Soft_Held__c),
+            ISCHANGED(RES_Last_Sync_DateTime__c)
+        )
+    )
 )</errorConditionFormula>
     <errorMessage>This Contract cannot be edited because it has been cancelled.</errorMessage>
 </ValidationRule>
