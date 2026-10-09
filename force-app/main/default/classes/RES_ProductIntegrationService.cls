@@ -14,8 +14,9 @@ public without sharing class RES_ProductIntegrationService extends RES_BaseInteg
         'RES_Type__c'
     };
 
-    @TestVisible private static Set<Id> includedMeasurementIds = new Set<Id>();
-    @TestVisible private static Set<Id> includedAbaIds        = new Set<Id>();
+    @TestVisible private static Set<Id> includedMeasurementIds    = new Set<Id>();
+    @TestVisible private static Set<Id> includedAbaIds            = new Set<Id>();
+    @TestVisible private static Map<Id, Date> includedAbaValidFromMap = new Map<Id, Date>();
     @TestVisible private static Set<Id> fixtureIdsToStamp = new Set<Id>();
 
     @TestVisible private static final Set<String> FIXTURES_SF_NAMES = new Set<String>{
@@ -158,6 +159,7 @@ public without sharing class RES_ProductIntegrationService extends RES_BaseInteg
 
         includedMeasurementIds.clear();
         includedAbaIds.clear();
+        includedAbaValidFromMap.clear();
         fixtureIdsToStamp.clear();
         List<Map<String, Object>> payloads = new List<Map<String, Object>>();
 
@@ -351,24 +353,35 @@ public without sharing class RES_ProductIntegrationService extends RES_BaseInteg
             condMap.put('RES_Conditions_Purpose', mapping.RES_Conditions_Purpose__c);
             condMap.put('Change_Indicator',       triggerContext);
             if (mapping.RES_Formula__c == 'D') {
+                if (String.isBlank(mapping.RES_Parameter_1__c)) {
+                    System.debug('### [Unit_Sync] Skipping condition ' + mapping.RES_Condition_Type__c
+                        + ' — Formula D requires Parameter_1 (area type) but none is configured.');
+                    continue;
+                }
                 condMap.put('RES_Parameter_1', mapping.RES_Parameter_1__c);
                 condMap.put('RES_Parameter_2', mapping.RES_Parameter_2__c != null ? mapping.RES_Parameter_2__c : '');
             }
 
             if (mapping.RES_Handling__c == 'Attribute_Based_Adjustment') {
-                for (AttributeBasedAdjustment aba : abaList) {
-                    String selector = ruleSelectorMap.get(aba.AttributeBasedAdjRuleId);
-                    if (selector == null || selector != mapping.RES_Selector_Value__c) continue;
+                AttributeBasedAdjustment aba = selectBestAba(abaList, ruleSelectorMap, mapping.RES_Selector_Value__c);
+                if (aba != null) {
                     String abaCI = (aba.RES_Last_Sync_DateTime__c == null) ? 'I' : 'U';
                     condMap.put('Change_Indicator',         abaCI);
                     condMap.put('RES_Condition_Price',      aba.AdjustmentValue);
-                    Date validFrom = aba.EffectiveFrom != null ? aba.EffectiveFrom.date() : Date.today();
-                    if (validFrom < Date.today()) validFrom = Date.today();
+                    Date abaEffFrom = aba.EffectiveFrom != null ? aba.EffectiveFrom.date() : Date.today();
+                    // CI='U': use the date SAP already has (stored from last sync) so SAP can locate the existing condition.
+                    // CI='I': use EffectiveFrom directly as the new condition start date.
+                    Date validFrom = (abaCI == 'U' && aba.RES_SAP_Condition_Valid_From__c != null)
+                        ? aba.RES_SAP_Condition_Valid_From__c
+                        : abaEffFrom;
                     Date validTo = aba.EffectiveTo != null ? aba.EffectiveTo.date() : Date.newInstance(9999, 12, 31);
                     condMap.put('RES_Condition_Valid_From', String.valueOf(validFrom));
                     condMap.put('RES_Condition_Valid_To',   String.valueOf(validTo));
                     includedAbaIds.add(aba.Id);
-                    break;
+                    includedAbaValidFromMap.put(aba.Id, abaEffFrom);
+                    System.debug('### [Unit_Sync] ABA selected for condition ' + mapping.RES_Condition_Type__c
+                        + ' | Id=' + aba.Id + ' | EffectiveFrom=' + aba.EffectiveFrom
+                        + ' | EffectiveTo=' + aba.EffectiveTo + ' | CI=' + abaCI);
                 }
             } else if (mapping.RES_Handling__c == 'Product_Attribute') {
                 String attrName = mapping.RES_Attribute_Name__c;
@@ -394,6 +407,52 @@ public without sharing class RES_ProductIntegrationService extends RES_BaseInteg
             }
         }
         return conditions;
+    }
+
+    /**
+     * @description Selects the best ABA record for a given condition selector using effective-date priority:
+     *              1. Currently active  (EffectiveFrom <= now <= EffectiveTo)
+     *              2. Most recently expired  (largest EffectiveTo in the past — kept for SAP audit trail)
+     *              3. Earliest upcoming  (smallest EffectiveFrom in the future)
+     *              Returns null when no ABA matches the selector.
+     */
+    @TestVisible
+    private static AttributeBasedAdjustment selectBestAba(
+        List<AttributeBasedAdjustment> abaList,
+        Map<Id, String> ruleSelectorMap,
+        String selectorValue
+    ) {
+        DateTime now         = DateTime.now();
+        AttributeBasedAdjustment activeAba  = null;
+        AttributeBasedAdjustment expiredAba = null;
+        AttributeBasedAdjustment futureAba  = null;
+
+        for (AttributeBasedAdjustment aba : abaList) {
+            String selector = ruleSelectorMap.get(aba.AttributeBasedAdjRuleId);
+            if (selector == null || selector != selectorValue) continue;
+
+            Boolean started = (aba.EffectiveFrom == null || aba.EffectiveFrom <= now);
+            Boolean ongoing = (aba.EffectiveTo   == null || aba.EffectiveTo   >= now);
+
+            if (started && ongoing) {
+                activeAba = aba;
+                break; // active record found — no need to check further
+            } else if (!started) {
+                // Future: keep the one with the earliest start
+                if (futureAba == null || aba.EffectiveFrom < futureAba.EffectiveFrom) {
+                    futureAba = aba;
+                }
+            } else {
+                // Expired: keep the most recently expired (largest EffectiveTo)
+                if (expiredAba == null || aba.EffectiveTo > expiredAba.EffectiveTo) {
+                    expiredAba = aba;
+                }
+            }
+        }
+
+        if (activeAba  != null) return activeAba;
+        if (expiredAba != null) return expiredAba;
+        return futureAba;
     }
 
     /**
@@ -453,6 +512,12 @@ public without sharing class RES_ProductIntegrationService extends RES_BaseInteg
                 : (inventoryTypeMap.containsKey('DEFAULT') ? inventoryTypeMap.get('DEFAULT') : 'Z01');
             result.add(new Map<String, Object>{ 'name' => 'RES_Type', 'value' => invType });
             addedSapNames.add('RES_Type');
+        }
+
+        // ZZRES_TYPE — Residential Type (B=Branded, N=Residential), Sales only.
+        // RES_Type__c is excluded from the MDT loop (ROOT_FIELD_SF_NAMES) to avoid conflicting with RES_Type (ZZINV_TYPE).
+        if (String.isNotBlank(p.RES_Type__c) && p.RES_Type__c != 'None') {
+            result.add(new Map<String, Object>{ 'name' => 'RES_Residential_Type', 'value' => p.RES_Type__c });
         }
 
         String addrJson = buildAddressJson(p);
@@ -851,7 +916,11 @@ public without sharing class RES_ProductIntegrationService extends RES_BaseInteg
                 if (!includedAbaIds.isEmpty()) {
                     List<AttributeBasedAdjustment> abaToStamp = new List<AttributeBasedAdjustment>();
                     for (Id abaId : includedAbaIds) {
-                        abaToStamp.add(new AttributeBasedAdjustment(Id = abaId, RES_Last_Sync_DateTime__c = System.now()));
+                        abaToStamp.add(new AttributeBasedAdjustment(
+                            Id = abaId,
+                            RES_Last_Sync_DateTime__c = System.now(),
+                            RES_SAP_Condition_Valid_From__c = includedAbaValidFromMap.get(abaId)
+                        ));
                     }
                     List<Database.SaveResult> abaResults = Database.update(abaToStamp, false, AccessLevel.SYSTEM_MODE);
                     for (Integer i = 0; i < abaResults.size(); i++) {
