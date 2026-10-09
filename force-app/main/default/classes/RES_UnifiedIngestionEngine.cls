@@ -1670,6 +1670,18 @@ public with sharing class RES_UnifiedIngestionEngine implements Database.Batchab
         Map<String, RES_Measurement__c> wanted =
             new Map<String, RES_Measurement__c>();
     
+        Map<String, String> measurementTypeLabelByValue = new Map<String, String>();
+
+        Schema.DescribeFieldResult fieldDescribe =
+            Schema.SObjectType.RES_Measurement__c.fields.RES_Measurement_Type__c;
+        
+        for (Schema.PicklistEntry entry : fieldDescribe.getPicklistValues()) {
+            measurementTypeLabelByValue.put(
+                entry.getValue(),
+                entry.getLabel()
+            );
+        }
+        
         for (String code : rowsByCode.keySet()) {
             Id productId = productIdByCode.get(code);
     
@@ -1741,10 +1753,13 @@ public with sharing class RES_UnifiedIngestionEngine implements Database.Batchab
                     m.RES_Category__c = categoryId;
                 }
     
-                m.Name = truncate(
-                    code + ' ' + tm.measurementType,
-                    80
-                );
+                String measurementTypeLabel = measurementTypeLabelByValue.get(tm.measurementType);
+                
+                if (String.isBlank(measurementTypeLabel)) {
+                    measurementTypeLabel = tm.measurementType;
+                }
+                
+                m.Name = truncate(measurementTypeLabel, 80);
     
                 wanted.put(
                     productId + '|' + tm.measurementType,
