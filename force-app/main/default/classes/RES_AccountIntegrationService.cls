@@ -76,8 +76,10 @@ public with sharing class RES_AccountIntegrationService extends RES_BaseIntegrat
         // RecordTypeId: '1' for PersonAccount, '2' for Company
         wrapper.RecordTypeId = (recordTypeDeveloperName == 'PersonAccount') ? '1' : '2';
         wrapper.Type = blankIfNull(acc.Type);
-        // PersonTitle maps to RES_Corporate_Title__c
-        wrapper.PersonTitle = blankIfNull(acc.RES_Corporate_Title__c);
+        // PersonTitle: Salutation for Person Account; RES_Corporate_Title__c for Company Account
+        wrapper.PersonTitle = isPersonAccount
+            ? blankIfNull(acc.Salutation)
+            : blankIfNull(acc.RES_Corporate_Title__c);
         wrapper.LastName = isPersonAccount
             ? blankIfNull(acc.LastName)
             : (firstRelatedContact != null ? blankIfNull(firstRelatedContact.LastName) : '');

@@ -137,7 +137,7 @@ private class RES_AccountIntegrationServiceTest {
             BillingCity                   = 'Riyadh',
             BillingPostalCode             = '11564',
             BillingCountryCode            = 'SA',
-            RES_Tax_Category__c           = 'SA1',
+            RES_Tax_Category__c           = 'SA0',
             RES_Tax_Number__c             = '310123457400003',
             RES_Identification_Type__c    = 'ZIT04',
             RES_CR_number__c              = '9332157452',
