@@ -261,8 +261,7 @@ public with sharing class RES_UnifiedIngestionEngine implements Database.Batchab
 
         Map<String, Product2> existingBySku = new Map<String, Product2>();
         
-        List<Product2> existingList =
-            new RES_Product2DAOLayer().getProductsByStockKeepingUnits(new Set<String>(codes));
+        List<Product2> existingList = new RES_Product2DAOLayer().getProductsByStockKeepingUnits(new Set<String>(codes));
         
         for (Product2 existing : existingList) {
             existingBySku.put(existing.StockKeepingUnit, existing);
@@ -1633,91 +1632,174 @@ public with sharing class RES_UnifiedIngestionEngine implements Database.Batchab
         Map<String, Id> productIdByCode,
         Map<Id, List<String>> rowErrors
     ) {
-        List<RES_IngestionConfig.TargetMap> maps = new List<RES_IngestionConfig.TargetMap>();
-        for (RES_IngestionConfig.TargetMap tm : RES_IngestionConfig.targetMaps(layoutCode)) {
-            if (tm.valueKind == 'Child_Record' && 'RES_Measurement__c'.equalsIgnoreCase(tm.targetObject)) {
+        List<RES_IngestionConfig.TargetMap> maps =
+            new List<RES_IngestionConfig.TargetMap>();
+    
+        for (RES_IngestionConfig.TargetMap tm :
+             RES_IngestionConfig.targetMaps(layoutCode)) {
+            if (tm.valueKind == 'Child_Record' &&
+                'RES_Measurement__c'.equalsIgnoreCase(tm.targetObject)) {
                 maps.add(tm);
             }
         }
-        if (maps.isEmpty() || productIdByCode.isEmpty()) return;
-
-        Map<String, List<RES_Product_Staging__c>> rowsByCode = new Map<String, List<RES_Product_Staging__c>>();
+    
+        if (maps.isEmpty() || productIdByCode.isEmpty()) {
+            return;
+        }
+    
+        Map<String, List<RES_Product_Staging__c>> rowsByCode =
+            new Map<String, List<RES_Product_Staging__c>>();
+    
         for (RES_Product_Staging__c stg : scope) {
             String code = textOf(stg, F_CODE);
-            if (String.isBlank(code)) continue;
-            if (!rowsByCode.containsKey(code)) rowsByCode.put(code, new List<RES_Product_Staging__c>());
+    
+            if (String.isBlank(code)) {
+                continue;
+            }
+    
+            if (!rowsByCode.containsKey(code)) {
+                rowsByCode.put(
+                    code,
+                    new List<RES_Product_Staging__c>()
+                );
+            }
+    
             rowsByCode.get(code).add(stg);
         }
-
-        Map<String, RES_Measurement__c> wanted = new Map<String, RES_Measurement__c>();
+    
+        Map<String, RES_Measurement__c> wanted =
+            new Map<String, RES_Measurement__c>();
+    
         for (String code : rowsByCode.keySet()) {
             Id productId = productIdByCode.get(code);
-            if (productId == null) continue;
+    
+            if (productId == null) {
+                continue;
+            }
+    
             List<RES_Product_Staging__c> rows = rowsByCode.get(code);
-            RES_Product_Staging__c primary    = rows[0];
-
-            Date validFrom = dateOf(primary, 'RES_Measurement_From__c');
-            Date validTo   = dateOf(primary, 'RES_Measurement_To__c');
-            Id catalogId   = catalogIdByCode.get(catalogCode(primary));
-            Id categoryId  = categoryIdByCode.get(categoryCode(primary));
-
+            RES_Product_Staging__c primary = rows[0];
+    
+            Date validFrom = dateOf(
+                primary,
+                'RES_Measurement_From__c'
+            );
+    
+            Date validTo = dateOf(
+                primary,
+                'RES_Measurement_To__c'
+            );
+    
+            Id catalogId = catalogIdByCode.get(catalogCode(primary));
+            Id categoryId = categoryIdByCode.get(categoryCode(primary));
+    
             for (RES_IngestionConfig.TargetMap tm : maps) {
-                Object raw = merged(rows, tm.stagingField, tm.mergeStrategy);
-                if (raw == null) continue;
+    
+                // Skip measurement processing for existing products
+                // when Skip On Update is enabled in metadata.
+                if (!newProductCodes.contains(code) && tm.skipOnUpdate) {
+                    continue;
+                }
+    
+                Object raw = merged(
+                    rows,
+                    tm.stagingField,
+                    tm.mergeStrategy
+                );
+    
+                if (raw == null) {
+                    continue;
+                }
+    
                 Decimal amount;
+    
                 try {
                     amount = (Decimal) raw;
                 } catch (Exception e) {
                     continue;
                 }
+    
                 RES_Measurement__c m = new RES_Measurement__c(
                     RES_Product__c             = productId,
-                    RES_Measurement_Type__c   = tm.measurementType,
-                    RES_Measurement_Amount__c = amount,
-                    RES_Measurement_From__c   = validFrom,
-                    RES_Measurement_To__c     = validTo
+                    RES_Measurement_Type__c    = tm.measurementType,
+                    RES_Measurement_Amount__c  = amount,
+                    RES_Measurement_From__c    = validFrom,
+                    RES_Measurement_To__c      = validTo
                 );
-                putSafePicklist(m, 'RES_Unit_Of_Measurement__c', tm.unitOfMeasurement);
-                if (catalogId  != null) m.RES_Catalog__c  = catalogId;
-                if (categoryId != null) m.RES_Category__c = categoryId;
-                m.Name = truncate(code + ' ' + tm.measurementType, 80);
-                wanted.put(productId + '|' + tm.measurementType, m);
+    
+                putSafePicklist(
+                    m,
+                    'RES_Unit_Of_Measurement__c',
+                    tm.unitOfMeasurement
+                );
+    
+                if (catalogId != null) {
+                    m.RES_Catalog__c = catalogId;
+                }
+    
+                if (categoryId != null) {
+                    m.RES_Category__c = categoryId;
+                }
+    
+                m.Name = truncate(
+                    code + ' ' + tm.measurementType,
+                    80
+                );
+    
+                wanted.put(
+                    productId + '|' + tm.measurementType,
+                    m
+                );
             }
         }
-        if (wanted.isEmpty()) return;
-
-        Set<Id> productIds = new Set<Id>(productIdByCode.values());
-        Map<String, RES_Measurement__c> existing = new Map<String, RES_Measurement__c>();
-        List<RES_Measurement__c> existingMeasurements = new RES_MeasurementDAOLayer().getMeasurementsByProductIds(productIds);
-        for (RES_Measurement__c m : existingMeasurements) {
-            existing.put(m.RES_Product__c + '|' + m.RES_Measurement_Type__c, m);
+    
+        if (wanted.isEmpty()) {
+            return;
         }
-
-        List<RES_Measurement__c> toInsert = new List<RES_Measurement__c>();
-        List<RES_Measurement__c> toUpdate = new List<RES_Measurement__c>();
+    
+        Set<Id> productIds = new Set<Id>(productIdByCode.values());
+    
+        Map<String, RES_Measurement__c> existing =
+            new Map<String, RES_Measurement__c>();
+    
+        List<RES_Measurement__c> existingMeasurements =
+            new RES_MeasurementDAOLayer()
+                .getMeasurementsByProductIds(productIds);
+    
+        for (RES_Measurement__c m : existingMeasurements) {
+            existing.put(
+                m.RES_Product__c + '|' + m.RES_Measurement_Type__c,
+                m
+            );
+        }
+    
+        List<RES_Measurement__c> toInsert =
+            new List<RES_Measurement__c>();
+    
         for (String key : wanted.keySet()) {
             RES_Measurement__c desired = wanted.get(key);
             RES_Measurement__c current = existing.get(key);
+    
+            // Insert only when this Product + Measurement Type
+            // combination does not already exist.
+            // Existing measurement records are never updated.
             if (current == null) {
                 toInsert.add(desired);
-            } else if (current.RES_Measurement_Amount__c != desired.RES_Measurement_Amount__c) {
-                toUpdate.add(new RES_Measurement__c(
-                    Id                         = current.Id,
-                    RES_Measurement_Amount__c = desired.RES_Measurement_Amount__c
-                ));
             }
         }
-
+    
         if (!toInsert.isEmpty()) {
-            for (Database.SaveResult sr : Database.insert(toInsert, false)) {
-                if (sr.isSuccess()) totalMeasurements++;
-                else recordError('RES_Measurement__c: ' + sr.getErrors()[0].getMessage());
-            }
-        }
-        if (!toUpdate.isEmpty()) {
-            for (Database.SaveResult sr : Database.update(toUpdate, false)) {
-                if (sr.isSuccess()) totalMeasurements++;
-                else recordError('RES_Measurement__c update: ' + sr.getErrors()[0].getMessage());
+            for (Database.SaveResult sr :
+                 Database.insert(toInsert, false)) {
+    
+                if (sr.isSuccess()) {
+                    totalMeasurements++;
+                } else {
+                    recordError(
+                        'RES_Measurement__c: ' +
+                        sr.getErrors()[0].getMessage()
+                    );
+                }
             }
         }
     }
