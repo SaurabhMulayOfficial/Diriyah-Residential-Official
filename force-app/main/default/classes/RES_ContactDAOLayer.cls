@@ -78,4 +78,16 @@ public without sharing class RES_ContactDAOLayer extends RES_BaseDAOLayer {
         }
         return contactsByAccountId;
     }
+
+    // Nationality (picklist) and its Document Nationality text counterpart
+    public Map<Id, Contact> getContactsNationalityByIds(Set<Id> contactIds) {
+        if (contactIds == null || contactIds.isEmpty()) {
+            return new Map<Id, Contact>();
+        }
+        Map<String, Object> bindVars = new Map<String, Object>{ 'contactIds' => contactIds };
+        String soql = 'SELECT Id, RES_Nationality__c, RES_Document_Nationality__c ' +
+                      'FROM Contact ' +
+                      'WHERE Id IN :contactIds';
+        return new Map<Id, Contact>((List<Contact>) executeQuery(soql, '', false, bindVars, AccessLevel.SYSTEM_MODE));
+    }
 }
