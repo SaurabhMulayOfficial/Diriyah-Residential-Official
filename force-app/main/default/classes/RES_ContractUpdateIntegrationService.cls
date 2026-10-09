@@ -70,7 +70,7 @@ public with sharing class RES_ContractUpdateIntegrationService extends RES_BaseI
         payload.IV_NOTICE_DATE     = null;
         payload.IV_CN_OFFR         = null;
         payload.IV_RETAIL          = null;
-        payload.IV_RESERVDATE      = hardBlockStart != null ? String.valueOf(hardBlockStart) : null;
+        payload.IV_RESERVDATE      = hardBlockStart != null ? String.valueOf(hardBlockStart.date()) : null;
         payload.IV_CT_FLAG         = false;
         payload.TEST_RUN           = false;
 
