@@ -10,7 +10,7 @@ public with sharing class RES_IntegrationSyncController {
     private static final Set<String> VALID_CONTEXTS = new Set<String>{ 'I', 'U' };
     private static final Set<String> VALID_SERVICES = new Set<String>{
         'Sales_Contract_Creation', 'Sales_Contract_Update', 'Sales_Contract_Termination',
-        'Account_Sync', 'Unit_Sync', 'ProductCategory_Sync', 'ProductCatalog_Sync'
+        'Account_Sync', 'Unit_Sync', 'ProductCategory_Sync', 'ProductCatalog_Sync', 'Payment_Plan'
     };
 
     public class SyncResult {
