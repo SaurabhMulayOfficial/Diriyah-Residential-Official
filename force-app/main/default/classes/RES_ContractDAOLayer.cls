@@ -99,4 +99,16 @@ public with sharing class RES_ContractDAOLayer extends RES_BaseDAOLayer {
             (List<Contract>) executeQuery(soql, '', false, bindVars, AccessLevel.SYSTEM_MODE)
         );
     }
+
+    // Purchaser Authorised Representative nationality (picklist) and its Document text counterpart
+    public Map<Id, Contract> getContractsNationalityByIds(Set<Id> contractIds) {
+        if (contractIds == null || contractIds.isEmpty()) {
+            return new Map<Id, Contract>();
+        }
+        Map<String, Object> bindVars = new Map<String, Object>{ 'contractIds' => contractIds };
+        String soql = 'SELECT Id, RES_PAR_Nationality__c, RES_Document_PAR_Nationality__c ' +
+                      'FROM Contract ' +
+                      'WHERE Id IN :contractIds';
+        return new Map<Id, Contract>((List<Contract>) executeQuery(soql, '', false, bindVars, AccessLevel.SYSTEM_MODE));
+    }
 }
