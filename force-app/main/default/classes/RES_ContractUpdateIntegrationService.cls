@@ -70,7 +70,7 @@ public with sharing class RES_ContractUpdateIntegrationService extends RES_BaseI
         payload.IV_NOTICE_DATE     = null;
         payload.IV_CN_OFFR         = null;
         payload.IV_RETAIL          = null;
-        payload.IV_RESERVDATE      = hardBlockStart != null ? String.valueOf(hardBlockStart) : null;
+        payload.IV_RESERVDATE      = hardBlockStart != null ? String.valueOf(hardBlockStart.date()) : null;
         payload.IV_CT_FLAG         = false;
         payload.TEST_RUN           = false;
 
@@ -112,14 +112,14 @@ public with sharing class RES_ContractUpdateIntegrationService extends RES_BaseI
             }
         }
 
-        // Fetch Contract_Status SAP value mapping (Object: Contract, Field: Contract_Status)
+        // Fetch Contract_Status SAP value mapping (Object: Contract, Field: Status)
         RES_SAPValueMappingDAOLayer sapDao = new RES_SAPValueMappingDAOLayer();
         Map<String, Map<String, String>> sapMappings = sapDao.getMappingByObjectsAndFields(
             new Set<String>{ 'Contract' },
-            new Set<String>{ 'Contract_Status' }
+            new Set<String>{ 'Status' }
         );
-        Map<String, String> contractStatusMapping = sapMappings.containsKey('ContractContract_Status')
-            ? sapMappings.get('ContractContract_Status')
+        Map<String, String> contractStatusMapping = sapMappings.containsKey('ContractStatus')
+            ? sapMappings.get('ContractStatus')
             : new Map<String, String>();
 
         List<RES_ContractUpdateWrapper> wrapperList = new List<RES_ContractUpdateWrapper>();

@@ -77,7 +77,9 @@ public with sharing class RES_AccountIntegrationService extends RES_BaseIntegrat
         wrapper.RecordTypeId = (recordTypeDeveloperName == 'PersonAccount') ? '1' : '2';
         wrapper.Type = blankIfNull(acc.Type);
         // PersonTitle maps to RES_Corporate_Title__c
-        wrapper.PersonTitle = blankIfNull(acc.RES_Corporate_Title__c);
+        wrapper.PersonTitle = isPersonAccount
+           ? blankIfNull(acc.Salutation)
+           : blankIfNull(acc.RES_Corporate_Title__c);
         wrapper.LastName = isPersonAccount
             ? blankIfNull(acc.LastName)
             : (firstRelatedContact != null ? blankIfNull(firstRelatedContact.LastName) : '');
@@ -95,7 +97,10 @@ public with sharing class RES_AccountIntegrationService extends RES_BaseIntegrat
         wrapper.RES_NAME1 = isPersonAccount ? '' : blankIfNull(acc.Name);
         wrapper.RES_NAME2 = '';
         wrapper.RES_KTOKD = blankIfNull(acc.RES_Account_Group__c);
-        wrapper.RES_Relationship_Type = blankIfNull(acc.RES_Relationship_Type__c);
+        // Person Account: always blank. Company Account: Account Group only when it has a related contact.
+        wrapper.RES_Relationship_Type = (!isPersonAccount && relatedContacts != null && !relatedContacts.isEmpty())
+            ? blankIfNull(acc.RES_Account_Group__c)
+            : '';
         wrapper.Change_Indicator = triggerContext;
         // Fullname: only for Company Account; blank for PersonAccount
         wrapper.Fullname = isPersonAccount ? '' : blankIfNull(acc.Name);

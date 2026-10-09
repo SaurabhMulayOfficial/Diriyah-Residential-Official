@@ -8,15 +8,30 @@ on:
       - 'feature/QADIR/**'
 
   pull_request:
-    types: [opened, synchronize, reopened, closed, labeled, unlabeled]
+    types: [synchronize, reopened, closed, labeled]
     branches:
       - develop
       - 'feature/QADIR/**'
       - 'release/uat/**'
 
+concurrency:
+  group: ci-${{ github.event_name }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' && github.event.action != 'closed' }}
+
 jobs:
   setup:
     runs-on: ubuntu-24.04
+    # Nothing runs for PRs until a deployment label is present.
+    # A 'labeled' event only counts when the label added is one of ours.
+    if: |
+      github.event_name != 'pull_request' ||
+      (
+        (github.event.action != 'labeled' ||
+          contains(fromJSON('["QA-Delta","QA-Full","UAT-Delta"]'), github.event.label.name)) &&
+        (contains(github.event.pull_request.labels.*.name, 'QA-Delta') ||
+         contains(github.event.pull_request.labels.*.name, 'QA-Full') ||
+         contains(github.event.pull_request.labels.*.name, 'UAT-Delta'))
+      )
     outputs:
       env_name:   ${{ steps.setenv.outputs.env_name }}
       test_level: ${{ steps.setenv.outputs.test_level }}

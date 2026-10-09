@@ -20,8 +20,8 @@ public with sharing class RES_ContractItemPriceTriggerHandler extends RES_BaseTr
 
     @TestVisible
     private static void handleAfterInsert(List<ContractItemPrice> newCIPs) {
-        if (isRunning) return;
-        isRunning = true;
+        // No isRunning guard: the services only write to Contract, and CIPs are inserted in several
+        // DMLs per transaction (CreateContract action, then the installment flow).
         RES_ContractItemPriceServices.updateFinalPaymentOnContract(newCIPs);
         RES_ContractItemPriceServices.syncContracts(newCIPs);
     }

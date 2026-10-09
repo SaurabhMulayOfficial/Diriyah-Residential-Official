@@ -71,7 +71,7 @@ public with sharing class RES_AccountDAOLayer extends RES_BaseDAOLayer{
         Map<String, Object> bindVars = new Map<String, Object>();
         bindVars.put('accountIds', accountIds);
         String soql = 'SELECT Id, Name, Type, RecordTypeId, RecordType.DeveloperName, IsPersonAccount, ' +
-                        'PersonTitle, FirstName, LastName, Fax, ' +
+                        'PersonTitle, Salutation, FirstName, LastName, Fax, ' +
                         'Phone, PersonMobilePhone, PersonEmail, ' +
                         'BillingStreet, BillingCity, BillingPostalCode, BillingCountryCode, BillingStateCode, ' +
                         'PersonGenderIdentity, ' +
@@ -96,5 +96,17 @@ public with sharing class RES_AccountDAOLayer extends RES_BaseDAOLayer{
             result.put(record.Id, (Account) record);
         }
         return result;
+    }
+
+    // Person Accounts only: nationality (picklist) and its Document Nationality text counterpart
+    public Map<Id, Account> getPersonAccountsNationalityByIds(Set<Id> accountIds) {
+        if (accountIds == null || accountIds.isEmpty()) {
+            return new Map<Id, Account>();
+        }
+        Map<String, Object> bindVars = new Map<String, Object>{ 'accountIds' => accountIds };
+        String soql = 'SELECT Id, RES_Nationality__pc, RES_Document_Nationality__pc ' +
+                        'FROM Account ' +
+                        'WHERE Id IN :accountIds AND IsPersonAccount = true';
+        return new Map<Id, Account>((List<Account>) executeQuery(soql, '', false, bindVars, AccessLevel.SYSTEM_MODE));
     }
 }

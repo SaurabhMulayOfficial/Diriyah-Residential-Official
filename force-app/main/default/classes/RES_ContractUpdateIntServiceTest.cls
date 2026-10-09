@@ -241,6 +241,25 @@ private class RES_ContractUpdateIntServiceTest {
 
         Assert.isNotNull(body, 'Body must not be null for Canceled contract.');
         Assert.isTrue(body.contains('CONTRACT_UPDATE'), 'Canceled contract body must contain CONTRACT_UPDATE key.');
+        Assert.isTrue(body.contains('"IV_CONTRACT_STATUS":"OFRJ"'), 'Canceled must map to OFRJ. Body: ' + body);
+    }
+
+    @isTest
+    static void updateHydrate_pendingCancellationApproval_mapsToCNRQ() {
+        RES_IntegrationTestDataFactory.primeSapToken();
+        Test.setMock(HttpCalloutMock.class, new RES_IntegrationTestDataFactory.EndpointRoutingMock());
+        Account acc = RES_TestDataFactory.createAccount();
+        Contract c  = buildContract(acc.Id, 'Draft', null, null);
+
+        // hydrateRequestBody only reads fields, so set the status in memory (no DML / approval rules)
+        c.Status = 'Pending Cancellation Approval';
+
+        Test.startTest();
+        String body = RES_ContractUpdateIntegrationService.hydrateRequestBody(new List<Contract>{ c });
+        Test.stopTest();
+
+        Assert.isTrue(body.contains('"IV_CONTRACT_STATUS":"CNRQ"'),
+            'Pending Cancellation Approval must map to CNRQ. Body: ' + body);
     }
 
     @isTest

@@ -18,7 +18,26 @@
             </value>
         </inputParameters>
         <nameSegment>RES_HijriDateUtility</nameSegment>
+        <offset>0</offset>
         <storeOutputAutomatically>true</storeOutputAutomatically>
+    </actionCalls>
+    <actionCalls>
+        <name>Populate_Document_Purchaser_Nationality_On_Contract</name>
+        <label>Populate Document Purchaser Nationality On Contract</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <actionName>RES_DocumentPurchaserNationality</actionName>
+        <actionType>apex</actionType>
+        <flowTransactionModel>Automatic</flowTransactionModel>
+        <inputParameters>
+            <name>contractRecord</name>
+            <value>
+                <elementReference>$Record</elementReference>
+                <inputConfiguratorMode>Resource</inputConfiguratorMode>
+            </value>
+        </inputParameters>
+        <nameSegment>RES_DocumentPurchaserNationality</nameSegment>
+        <offset>0</offset>
     </actionCalls>
     <apiVersion>67.0</apiVersion>
     <areMetricsLoggedToDataCloud>false</areMetricsLoggedToDataCloud>
@@ -33,6 +52,19 @@
             <value>
                 <elementReference>Convert_to_Hijri_Date.hijriDateText</elementReference>
             </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Update_Triggering_Contract</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
+        <name>Clear_Company_Signed_Date_Hijri</name>
+        <label>Clear Company Signed Date (Hijri)</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignmentItems>
+            <assignToReference>$Record.RES_CompanySignedDate_Arabic__c</assignToReference>
+            <operator>Assign</operator>
         </assignmentItems>
         <connector>
             <targetReference>Update_Triggering_Contract</targetReference>
@@ -55,9 +87,82 @@
                 </rightValue>
             </conditions>
             <connector>
-                <targetReference>Convert_to_Hijri_Date</targetReference>
+                <targetReference>Logic_To_Run</targetReference>
             </connector>
             <label>Flow Switch is On</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>Logic_To_Run</name>
+        <label>Logic To Run</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Hijri_Date</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.CompanySignedDate</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.CompanySignedDate</leftValueReference>
+                <operator>IsChanged</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Convert_to_Hijri_Date</targetReference>
+            </connector>
+            <label>Hijri Date</label>
+        </rules>
+        <rules>
+            <name>Hijri_Date_Cleared</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.CompanySignedDate</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.CompanySignedDate</leftValueReference>
+                <operator>IsChanged</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Clear_Company_Signed_Date_Hijri</targetReference>
+            </connector>
+            <label>Hijri Date Cleared</label>
+        </rules>
+        <rules>
+            <name>Document_Purchaser_Nationality</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.RES_PAR_Nationality__c</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.RES_PAR_Nationality__c</leftValueReference>
+                <operator>IsChanged</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Populate_Document_Purchaser_Nationality_On_Contract</targetReference>
+            </connector>
+            <label>Document Purchaser Nationality</label>
         </rules>
     </decisions>
     <environments>Default</environments>
@@ -95,13 +200,33 @@
         <connector>
             <targetReference>Check_Flow_Switch</targetReference>
         </connector>
-        <doesRequireRecordChangedToMeetCriteria>true</doesRequireRecordChangedToMeetCriteria>
-        <filterLogic>and</filterLogic>
+        <filterLogic>1 OR 2 OR 3 OR 4</filterLogic>
         <filters>
             <field>CompanySignedDate</field>
             <operator>IsNull</operator>
             <value>
                 <booleanValue>false</booleanValue>
+            </value>
+        </filters>
+        <filters>
+            <field>RES_PAR_Nationality__c</field>
+            <operator>IsNull</operator>
+            <value>
+                <booleanValue>false</booleanValue>
+            </value>
+        </filters>
+        <filters>
+            <field>RES_PAR_Nationality__c</field>
+            <operator>IsChanged</operator>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </filters>
+        <filters>
+            <field>CompanySignedDate</field>
+            <operator>IsChanged</operator>
+            <value>
+                <booleanValue>true</booleanValue>
             </value>
         </filters>
         <object>Contract</object>
