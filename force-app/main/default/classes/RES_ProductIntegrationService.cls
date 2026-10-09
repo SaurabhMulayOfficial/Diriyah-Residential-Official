@@ -15,6 +15,7 @@ public without sharing class RES_ProductIntegrationService extends RES_BaseInteg
     };
 
     @TestVisible private static Set<Id> includedMeasurementIds = new Set<Id>();
+    @TestVisible private static Set<Id> includedAbaIds        = new Set<Id>();
     @TestVisible private static Set<Id> fixtureIdsToStamp = new Set<Id>();
 
     @TestVisible private static final Set<String> FIXTURES_SF_NAMES = new Set<String>{
@@ -156,6 +157,7 @@ public without sharing class RES_ProductIntegrationService extends RES_BaseInteg
         }
 
         includedMeasurementIds.clear();
+        includedAbaIds.clear();
         fixtureIdsToStamp.clear();
         List<Map<String, Object>> payloads = new List<Map<String, Object>>();
 
@@ -357,12 +359,15 @@ public without sharing class RES_ProductIntegrationService extends RES_BaseInteg
                 for (AttributeBasedAdjustment aba : abaList) {
                     String selector = ruleSelectorMap.get(aba.AttributeBasedAdjRuleId);
                     if (selector == null || selector != mapping.RES_Selector_Value__c) continue;
+                    String abaCI = (aba.RES_Last_Sync_DateTime__c == null) ? 'I' : 'U';
+                    condMap.put('Change_Indicator',         abaCI);
                     condMap.put('RES_Condition_Price',      aba.AdjustmentValue);
                     Date validFrom = aba.EffectiveFrom != null ? aba.EffectiveFrom.date() : Date.today();
                     if (validFrom < Date.today()) validFrom = Date.today();
                     Date validTo = aba.EffectiveTo != null ? aba.EffectiveTo.date() : Date.newInstance(9999, 12, 31);
                     condMap.put('RES_Condition_Valid_From', String.valueOf(validFrom));
                     condMap.put('RES_Condition_Valid_To',   String.valueOf(validTo));
+                    includedAbaIds.add(aba.Id);
                     break;
                 }
             } else if (mapping.RES_Handling__c == 'Product_Attribute') {
@@ -494,7 +499,7 @@ public without sharing class RES_ProductIntegrationService extends RES_BaseInteg
         }
 
         List<Map<String, Object>> result = new List<Map<String, Object>>();
-        if (String.isNotBlank(p.RES_Orientation__c))  addChar(result, p.RES_Orientation__c, triggerContext);
+        addPicklistFixture(result, p.RES_Orientation__c, 'RES_Orientation__c', triggerContext, prevValues);
         addBoolFixture(result, p.RES_Storeroom__c,       'RES_Storeroom__c',       boolTrueCodes, boolFalseCodes, triggerContext, prevValues);
         addBoolFixture(result, p.RES_Elevated__c,        'RES_Elevated__c',        boolTrueCodes, boolFalseCodes, triggerContext, prevValues);
         addBoolFixture(result, p.RES_Terrace__c,         'RES_Terrace__c',         boolTrueCodes, boolFalseCodes, triggerContext, prevValues);
@@ -502,14 +507,14 @@ public without sharing class RES_ProductIntegrationService extends RES_BaseInteg
         addBoolFixture(result, p.RES_Entry_Courtyard__c, 'RES_Entry_Courtyard__c', boolTrueCodes, boolFalseCodes, triggerContext, prevValues);
         addBoolFixture(result, p.RES_Garage__c,          'RES_Garage__c',          boolTrueCodes, boolFalseCodes, triggerContext, prevValues);
         addBoolFixture(result, p.RES_Pool__c,            'RES_Pool__c',            boolTrueCodes, boolFalseCodes, triggerContext, prevValues);
-        if (String.isNotBlank(p.RES_ID_Finish__c))    addChar(result, p.RES_ID_Finish__c, triggerContext);
+        addPicklistFixture(result, p.RES_ID_Finish__c,   'RES_ID_Finish__c',   triggerContext, prevValues);
         addBoolFixture(result, p.RES_Drivers_Room__c,    'RES_Drivers_Room__c',    boolTrueCodes, boolFalseCodes, triggerContext, prevValues);
         addBoolFixture(result, p.RES_Maids_Room__c,      'RES_Maids_Room__c',      boolTrueCodes, boolFalseCodes, triggerContext, prevValues);
         addBoolFixture(result, p.RES_Wadi_View__c,       'RES_Wadi_View__c',       boolTrueCodes, boolFalseCodes, triggerContext, prevValues);
         addBoolFixture(result, p.RES_Golf_View__c,       'RES_Golf_View__c',       boolTrueCodes, boolFalseCodes, triggerContext, prevValues);
         addBoolFixture(result, p.RES_Panoramic_View__c,  'RES_Panoramic_View__c',  boolTrueCodes, boolFalseCodes, triggerContext, prevValues);
         addBoolFixture(result, p.RES_Private__c,         'RES_Private__c',         boolTrueCodes, boolFalseCodes, triggerContext, prevValues);
-        if (String.isNotBlank(p.RES_Condition__c))    addChar(result, p.RES_Condition__c, triggerContext);
+        addPicklistFixture(result, p.RES_Condition__c,   'RES_Condition__c',   triggerContext, prevValues);
         addBoolFixture(result, p.RES_Furnished__c,       'RES_Furnished__c',       boolTrueCodes, boolFalseCodes, triggerContext, prevValues);
         return result;
     }
@@ -576,10 +581,35 @@ public without sharing class RES_ProductIntegrationService extends RES_BaseInteg
         });
     }
 
+    private static void addPicklistFixture(List<Map<String, Object>> r, String currentVal, String sfField,
+                                           String ctx, Map<String, Object> prevValues) {
+        String prevVal = prevValues.containsKey(sfField) ? (String) prevValues.get(sfField) : null;
+
+        if (ctx == 'I') {
+            if (String.isNotBlank(currentVal)) addChar(r, currentVal, 'I');
+            return;
+        }
+
+        // UPDATE context
+        if (String.isBlank(currentVal)) {
+            if (String.isNotBlank(prevVal)) addChar(r, prevVal, 'D');
+            return;
+        }
+        if (prevVal == null) {
+            addChar(r, currentVal, 'I');
+        } else if (prevVal == currentVal) {
+            addChar(r, currentVal, 'U');
+        } else {
+            addChar(r, prevVal, 'D');
+            addChar(r, currentVal, 'I');
+        }
+    }
+
     /** @description Serializes the current fixture boolean values to JSON for storage in RES_Fixture_Prev_Values__c. */
     @TestVisible
     private static String buildFixturePrevValuesJson(Product2 p) {
         Map<String, Object> vals = new Map<String, Object>{
+            'RES_Orientation__c'     => p.RES_Orientation__c,
             'RES_Storeroom__c'       => p.RES_Storeroom__c,
             'RES_Elevated__c'        => p.RES_Elevated__c,
             'RES_Terrace__c'         => p.RES_Terrace__c,
@@ -587,12 +617,14 @@ public without sharing class RES_ProductIntegrationService extends RES_BaseInteg
             'RES_Entry_Courtyard__c' => p.RES_Entry_Courtyard__c,
             'RES_Garage__c'          => p.RES_Garage__c,
             'RES_Pool__c'            => p.RES_Pool__c,
+            'RES_ID_Finish__c'       => p.RES_ID_Finish__c,
             'RES_Drivers_Room__c'    => p.RES_Drivers_Room__c,
             'RES_Maids_Room__c'      => p.RES_Maids_Room__c,
             'RES_Wadi_View__c'       => p.RES_Wadi_View__c,
             'RES_Golf_View__c'       => p.RES_Golf_View__c,
             'RES_Panoramic_View__c'  => p.RES_Panoramic_View__c,
             'RES_Private__c'         => p.RES_Private__c,
+            'RES_Condition__c'       => p.RES_Condition__c,
             'RES_Furnished__c'       => p.RES_Furnished__c
         };
         return JSON.serialize(vals);
@@ -812,6 +844,20 @@ public without sharing class RES_ProductIntegrationService extends RES_BaseInteg
                         if (!measResults[i].isSuccess()) {
                             System.debug('### [Unit_Sync] ERROR stamping Measurement sync time for ' + measToStamp[i].Id
                                 + ' | Errors: ' + measResults[i].getErrors());
+                        }
+                    }
+                }
+
+                if (!includedAbaIds.isEmpty()) {
+                    List<AttributeBasedAdjustment> abaToStamp = new List<AttributeBasedAdjustment>();
+                    for (Id abaId : includedAbaIds) {
+                        abaToStamp.add(new AttributeBasedAdjustment(Id = abaId, RES_Last_Sync_DateTime__c = System.now()));
+                    }
+                    List<Database.SaveResult> abaResults = Database.update(abaToStamp, false, AccessLevel.SYSTEM_MODE);
+                    for (Integer i = 0; i < abaResults.size(); i++) {
+                        if (!abaResults[i].isSuccess()) {
+                            System.debug('### [Unit_Sync] ERROR stamping ABA sync time for ' + abaToStamp[i].Id
+                                + ' | Errors: ' + abaResults[i].getErrors());
                         }
                     }
                 }
