@@ -4,6 +4,6 @@
     <defaultValue>false</defaultValue>
     <label>Payment Plan Deactivation Requested</label>
     <description>Trigger flag for the DIR-1258 deactivation approval process. Set true by the Request Deactivation screen flow (after a supporting document is attached); the Deactivation Flow Orchestration record-triggers off this flag flipping, then resets it to false.</description>
-    <trackHistory>false</trackHistory>
+    <trackHistory>true</trackHistory>
     <type>Checkbox</type>
 </CustomField>

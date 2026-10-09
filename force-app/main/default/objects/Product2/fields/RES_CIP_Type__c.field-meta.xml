@@ -5,7 +5,7 @@
     <description>Classifies this product for Contract Item Price generation: Unit, Payment Plan, Installment, or Service Charge. Entered manually when the product is created. Copied onto each ContractItemPrice row by the RES_ContractItemPrice_AfterSave_SetType flow.</description>
     <inlineHelpText>Set to the role this product plays in a bundle: Unit, Payment Plan, Installment, or Service Charge.</inlineHelpText>
     <required>false</required>
-    <trackHistory>false</trackHistory>
+    <trackHistory>true</trackHistory>
     <trackTrending>false</trackTrending>
     <type>Picklist</type>
     <valueSet>
