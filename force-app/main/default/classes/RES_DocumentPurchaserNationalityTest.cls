@@ -45,16 +45,35 @@ private class RES_DocumentPurchaserNationalityTest {
         System.assertEquals(null, [SELECT RES_Document_Nationality__c FROM Contact WHERE Id = :c.Id].RES_Document_Nationality__c, 'Should be cleared');
     }
 
+    // Restricted picklist values can differ per record type / org, so try active values until one is accepted
+    private static Account insertPersonAccountWithNationality(Id recordTypeId) {
+        Integer attempts = 0;
+        for (Schema.PicklistEntry e : Account.RES_Nationality__pc.getDescribe().getPicklistValues()) {
+            if (!e.isActive()) {
+                continue;
+            }
+            if (attempts++ >= 20) {
+                break;
+            }
+            Account a = new Account(LastName = 'Test', PersonEmail = 'test.nationality@example.com', PersonMobilePhone = '+966500000000', RecordTypeId = recordTypeId, RES_Nationality__pc = e.getValue());
+            Database.SaveResult sr = Database.insert(a, false);
+            if (sr.isSuccess()) {
+                return a;
+            }
+        }
+        return null;
+    }
+
     @IsTest
     static void personAccount_populatesLabel() {
         List<RecordType> rts = [SELECT Id FROM RecordType WHERE SobjectType = 'Account' AND IsPersonType = true AND IsActive = true LIMIT 1];
         if (rts.isEmpty()) {
             return; // Person Accounts not available in this org
         }
-        String value = firstValue(Account.RES_Nationality__pc.getDescribe());
+        Account a = insertPersonAccountWithNationality(rts[0].Id);
+        System.assertNotEquals(null, a, 'A Person Account with an allowed nationality should be insertable');
+        String value = a.RES_Nationality__pc;
         String expected = RES_NationalityServices.getPicklistValuesMap(Account.RES_Nationality__pc.getDescribe()).get(value);
-        Account a = new Account(LastName = 'Test', PersonEmail = 'test.nationality@example.com', PersonMobilePhone = '+966500000000', RecordTypeId = rts[0].Id, RES_Nationality__pc = value);
-        insert a;
 
         RES_DocumentPurchaserNationality.Input input = new RES_DocumentPurchaserNationality.Input();
         input.accountRecord = [SELECT Id, RES_Nationality__pc, RES_Document_Nationality__pc FROM Account WHERE Id = :a.Id];
