@@ -402,12 +402,10 @@ private class RES_UnifiedIngestionEngineTest {
         Assert.areEqual(1, [SELECT COUNT() FROM ProductSellingModel WHERE Name LIKE 'SAP Y100%'],
             'Selling model should be reused (found via DAO query on a fresh engine instance), not duplicated');
 
-        // ---- Third pass: reuse the SAME engine instance and re-process UNIT-400 (plus a
-        // changed re-run of UNIT-100) to exercise every "record already exists" / "value
-        // changed, needs update" branch across links, disqualification, pricing-option
-        // rules/conditions/adjustments, attribute definitions, and measurements.
-        // Y100 is Attribute_Based_Adjustment, so PricebookEntry.UnitPrice is always zeroed;
-        // IsActive is the only thing on it that a re-run can change, hence flipping it here.
+        // Third pass: reuse the same engine instance and re-process UNIT-400
+        // plus a changed re-run of UNIT-100 to exercise existing-record branches
+        // across links, pricing options, attributes, and measurements.
+        // Existing measurements must remain unchanged during product updates.
         update new Product2(Id = unit100.Id, IsActive = true);
 
         RES_Product_Staging__c y100Rerun = baseRow('UNIT-100', catalog, building);
@@ -437,10 +435,23 @@ private class RES_UnifiedIngestionEngineTest {
         Assert.areEqual(true, rerunPbe.IsActive,
             'Re-running after the product was activated should update the existing PricebookEntry');
 
+        // Existing measurement must remain unchanged during a product update.
         Assert.areEqual(1, [
-            SELECT COUNT() FROM RES_Measurement__c
-            WHERE RES_Product__c = :unit100.Id AND RES_Measurement_Type__c = 'Z006' AND RES_Measurement_Amount__c = 150
-        ], 'The Area measurement should be updated in place on a re-run with a changed value');
+            SELECT COUNT()
+            FROM RES_Measurement__c
+            WHERE RES_Product__c = :unit100.Id
+            AND RES_Measurement_Type__c = 'Z006'
+            AND RES_Measurement_Amount__c = 120
+        ], 'The original Area measurement must remain unchanged on re-upload');
+        
+        // No new measurement with the changed amount should be created.
+        Assert.areEqual(0, [
+            SELECT COUNT()
+            FROM RES_Measurement__c
+            WHERE RES_Product__c = :unit100.Id
+            AND RES_Measurement_Type__c = 'Z006'
+            AND RES_Measurement_Amount__c = 150
+        ], 'Measurement changes must be skipped for existing products');
 
         Product2 unit400 = [SELECT Id FROM Product2 WHERE RES_Product_External_ID__c = 'UNIT-400'];
         Assert.areEqual(1, [SELECT COUNT() FROM ProductDisqualification WHERE ProductId = :unit400.Id],
