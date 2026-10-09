@@ -71,7 +71,7 @@ public with sharing class RES_AccountDAOLayer extends RES_BaseDAOLayer{
         Map<String, Object> bindVars = new Map<String, Object>();
         bindVars.put('accountIds', accountIds);
         String soql = 'SELECT Id, Name, Type, RecordTypeId, RecordType.DeveloperName, IsPersonAccount, ' +
-                        'PersonTitle, FirstName, LastName, Fax, ' +
+                        'PersonTitle, Salutation, FirstName, LastName, Fax, ' +
                         'Phone, PersonMobilePhone, PersonEmail, ' +
                         'BillingStreet, BillingCity, BillingPostalCode, BillingCountryCode, BillingStateCode, ' +
                         'PersonGenderIdentity, ' +
