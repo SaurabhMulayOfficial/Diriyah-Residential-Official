@@ -20,8 +20,9 @@ public without sharing class RES_AttributeBasedAdjustmentDAOLayer extends RES_Ba
         if (productIds == null || productIds.isEmpty()) return new List<AttributeBasedAdjustment>();
         Map<String, Object> bindVars = new Map<String, Object>{ 'productIds' => productIds };
         String soql = 'SELECT Id, ProductId, AttributeBasedAdjRuleId, AdjustmentValue, AdjustmentType, ' +
-                      'EffectiveFrom, EffectiveTo, SellingModelType, RES_Last_Sync_DateTime__c ' +
-                      'FROM AttributeBasedAdjustment WHERE ProductId IN :productIds';
+                      'EffectiveFrom, EffectiveTo, SellingModelType, RES_Last_Sync_DateTime__c, RES_SAP_Condition_Valid_From__c ' +
+                      'FROM AttributeBasedAdjustment WHERE ProductId IN :productIds ' +
+                      'ORDER BY EffectiveFrom DESC NULLS LAST';
         return (List<AttributeBasedAdjustment>) executeQuery(soql, '', false, bindVars, AccessLevel.SYSTEM_MODE);
     }
 }

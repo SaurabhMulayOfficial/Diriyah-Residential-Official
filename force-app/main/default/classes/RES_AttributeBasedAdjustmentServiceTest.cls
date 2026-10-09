@@ -6,6 +6,11 @@
 @isTest
 private class RES_AttributeBasedAdjustmentServiceTest {
 
+    // Fields that mirror the ABA_Sync MDT record deployed alongside this code.
+    private static final Set<String> DEFAULT_SYNC_FIELDS = new Set<String>{
+        'AdjustmentValue', 'EffectiveFrom', 'EffectiveTo', 'AdjustmentType'
+    };
+
     @isTest
     static void testIsAdjustmentChangedFalseWhenIdentical() {
         AttributeBasedAdjustment aba = new AttributeBasedAdjustment(
@@ -14,7 +19,7 @@ private class RES_AttributeBasedAdjustmentServiceTest {
         );
 
         Assert.isFalse(
-            RES_AttributeBasedAdjustmentService.isAdjustmentChanged(aba, aba),
+            RES_AttributeBasedAdjustmentService.isAdjustmentChanged(aba, aba, DEFAULT_SYNC_FIELDS),
             'Identical records must not be considered changed'
         );
     }
@@ -25,7 +30,7 @@ private class RES_AttributeBasedAdjustmentServiceTest {
         AttributeBasedAdjustment oldAba = new AttributeBasedAdjustment(AdjustmentValue = 5000);
 
         Assert.isTrue(
-            RES_AttributeBasedAdjustmentService.isAdjustmentChanged(newAba, oldAba),
+            RES_AttributeBasedAdjustmentService.isAdjustmentChanged(newAba, oldAba, DEFAULT_SYNC_FIELDS),
             'Different AdjustmentValue must be detected as changed'
         );
     }
@@ -42,7 +47,7 @@ private class RES_AttributeBasedAdjustmentServiceTest {
         );
 
         Assert.isTrue(
-            RES_AttributeBasedAdjustmentService.isAdjustmentChanged(newAba, oldAba),
+            RES_AttributeBasedAdjustmentService.isAdjustmentChanged(newAba, oldAba, DEFAULT_SYNC_FIELDS),
             'Changed EffectiveFrom must be detected'
         );
     }
@@ -53,8 +58,20 @@ private class RES_AttributeBasedAdjustmentServiceTest {
         AttributeBasedAdjustment oldAba = new AttributeBasedAdjustment(AdjustmentType = 'Discount');
 
         Assert.isTrue(
-            RES_AttributeBasedAdjustmentService.isAdjustmentChanged(newAba, oldAba),
+            RES_AttributeBasedAdjustmentService.isAdjustmentChanged(newAba, oldAba, DEFAULT_SYNC_FIELDS),
             'Changed AdjustmentType must be detected'
+        );
+    }
+
+    @isTest
+    static void testIsAdjustmentChangedIgnoresFieldsNotInSyncSet() {
+        // SellingModelType is NOT in DEFAULT_SYNC_FIELDS — change must be invisible
+        AttributeBasedAdjustment newAba = new AttributeBasedAdjustment(AdjustmentValue = 5000);
+        AttributeBasedAdjustment oldAba = new AttributeBasedAdjustment(AdjustmentValue = 5000);
+
+        Assert.isFalse(
+            RES_AttributeBasedAdjustmentService.isAdjustmentChanged(newAba, oldAba, new Set<String>{ 'AdjustmentValue' }),
+            'A field not in syncFields must not trigger a change detection'
         );
     }
 
@@ -152,5 +169,31 @@ private class RES_AttributeBasedAdjustmentServiceTest {
     @isTest
     static void testConstructorInstantiates() {
         Assert.isNotNull(new RES_AttributeBasedAdjustmentService(), 'Constructor should succeed');
+    }
+
+    @isTest
+    static void testDAOGetAdjustmentsByRuleIdsNullOrEmptyReturnsEmpty() {
+        Assert.isTrue(
+            new RES_AttributeBasedAdjustmentDAOLayer().getAdjustmentsByRuleIds(null).isEmpty(),
+            'null ruleIds must return empty list'
+        );
+        Assert.isTrue(
+            new RES_AttributeBasedAdjustmentDAOLayer().getAdjustmentsByRuleIds(new Set<Id>()).isEmpty(),
+            'empty ruleIds must return empty list'
+        );
+    }
+
+    @isTest
+    static void testDAOGetAdjustmentsByRuleIdsNonMatchingReturnsEmpty() {
+        // Insert a rule with no ABA records — SOQL executes (covers the method body) and returns empty.
+        AttributeBasedAdjRule rule = new AttributeBasedAdjRule(Name = 'DAO-Coverage-Rule');
+        insert rule;
+
+        Test.startTest();
+        List<AttributeBasedAdjustment> results =
+            new RES_AttributeBasedAdjustmentDAOLayer().getAdjustmentsByRuleIds(new Set<Id>{ rule.Id });
+        Test.stopTest();
+
+        Assert.isTrue(results.isEmpty(), 'Rule with no ABA records should return empty list');
     }
 }

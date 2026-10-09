@@ -221,6 +221,82 @@ private class RES_ProductIntegrationServiceTest {
     }
 
     @isTest
+    static void testResidentialTypeSentAsRESResidentialType() {
+        // N (Residential) — must be sent as RES_Residential_Type, not as RES_Type
+        Product2 p = makeProduct();
+        p.RES_Type__c = 'N';
+
+        List<Map<String, Object>> result = RES_ProductIntegrationService.buildCustomFields(
+            p, new Set<String>(), makeInventoryTypeMap(),
+            new List<RES_Measurement__c>(), new Map<String, String>()
+        );
+
+        Map<String, String> byName = toNameValueMap(result);
+        Assert.isTrue(byName.containsKey('RES_Residential_Type'),
+            'Residential Type must appear as RES_Residential_Type in RES_CustomFields');
+        Assert.areEqual('N', byName.get('RES_Residential_Type'),
+            'Residential Type value must be N');
+        Assert.isFalse(byName.containsKey('RES_Type__c'),
+            'Raw SF field name with __c must not appear in payload');
+    }
+
+    @isTest
+    static void testBrandedResidentialTypeSent() {
+        Product2 p = makeProduct();
+        p.RES_Type__c = 'B';
+
+        List<Map<String, Object>> result = RES_ProductIntegrationService.buildCustomFields(
+            p, new Set<String>(), makeInventoryTypeMap(),
+            new List<RES_Measurement__c>(), new Map<String, String>()
+        );
+
+        Map<String, String> byName = toNameValueMap(result);
+        Assert.areEqual('B', byName.get('RES_Residential_Type'),
+            'Branded residential type must be sent as B');
+    }
+
+    @isTest
+    static void testResidentialTypeNoneNotSent() {
+        Product2 p = makeProduct();
+        p.RES_Type__c = 'None';
+
+        List<Map<String, Object>> result = RES_ProductIntegrationService.buildCustomFields(
+            p, new Set<String>(), makeInventoryTypeMap(),
+            new List<RES_Measurement__c>(), new Map<String, String>()
+        );
+
+        Map<String, String> byName = toNameValueMap(result);
+        Assert.isFalse(byName.containsKey('RES_Residential_Type'),
+            'None value must not be sent to SAP as Residential Type');
+    }
+
+    @isTest
+    static void testResidentialTypeAndInventoryTypeAreBothSent() {
+        // Both ZZRES_TYPE (RES_Residential_Type) and ZZINV_TYPE (RES_Type) must appear together
+        Product2 p = makeProduct();
+        p.RES_Type__c = 'N';
+        p.put('RecordTypeId', Schema.SObjectType.Product2.getRecordTypeInfosByDeveloperName()
+            .get('RES_Residential_Sales') != null
+                ? Schema.SObjectType.Product2.getRecordTypeInfosByDeveloperName().get('RES_Residential_Sales').getRecordTypeId()
+                : null);
+
+        List<Map<String, Object>> result = RES_ProductIntegrationService.buildCustomFields(
+            p, new Set<String>(), makeInventoryTypeMap(),
+            new List<RES_Measurement__c>(), new Map<String, String>()
+        );
+
+        Map<String, String> byName = toNameValueMap(result);
+        // Inventory Type (ZZINV_TYPE) must still be present
+        if (p.RecordType != null) {
+            Assert.isTrue(byName.containsKey('RES_Type'),
+                'Inventory Type (ZZINV_TYPE) must be present as RES_Type');
+        }
+        // Residential Type (ZZRES_TYPE) must also be present — both fields, no conflict
+        Assert.isTrue(byName.containsKey('RES_Residential_Type'),
+            'Residential Type (ZZRES_TYPE) must be present as RES_Residential_Type alongside RES_Type');
+    }
+
+    @isTest
     static void testMeasurementOverlapDetected() {
         List<Map<String, Object>> measList = new List<Map<String, Object>>{
             new Map<String, Object>{
@@ -596,12 +672,10 @@ private class RES_ProductIntegrationServiceTest {
     static void testBuildConditionsProductAttributeHandling() {
         RES_Condition_Mapping__mdt mapping = new RES_Condition_Mapping__mdt(
             RES_Condition_Type__c     = 'Y100',
-            RES_Formula__c            = 'D',
-            RES_Conditions_Purpose__c = 'I',
+            RES_Formula__c            = 'A',       // Fixed price — parameters must be omitted entirely
+            RES_Conditions_Purpose__c = 'S',
             RES_Handling__c           = 'Product_Attribute',
-            RES_Attribute_Name__c     = 'Pricing Option',
-            RES_Parameter_1__c        = 'Z007',
-            RES_Parameter_2__c        = null
+            RES_Attribute_Name__c     = 'Pricing Option'
         );
         ProductAttributeDefinition pad = new ProductAttributeDefinition(
             DefaultValue      = '50000',
@@ -620,11 +694,12 @@ private class RES_ProductIntegrationServiceTest {
 
         Assert.areEqual(1, conditions.size(), 'One condition must be built from PAD data');
         Map<String, Object> cond = conditions[0];
-        Assert.areEqual('Y100', cond.get('RES_Condition_Type'),       'Condition type from mapping');
+        Assert.areEqual('Y100', cond.get('RES_Condition_Type'), 'Condition type from mapping');
+        Assert.areEqual('A',    cond.get('RES_Formula'),        'Formula must be A for fixed-price condition');
         Assert.areEqual(50000,  ((Decimal) cond.get('RES_Condition_Price')).intValue(), 'Price from PAD DefaultValue');
-        Assert.areEqual('I',         cond.get('Change_Indicator'),        'CI must equal triggerContext');
-        Assert.areEqual('Z007',      cond.get('RES_Parameter_1'),         'Parameter_1 from mapping');
-        Assert.areEqual('',          cond.get('RES_Parameter_2'),         'Parameter_2 must be empty string when null');
+        Assert.areEqual('I',    cond.get('Change_Indicator'),   'CI must equal triggerContext');
+        Assert.isFalse(cond.containsKey('RES_Parameter_1'),     'Parameter_1 must be absent for Formula A');
+        Assert.isFalse(cond.containsKey('RES_Parameter_2'),     'Parameter_2 must be absent for Formula A');
         Assert.areEqual('2026-01-01', cond.get('RES_Condition_Valid_From'), 'Valid_From from PAD');
         Assert.areEqual('2026-12-31', cond.get('RES_Condition_Valid_To'),   'Valid_To from PAD');
     }
@@ -654,11 +729,10 @@ private class RES_ProductIntegrationServiceTest {
     static void testBuildConditionsChangeIndicatorEqualsContext() {
         RES_Condition_Mapping__mdt mapping = new RES_Condition_Mapping__mdt(
             RES_Condition_Type__c     = 'Y101',
-            RES_Formula__c            = 'D',
-            RES_Conditions_Purpose__c = 'I',
+            RES_Formula__c            = 'A',       // Fixed price — no parameters
+            RES_Conditions_Purpose__c = 'S',
             RES_Handling__c           = 'Product_Attribute',
-            RES_Attribute_Name__c     = 'Area Price',
-            RES_Parameter_1__c        = 'Z007'
+            RES_Attribute_Name__c     = 'Area Price'
         );
         ProductAttributeDefinition pad = new ProductAttributeDefinition(DefaultValue = '90000');
         pad.put('Name', 'Area Price');
@@ -977,6 +1051,337 @@ private class RES_ProductIntegrationServiceTest {
     }
 
     // ── Change C: "Already Exist" reconciliation label ────────────────────────
+
+    // ── selectBestAba: effective-date priority selection ─────────────────────
+
+    private static AttributeBasedAdjRule insertRule(String name) {
+        AttributeBasedAdjRule r = new AttributeBasedAdjRule(Name = name);
+        insert r;
+        return r;
+    }
+
+    @isTest
+    static void testSelectBestAbaActivePreferredOverExpired() {
+        AttributeBasedAdjRule rule = insertRule('SBAL-Test :: Option 1');
+        Map<Id, String> ruleMap = new Map<Id, String>{ rule.Id => 'Option 1' };
+
+        DateTime now = DateTime.now();
+        AttributeBasedAdjustment active  = new AttributeBasedAdjustment(
+            AttributeBasedAdjRuleId = rule.Id,
+            AdjustmentValue         = 100,
+            EffectiveFrom           = now.addHours(-1),
+            EffectiveTo             = now.addHours(1)
+        );
+        AttributeBasedAdjustment expired = new AttributeBasedAdjustment(
+            AttributeBasedAdjRuleId = rule.Id,
+            AdjustmentValue         = 999,
+            EffectiveFrom           = now.addDays(-2),
+            EffectiveTo             = now.addDays(-1)
+        );
+
+        Test.startTest();
+        AttributeBasedAdjustment result = RES_ProductIntegrationService.selectBestAba(
+            new List<AttributeBasedAdjustment>{ expired, active }, ruleMap, 'Option 1'
+        );
+        Test.stopTest();
+
+        Assert.areEqual(100, result.AdjustmentValue, 'Active ABA must be preferred over expired');
+    }
+
+    @isTest
+    static void testSelectBestAbaActivePreferredOverFuture() {
+        AttributeBasedAdjRule rule = insertRule('SBAL-Test-F :: Option 1');
+        Map<Id, String> ruleMap = new Map<Id, String>{ rule.Id => 'Option 1' };
+
+        DateTime now = DateTime.now();
+        AttributeBasedAdjustment active = new AttributeBasedAdjustment(
+            AttributeBasedAdjRuleId = rule.Id,
+            AdjustmentValue         = 200,
+            EffectiveFrom           = now.addHours(-1),
+            EffectiveTo             = now.addHours(1)
+        );
+        AttributeBasedAdjustment future = new AttributeBasedAdjustment(
+            AttributeBasedAdjRuleId = rule.Id,
+            AdjustmentValue         = 999,
+            EffectiveFrom           = now.addDays(1),
+            EffectiveTo             = now.addDays(2)
+        );
+
+        Test.startTest();
+        AttributeBasedAdjustment result = RES_ProductIntegrationService.selectBestAba(
+            new List<AttributeBasedAdjustment>{ future, active }, ruleMap, 'Option 1'
+        );
+        Test.stopTest();
+
+        Assert.areEqual(200, result.AdjustmentValue, 'Active ABA must be preferred over future');
+    }
+
+    @isTest
+    static void testSelectBestAbaExpiredUsedForAuditWhenNoActive() {
+        AttributeBasedAdjRule rule = insertRule('SBAL-Audit :: Option 1');
+        Map<Id, String> ruleMap = new Map<Id, String>{ rule.Id => 'Option 1' };
+
+        DateTime now = DateTime.now();
+        AttributeBasedAdjustment expiredOld    = new AttributeBasedAdjustment(
+            AttributeBasedAdjRuleId = rule.Id,
+            AdjustmentValue         = 111,
+            EffectiveFrom           = now.addDays(-5),
+            EffectiveTo             = now.addDays(-4)
+        );
+        AttributeBasedAdjustment expiredRecent = new AttributeBasedAdjustment(
+            AttributeBasedAdjRuleId = rule.Id,
+            AdjustmentValue         = 222,
+            EffectiveFrom           = now.addDays(-2),
+            EffectiveTo             = now.addDays(-1)
+        );
+
+        Test.startTest();
+        AttributeBasedAdjustment result = RES_ProductIntegrationService.selectBestAba(
+            new List<AttributeBasedAdjustment>{ expiredOld, expiredRecent }, ruleMap, 'Option 1'
+        );
+        Test.stopTest();
+
+        Assert.areEqual(222, result.AdjustmentValue, 'Most recently expired ABA must be used for audit continuity');
+    }
+
+    @isTest
+    static void testSelectBestAbaFutureAbaUsedWhenOnlyOption() {
+        AttributeBasedAdjRule rule = insertRule('SBAL-Future :: Option 1');
+        Map<Id, String> ruleMap = new Map<Id, String>{ rule.Id => 'Option 1' };
+
+        DateTime now = DateTime.now();
+        AttributeBasedAdjustment futureNear = new AttributeBasedAdjustment(
+            AttributeBasedAdjRuleId = rule.Id,
+            AdjustmentValue         = 333,
+            EffectiveFrom           = now.addDays(1),
+            EffectiveTo             = now.addDays(2)
+        );
+        AttributeBasedAdjustment futureFar = new AttributeBasedAdjustment(
+            AttributeBasedAdjRuleId = rule.Id,
+            AdjustmentValue         = 444,
+            EffectiveFrom           = now.addDays(10),
+            EffectiveTo             = now.addDays(11)
+        );
+
+        Test.startTest();
+        AttributeBasedAdjustment result = RES_ProductIntegrationService.selectBestAba(
+            new List<AttributeBasedAdjustment>{ futureFar, futureNear }, ruleMap, 'Option 1'
+        );
+        Test.stopTest();
+
+        Assert.areEqual(333, result.AdjustmentValue, 'Earliest future ABA must be selected when no active or expired exists');
+    }
+
+    @isTest
+    static void testSelectBestAbaNullWhenNoSelectorMatch() {
+        AttributeBasedAdjRule rule = insertRule('SBAL-NoMatch :: Option 1');
+        Map<Id, String> ruleMap = new Map<Id, String>{ rule.Id => 'Option 1' };
+
+        AttributeBasedAdjustment aba = new AttributeBasedAdjustment(
+            AttributeBasedAdjRuleId = rule.Id,
+            AdjustmentValue         = 555,
+            EffectiveFrom           = DateTime.now().addHours(-1),
+            EffectiveTo             = DateTime.now().addHours(1)
+        );
+
+        Test.startTest();
+        AttributeBasedAdjustment result = RES_ProductIntegrationService.selectBestAba(
+            new List<AttributeBasedAdjustment>{ aba }, ruleMap, 'Option 2' // wrong selector
+        );
+        Test.stopTest();
+
+        Assert.isNull(result, 'No matching selector must return null');
+    }
+
+    @isTest
+    static void testSelectBestAbaEmptyListReturnsNull() {
+        Test.startTest();
+        AttributeBasedAdjustment result = RES_ProductIntegrationService.selectBestAba(
+            new List<AttributeBasedAdjustment>(), new Map<Id, String>(), 'Option 1'
+        );
+        Test.stopTest();
+
+        Assert.isNull(result, 'Empty ABA list must return null');
+    }
+
+    @isTest
+    static void testSelectBestAbaOpenEndedActiveNullEffectiveTo() {
+        // An ABA with null EffectiveTo is treated as never-expiring → always active after EffectiveFrom
+        AttributeBasedAdjRule rule = insertRule('SBAL-OpenEnd :: Option 1');
+        Map<Id, String> ruleMap = new Map<Id, String>{ rule.Id => 'Option 1' };
+
+        AttributeBasedAdjustment openEnded = new AttributeBasedAdjustment(
+            AttributeBasedAdjRuleId = rule.Id,
+            AdjustmentValue         = 666,
+            EffectiveFrom           = DateTime.now().addDays(-10),
+            EffectiveTo             = null  // open-ended
+        );
+
+        Test.startTest();
+        AttributeBasedAdjustment result = RES_ProductIntegrationService.selectBestAba(
+            new List<AttributeBasedAdjustment>{ openEnded }, ruleMap, 'Option 1'
+        );
+        Test.stopTest();
+
+        Assert.areEqual(666, result.AdjustmentValue, 'Open-ended ABA (null EffectiveTo) must be treated as currently active');
+    }
+
+    @isTest
+    static void testBuildConditionsY102FormulaAOmitsParameterKeys() {
+        RES_Condition_Mapping__mdt mapping = new RES_Condition_Mapping__mdt(
+            RES_Condition_Type__c     = 'Y102',
+            RES_Formula__c            = 'A',
+            RES_Conditions_Purpose__c = 'S',
+            RES_Handling__c           = 'Product_Attribute',
+            RES_Attribute_Name__c     = 'Unit Price 3'
+        );
+        ProductAttributeDefinition pad = new ProductAttributeDefinition(DefaultValue = '75000');
+        pad.put('Name', 'Unit Price 3');
+
+        List<Map<String, Object>> conditions = RES_ProductIntegrationService.buildConditions(
+            new List<RES_Condition_Mapping__mdt>{ mapping },
+            new List<AttributeBasedAdjustment>(),
+            new Map<Id, String>(),
+            new List<ProductAttributeDefinition>{ pad },
+            'I'
+        );
+
+        Assert.areEqual(1, conditions.size(), 'One Y102 condition expected');
+        Map<String, Object> cond = conditions[0];
+        Assert.areEqual('Y102', cond.get('RES_Condition_Type'), 'Condition type must be Y102');
+        Assert.areEqual('A',    cond.get('RES_Formula'),        'Y102 must use Formula A');
+        Assert.isFalse(cond.containsKey('RES_Parameter_1'),     'Parameter_1 must be absent for Y102');
+        Assert.isFalse(cond.containsKey('RES_Parameter_2'),     'Parameter_2 must be absent for Y102');
+    }
+
+    @isTest
+    static void testBuildConditionsY400FormulaDIncludesParameterKeys() {
+        RES_Condition_Mapping__mdt mapping = new RES_Condition_Mapping__mdt(
+            RES_Condition_Type__c     = 'Y400',
+            RES_Formula__c            = 'D',
+            RES_Conditions_Purpose__c = 'S',
+            RES_Handling__c           = 'Product_Attribute',
+            RES_Attribute_Name__c     = 'Service Charge',
+            RES_Parameter_1__c        = 'Z009',
+            RES_Parameter_2__c        = null
+        );
+        ProductAttributeDefinition pad = new ProductAttributeDefinition(
+            DefaultValue      = '15000',
+            RES_Valid_From__c = Date.newInstance(2026, 1, 1),
+            RES_Valid_To__c   = Date.newInstance(2026, 12, 31)
+        );
+        pad.put('Name', 'Service Charge');
+
+        List<Map<String, Object>> conditions = RES_ProductIntegrationService.buildConditions(
+            new List<RES_Condition_Mapping__mdt>{ mapping },
+            new List<AttributeBasedAdjustment>(),
+            new Map<Id, String>(),
+            new List<ProductAttributeDefinition>{ pad },
+            'I'
+        );
+
+        Assert.areEqual(1, conditions.size(), 'One Y400 condition expected');
+        Map<String, Object> cond = conditions[0];
+        Assert.areEqual('Y400', cond.get('RES_Condition_Type'), 'Condition type must be Y400');
+        Assert.areEqual('D',    cond.get('RES_Formula'),        'Y400 must use Formula D');
+        Assert.isTrue(cond.containsKey('RES_Parameter_1'),      'Parameter_1 must be present for Formula D');
+        Assert.areEqual('Z009', cond.get('RES_Parameter_1'),    'Parameter_1 must be Z009 (Plot Area)');
+        Assert.isTrue(cond.containsKey('RES_Parameter_2'),      'Parameter_2 must be present for Formula D');
+        Assert.areEqual('',     cond.get('RES_Parameter_2'),    'Parameter_2 must be empty string');
+    }
+
+    @isTest
+    static void testBuildConditionsFormulaDNullAreaTypeIsSkipped() {
+        RES_Condition_Mapping__mdt mapping = new RES_Condition_Mapping__mdt(
+            RES_Condition_Type__c     = 'Y400',
+            RES_Formula__c            = 'D',
+            RES_Conditions_Purpose__c = 'S',
+            RES_Handling__c           = 'Product_Attribute',
+            RES_Attribute_Name__c     = 'Service Charge',
+            RES_Parameter_1__c        = null
+        );
+        ProductAttributeDefinition pad = new ProductAttributeDefinition(DefaultValue = '15000');
+        pad.put('Name', 'Service Charge');
+
+        List<Map<String, Object>> conditions = RES_ProductIntegrationService.buildConditions(
+            new List<RES_Condition_Mapping__mdt>{ mapping },
+            new List<AttributeBasedAdjustment>(),
+            new Map<Id, String>(),
+            new List<ProductAttributeDefinition>{ pad },
+            'I'
+        );
+
+        Assert.isTrue(conditions.isEmpty(),
+            'A Formula D condition with no area type must be skipped to prevent an incomplete Y400 payload');
+    }
+
+    @isTest
+    static void testBuildConditionsFixedPriceJsonLacksParameterKeys() {
+        RES_Condition_Mapping__mdt mapping = new RES_Condition_Mapping__mdt(
+            RES_Condition_Type__c     = 'Y100',
+            RES_Formula__c            = 'A',
+            RES_Conditions_Purpose__c = 'S',
+            RES_Handling__c           = 'Product_Attribute',
+            RES_Attribute_Name__c     = 'Unit Price'
+        );
+        ProductAttributeDefinition pad = new ProductAttributeDefinition(
+            DefaultValue      = '200000',
+            RES_Valid_From__c = Date.newInstance(2026, 1, 1),
+            RES_Valid_To__c   = Date.newInstance(2026, 12, 31)
+        );
+        pad.put('Name', 'Unit Price');
+
+        List<Map<String, Object>> conditions = RES_ProductIntegrationService.buildConditions(
+            new List<RES_Condition_Mapping__mdt>{ mapping },
+            new List<AttributeBasedAdjustment>(),
+            new Map<Id, String>(),
+            new List<ProductAttributeDefinition>{ pad },
+            'I'
+        );
+
+        Assert.areEqual(1, conditions.size());
+        String condJson = JSON.serialize(conditions[0]);
+        Assert.isFalse(condJson.contains('RES_Parameter_1'),
+            'Serialized fixed-price JSON must not contain RES_Parameter_1');
+        Assert.isFalse(condJson.contains('RES_Parameter_2'),
+            'Serialized fixed-price JSON must not contain RES_Parameter_2');
+    }
+
+    @isTest
+    static void testBuildConditionsServiceChargeJsonIncludesParameterKeys() {
+        RES_Condition_Mapping__mdt mapping = new RES_Condition_Mapping__mdt(
+            RES_Condition_Type__c     = 'Y400',
+            RES_Formula__c            = 'D',
+            RES_Conditions_Purpose__c = 'S',
+            RES_Handling__c           = 'Product_Attribute',
+            RES_Attribute_Name__c     = 'Service Charge',
+            RES_Parameter_1__c        = 'Z009',
+            RES_Parameter_2__c        = null
+        );
+        ProductAttributeDefinition pad = new ProductAttributeDefinition(
+            DefaultValue      = '12000',
+            RES_Valid_From__c = Date.newInstance(2026, 1, 1),
+            RES_Valid_To__c   = Date.newInstance(2026, 12, 31)
+        );
+        pad.put('Name', 'Service Charge');
+
+        List<Map<String, Object>> conditions = RES_ProductIntegrationService.buildConditions(
+            new List<RES_Condition_Mapping__mdt>{ mapping },
+            new List<AttributeBasedAdjustment>(),
+            new Map<Id, String>(),
+            new List<ProductAttributeDefinition>{ pad },
+            'I'
+        );
+
+        Assert.areEqual(1, conditions.size());
+        String condJson = JSON.serialize(conditions[0]);
+        Assert.isTrue(condJson.contains('"RES_Parameter_1"'),
+            'Serialized service-charge JSON must contain RES_Parameter_1');
+        Assert.isTrue(condJson.contains('"RES_Parameter_2"'),
+            'Serialized service-charge JSON must contain RES_Parameter_2');
+        Assert.isTrue(condJson.contains('"Z009"'),
+            'Serialized service-charge JSON must contain Z009 as the area type');
+    }
 
     @isTest
     static void testAlreadyExistResponseLogsReconciliationRequired() {

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>RES_SAP_Condition_Valid_From__c</fullName>
+    <description>Stores the ValidFrom date last successfully sent to SAP for this ABA condition. Used on CI=U updates so SAP can locate the existing condition by its current start date.</description>
+    <externalId>false</externalId>
+    <label>SAP Condition Valid From</label>
+    <required>false</required>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Date</type>
+</CustomField>
