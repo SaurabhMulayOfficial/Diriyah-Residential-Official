@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Profile xmlns="http://soap.sforce.com/2006/04/metadata">
     <custom>true</custom>
-     <classAccesses>
+    <classAccesses>
         <apexClass>RES_NumberToWordsService</apexClass>
         <enabled>true</enabled>
     </classAccesses>
@@ -769,6 +769,16 @@
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
+            <editable>false</editable>
+            <field>Product2.RES_Fixtures_Last_Sync__c</field>
+            <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+            <editable>false</editable>
+            <field>Product2.RES_Last_Sync_DateTime__c</field>
+            <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
         <editable>false</editable>
         <field>Product2.RES_CIP_Type__c</field>
         <readable>true</readable>
@@ -1407,6 +1417,11 @@
     <fieldPermissions>
         <editable>false</editable>
         <field>RES_Measurement__c.RES_Measurement_To__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>AttributeBasedAdjustment.RES_Last_Sync_DateTime__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <recordTypeVisibilities>
