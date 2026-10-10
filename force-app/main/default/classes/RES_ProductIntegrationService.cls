@@ -134,13 +134,7 @@ public without sharing class RES_ProductIntegrationService extends RES_BaseInteg
         for (AttributeBasedAdjustment aba : allAbaList) {
             if (aba.AttributeBasedAdjRuleId != null) abaRuleIds.add(aba.AttributeBasedAdjRuleId);
         }
-        Map<Id, String> ruleSelectorMap = new Map<Id, String>();
-        if (!abaRuleIds.isEmpty()) {
-            for (AttributeBasedAdjRule rule : new RES_AttributeBasedAdjRuleDAOLayer().getRulesByIds(abaRuleIds)) {
-                String sel = rule.Name.contains(' :: ') ? rule.Name.substringAfterLast(' :: ') : rule.Name;
-                ruleSelectorMap.put(rule.Id, sel);
-            }
-        }
+        Map<Id, String> ruleSelectorMap = buildRuleSelectorMap(abaRuleIds);
         Map<Id, List<AttributeBasedAdjustment>> abaByProduct = new Map<Id, List<AttributeBasedAdjustment>>();
         for (AttributeBasedAdjustment aba : allAbaList) {
             if (!abaByProduct.containsKey(aba.ProductId)) {
@@ -360,6 +354,10 @@ public without sharing class RES_ProductIntegrationService extends RES_BaseInteg
                 }
                 condMap.put('RES_Parameter_1', mapping.RES_Parameter_1__c);
                 condMap.put('RES_Parameter_2', mapping.RES_Parameter_2__c != null ? mapping.RES_Parameter_2__c : '');
+            } else {
+                // Formula A (Y100/Y101/Y102): SAP requires these fields present as empty strings
+                condMap.put('RES_Parameter_1', '');
+                condMap.put('RES_Parameter_2', '');
             }
 
             if (mapping.RES_Handling__c == 'Attribute_Based_Adjustment') {
@@ -407,6 +405,42 @@ public without sharing class RES_ProductIntegrationService extends RES_BaseInteg
             }
         }
         return conditions;
+    }
+
+    /**
+     * @description Maps each ABA rule to its pricing-option selector (e.g. "Option 1").
+     *              The rule's AttributeAdjustmentCondition value is the source of truth because the UI
+     *              auto-names new rules ("Rule_<n>"); the "<Unit> :: Option N" name is only a fallback.
+     */
+    private static Map<Id, String> buildRuleSelectorMap(Set<Id> ruleIds) {
+        Map<Id, String> selectorByRule = new Map<Id, String>();
+        if (ruleIds == null || ruleIds.isEmpty()) return selectorByRule;
+
+        Map<Id, List<String>> valuesByRule = new Map<Id, List<String>>();
+        for (AttributeAdjustmentCondition cond : new RES_AttributeAdjustmentConditionDAOLayer().getConditionsByRuleIds(ruleIds)) {
+            if (!valuesByRule.containsKey(cond.AttributeBasedAdjRuleId)) {
+                valuesByRule.put(cond.AttributeBasedAdjRuleId, new List<String>());
+            }
+            valuesByRule.get(cond.AttributeBasedAdjRuleId).add(cond.StringValue);
+        }
+        for (AttributeBasedAdjRule rule : new RES_AttributeBasedAdjRuleDAOLayer().getRulesByIds(ruleIds)) {
+            selectorByRule.put(rule.Id, resolveSelector(rule.Name, valuesByRule.get(rule.Id)));
+        }
+        return selectorByRule;
+    }
+
+    /**
+     * @description Returns the first non-blank condition value; falls back to the text after " :: " in the rule name.
+     */
+    @TestVisible
+    private static String resolveSelector(String ruleName, List<String> conditionValues) {
+        if (conditionValues != null) {
+            for (String v : conditionValues) {
+                if (String.isNotBlank(v)) return v.trim();
+            }
+        }
+        if (ruleName == null) return null;
+        return ruleName.contains(' :: ') ? ruleName.substringAfterLast(' :: ') : ruleName;
     }
 
     /**
