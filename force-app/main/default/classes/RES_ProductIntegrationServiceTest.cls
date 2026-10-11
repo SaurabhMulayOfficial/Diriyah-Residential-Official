@@ -114,7 +114,7 @@ private class RES_ProductIntegrationServiceTest {
 
         Map<String, String> byName = toNameValueMap(result);
         Assert.areEqual('SKU-001',  byName.get('StockKeepingUnit'),       'StockKeepingUnit');
-        Assert.isFalse(byName.containsKey('RES_Type'),  'RES_Type__c (root-excluded) must not appear directly');
+        Assert.isFalse(byName.containsKey('RES_Type__c'), 'Raw RES_Type__c name must not appear directly');
         Assert.areEqual('3-3A',     byName.get('RES_Style'),              'RES_Style');
         Assert.areEqual('20260630', byName.get('RES_Unit_Handover_Date'), 'Date must be YYYYMMDD');
         Assert.isTrue(byName.containsKey('RES_Unit_Size'),  'RES_Unit_Size must be present');
@@ -133,7 +133,7 @@ private class RES_ProductIntegrationServiceTest {
 
         Map<String, String> byName = toNameValueMap(result);
         Assert.isTrue(byName.containsKey('StockKeepingUnit'), 'SKU must be present');
-        Assert.isFalse(byName.containsKey('RES_Type'),        'Null field must be skipped');
+        Assert.isFalse(byName.containsKey('RES_Type'),        'Null RES_Type__c must be skipped');
         Assert.isFalse(byName.containsKey('RES_Style'),       'Null field must be skipped');
     }
 
@@ -163,6 +163,7 @@ private class RES_ProductIntegrationServiceTest {
         for (Map<String, Object> e : result) names.add((String) e.get('name'));
 
         for (String rootSf : RES_ProductIntegrationService.ROOT_FIELD_SF_NAMES) {
+            if (rootSf == 'RES_Type__c') continue; // sent deliberately as RES_Type (S4 Residential Type)
             String sapName = rootSf.endsWith('__c') ? rootSf.removeEnd('__c') : rootSf;
             Assert.isFalse(names.contains(sapName),
                 'Root field ' + rootSf + ' must not appear in RES_CustomFields');
@@ -222,7 +223,7 @@ private class RES_ProductIntegrationServiceTest {
 
     @isTest
     static void testResidentialTypeSentAsRESResidentialType() {
-        // N (Residential) — must be sent as RES_Residential_Type, not as RES_Type
+        // N (Residential) — must be sent as RES_Type (S4 Residential Type: B or N)
         Product2 p = makeProduct();
         p.RES_Type__c = 'N';
 
@@ -232,9 +233,9 @@ private class RES_ProductIntegrationServiceTest {
         );
 
         Map<String, String> byName = toNameValueMap(result);
-        Assert.isTrue(byName.containsKey('RES_Residential_Type'),
-            'Residential Type must appear as RES_Residential_Type in RES_CustomFields');
-        Assert.areEqual('N', byName.get('RES_Residential_Type'),
+        Assert.isTrue(byName.containsKey('RES_Type'),
+            'Residential Type must appear as RES_Type in RES_CustomFields');
+        Assert.areEqual('N', byName.get('RES_Type'),
             'Residential Type value must be N');
         Assert.isFalse(byName.containsKey('RES_Type__c'),
             'Raw SF field name with __c must not appear in payload');
@@ -251,7 +252,7 @@ private class RES_ProductIntegrationServiceTest {
         );
 
         Map<String, String> byName = toNameValueMap(result);
-        Assert.areEqual('B', byName.get('RES_Residential_Type'),
+        Assert.areEqual('B', byName.get('RES_Type'),
             'Branded residential type must be sent as B');
     }
 
@@ -266,13 +267,13 @@ private class RES_ProductIntegrationServiceTest {
         );
 
         Map<String, String> byName = toNameValueMap(result);
-        Assert.isFalse(byName.containsKey('RES_Residential_Type'),
+        Assert.isFalse(byName.containsKey('RES_Type'),
             'None value must not be sent to SAP as Residential Type');
     }
 
     @isTest
     static void testResidentialTypeAndInventoryTypeAreBothSent() {
-        // Both ZZRES_TYPE (RES_Residential_Type) and ZZINV_TYPE (RES_Type) must appear together
+        // Both Residential Type (RES_Type = B/N) and Inventory Type (RECORDTYPENAME = Y01/Z01) must appear together
         Product2 p = makeProduct();
         p.RES_Type__c = 'N';
         p.put('RecordTypeId', Schema.SObjectType.Product2.getRecordTypeInfosByDeveloperName()
@@ -286,14 +287,15 @@ private class RES_ProductIntegrationServiceTest {
         );
 
         Map<String, String> byName = toNameValueMap(result);
-        // Inventory Type (ZZINV_TYPE) must still be present
+        // Inventory Type must still be present when a record type is set
         if (p.RecordType != null) {
-            Assert.isTrue(byName.containsKey('RES_Type'),
-                'Inventory Type (ZZINV_TYPE) must be present as RES_Type');
+            Assert.areEqual('Y01', byName.get('RECORDTYPENAME'),
+                'Inventory Type must be present as RECORDTYPENAME');
         }
-        // Residential Type (ZZRES_TYPE) must also be present — both fields, no conflict
-        Assert.isTrue(byName.containsKey('RES_Residential_Type'),
-            'Residential Type (ZZRES_TYPE) must be present as RES_Residential_Type alongside RES_Type');
+        // Residential Type must also be present — both fields, no conflict
+        Assert.isTrue(byName.containsKey('RES_Type'),
+            'Residential Type must be present as RES_Type alongside the inventory type');
+        Assert.areEqual('N', byName.get('RES_Type'), 'RES_Type must carry the B/N residential type, not the inventory code');
     }
 
     @isTest
