@@ -539,19 +539,21 @@ public without sharing class RES_ProductIntegrationService extends RES_BaseInteg
             }
         }
 
-        if (!addedSapNames.contains('RES_Type') && p.RecordType != null && String.isNotBlank(p.RecordType.DeveloperName)) {
+        // RES_Type is the S4 Residential Type (B=Branded, N=Residential), Sales only.
+        // RES_Type__c is excluded from the MDT loop (ROOT_FIELD_SF_NAMES) so it is only sent here.
+        if (String.isNotBlank(p.RES_Type__c) && p.RES_Type__c != 'None') {
+            result.add(new Map<String, Object>{ 'name' => 'RES_Type', 'value' => p.RES_Type__c });
+            addedSapNames.add('RES_Type');
+        }
+
+        // Inventory Type (Y01=Sales, Z01=Leasing) is derived from the product record type and sent as RECORDTYPENAME.
+        if (!addedSapNames.contains('RECORDTYPENAME') && p.RecordType != null && String.isNotBlank(p.RecordType.DeveloperName)) {
             String rtName = p.RecordType.DeveloperName;
             String invType = inventoryTypeMap.containsKey(rtName)
                 ? inventoryTypeMap.get(rtName)
                 : (inventoryTypeMap.containsKey('DEFAULT') ? inventoryTypeMap.get('DEFAULT') : 'Z01');
-            result.add(new Map<String, Object>{ 'name' => 'RES_Type', 'value' => invType });
-            addedSapNames.add('RES_Type');
-        }
-
-        // ZZRES_TYPE — Residential Type (B=Branded, N=Residential), Sales only.
-        // RES_Type__c is excluded from the MDT loop (ROOT_FIELD_SF_NAMES) to avoid conflicting with RES_Type (ZZINV_TYPE).
-        if (String.isNotBlank(p.RES_Type__c) && p.RES_Type__c != 'None') {
-            result.add(new Map<String, Object>{ 'name' => 'RES_Residential_Type', 'value' => p.RES_Type__c });
+            result.add(new Map<String, Object>{ 'name' => 'RECORDTYPENAME', 'value' => invType });
+            addedSapNames.add('RECORDTYPENAME');
         }
 
         String addrJson = buildAddressJson(p);
