@@ -9,16 +9,10 @@
                         <valueListItems>
                             <value>Edit</value>
                             <visibilityRule>
-                                <booleanFilter>1 OR 2</booleanFilter>
                                 <criteria>
                                     <leftValue>{!$User.Profile.Name}</leftValue>
                                     <operator>EQUAL</operator>
                                     <rightValue>System Administrator</rightValue>
-                                </criteria>
-                                <criteria>
-                                    <leftValue>{!$Permission.CustomPermission.RES_Product_Edit}</leftValue>
-                                    <operator>EQUAL</operator>
-                                    <rightValue>true</rightValue>
                                 </criteria>
                             </visibilityRule>
                         </valueListItems>
@@ -111,7 +105,7 @@
             <fieldInstance>
                 <fieldInstanceProperties>
                     <name>uiBehavior</name>
-                    <value>none</value>
+                    <value>readonly</value>
                 </fieldInstanceProperties>
                 <fieldItem>Record.Family</fieldItem>
                 <identifier>RecordFamilyField</identifier>
@@ -175,7 +169,7 @@
             <fieldInstance>
                 <fieldInstanceProperties>
                     <name>uiBehavior</name>
-                    <value>none</value>
+                    <value>readonly</value>
                 </fieldInstanceProperties>
                 <fieldItem>Record.RES_Business_Entity__c</fieldItem>
                 <identifier>RecordRES_Business_Entity_cField</identifier>
@@ -185,7 +179,7 @@
             <fieldInstance>
                 <fieldInstanceProperties>
                     <name>uiBehavior</name>
-                    <value>none</value>
+                    <value>readonly</value>
                 </fieldInstanceProperties>
                 <fieldItem>Record.RES_Product_External_ID__c</fieldItem>
                 <identifier>RecordRES_Product_External_ID_cField</identifier>
@@ -282,7 +276,7 @@
             <fieldInstance>
                 <fieldInstanceProperties>
                     <name>uiBehavior</name>
-                    <value>none</value>
+                    <value>readonly</value>
                 </fieldInstanceProperties>
                 <fieldItem>Record.RES_Company_Code__c</fieldItem>
                 <identifier>RecordRES_Company_Code_cField</identifier>
