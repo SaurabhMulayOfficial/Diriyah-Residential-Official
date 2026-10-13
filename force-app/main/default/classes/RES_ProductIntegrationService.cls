@@ -17,6 +17,7 @@ public without sharing class RES_ProductIntegrationService extends RES_BaseInteg
     @TestVisible private static Set<Id> includedMeasurementIds    = new Set<Id>();
     @TestVisible private static Set<Id> includedAbaIds            = new Set<Id>();
     @TestVisible private static Map<Id, Date> includedAbaValidFromMap = new Map<Id, Date>();
+    @TestVisible private static Map<Id, Date> includedPadValidFromMap = new Map<Id, Date>();
     @TestVisible private static Set<Id> fixtureIdsToStamp = new Set<Id>();
 
     @TestVisible private static final Set<String> FIXTURES_SF_NAMES = new Set<String>{
@@ -154,6 +155,7 @@ public without sharing class RES_ProductIntegrationService extends RES_BaseInteg
         includedMeasurementIds.clear();
         includedAbaIds.clear();
         includedAbaValidFromMap.clear();
+        includedPadValidFromMap.clear();
         fixtureIdsToStamp.clear();
         List<Map<String, Object>> payloads = new List<Map<String, Object>>();
 
@@ -392,8 +394,18 @@ public without sharing class RES_ProductIntegrationService extends RES_BaseInteg
                             condMap.put('RES_Condition_Price', pad.DefaultValue);
                         }
                     }
-                    condMap.put('RES_Condition_Valid_From', pad.RES_Valid_From__c != null ? String.valueOf(pad.RES_Valid_From__c) : String.valueOf(Date.today()));
+                    // SAP finds an existing condition by its start date, so once SAP has accepted it we keep sending that same date as an update.
+                    // A condition SAP has never received (no sync stamp) is an insert, even when the unit itself already exists in SAP.
+                    Boolean alreadyInSap = triggerContext != 'I'
+                        && pad.RES_Last_Sync_DateTime__c != null
+                        && pad.RES_SAP_Condition_Valid_From__c != null;
+                    Date padValidFrom = alreadyInSap
+                        ? pad.RES_SAP_Condition_Valid_From__c
+                        : (pad.RES_Valid_From__c != null ? pad.RES_Valid_From__c : Date.today());
+                    condMap.put('Change_Indicator',         alreadyInSap ? 'U' : 'I');
+                    condMap.put('RES_Condition_Valid_From', String.valueOf(padValidFrom));
                     condMap.put('RES_Condition_Valid_To',   pad.RES_Valid_To__c   != null ? String.valueOf(pad.RES_Valid_To__c)   : '9999-12-31');
+                    includedPadValidFromMap.put(pad.Id, padValidFrom);
                 }
             } else {
                 continue;
@@ -945,6 +957,24 @@ public without sharing class RES_ProductIntegrationService extends RES_BaseInteg
                         if (!measResults[i].isSuccess()) {
                             System.debug('### [Unit_Sync] ERROR stamping Measurement sync time for ' + measToStamp[i].Id
                                 + ' | Errors: ' + measResults[i].getErrors());
+                        }
+                    }
+                }
+
+                if (!includedPadValidFromMap.isEmpty()) {
+                    List<ProductAttributeDefinition> padToStamp = new List<ProductAttributeDefinition>();
+                    for (Id padId : includedPadValidFromMap.keySet()) {
+                        padToStamp.add(new ProductAttributeDefinition(
+                            Id = padId,
+                            RES_Last_Sync_DateTime__c = System.now(),
+                            RES_SAP_Condition_Valid_From__c = includedPadValidFromMap.get(padId)
+                        ));
+                    }
+                    List<Database.SaveResult> padResults = Database.update(padToStamp, false, AccessLevel.SYSTEM_MODE);
+                    for (Integer i = 0; i < padResults.size(); i++) {
+                        if (!padResults[i].isSuccess()) {
+                            System.debug('### [Unit_Sync] ERROR stamping attribute condition sync time for ' + padToStamp[i].Id
+                                + ' | Errors: ' + padResults[i].getErrors());
                         }
                     }
                 }

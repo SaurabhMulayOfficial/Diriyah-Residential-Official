@@ -138,4 +138,29 @@ private class RES_ProdAttrDefDAOLayerTest {
 
         Assert.isNotNull(result, 'Result must not be null');
     }
+
+    // ── getByProductIds ──────────────────────────────────────────────────────
+
+    @isTest
+    static void getByProductIds_nullAndEmpty_returnEmpty() {
+        Assert.areEqual(0, dao.getByProductIds(null).size(), 'Null productIds must return empty list');
+        Assert.areEqual(0, dao.getByProductIds(new Set<Id>()).size(), 'Empty productIds must return empty list');
+    }
+
+    @isTest
+    static void getByProductIds_validIds_executesQueryIncludingSyncFields() {
+        RES_Config_Switch__c cfg = new RES_Config_Switch__c(
+            SetupOwnerId = UserInfo.getOrganizationId(), RES_Triggers_Off__c = true
+        );
+        upsert cfg;
+        Product2 p = new Product2(Name = 'DAO-PAD-ByProduct', IsActive = true);
+        insert p;
+
+        Test.startTest();
+        List<ProductAttributeDefinition> result = dao.getByProductIds(new Set<Id>{ p.Id });
+        Test.stopTest();
+
+        Assert.isNotNull(result, 'Query must execute and return a list');
+        Assert.areEqual(0, result.size(), 'A product without attributes returns no rows');
+    }
 }

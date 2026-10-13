@@ -31,7 +31,8 @@ public without sharing class RES_ProductAttributeDefinitionDAOLayer extends RES_
     public List<ProductAttributeDefinition> getByProductIds(Set<Id> productIds) {
         if (productIds == null || productIds.isEmpty()) return new List<ProductAttributeDefinition>();
         Map<String, Object> bindVars = new Map<String, Object>{ 'productIds' => productIds };
-        String soql = 'SELECT Id, Product2Id, Name, DefaultValue, RES_Valid_From__c, RES_Valid_To__c, Status ' +
+        String soql = 'SELECT Id, Product2Id, Name, DefaultValue, RES_Valid_From__c, RES_Valid_To__c, Status, ' +
+                      'RES_Last_Sync_DateTime__c, RES_SAP_Condition_Valid_From__c ' +
                       'FROM ProductAttributeDefinition WHERE Product2Id IN :productIds AND Status = \'Active\'';
         return (List<ProductAttributeDefinition>) executeQuery(soql, '', false, bindVars, AccessLevel.SYSTEM_MODE);
     }
