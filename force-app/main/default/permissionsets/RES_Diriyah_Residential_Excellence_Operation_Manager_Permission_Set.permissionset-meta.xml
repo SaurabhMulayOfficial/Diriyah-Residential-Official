@@ -3497,12 +3497,12 @@
             <readable>true</readable>
         </fieldPermissions>
         <fieldPermissions>
-        <editable>false</editable>
+        <editable>true</editable>
         <field>Product2.RES_Status_Role_Description__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
-        <editable>false</editable>
+        <editable>true</editable>
         <field>Product2.RES_Status_Role__c</field>
         <readable>true</readable>
     </fieldPermissions>
@@ -3512,7 +3512,7 @@
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
-        <editable>false</editable>
+        <editable>true</editable>
         <field>Product2.RES_No_of_Months__c</field>
         <readable>true</readable>
     </fieldPermissions>
@@ -3536,6 +3536,16 @@
         <field>Product2.RES_Company_Code__c</field>
         <readable>true</readable>
     </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>Product2.RES_Product_External_ID__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+        <fieldPermissions>
+            <editable>true</editable>
+            <field>Product2.DisplayUrl</field>
+            <readable>true</readable>
+        </fieldPermissions>
     <hasActivationRequired>false</hasActivationRequired>
     <label>Diriyah Residential – Excellence Operation Manager Permission Set</label>
     <license>Salesforce</license>

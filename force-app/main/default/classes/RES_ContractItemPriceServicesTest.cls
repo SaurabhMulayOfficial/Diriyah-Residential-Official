@@ -546,5 +546,62 @@ private class RES_ContractItemPriceServicesTest {
             'Service should update Final Payment correctly');
     }
 
+    @IsTest
+    static void testUpdateFinalPayment_successLeavesNoErrors() {
+        RES_IntegrationTestDataFactory.primeSapToken();
+        Test.setMock(HttpCalloutMock.class, new RES_IntegrationTestDataFactory.EndpointRoutingMock());
+        Contract con = createTestContract();
+
+        RES_ContractItemPriceServices.mockExistingCIPs = new List<ContractItemPrice>{
+            makeCip(con.Id, 4, 4200)
+        };
+
+        Test.startTest();
+        RES_ContractItemPriceServices.updateFinalPaymentOnContract(
+            new List<ContractItemPrice>{ makeCip(con.Id, 4, 4200) }
+        );
+        Test.stopTest();
+
+        Contract updated = [SELECT RES_Final_Payment__c FROM Contract WHERE Id = :con.Id];
+        System.assertEquals(4200, updated.RES_Final_Payment__c,
+            'Final Payment should be written in system mode');
+        System.assert(RES_ContractItemPriceServices.finalPaymentUpdateErrors.isEmpty(),
+            'A successful update must not record any errors');
+    }
+
+    @IsTest
+    static void testUpdateFinalPayment_dmlFailureIsCapturedNotThrown() {
+        RES_IntegrationTestDataFactory.primeSapToken();
+        Test.setMock(HttpCalloutMock.class, new RES_IntegrationTestDataFactory.EndpointRoutingMock());
+        Contract con = createTestContract();
+
+        // A value outside the currency field's valid range makes the Contract update fail
+        // on its own (no mocks needed) - the service must report it, not throw and roll back
+        // the caller's Contract Item Price insert.
+        Decimal outOfRange = 99999999999999999999.00;
+        RES_ContractItemPriceServices.mockExistingCIPs = new List<ContractItemPrice>{
+            makeCip(con.Id, 1, outOfRange)
+        };
+
+        Boolean threw = false;
+        Test.startTest();
+        try {
+            RES_ContractItemPriceServices.updateFinalPaymentOnContract(
+                new List<ContractItemPrice>{ makeCip(con.Id, 1, outOfRange) }
+            );
+        } catch (Exception e) {
+            threw = true;
+        }
+        Test.stopTest();
+
+        System.assertEquals(false, threw, 'A failed Final Payment update must not throw');
+        System.assertEquals(1, RES_ContractItemPriceServices.finalPaymentUpdateErrors.size(),
+            'The failed update must be captured');
+        System.assert(RES_ContractItemPriceServices.finalPaymentUpdateErrors[0].contains(con.Id),
+            'The captured error must identify the Contract');
+        Contract unchanged = [SELECT RES_Final_Payment__c FROM Contract WHERE Id = :con.Id];
+        System.assertEquals(null, unchanged.RES_Final_Payment__c,
+            'The Contract must be left unchanged when the update fails');
+    }
 
 }
