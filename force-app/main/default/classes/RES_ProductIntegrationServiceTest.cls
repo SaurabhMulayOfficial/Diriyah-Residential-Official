@@ -738,6 +738,8 @@ private class RES_ProductIntegrationServiceTest {
         );
         ProductAttributeDefinition pad = new ProductAttributeDefinition(DefaultValue = '90000');
         pad.put('Name', 'Area Price');
+        pad.put('RES_Last_Sync_DateTime__c', System.now().addDays(-1));
+        pad.put('RES_SAP_Condition_Valid_From__c', Date.today().addDays(-1));
 
         List<Map<String, Object>> conditions = RES_ProductIntegrationService.buildConditions(
             new List<RES_Condition_Mapping__mdt>{ mapping },
@@ -749,7 +751,7 @@ private class RES_ProductIntegrationServiceTest {
 
         Assert.areEqual(1, conditions.size());
         Assert.areEqual('U', conditions[0].get('Change_Indicator'),
-            'Change_Indicator must equal the triggerContext passed in (U for UPDATE)');
+            'A condition SAP already has is an update (U) on a unit update');
     }
 
     @isTest
@@ -1453,5 +1455,55 @@ private class RES_ProductIntegrationServiceTest {
     static void testResolveSelectorWithoutSeparatorReturnsWholeName() {
         Assert.areEqual('Rule_99', RES_ProductIntegrationService.resolveSelector('Rule_99', null));
         Assert.isNull(RES_ProductIntegrationService.resolveSelector(null, null));
+    }
+
+    private static Map<String, Object> buildServiceChargeCondition(ProductAttributeDefinition pad, String ctx) {
+        RES_Condition_Mapping__mdt mapping = new RES_Condition_Mapping__mdt(
+            RES_Condition_Type__c     = 'Y400',
+            RES_Formula__c            = 'D',
+            RES_Conditions_Purpose__c = 'S',
+            RES_Handling__c           = 'Product_Attribute',
+            RES_Attribute_Name__c     = 'Service Charge Rate',
+            RES_Parameter_1__c        = 'Z009'
+        );
+        pad.put('Name', 'Service Charge Rate');
+        List<Map<String, Object>> conditions = RES_ProductIntegrationService.buildConditions(
+            new List<RES_Condition_Mapping__mdt>{ mapping },
+            new List<AttributeBasedAdjustment>(),
+            new Map<Id, String>(),
+            new List<ProductAttributeDefinition>{ pad },
+            ctx
+        );
+        Assert.areEqual(1, conditions.size(), 'One Y400 condition expected');
+        return conditions[0];
+    }
+
+    @isTest
+    static void testAttributeConditionNeverSentIsInsertEvenOnExistingUnit() {
+        ProductAttributeDefinition pad = new ProductAttributeDefinition(DefaultValue = '300');
+        Map<String, Object> cond = buildServiceChargeCondition(pad, 'U');
+        Assert.areEqual('I', cond.get('Change_Indicator'), 'A condition SAP never received must be an insert, even on a unit update');
+        Assert.areEqual(String.valueOf(Date.today()), cond.get('RES_Condition_Valid_From'), 'No stored date: starts today');
+    }
+
+    @isTest
+    static void testAttributeConditionAlreadyInSapIsUpdateWithStoredDate() {
+        Date stored = Date.today().addDays(-3);
+        ProductAttributeDefinition pad = new ProductAttributeDefinition(DefaultValue = '300');
+        pad.put('RES_Last_Sync_DateTime__c', System.now().addDays(-3));
+        pad.put('RES_SAP_Condition_Valid_From__c', stored);
+        Map<String, Object> cond = buildServiceChargeCondition(pad, 'U');
+        Assert.areEqual('U', cond.get('Change_Indicator'), 'A condition SAP already has must be an update');
+        Assert.areEqual(String.valueOf(stored), cond.get('RES_Condition_Valid_From'),
+            'The stored start date must be reused so SAP can find the condition');
+    }
+
+    @isTest
+    static void testAttributeConditionOnNewUnitIsInsertEvenWhenStamped() {
+        ProductAttributeDefinition pad = new ProductAttributeDefinition(DefaultValue = '300');
+        pad.put('RES_Last_Sync_DateTime__c', System.now().addDays(-1));
+        pad.put('RES_SAP_Condition_Valid_From__c', Date.today().addDays(-1));
+        Map<String, Object> cond = buildServiceChargeCondition(pad, 'I');
+        Assert.areEqual('I', cond.get('Change_Indicator'), 'A unit insert must send every condition as an insert');
     }
 }

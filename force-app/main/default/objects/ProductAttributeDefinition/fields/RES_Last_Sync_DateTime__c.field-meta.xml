@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>RES_Last_Sync_DateTime__c</fullName>
+    <description>When this attribute-based condition (for example Y400) was last accepted by SAP. Empty means it has not been created in SAP yet, so it is sent as an insert.</description>
+    <externalId>false</externalId>
+    <label>Last Sync Date Time</label>
+    <required>false</required>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>DateTime</type>
+</CustomField>
