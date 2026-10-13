@@ -290,6 +290,7 @@ public with sharing class RES_PaymentPlanConfiguratorService {
                 RES_Installment_Percentage__c = installment.percentage,
                 RES_Instalment_DueDate__c = installment.dueDate,
                 RES_Condition_Type__c = installment.conditionType,
+                RES_Installment_Payment_Type__c = installment.conditionType,
                 RES_Condition_Months__c = installment.conditionMonths,
                 RES_Condition_Days__c = installment.conditionDays,
                 CurrencyIsoCode = currencyIsoCode,
