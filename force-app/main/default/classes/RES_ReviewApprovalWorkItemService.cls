@@ -10,6 +10,8 @@
  */
 
 public with sharing class RES_ReviewApprovalWorkItemService {
+    // Management Decision
+    private static final String CONTRACT_CANCELLATION_REASON = '24';
     public RES_ReviewApprovalWorkItemService() {
     }
 
@@ -115,10 +117,15 @@ public with sharing class RES_ReviewApprovalWorkItemService {
             }
         }
         List<Contract> contractToUpdate = new List<Contract>();
-        for(Id cId: contractIds){
+        for(Contract existing: new RES_ContractDAOLayer().getContractsByIds(contractIds)){
             Contract c = new Contract();
-            c.Id = cId;
+            c.Id = existing.Id;
             c.Status = 'Canceled';
+            // Approval was revoked, so it must no longer show as pending
+            c.RES_Approval_Status__c = 'Rejected';
+            if(String.isBlank(existing.RES_Cancellation_Reasons__c)){
+                c.RES_Cancellation_Reasons__c = CONTRACT_CANCELLATION_REASON;
+            }
             contractToUpdate.add(c);
         }
         try{
