@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>RES_Document_Installment_Due_Date__c</fullName>
+    <externalId>false</externalId>
+    <formula>IF(ISBLANK(RES_Instalment_DueDate__c), &quot;&quot;,
+TEXT(DAY(RES_Instalment_DueDate__c)) &amp; &quot; &quot; &amp;
+CASE(MONTH(RES_Instalment_DueDate__c),
+  1,&quot;January&quot;,2,&quot;February&quot;,3,&quot;March&quot;,4,&quot;April&quot;,5,&quot;May&quot;,6,&quot;June&quot;,
+  7,&quot;July&quot;,8,&quot;August&quot;,9,&quot;September&quot;,10,&quot;October&quot;,11,&quot;November&quot;,&quot;December&quot;) &amp; &quot; &quot; &amp;
+TEXT(YEAR(RES_Instalment_DueDate__c)))</formula>
+    <label>Document Installment Due Date</label>
+    <required>false</required>
+    <trackHistory>false</trackHistory>
+    <type>Text</type>
+    <unique>false</unique>
+</CustomField>

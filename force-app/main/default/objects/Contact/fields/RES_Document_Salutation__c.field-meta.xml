@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>RES_Document_Salutation__c</fullName>
+    <externalId>false</externalId>
+    <formula>CASE(Salutation,
+&quot;Z002&quot;, &quot;Prof.&quot;,
+&quot;Z006&quot;, &quot;Prince&quot;,
+&quot;Z008&quot;, &quot;Princess&quot;,
+&quot;Z003&quot;, &quot;HRH&quot;,
+&quot;Z004&quot;, &quot;H.H&quot;,
+&quot;Z005&quot;, &quot;H.E&quot;,
+&quot;0002&quot;, &quot;Mr.&quot;,
+&quot;Z001&quot;, &quot;Dr.&quot;,
+&quot;0001&quot;, &quot;Ms.&quot;,
+&quot;0004&quot;, &quot;Mr. and Mrs.&quot;,
+TEXT(Salutation)
+)</formula>
+    <label>Document Salutation</label>
+    <required>false</required>
+    <trackHistory>false</trackHistory>
+    <type>Text</type>
+    <unique>false</unique>
+</CustomField>
