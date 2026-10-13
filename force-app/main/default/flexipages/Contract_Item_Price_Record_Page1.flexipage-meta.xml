@@ -82,8 +82,8 @@
                     <name>uiBehavior</name>
                     <value>none</value>
                 </fieldInstanceProperties>
-                <fieldItem>Record.ProductSellingModelId</fieldItem>
-                <identifier>RecordProductSellingModelIdField</identifier>
+                <fieldItem>Record.DiscountType</fieldItem>
+                <identifier>RecordDiscountTypeField</identifier>
             </fieldInstance>
         </itemInstances>
         <itemInstances>
@@ -92,8 +92,18 @@
                     <name>uiBehavior</name>
                     <value>none</value>
                 </fieldInstanceProperties>
-                <fieldItem>Record.DiscountType</fieldItem>
-                <identifier>RecordDiscountTypeField</identifier>
+                <fieldItem>Record.ProductSellingModelId</fieldItem>
+                <identifier>RecordProductSellingModelIdField</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>readonly</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.SellingModelType</fieldItem>
+                <identifier>RecordSellingModelTypeField</identifier>
             </fieldInstance>
         </itemInstances>
         <name>Facet-fa8f6035-6591-47a1-9f55-ff3d78d256f2</name>
@@ -116,18 +126,8 @@
                     <name>uiBehavior</name>
                     <value>none</value>
                 </fieldInstanceProperties>
-                <fieldItem>Record.Price</fieldItem>
-                <identifier>RecordPriceField</identifier>
-            </fieldInstance>
-        </itemInstances>
-        <itemInstances>
-            <fieldInstance>
-                <fieldInstanceProperties>
-                    <name>uiBehavior</name>
-                    <value>readonly</value>
-                </fieldInstanceProperties>
-                <fieldItem>Record.SellingModelType</fieldItem>
-                <identifier>RecordSellingModelTypeField</identifier>
+                <fieldItem>Record.RES_Installment_Percentage__c</fieldItem>
+                <identifier>RecordRES_Installment_Percentage_cField</identifier>
             </fieldInstance>
         </itemInstances>
         <itemInstances>
@@ -136,8 +136,18 @@
                     <name>uiBehavior</name>
                     <value>none</value>
                 </fieldInstanceProperties>
-                <fieldItem>Record.DiscountValue</fieldItem>
-                <identifier>RecordDiscountValueField</identifier>
+                <fieldItem>Record.Price</fieldItem>
+                <identifier>RecordPriceField</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.EndDate</fieldItem>
+                <identifier>RecordEndDateField</identifier>
             </fieldInstance>
         </itemInstances>
         <itemInstances>
@@ -156,8 +166,8 @@
                     <name>uiBehavior</name>
                     <value>none</value>
                 </fieldInstanceProperties>
-                <fieldItem>Record.EndDate</fieldItem>
-                <identifier>RecordEndDateField</identifier>
+                <fieldItem>Record.DiscountValue</fieldItem>
+                <identifier>RecordDiscountValueField</identifier>
             </fieldInstance>
         </itemInstances>
         <name>Facet-adff529c-3a55-40a2-ac1f-436427ab1522</name>

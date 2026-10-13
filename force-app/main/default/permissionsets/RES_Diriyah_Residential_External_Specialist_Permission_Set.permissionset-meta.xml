@@ -27,7 +27,15 @@ Sales – External – Relationship Manager</description>
         <enabled>true</enabled>
         <name>RES_Generate_URC_Button_Visibility</name>
     </customPermissions>
-        <fieldPermissions>
+    <customPermissions>
+        <enabled>true</enabled>
+        <name>RES_Generate_Payment_Plan_Button_Visibility</name>
+    </customPermissions>
+    <customPermissions>
+        <enabled>true</enabled>
+        <name>RES_Generate_Sales_Proposal_Button_Visibility</name>
+    </customPermissions>
+    <fieldPermissions>
         <editable>false</editable>
         <field>ContractItemPrice.RES_Product__c</field>
         <readable>true</readable>
@@ -105,6 +113,36 @@ Sales – External – Relationship Manager</description>
     <fieldPermissions>
         <editable>true</editable>
         <field>Asset.LifecycleEndDate</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>Lead.RES_City_Arabic__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>Lead.RES_Country_Arabic__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>Lead.RES_Nationality_Arabic__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>Lead.RES_PO_Box__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>Quote.RES_Total_Price_In_Words_Arabic__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>Quote.RES_Total_Price_In_Words__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
@@ -1624,6 +1662,16 @@ Sales – External – Relationship Manager</description>
     </fieldPermissions>
     <fieldPermissions>
         <editable>true</editable>
+        <field>Contract.RES_PAR_Name_Arabic__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>Contract.RES_PAR_Nationality_Arabic__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
         <field>Contract.ActivatedDate</field>
         <readable>true</readable>
     </fieldPermissions>
@@ -2236,27 +2284,27 @@ Sales – External – Relationship Manager</description>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
-        <editable>false</editable>
+        <editable>true</editable>
         <field>Account.RES_Country_Arabic__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
-        <editable>false</editable>
+        <editable>true</editable>
         <field>Account.RES_Company_Organization_Arabic__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
-        <editable>false</editable>
+        <editable>true</editable>
         <field>Account.RES_PO_Box__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
-        <editable>false</editable>
+        <editable>true</editable>
         <field>Account.RES_City_Arabic__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
-        <editable>false</editable>
+        <editable>true</editable>
         <field>Account.RES_Country_Of_Company_Incorporation_AR__c</field>
         <readable>true</readable>
     </fieldPermissions>
@@ -2361,27 +2409,27 @@ Sales – External – Relationship Manager</description>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
-        <editable>false</editable>
+        <editable>true</editable>
         <field>Contact.RES_Country_Arabic__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
-        <editable>false</editable>
+        <editable>true</editable>
         <field>Contact.RES_Nationality_Arabic__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
-        <editable>false</editable>
+        <editable>true</editable>
         <field>Contact.RES_Company_Representative_ID__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
-        <editable>false</editable>
+        <editable>true</editable>
         <field>Contact.RES_PO_Box__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
-        <editable>false</editable>
+        <editable>true</editable>
         <field>Contact.RES_City_Arabic__c</field>
         <readable>true</readable>
     </fieldPermissions>
@@ -3027,32 +3075,32 @@ Sales – External – Relationship Manager</description>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
-        <editable>false</editable>
+        <editable>true</editable>
         <field>Contract.RES_Reservation_Amount__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
-        <editable>false</editable>
+        <editable>true</editable>
         <field>Contract.RES_PAR_Name__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
-        <editable>false</editable>
+        <editable>true</editable>
         <field>Contract.RES_PAR_Nationality__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
-        <editable>false</editable>
+        <editable>true</editable>
         <field>Contract.RES_PAR_ID_Number__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
-        <editable>false</editable>
+        <editable>true</editable>
         <field>Contract.RES_PAR_POA_Number__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
-        <editable>false</editable>
+        <editable>true</editable>
         <field>Contract.RES_PAR_POA_Date__c</field>
         <readable>true</readable>
     </fieldPermissions>

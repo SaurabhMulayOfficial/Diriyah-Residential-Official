@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>RES_Document_Usage_Type_Arabic__c</fullName>
+    <externalId>false</externalId>
+    <formula>CASE(TEXT(RES_Usage_Type_Arabic__c),
+&quot;1001&quot;, &quot;مكتب&quot;,
+&quot;1002&quot;, &quot;شقة&quot;,
+&quot;1003&quot;, &quot;فيلا&quot;,
+&quot;1004&quot;, &quot;فيلا بفناء داخلي&quot;,
+&quot;1005&quot;, &quot;غرفة سائق&quot;,
+&quot;1006&quot;, &quot;روضة اطفال&quot;,
+&quot;1007&quot;, &quot;دور علوي&quot;,
+&quot;1008&quot;, &quot;دوبلكس&quot;,
+&quot;1009&quot;, &quot;بنتهاوس&quot;,
+&quot;1010&quot;, &quot;غرف تخزين&quot;,
+&quot;1011&quot;, &quot;موقف سيارة&quot;,
+&quot;1012&quot;, &quot;مساحات مشتركة&quot;,
+&quot;1013&quot;, &quot;ارض سكنية&quot;,
+TEXT(RES_Usage_Type_Arabic__c))</formula>
+    <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+    <label>Document Usage Type Arabic</label>
+    <required>false</required>
+    <trackHistory>false</trackHistory>
+    <type>Text</type>
+    <unique>false</unique>
+</CustomField>

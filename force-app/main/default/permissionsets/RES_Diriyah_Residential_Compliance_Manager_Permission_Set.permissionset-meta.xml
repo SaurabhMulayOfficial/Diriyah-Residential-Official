@@ -22,6 +22,36 @@
         <name>RES_Show_Document_Section</name>
     </customPermissions>
     <fieldPermissions>
+        <editable>true</editable>
+        <field>Lead.RES_City_Arabic__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>Lead.RES_Country_Arabic__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>Lead.RES_Nationality_Arabic__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>Lead.RES_PO_Box__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>Quote.RES_Total_Price_In_Words_Arabic__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>Quote.RES_Total_Price_In_Words__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
         <editable>false</editable>
         <field>RES_Measurement__c.RES_Active__c</field>
         <readable>true</readable>
@@ -1062,27 +1092,27 @@
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
-        <editable>false</editable>
+        <editable>true</editable>
         <field>Account.RES_Country_Arabic__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
-        <editable>false</editable>
+        <editable>true</editable>
         <field>Account.RES_Company_Organization_Arabic__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
-        <editable>false</editable>
+        <editable>true</editable>
         <field>Account.RES_PO_Box__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
-        <editable>false</editable>
+        <editable>true</editable>
         <field>Account.RES_City_Arabic__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
-        <editable>false</editable>
+        <editable>true</editable>
         <field>Account.RES_Country_Of_Company_Incorporation_AR__c</field>
         <readable>true</readable>
     </fieldPermissions>
@@ -1257,27 +1287,27 @@
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
-        <editable>false</editable>
+        <editable>true</editable>
         <field>Contact.RES_Country_Arabic__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
-        <editable>false</editable>
+        <editable>true</editable>
         <field>Contact.RES_Nationality_Arabic__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
-        <editable>false</editable>
+        <editable>true</editable>
         <field>Contact.RES_Company_Representative_ID__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
-        <editable>false</editable>
+        <editable>true</editable>
         <field>Contact.RES_PO_Box__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
-        <editable>false</editable>
+        <editable>true</editable>
         <field>Contact.RES_City_Arabic__c</field>
         <readable>true</readable>
     </fieldPermissions>
@@ -1837,22 +1867,22 @@
         <readable>true</readable>
     </fieldPermissions>
         <fieldPermissions>
-            <editable>false</editable>
+            <editable>true</editable>
             <field>Lead.RES_Nationality_Arabic__c</field>
             <readable>true</readable>
         </fieldPermissions>
         <fieldPermissions>
-            <editable>false</editable>
+            <editable>true</editable>
             <field>Lead.RES_Country_Arabic__c</field>
             <readable>true</readable>
         </fieldPermissions>
         <fieldPermissions>
-            <editable>false</editable>
+            <editable>true</editable>
             <field>Lead.RES_PO_Box__c</field>
             <readable>true</readable>
         </fieldPermissions>
         <fieldPermissions>
-            <editable>false</editable>
+            <editable>true</editable>
             <field>Lead.RES_City_Arabic__c</field>
             <readable>true</readable>
         </fieldPermissions>

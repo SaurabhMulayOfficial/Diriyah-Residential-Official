@@ -3,6 +3,46 @@
     <apiVersion>67.0</apiVersion>
     <areMetricsLoggedToDataCloud>false</areMetricsLoggedToDataCloud>
     <decisions>
+        <name>Check_DGP_Status</name>
+        <label>Check DGP Status</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnector>
+            <targetReference>Show_Generating</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Still In Progress</defaultConnectorLabel>
+        <rules>
+            <name>DGP_Succeeded</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>Get_DGP_Status.Status</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Success</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Show_Success</targetReference>
+            </connector>
+            <label>DGP Succeeded</label>
+        </rules>
+        <rules>
+            <name>DGP_Failed</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>Get_DGP_Status.Status</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Failure</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Show_Generation_Failed</targetReference>
+            </connector>
+            <label>DGP Failed</label>
+        </rules>
+    </decisions>
+    <decisions>
         <name>Check_Template</name>
         <label>Check Template</label>
         <locationX>0</locationX>
@@ -70,7 +110,7 @@
         <locationX>0</locationX>
         <locationY>0</locationY>
         <connector>
-            <targetReference>Show_Success</targetReference>
+            <targetReference>Show_Generating</targetReference>
         </connector>
         <inputAssignments>
             <field>DocGenAdditionalInput</field>
@@ -124,6 +164,33 @@
         <storeOutputAutomatically>true</storeOutputAutomatically>
     </recordCreates>
     <recordLookups>
+        <name>Get_DGP_Status</name>
+        <label>Get DGP Status</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Check_DGP_Status</targetReference>
+        </connector>
+        <faultConnector>
+            <targetReference>Show_Error</targetReference>
+        </faultConnector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Id</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>Create_DGP</elementReference>
+            </value>
+        </filters>
+        <getFirstRecordOnly>true</getFirstRecordOnly>
+        <object>DocumentGenerationProcess</object>
+        <queriedFields>Id</queriedFields>
+        <queriedFields>Status</queriedFields>
+        <queriedFields>ResponseText</queriedFields>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
+    <recordLookups>
         <name>Get_URC_Template</name>
         <label>Get URC Template</label>
         <locationX>0</locationX>
@@ -162,6 +229,84 @@
     </recordLookups>
     <runInMode>SystemModeWithoutSharing</runInMode>
     <screens>
+        <name>Show_Error</name>
+        <label>Error</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <allowBack>false</allowBack>
+        <allowFinish>true</allowFinish>
+        <allowPause>false</allowPause>
+        <fields>
+            <name>Show_Error_Message</name>
+            <fieldText>&lt;p&gt;URC document could not be generated: {!$Flow.FaultMessage}&lt;/p&gt;</fieldText>
+            <fieldType>DisplayText</fieldType>
+            <styleProperties>
+                <verticalAlignment>
+                    <stringValue>top</stringValue>
+                </verticalAlignment>
+                <width>
+                    <stringValue>12</stringValue>
+                </width>
+            </styleProperties>
+        </fields>
+        <nextOrFinishButtonLabel>Done</nextOrFinishButtonLabel>
+        <showFooter>true</showFooter>
+        <showHeader>false</showHeader>
+    </screens>
+    <screens>
+        <name>Show_Generating</name>
+        <label>Generating Document</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <allowBack>false</allowBack>
+        <allowFinish>true</allowFinish>
+        <allowPause>false</allowPause>
+        <connector>
+            <targetReference>Get_DGP_Status</targetReference>
+        </connector>
+        <fields>
+            <name>Show_Generating_Message</name>
+            <fieldText>&lt;p&gt;Your URC document is being generated. Click Check Status to see the result.&lt;/p&gt;</fieldText>
+            <fieldType>DisplayText</fieldType>
+            <styleProperties>
+                <verticalAlignment>
+                    <stringValue>top</stringValue>
+                </verticalAlignment>
+                <width>
+                    <stringValue>12</stringValue>
+                </width>
+            </styleProperties>
+        </fields>
+        <nextOrFinishButtonLabel>Check Status</nextOrFinishButtonLabel>
+        <showFooter>true</showFooter>
+        <showHeader>false</showHeader>
+    </screens>
+    <screens>
+        <name>Show_Generation_Failed</name>
+        <label>Generation Failed</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <allowBack>false</allowBack>
+        <allowFinish>true</allowFinish>
+        <allowPause>false</allowPause>
+        <fields>
+            <name>Show_Generation_Failed_Message</name>
+            <fieldText>&lt;p&gt;URC document could not be generated: {!Get_DGP_Status.ResponseText}&lt;/p&gt;</fieldText>
+            <fieldType>DisplayText</fieldType>
+            <styleProperties>
+                <verticalAlignment>
+                    <stringValue>top</stringValue>
+                </verticalAlignment>
+                <width>
+                    <stringValue>12</stringValue>
+                </width>
+            </styleProperties>
+        </fields>
+        <nextOrFinishButtonLabel>Done</nextOrFinishButtonLabel>
+        <showFooter>true</showFooter>
+        <showHeader>false</showHeader>
+    </screens>
+    <screens>
         <name>Show_No_Template</name>
         <label>No URC Template</label>
         <locationX>0</locationX>
@@ -171,7 +316,7 @@
         <allowPause>false</allowPause>
         <fields>
             <name>No_URC_Template_Message</name>
-            <fieldText>&lt;p&gt;No URC document template is configured for this project. &lt;/p&gt;</fieldText>
+            <fieldText>&lt;p&gt;&lt;span style=&quot;background-color: rgb(255, 255, 255);&quot;&gt;{!$Label.RES_Document_Error_Message}&lt;/span&gt;&lt;/p&gt;</fieldText>
             <fieldType>DisplayText</fieldType>
             <styleProperties>
                 <verticalAlignment>
@@ -196,7 +341,7 @@
         <allowPause>false</allowPause>
         <fields>
             <name>URC_Success_Message</name>
-            <fieldText>&lt;p&gt;URC Document generated&lt;/p&gt;</fieldText>
+            <fieldText>&lt;p&gt;{!$Label.RES_URC_Document_Success_Message}&lt;/p&gt;</fieldText>
             <fieldType>DisplayText</fieldType>
             <styleProperties>
                 <verticalAlignment>

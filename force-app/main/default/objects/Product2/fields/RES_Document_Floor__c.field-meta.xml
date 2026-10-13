@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>RES_Document_Floor__c</fullName>
+    <externalId>false</externalId>
+    <formula>CASE(TEXT(RES_Floor__c),
+&quot;001&quot;, &quot;Basement 1&quot;,
+&quot;002&quot;, &quot;Basement 2&quot;,
+&quot;003&quot;, &quot;Basement 3&quot;,
+&quot;004&quot;, &quot;Ground Floor&quot;,
+&quot;005&quot;, &quot;Floor 1st&quot;,
+&quot;006&quot;, &quot;Floor 2nd&quot;,
+&quot;007&quot;, &quot;Floor 3rd&quot;,
+&quot;008&quot;, &quot;Garden&quot;,
+&quot;009&quot;, &quot;Sky&quot;,
+&quot;096&quot;, &quot;4. Basement&quot;,
+&quot;097&quot;, &quot;3. Basement&quot;,
+&quot;098&quot;, &quot;2. Basement&quot;,
+&quot;099&quot;, &quot;Basement 1.&quot;,
+&quot;100&quot;, &quot;Ground floor&quot;,
+&quot;101&quot;, &quot;1st floor&quot;,
+&quot;102&quot;, &quot;2nd floor&quot;,
+&quot;103&quot;, &quot;3rd floor&quot;,
+&quot;104&quot;, &quot;4th floor&quot;,
+&quot;105&quot;, &quot;5th floor&quot;,
+&quot;106&quot;, &quot;6th floor&quot;,
+&quot;107&quot;, &quot;7th floor&quot;,
+&quot;108&quot;, &quot;8th floor&quot;,
+&quot;109&quot;, &quot;9th floor&quot;,
+&quot;110&quot;, &quot;10th floor&quot;,
+&quot;111&quot;, &quot;11th floor&quot;,
+&quot;112&quot;, &quot;12th floor&quot;,
+&quot;113&quot;, &quot;13th floor&quot;,
+&quot;114&quot;, &quot;14th floor&quot;,
+&quot;115&quot;, &quot;15th floor&quot;,
+&quot;116&quot;, &quot;16th floor&quot;,
+&quot;999&quot;, &quot;Top Floor&quot;,
+TEXT(RES_Floor__c))</formula>
+    <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+    <label>Document Floor</label>
+    <required>false</required>
+    <trackHistory>false</trackHistory>
+    <type>Text</type>
+    <unique>false</unique>
+</CustomField>

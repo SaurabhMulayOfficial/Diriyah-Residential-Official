@@ -143,6 +143,16 @@
     </fieldPermissions>
     <fieldPermissions>
         <editable>true</editable>
+        <field>Quote.RES_Total_Price_In_Words_Arabic__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>Quote.RES_Total_Price_In_Words__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
         <field>Quote.AccountId</field>
         <readable>true</readable>
     </fieldPermissions>
@@ -1081,11 +1091,21 @@
             <field>Account.RES_Last_Sync_DateTime__c</field>
             <readable>true</readable>
         </fieldPermissions>
+        <fieldPermissions>
+        <editable>true</editable>
+        <field>Contract.RES_PAR_Name_Arabic__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
     <fieldPermissions>
+        <editable>true</editable>
+        <field>Contract.RES_PAR_Nationality_Arabic__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+   <fieldPermissions>
     <editable>true</editable>
     <field>Contract.ActivatedDate</field>
     <readable>true</readable>
-</fieldPermissions>
+    </fieldPermissions>
 <fieldPermissions>
     <editable>true</editable>
     <field>Contract.BillingAddress</field>
@@ -2338,32 +2358,32 @@
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
-        <editable>false</editable>
+        <editable>true</editable>
         <field>Contract.RES_Reservation_Amount__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
-        <editable>false</editable>
+        <editable>true</editable>
         <field>Contract.RES_PAR_Name__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
-        <editable>false</editable>
+        <editable>true</editable>
         <field>Contract.RES_PAR_Nationality__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
-        <editable>false</editable>
+        <editable>true</editable>
         <field>Contract.RES_PAR_ID_Number__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
-        <editable>false</editable>
+        <editable>true</editable>
         <field>Contract.RES_PAR_POA_Number__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
-        <editable>false</editable>
+        <editable>true</editable>
         <field>Contract.RES_PAR_POA_Date__c</field>
         <readable>true</readable>
     </fieldPermissions>
