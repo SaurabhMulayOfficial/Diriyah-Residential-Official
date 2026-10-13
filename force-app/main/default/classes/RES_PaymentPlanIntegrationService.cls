@@ -64,7 +64,7 @@ public with sharing class RES_PaymentPlanIntegrationService extends RES_BaseInte
         List<RES_PaymentPlanWrapper.PaymentPlanAssignment> assignmentsWrapper = new List<RES_PaymentPlanWrapper.PaymentPlanAssignment>();
         for(Product2 paymentPlan : paymentPlans){
             paymentPlanWrapper.Change_Indicator = triggerContext;
-            paymentPlanWrapper.RES_Product_External_ID = (paymentPlan.RES_Product_External_ID__c != null) ? paymentPlan.RES_Product_External_ID__c : ''; 
+            paymentPlanWrapper.RES_Product_External_ID = (paymentPlan.RES_Parent_Payment_Plan__c != null) ? paymentPlan.RES_Parent_Payment_Plan__r.RES_Product_External_ID__c : paymentPlan.RES_Product_External_ID__c; 
             paymentPlanWrapper.ProductName = paymentPlan.Name;
             paymentPlanWrapper.RES_No_of_Years = (paymentPlan.RES_No_of_Years__c != null) ? (Integer) paymentPlan.RES_No_of_Years__c : 0;
             paymentPlanWrapper.AvailabilityDate = (paymentPlan.AvailabilityDate != null) ? paymentPlan.AvailabilityDate.format('yyyy-MM-dd\'T\'HH:mm:ss\'Z\'', 'UTC') : '';

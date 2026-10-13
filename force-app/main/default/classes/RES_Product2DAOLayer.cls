@@ -376,7 +376,7 @@ public List<Product2> getRejectedProducts(String status,String searchTerm,Intege
          * Product2 acting as a ProductRelatedComponent parent, and RecordTypeId drives every
          * "RecordType.DeveloperName = ..." filter this feature relies on elsewhere.
          */
-        String soql = 'SELECT Id, Name, RecordTypeId, Type, ConfigureDuringSale, RES_CIP_Type__c, RES_No_of_Years__c,RES_Business_Entity__c, RES_Price_Option__c, CurrencyIsoCode, AvailabilityDate, RES_Validity_End_Date__c, IsActive, Description, IsAssetizable, RES_Version__c, ' +
+        String soql = 'SELECT Id, Name, RecordTypeId, Type, ConfigureDuringSale, RES_CIP_Type__c, RES_No_of_Years__c,RES_Business_Entity__c, RES_Price_Option__c, CurrencyIsoCode, AvailabilityDate, RES_Validity_End_Date__c, IsActive, Description, IsAssetizable, RES_Version__c, RES_No_of_Months__c, RES_Status_Role__c, RES_Status_Role_Description__c, ' +
                       '(SELECT Id, Name, RES_Parent_Payment_Plan__c, RES_Version__c FROM ParentPaymentPlan__r WHERE RES_Version__c > 0 ORDER BY RES_Version__c DESC) ' +
         			  'FROM Product2 ' +
                       'WHERE RES_Business_Entity__c IN : productCatalogIdSet AND ' +
@@ -410,7 +410,7 @@ public List<Product2> getRejectedProducts(String status,String searchTerm,Intege
                       'RES_Furnished__c, ' +
                       'RES_Last_Sync_DateTime__c, RES_Fixtures_Last_Sync__c, RES_Fixture_Prev_Values__c, ' +
                       'RecordType.DeveloperName, RES_No_of_Years__c, RES_Approval_Status__c, RES_Status_Role_Description__c, RES_Status_Role__c, ' +
-                      'RES_Note__c, RES_No_of_Months__c, RES_Review__c, CreatedDate, CreatedBy.Alias, LastModifiedBy.Alias, LastModifiedDate, RES_Validity_End_Date__c, RES_Condition_Type__c ' +
+                      'RES_Note__c, RES_No_of_Months__c, RES_Review__c, CreatedDate, CreatedBy.Alias, LastModifiedBy.Alias, LastModifiedDate, RES_Validity_End_Date__c, RES_Condition_Type__c, RES_Parent_Payment_Plan__c, RES_Parent_Payment_Plan__r.RES_Product_External_ID__c ' +
                       'FROM Product2 WHERE Id IN :productIds';
         return (List<Product2>) executeQuery(soql, '', false, bindVars, AccessLevel.SYSTEM_MODE);
     }

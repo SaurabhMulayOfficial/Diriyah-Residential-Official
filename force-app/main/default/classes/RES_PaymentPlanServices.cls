@@ -32,17 +32,25 @@ public with sharing class RES_PaymentPlanServices {
 
         String triggerContext = '';
 
+        Id paymentPlanRecordTypeId = Schema.SObjectType.Product2
+            .getRecordTypeInfosByDeveloperName()
+            .get('RES_Residential_Payment_Plan')
+            .getRecordTypeId();
+        
         for (Product2 paymentPlan : paymentPlans) {
-            if (oldMap == null) {
-                paymentPlansToSync.add(paymentPlan);
-            } 
-            else if(isPaymentPlanApproved(paymentPlan, oldMap.get(paymentPlan.Id))){
-                paymentPlansToSync.add(paymentPlan);
-                triggerContext = 'I';
-            }
-            else if (isPaymentPlanChanged(paymentPlan, oldMap.get(paymentPlan.Id), syncFields) && paymentPlan.RES_Last_Sync_DateTime__c != null) {
-                paymentPlansToSync.add(paymentPlan);
-                triggerContext = 'U';
+            if(paymentPlan.RecordTypeId == paymentPlanRecordTypeId){
+                if (oldMap == null && paymentPlan.IsActive == true && paymentPlan.RES_Approval_Status__c == 'Approved') {
+                    paymentPlansToSync.add(paymentPlan);
+                    triggerContext = 'I';
+                } 
+                else if(oldMap != null && isPaymentPlanApproved(paymentPlan, oldMap.get(paymentPlan.Id))){
+                    paymentPlansToSync.add(paymentPlan);
+                    triggerContext = 'I';
+                }
+                else if (oldMap != null && isPaymentPlanChanged(paymentPlan, oldMap.get(paymentPlan.Id), syncFields) && paymentPlan.RES_Last_Sync_DateTime__c != null) {
+                    paymentPlansToSync.add(paymentPlan);
+                    triggerContext = 'U';
+                }
             }
         }
 		system.debug('paymentPlansToSync ==> '+paymentPlansToSync);

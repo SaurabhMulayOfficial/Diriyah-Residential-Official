@@ -1,5 +1,5 @@
 /**
- * @description Trigger handler for Product2; defaults dates and delegates sync to RES_ProductService.
+ * @description Trigger handler for Product2; defaults Description from Name and delegates sync to RES_ProductService.
  * @author      Roshan Jambhule
  * @date        2025
  */
@@ -29,6 +29,7 @@ public with sharing class RES_ProductTriggerHandler extends RES_BaseTriggerHandl
     protected override void afterInsert() {
         System.debug('### [RES_ProductTriggerHandler] afterInsert | Records: ' + Trigger.new.size());
         RES_ProductService.syncProducts((List<Product2>) Trigger.new, null);
+        RES_PaymentPlanServices.syncPaymentPlans((List<Product2>) Trigger.new, null);
     }
 
     /** @description Re-defaults AvailabilityDate/DiscontinuedDate if explicitly cleared; blocks a Residential Sales unit from being set Active or Available without its Service Charge Rate attribute override. */
@@ -46,7 +47,7 @@ public with sharing class RES_ProductTriggerHandler extends RES_BaseTriggerHandl
         RES_UnitDraftCancellationService.releaseReservations((List<Product2>) Trigger.new, (Map<Id, Product2>) Trigger.oldMap);
     }
 
-    /** @description Publishes Unit_Sync event for updated products whose sync fields changed; cancels quotes/contracts of bundle units moved back to Draft. */
+    /** @description Publishes Unit_Sync event for updated products whose sync fields changed. */
     protected override void afterUpdate() {
         System.debug('### [RES_ProductTriggerHandler] afterUpdate | Records: ' + Trigger.new.size());
         RES_ProductService.syncProducts((List<Product2>) Trigger.new, (Map<Id, Product2>) Trigger.oldMap);
