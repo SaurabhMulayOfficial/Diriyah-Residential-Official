@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>RES_Document_Floor_Arabic__c</fullName>
+    <externalId>false</externalId>
+    <formula>CASE(TEXT(RES_Floor_Arabic__c),
+&quot;1&quot;, &quot;البدروم 1&quot;,
+&quot;2&quot;, &quot;البدروم 2&quot;,
+&quot;3&quot;, &quot;3 البدروم&quot;,
+&quot;4&quot;, &quot;الدور الأرضي&quot;,
+&quot;5&quot;, &quot;الدور 1&quot;,
+&quot;6&quot;, &quot;الدور 2&quot;,
+&quot;7&quot;, &quot;الدور 3&quot;,
+&quot;8&quot;, &quot;الحديـــقـة&quot;,
+&quot;9&quot;, &quot;سكـاي&quot;,
+&quot;96&quot;, &quot;4. التسوية&quot;,
+&quot;97&quot;, &quot;3. تسوية&quot;,
+&quot;98&quot;, &quot;2. تسوية&quot;,
+&quot;99&quot;, &quot;تسوية 1&quot;,
+&quot;100&quot;, &quot;طابق أرضي&quot;,
+&quot;101&quot;, &quot;طابق أول&quot;,
+&quot;102&quot;, &quot;طابق ثاني&quot;,
+&quot;103&quot;, &quot;طابق ثالث&quot;,
+&quot;104&quot;, &quot;طابق رابع&quot;,
+&quot;105&quot;, &quot;طابق خامس&quot;,
+&quot;106&quot;, &quot;طابق سادس&quot;,
+&quot;107&quot;, &quot;طابق سابع&quot;,
+&quot;108&quot;, &quot;طابق ثامن&quot;,
+&quot;109&quot;, &quot;طابق تاسع&quot;,
+&quot;110&quot;, &quot;طابق عاشر&quot;,
+&quot;111&quot;, &quot;طابق حادي عشر&quot;,
+&quot;112&quot;, &quot;طابق ثاني عشر&quot;,
+&quot;113&quot;, &quot;طابق ثالث عشر&quot;,
+&quot;114&quot;, &quot;طابق رابع عشر&quot;,
+&quot;115&quot;, &quot;طابق خامس عشر&quot;,
+&quot;116&quot;, &quot;طابق سادس عشر&quot;,
+&quot;999&quot;, &quot;الطابق العلوي&quot;,
+TEXT(RES_Floor_Arabic__c))</formula>
+    <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+    <label>Document Floor Arabic</label>
+    <required>false</required>
+    <trackHistory>false</trackHistory>
+    <type>Text</type>
+    <unique>false</unique>
+</CustomField>

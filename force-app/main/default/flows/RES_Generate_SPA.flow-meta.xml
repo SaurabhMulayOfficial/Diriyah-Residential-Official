@@ -9,6 +9,46 @@
         </value>
     </customProperties>
     <decisions>
+        <name>Check_DGP_Status</name>
+        <label>Check DGP Status</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnector>
+            <targetReference>Show_Generating</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Still In Progress</defaultConnectorLabel>
+        <rules>
+            <name>DGP_Succeeded</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>Get_DGP_Status.Status</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Success</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Show_Success</targetReference>
+            </connector>
+            <label>DGP Succeeded</label>
+        </rules>
+        <rules>
+            <name>DGP_Failed</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>Get_DGP_Status.Status</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Failure</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Show_Generation_Failed</targetReference>
+            </connector>
+            <label>DGP Failed</label>
+        </rules>
+    </decisions>
+    <decisions>
         <name>Check_Templates</name>
         <label>Check Templates</label>
         <locationX>0</locationX>
@@ -31,6 +71,31 @@
                 <targetReference>Generate_Document</targetReference>
             </connector>
             <label>Template Found</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>Check_Unit_CIP</name>
+        <label>Check Unit CIP</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnector>
+            <targetReference>Show_No_Template</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>No Unit CIP</defaultConnectorLabel>
+        <rules>
+            <name>Unit_CIP_Found</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>Get_Unit_CIP</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Get_SPA_Templates</targetReference>
+            </connector>
+            <label>Unit CIP Found</label>
         </rules>
     </decisions>
     <dynamicChoiceSets>
@@ -81,7 +146,7 @@
     <formulas>
         <name>Project</name>
         <dataType>String</dataType>
-        <expression>TEXT({!recordId.SourceOpportunity.RES_Project__c})</expression>
+        <expression>{!Get_Unit_CIP.RES_Product__r.RES_Business_Entity__r.Name}</expression>
     </formulas>
     <formulas>
         <name>requestText</name>
@@ -122,7 +187,7 @@
         <locationX>0</locationX>
         <locationY>0</locationY>
         <connector>
-            <targetReference>Show_Success</targetReference>
+            <targetReference>Show_Generating</targetReference>
         </connector>
         <inputAssignments>
             <field>DocGenAdditionalInput</field>
@@ -188,6 +253,33 @@
         <storeOutputAutomatically>true</storeOutputAutomatically>
     </recordCreates>
     <recordLookups>
+        <name>Get_DGP_Status</name>
+        <label>Get DGP Status</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Check_DGP_Status</targetReference>
+        </connector>
+        <faultConnector>
+            <targetReference>Show_Error</targetReference>
+        </faultConnector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Id</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>Create_DGP</elementReference>
+            </value>
+        </filters>
+        <getFirstRecordOnly>true</getFirstRecordOnly>
+        <object>DocumentGenerationProcess</object>
+        <queriedFields>Id</queriedFields>
+        <queriedFields>Status</queriedFields>
+        <queriedFields>ResponseText</queriedFields>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
+    <recordLookups>
         <name>Get_SPA_Templates</name>
         <label>Get SPA Templates</label>
         <locationX>0</locationX>
@@ -231,6 +323,34 @@
             <field>Id</field>
         </outputAssignments>
     </recordLookups>
+    <recordLookups>
+        <name>Get_Unit_CIP</name>
+        <label>Get Unit CIP</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Check_Unit_CIP</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>ContractId</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>recordId.Id</elementReference>
+            </value>
+        </filters>
+        <filters>
+            <field>RES_Unit_Check__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </filters>
+        <getFirstRecordOnly>true</getFirstRecordOnly>
+        <object>ContractItemPrice</object>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
     <runInMode>SystemModeWithoutSharing</runInMode>
     <screens>
         <name>Generate_Document</name>
@@ -265,6 +385,84 @@
         <showHeader>false</showHeader>
     </screens>
     <screens>
+        <name>Show_Error</name>
+        <label>Error</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <allowBack>false</allowBack>
+        <allowFinish>true</allowFinish>
+        <allowPause>false</allowPause>
+        <fields>
+            <name>Show_Error_Message</name>
+            <fieldText>&lt;p&gt;SPA document could not be generated: {!$Flow.FaultMessage}&lt;/p&gt;</fieldText>
+            <fieldType>DisplayText</fieldType>
+            <styleProperties>
+                <verticalAlignment>
+                    <stringValue>top</stringValue>
+                </verticalAlignment>
+                <width>
+                    <stringValue>12</stringValue>
+                </width>
+            </styleProperties>
+        </fields>
+        <nextOrFinishButtonLabel>Done</nextOrFinishButtonLabel>
+        <showFooter>true</showFooter>
+        <showHeader>false</showHeader>
+    </screens>
+    <screens>
+        <name>Show_Generating</name>
+        <label>Generating Document</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <allowBack>false</allowBack>
+        <allowFinish>true</allowFinish>
+        <allowPause>false</allowPause>
+        <connector>
+            <targetReference>Get_DGP_Status</targetReference>
+        </connector>
+        <fields>
+            <name>Show_Generating_Message</name>
+            <fieldText>&lt;p&gt;Your SPA document is being generated. Click Check Status to see the result.&lt;/p&gt;</fieldText>
+            <fieldType>DisplayText</fieldType>
+            <styleProperties>
+                <verticalAlignment>
+                    <stringValue>top</stringValue>
+                </verticalAlignment>
+                <width>
+                    <stringValue>12</stringValue>
+                </width>
+            </styleProperties>
+        </fields>
+        <nextOrFinishButtonLabel>Check Status</nextOrFinishButtonLabel>
+        <showFooter>true</showFooter>
+        <showHeader>false</showHeader>
+    </screens>
+    <screens>
+        <name>Show_Generation_Failed</name>
+        <label>Generation Failed</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <allowBack>false</allowBack>
+        <allowFinish>true</allowFinish>
+        <allowPause>false</allowPause>
+        <fields>
+            <name>Show_Generation_Failed_Message</name>
+            <fieldText>&lt;p&gt;SPA document could not be generated: {!Get_DGP_Status.ResponseText}&lt;/p&gt;</fieldText>
+            <fieldType>DisplayText</fieldType>
+            <styleProperties>
+                <verticalAlignment>
+                    <stringValue>top</stringValue>
+                </verticalAlignment>
+                <width>
+                    <stringValue>12</stringValue>
+                </width>
+            </styleProperties>
+        </fields>
+        <nextOrFinishButtonLabel>Done</nextOrFinishButtonLabel>
+        <showFooter>true</showFooter>
+        <showHeader>false</showHeader>
+    </screens>
+    <screens>
         <name>Show_No_Template</name>
         <label>No SPA Template</label>
         <locationX>0</locationX>
@@ -274,7 +472,7 @@
         <allowPause>false</allowPause>
         <fields>
             <name>No_SPA_Template_Message</name>
-            <fieldText>&lt;p&gt;No SPA document template is configured for this project. Please contact your administrator.&lt;/p&gt;</fieldText>
+            <fieldText>&lt;p&gt;{!$Label.RES_Document_Error_Message}&lt;/p&gt;</fieldText>
             <fieldType>DisplayText</fieldType>
             <styleProperties>
                 <verticalAlignment>
@@ -299,7 +497,7 @@
         <allowPause>false</allowPause>
         <fields>
             <name>SPA_Success_Message</name>
-            <fieldText>&lt;p&gt;SPA Document generated&lt;/p&gt;</fieldText>
+            <fieldText>&lt;p&gt;{!$Label.RES_SPA_Document_Success_Message}&lt;/p&gt;</fieldText>
             <fieldType>DisplayText</fieldType>
             <styleProperties>
                 <verticalAlignment>
@@ -318,7 +516,7 @@
         <locationX>0</locationX>
         <locationY>0</locationY>
         <connector>
-            <targetReference>Get_SPA_Templates</targetReference>
+            <targetReference>Get_Unit_CIP</targetReference>
         </connector>
     </start>
     <status>Active</status>
