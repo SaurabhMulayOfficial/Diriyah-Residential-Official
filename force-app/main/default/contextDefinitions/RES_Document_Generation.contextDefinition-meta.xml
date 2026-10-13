@@ -14,6 +14,12 @@
             <filterName>Sort Quote Installments</filterName>
             <filtersPerNode>{&quot;QuoteLineItem&quot;:{&quot;orderByConditions&quot;:[{&quot;orderByAttribute&quot;:&quot;RES_QInstallment_Num&quot;,&quot;ascending&quot;:true,&quot;nullsFirst&quot;:false}]}}</filtersPerNode>
         </contextDefinitionFilters>
+        <contextDefinitionFilters>
+            <description>Sort installments by Sequence field on installment for Quote</description>
+            <filterApiName>Sort_Quote_Installments</filterApiName>
+            <filterName>Sort Quote Installments</filterName>
+            <filtersPerNode>{&quot;QuoteLineItem&quot;:{&quot;orderByConditions&quot;:[{&quot;orderByAttribute&quot;:&quot;RES_QInstallment_Num&quot;,&quot;ascending&quot;:true,&quot;nullsFirst&quot;:false}]}}</filtersPerNode>
+        </contextDefinitionFilters>
         <contextMappings>
             <contextMappingIntents>
                 <mappingIntent>association</mappingIntent>
@@ -3498,6 +3504,7 @@
             <title>ContractItemPrice</title>
             <transposable>false</transposable>
         </contextNodes>
+        <isActive>false</isActive>
         <isActive>false</isActive>
         <startDate>2026-09-21 00:00:00</startDate>
         <versionNumber>3</versionNumber>
