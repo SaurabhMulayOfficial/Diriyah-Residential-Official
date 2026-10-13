@@ -2135,6 +2135,11 @@
             <field>Product2.RES_No_of_Bedrooms__c</field>
             <readable>true</readable>
         </fieldPermissions>
+                <fieldPermissions>
+                    <editable>true</editable>
+                    <field>Product2.DisplayUrl</field>
+                    <readable>true</readable>
+                </fieldPermissions>
     <fieldPermissions>
         <editable>false</editable>
         <field>Contract.RES_SPA_Signed_Date__c</field>

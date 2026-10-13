@@ -552,6 +552,11 @@ Sales – Planning – Senior Manager</description>
             <field>Product2.RES_No_of_Bedrooms__c</field>
             <readable>true</readable>
         </fieldPermissions>
+                <fieldPermissions>
+                    <editable>true</editable>
+                    <field>Product2.DisplayUrl</field>
+                    <readable>true</readable>
+                </fieldPermissions>
     <fieldPermissions>
         <editable>true</editable>
         <field>ContentVersion.RES_Attachment_Type__c</field>
