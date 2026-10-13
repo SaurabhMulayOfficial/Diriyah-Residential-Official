@@ -1,8 +1,10 @@
 /**
  * @description Service class for ContentVersion and ContentDocument business logic.
  * Called from RES_ContentVersionTriggerHandler and RES_ContentDocumentTriggerHandler.
+ * Runs in system context (without sharing, no user-mode DML) because Product2 OWD is Read Only
+ * and trigger-driven DisplayUrl updates must succeed regardless of the user's record access.
  */
-public with sharing class RES_ContentVersionServices {
+public without sharing class RES_ContentVersionServices {
 
     // Static variable to prevent recursive execution during automated unchecks
     public static Boolean isExecuting = false;
@@ -112,8 +114,8 @@ public with sharing class RES_ContentVersionServices {
 
         docsToProductIdsMapToClear.clear();
 
-        if (!productsToUpdate.isEmpty() && Schema.sObjectType.Product2.isUpdateable()) {
-            update as user productsToUpdate.values();
+        if (!productsToUpdate.isEmpty()) {
+            Database.update(productsToUpdate.values(), false, AccessLevel.SYSTEM_MODE);
         }
     }
 
@@ -186,9 +188,10 @@ public with sharing class RES_ContentVersionServices {
             }
         }
 
+        
         // Perform DML Update
-        if (!productsToUpdate.isEmpty() && Schema.sObjectType.Product2.isUpdateable()) {
-            update as user productsToUpdate.values();
+        if (!productsToUpdate.isEmpty()) {
+            Database.update(productsToUpdate.values(), false, AccessLevel.SYSTEM_MODE);
         }
     }
 
@@ -218,9 +221,7 @@ public with sharing class RES_ContentVersionServices {
 
             // Set recursion flag to prevent infinite re-triggering
             isExecuting = true;
-            if (Schema.sObjectType.ContentVersion.isUpdateable()) {
-                update as user previousPrimaryImages;
-            }
+            Database.update(previousPrimaryImages, false, AccessLevel.SYSTEM_MODE);
             isExecuting = false;
         }
     }
