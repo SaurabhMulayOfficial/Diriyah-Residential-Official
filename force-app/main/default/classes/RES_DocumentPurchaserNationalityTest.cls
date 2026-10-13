@@ -64,19 +64,45 @@ private class RES_DocumentPurchaserNationalityTest {
         return null;
     }
 
-    @IsTest
-    static void personAccount_populatesLabel() {
+    private static Id personAccountRecordTypeId() {
         List<RecordType> rts = [SELECT Id FROM RecordType WHERE SobjectType = 'Account' AND IsPersonType = true AND IsActive = true LIMIT 1];
-        if (rts.isEmpty()) {
+        return rts.isEmpty() ? null : rts[0].Id;
+    }
+
+    // Needs no nationality value, so it does not depend on the org's restricted picklist setup
+    @IsTest
+    static void personAccount_blankClearsDocumentNationality() {
+        Id rtId = personAccountRecordTypeId();
+        if (rtId == null) {
             return; // Person Accounts not available in this org
         }
-        Account a = insertPersonAccountWithNationality(rts[0].Id);
-        System.assertNotEquals(null, a, 'A Person Account with an allowed nationality should be insertable');
-        String value = a.RES_Nationality__pc;
-        String expected = RES_NationalityServices.getPicklistValuesMap(Account.RES_Nationality__pc.getDescribe()).get(value);
+        Account a = new Account(LastName = 'Test', PersonEmail = 'test.nationality.blank@example.com', PersonMobilePhone = '+966500000002', RecordTypeId = rtId, RES_Document_Nationality__pc = 'Old');
+        insert a;
 
         RES_DocumentPurchaserNationality.Input input = new RES_DocumentPurchaserNationality.Input();
-        input.accountRecord = [SELECT Id, RES_Nationality__pc, RES_Document_Nationality__pc FROM Account WHERE Id = :a.Id];
+        input.accountRecord = a;
+        Test.startTest();
+        RES_DocumentPurchaserNationality.validateOpportunity(new List<RES_DocumentPurchaserNationality.Input>{ input });
+        Test.stopTest();
+
+        System.assertEquals(null, [SELECT RES_Document_Nationality__pc FROM Account WHERE Id = :a.Id].RES_Document_Nationality__pc, 'Should be cleared');
+    }
+
+    // Label stamping is asserted only when the org accepts a nationality value for Person Accounts
+    @IsTest
+    static void personAccount_populatesLabel() {
+        Id rtId = personAccountRecordTypeId();
+        if (rtId == null) {
+            return; // Person Accounts not available in this org
+        }
+        Account a = insertPersonAccountWithNationality(rtId);
+        if (a == null) {
+            return; // No nationality value is allowed for Person Accounts in this org
+        }
+        String expected = RES_NationalityServices.getPicklistValuesMap(Account.RES_Nationality__pc.getDescribe()).get(a.RES_Nationality__pc);
+
+        RES_DocumentPurchaserNationality.Input input = new RES_DocumentPurchaserNationality.Input();
+        input.accountRecord = a;
         Test.startTest();
         RES_DocumentPurchaserNationality.validateOpportunity(new List<RES_DocumentPurchaserNationality.Input>{ input });
         Test.stopTest();
