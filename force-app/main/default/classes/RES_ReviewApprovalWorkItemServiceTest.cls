@@ -251,8 +251,30 @@ private class RES_ReviewApprovalWorkItemServiceTest {
         RES_ReviewApprovalWorkItemService.contractCancellation(events);
         Test.stopTest();
 
-        Contract updated = [SELECT Id, Status FROM Contract WHERE Id = :c.Id];
+        Contract updated = [SELECT Id, Status, RES_Approval_Status__c, RES_Cancellation_Reasons__c FROM Contract WHERE Id = :c.Id];
         System.assertEquals('Canceled', updated.Status);
+        System.assertEquals('Rejected', updated.RES_Approval_Status__c,
+            'Approval Status should be Rejected once the approval is revoked');
+        System.assertEquals('24', updated.RES_Cancellation_Reasons__c,
+            'Blank cancellation reason should default to Management Decision');
+    }
+
+    @isTest
+    static void testContractCancellation_KeepsExistingReason() {
+        Contract c = [SELECT Id FROM Contract LIMIT 1];
+        c.RES_Cancellation_Reasons__c = '14';
+        update c;
+
+        Test.startTest();
+        RES_ReviewApprovalWorkItemService.contractCancellation(new List<RES_Review_Approval_Work_Item__e>{
+            buildRecordEvent('ContractCancellation', c.Id)
+        });
+        Test.stopTest();
+
+        Contract updated = [SELECT Status, RES_Cancellation_Reasons__c FROM Contract WHERE Id = :c.Id];
+        System.assertEquals('Canceled', updated.Status);
+        System.assertEquals('14', updated.RES_Cancellation_Reasons__c,
+            'An existing cancellation reason should not be overwritten');
     }
 
     @isTest
