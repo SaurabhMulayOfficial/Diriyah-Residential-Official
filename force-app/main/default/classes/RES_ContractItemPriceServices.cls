@@ -11,6 +11,7 @@ public with sharing class RES_ContractItemPriceServices {
 
     @TestVisible private static List<ContractItemPrice> mockExistingCIPs;
     @TestVisible private static List<Contract> mockContractList;
+    @TestVisible private static List<String> finalPaymentUpdateErrors = new List<String>();
 
     public static void syncContracts(List<ContractItemPrice> CIPList){
         if(CIPList.isEmpty())return;
@@ -108,7 +109,23 @@ public with sharing class RES_ContractItemPriceServices {
         }
 
         if (!contractsToUpdate.isEmpty()) {
-            update contractsToUpdate;
+            // Final Payment is a system-calculated value, so it is written in explicit system
+            // mode (same convention as RES_OpportunityStageUpdateValidation) and does not depend on
+            // the running user's field access. Partial-success DML: a failure here must never
+            // roll back the Contract Item Price insert that triggered it (e.g. the installment
+            // generator's bulk insert), so failures are captured instead of thrown.
+            finalPaymentUpdateErrors = new List<String>();
+            List<Database.SaveResult> saveResults =
+                Database.update(contractsToUpdate, false, AccessLevel.SYSTEM_MODE);
+            for (Integer index = 0; index < saveResults.size(); index++) {
+                if (!saveResults[index].isSuccess()) {
+                    String errorMessage = 'Final Payment update failed for Contract '
+                        + contractsToUpdate[index].Id + ': '
+                        + saveResults[index].getErrors()[0].getMessage();
+                    finalPaymentUpdateErrors.add(errorMessage);
+                    System.debug(LoggingLevel.ERROR, errorMessage);
+                }
+            }
         }
     }
 
