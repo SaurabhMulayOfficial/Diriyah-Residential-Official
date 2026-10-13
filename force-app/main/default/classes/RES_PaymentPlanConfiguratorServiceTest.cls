@@ -310,5 +310,8 @@ private class RES_PaymentPlanConfiguratorServiceTest {
         Test.stopTest();
 
         System.assertEquals(true, results[0].isSuccess, 'Expected success, got: ' + results[0].message);
+        for (Product2 inst : [SELECT RES_Condition_Type__c, RES_Installment_Payment_Type__c FROM Product2 WHERE ProductCode LIKE 'TEST-PP-COND-DIFF-INST%']) {
+            System.assertEquals(inst.RES_Condition_Type__c, inst.RES_Installment_Payment_Type__c, 'Installment Payment Type should mirror the Condition Type code');
+        }
     }
 }
