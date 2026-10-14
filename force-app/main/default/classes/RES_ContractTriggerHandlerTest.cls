@@ -76,4 +76,26 @@ private class RES_ContractTriggerHandlerTest {
         }
         Assert.isFalse(threw, 'Contract update must not throw from the trigger handler.');
     }
+
+    @isTest
+    static void setFeeTransferred_lastAmountBlankToValue_setsTrue() {
+        Id cId = fakeContractId();
+        Contract oldC = new Contract(Id = cId, RES_Last_Amount_Received__c = null, RES_Fee_Transferred__c = false);
+        Contract newC = new Contract(Id = cId, RES_Last_Amount_Received__c = 5000, RES_Fee_Transferred__c = false);
+        RES_ContractTriggerHandler.handleBeforeUpdate(new List<Contract>{ newC }, new Map<Id, Contract>{ cId => oldC });
+        Assert.isTrue(newC.RES_Fee_Transferred__c, 'Fee Transferred should be set when Last Amount Received is first populated.');
+    }
+
+    @isTest
+    static void setFeeTransferred_lastAmountAlreadySet_unchanged() {
+        Id cId = fakeContractId();
+        Contract oldC = new Contract(Id = cId, RES_Last_Amount_Received__c = 1000, RES_Fee_Transferred__c = false);
+        Contract newC = new Contract(Id = cId, RES_Last_Amount_Received__c = 5000, RES_Fee_Transferred__c = false);
+        RES_ContractTriggerHandler.handleBeforeUpdate(new List<Contract>{ newC }, new Map<Id, Contract>{ cId => oldC });
+        Assert.isFalse(newC.RES_Fee_Transferred__c, 'Fee Transferred should not change when Last Amount Received was already populated.');
+    }
+
+    private static Id fakeContractId() {
+        return Contract.SObjectType.getDescribe().getKeyPrefix() + '000000000001AAA';
+    }
 }
