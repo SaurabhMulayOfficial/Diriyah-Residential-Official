@@ -60,7 +60,7 @@ private class RES_ContractIntegrationServiceTest {
                    CompanySignedDate, DIR_Old_Contract__c,
                    RES_Company_Code__c,
                    Account.RES_BP_Role__c,
-                   Account.RES_External_Key__c
+                   Account.RES_External_Key__c, Account.Name
             FROM Contract
             WHERE Id = :c.Id
         ];
@@ -403,6 +403,9 @@ private class RES_ContractIntegrationServiceTest {
             String body = svc.hydrateRequestBody(new List<Contract>{ c });
             Assert.isNotNull(body, 'Body should not be null for a valid contract.');
             Assert.isTrue(body.contains('IV_C4CREF') || body.length() > 0, 'Body should be non-empty JSON.');
+            Map<String, Object> contractCreation = (Map<String, Object>) ((Map<String, Object>) JSON.deserializeUntyped(body)).get('CONTRACT_CREATION');
+            Assert.areEqual(c.ContractNumber, contractCreation.get('IV_C4CREF'), 'IV_C4CREF should carry the Contract Number.');
+            Assert.areEqual(c.Account.Name, contractCreation.get('IV_RECNTXT'), 'IV_RECNTXT should carry the Account Name.');
         }
         Test.stopTest();
     }

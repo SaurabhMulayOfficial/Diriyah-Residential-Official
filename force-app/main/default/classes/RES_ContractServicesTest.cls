@@ -295,6 +295,80 @@ private class RES_ContractServicesTest {
     }
 
     // ─────────────────────────────────────────────────────────────────────────
+    // Update path — only Approval Status changed → Sales_Contract_Update event
+    // ─────────────────────────────────────────────────────────────────────────
+
+    @isTest
+    static void syncContract_update_approvalStatusChanged_publishesUpdateEvent() {
+        if (!configReady()) { return; }
+
+        RES_IntegrationTestDataFactory.primeSapToken();
+        Test.setMock(HttpCalloutMock.class, new RES_IntegrationTestDataFactory.EndpointRoutingMock());
+        RES_IntegrationRequestEventService.CountingBatchSubmitter spy = injectBatchSpy();
+        Account acc  = withKey(RES_TestDataFactory.createAccount());
+        Contract c   = createAndFetchContract(acc.Id);
+
+        Database.update(
+            new Contract(Id = c.Id, RES_External_ID__c = 'EXT-1', RES_Last_Sync_DateTime__c = System.now().addDays(-1),
+                         RES_Approval_Status__c = 'Approved'),
+            false, AccessLevel.SYSTEM_MODE
+        );
+        c = fetchContract(c.Id);
+
+        // Same Status on old and new; only RES_Approval_Status__c differs
+        Contract oldC = new Contract(Id = c.Id, Status = c.Status, RES_Approval_Status__c = 'Submitted');
+        Map<Id, Contract> oldMap = new Map<Id, Contract>{ c.Id => oldC };
+
+        Test.startTest();
+        Test.getEventBus().deliver();
+        Integer before = spy.callCount;
+        RES_ContractServices.syncContract(new List<Contract>{ c }, oldMap);
+        Test.getEventBus().deliver();
+        Integer after = spy.callCount;
+        Test.stopTest();
+
+        Assert.areEqual(1, after - before,
+            'An Approval Status change alone should publish one Sales_Contract_Update event.');
+    }
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // Update path — moved to Pending Cancellation Approval → Sales_Contract_Termination event
+    // ─────────────────────────────────────────────────────────────────────────
+
+    @isTest
+    static void syncContract_update_toPendingCancellationApproval_publishesTerminationEvent() {
+        if (!configReady()) { return; }
+
+        RES_IntegrationTestDataFactory.primeSapToken();
+        Test.setMock(HttpCalloutMock.class, new RES_IntegrationTestDataFactory.EndpointRoutingMock());
+        RES_IntegrationRequestEventService.CountingBatchSubmitter spy = injectBatchSpy();
+        Account acc  = withKey(RES_TestDataFactory.createAccount());
+        Contract c   = createAndFetchContract(acc.Id);
+
+        Database.update(
+            new Contract(Id = c.Id, RES_External_ID__c = 'EXT-1', RES_Last_Sync_DateTime__c = System.now().addDays(-1)),
+            false, AccessLevel.SYSTEM_MODE
+        );
+        c = fetchContract(c.Id);
+
+        // In-memory transition: new Status is Pending Cancellation Approval, old Status was Activated
+        c.Status = 'Pending Cancellation Approval';
+        Contract oldC = new Contract(Id = c.Id, Status = 'Activated');
+        Map<Id, Contract> oldMap = new Map<Id, Contract>{ c.Id => oldC };
+
+        Test.startTest();
+        Test.getEventBus().deliver();
+        Integer before = spy.callCount;
+        RES_ContractServices.syncContract(new List<Contract>{ c }, oldMap);
+        Test.getEventBus().deliver();
+        Integer after = spy.callCount;
+        Test.stopTest();
+
+        Assert.areEqual(1, after - before,
+            'Moving to Pending Cancellation Approval should publish one Sales_Contract_Termination event.');
+    }
+
+    // ─────────────────────────────────────────────────────────────────────────
     // Update path — Canceled + Approved status → Sales_Contract_Termination event
     // ─────────────────────────────────────────────────────────────────────────
 

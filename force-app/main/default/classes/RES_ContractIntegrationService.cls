@@ -97,7 +97,7 @@ public with sharing class RES_ContractIntegrationService extends RES_BaseIntegra
                 payload.IT_PARTNERS = partner;
             }
 
-            payload.IV_C4CREF = String.valueOf(c.Id).right(15);
+            payload.IV_C4CREF = c.ContractNumber;
             payload.IV_C4CUSR = c.Owner.Name;
             payload.IV_CN_STDATE = String.valueOf(c.StartDate);
             payload.IV_CN_ENDDATE = String.valueOf(c.EndDate);
@@ -114,7 +114,7 @@ public with sharing class RES_ContractIntegrationService extends RES_BaseIntegra
                 }
             }
             
-            payload.IV_RECNTXT = c.ContractNumber;
+            payload.IV_RECNTXT = c.Account.Name;
             payload.IV_RECNTYPE = c.RES_Contract_Type__c;
             
             String firstTimeBuyer = (c.RES_First_Residential_Buyer__c == true? 'X': '');

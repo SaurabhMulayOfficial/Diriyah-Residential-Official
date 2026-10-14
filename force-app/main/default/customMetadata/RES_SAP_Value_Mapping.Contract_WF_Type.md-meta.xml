@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <label>Contract WF Type</label>
+    <protected>false</protected>
+    <values>
+        <field>RES_Object_Name__c</field>
+        <value xsi:type="xsd:string">Contract</value>
+    </values>
+    <values>
+        <field>RES_Field_Name__c</field>
+        <value xsi:type="xsd:string">WFType</value>
+    </values>
+    <values>
+        <field>RES_Json_Mapping__c</field>
+        <value xsi:type="xsd:string">{"CONTRACT CANCELLATION CYCLE":"CANC","CONTRACT UPGRADE/DOWN GRADE CYCLE":"DNUP","LEASING CONTRACT APPROVAL CYCLE":"LCAC","RETAIL CONTRACT CYCLE":"RCAC","SALES CONTRACT APPROVAL CYCLE":"SCAC","SPECIALTY CONTRACT CYCLE":"SPCC"}</value>
+    </values>
+</CustomMetadata>

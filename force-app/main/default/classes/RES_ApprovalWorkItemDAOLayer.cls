@@ -40,7 +40,7 @@ public with sharing class RES_ApprovalWorkItemDAOLayer extends RES_BaseDAOLayer 
             return new List<ApprovalWorkItem>();
         }
         Map<String, Object> bindVars = new Map<String, Object>{ 'contractIds' => contractIds };
-        String soql = 'SELECT Id, RelatedRecordId, Status, ReviewedById, ReviewedBy.Name, LastModifiedDate ' +
+        String soql = 'SELECT Id, RelatedRecordId, Status, AssignedToId, AssignedTo.Name, LastModifiedDate ' +
                       'FROM ApprovalWorkItem ' +
                       'WHERE RelatedRecordId IN :contractIds ' +
                       'AND RelatedRecordObjectName = \'Contract\' ' +
