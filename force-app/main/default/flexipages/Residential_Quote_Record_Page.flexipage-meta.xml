@@ -16,9 +16,6 @@
                             <value>SyncQuote</value>
                         </valueListItems>
                         <valueListItems>
-                            <value>CreateOrder</value>
-                        </valueListItems>
-                        <valueListItems>
                             <value>Quote.RES_Request_Soft_Hold_Extension</value>
                         </valueListItems>
                         <valueListItems>
@@ -420,16 +417,6 @@
                     <name>uiBehavior</name>
                     <value>readonly</value>
                 </fieldInstanceProperties>
-                <fieldItem>Record.AppliedDiscount</fieldItem>
-                <identifier>RecordAppliedDiscountField</identifier>
-            </fieldInstance>
-        </itemInstances>
-        <itemInstances>
-            <fieldInstance>
-                <fieldInstanceProperties>
-                    <name>uiBehavior</name>
-                    <value>readonly</value>
-                </fieldInstanceProperties>
                 <fieldItem>Record.CalculationStatus</fieldItem>
                 <identifier>RecordCalculationStatusField</identifier>
             </fieldInstance>
@@ -456,16 +443,6 @@
                 </fieldInstanceProperties>
                 <fieldItem>Record.RES_Total_Price_In_Words_Arabic__c</fieldItem>
                 <identifier>RecordRES_Total_Price_In_Words_Arabic_cField</identifier>
-            </fieldInstance>
-        </itemInstances>
-        <itemInstances>
-            <fieldInstance>
-                <fieldInstanceProperties>
-                    <name>uiBehavior</name>
-                    <value>readonly</value>
-                </fieldInstanceProperties>
-                <fieldItem>Record.AppliedDiscountAmount</fieldItem>
-                <identifier>RecordAppliedDiscountAmountField</identifier>
             </fieldInstance>
         </itemInstances>
         <name>Facet-1413893b-c3b2-45e4-9edb-41211b560398</name>
