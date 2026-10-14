@@ -178,7 +178,7 @@ public without sharing class RES_Product2DAOLayer extends RES_BaseDAOLayer {
             'CreatedBy.Name, ' +
             'LastModifiedDate, ' +
             'RES_Unit_Status__c, ' +
-            'RES_Type__c, ' +
+            'toLabel(RES_Type__c), ' +
             'RES_Net_Saleable_Area__c, ' +
             'RES_Business_Entity__c, ' +
             'RES_Business_Entity__r.Name, ' +
@@ -187,7 +187,7 @@ public without sharing class RES_Product2DAOLayer extends RES_BaseDAOLayer {
             'RES_Rejection_Comment__c, ' +
             'RES_Update_Comments__c, ' +
             'RES_Update_Requested__c, ' +
-            'Family ' +
+            'toLabel(Family) ' +
             'FROM Product2 ' +
             'WHERE RES_Unit_Status__c IN :statuses ' +
             'AND (IsActive = false OR RES_Update_Requested__c = true) ';
@@ -270,7 +270,7 @@ public List<Product2> getRejectedProducts(String status,String searchTerm,Intege
                 'CreatedBy.Name, ' +
                 'LastModifiedDate, ' +
                 'RES_Unit_Status__c, ' +
-                'RES_Type__c, ' +
+                'toLabel(RES_Type__c), ' +
                 'RES_Net_Saleable_Area__c, ' +
                 'RES_Business_Entity__c, ' +
                 'RES_Business_Entity__r.Name, ' +
@@ -279,7 +279,7 @@ public List<Product2> getRejectedProducts(String status,String searchTerm,Intege
                 'RES_Rejection_Comment__c, ' +
                 'RES_Update_Comments__c, ' +
                 'RES_Update_Requested__c, ' +
-                'Family ' +
+                'toLabel(Family) ' +
                 'FROM Product2 ' +
                 'WHERE RES_Unit_Status__c IN :statuses ' +
                 'AND (IsActive = false OR RES_Update_Requested__c = true) ';

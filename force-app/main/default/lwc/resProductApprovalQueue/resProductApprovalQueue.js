@@ -6,8 +6,6 @@ import rejectProducts from '@salesforce/apex/RES_ProductApprovalController.rejec
 import getRejectedProducts from '@salesforce/apex/RES_ProductApprovalController.getRejectedProducts';
 import submitForApproval from '@salesforce/apex/RES_ProductApprovalController.submitForApproval';
 import { ShowToastEvent } from 'lightning/platformShowToastEvent';
-import { getPicklistValues } from 'lightning/uiObjectInfoApi';
-import FAMILY_FIELD from '@salesforce/schema/Product2.Family';
 
 const PAGE_SIZE = 50;
 const SEARCH_DELAY = 400;
@@ -114,8 +112,6 @@ export default class ResProductApprovalQueue extends LightningElement {
     isLoadingMore = false;
     isProcessing = false;
 
-    familyPicklistValues = {};
-
     hasError = false;
     errorMessage = '';
 
@@ -133,18 +129,7 @@ export default class ResProductApprovalQueue extends LightningElement {
     failedResults = [];
     searchTimeout;
     searchController;
-    familyPicklistValues = {};
 
-    @wire(getPicklistValues, { recordTypeId: '012000000000000AAA', fieldApiName: FAMILY_FIELD })
-    wiredFamilyPicklist({ error, data }) {
-        if (data) {
-            const valueMap = {};
-            data.values.forEach(item => {
-                valueMap[item.value] = item.label;
-            });
-            this.familyPicklistValues = valueMap;
-        }
-    }
 
     connectedCallback() {
         this.loadUserAccess();
@@ -308,7 +293,6 @@ export default class ResProductApprovalQueue extends LightningElement {
             this.selectedProductIds.includes(
                 record.Id
             ),
-        Family: this.familyPicklistValues[record.Family] || record.Family,
         BusinessEntityName: record.RES_Business_Entity__r?.Name || ''
         };
     }
