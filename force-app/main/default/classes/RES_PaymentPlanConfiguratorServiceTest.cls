@@ -63,9 +63,13 @@ private class RES_PaymentPlanConfiguratorServiceTest {
 
         Product2 plan = [
             SELECT Id, Type, ConfigureDuringSale, RES_CIP_Type__c, RES_No_of_Years__c, RES_Price_Option__c,
-                   AvailabilityDate, RES_Validity_End_Date__c, RecordType.DeveloperName
+                   AvailabilityDate, RES_Validity_End_Date__c, RecordType.DeveloperName,
+                   RES_No_of_Months__c, RES_Status_Role__c, RES_Status_Role_Description__c
             FROM Product2 WHERE Id = :result.paymentPlanId
         ];
+        System.assertEquals(36, plan.RES_No_of_Months__c);
+        System.assertEquals('REL', plan.RES_Status_Role__c);
+        System.assertEquals('Released', plan.RES_Status_Role_Description__c);
         System.assertEquals('Bundle', plan.Type);
         System.assertEquals('Allowed', plan.ConfigureDuringSale);
         System.assertEquals('Payment Plan', plan.RES_CIP_Type__c);
@@ -262,11 +266,11 @@ private class RES_PaymentPlanConfiguratorServiceTest {
     }
 
     @IsTest
-    static void testCreatePaymentPlan_ConditionFields_PersistedWithDaysDerivedFromMonths() {
+    static void testCreatePaymentPlan_ConditionFields_PersistedWithoutDerivingDays() {
         RES_PaymentPlanConfiguratorService.Request req = baseRequest();
         req.productCode = 'TEST-PP-COND';
         req.installmentsJson = '[{"name":"Installment 1","percentage":50,"conditionType":"Y002","conditionMonths":2,"sequence":1},' +
-            '{"name":"Installment 2","percentage":50,"conditionType":"Y002","conditionMonths":1,"conditionDays":30,"sequence":2}]';
+            '{"name":"Installment 2","percentage":50,"conditionType":"Y002","conditionMonths":1,"conditionDays":45,"sequence":2}]';
 
         Test.startTest();
         List<RES_PaymentPlanConfiguratorService.Result> results =
@@ -277,7 +281,10 @@ private class RES_PaymentPlanConfiguratorServiceTest {
         Product2 first = [SELECT RES_Condition_Type__c, RES_Condition_Months__c, RES_Condition_Days__c FROM Product2 WHERE ProductCode = 'TEST-PP-COND-INST1'];
         System.assertEquals('Y002', first.RES_Condition_Type__c);
         System.assertEquals(2, first.RES_Condition_Months__c);
-        System.assertEquals(60, first.RES_Condition_Days__c);
+        System.assertEquals(null, first.RES_Condition_Days__c);
+        Product2 second = [SELECT RES_Condition_Months__c, RES_Condition_Days__c FROM Product2 WHERE ProductCode = 'TEST-PP-COND-INST2'];
+        System.assertEquals(1, second.RES_Condition_Months__c);
+        System.assertEquals(45, second.RES_Condition_Days__c);
     }
 
     @IsTest
@@ -285,7 +292,7 @@ private class RES_PaymentPlanConfiguratorServiceTest {
         RES_PaymentPlanConfiguratorService.Request req = baseRequest();
         req.productCode = 'TEST-PP-COND-DUP';
         req.installmentsJson = '[{"name":"Installment 1","percentage":50,"conditionType":"Y003","conditionMonths":2,"conditionDays":60,"sequence":1},' +
-            '{"name":"Installment 2","percentage":50,"conditionType":"Y003","conditionMonths":2,"sequence":2}]';
+            '{"name":"Installment 2","percentage":50,"conditionType":"Y003","conditionMonths":2,"conditionDays":60,"sequence":2}]';
 
         Test.startTest();
         List<RES_PaymentPlanConfiguratorService.Result> results =

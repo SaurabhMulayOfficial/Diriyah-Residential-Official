@@ -4,7 +4,6 @@ const MAX_INSTALLMENTS = 24;
 const MIN_INSTALLMENTS_TO_START = 2;
 const PERCENTAGE_TOLERANCE = 0.01;
 const PERCENTAGE_TARGET = 100;
-const DAYS_PER_MONTH = 30;
 const NUMERIC_FIELDS = ['percentage', 'pocPercentage', 'conditionMonths', 'conditionDays'];
 const CONDITION_TYPE_OPTIONS = [
     { label: 'Reservation', value: 'Y001' },
@@ -131,11 +130,7 @@ export default class ResPaymentPlanInstallments extends LightningElement {
             if (row.key !== key) {
                 return row;
             }
-            const updated = { ...row, [field]: value };
-            if (field === 'conditionMonths') {
-                updated.conditionDays = value != null ? value * DAYS_PER_MONTH : null;
-            }
-            return updated;
+            return { ...row, [field]: value };
         });
     }
 
