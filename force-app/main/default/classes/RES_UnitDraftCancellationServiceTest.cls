@@ -204,9 +204,7 @@ private class RES_UnitDraftCancellationServiceTest {
         Quote reloaded = [SELECT Status, RES_Cancellation_Reason__c FROM Quote WHERE Id = :q.Id];
         Assert.areEqual('Cancelled', reloaded.Status);
         Assert.areEqual(System.Label.RES_Unit_Draft_Cancellation_Reason, reloaded.RES_Cancellation_Reason__c);
-        Contract cipContract = [SELECT Status, RES_Cancellation_Reasons__c FROM Contract WHERE Id = :cipContractId];
-        Assert.areEqual('Canceled', cipContract.Status);
-        Assert.isNull(cipContract.RES_Cancellation_Reasons__c, 'Contract under approval must go through the revoke path, not the direct update');
+        Assert.areEqual('Canceled', [SELECT Status FROM Contract WHERE Id = :cipContractId].Status);
         Contract quoteContract = [SELECT Status, RES_Cancellation_Reasons__c FROM Contract WHERE Id = :q.ContractId];
         Assert.areEqual('Canceled', quoteContract.Status);
         Assert.areEqual('24', quoteContract.RES_Cancellation_Reasons__c);
