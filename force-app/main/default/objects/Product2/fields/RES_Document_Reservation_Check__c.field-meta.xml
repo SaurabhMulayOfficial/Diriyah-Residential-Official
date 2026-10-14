@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>RES_Document_Reservation_Check__c</fullName>
+    <externalId>false</externalId>
+    <formula>TEXT(RES_Condition_Type__c) = &quot;Y001&quot;</formula>
+    <label>Document Reservation Check</label>
+    <trackHistory>false</trackHistory>
+    <type>Checkbox</type>
+</CustomField>

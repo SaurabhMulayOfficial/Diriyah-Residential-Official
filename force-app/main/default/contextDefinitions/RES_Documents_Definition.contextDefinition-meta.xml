@@ -48,38 +48,6 @@
                 <contextAttributeMappings>
                     <contextAttrHydrationDetails>
                         <contextAttrHydrationDetails>
-                            <objectName>Quote</objectName>
-                            <queryAttribute>TotalPrice</queryAttribute>
-                        </contextAttrHydrationDetails>
-                        <objectName>Contract</objectName>
-                        <queryAttribute>SourceQuote</queryAttribute>
-                    </contextAttrHydrationDetails>
-                    <contextAttribute>RES_TotalPrice</contextAttribute>
-                    <contextInputAttributeName>RES_TotalPrice</contextInputAttributeName>
-                </contextAttributeMappings>
-                <contextAttributeMappings>
-                    <contextAttrHydrationDetails>
-                        <objectName>Contract</objectName>
-                        <queryAttribute>RES_Final_Payment__c</queryAttribute>
-                    </contextAttrHydrationDetails>
-                    <contextAttribute>RES_Final_Payment</contextAttribute>
-                    <contextInputAttributeName>RES_Final_Payment</contextInputAttributeName>
-                </contextAttributeMappings>
-                <contextAttributeMappings>
-                    <contextAttrHydrationDetails>
-                        <contextAttrHydrationDetails>
-                            <objectName>Quote</objectName>
-                            <queryAttribute>RES_Financial_Compensation__c</queryAttribute>
-                        </contextAttrHydrationDetails>
-                        <objectName>Contract</objectName>
-                        <queryAttribute>SourceQuote</queryAttribute>
-                    </contextAttrHydrationDetails>
-                    <contextAttribute>RES_Financial_Compensation</contextAttribute>
-                    <contextInputAttributeName>RES_Financial_Compensation</contextInputAttributeName>
-                </contextAttributeMappings>
-                <contextAttributeMappings>
-                    <contextAttrHydrationDetails>
-                        <contextAttrHydrationDetails>
                             <objectName>Contact</objectName>
                             <queryAttribute>MailingCountry</queryAttribute>
                         </contextAttrHydrationDetails>
@@ -504,14 +472,6 @@
                 <contextAttributeMappings>
                     <contextAttrHydrationDetails>
                         <objectName>Contract</objectName>
-                        <queryAttribute>RES_Reservation_Amount__c</queryAttribute>
-                    </contextAttrHydrationDetails>
-                    <contextAttribute>RES_Reservation_Amount</contextAttribute>
-                    <contextInputAttributeName>RES_Reservation_Amount</contextInputAttributeName>
-                </contextAttributeMappings>
-                <contextAttributeMappings>
-                    <contextAttrHydrationDetails>
-                        <objectName>Contract</objectName>
                         <queryAttribute>RES_External_ID__c</queryAttribute>
                     </contextAttrHydrationDetails>
                     <contextAttribute>RES_S4_Contract_Id</contextAttribute>
@@ -789,6 +749,30 @@
                     <contextAttribute>RES_OutCityAR</contextAttribute>
                     <contextInputAttributeName>RES_OutCityAR</contextInputAttributeName>
                 </contextAttributeMappings>
+                <contextAttributeMappings>
+                    <contextAttrHydrationDetails>
+                        <contextAttrHydrationDetails>
+                            <objectName>Quote</objectName>
+                            <queryAttribute>RES_Document_Total_Price__c</queryAttribute>
+                        </contextAttrHydrationDetails>
+                        <objectName>Contract</objectName>
+                        <queryAttribute>SourceQuote</queryAttribute>
+                    </contextAttrHydrationDetails>
+                    <contextAttribute>RES_TotalPrice</contextAttribute>
+                    <contextInputAttributeName>RES_TotalPrice</contextInputAttributeName>
+                </contextAttributeMappings>
+                <contextAttributeMappings>
+                    <contextAttrHydrationDetails>
+                        <contextAttrHydrationDetails>
+                            <objectName>Quote</objectName>
+                            <queryAttribute>RES_Financial_Compensation__c</queryAttribute>
+                        </contextAttrHydrationDetails>
+                        <objectName>Contract</objectName>
+                        <queryAttribute>SourceQuote</queryAttribute>
+                    </contextAttrHydrationDetails>
+                    <contextAttribute>RES_Financial_Compensation</contextAttribute>
+                    <contextInputAttributeName>RES_Financial_Compensation</contextInputAttributeName>
+                </contextAttributeMappings>
                 <contextNode>Contract</contextNode>
                 <object>Contract</object>
             </contextNodeMappings>
@@ -800,18 +784,6 @@
                     </contextAttrHydrationDetails>
                     <contextAttribute>ParentReference</contextAttribute>
                     <contextInputAttributeName>ParentReference</contextInputAttributeName>
-                </contextAttributeMappings>
-                <contextAttributeMappings>
-                    <contextAttrHydrationDetails>
-                        <contextAttrHydrationDetails>
-                            <objectName>Product2</objectName>
-                            <queryAttribute>RES_Installment_Amount__c</queryAttribute>
-                        </contextAttrHydrationDetails>
-                        <objectName>ContractItemPrice</objectName>
-                        <queryAttribute>RES_Product__r</queryAttribute>
-                    </contextAttrHydrationDetails>
-                    <contextAttribute>RES_Amount</contextAttribute>
-                    <contextInputAttributeName>RES_Amount</contextInputAttributeName>
                 </contextAttributeMappings>
                 <contextAttributeMappings>
                     <contextAttrHydrationDetails>
@@ -864,18 +836,6 @@
                     </contextAttrHydrationDetails>
                     <contextAttribute>IF_RES_Unit_Check</contextAttribute>
                     <contextInputAttributeName>IF_RES_Unit_Check</contextInputAttributeName>
-                </contextAttributeMappings>
-                <contextAttributeMappings>
-                    <contextAttrHydrationDetails>
-                        <contextAttrHydrationDetails>
-                            <objectName>Product2</objectName>
-                            <queryAttribute>RES_Installment_Accumulative_Payments__c</queryAttribute>
-                        </contextAttrHydrationDetails>
-                        <objectName>ContractItemPrice</objectName>
-                        <queryAttribute>RES_Product__r</queryAttribute>
-                    </contextAttrHydrationDetails>
-                    <contextAttribute>RES_Accumulative_Payments</contextAttribute>
-                    <contextInputAttributeName>RES_Accumulative_Payments</contextInputAttributeName>
                 </contextAttributeMappings>
                 <contextAttributeMappings>
                     <contextAttrHydrationDetails>
@@ -1329,7 +1289,7 @@
                     <contextAttrHydrationDetails>
                         <contextAttrHydrationDetails>
                             <objectName>Product2</objectName>
-                            <queryAttribute>RES_Installment_Payment_Type__c</queryAttribute>
+                            <queryAttribute>RES_Document_Installment_Condition_Type__c</queryAttribute>
                         </contextAttrHydrationDetails>
                         <objectName>ContractItemPrice</objectName>
                         <queryAttribute>RES_Product__r</queryAttribute>
@@ -1360,6 +1320,50 @@
                     </contextAttrHydrationDetails>
                     <contextAttribute>RES_Indicative_Due_Date</contextAttribute>
                     <contextInputAttributeName>RES_Indicative_Due_Date</contextInputAttributeName>
+                </contextAttributeMappings>
+                <contextAttributeMappings>
+                    <contextAttrHydrationDetails>
+                        <objectName>ContractItemPrice</objectName>
+                        <queryAttribute>RES_Document_Price__c</queryAttribute>
+                    </contextAttrHydrationDetails>
+                    <contextAttribute>RES_Amount</contextAttribute>
+                    <contextInputAttributeName>RES_Amount</contextInputAttributeName>
+                </contextAttributeMappings>
+                <contextAttributeMappings>
+                    <contextAttrHydrationDetails>
+                        <contextAttrHydrationDetails>
+                            <objectName>Product2</objectName>
+                            <queryAttribute>RES_Document_Accumulative_Payments__c</queryAttribute>
+                        </contextAttrHydrationDetails>
+                        <objectName>ContractItemPrice</objectName>
+                        <queryAttribute>RES_Product__r</queryAttribute>
+                    </contextAttrHydrationDetails>
+                    <contextAttribute>RES_Accumulative_Payments</contextAttribute>
+                    <contextInputAttributeName>RES_Accumulative_Payments</contextInputAttributeName>
+                </contextAttributeMappings>
+                <contextAttributeMappings>
+                    <contextAttrHydrationDetails>
+                        <contextAttrHydrationDetails>
+                            <objectName>Product2</objectName>
+                            <queryAttribute>RES_Document_Final_Payment_Check__c</queryAttribute>
+                        </contextAttrHydrationDetails>
+                        <objectName>ContractItemPrice</objectName>
+                        <queryAttribute>RES_Product__r</queryAttribute>
+                    </contextAttrHydrationDetails>
+                    <contextAttribute>IF_RES_FinalPayment_Check</contextAttribute>
+                    <contextInputAttributeName>IF_RES_FinalPayment_Check</contextInputAttributeName>
+                </contextAttributeMappings>
+                <contextAttributeMappings>
+                    <contextAttrHydrationDetails>
+                        <contextAttrHydrationDetails>
+                            <objectName>Product2</objectName>
+                            <queryAttribute>RES_Document_Reservation_Check__c</queryAttribute>
+                        </contextAttrHydrationDetails>
+                        <objectName>ContractItemPrice</objectName>
+                        <queryAttribute>RES_Product__r</queryAttribute>
+                    </contextAttrHydrationDetails>
+                    <contextAttribute>IF_RES_Reservation_Check</contextAttribute>
+                    <contextInputAttributeName>IF_RES_Reservation_Check</contextInputAttributeName>
                 </contextAttributeMappings>
                 <contextNode>ContractItemPrice</contextNode>
                 <object>ContractItemPrice</object>
@@ -1445,18 +1449,6 @@
                     <contextAttrHydrationDetails>
                         <contextAttrHydrationDetails>
                             <objectName>Product2</objectName>
-                            <queryAttribute>RES_Area__c</queryAttribute>
-                        </contextAttrHydrationDetails>
-                        <objectName>QuoteLineItem</objectName>
-                        <queryAttribute>Product2</queryAttribute>
-                    </contextAttrHydrationDetails>
-                    <contextAttribute>RES_QUnitArea</contextAttribute>
-                    <contextInputAttributeName>RES_QUnitArea</contextInputAttributeName>
-                </contextAttributeMappings>
-                <contextAttributeMappings>
-                    <contextAttrHydrationDetails>
-                        <contextAttrHydrationDetails>
-                            <objectName>Product2</objectName>
                             <queryAttribute>RES_Document_Usage_Type__c</queryAttribute>
                         </contextAttrHydrationDetails>
                         <objectName>QuoteLineItem</objectName>
@@ -1505,18 +1497,6 @@
                     <contextAttrHydrationDetails>
                         <contextAttrHydrationDetails>
                             <objectName>Product2</objectName>
-                            <queryAttribute>RES_Installment_Amount__c</queryAttribute>
-                        </contextAttrHydrationDetails>
-                        <objectName>QuoteLineItem</objectName>
-                        <queryAttribute>Product2</queryAttribute>
-                    </contextAttrHydrationDetails>
-                    <contextAttribute>RES_QInstallment_Amount</contextAttribute>
-                    <contextInputAttributeName>RES_QInstallment_Amount</contextInputAttributeName>
-                </contextAttributeMappings>
-                <contextAttributeMappings>
-                    <contextAttrHydrationDetails>
-                        <contextAttrHydrationDetails>
-                            <objectName>Product2</objectName>
                             <queryAttribute>RES_Sequence__c</queryAttribute>
                         </contextAttrHydrationDetails>
                         <objectName>QuoteLineItem</objectName>
@@ -1541,7 +1521,7 @@
                     <contextAttrHydrationDetails>
                         <contextAttrHydrationDetails>
                             <objectName>Product2</objectName>
-                            <queryAttribute>RES_Installment_Payment_Type__c</queryAttribute>
+                            <queryAttribute>RES_Document_Installment_Condition_Type__c</queryAttribute>
                         </contextAttrHydrationDetails>
                         <objectName>QuoteLineItem</objectName>
                         <queryAttribute>Product2</queryAttribute>
@@ -1653,6 +1633,26 @@
                     <contextAttribute>RES_QConstruction_Progress</contextAttribute>
                     <contextInputAttributeName>RES_QConstruction_Progress</contextInputAttributeName>
                 </contextAttributeMappings>
+                <contextAttributeMappings>
+                    <contextAttrHydrationDetails>
+                        <contextAttrHydrationDetails>
+                            <objectName>Product2</objectName>
+                            <queryAttribute>RES_Unit_Total_Area__c</queryAttribute>
+                        </contextAttrHydrationDetails>
+                        <objectName>QuoteLineItem</objectName>
+                        <queryAttribute>Product2</queryAttribute>
+                    </contextAttrHydrationDetails>
+                    <contextAttribute>RES_QUnitArea</contextAttribute>
+                    <contextInputAttributeName>RES_QUnitArea</contextInputAttributeName>
+                </contextAttributeMappings>
+                <contextAttributeMappings>
+                    <contextAttrHydrationDetails>
+                        <objectName>QuoteLineItem</objectName>
+                        <queryAttribute>RES_Document_Installment_Amount__c</queryAttribute>
+                    </contextAttrHydrationDetails>
+                    <contextAttribute>RES_QInstallment_Amount</contextAttribute>
+                    <contextInputAttributeName>RES_QInstallment_Amount</contextInputAttributeName>
+                </contextAttributeMappings>
                 <contextNode>QuoteLineItem</contextNode>
                 <object>QuoteLineItem</object>
             </contextNodeMappings>
@@ -1664,14 +1664,6 @@
                     </contextAttrHydrationDetails>
                     <contextAttribute>RES_QProjectName</contextAttribute>
                     <contextInputAttributeName>RES_QProjectName</contextInputAttributeName>
-                </contextAttributeMappings>
-                <contextAttributeMappings>
-                    <contextAttrHydrationDetails>
-                        <objectName>Quote</objectName>
-                        <queryAttribute>TotalPrice</queryAttribute>
-                    </contextAttrHydrationDetails>
-                    <contextAttribute>RES_QTotalPrice</contextAttribute>
-                    <contextInputAttributeName>RES_QTotalPrice</contextInputAttributeName>
                 </contextAttributeMappings>
                 <contextAttributeMappings>
                     <contextAttrHydrationDetails>
@@ -1688,6 +1680,14 @@
                     </contextAttrHydrationDetails>
                     <contextAttribute>RES_QRefrenceNum</contextAttribute>
                     <contextInputAttributeName>RES_QRefrenceNum</contextInputAttributeName>
+                </contextAttributeMappings>
+                <contextAttributeMappings>
+                    <contextAttrHydrationDetails>
+                        <objectName>Quote</objectName>
+                        <queryAttribute>RES_Document_Total_Price__c</queryAttribute>
+                    </contextAttrHydrationDetails>
+                    <contextAttribute>RES_QTotalPrice</contextAttribute>
+                    <contextInputAttributeName>RES_QTotalPrice</contextInputAttributeName>
                 </contextAttributeMappings>
                 <contextNode>Quote</contextNode>
                 <object>Quote</object>
@@ -1740,7 +1740,7 @@
                     <title>RES_QTotalPrice</title>
                 </contextTags>
                 <customMappingAllowed>false</customMappingAllowed>
-                <dataType>currency</dataType>
+                <dataType>string</dataType>
                 <fieldType>inputoutput</fieldType>
                 <key>false</key>
                 <localizationDisabled>false</localizationDisabled>
@@ -1755,11 +1755,314 @@
         </contextNodes>
         <contextNodes>
             <contextAttributes>
+                <customMappingAllowed>false</customMappingAllowed>
+                <dataType>reference</dataType>
+                <domainSet>Quote</domainSet>
+                <fieldType>input</fieldType>
+                <key>false</key>
+                <localizationDisabled>false</localizationDisabled>
+                <title>ParentReference</title>
+                <transient>false</transient>
+                <value>false</value>
+            </contextAttributes>
+            <contextAttributes>
+                <contextTags>
+                    <title>RES_QVirtual_Bank_Account</title>
+                </contextTags>
+                <customMappingAllowed>false</customMappingAllowed>
+                <dataType>string</dataType>
+                <fieldType>inputoutput</fieldType>
+                <key>false</key>
+                <localizationDisabled>false</localizationDisabled>
+                <title>RES_QVirtual_Bank_Account</title>
+                <transient>false</transient>
+                <value>false</value>
+            </contextAttributes>
+            <contextAttributes>
+                <contextTags>
+                    <title>RES_QUnit_Virtual_IBAN</title>
+                </contextTags>
+                <customMappingAllowed>false</customMappingAllowed>
+                <dataType>string</dataType>
+                <fieldType>inputoutput</fieldType>
+                <key>false</key>
+                <localizationDisabled>false</localizationDisabled>
+                <title>RES_QUnit_Virtual_IBAN</title>
+                <transient>false</transient>
+                <value>false</value>
+            </contextAttributes>
+            <contextAttributes>
+                <contextTags>
+                    <title>RES_QBankNameAR</title>
+                </contextTags>
+                <customMappingAllowed>false</customMappingAllowed>
+                <dataType>picklist</dataType>
+                <fieldType>inputoutput</fieldType>
+                <key>false</key>
+                <localizationDisabled>false</localizationDisabled>
+                <title>RES_QBankNameAR</title>
+                <transient>false</transient>
+                <value>false</value>
+            </contextAttributes>
+            <contextAttributes>
+                <contextTags>
+                    <title>RES_QUnit_Status</title>
+                </contextTags>
+                <customMappingAllowed>false</customMappingAllowed>
+                <dataType>picklist</dataType>
+                <fieldType>inputoutput</fieldType>
+                <key>false</key>
+                <localizationDisabled>false</localizationDisabled>
+                <title>RES_QUnit_Status</title>
+                <transient>false</transient>
+                <value>false</value>
+            </contextAttributes>
+            <contextAttributes>
+                <contextTags>
+                    <title>RES_QUnitArea</title>
+                </contextTags>
+                <customMappingAllowed>false</customMappingAllowed>
+                <dataType>number</dataType>
+                <fieldType>inputoutput</fieldType>
+                <key>false</key>
+                <localizationDisabled>false</localizationDisabled>
+                <title>RES_QUnitArea</title>
+                <transient>false</transient>
+                <value>false</value>
+            </contextAttributes>
+            <contextAttributes>
+                <contextTags>
+                    <title>RES_QUnit_Type</title>
+                </contextTags>
+                <customMappingAllowed>false</customMappingAllowed>
+                <dataType>string</dataType>
+                <fieldType>inputoutput</fieldType>
+                <key>false</key>
+                <localizationDisabled>false</localizationDisabled>
+                <title>RES_QUnit_Type</title>
+                <transient>false</transient>
+                <value>false</value>
+            </contextAttributes>
+            <contextAttributes>
+                <contextTags>
+                    <title>RES_QProductName</title>
+                </contextTags>
+                <customMappingAllowed>false</customMappingAllowed>
+                <dataType>string</dataType>
+                <fieldType>inputoutput</fieldType>
+                <key>false</key>
+                <localizationDisabled>false</localizationDisabled>
+                <title>RES_QProductName</title>
+                <transient>false</transient>
+                <value>false</value>
+            </contextAttributes>
+            <contextAttributes>
+                <contextTags>
+                    <title>RES_QBedrooms</title>
+                </contextTags>
+                <customMappingAllowed>false</customMappingAllowed>
+                <dataType>number</dataType>
+                <fieldType>inputoutput</fieldType>
+                <key>false</key>
+                <localizationDisabled>false</localizationDisabled>
+                <title>RES_QBedrooms</title>
+                <transient>false</transient>
+                <value>false</value>
+            </contextAttributes>
+            <contextAttributes>
+                <contextTags>
+                    <title>RES_QUnit_Number</title>
+                </contextTags>
+                <customMappingAllowed>false</customMappingAllowed>
+                <dataType>string</dataType>
+                <fieldType>inputoutput</fieldType>
+                <key>false</key>
+                <localizationDisabled>false</localizationDisabled>
+                <title>RES_QUnit_Number</title>
+                <transient>false</transient>
+                <value>false</value>
+            </contextAttributes>
+            <contextAttributes>
+                <contextTags>
+                    <title>RES_QInstallment_Due_Date</title>
+                </contextTags>
+                <customMappingAllowed>false</customMappingAllowed>
+                <dataType>string</dataType>
+                <fieldType>inputoutput</fieldType>
+                <key>false</key>
+                <localizationDisabled>false</localizationDisabled>
+                <title>RES_QInstallment_Due_Date</title>
+                <transient>false</transient>
+                <value>false</value>
+            </contextAttributes>
+            <contextAttributes>
+                <contextTags>
+                    <title>RES_QInstallment_Amount</title>
+                </contextTags>
+                <customMappingAllowed>false</customMappingAllowed>
+                <dataType>string</dataType>
+                <fieldType>inputoutput</fieldType>
+                <key>false</key>
+                <localizationDisabled>false</localizationDisabled>
+                <title>RES_QInstallment_Amount</title>
+                <transient>false</transient>
+                <value>false</value>
+            </contextAttributes>
+            <contextAttributes>
+                <contextTags>
+                    <title>RES_QInstallment_Num</title>
+                </contextTags>
+                <customMappingAllowed>false</customMappingAllowed>
+                <dataType>number</dataType>
+                <fieldType>inputoutput</fieldType>
+                <key>false</key>
+                <localizationDisabled>false</localizationDisabled>
+                <title>RES_QInstallment_Num</title>
+                <transient>false</transient>
+                <value>false</value>
+            </contextAttributes>
+            <contextAttributes>
+                <contextTags>
+                    <title>RES_QInstallment_Percentage</title>
+                </contextTags>
+                <customMappingAllowed>false</customMappingAllowed>
+                <dataType>percent</dataType>
+                <fieldType>inputoutput</fieldType>
+                <key>false</key>
+                <localizationDisabled>false</localizationDisabled>
+                <title>RES_QInstallment_Percentage</title>
+                <transient>false</transient>
+                <value>false</value>
+            </contextAttributes>
+            <contextAttributes>
+                <contextTags>
+                    <title>IF_RES_QUnit_Check</title>
+                </contextTags>
+                <customMappingAllowed>false</customMappingAllowed>
+                <dataType>boolean</dataType>
+                <fieldType>inputoutput</fieldType>
+                <key>false</key>
+                <localizationDisabled>false</localizationDisabled>
+                <title>IF_RES_QUnit_Check</title>
+                <transient>false</transient>
+                <value>false</value>
+            </contextAttributes>
+            <contextAttributes>
+                <contextTags>
+                    <title>IF_RES_QInstallments_Check</title>
+                </contextTags>
+                <customMappingAllowed>false</customMappingAllowed>
+                <dataType>boolean</dataType>
+                <fieldType>inputoutput</fieldType>
+                <key>false</key>
+                <localizationDisabled>false</localizationDisabled>
+                <title>IF_RES_QInstallments_Check</title>
+                <transient>false</transient>
+                <value>false</value>
+            </contextAttributes>
+            <contextAttributes>
+                <contextTags>
+                    <title>RES_QInstallment_Type</title>
+                </contextTags>
+                <customMappingAllowed>false</customMappingAllowed>
+                <dataType>string</dataType>
+                <fieldType>inputoutput</fieldType>
+                <key>false</key>
+                <localizationDisabled>false</localizationDisabled>
+                <title>RES_QInstallment_Type</title>
+                <transient>false</transient>
+                <value>false</value>
+            </contextAttributes>
+            <contextAttributes>
+                <contextTags>
+                    <title>RES_QBankName</title>
+                </contextTags>
+                <customMappingAllowed>false</customMappingAllowed>
+                <dataType>picklist</dataType>
+                <fieldType>inputoutput</fieldType>
+                <key>false</key>
+                <localizationDisabled>false</localizationDisabled>
+                <title>RES_QBankName</title>
+                <transient>false</transient>
+                <value>false</value>
+            </contextAttributes>
+            <contextAttributes>
+                <contextTags>
+                    <title>RES_QPlotArea</title>
+                </contextTags>
+                <customMappingAllowed>false</customMappingAllowed>
+                <dataType>string</dataType>
+                <fieldType>inputoutput</fieldType>
+                <key>false</key>
+                <localizationDisabled>false</localizationDisabled>
+                <title>RES_QPlotArea</title>
+                <transient>false</transient>
+                <value>false</value>
+            </contextAttributes>
+            <contextAttributes>
+                <contextTags>
+                    <title>IMG_FloorPlan_width</title>
+                </contextTags>
+                <customMappingAllowed>false</customMappingAllowed>
+                <dataType>string</dataType>
+                <fieldType>inputoutput</fieldType>
+                <key>false</key>
+                <localizationDisabled>false</localizationDisabled>
+                <title>IMG_FloorPlan_width</title>
+                <transient>false</transient>
+                <value>false</value>
+            </contextAttributes>
+            <contextAttributes>
+                <contextTags>
+                    <title>IMG_FloorPlan_height</title>
+                </contextTags>
+                <customMappingAllowed>false</customMappingAllowed>
+                <dataType>string</dataType>
+                <fieldType>inputoutput</fieldType>
+                <key>false</key>
+                <localizationDisabled>false</localizationDisabled>
+                <title>IMG_FloorPlan_height</title>
+                <transient>false</transient>
+                <value>false</value>
+            </contextAttributes>
+            <contextAttributes>
+                <contextTags>
+                    <title>IMG_FloorPlan_src</title>
+                </contextTags>
+                <customMappingAllowed>false</customMappingAllowed>
+                <dataType>string</dataType>
+                <fieldType>inputoutput</fieldType>
+                <key>false</key>
+                <localizationDisabled>false</localizationDisabled>
+                <title>IMG_FloorPlan_src</title>
+                <transient>false</transient>
+                <value>false</value>
+            </contextAttributes>
+            <contextAttributes>
+                <contextTags>
+                    <title>RES_QConstruction_Progress</title>
+                </contextTags>
+                <customMappingAllowed>false</customMappingAllowed>
+                <dataType>percent</dataType>
+                <fieldType>inputoutput</fieldType>
+                <key>false</key>
+                <localizationDisabled>false</localizationDisabled>
+                <title>RES_QConstruction_Progress</title>
+                <transient>false</transient>
+                <value>false</value>
+            </contextAttributes>
+            <customMappingAllowed>false</customMappingAllowed>
+            <displayName>QuoteLineItem</displayName>
+            <title>QuoteLineItem</title>
+            <transposable>false</transposable>
+        </contextNodes>
+        <contextNodes>
+            <contextAttributes>
                 <contextTags>
                     <title>RES_Reservation_Amount</title>
                 </contextTags>
                 <customMappingAllowed>false</customMappingAllowed>
-                <dataType>currency</dataType>
+                <dataType>string</dataType>
                 <fieldType>inputoutput</fieldType>
                 <key>false</key>
                 <localizationDisabled>false</localizationDisabled>
@@ -1785,7 +2088,7 @@
                     <title>RES_Financial_Compensation</title>
                 </contextTags>
                 <customMappingAllowed>false</customMappingAllowed>
-                <dataType>currency</dataType>
+                <dataType>string</dataType>
                 <fieldType>inputoutput</fieldType>
                 <key>false</key>
                 <localizationDisabled>false</localizationDisabled>
@@ -1798,7 +2101,7 @@
                     <title>RES_Final_Payment</title>
                 </contextTags>
                 <customMappingAllowed>false</customMappingAllowed>
-                <dataType>currency</dataType>
+                <dataType>string</dataType>
                 <fieldType>inputoutput</fieldType>
                 <key>false</key>
                 <localizationDisabled>false</localizationDisabled>
@@ -1811,7 +2114,7 @@
                     <title>RES_TotalPrice</title>
                 </contextTags>
                 <customMappingAllowed>false</customMappingAllowed>
-                <dataType>currency</dataType>
+                <dataType>string</dataType>
                 <fieldType>inputoutput</fieldType>
                 <key>false</key>
                 <localizationDisabled>false</localizationDisabled>
@@ -2624,309 +2927,6 @@
             <contextAttributes>
                 <customMappingAllowed>false</customMappingAllowed>
                 <dataType>reference</dataType>
-                <domainSet>Quote</domainSet>
-                <fieldType>input</fieldType>
-                <key>false</key>
-                <localizationDisabled>false</localizationDisabled>
-                <title>ParentReference</title>
-                <transient>false</transient>
-                <value>false</value>
-            </contextAttributes>
-            <contextAttributes>
-                <contextTags>
-                    <title>RES_QVirtual_Bank_Account</title>
-                </contextTags>
-                <customMappingAllowed>false</customMappingAllowed>
-                <dataType>string</dataType>
-                <fieldType>inputoutput</fieldType>
-                <key>false</key>
-                <localizationDisabled>false</localizationDisabled>
-                <title>RES_QVirtual_Bank_Account</title>
-                <transient>false</transient>
-                <value>false</value>
-            </contextAttributes>
-            <contextAttributes>
-                <contextTags>
-                    <title>RES_QUnit_Virtual_IBAN</title>
-                </contextTags>
-                <customMappingAllowed>false</customMappingAllowed>
-                <dataType>string</dataType>
-                <fieldType>inputoutput</fieldType>
-                <key>false</key>
-                <localizationDisabled>false</localizationDisabled>
-                <title>RES_QUnit_Virtual_IBAN</title>
-                <transient>false</transient>
-                <value>false</value>
-            </contextAttributes>
-            <contextAttributes>
-                <contextTags>
-                    <title>RES_QBankNameAR</title>
-                </contextTags>
-                <customMappingAllowed>false</customMappingAllowed>
-                <dataType>picklist</dataType>
-                <fieldType>inputoutput</fieldType>
-                <key>false</key>
-                <localizationDisabled>false</localizationDisabled>
-                <title>RES_QBankNameAR</title>
-                <transient>false</transient>
-                <value>false</value>
-            </contextAttributes>
-            <contextAttributes>
-                <contextTags>
-                    <title>RES_QUnit_Status</title>
-                </contextTags>
-                <customMappingAllowed>false</customMappingAllowed>
-                <dataType>picklist</dataType>
-                <fieldType>inputoutput</fieldType>
-                <key>false</key>
-                <localizationDisabled>false</localizationDisabled>
-                <title>RES_QUnit_Status</title>
-                <transient>false</transient>
-                <value>false</value>
-            </contextAttributes>
-            <contextAttributes>
-                <contextTags>
-                    <title>RES_QUnitArea</title>
-                </contextTags>
-                <customMappingAllowed>false</customMappingAllowed>
-                <dataType>number</dataType>
-                <fieldType>inputoutput</fieldType>
-                <key>false</key>
-                <localizationDisabled>false</localizationDisabled>
-                <title>RES_QUnitArea</title>
-                <transient>false</transient>
-                <value>false</value>
-            </contextAttributes>
-            <contextAttributes>
-                <contextTags>
-                    <title>RES_QUnit_Type</title>
-                </contextTags>
-                <customMappingAllowed>false</customMappingAllowed>
-                <dataType>string</dataType>
-                <fieldType>inputoutput</fieldType>
-                <key>false</key>
-                <localizationDisabled>false</localizationDisabled>
-                <title>RES_QUnit_Type</title>
-                <transient>false</transient>
-                <value>false</value>
-            </contextAttributes>
-            <contextAttributes>
-                <contextTags>
-                    <title>RES_QProductName</title>
-                </contextTags>
-                <customMappingAllowed>false</customMappingAllowed>
-                <dataType>string</dataType>
-                <fieldType>inputoutput</fieldType>
-                <key>false</key>
-                <localizationDisabled>false</localizationDisabled>
-                <title>RES_QProductName</title>
-                <transient>false</transient>
-                <value>false</value>
-            </contextAttributes>
-            <contextAttributes>
-                <contextTags>
-                    <title>RES_QBedrooms</title>
-                </contextTags>
-                <customMappingAllowed>false</customMappingAllowed>
-                <dataType>number</dataType>
-                <fieldType>inputoutput</fieldType>
-                <key>false</key>
-                <localizationDisabled>false</localizationDisabled>
-                <title>RES_QBedrooms</title>
-                <transient>false</transient>
-                <value>false</value>
-            </contextAttributes>
-            <contextAttributes>
-                <contextTags>
-                    <title>RES_QUnit_Number</title>
-                </contextTags>
-                <customMappingAllowed>false</customMappingAllowed>
-                <dataType>string</dataType>
-                <fieldType>inputoutput</fieldType>
-                <key>false</key>
-                <localizationDisabled>false</localizationDisabled>
-                <title>RES_QUnit_Number</title>
-                <transient>false</transient>
-                <value>false</value>
-            </contextAttributes>
-            <contextAttributes>
-                <contextTags>
-                    <title>RES_QInstallment_Due_Date</title>
-                </contextTags>
-                <customMappingAllowed>false</customMappingAllowed>
-                <dataType>string</dataType>
-                <fieldType>inputoutput</fieldType>
-                <key>false</key>
-                <localizationDisabled>false</localizationDisabled>
-                <title>RES_QInstallment_Due_Date</title>
-                <transient>false</transient>
-                <value>false</value>
-            </contextAttributes>
-            <contextAttributes>
-                <contextTags>
-                    <title>RES_QInstallment_Amount</title>
-                </contextTags>
-                <customMappingAllowed>false</customMappingAllowed>
-                <dataType>currency</dataType>
-                <fieldType>inputoutput</fieldType>
-                <key>false</key>
-                <localizationDisabled>false</localizationDisabled>
-                <title>RES_QInstallment_Amount</title>
-                <transient>false</transient>
-                <value>false</value>
-            </contextAttributes>
-            <contextAttributes>
-                <contextTags>
-                    <title>RES_QInstallment_Num</title>
-                </contextTags>
-                <customMappingAllowed>false</customMappingAllowed>
-                <dataType>number</dataType>
-                <fieldType>inputoutput</fieldType>
-                <key>false</key>
-                <localizationDisabled>false</localizationDisabled>
-                <title>RES_QInstallment_Num</title>
-                <transient>false</transient>
-                <value>false</value>
-            </contextAttributes>
-            <contextAttributes>
-                <contextTags>
-                    <title>RES_QInstallment_Percentage</title>
-                </contextTags>
-                <customMappingAllowed>false</customMappingAllowed>
-                <dataType>percent</dataType>
-                <fieldType>inputoutput</fieldType>
-                <key>false</key>
-                <localizationDisabled>false</localizationDisabled>
-                <title>RES_QInstallment_Percentage</title>
-                <transient>false</transient>
-                <value>false</value>
-            </contextAttributes>
-            <contextAttributes>
-                <contextTags>
-                    <title>IF_RES_QUnit_Check</title>
-                </contextTags>
-                <customMappingAllowed>false</customMappingAllowed>
-                <dataType>boolean</dataType>
-                <fieldType>inputoutput</fieldType>
-                <key>false</key>
-                <localizationDisabled>false</localizationDisabled>
-                <title>IF_RES_QUnit_Check</title>
-                <transient>false</transient>
-                <value>false</value>
-            </contextAttributes>
-            <contextAttributes>
-                <contextTags>
-                    <title>IF_RES_QInstallments_Check</title>
-                </contextTags>
-                <customMappingAllowed>false</customMappingAllowed>
-                <dataType>boolean</dataType>
-                <fieldType>inputoutput</fieldType>
-                <key>false</key>
-                <localizationDisabled>false</localizationDisabled>
-                <title>IF_RES_QInstallments_Check</title>
-                <transient>false</transient>
-                <value>false</value>
-            </contextAttributes>
-            <contextAttributes>
-                <contextTags>
-                    <title>RES_QInstallment_Type</title>
-                </contextTags>
-                <customMappingAllowed>false</customMappingAllowed>
-                <dataType>string</dataType>
-                <fieldType>inputoutput</fieldType>
-                <key>false</key>
-                <localizationDisabled>false</localizationDisabled>
-                <title>RES_QInstallment_Type</title>
-                <transient>false</transient>
-                <value>false</value>
-            </contextAttributes>
-            <contextAttributes>
-                <contextTags>
-                    <title>RES_QBankName</title>
-                </contextTags>
-                <customMappingAllowed>false</customMappingAllowed>
-                <dataType>picklist</dataType>
-                <fieldType>inputoutput</fieldType>
-                <key>false</key>
-                <localizationDisabled>false</localizationDisabled>
-                <title>RES_QBankName</title>
-                <transient>false</transient>
-                <value>false</value>
-            </contextAttributes>
-            <contextAttributes>
-                <contextTags>
-                    <title>RES_QPlotArea</title>
-                </contextTags>
-                <customMappingAllowed>false</customMappingAllowed>
-                <dataType>string</dataType>
-                <fieldType>inputoutput</fieldType>
-                <key>false</key>
-                <localizationDisabled>false</localizationDisabled>
-                <title>RES_QPlotArea</title>
-                <transient>false</transient>
-                <value>false</value>
-            </contextAttributes>
-            <contextAttributes>
-                <contextTags>
-                    <title>IMG_FloorPlan_width</title>
-                </contextTags>
-                <customMappingAllowed>false</customMappingAllowed>
-                <dataType>string</dataType>
-                <fieldType>inputoutput</fieldType>
-                <key>false</key>
-                <localizationDisabled>false</localizationDisabled>
-                <title>IMG_FloorPlan_width</title>
-                <transient>false</transient>
-                <value>false</value>
-            </contextAttributes>
-            <contextAttributes>
-                <contextTags>
-                    <title>IMG_FloorPlan_height</title>
-                </contextTags>
-                <customMappingAllowed>false</customMappingAllowed>
-                <dataType>string</dataType>
-                <fieldType>inputoutput</fieldType>
-                <key>false</key>
-                <localizationDisabled>false</localizationDisabled>
-                <title>IMG_FloorPlan_height</title>
-                <transient>false</transient>
-                <value>false</value>
-            </contextAttributes>
-            <contextAttributes>
-                <contextTags>
-                    <title>IMG_FloorPlan_src</title>
-                </contextTags>
-                <customMappingAllowed>false</customMappingAllowed>
-                <dataType>string</dataType>
-                <fieldType>inputoutput</fieldType>
-                <key>false</key>
-                <localizationDisabled>false</localizationDisabled>
-                <title>IMG_FloorPlan_src</title>
-                <transient>false</transient>
-                <value>false</value>
-            </contextAttributes>
-            <contextAttributes>
-                <contextTags>
-                    <title>RES_QConstruction_Progress</title>
-                </contextTags>
-                <customMappingAllowed>false</customMappingAllowed>
-                <dataType>percent</dataType>
-                <fieldType>inputoutput</fieldType>
-                <key>false</key>
-                <localizationDisabled>false</localizationDisabled>
-                <title>RES_QConstruction_Progress</title>
-                <transient>false</transient>
-                <value>false</value>
-            </contextAttributes>
-            <customMappingAllowed>false</customMappingAllowed>
-            <displayName>QuoteLineItem</displayName>
-            <title>QuoteLineItem</title>
-            <transposable>false</transposable>
-        </contextNodes>
-        <contextNodes>
-            <contextAttributes>
-                <customMappingAllowed>false</customMappingAllowed>
-                <dataType>reference</dataType>
                 <domainSet>Contract</domainSet>
                 <fieldType>input</fieldType>
                 <key>false</key>
@@ -2953,7 +2953,7 @@
                     <title>RES_Amount</title>
                 </contextTags>
                 <customMappingAllowed>false</customMappingAllowed>
-                <dataType>currency</dataType>
+                <dataType>string</dataType>
                 <fieldType>inputoutput</fieldType>
                 <key>false</key>
                 <localizationDisabled>false</localizationDisabled>
@@ -2979,7 +2979,7 @@
                     <title>RES_Accumulative_Payments</title>
                 </contextTags>
                 <customMappingAllowed>false</customMappingAllowed>
-                <dataType>currency</dataType>
+                <dataType>string</dataType>
                 <fieldType>inputoutput</fieldType>
                 <key>false</key>
                 <localizationDisabled>false</localizationDisabled>
@@ -3494,14 +3494,40 @@
                 <transient>false</transient>
                 <value>false</value>
             </contextAttributes>
+            <contextAttributes>
+                <contextTags>
+                    <title>IF_RES_FinalPayment_Check</title>
+                </contextTags>
+                <customMappingAllowed>false</customMappingAllowed>
+                <dataType>boolean</dataType>
+                <fieldType>inputoutput</fieldType>
+                <key>false</key>
+                <localizationDisabled>false</localizationDisabled>
+                <title>IF_RES_FinalPayment_Check</title>
+                <transient>false</transient>
+                <value>false</value>
+            </contextAttributes>
+            <contextAttributes>
+                <contextTags>
+                    <title>IF_RES_Reservation_Check</title>
+                </contextTags>
+                <customMappingAllowed>false</customMappingAllowed>
+                <dataType>boolean</dataType>
+                <fieldType>inputoutput</fieldType>
+                <key>false</key>
+                <localizationDisabled>false</localizationDisabled>
+                <title>IF_RES_Reservation_Check</title>
+                <transient>false</transient>
+                <value>false</value>
+            </contextAttributes>
             <customMappingAllowed>false</customMappingAllowed>
             <displayName>ContractItemPrice</displayName>
             <title>ContractItemPrice</title>
             <transposable>false</transposable>
         </contextNodes>
         <isActive>true</isActive>
-        <startDate>2026-10-13 15:28:21</startDate>
-        <versionNumber>3</versionNumber>
+        <startDate>2026-10-13 00:00:00</startDate>
+        <versionNumber>9</versionNumber>
     </contextDefinitionVersions>
     <contextTtl>10</contextTtl>
     <hasSystemTags>false</hasSystemTags>

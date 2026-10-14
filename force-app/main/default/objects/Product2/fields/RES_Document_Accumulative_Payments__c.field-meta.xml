@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>RES_Document_Accumulative_Payments__c</fullName>
+    <externalId>false</externalId>
+    <formula>IF(ISBLANK(RES_Installment_Accumulative_Payments__c),&quot;&quot;,IF(ROUND(RES_Installment_Accumulative_Payments__c,2)&lt;0,&quot;-&quot;,&quot;&quot;)&amp;IF(ABS(ROUND(RES_Installment_Accumulative_Payments__c,2))&gt;=1000000,TEXT(FLOOR(ABS(ROUND(RES_Installment_Accumulative_Payments__c,2))/1000000))&amp;&quot;,&quot;&amp;RIGHT(TEXT(1000+MOD(FLOOR(ABS(ROUND(RES_Installment_Accumulative_Payments__c,2))/1000),1000)),3)&amp;&quot;,&quot;&amp;RIGHT(TEXT(1000+MOD(FLOOR(ABS(ROUND(RES_Installment_Accumulative_Payments__c,2))),1000)),3),IF(ABS(ROUND(RES_Installment_Accumulative_Payments__c,2))&gt;=1000,TEXT(FLOOR(ABS(ROUND(RES_Installment_Accumulative_Payments__c,2))/1000))&amp;&quot;,&quot;&amp;RIGHT(TEXT(1000+MOD(FLOOR(ABS(ROUND(RES_Installment_Accumulative_Payments__c,2))),1000)),3),TEXT(FLOOR(ABS(ROUND(RES_Installment_Accumulative_Payments__c,2))))))&amp;IF(ABS(ROUND(RES_Installment_Accumulative_Payments__c,2))=FLOOR(ABS(ROUND(RES_Installment_Accumulative_Payments__c,2))),&quot;&quot;,&quot;.&quot;&amp;RIGHT(TEXT(100+ROUND(MOD(ABS(ROUND(RES_Installment_Accumulative_Payments__c,2)),1)*100,0)),2)))</formula>
+    <label>Document Accumulative Payments</label>
+    <required>false</required>
+    <trackHistory>false</trackHistory>
+    <type>Text</type>
+    <unique>false</unique>
+</CustomField>

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>RES_Document_Price__c</fullName>
+    <externalId>false</externalId>
+    <formula>IF(ISBLANK(Price),&quot;&quot;,IF(ROUND(Price,2)&lt;0,&quot;-&quot;,&quot;&quot;)&amp;IF(ABS(ROUND(Price,2))&gt;=1000000,TEXT(FLOOR(ABS(ROUND(Price,2))/1000000))&amp;&quot;,&quot;&amp;RIGHT(TEXT(1000+MOD(FLOOR(ABS(ROUND(Price,2))/1000),1000)),3)&amp;&quot;,&quot;&amp;RIGHT(TEXT(1000+MOD(FLOOR(ABS(ROUND(Price,2))),1000)),3),IF(ABS(ROUND(Price,2))&gt;=1000,TEXT(FLOOR(ABS(ROUND(Price,2))/1000))&amp;&quot;,&quot;&amp;RIGHT(TEXT(1000+MOD(FLOOR(ABS(ROUND(Price,2))),1000)),3),TEXT(FLOOR(ABS(ROUND(Price,2))))))&amp;IF(ABS(ROUND(Price,2))=FLOOR(ABS(ROUND(Price,2))),&quot;&quot;,&quot;.&quot;&amp;RIGHT(TEXT(100+ROUND(MOD(ABS(ROUND(Price,2)),1)*100,0)),2)))</formula>
+    <label>Document Price</label>
+    <required>false</required>
+    <trackHistory>false</trackHistory>
+    <type>Text</type>
+    <unique>false</unique>
+</CustomField>
