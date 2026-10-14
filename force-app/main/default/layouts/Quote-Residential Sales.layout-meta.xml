@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Layout xmlns="http://soap.sforce.com/2006/04/metadata">
     <excludeButtons>CreateOrder</excludeButtons>
-    <excludeButtons>OpenSlackRecordChannel</excludeButtons>
+    <excludeButtons>GenerateKnowledge</excludeButtons>
     <layoutSections>
         <customLabel>false</customLabel>
         <detailHeading>false</detailHeading>
@@ -308,13 +308,9 @@
         <fields>QUOTE_LI.PRODUCT2</fields>
         <fields>QUOTE_LI.QUANTITY</fields>
         <fields>QUOTE_LI.SUBTOTAL</fields>
-        <fields>RES_Discount_Type__c</fields>
-        <fields>QUOTE_LI.DISCOUNT</fields>
-        <fields>QUOTE_LI.DISC_AMOUNT</fields>
         <fields>QUOTE_LI.TOTAL_PRICE</fields>
-        <fields>QUOTE_LI.LIST_PRICE</fields>
-        <fields>QUOTE_LI.N_UNITPRICE</fields>
-        <fields>QUOTE_LI.N_TOTALPRICE</fields>
+        <fields>RES_Installment_Percentage__c</fields>
+        <fields>RES_Installment_Amount__c</fields>
         <relatedList>RelatedQuoteLineItemList</relatedList>
     </relatedLists>
     <relatedLists>
@@ -365,7 +361,7 @@
     <showRunAssignmentRulesCheckbox>false</showRunAssignmentRulesCheckbox>
     <showSubmitAndAttachButton>false</showSubmitAndAttachButton>
     <summaryLayout>
-        <masterLabel>00h9X00000XoQ1F</masterLabel>
+        <masterLabel>00h9X00000XuZJT</masterLabel>
         <sizeX>4</sizeX>
         <sizeY>0</sizeY>
         <summaryLayoutStyle>Default</summaryLayoutStyle>
