@@ -148,7 +148,6 @@ public without sharing class RES_ContentVersionServices {
         List<ContentVersion> uncheckedVersions, 
         Map<Id, Id> docToProductMap
     ) {
-        String baseUrl = URL.getOrgDomainUrl().toExternalForm();
         Map<Id, Product2> productsToUpdate = new Map<Id, Product2>();
         Set<Id> targetProductIds = new Set<Id>();
         Set<Id> currentCvIds = new Set<Id>();
@@ -161,10 +160,9 @@ public without sharing class RES_ContentVersionServices {
                     targetProductIds.add(productId);
                     currentCvIds.add(cv.Id);
 
-                    String directDownloadUrl = baseUrl + '/sfc/servlet.shepherd/version/download/' + cv.Id;
                     productsToUpdate.put(productId, new Product2(
                         Id = productId,
-                        DisplayUrl = directDownloadUrl
+                        DisplayUrl = buildImageUrl(cv)
                     ));
                 }
             }
@@ -193,6 +191,18 @@ public without sharing class RES_ContentVersionServices {
         if (!productsToUpdate.isEmpty()) {
             Database.update(productsToUpdate.values(), false, AccessLevel.SYSTEM_MODE);
         }
+    }
+
+    /**
+     * @description Builds the file-domain rendition URL, which loads for all users (my.salesforce.com links fail cross-domain).
+     * @param cv ContentVersion with ContentBodyId and FileType populated.
+     * @return Image URL for Product2.DisplayUrl.
+     */
+    private static String buildImageUrl(ContentVersion cv) {
+        String fileType = String.isBlank(cv.FileType) ? 'Jpeg' : cv.FileType.toLowerCase().capitalize();
+        return 'https://' + DomainCreator.getContentHostname()
+            + '/sfc/servlet.shepherd/version/renditionDownload?rendition=ORIGINAL_' + fileType
+            + '&versionId=' + cv.Id + '&operationContext=CHATTER&contentId=' + cv.ContentBodyId;
     }
 
     /**
