@@ -2,10 +2,10 @@
  * @description Copies the active measurement values of a Product2 onto the Product2 itself (DIR-1797).
  *
  *              Measurement Type -> Product2 field:
- *                Z006 BUA (Build up Area)   -> RES_Build_up_area__c      ("<amount> <UOM>")
- *                Z007 Net Saleable Area     -> RES_Unit_Total_Area__c    ("<amount> <UOM>")
- *                Z009 Plot Area             -> RES_Unit_Plot_Area__c     ("<amount> <UOM>")
- *                Z013 Internal Buildup Area -> RES_Internal_unit_Area__c ("<amount> <UOM>")
+ *                Z006 BUA (Build up Area)   -> RES_Build_up_area__c      ("<amount>")
+ *                Z007 Net Saleable Area     -> RES_Unit_Total_Area__c    ("<amount>")
+ *                Z009 Plot Area             -> RES_Unit_Plot_Area__c     ("<amount>")
+ *                Z013 Internal Buildup Area -> RES_Internal_unit_Area__c ("<amount>")
  *                Z008 No. of rooms          -> RES_No_of_Bedrooms__c     (whole number)
  *
  *              Every measurement (any type) also gets RES_Active__c: true only on the one record per product and type
@@ -197,10 +197,7 @@ public without sharing class RES_ProductMeasurementSyncService {
         if (typeCode == TYPE_ROOMS) {
             return m.RES_Measurement_Amount__c.setScale(0, System.RoundingMode.DOWN);
         }
-        String text = m.RES_Measurement_Amount__c.stripTrailingZeros().toPlainString();
-        if (String.isNotBlank(m.RES_Unit_Of_Measurement__c)) {
-            text += ' ' + m.RES_Unit_Of_Measurement__c;
-        }
-        return text.left(20); // Product2 target fields are Text(20)
+        // Value only - the unit of measurement is intentionally NOT appended (it broke document generation)
+        return m.RES_Measurement_Amount__c.stripTrailingZeros().toPlainString().left(20); // Product2 target fields are Text(20)
     }
 }

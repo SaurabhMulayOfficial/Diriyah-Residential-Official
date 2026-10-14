@@ -49,10 +49,10 @@ private class RES_ProductMeasurementSyncTest {
         Test.stopTest();
 
         Product2 r = reload(p.Id);
-        System.assertEquals('1041.68 Sqr Mtr', r.RES_Build_up_area__c);
-        System.assertEquals('907.03 Sqr Mtr', r.RES_Unit_Total_Area__c);
-        System.assertEquals('2999.13 Sqr Mtr', r.RES_Unit_Plot_Area__c);
-        System.assertEquals('691.46 Sqr Mtr', r.RES_Internal_unit_Area__c);
+        System.assertEquals('1041.68', r.RES_Build_up_area__c);
+        System.assertEquals('907.03', r.RES_Unit_Total_Area__c);
+        System.assertEquals('2999.13', r.RES_Unit_Plot_Area__c);
+        System.assertEquals('691.46', r.RES_Internal_unit_Area__c);
         System.assertEquals(5, r.RES_No_of_Bedrooms__c);
     }
 
@@ -91,7 +91,7 @@ private class RES_ProductMeasurementSyncTest {
             build(p.Id, BUA, 120, 'Sqr Mtr', today.addDays(-10), null)
         };
         Test.stopTest();
-        System.assertEquals('150 Sqr Mtr', reload(p.Id).RES_Build_up_area__c);
+        System.assertEquals('150', reload(p.Id).RES_Build_up_area__c);
     }
 
     @IsTest
@@ -99,11 +99,11 @@ private class RES_ProductMeasurementSyncTest {
         Product2 p = createProduct('P5');
         RES_Measurement__c m = build(p.Id, BUA, 100, 'Sqr Mtr', RES_ProductMeasurementSyncService.today(), null);
         insert m;
-        System.assertEquals('100 Sqr Mtr', reload(p.Id).RES_Build_up_area__c);
+        System.assertEquals('100', reload(p.Id).RES_Build_up_area__c);
 
         m.RES_Measurement_Amount__c = 250.5;
         update m;
-        System.assertEquals('250.5 Sqr Mtr', reload(p.Id).RES_Build_up_area__c);
+        System.assertEquals('250.5', reload(p.Id).RES_Build_up_area__c);
 
         m.RES_Measurement_To__c = RES_ProductMeasurementSyncService.today().addDays(-1);
         update m;
@@ -111,13 +111,13 @@ private class RES_ProductMeasurementSyncTest {
 
         m.RES_Measurement_To__c = null;
         update m;
-        System.assertEquals('250.5 Sqr Mtr', reload(p.Id).RES_Build_up_area__c);
+        System.assertEquals('250.5', reload(p.Id).RES_Build_up_area__c);
 
         delete m;
         System.assertEquals(null, reload(p.Id).RES_Build_up_area__c);
 
         undelete m;
-        System.assertEquals('250.5 Sqr Mtr', reload(p.Id).RES_Build_up_area__c);
+        System.assertEquals('250.5', reload(p.Id).RES_Build_up_area__c);
     }
 
     @IsTest
@@ -129,7 +129,7 @@ private class RES_ProductMeasurementSyncTest {
         m.RES_Product__c = b.Id;
         update m;
         System.assertEquals(null, reload(a.Id).RES_Unit_Plot_Area__c);
-        System.assertEquals('300 Sqr Mtr', reload(b.Id).RES_Unit_Plot_Area__c);
+        System.assertEquals('300', reload(b.Id).RES_Unit_Plot_Area__c);
     }
 
     @IsTest
@@ -148,7 +148,7 @@ private class RES_ProductMeasurementSyncTest {
         Product2 p = createProduct('P7');
         RES_Measurement__c m = build(p.Id, BUA, 100, 'Sqr Mtr', RES_ProductMeasurementSyncService.today().addDays(-10), RES_ProductMeasurementSyncService.today().addDays(5));
         insert m;
-        System.assertEquals('100 Sqr Mtr', reload(p.Id).RES_Build_up_area__c);
+        System.assertEquals('100', reload(p.Id).RES_Build_up_area__c);
 
         // Simulate the To date passing with no save-triggered sync: switch triggers off, edit, switch on
         RES_Config_Switch__c cfg = RES_Config_Switch__c.getOrgDefaults();
@@ -158,7 +158,7 @@ private class RES_ProductMeasurementSyncTest {
         update m;
         cfg.RES_Triggers_Off__c = false;
         upsert cfg;
-        System.assertEquals('100 Sqr Mtr', reload(p.Id).RES_Build_up_area__c, 'Stale until the batch runs');
+        System.assertEquals('100', reload(p.Id).RES_Build_up_area__c, 'Stale until the batch runs');
 
         Test.startTest();
         Database.executeBatch(new RES_ProductMeasurementSyncBatch());
@@ -191,11 +191,11 @@ private class RES_ProductMeasurementSyncTest {
         Test.setCreatedDate(older.Id, Datetime.now().addDays(-5));
         Test.setCreatedDate(newer.Id, Datetime.now().addDays(-1));
         RES_ProductMeasurementSyncService.syncProducts(new Set<Id>{ p.Id });
-        System.assertEquals('200 Sqr Mtr', reload(p.Id).RES_Build_up_area__c);
+        System.assertEquals('200', reload(p.Id).RES_Build_up_area__c);
 
         Test.setCreatedDate(older.Id, Datetime.now().addHours(-1)); // now the other one is the most recent
         RES_ProductMeasurementSyncService.syncProducts(new Set<Id>{ p.Id });
-        System.assertEquals('100 Sqr Mtr', reload(p.Id).RES_Build_up_area__c);
+        System.assertEquals('100', reload(p.Id).RES_Build_up_area__c);
     }
 
     @IsTest
@@ -207,7 +207,7 @@ private class RES_ProductMeasurementSyncTest {
         Test.startTest();
         Database.executeBatch(new RES_ProductMeasurementSyncBatch(true));
         Test.stopTest();
-        System.assertEquals('500 Sqr Mtr', reload(p.Id).RES_Unit_Plot_Area__c);
+        System.assertEquals('500', reload(p.Id).RES_Unit_Plot_Area__c);
     }
 
     private static Map<String, Boolean> activeByName(Id productId) {
@@ -271,7 +271,7 @@ private class RES_ProductMeasurementSyncTest {
         Map<String, Boolean> a = activeByName(p.Id);
         System.assertEquals(true, a.get('first'));
         System.assertEquals(false, a.get('second'));
-        System.assertEquals('100 Sqr Mtr', reload(p.Id).RES_Build_up_area__c);
+        System.assertEquals('100', reload(p.Id).RES_Build_up_area__c);
 
         delete first; // nothing left in effect
         System.assertEquals(null, reload(p.Id).RES_Build_up_area__c);
@@ -438,12 +438,12 @@ private class RES_ProductMeasurementSyncTest {
         setCreated(undated, Datetime.now().addDays(-5));
         resync(p.Id);
         System.assertEquals('undated', activeName(p.Id, BUA), 'Future-dated record is not in window yet');
-        System.assertEquals('100 Sqr Mtr', reload(p.Id).RES_Build_up_area__c);
+        System.assertEquals('100', reload(p.Id).RES_Build_up_area__c);
 
         future.RES_Measurement_From__c = today; // the From date arrives
         update future;
         System.assertEquals('future', activeName(p.Id, BUA));
-        System.assertEquals('200 Sqr Mtr', reload(p.Id).RES_Build_up_area__c);
+        System.assertEquals('200', reload(p.Id).RES_Build_up_area__c);
     }
 
     @IsTest
