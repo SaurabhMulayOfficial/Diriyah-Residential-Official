@@ -49,11 +49,14 @@ public with sharing class RES_ContractUpdateIntegrationService extends RES_BaseI
         setRequestName('Sales_Contract_Update');
     }
 
+    private static final String WF_TYPE_DESCRIPTION = 'SALES CONTRACT APPROVAL CYCLE';
+
     private static RES_ContractUpdateWrapper buildUpdateWrapper(
         Contract c,
         Map<Id, DateTime> contractToHardBlockDate,
         Map<Id, String> contractToApprovedByName,
-        Map<String, String> contractStatusMapping
+        Map<String, String> contractStatusMapping,
+        Map<String, String> wfTypeMapping
     ) {
         RES_ContractUpdateWrapper wrapper = new RES_ContractUpdateWrapper();
         RES_ContractUpdateWrapper.ContractUpdatePayload payload = new RES_ContractUpdateWrapper.ContractUpdatePayload();
@@ -65,7 +68,7 @@ public with sharing class RES_ContractUpdateIntegrationService extends RES_BaseI
         payload.IV_COMPANY_CODE    = c.RES_Company_Code__c;
         payload.IV_CONTRACT        = c.RES_External_ID__c;
         payload.IV_CONTRACT_STATUS = mappedStatus;
-        payload.IV_WF_TYPE         = c.RES_Contract_Type__c;
+        payload.IV_WF_TYPE         = wfTypeMapping.get(WF_TYPE_DESCRIPTION);
         payload.IV_C4C_USER        = contractToApprovedByName.get(c.Id);
         payload.IV_NOTICE_DATE     = null;
         payload.IV_CN_OFFR         = null;
@@ -102,30 +105,33 @@ public with sharing class RES_ContractUpdateIntegrationService extends RES_BaseI
             }
         }
 
-        // Build contractId -> latest approved reviewer name
+        // Build contractId -> Assigned To (user / queue / role name) of the latest approved work item
         Map<Id, String> contractToApprovedByName = new Map<Id, String>();
         RES_ApprovalWorkItemDAOLayer approvalDao = new RES_ApprovalWorkItemDAOLayer();
         for (ApprovalWorkItem awi : approvalDao.getApprovedWorkItemsByContractIds(contractIds)) {
             // ORDER BY LastModifiedDate DESC — first hit per contract is the latest
             if (!contractToApprovedByName.containsKey(awi.RelatedRecordId)) {
-                contractToApprovedByName.put(awi.RelatedRecordId, awi.ReviewedBy.Name);
+                contractToApprovedByName.put(awi.RelatedRecordId, awi.AssignedTo.Name);
             }
         }
 
-        // Fetch Contract_Status SAP value mapping (Object: Contract, Field: Status)
+        // Fetch Contract Status and WF Type SAP value mappings (Object: Contract, Fields: Status, WFType)
         RES_SAPValueMappingDAOLayer sapDao = new RES_SAPValueMappingDAOLayer();
         Map<String, Map<String, String>> sapMappings = sapDao.getMappingByObjectsAndFields(
             new Set<String>{ 'Contract' },
-            new Set<String>{ 'Status' }
+            new Set<String>{ 'Status', 'WFType' }
         );
         Map<String, String> contractStatusMapping = sapMappings.containsKey('ContractStatus')
             ? sapMappings.get('ContractStatus')
+            : new Map<String, String>();
+        Map<String, String> wfTypeMapping = sapMappings.containsKey('ContractWFType')
+            ? sapMappings.get('ContractWFType')
             : new Map<String, String>();
 
         List<RES_ContractUpdateWrapper> wrapperList = new List<RES_ContractUpdateWrapper>();
 
         for (Contract c : contracts) {
-            wrapperList.add(buildUpdateWrapper(c, contractToHardBlockDate, contractToApprovedByName, contractStatusMapping));
+            wrapperList.add(buildUpdateWrapper(c, contractToHardBlockDate, contractToApprovedByName, contractStatusMapping, wfTypeMapping));
         }
 
         if (wrapperList.isEmpty()) {

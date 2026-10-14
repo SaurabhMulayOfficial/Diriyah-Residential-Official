@@ -58,11 +58,13 @@ public with sharing class RES_ContractTerminationIntService extends RES_BaseInte
         RES_ContractTerminationWrapper.ContractTerminationPayload payload = new RES_ContractTerminationWrapper.ContractTerminationPayload();
 
         Boolean isCanceled = c.Status == 'Canceled';
+        Boolean isPending  = c.Status == 'Pending Cancellation Approval';
 
+        // Pending: termination request only, no status. Canceled: mapped status. Otherwise (reverted): TMRJ.
         String mappedStatus;
         if (isCanceled) {
             mappedStatus = contractStatusMapping.get('Canceled');
-        } else {
+        } else if (!isPending) {
             mappedStatus = contractStatusMapping.containsKey('Termination Rejected')
                 ? contractStatusMapping.get('Termination Rejected')
                 : 'TMRJ';
@@ -74,7 +76,7 @@ public with sharing class RES_ContractTerminationIntService extends RES_BaseInte
         payload.IV_REQUESTED_DATE         = contractToRequestedDate.get(c.Id);
         payload.IV_FINAL_TERMINATION_DATE = isCanceled ? String.valueOf(Date.today()) : null;
         payload.IV_CONTRACT_STATUS        = mappedStatus;
-        payload.IV_TERMINATION_REASON     = c.RES_Cancellation_Reasons__c;
+        payload.IV_TERMINATION_REASON     = isPending ? null : c.RES_Cancellation_Reasons__c;
         payload.IV_NOTE                   = null;
         payload.IV_C4CUSR                 = null;
         payload.IV_CONTRACT_OBJECT_ID     = null;

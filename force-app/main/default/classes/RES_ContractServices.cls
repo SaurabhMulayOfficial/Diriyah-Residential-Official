@@ -45,6 +45,15 @@ public with sharing class RES_ContractServices {
                 // Cancellation request was rejected/reverted; nothing to sync to SAP
                 continue;
             }
+            else if (oldMap.get(contract.Id) != null
+                && oldMap.get(contract.Id).Status != 'Pending Cancellation Approval'
+                && contract.Status == 'Pending Cancellation Approval') {
+                // Moved to Pending Cancellation Approval: send Sales_Contract_Termination instead of Sales_Contract_Update
+                if (contract.RES_Last_Sync_DateTime__c != null && String.isNotBlank(contract.RES_External_ID__c)) {
+                    contractsToSync_Termination.add(contract);
+                }
+                continue;
+            }
             else if (isContractChanged(contract, oldMap.get(contract.Id), syncFields)
                 && contract.RES_Last_Sync_DateTime__c != null
                 && String.isNotBlank(contract.RES_External_ID__c)) {

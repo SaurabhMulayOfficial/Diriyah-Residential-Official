@@ -189,12 +189,12 @@ private class RES_ContractUpdateIntServiceTest {
     }
 
     @isTest
-    static void updateHydrate_contractTypeMapsToIvWfType() {
+    static void updateHydrate_ivWfTypeMapsToSalesContractApprovalCycle() {
         Account acc = RES_TestDataFactory.createAccount();
         Contract c  = buildContract(acc.Id, 'Draft', 'Y001', null);
 
         String body = RES_ContractUpdateIntegrationService.hydrateRequestBody(new List<Contract>{ c });
-        Assert.isTrue(body.contains('Y001'), 'IV_WF_TYPE must reflect RES_Contract_Type__c value.');
+        Assert.isTrue(body.contains('"IV_WF_TYPE":"SCAC"'), 'IV_WF_TYPE must map to SCAC from the SAP value mapping. Body: ' + body);
     }
 
     @isTest
@@ -263,14 +263,14 @@ private class RES_ContractUpdateIntServiceTest {
     }
 
     @isTest
-    static void updateHydrate_contractTypeNullWhenNotSet() {
+    static void updateHydrate_ivWfTypeIndependentOfContractType() {
         Account acc = RES_TestDataFactory.createAccount();
         Contract c  = buildContract(acc.Id, 'Draft', null, null);
 
         String body = RES_ContractUpdateIntegrationService.hydrateRequestBody(new List<Contract>{ c });
         Map<String, Object> parsed  = (Map<String, Object>) JSON.deserializeUntyped(body);
         Map<String, Object> payload = (Map<String, Object>) parsed.get('CONTRACT_UPDATE');
-        Assert.isNull(payload.get('IV_WF_TYPE'), 'IV_WF_TYPE must be null when contract type is not set.');
+        Assert.areEqual('SCAC', payload.get('IV_WF_TYPE'), 'IV_WF_TYPE must be SCAC regardless of contract type.');
     }
 
     // ─────────────────────────────────────────────────────────────────────────
@@ -558,6 +558,22 @@ private class RES_ContractUpdateIntServiceTest {
         // Status is either the SAP-mapped value or the TMRJ fallback
         Assert.isNotNull(contractStatus != null ? contractStatus : 'TMRJ',
             'IV_CONTRACT_STATUS must resolve to a value for non-Canceled contracts.');
+    }
+
+    @isTest
+    static void terminationHydrate_pendingCancellationApproval_omitsStatusFinalDateAndReason() {
+        Account acc = RES_TestDataFactory.createAccount();
+        Contract c  = buildContract(acc.Id, 'Draft', null, '27');
+        // hydrateRequestBody only reads fields, so set the status in memory
+        c.Status = 'Pending Cancellation Approval';
+
+        String body = RES_ContractTerminationIntService.hydrateRequestBody(new List<Contract>{ c });
+        Map<String, Object> parsed  = (Map<String, Object>) JSON.deserializeUntyped(body);
+        Map<String, Object> payload = (Map<String, Object>) parsed.get('CONTRACT_TERM');
+
+        Assert.isNull(payload.get('IV_CONTRACT_STATUS'), 'IV_CONTRACT_STATUS must not be sent while pending.');
+        Assert.isNull(payload.get('IV_FINAL_TERMINATION_DATE'), 'IV_FINAL_TERMINATION_DATE must not be sent while pending.');
+        Assert.isNull(payload.get('IV_TERMINATION_REASON'), 'IV_TERMINATION_REASON must not be sent while pending.');
     }
 
     @isTest
