@@ -14,6 +14,7 @@
         <locationX>0</locationX>
         <locationY>0</locationY>
         <defaultConnector>
+            <isGoTo>true</isGoTo>
             <targetReference>Show_Generating</targetReference>
         </defaultConnector>
         <defaultConnectorLabel>Still In Progress</defaultConnectorLabel>
@@ -127,7 +128,7 @@
     <formulas>
         <name>Project</name>
         <dataType>String</dataType>
-        <expression>TEXT({!recordId.RES_Project__c})</expression>
+        <expression>{!Get_Quote_Line_Item.Product2.RES_Business_Entity__r.Name}</expression>
     </formulas>
     <formulas>
         <name>requestText</name>
@@ -171,6 +172,7 @@
             <targetReference>Show_Generating</targetReference>
         </connector>
         <faultConnector>
+            <isGoTo>true</isGoTo>
             <targetReference>Show_Error</targetReference>
         </faultConnector>
         <inputAssignments>
