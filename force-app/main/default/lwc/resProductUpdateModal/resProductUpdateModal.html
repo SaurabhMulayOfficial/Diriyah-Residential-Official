@@ -42,6 +42,26 @@
                         <lightning-tab label="Details">
                             <div class="slds-p-around_small">
                                 <div class="slds-grid slds-wrap slds-gutters_small">
+                                    <!-- SAP-controlled fields: visible, not editable -->
+                                    <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
+                                        <lightning-input label="Company Code" value={companyCode} readonly></lightning-input>
+                                    </div>
+                                    <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
+                                        <lightning-input label="Business Entity Code" value={businessEntityCode} readonly></lightning-input>
+                                    </div>
+                                    <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
+                                        <lightning-input label="Rental Object Number" value={rentalObjectNumber} readonly></lightning-input>
+                                    </div>
+                                    <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
+                                        <lightning-input label="Usage Type" value={usageType} readonly></lightning-input>
+                                    </div>
+                                    <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
+                                        <lightning-input label="Valid From" value={validFrom} readonly></lightning-input>
+                                    </div>
+                                    <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
+                                        <lightning-input label="Virtual Bank Account" value={virtualBankAccount} readonly></lightning-input>
+                                    </div>
+
                                     <!-- Product Information -->
                                     <div class="slds-col slds-size_1-of-1">
                                         <h3 class="slds-text-heading_small slds-m-bottom_small">Product Information</h3>
@@ -59,10 +79,10 @@
                                         <lightning-input-field field-name={constructionPhaseField} data-field="RES_Construction_Phase__c"></lightning-input-field>
                                     </div>
                                     <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
-                                        <lightning-input-field field-name={businessEntityField} data-field="RES_Business_Entity__c"></lightning-input-field>
+                                        <lightning-input-field field-name={businessEntityField} data-field="RES_Business_Entity__c" disabled></lightning-input-field>
                                     </div>
                                     <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
-                                        <lightning-input-field field-name={familyField} data-field="Family"></lightning-input-field>
+                                        <lightning-input-field field-name={familyField} data-field="Family" disabled></lightning-input-field>
                                     </div>
                                     <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
                                         <lightning-input-field field-name={usageTypeArabicField} data-field="RES_Usage_Type_Arabic__c"></lightning-input-field>

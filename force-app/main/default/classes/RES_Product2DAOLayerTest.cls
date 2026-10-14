@@ -343,4 +343,31 @@ private class RES_Product2DAOLayerTest {
             .getProductsByStockKeepingUnits(new Set<String>{ 'SKU-DAO-003' });
         Assert.areEqual(1, results.size(), 'Should return the product matching the SKU');
     }
+
+    // ── labels instead of stored codes (Usage Type and Typology) ──────────────
+
+    private static String labelOf(Schema.SObjectField field, String value) {
+        for (Schema.PicklistEntry e : field.getDescribe().getPicklistValues()) {
+            if (e.getValue() == value) return e.getLabel();
+        }
+        return value;
+    }
+
+    @isTest
+    static void testGetApprovalQueueReturnsPicklistLabels() {
+        List<Product2> results = new RES_Product2DAOLayer().getApprovalQueue('Draft', 'DAO-UNIT-001', 10, null, null);
+        Assert.areEqual(1, results.size(), 'The seeded unit must be returned');
+        Assert.areEqual(labelOf(Product2.Family, '1004'), results[0].Family,
+            'Usage Type must come back as its label, not the stored code');
+        Assert.areEqual(labelOf(Product2.RES_Type__c, 'N'), results[0].RES_Type__c,
+            'Typology must come back as its label, not the stored code');
+    }
+
+    @isTest
+    static void testGetRejectedProductsReturnsPicklistLabels() {
+        List<Product2> results = new RES_Product2DAOLayer().getRejectedProducts('Draft', 'DAO-UNIT-001', 10, null, null);
+        Assert.areEqual(1, results.size(), 'The seeded unit must be returned');
+        Assert.areEqual(labelOf(Product2.Family, '1004'), results[0].Family, 'Usage Type must be a label');
+        Assert.areEqual(labelOf(Product2.RES_Type__c, 'N'), results[0].RES_Type__c, 'Typology must be a label');
+    }
 }

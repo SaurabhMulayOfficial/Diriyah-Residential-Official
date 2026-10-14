@@ -16,6 +16,12 @@ import FAMILY_FIELD from '@salesforce/schema/Product2.Family';
 import DESCRIPTION_FIELD from '@salesforce/schema/Product2.Description';
 import UPDATE_COMMENTS_FIELD from '@salesforce/schema/Product2.RES_Update_Comments__c';
 
+// Product2 fields - SAP-controlled, shown read-only
+import COMPANY_CODE_FIELD from '@salesforce/schema/Product2.RES_Company_Code__c';
+import EXTERNAL_ID_FIELD from '@salesforce/schema/Product2.RES_Product_External_ID__c';
+import AVAILABILITY_FIELD from '@salesforce/schema/Product2.AvailabilityDate';
+import VIRTUAL_BANK_ACCOUNT_FIELD from '@salesforce/schema/Product2.RES_Virtual_Bank_Account__c';
+
 // Product2 fields - Details Tab (from screenshots)
 import CONSTRUCTION_PHASE_FIELD from '@salesforce/schema/Product2.RES_Construction_Phase__c';
 import USAGE_TYPE_ARABIC_FIELD from '@salesforce/schema/Product2.RES_Usage_Type_Arabic__c';
@@ -47,13 +53,23 @@ const FIELDS = [
     BUSINESS_ENTITY_FIELD,
     TYPE_FIELD,
     FAMILY_FIELD,
-    DESCRIPTION_FIELD
+    DESCRIPTION_FIELD,
+    COMPANY_CODE_FIELD,
+    EXTERNAL_ID_FIELD,
+    AVAILABILITY_FIELD,
+    VIRTUAL_BANK_ACCOUNT_FIELD
 ];
+
+// Business entity code lives on the related catalog, so it is requested by relationship path.
+const OPTIONAL_FIELDS = ['Product2.RES_Business_Entity__r.RES_Business_Entity_Id__c'];
 
 const STATUS_AVAILABLE = 'Available';
 const STATUS_SOFT_HOLD = 'Soft Hold';
 const STATUS_HARD_BLOCK = 'Hard Block';
 const STATUS_DRAFT = 'Draft';
+
+// Fields SAP never accepts changes to after the unit is created: shown read-only and never sent for update.
+const LOCKED_FIELDS = ['RES_Business_Entity__c', 'Family'];
 
 export default class ResProductUpdateModal extends LightningElement {
     @api recordId;
@@ -100,13 +116,38 @@ export default class ResProductUpdateModal extends LightningElement {
     privateField = PRIVATE_FIELD;
     conditionField = CONDITION_FIELD;
 
-    @wire(getRecord, { recordId: '$recordId', fields: FIELDS })
+    @wire(getRecord, { recordId: '$recordId', fields: FIELDS, optionalFields: OPTIONAL_FIELDS })
     wiredProduct(result) {
         this.wiredProductResult = result;
         if (result.data) {
             this.currentStatus = getFieldValue(result.data, UNIT_STATUS_FIELD);
             this.productName = getFieldValue(result.data, NAME_FIELD);
         }
+    }
+
+    // Read-only SAP values shown in the form (labels follow SAP wording).
+    get recordData() {
+        return this.wiredProductResult && this.wiredProductResult.data ? this.wiredProductResult.data : null;
+    }
+    get companyCode() {
+        return this.recordData ? getFieldValue(this.recordData, COMPANY_CODE_FIELD) : '';
+    }
+    get businessEntityCode() {
+        const rel = this.recordData && this.recordData.fields.RES_Business_Entity__r;
+        const v = rel && rel.value && rel.value.fields.RES_Business_Entity_Id__c;
+        return v ? v.value : '';
+    }
+    get rentalObjectNumber() {
+        return this.recordData ? getFieldValue(this.recordData, EXTERNAL_ID_FIELD) : '';
+    }
+    get usageType() {
+        return this.recordData ? getFieldValue(this.recordData, FAMILY_FIELD) : '';
+    }
+    get validFrom() {
+        return this.recordData ? getFieldValue(this.recordData, AVAILABILITY_FIELD) : '';
+    }
+    get virtualBankAccount() {
+        return this.recordData ? getFieldValue(this.recordData, VIRTUAL_BANK_ACCOUNT_FIELD) : '';
     }
 
     // Auto-open modal when component loads (for Quick Actions)
@@ -172,6 +213,9 @@ export default class ResProductUpdateModal extends LightningElement {
         const fields = {};
         this.template.querySelectorAll('lightning-input-field').forEach(field => {
             const fieldName = field.dataset.field;
+            if (fieldName && LOCKED_FIELDS.includes(fieldName)) {
+                return;
+            }
             if (fieldName && field.value !== undefined && field.value !== null) {
                 fields[fieldName] = field.value;
             }
