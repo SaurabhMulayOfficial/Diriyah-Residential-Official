@@ -25,7 +25,9 @@ public with sharing class RES_PaymentPlanConfiguratorService {
     private static final String RESIDENTIAL_SALES_PRICEBOOK_NAME = 'Residential Sales';
     private static final Decimal PERCENTAGE_TOTAL_TOLERANCE = 0.01;
     private static final Decimal PERCENTAGE_TOTAL_TARGET = 100;
-    private static final Integer DAYS_PER_MONTH = 30;
+    private static final Integer MONTHS_PER_YEAR = 12;
+    private static final String STATUS_ROLE_RELEASED = 'REL';
+    private static final String STATUS_ROLE_DESCRIPTION_RELEASED = 'Released';
 
     public class PaymentPlanConfiguratorException extends Exception {}
 
@@ -208,13 +210,10 @@ public with sharing class RES_PaymentPlanConfiguratorService {
         }
     }
 
-    // Derives days from months when only months is given, then blocks two installments sharing the same condition type and months/days
+    // Blocks two installments sharing the same condition type and months/days
     private static void validateCondition(InstallmentInput installment, Map<String, Integer> seenConditionKeys) {
         if ((installment.conditionMonths != null && installment.conditionMonths < 0) || (installment.conditionDays != null && installment.conditionDays < 0)) {
             throw new PaymentPlanConfiguratorException('Installment ' + installment.sequence + ' cannot have negative Condition Months or Condition Days.');
-        }
-        if (installment.conditionMonths != null && installment.conditionDays == null) {
-            installment.conditionDays = installment.conditionMonths * DAYS_PER_MONTH;
         }
         if (String.isBlank(installment.conditionType) || (installment.conditionMonths == null && installment.conditionDays == null)) {
             return;
@@ -249,6 +248,9 @@ public with sharing class RES_PaymentPlanConfiguratorService {
             ConfigureDuringSale = 'Allowed',
             RES_CIP_Type__c = CIP_TYPE_PAYMENT_PLAN,
             RES_No_of_Years__c = req.numberOfYears,
+            RES_No_of_Months__c = req.numberOfYears != null ? req.numberOfYears * MONTHS_PER_YEAR : null,
+            RES_Status_Role__c = STATUS_ROLE_RELEASED,
+            RES_Status_Role_Description__c = STATUS_ROLE_DESCRIPTION_RELEASED,
             RES_Business_Entity__c = req.catalogId,
             RES_Price_Option__c = req.priceOption,
             CurrencyIsoCode = String.isNotBlank(req.currencyIsoCode) ? req.currencyIsoCode : UserInfo.getDefaultCurrency(),

@@ -5,8 +5,8 @@
         </template>
         <p class="slds-text-body_small slds-m-bottom_small slds-text-color_weak">
             Define each installment's share of the payment plan. Percentages must add up to 100%.
-            POC % (construction milestone) and due date are both optional. Condition Days is calculated from
-            Condition Months (30 days per month); two installments with the same Condition Type cannot share the same months/days.
+            POC % (construction milestone) and due date are both optional. Condition Months and Condition Days
+            are entered independently; two installments with the same Condition Type cannot share the same months/days.
         </p>
 
         <table class="slds-table slds-table_bordered slds-table_cell-buffer" aria-label="Installments">
@@ -120,7 +120,6 @@
                                 onchange={handleFieldChange}
                                 variant="label-hidden"
                                 label="Condition Days"
-                                placeholder="Auto"
                             ></lightning-input>
                         </td>
                         <td>
