@@ -561,7 +561,7 @@ private class RES_ContractUpdateIntServiceTest {
     }
 
     @isTest
-    static void terminationHydrate_pendingCancellationApproval_omitsStatusFinalDateAndReason() {
+    static void terminationHydrate_pendingCancellationApproval_omitsStatusAndFinalDate_sendsReason() {
         Account acc = RES_TestDataFactory.createAccount();
         Contract c  = buildContract(acc.Id, 'Draft', null, '27');
         // hydrateRequestBody only reads fields, so set the status in memory
@@ -573,7 +573,7 @@ private class RES_ContractUpdateIntServiceTest {
 
         Assert.isNull(payload.get('IV_CONTRACT_STATUS'), 'IV_CONTRACT_STATUS must not be sent while pending.');
         Assert.isNull(payload.get('IV_FINAL_TERMINATION_DATE'), 'IV_FINAL_TERMINATION_DATE must not be sent while pending.');
-        Assert.isNull(payload.get('IV_TERMINATION_REASON'), 'IV_TERMINATION_REASON must not be sent while pending.');
+        Assert.areEqual('27', (String) payload.get('IV_TERMINATION_REASON'), 'IV_TERMINATION_REASON must be sent while pending.');
     }
 
     @isTest
