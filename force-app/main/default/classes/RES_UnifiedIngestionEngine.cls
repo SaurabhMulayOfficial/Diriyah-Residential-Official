@@ -1702,9 +1702,6 @@ public with sharing class RES_UnifiedIngestionEngine implements Database.Batchab
                 'RES_Measurement_To__c'
             );
     
-            Id catalogId = catalogIdByCode.get(catalogCode(primary));
-            Id categoryId = categoryIdByCode.get(categoryCode(primary));
-    
             for (RES_IngestionConfig.TargetMap tm : maps) {
     
                 // Skip measurement processing for existing products
@@ -1744,14 +1741,6 @@ public with sharing class RES_UnifiedIngestionEngine implements Database.Batchab
                     'RES_Unit_Of_Measurement__c',
                     tm.unitOfMeasurement
                 );
-    
-                if (catalogId != null) {
-                    m.RES_Catalog__c = catalogId;
-                }
-    
-                if (categoryId != null) {
-                    m.RES_Category__c = categoryId;
-                }
     
                 String measurementTypeLabel = measurementTypeLabelByValue.get(tm.measurementType);
                 
