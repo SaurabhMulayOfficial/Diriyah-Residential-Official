@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <PermissionSet xmlns="http://soap.sforce.com/2006/04/metadata">
     <description>Permission Set for Residential Sales Relationship Manager (Diriyah)</description>
+    <classAccesses>
+        <apexClass>RES_ConvertedLeadController</apexClass>
+        <enabled>true</enabled>
+    </classAccesses>
     <customPermissions>
         <enabled>true</enabled>
         <name>RES_Can_Submit_Discount_Approval</name>
@@ -2813,16 +2817,6 @@
         <viewAllFields>false</viewAllFields>
         <viewAllRecords>false</viewAllRecords>
     </objectPermissions>
-    <objectPermissions>
-        <allowCreate>false</allowCreate>
-        <allowDelete>false</allowDelete>
-        <allowEdit>false</allowEdit>
-        <allowRead>true</allowRead>
-        <modifyAllRecords>false</modifyAllRecords>
-        <object>Converted_Leads</object>
-        <viewAllFields>true</viewAllFields>
-        <viewAllRecords>false</viewAllRecords>
-    </objectPermissions>
     <recordTypeVisibilities>
         <recordType>Product2.RES_Residential_Payment_Plan</recordType>
         <visible>true</visible>
@@ -2884,7 +2878,7 @@
         <visibility>Visible</visibility>
     </tabSettings>
     <tabSettings>
-        <tab>custom-Converted_Leads</tab>
+        <tab>Converted_Leads</tab>
         <visibility>Visible</visibility>
     </tabSettings>    
     <tabSettings>

@@ -3,6 +3,10 @@
     <description>Permission Set for 
 Sales – DI – Specialist
 Sales – DI – Relationship Manager</description>
+    <classAccesses>
+        <apexClass>RES_ConvertedLeadController</apexClass>
+        <enabled>true</enabled>
+    </classAccesses>
     <customPermissions>
         <enabled>true</enabled>
         <name>RES_Can_Submit_Discount_Approval</name>
@@ -3571,16 +3575,6 @@ Sales – DI – Relationship Manager</description>
         <viewAllFields>false</viewAllFields>
         <viewAllRecords>false</viewAllRecords>
     </objectPermissions>
-    <objectPermissions>
-        <allowCreate>false</allowCreate>
-        <allowDelete>false</allowDelete>
-        <allowEdit>false</allowEdit>
-        <allowRead>true</allowRead>
-        <modifyAllRecords>false</modifyAllRecords>
-        <object>Converted_Leads</object>
-        <viewAllFields>true</viewAllFields>
-        <viewAllRecords>false</viewAllRecords>
-    </objectPermissions>
     <recordTypeVisibilities>
         <recordType>Product2.RES_Residential_Payment_Plan</recordType>
         <visible>true</visible>
@@ -3642,7 +3636,7 @@ Sales – DI – Relationship Manager</description>
         <visibility>Visible</visibility>
     </tabSettings>
     <tabSettings>
-        <tab>custom-Converted_Leads</tab>
+        <tab>Converted_Leads</tab>
         <visibility>Visible</visibility>
     </tabSettings>   
     <tabSettings>
