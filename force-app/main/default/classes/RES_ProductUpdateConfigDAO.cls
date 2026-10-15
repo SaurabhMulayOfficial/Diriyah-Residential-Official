@@ -15,6 +15,21 @@
  *      - All queries use AccessLevel.SYSTEM_MODE for consistency
  */
 public without sharing class RES_ProductUpdateConfigDAO extends RES_BaseDAOLayer {
+
+    // Custom metadata records cannot be inserted in a test, so tests supply them here.
+    @TestVisible
+    private static List<RES_Product_Update_Config__mdt> mockConfigs;
+
+    private static final String CONFIG_FIELDS =
+        'DeveloperName, ' +
+        'MasterLabel, ' +
+        'RES_Status_Value__c, ' +
+        'RES_Warning_Label__c, ' +
+        'RES_Requires_Warning__c, ' +
+        'RES_Target_Status__c, ' +
+        'RES_Min_Comment_Length__c, ' +
+        'RES_Active__c ';
+
     protected override String getSObjectName() {
         return 'RES_Product_Update_Config__mdt';
     }
@@ -27,20 +42,19 @@ public without sharing class RES_ProductUpdateConfigDAO extends RES_BaseDAOLayer
      * @return List of active RES_Product_Update_Config__mdt records (never null)
      */
     public List<RES_Product_Update_Config__mdt> getActiveConfigs() {
+        if (mockConfigs != null) {
+            List<RES_Product_Update_Config__mdt> active = new List<RES_Product_Update_Config__mdt>();
+            for (RES_Product_Update_Config__mdt c : mockConfigs) {
+                if (c.RES_Active__c == true) active.add(c);
+            }
+            return active;
+        }
         try {
             String soql =
-                'SELECT ' +
-                'DeveloperName, ' +
-                'MasterLabel, ' +
-                'RES_Field_API_Name__c, ' +
-                'RES_Field_Label__c, ' +
-                'RES_Is_Required__c, ' +
-                'RES_Is_Updateable__c, ' +
-                'RES_Display_Order__c, ' +
-                'RES_Active__c ' +
+                'SELECT ' + CONFIG_FIELDS +
                 'FROM RES_Product_Update_Config__mdt ' +
                 'WHERE RES_Active__c = true ' +
-                'ORDER BY RES_Display_Order__c ASC';
+                'ORDER BY DeveloperName ASC';
 
             List<RES_Product_Update_Config__mdt> results =
                 (List<RES_Product_Update_Config__mdt>) executeQuery(
@@ -77,16 +91,15 @@ public without sharing class RES_ProductUpdateConfigDAO extends RES_BaseDAOLayer
                 return null;
             }
 
+            if (mockConfigs != null) {
+                for (RES_Product_Update_Config__mdt c : mockConfigs) {
+                    if (c.DeveloperName == developerName) return c;
+                }
+                return null;
+            }
+
             String soql =
-                'SELECT ' +
-                'DeveloperName, ' +
-                'MasterLabel, ' +
-                'RES_Field_API_Name__c, ' +
-                'RES_Field_Label__c, ' +
-                'RES_Is_Required__c, ' +
-                'RES_Is_Updateable__c, ' +
-                'RES_Display_Order__c, ' +
-                'RES_Active__c ' +
+                'SELECT ' + CONFIG_FIELDS +
                 'FROM RES_Product_Update_Config__mdt ' +
                 'WHERE DeveloperName = :developerName ' +
                 'LIMIT 1';

@@ -730,4 +730,205 @@ private class RES_ProductApprovalServiceTest {
         System.assertEquals(null, refreshed.RES_Update_Comments__c,
             'Normal product comments should remain null');
     }
+
+    // ============================================================
+    // submitForApproval
+    // ============================================================
+
+    private static Product2 insertUnit(String name, String status) {
+        RES_IntegrationRequestEventService.batchSubmitter = new RES_IntegrationRequestEventService.CountingBatchSubmitter();
+        Product2 unit = new Product2(Name = name, IsActive = false, RES_Unit_Status__c = status);
+        insert unit;
+        return unit;
+    }
+
+    @isTest
+    static void testSubmitForApproval_nullOrEmptyIds_returnsError() {
+        System.assertEquals(System.Label.RES_Product_No_Records_Selected,
+            RES_ProductApprovalService.submitForApproval(null).errorMessage, 'Null ids');
+        System.assertEquals(System.Label.RES_Product_No_Records_Selected,
+            RES_ProductApprovalService.submitForApproval(new Set<Id>()).errorMessage, 'Empty ids');
+    }
+
+    @isTest
+    static void testSubmitForApproval_unauthorizedUser_returnsError() {
+        User standardUser = RES_TestDataFactory.createGenericUser('Standard User');
+        Id anyId = deletedProductId();
+
+        Test.startTest();
+        System.runAs(standardUser) {
+            RES_ProductApprovalService.BulkApprovalResult result = RES_ProductApprovalService.submitForApproval(new Set<Id>{ anyId });
+            System.assertEquals(System.Label.RES_Product_Unauthorized_Approval, result.errorMessage);
+        }
+        Test.stopTest();
+    }
+
+    @isTest
+    static void testSubmitForApproval_onlyNullIds_returnsError() {
+        User admin = RES_TestDataFactory.createGenericUser('System Administrator');
+
+        Test.startTest();
+        System.runAs(admin) {
+            RES_ProductApprovalService.BulkApprovalResult result = RES_ProductApprovalService.submitForApproval(new Set<Id>{ null });
+            System.assertEquals(System.Label.RES_Product_No_Records_Selected, result.errorMessage,
+                'A set that only holds null is treated as no selection');
+        }
+        Test.stopTest();
+    }
+
+    @isTest
+    static void testSubmitForApproval_draftAndRejected_moveToPendingDevCoAndClearComment() {
+        Product2 draftUnit = insertUnit('Submit Draft Unit', 'Draft');
+        Product2 rejectedUnit = insertUnit('Submit Rejected Unit', 'Rejected');
+        update new Product2(Id = rejectedUnit.Id, RES_Rejection_Comment__c = 'Fix the area');
+        User admin = RES_TestDataFactory.createGenericUser('System Administrator');
+
+        Test.startTest();
+        System.runAs(admin) {
+            RES_ProductApprovalService.BulkApprovalResult result =
+                RES_ProductApprovalService.submitForApproval(new Set<Id>{ draftUnit.Id, rejectedUnit.Id });
+            System.assertEquals(2, result.successCount, 'Both units can be submitted');
+            System.assertEquals(0, result.failedCount, 'Nothing fails');
+            System.assertEquals(2, result.items.size(), 'One item per unit');
+        }
+        Test.stopTest();
+
+        for (Product2 unit : [SELECT RES_Unit_Status__c, RES_Rejection_Comment__c FROM Product2 WHERE Id IN :new Set<Id>{ draftUnit.Id, rejectedUnit.Id }]) {
+            System.assertEquals('Pending DevCo Approval', unit.RES_Unit_Status__c, 'Submitted units wait for DevCo');
+            System.assertEquals(null, unit.RES_Rejection_Comment__c, 'The old rejection comment is cleared');
+        }
+    }
+
+    @isTest
+    static void testSubmitForApproval_otherStatus_isRefusedAndUnitUntouched() {
+        Product2 pendingUnit = insertUnit('Already Pending Unit', 'Pending Finance Approval');
+        User admin = RES_TestDataFactory.createGenericUser('System Administrator');
+
+        Test.startTest();
+        System.runAs(admin) {
+            RES_ProductApprovalService.BulkApprovalResult result = RES_ProductApprovalService.submitForApproval(new Set<Id>{ pendingUnit.Id });
+            System.assertEquals(1, result.failedCount, 'Only Draft or Rejected units can be submitted');
+            System.assertEquals(0, result.successCount, 'No success');
+            System.assertEquals(false, result.items[0].success, 'The item is a failure');
+        }
+        Test.stopTest();
+
+        System.assertEquals('Pending Finance Approval',
+            [SELECT RES_Unit_Status__c FROM Product2 WHERE Id = :pendingUnit.Id].RES_Unit_Status__c, 'The status is not changed');
+    }
+
+    @isTest
+    static void testSubmitForApproval_missingUnit_isReportedAsAlreadyProcessed() {
+        Product2 draftUnit = insertUnit('Submit With Missing', 'Draft');
+        Id missingId = deletedProductId();
+        User admin = RES_TestDataFactory.createGenericUser('System Administrator');
+
+        Test.startTest();
+        System.runAs(admin) {
+            RES_ProductApprovalService.BulkApprovalResult result =
+                RES_ProductApprovalService.submitForApproval(new Set<Id>{ draftUnit.Id, missingId });
+            System.assertEquals(1, result.successCount, 'The existing unit is submitted');
+            System.assertEquals(1, result.failedCount, 'The deleted unit is a failure');
+            Boolean foundMessage = false;
+            for (RES_ProductApprovalService.ApprovalItemResult item : result.items) {
+                if (item.productId == missingId) {
+                    foundMessage = item.errorMessage == System.Label.RES_Product_Already_Processed;
+                }
+            }
+            System.assert(foundMessage, 'The missing unit carries the already-processed message');
+        }
+        Test.stopTest();
+    }
+
+    @isTest
+    static void testSubmitForApproval_onlyMissingUnit_returnsWithoutUpdate() {
+        Id missingId = deletedProductId();
+        User admin = RES_TestDataFactory.createGenericUser('System Administrator');
+
+        Test.startTest();
+        System.runAs(admin) {
+            RES_ProductApprovalService.BulkApprovalResult result = RES_ProductApprovalService.submitForApproval(new Set<Id>{ missingId });
+            System.assertEquals(0, result.successCount, 'Nothing to update');
+            System.assertEquals(1, result.failedCount, 'The missing unit is reported');
+        }
+        Test.stopTest();
+    }
+
+    // ============================================================
+    // rejectProducts - success and authorization paths
+    // ============================================================
+
+    @isTest
+    static void testRejectProducts_pendingDevCoUnit_isRejectedWithTrimmedComment() {
+        Product2 pendingUnit = insertUnit('Reject Me Unit', 'Pending DevCo Approval');
+        User admin = RES_TestDataFactory.createGenericUser('System Administrator');
+
+        Test.startTest();
+        System.runAs(admin) {
+            RES_ProductApprovalService.BulkApprovalResult result =
+                RES_ProductApprovalService.rejectProducts(new Set<Id>{ pendingUnit.Id }, '   Area is wrong   ');
+            System.assertEquals(1, result.successCount, 'The unit is rejected');
+            System.assertEquals(0, result.failedCount, 'No failure');
+            System.assertEquals(true, result.items[0].success, 'The item is a success');
+        }
+        Test.stopTest();
+
+        Product2 refreshed = [SELECT RES_Unit_Status__c, RES_Rejection_Comment__c FROM Product2 WHERE Id = :pendingUnit.Id];
+        System.assertEquals('Rejected', refreshed.RES_Unit_Status__c, 'Status becomes Rejected');
+        System.assertEquals('Area is wrong', refreshed.RES_Rejection_Comment__c, 'The comment is trimmed');
+    }
+
+    @isTest
+    static void testRejectProducts_unitsAtEveryStage_areAllRejected() {
+        Product2 devCoUnit = insertUnit('Reject DevCo Stage', 'Pending DevCo Approval');
+        Product2 financeUnit = insertUnit('Reject Finance Stage', 'Pending Finance Approval');
+        Product2 csoUnit = insertUnit('Reject CSO Stage', 'Pending CSO Approval');
+        User admin = RES_TestDataFactory.createGenericUser('System Administrator');
+
+        Test.startTest();
+        System.runAs(admin) {
+            RES_ProductApprovalService.BulkApprovalResult result = RES_ProductApprovalService.rejectProducts(
+                new Set<Id>{ devCoUnit.Id, financeUnit.Id, csoUnit.Id }, 'Not ready');
+            System.assertEquals(3, result.successCount, 'Each approval stage can reject');
+        }
+        Test.stopTest();
+
+        for (Product2 unit : [SELECT RES_Unit_Status__c FROM Product2 WHERE Id IN :new Set<Id>{ devCoUnit.Id, financeUnit.Id, csoUnit.Id }]) {
+            System.assertEquals('Rejected', unit.RES_Unit_Status__c, 'Rejected at every stage');
+        }
+    }
+
+    @isTest
+    static void testRejectProducts_unauthorizedUser_failsEachUnit() {
+        Product2 pendingUnit = insertUnit('Reject Not Allowed', 'Pending DevCo Approval');
+        User standardUser = RES_TestDataFactory.createGenericUser('Standard User');
+
+        Test.startTest();
+        System.runAs(standardUser) {
+            RES_ProductApprovalService.BulkApprovalResult result =
+                RES_ProductApprovalService.rejectProducts(new Set<Id>{ pendingUnit.Id }, 'Because');
+            System.assertEquals(1, result.failedCount, 'A user without approver rights cannot reject');
+            System.assertEquals(System.Label.RES_Product_Unauthorized_Approval, result.items[0].errorMessage, 'Unauthorized message');
+        }
+        Test.stopTest();
+
+        System.assertEquals('Pending DevCo Approval',
+            [SELECT RES_Unit_Status__c FROM Product2 WHERE Id = :pendingUnit.Id].RES_Unit_Status__c, 'The unit is unchanged');
+    }
+
+    @isTest
+    static void testRejectProducts_missingUnitAlongsideRealOne_isAccountedFor() {
+        Product2 pendingUnit = insertUnit('Reject With Missing', 'Pending DevCo Approval');
+        Id missingId = deletedProductId();
+        User admin = RES_TestDataFactory.createGenericUser('System Administrator');
+
+        Test.startTest();
+        System.runAs(admin) {
+            RES_ProductApprovalService.BulkApprovalResult result =
+                RES_ProductApprovalService.rejectProducts(new Set<Id>{ pendingUnit.Id, missingId }, 'Reason');
+            System.assertEquals(1, result.successCount, 'The real unit is rejected');
+            System.assertEquals(1, result.failedCount, 'The deleted unit is reported as processed already');
+        }
+        Test.stopTest();
+    }
 }
