@@ -78,7 +78,7 @@ private class RES_AccountIntegrationServiceTest {
         acc.Type                              = 'Z001';
         acc.PersonGenderIdentity              = '1';
         acc.PersonEmail                       = 'main.user122334@domain.com';
-        acc.Phone                             = '966112223349';
+        acc.Phone                             = '+966112223349';
         acc.Fax                               = '966112224576';
         acc.BillingCity                       = 'Riyadh';
         acc.BillingPostalCode                 = '11564';
@@ -130,7 +130,7 @@ private class RES_AccountIntegrationServiceTest {
             Type                          = 'Z001',
             RES_Corporate_Title__c        = 'Z009',
             RES_Account_Group__c          = 'Z001',
-            Phone                         = '966112223390',
+            Phone                         = '+966112223390',
             Fax                           = '966112224045',
             RES_Extension__c              = 102,
             BillingStreet                 = 'King Nehru Road',
