@@ -162,7 +162,9 @@ public without sharing class RES_ProductMeasurementSyncService {
         if (records.isEmpty()) {
             return;
         }
-        for (Database.SaveResult sr : Database.update(records, false)) {
+        // System mode: the flag and the Product values are system-maintained and must not depend on the triggering
+        // user's field-level security (business users only have read access to RES_Active__c - DIR-2005/DIR-2008).
+        for (Database.SaveResult sr : Database.update(records, false, AccessLevel.SYSTEM_MODE)) {
             if (!sr.isSuccess()) {
                 System.debug(LoggingLevel.ERROR, '### [RES_ProductMeasurementSyncService] ' + label + ' update failed: ' + sr.getErrors()[0].getMessage());
             }
