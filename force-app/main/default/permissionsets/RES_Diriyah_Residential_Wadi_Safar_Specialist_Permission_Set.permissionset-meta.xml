@@ -3,6 +3,14 @@
     <description>Permission Set for 
 Sales – Wadi Safar – Specialist I
 Sales – Wadi Safar – Specialist II</description>
+    <classAccesses>
+        <apexClass>RES_AccountConvertedLeadController</apexClass>
+        <enabled>true</enabled>
+    </classAccesses>
+    <classAccesses>
+        <apexClass>RES_ConvertedLeadController</apexClass>
+        <enabled>true</enabled>
+    </classAccesses>
     <customPermissions>
         <enabled>true</enabled>
         <name>RES_Can_Submit_Discount_Approval</name>
@@ -3709,6 +3717,10 @@ Sales – Wadi Safar – Specialist II</description>
         <visible>true</visible>
     </recordTypeVisibilities>
     <tabSettings>
+        <tab>RES_Account_Converted_Leads</tab>
+        <visibility>Available</visibility>
+    </tabSettings>
+    <tabSettings>
         <tab>RES_Payment_Plan_Version__c</tab>
         <visibility>Visible</visibility>
     </tabSettings>
@@ -3744,6 +3756,10 @@ Sales – Wadi Safar – Specialist II</description>
         <tab>standard-Lead</tab>
         <visibility>Visible</visibility>
     </tabSettings>
+    <tabSettings>
+        <tab>Converted_Leads</tab>
+        <visibility>Visible</visibility>
+    </tabSettings>    
     <tabSettings>
         <tab>standard-Opportunity</tab>
         <visibility>Visible</visibility>

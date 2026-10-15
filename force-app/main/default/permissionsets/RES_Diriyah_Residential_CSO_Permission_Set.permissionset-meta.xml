@@ -5,6 +5,14 @@
         <apexClass>RES_BulkFolderUploaderController</apexClass>
         <enabled>true</enabled>
     </classAccesses>
+    <classAccesses>
+        <apexClass>RES_ConvertedLeadController</apexClass>
+        <enabled>true</enabled>
+    </classAccesses>
+    <classAccesses>
+        <apexClass>RES_AccountConvertedLeadController</apexClass>
+        <enabled>true</enabled>
+    </classAccesses>
     <customPermissions>
         <enabled>true</enabled>
         <name>RES_Product_CSO_Approver</name>
@@ -2832,6 +2840,14 @@
         <recordType>Product2.RES_Residential_Sales</recordType>
         <visible>true</visible>
     </recordTypeVisibilities>
+    <tabSettings>
+        <tab>Converted_Leads</tab>
+        <visibility>Visible</visibility>
+    </tabSettings>
+    <tabSettings>
+        <tab>RES_Account_Converted_Leads</tab>
+        <visibility>Available</visibility>
+    </tabSettings>
     <tabSettings>
         <tab>standard-Home</tab>
         <visibility>Visible</visibility>

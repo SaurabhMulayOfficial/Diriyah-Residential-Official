@@ -2630,6 +2630,14 @@ Sales – Planning – Senior Manager</description>
         <viewAllFields>false</viewAllFields>
         <viewAllRecords>false</viewAllRecords>
     </objectPermissions>
+                <classAccesses>
+                    <apexClass>RES_ConvertedLeadController</apexClass>
+                    <enabled>true</enabled>
+                </classAccesses>
+                <classAccesses>
+                    <apexClass>RES_AccountConvertedLeadController</apexClass>
+                    <enabled>true</enabled>
+                </classAccesses>
     <recordTypeVisibilities>
         <recordType>Product2.RES_Residential_Payment_Plan</recordType>
         <visible>true</visible>
@@ -2682,6 +2690,14 @@ Sales – Planning – Senior Manager</description>
         <recordType>Product2.RES_Residential_Sales</recordType>
         <visible>true</visible>
     </recordTypeVisibilities>
+    <tabSettings>
+        <tab>Converted_Leads</tab>
+        <visibility>Visible</visibility>
+    </tabSettings>
+    <tabSettings>
+        <tab>RES_Account_Converted_Leads</tab>
+        <visibility>Available</visibility>
+    </tabSettings>
     <tabSettings>
         <tab>standard-Home</tab>
         <visibility>Visible</visibility>
