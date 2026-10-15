@@ -2,6 +2,10 @@
 <PermissionSet xmlns="http://soap.sforce.com/2006/04/metadata">
     <description>Permission Set for Sales – Planning – Specialist</description>
     <classAccesses>
+        <apexClass>RES_AccountConvertedLeadController</apexClass>
+        <enabled>true</enabled>
+    </classAccesses>
+    <classAccesses>
         <apexClass>RES_ConvertedLeadController</apexClass>
         <enabled>true</enabled>
     </classAccesses>
@@ -3767,6 +3771,10 @@
         <recordType>Product2.RES_Residential_Sales</recordType>
         <visible>true</visible>
     </recordTypeVisibilities>
+    <tabSettings>
+        <tab>RES_Account_Converted_Leads</tab>
+        <visibility>Available</visibility>
+    </tabSettings>
     <tabSettings>
         <tab>RES_Payment_Plan_Version__c</tab>
         <visibility>Visible</visibility>
