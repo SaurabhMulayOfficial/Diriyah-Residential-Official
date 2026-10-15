@@ -3640,6 +3640,26 @@
         <viewAllFields>false</viewAllFields>
         <viewAllRecords>false</viewAllRecords>
     </objectPermissions>
+    <objectPermissions>
+        <allowCreate>false</allowCreate>
+        <allowDelete>false</allowDelete>
+        <allowEdit>false</allowEdit>
+        <allowRead>true</allowRead>
+        <modifyAllRecords>false</modifyAllRecords>
+        <object>RES_Account_Converted_Leads</object>
+        <viewAllFields>true</viewAllFields>
+        <viewAllRecords>false</viewAllRecords>
+    </objectPermissions>
+    <objectPermissions>
+        <allowCreate>false</allowCreate>
+        <allowDelete>false</allowDelete>
+        <allowEdit>false</allowEdit>
+        <allowRead>true</allowRead>
+        <modifyAllRecords>false</modifyAllRecords>
+        <object>Converted_Leads</object>
+        <viewAllFields>true</viewAllFields>
+        <viewAllRecords>false</viewAllRecords>
+    </objectPermissions>
     <recordTypeVisibilities>
         <recordType>Product2.RES_Residential_Payment_Plan</recordType>
         <visible>true</visible>
@@ -3732,6 +3752,10 @@
         <tab>standard-Lead</tab>
         <visibility>Visible</visibility>
     </tabSettings>
+    <tabSettings>
+        <tab>custom-Converted_Leads</tab>
+        <visibility>Visible</visibility>
+    </tabSettings>     
     <tabSettings>
         <tab>standard-Opportunity</tab>
         <visibility>Visible</visibility>
