@@ -69,7 +69,7 @@ public class RES_AccountRequestWrapper {
     }
 
     public class Phones {
-        public PhoneItem item;
+        public List<PhoneItem> item;
     }
 
     public class PhoneItem {
