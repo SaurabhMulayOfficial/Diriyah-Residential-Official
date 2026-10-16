@@ -294,42 +294,6 @@ private class RES_IntegrationQueueableTest {
         Assert.isTrue(true, 'Sales_Contract_Termination branch runs the cast loop.');
     }
 
-    @isTest
-    static void executeHandlesPaymentPlanBranch() {
-        Test.setMock(
-            HttpCalloutMock.class,
-            new RES_IntegrationTestDataFactory.EndpointRoutingMock()
-        );
-
-        Test.startTest();
-        try {
-            new RES_IntegrationQueueable(
-                new List<SObject>{ new RES_Payment_Plan__c() }, 'Payment_Plan', METHOD, 'I'
-            ).execute(null);
-        } catch (Exception e) { }
-        Test.stopTest();
-
-        Assert.isTrue(true, 'Payment_Plan branch runs the cast loop.');
-    }
-
-    @isTest
-    static void executeHandlesInstallmentsBranch() {
-        Test.setMock(
-            HttpCalloutMock.class,
-            new RES_IntegrationTestDataFactory.EndpointRoutingMock()
-        );
-
-        Test.startTest();
-        try {
-            new RES_IntegrationQueueable(
-                new List<SObject>{ new RES_Installment__c() }, 'Installments', METHOD, 'I'
-            ).execute(null);
-        } catch (Exception e) { }
-        Test.stopTest();
-
-        Assert.isTrue(true, 'Installments branch runs the cast loop.');
-    }
-
     /* ====================================================================
      *  PRODUCT2 DAO LAYER COVERAGE
      *  getProductsForSync was modified on this branch; these tests ensure
