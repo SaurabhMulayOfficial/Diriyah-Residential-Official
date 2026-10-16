@@ -1054,5 +1054,48 @@ private class RES_UnifiedIngestionEngineTest {
         Assert.isNull(engine.resolveAdjustmentSchedule(missingLayout),
             'A schedule name that matches no record should resolve to null');
     }
+    
+    // ==================================================================
+    // Pricebook DAO coverage
+    // ==================================================================
+    @IsTest
+    static void testPricebook2DAOLayer() {
+        RES_Pricebook2DAOLayer dao = new RES_Pricebook2DAOLayer();
+    
+        // Test standard pricebook query
+        Id standardPricebookId = Test.getStandardPricebookId();
+    
+        Test.startTest();
+        List<Pricebook2> standardResults = dao.getStandardPricebook();
+        Test.stopTest();
+    
+        Assert.isNotNull(standardResults, 'Standard pricebook results should not be null');
+        
+        // Verify the returned ID when the standard pricebook is visible to the DAO query.
+        if (!standardResults.isEmpty()) {
+            Assert.areEqual(
+                standardPricebookId,
+                standardResults[0].Id,
+                'The DAO should return the standard pricebook'
+            );
+        }
+    
+        // Test named, non-standard pricebook query
+        Pricebook2 testPricebook = new Pricebook2(
+            Name = 'DAO Test Pricebook',
+            IsActive = true
+        );
+        insert testPricebook;
+    
+        List<Pricebook2> namedResults = dao.getPricebookByName(testPricebook.Name);
+    
+        Assert.areEqual(1, namedResults.size(), 'One matching pricebook should be returned');
+        Assert.areEqual(testPricebook.Id, namedResults[0].Id);
+    
+        // Test blank-name handling
+        List<Pricebook2> blankResults = dao.getPricebookByName(' ');
+    
+        Assert.isTrue(blankResults.isEmpty(), 'Blank pricebook name should return an empty list');
+    }
 
 }
