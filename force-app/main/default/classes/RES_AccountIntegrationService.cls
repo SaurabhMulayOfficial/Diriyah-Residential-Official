@@ -129,13 +129,22 @@ public with sharing class RES_AccountIntegrationService extends RES_BaseIntegrat
         addressItem.COUNTRY = blankIfNull(acc.BillingCountryCode);
         addressItem.LANGU = mapLanguageCode(acc.RES_Language__pc);
 
+        // First phone item: mobile (Person Account only; blank for Company), extension always blank
+        RES_AccountRequestWrapper.PhoneItem mobilePhoneItem = new RES_AccountRequestWrapper.PhoneItem();
+        mobilePhoneItem.OBJECT_TASK = triggerContext;
+        mobilePhoneItem.TELEPHONE = isPersonAccount ? blankIfNull(acc.PersonMobilePhone) : '';
+        mobilePhoneItem.EXTENSION = '';
+        mobilePhoneItem.COUNTRY = blankIfNull(acc.BillingCountryCode);
+
+        // Second phone item: Account.Phone with extension, defaulting to '000' when blank
         RES_AccountRequestWrapper.PhoneItem phoneItem = new RES_AccountRequestWrapper.PhoneItem();
         phoneItem.OBJECT_TASK = triggerContext;
         phoneItem.TELEPHONE = blankIfNull(acc.Phone);
-        phoneItem.EXTENSION = acc.RES_Extension__c != null ? String.valueOf(acc.RES_Extension__c) : '';
+        phoneItem.EXTENSION = acc.RES_Extension__c != null ? String.valueOf(acc.RES_Extension__c) : '000';
         phoneItem.COUNTRY = blankIfNull(acc.BillingCountryCode);
+
         RES_AccountRequestWrapper.Phones phones = new RES_AccountRequestWrapper.Phones();
-        phones.item = phoneItem;
+        phones.item = new List<RES_AccountRequestWrapper.PhoneItem>{ mobilePhoneItem, phoneItem };
         addressItem.TT_PHONES = phones;
 
         RES_AccountRequestWrapper.FaxItem faxItem = new RES_AccountRequestWrapper.FaxItem();
