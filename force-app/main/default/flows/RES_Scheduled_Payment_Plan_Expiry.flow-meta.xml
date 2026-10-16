@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <actionCalls>
+        <name>Run_Payment_Plan_Expiry_Batch</name>
+        <label>Run Payment Plan Expiry Batch</label>
+        <locationX>176</locationX>
+        <locationY>158</locationY>
+        <actionName>RES_PaymentPlanExpiryInvocable</actionName>
+        <actionType>apex</actionType>
+        <flowTransactionModel>CurrentTransaction</flowTransactionModel>
+        <nameSegment>RES_PaymentPlanExpiryInvocable</nameSegment>
+        <versionSegment>1</versionSegment>
+    </actionCalls>
+    <apiVersion>67.0</apiVersion>
+    <areMetricsLoggedToDataCloud>false</areMetricsLoggedToDataCloud>
+    <description>Daily scheduled job. Launches RES_PaymentPlanExpiryBatch so Payment Plans past their Validity End Date are removed from the Units they are tagged to (one default Payment Plan is kept per Unit). A plan expiring on a date boundary involves no record save, so no trigger sees it. Scheduled flows are deployable metadata, unlike Apex System.schedule.</description>
+    <environments>Default</environments>
+    <interviewLabel>RES Scheduled Payment Plan Expiry {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>RES Scheduled Payment Plan Expiry</label>
+    <processType>AutoLaunchedFlow</processType>
+    <start>
+        <locationX>50</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Run_Payment_Plan_Expiry_Batch</targetReference>
+        </connector>
+        <schedule>
+            <frequency>Daily</frequency>
+            <startDate>2026-10-17</startDate>
+            <startTime>00:30:00.000Z</startTime>
+        </schedule>
+        <triggerType>Scheduled</triggerType>
+    </start>
+    <status>Active</status>
+</Flow>
