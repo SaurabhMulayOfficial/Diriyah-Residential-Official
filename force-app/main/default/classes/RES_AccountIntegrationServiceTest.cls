@@ -1061,7 +1061,7 @@ private class RES_AccountIntegrationServiceTest {
         phoneItem.EXTENSION   = '';
         phoneItem.COUNTRY     = 'SA';
         RES_AccountRequestWrapper.Phones phones = new RES_AccountRequestWrapper.Phones();
-        phones.item = phoneItem;
+        phones.item = new List<RES_AccountRequestWrapper.PhoneItem>{ phoneItem };
         addrItem.TT_PHONES = phones;
 
         RES_AccountRequestWrapper.FaxItem faxItem = new RES_AccountRequestWrapper.FaxItem();
