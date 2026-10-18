@@ -1,0 +1,76 @@
+<template>
+    <lightning-card title={title} icon-name="standard:product">
+        <lightning-button-icon slot="actions" icon-name="utility:refresh" alternative-text="Refresh" title="Refresh" onclick={handleRefresh}></lightning-button-icon>
+        <div class="slds-is-relative slds-p-horizontal_small">
+            <template lwc:if={isLoading}>
+                <lightning-spinner alternative-text="Loading payment plans" size="small"></lightning-spinner>
+            </template>
+            <template lwc:if={error}>
+                <div class="slds-text-color_error">{error}</div>
+            </template>
+            <template lwc:elseif={hasPlans}>
+                <lightning-accordion allow-multiple-sections-open active-section-name={activeSections} onsectiontoggle={handleSectionToggle}>
+                    <template for:each={plans} for:item="plan">
+                        <lightning-accordion-section key={plan.componentId} name={plan.productId} label={plan.label}>
+                            <div class="slds-grid slds-wrap slds-gutters_x-small slds-m-bottom_small">
+                                <div class="slds-col slds-size_1-of-2 slds-medium-size_1-of-4 slds-m-bottom_x-small">
+                                    <div class="slds-text-title">Payment Plan</div>
+                                    <a href={plan.recordUrl}>{plan.name}</a>
+                                </div>
+                                <div class="slds-col slds-size_1-of-2 slds-medium-size_1-of-4 slds-m-bottom_x-small">
+                                    <div class="slds-text-title">Product Code</div>
+                                    <div>{plan.productCode}</div>
+                                </div>
+                                <div class="slds-col slds-size_1-of-2 slds-medium-size_1-of-4 slds-m-bottom_x-small">
+                                    <div class="slds-text-title">Duration</div>
+                                    <div>{plan.duration}</div>
+                                </div>
+                                <div class="slds-col slds-size_1-of-2 slds-medium-size_1-of-4 slds-m-bottom_x-small">
+                                    <div class="slds-text-title">Validity End Date</div>
+                                    <lightning-formatted-date-time value={plan.validityEndDate} year="numeric" month="short" day="2-digit" time-zone="UTC"></lightning-formatted-date-time>
+                                </div>
+                                <div class="slds-col slds-size_1-of-2 slds-medium-size_1-of-4 slds-m-bottom_x-small">
+                                    <div class="slds-text-title">Version</div>
+                                    <div>{plan.version}</div>
+                                </div>
+                                <div class="slds-col slds-size_1-of-2 slds-medium-size_1-of-4 slds-m-bottom_x-small">
+                                    <div class="slds-text-title">Approval Status</div>
+                                    <div>{plan.approvalStatus}</div>
+                                </div>
+                                <div class="slds-col slds-size_1-of-2 slds-medium-size_1-of-4 slds-m-bottom_x-small">
+                                    <div class="slds-text-title">Price Option</div>
+                                    <div>{plan.priceOption}</div>
+                                </div>
+                                <div class="slds-col slds-size_1-of-2 slds-medium-size_1-of-4 slds-m-bottom_x-small">
+                                    <div class="slds-text-title">Status</div>
+                                    <lightning-badge label={plan.statusLabel} class={plan.statusClass}></lightning-badge>
+                                    <template lwc:if={plan.isDefault}>
+                                        <lightning-badge label="Default" class="slds-badge_inverse slds-m-left_xx-small"></lightning-badge>
+                                    </template>
+                                </div>
+                            </div>
+                            <template lwc:if={plan.hasInstallments}>
+                                <lightning-datatable
+                                    key-field="componentId"
+                                    data={plan.rows}
+                                    columns={columns}
+                                    hide-checkbox-column
+                                    column-widths-mode="auto">
+                                </lightning-datatable>
+                                <div class="slds-text-align_right slds-text-title_bold slds-p-around_x-small">
+                                    Total Percentage:&nbsp;<lightning-formatted-number value={plan.totalPercentFraction} format-style="percent" maximum-fraction-digits="2"></lightning-formatted-number>
+                                </div>
+                            </template>
+                            <template lwc:else>
+                                <p class="slds-text-color_weak">No installments are linked to this payment plan.</p>
+                            </template>
+                        </lightning-accordion-section>
+                    </template>
+                </lightning-accordion>
+            </template>
+            <template lwc:elseif={isLoaded}>
+                <p class="slds-text-color_weak">No payment plans are linked to this unit.</p>
+            </template>
+        </div>
+    </lightning-card>
+</template>

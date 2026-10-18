@@ -626,6 +626,20 @@
         <itemInstances>
             <componentInstance>
                 <componentInstanceProperties>
+                    <name>cardTitle</name>
+                    <value>Installments</value>
+                </componentInstanceProperties>
+                <componentName>resPaymentPlanInstallmentList</componentName>
+                <identifier>c_resPaymentPlanInstallmentList</identifier>
+            </componentInstance>
+        </itemInstances>
+        <name>installmentsTab</name>
+        <type>Facet</type>
+    </flexiPageRegions>
+    <flexiPageRegions>
+        <itemInstances>
+            <componentInstance>
+                <componentInstanceProperties>
                     <name>active</name>
                     <value>true</value>
                 </componentInstanceProperties>
@@ -657,6 +671,20 @@
                 </componentInstanceProperties>
                 <componentName>flexipage:tab</componentName>
                 <identifier>structureTab</identifier>
+            </componentInstance>
+        </itemInstances>
+        <itemInstances>
+            <componentInstance>
+                <componentInstanceProperties>
+                    <name>body</name>
+                    <value>installmentsTab</value>
+                </componentInstanceProperties>
+                <componentInstanceProperties>
+                    <name>title</name>
+                    <value>Installments</value>
+                </componentInstanceProperties>
+                <componentName>flexipage:tab</componentName>
+                <identifier>installmentsTab</identifier>
             </componentInstance>
         </itemInstances>
         <name>maintabs</name>

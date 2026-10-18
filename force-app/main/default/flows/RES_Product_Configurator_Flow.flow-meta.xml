@@ -544,6 +544,40 @@
                         </width>
                     </styleProperties>
                 </fields>
+                <fields>
+                    <name>PaymentPlanPreview</name>
+                    <extensionName>c:resPaymentPlanPreview</extensionName>
+                    <fieldType>ComponentInstance</fieldType>
+                    <inputParameters>
+                        <name>rootProductId</name>
+                        <value>
+                            <elementReference>S01_DataManager.header.id</elementReference>
+                        </value>
+                    </inputParameters>
+                    <inputParameters>
+                        <name>optionGroups</name>
+                        <value>
+                            <elementReference>S01_DataManager.optionGroups</elementReference>
+                        </value>
+                    </inputParameters>
+                    <inputParameters>
+                        <name>salesTransactionItems</name>
+                        <value>
+                            <elementReference>S01_DataManager.salesTransactionItems</elementReference>
+                        </value>
+                    </inputParameters>
+                    <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
+                    <isRequired>true</isRequired>
+                    <storeOutputAutomatically>true</storeOutputAutomatically>
+                    <styleProperties>
+                        <verticalAlignment>
+                            <stringValue>top</stringValue>
+                        </verticalAlignment>
+                        <width>
+                            <stringValue>12</stringValue>
+                        </width>
+                    </styleProperties>
+                </fields>
                 <inputParameters>
                     <name>width</name>
                     <value>

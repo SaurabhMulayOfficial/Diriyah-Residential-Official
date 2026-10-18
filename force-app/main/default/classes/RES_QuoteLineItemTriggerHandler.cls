@@ -4,6 +4,10 @@
 
 public with sharing class RES_QuoteLineItemTriggerHandler extends RES_BaseTriggerHandler {
 
+    protected override void beforeInsert() {
+        RES_InstallmentDueDateService.populateQuoteLineDueDates((List<QuoteLineItem>) Trigger.new);
+    }
+
     protected override void afterInsert() {
         RES_QuoteLineItemProductHandler.populateQuoteProduct((List<QuoteLineItem>) Trigger.new);
     }

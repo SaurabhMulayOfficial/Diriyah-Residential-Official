@@ -229,6 +229,26 @@ private class RES_BundlePricingHookMatchingTest {
         };
     }
 
+    /** Test: planAdjustmentValue returns the adjustment matching the option's RES_Price_Option__c, or null without one. */
+    @isTest
+    static void testPlanAdjustmentValue() {
+        setupCoreData();
+        insertBundleComponentPriceOption();
+        insertPricingRulesAndAdjustments();
+        Id bundleId = [SELECT Id FROM Product2 WHERE Name = :BUNDLE_NAME LIMIT 1].Id;
+        Id premiumId = [SELECT Id FROM Product2 WHERE Name = :PREMIUM_NAME LIMIT 1].Id;
+        Id serviceChargeId = [SELECT Id FROM Product2 WHERE Name = :SERVICE_CHARGE_NAME AND ProductCode = 'RES-TEST-MATCH-SC-001' LIMIT 1].Id;
+
+        Test.startTest();
+        Decimal premiumValue = RES_ResidentialBundlePricingHook.planAdjustmentValue(bundleId, premiumId);
+        Decimal unlinkedValue = RES_ResidentialBundlePricingHook.planAdjustmentValue(bundleId, serviceChargeId);
+        Test.stopTest();
+
+        System.assertEquals(5000, premiumValue, 'Premium price option should resolve to its Override adjustment');
+        System.assertEquals(null, unlinkedValue, 'An option with no RES_Price_Option__c link has no adjustment');
+        System.assertEquals(null, RES_ResidentialBundlePricingHook.planAdjustmentValue(null, premiumId));
+    }
+
     /** Test: Find matching adjustments for a selected option with RES_Price_Option__c = Premium. */
     @isTest
     static void testFindMatchingAdjustments_Premium() {

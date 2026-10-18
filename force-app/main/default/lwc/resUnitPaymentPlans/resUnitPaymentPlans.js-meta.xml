@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<LightningComponentBundle xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>67.0</apiVersion>
+    <isExposed>true</isExposed>
+    <masterLabel>Unit Payment Plans</masterLabel>
+    <description>Accordion of every Payment Plan linked to a Unit bundle; expanding a plan shows its details and its installments in a table.</description>
+    <targets>
+        <target>lightning__RecordPage</target>
+    </targets>
+    <targetConfigs>
+        <targetConfig targets="lightning__RecordPage">
+            <objects>
+                <object>Product2</object>
+            </objects>
+            <property name="cardTitle" type="String" label="Card Title" default="Payment Plans" />
+        </targetConfig>
+    </targetConfigs>
+</LightningComponentBundle>
