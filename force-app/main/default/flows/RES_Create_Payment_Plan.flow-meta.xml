@@ -161,10 +161,16 @@
     </dynamicChoiceSets>
     <environments>Default</environments>
     <formulas>
+        <name>f_MaxMonths</name>
+        <dataType>Number</dataType>
+        <expression>IF(ISBLANK({!f_NumberOfYears}), 0, ROUND({!f_NumberOfYears} * 12, 0))</expression>
+        <scale>0</scale>
+    </formulas>
+    <formulas>
         <name>f_NumberOfYears</name>
         <dataType>Number</dataType>
         <expression>IF({!var_DevelopmentPhase} = &apos;On-Plan&apos;, {!NumberOfYearsRequired}, {!NumberOfYears})</expression>
-        <scale>0</scale>
+        <scale>2</scale>
     </formulas>
     <interviewLabel>Create Payment Plan {!$Flow.CurrentDateTime}</interviewLabel>
     <label>Create Payment Plan</label>
@@ -320,9 +326,9 @@
                 </value>
             </inputParameters>
             <inputParameters>
-                <name>numberOfYears</name>
+                <name>numberOfMonths</name>
                 <value>
-                    <elementReference>f_NumberOfYears</elementReference>
+                    <elementReference>f_MaxMonths</elementReference>
                 </value>
             </inputParameters>
             <inputParameters>
@@ -402,7 +408,7 @@
                     <fieldText>Number of Years</fieldText>
                     <fieldType>InputField</fieldType>
                     <isRequired>false</isRequired>
-                    <scale>0</scale>
+                    <scale>2</scale>
                     <styleProperties>
                         <verticalAlignment>
                             <stringValue>top</stringValue>
@@ -429,7 +435,7 @@
                     <fieldType>InputField</fieldType>
                     <helpText>&lt;p&gt;Required for On-Plan catalogs.&lt;/p&gt;</helpText>
                     <isRequired>true</isRequired>
-                    <scale>0</scale>
+                    <scale>2</scale>
                     <styleProperties>
                         <verticalAlignment>
                             <stringValue>top</stringValue>

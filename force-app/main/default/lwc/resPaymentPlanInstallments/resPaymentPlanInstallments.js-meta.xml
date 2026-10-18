@@ -10,7 +10,8 @@
     <targetConfigs>
         <targetConfig targets="lightning__FlowScreen">
             <property name="planName" type="String" label="Payment Plan Name" description="Shown as a heading above the installment table." role="inputOnly" />
-            <property name="numberOfYears" type="Integer" label="Number of Years" description="Payment plan length. Condition Months/Days on the last installment cannot exceed this many years." role="inputOnly" />
+            <property name="numberOfYears" type="Integer" label="Number of Years (deprecated)" description="Not used - superseded by Number of Months so decimal years are supported. Kept because earlier Create Payment Plan flow versions reference it." role="inputOnly" />
+            <property name="numberOfMonths" type="Integer" label="Number of Months" description="Payment plan length in months (Number of Years x 12, rounded). Condition Months/Days on the last installment cannot exceed it; 0 or blank means no limit." role="inputOnly" />
             <property name="developmentPhase" type="String" label="Development Phase" description="Development Phase of the selected catalog. On-Plan fixes POC at 100%; Off-Plan makes POC mandatory." role="inputOnly" />
             <property name="installmentsJson" type="String" label="Installments (JSON)" description="JSON array of installment rows. Store this screen's output into a flow variable to pass into the Create Payment Plan action." />
         </targetConfig>

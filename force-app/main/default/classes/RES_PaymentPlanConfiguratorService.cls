@@ -49,7 +49,7 @@ public with sharing class RES_PaymentPlanConfiguratorService {
         public String productCode;
 
         @InvocableVariable(label='Number of Years')
-        public Integer numberOfYears;
+        public Decimal numberOfYears;
 
         @InvocableVariable(label='Catalog Id')
         public Id catalogId;
@@ -188,7 +188,8 @@ public with sharing class RES_PaymentPlanConfiguratorService {
         Map<String, Integer> seenConditionKeys = new Map<String, Integer>();
         Decimal totalPercentage = 0;
         Date planStart = req.validFromDate;
-        Date latestDueDate = req.numberOfYears != null ? planStart.addMonths(req.numberOfYears * MONTHS_PER_YEAR) : null;
+        Integer maxMonths = monthsFor(req.numberOfYears);
+        Date latestDueDate = maxMonths != null ? planStart.addMonths(maxMonths) : null;
         InstallmentInput previous;
         for (InstallmentInput installment : installments) {
             if (installment.sequence == null) {
@@ -205,7 +206,7 @@ public with sharing class RES_PaymentPlanConfiguratorService {
             totalPercentage += installment.percentage;
 
             applyPocRule(installment, developmentPhase);
-            validateCondition(installment, previous, planStart, latestDueDate, req.numberOfYears, seenConditionKeys);
+            validateCondition(installment, previous, planStart, latestDueDate, maxMonths, seenConditionKeys);
             previous = installment;
         }
 
@@ -229,7 +230,7 @@ public with sharing class RES_PaymentPlanConfiguratorService {
 
     // Due date = Valid From + condition months/days; due dates must not go backwards, must stay within Number of Years, and can't repeat for the same condition type
     private static void validateCondition(InstallmentInput installment, InstallmentInput previous, Date planStart, Date latestDueDate,
-            Integer numberOfYears, Map<String, Integer> seenConditionKeys) {
+            Integer maxMonths, Map<String, Integer> seenConditionKeys) {
         if (String.isBlank(installment.conditionType)) {
             throw new PaymentPlanConfiguratorException('Installment ' + installment.sequence + ' must have an Installment Type.');
         }
@@ -248,8 +249,8 @@ public with sharing class RES_PaymentPlanConfiguratorService {
                 ' (' + previous.conditionMonths + ' months, ' + previous.conditionDays + ' days).');
         }
         if (latestDueDate != null && installment.dueDate > latestDueDate) {
-            throw new PaymentPlanConfiguratorException('Installment ' + installment.sequence + ' goes beyond the plan\'s ' + numberOfYears +
-                ' year(s): Condition Months/Days cannot exceed ' + (numberOfYears * MONTHS_PER_YEAR) + ' months.');
+            throw new PaymentPlanConfiguratorException('Installment ' + installment.sequence + ' goes beyond the plan\'s Number of Years: ' +
+                'Condition Months/Days cannot exceed ' + maxMonths + ' months.');
         }
 
         String conditionKey = installment.conditionType + '|' + installment.dueDate;
@@ -258,6 +259,12 @@ public with sharing class RES_PaymentPlanConfiguratorService {
                 ' have the same Installment Type (' + conditionTypeLabel(installment.conditionType) + ') and the same Condition Months/Days.');
         }
         seenConditionKeys.put(conditionKey, installment.sequence);
+    }
+
+    // Number of Years can carry decimals (e.g. 2.5); months are rounded to the nearest whole month
+    @TestVisible
+    private static Integer monthsFor(Decimal numberOfYears) {
+        return numberOfYears == null ? null : (numberOfYears * MONTHS_PER_YEAR).setScale(0, System.RoundingMode.HALF_UP).intValue();
     }
 
     private static String developmentPhase(Id catalogId) {
@@ -290,7 +297,7 @@ public with sharing class RES_PaymentPlanConfiguratorService {
             ConfigureDuringSale = 'Allowed',
             RES_CIP_Type__c = CIP_TYPE_PAYMENT_PLAN,
             RES_No_of_Years__c = req.numberOfYears,
-            RES_No_of_Months__c = req.numberOfYears != null ? req.numberOfYears * MONTHS_PER_YEAR : null,
+            RES_No_of_Months__c = monthsFor(req.numberOfYears),
             RES_Status_Role__c = STATUS_ROLE_RELEASED,
             RES_Status_Role_Description__c = STATUS_ROLE_DESCRIPTION_RELEASED,
             RES_Business_Entity__c = req.catalogId,

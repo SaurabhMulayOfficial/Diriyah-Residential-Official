@@ -347,6 +347,42 @@ private class RES_PaymentPlanConfiguratorServiceTest {
     }
 
     @IsTest
+    static void testCreatePaymentPlan_DecimalYears_SetsMonthsAndCap() {
+        RES_PaymentPlanConfiguratorService.Request req = baseRequest();
+        req.productCode = 'TEST-PP-DEC';
+        req.numberOfYears = 2.5;
+        req.installmentsJson = twoInstallmentsJson('Y002', 0, 'Y004', 30);
+
+        RES_PaymentPlanConfiguratorService.Result result = createOne(req);
+
+        System.assertEquals(true, result.isSuccess, 'Expected success, got: ' + result.message);
+        Product2 plan = [SELECT RES_No_of_Years__c, RES_No_of_Months__c FROM Product2 WHERE Id = :result.paymentPlanId];
+        System.assertEquals(2.5, plan.RES_No_of_Years__c);
+        System.assertEquals(30, plan.RES_No_of_Months__c);
+    }
+
+    @IsTest
+    static void testCreatePaymentPlan_DecimalYearsExceeded_Fails() {
+        RES_PaymentPlanConfiguratorService.Request req = baseRequest();
+        req.productCode = 'TEST-PP-DEC-MAX';
+        req.numberOfYears = 2.5;
+        req.installmentsJson = twoInstallmentsJson('Y002', 0, 'Y004', 31);
+
+        RES_PaymentPlanConfiguratorService.Result result = createOne(req);
+
+        System.assertEquals(false, result.isSuccess);
+        System.assert(result.message.contains('cannot exceed 30 months'), 'Expected years cap error, got: ' + result.message);
+    }
+
+    @IsTest
+    static void testMonthsFor_RoundsToNearestMonth() {
+        System.assertEquals(null, RES_PaymentPlanConfiguratorService.monthsFor(null));
+        System.assertEquals(24, RES_PaymentPlanConfiguratorService.monthsFor(2));
+        System.assertEquals(28, RES_PaymentPlanConfiguratorService.monthsFor(2.33));
+        System.assertEquals(15, RES_PaymentPlanConfiguratorService.monthsFor(1.25));
+    }
+
+    @IsTest
     static void testCreatePaymentPlan_ConditionDaysPastNumberOfYears_Fails() {
         RES_PaymentPlanConfiguratorService.Request req = baseRequest();
         req.productCode = 'TEST-PP-COND-MAXD';

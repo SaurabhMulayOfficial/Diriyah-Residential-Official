@@ -458,7 +458,7 @@ IF(AND(NOT(ISBLANK({!$Record.RES_Pending_Parent_Payment_Plan__c})), BLANKVALUE({
         <name>PendingCandidate_NoOfYears</name>
         <dataType>Number</dataType>
         <expression>IF(ISCHANGED({!$Record.RES_No_of_Years__c}), {!$Record.RES_No_of_Years__c}, {!$Record.RES_Pending_No_Of_Years__c})</expression>
-        <scale>0</scale>
+        <scale>2</scale>
     </formulas>
     <formulas>
         <name>PendingCandidate_ParentPaymentPlan</name>

@@ -7,7 +7,6 @@ const PERCENTAGE_TARGET = 100;
 const PHASE_ON_PLAN = 'On-Plan';
 const PHASE_OFF_PLAN = 'Off-Plan';
 const ON_PLAN_POC_PERCENTAGE = 100;
-const MONTHS_PER_YEAR = 12;
 const NUMERIC_FIELDS = ['percentage', 'pocPercentage', 'conditionMonths', 'conditionDays'];
 const CONDITION_TYPE_OPTIONS = [
     { label: 'Reservation', value: 'Y001' },
@@ -25,7 +24,9 @@ const CONDITION_TYPE_OPTIONS = [
  */
 export default class ResPaymentPlanInstallments extends LightningElement {
     @api planName;
-    // Caps how far the last installment can fall: Condition Months/Days can't exceed numberOfYears x 12 months
+    // Caps how far the last installment can fall: Number of Years x 12 (years may be decimal, so the flow passes months)
+    @api numberOfMonths;
+    // Deprecated: superseded by numberOfMonths; kept because earlier flow versions bind it
     @api numberOfYears;
 
     rows = [];
@@ -182,7 +183,7 @@ export default class ResPaymentPlanInstallments extends LightningElement {
     }
 
     get maxMonths() {
-        return this.numberOfYears ? this.numberOfYears * MONTHS_PER_YEAR : null;
+        return this.numberOfMonths ? this.numberOfMonths : null;
     }
 
     get latestDueDate() {
@@ -275,7 +276,7 @@ export default class ResPaymentPlanInstallments extends LightningElement {
                 }
                 if (latestDueDate && dueDate > latestDueDate) {
                     errors.push(
-                        `Installment ${row.sequence}: Condition Months/Days cannot exceed ${this.maxMonths} months (${this.numberOfYears} year(s)).`
+                        `Installment ${row.sequence}: Condition Months/Days cannot exceed ${this.maxMonths} months (Number of Years x 12).`
                     );
                 }
                 if (row.conditionType) {

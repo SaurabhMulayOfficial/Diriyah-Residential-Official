@@ -11,7 +11,7 @@
             <template if:true={isOnPlan}>for On-Plan catalogs it is counted from the date the plan is configured on a quote.</template>
             <template if:false={isOnPlan}>it is counted from the payment plan's Valid From date.</template>
             They cannot go backwards from the previous installment
-            <template if:true={maxMonths}>or exceed {maxMonths} months ({numberOfYears} year(s))</template>.
+            <template if:true={maxMonths}>or exceed {maxMonths} months (Number of Years x 12)</template>.
             Two installments with the same Installment Type cannot share the same Condition Months/Days.
         </p>
 

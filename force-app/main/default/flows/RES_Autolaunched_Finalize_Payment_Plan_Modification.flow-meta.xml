@@ -25,7 +25,7 @@
     <formulas>
         <name>FinalValue_NoOfYears</name>
         <dataType>Number</dataType>
-        <scale>0</scale>
+        <scale>2</scale>
         <expression>IF(ISBLANK({!Get_Payment_Plan.RES_Pending_No_Of_Years__c}), {!Get_Payment_Plan.RES_No_of_Years__c}, {!Get_Payment_Plan.RES_Pending_No_Of_Years__c})</expression>
     </formulas>
     <formulas>
