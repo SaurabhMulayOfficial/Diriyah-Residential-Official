@@ -544,6 +544,40 @@
                         </width>
                     </styleProperties>
                 </fields>
+                <fields>
+                    <name>PaymentPlanPreview</name>
+                    <extensionName>c:resPaymentPlanPreview</extensionName>
+                    <fieldType>ComponentInstance</fieldType>
+                    <inputParameters>
+                        <name>contextId</name>
+                        <value>
+                            <elementReference>configuratorContext.contextId</elementReference>
+                        </value>
+                    </inputParameters>
+                    <inputParameters>
+                        <name>isApiInProgress</name>
+                        <value>
+                            <elementReference>S01_DataManager.isApiInProgress</elementReference>
+                        </value>
+                    </inputParameters>
+                    <inputParameters>
+                        <name>rootProductId</name>
+                        <value>
+                            <elementReference>S01_DataManager.header.id</elementReference>
+                        </value>
+                    </inputParameters>
+                    <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
+                    <isRequired>true</isRequired>
+                    <storeOutputAutomatically>true</storeOutputAutomatically>
+                    <styleProperties>
+                        <verticalAlignment>
+                            <stringValue>top</stringValue>
+                        </verticalAlignment>
+                        <width>
+                            <stringValue>12</stringValue>
+                        </width>
+                    </styleProperties>
+                </fields>
                 <inputParameters>
                     <name>width</name>
                     <value>

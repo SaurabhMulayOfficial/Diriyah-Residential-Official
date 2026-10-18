@@ -4,6 +4,17 @@
     <active>true</active>
     <label>Residential Sales</label>
     <picklistValues>
+        <picklist>RES_Development_Phase__c</picklist>
+        <values>
+            <fullName>Off-Plan</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>On-Plan</fullName>
+            <default>false</default>
+        </values>
+    </picklistValues>
+    <picklistValues>
         <picklist>RES_BP_Role__c</picklist>
         <values>
             <fullName>ZTR601</fullName>

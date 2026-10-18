@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<LightningComponentBundle xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>67.0</apiVersion>
+    <isExposed>true</isExposed>
+    <masterLabel>Payment Plan Installment List</masterLabel>
+    <description>Read-only table of every Installment product under a Payment Plan bundle (sequence, type, percentage, POC %, conditions, due date, amount), each linking to its product record.</description>
+    <targets>
+        <target>lightning__RecordPage</target>
+    </targets>
+    <targetConfigs>
+        <targetConfig targets="lightning__RecordPage">
+            <objects>
+                <object>Product2</object>
+            </objects>
+            <property name="cardTitle" type="String" label="Card Title" default="Installments" />
+        </targetConfig>
+    </targetConfigs>
+</LightningComponentBundle>

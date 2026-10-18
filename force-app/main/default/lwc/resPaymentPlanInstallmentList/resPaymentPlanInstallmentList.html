@@ -1,0 +1,30 @@
+<template>
+    <lightning-card title={title} icon-name="standard:product_item">
+        <lightning-button-icon slot="actions" icon-name="utility:refresh" alternative-text="Refresh" title="Refresh" onclick={handleRefresh}></lightning-button-icon>
+        <div class="slds-is-relative">
+            <template lwc:if={isLoading}>
+                <lightning-spinner alternative-text="Loading installments" size="small"></lightning-spinner>
+            </template>
+            <template lwc:if={error}>
+                <div class="slds-text-color_error slds-p-horizontal_medium">{error}</div>
+            </template>
+            <template lwc:elseif={hasRows}>
+                <lightning-datatable
+                    key-field="componentId"
+                    data={rows}
+                    columns={columns}
+                    hide-checkbox-column
+                    column-widths-mode="auto">
+                </lightning-datatable>
+            </template>
+            <template lwc:elseif={isLoaded}>
+                <p class="slds-text-color_weak slds-p-horizontal_medium">No installments are linked to this payment plan.</p>
+            </template>
+        </div>
+        <template lwc:if={hasRows}>
+            <div slot="footer" class="slds-text-align_right slds-text-title_bold">
+                Total Percentage:&nbsp;<lightning-formatted-number value={totalPercentFraction} format-style="percent" maximum-fraction-digits="2"></lightning-formatted-number>
+            </div>
+        </template>
+    </lightning-card>
+</template>

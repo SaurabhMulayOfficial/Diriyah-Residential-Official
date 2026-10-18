@@ -50,9 +50,9 @@ public without sharing class RES_ProductRelatedComponentDAOLayer extends RES_Bas
             'parentProductIds' => parentProductIds,
             'recordTypeDeveloperName' => recordTypeDeveloperName
         };
-        String soql = 'SELECT Id, ParentProductId, ParentProduct.RES_Business_Entity__c, ChildProductId, Quantity, '+ 
-                      'IsComponentRequired, IsDefaultComponent, IsQuantityEditable, DoesBundlePriceIncludeChild, '+ 
-                      'QuoteVisibility, ChildProduct.RES_POC_Percentage__c, ChildProduct.RES_Installment_Percentage__c, '+ 
+        String soql = 'SELECT Id, ParentProductId, ParentProduct.RES_Business_Entity__c, ChildProductId, Quantity, '+
+                      'IsComponentRequired, IsDefaultComponent, IsQuantityEditable, DoesBundlePriceIncludeChild, '+
+                      'QuoteVisibility, RES_Installment_Percentage__c, ChildProduct.RES_POC_Percentage__c, ChildProduct.RES_Installment_Percentage__c, '+ 
                       'ChildProduct.Name, ChildProduct.RecordTypeId, ChildProduct.RES_CIP_Type__c, ChildProduct.RES_Sequence__c, '+ 
                       'ChildProduct.ProductCode, ChildProduct.RES_Instalment_DueDate__c, ChildProduct.RES_Installment_Accumulative_Payments__c, '+ 
                       'ChildProduct.RES_Installment_Construction_Progress__c, ChildProduct.Description, ChildProduct.IsActive, '+ 

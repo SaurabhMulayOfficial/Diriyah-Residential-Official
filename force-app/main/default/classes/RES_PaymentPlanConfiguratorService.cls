@@ -28,6 +28,9 @@ public with sharing class RES_PaymentPlanConfiguratorService {
     private static final Integer MONTHS_PER_YEAR = 12;
     private static final String STATUS_ROLE_RELEASED = 'REL';
     private static final String STATUS_ROLE_DESCRIPTION_RELEASED = 'Released';
+    private static final String PHASE_ON_PLAN = 'On-Plan';
+    private static final String PHASE_OFF_PLAN = 'Off-Plan';
+    private static final Decimal ON_PLAN_POC_PERCENTAGE = 100;
 
     public class PaymentPlanConfiguratorException extends Exception {}
 
@@ -85,12 +88,11 @@ public with sharing class RES_PaymentPlanConfiguratorService {
 
     /**
      * One row of the installment table built by the LWC. Fields are public (not private) so
-     * JSON.deserialize can populate them directly; dueDate is typed as Date since Apex's JSON
-     * deserializer parses an ISO 'YYYY-MM-DD' string into a Date natively.
+     * JSON.deserialize can populate them directly. dueDate is never trusted from the client: it is
+     * recalculated as Valid From + conditionMonths + conditionDays.
      */
     @TestVisible
     private class InstallmentInput {
-        public String name;
         public Decimal percentage;
         public Decimal pocPercentage;
         public Date dueDate;
@@ -118,11 +120,12 @@ public with sharing class RES_PaymentPlanConfiguratorService {
         Savepoint sp = Database.setSavepoint();
         try {
             List<InstallmentInput> installments = parseInstallments(req.installmentsJson);
-            validate(req, installments);
+            String developmentPhase = developmentPhase(req.catalogId);
+            validate(req, installments, developmentPhase);
 
             Id paymentPlanId = insertPaymentPlan(req);
             Id groupId = insertComponentGroup(paymentPlanId, req.planName, installments.size());
-            List<Id> installmentIds = insertInstallments(req, installments);
+            List<Id> installmentIds = insertInstallments(req, installments, developmentPhase);
             insertRelatedComponents(paymentPlanId, groupId, installments, installmentIds);
 
             List<Id> allProductIds = new List<Id>{ paymentPlanId };
@@ -161,7 +164,7 @@ public with sharing class RES_PaymentPlanConfiguratorService {
     }
 
     @TestVisible
-    private static void validate(Request req, List<InstallmentInput> installments) {
+    private static void validate(Request req, List<InstallmentInput> installments, String developmentPhase) {
         if (String.isBlank(req.planName)) {
             throw new PaymentPlanConfiguratorException('Payment Plan Name is required.');
         }
@@ -174,6 +177,9 @@ public with sharing class RES_PaymentPlanConfiguratorService {
         if (String.isBlank(req.priceOption)) {
             throw new PaymentPlanConfiguratorException('Price Option is required.');
         }
+        if (developmentPhase == PHASE_ON_PLAN && req.numberOfYears == null) {
+            throw new PaymentPlanConfiguratorException('Number of Years is required for an On-Plan catalog.');
+        }
         if (installments.isEmpty()) {
             throw new PaymentPlanConfiguratorException('At least one installment is required.');
         }
@@ -181,10 +187,10 @@ public with sharing class RES_PaymentPlanConfiguratorService {
         Set<Integer> seenSequences = new Set<Integer>();
         Map<String, Integer> seenConditionKeys = new Map<String, Integer>();
         Decimal totalPercentage = 0;
+        Date planStart = req.validFromDate;
+        Date latestDueDate = req.numberOfYears != null ? planStart.addMonths(req.numberOfYears * MONTHS_PER_YEAR) : null;
+        InstallmentInput previous;
         for (InstallmentInput installment : installments) {
-            if (String.isBlank(installment.name)) {
-                throw new PaymentPlanConfiguratorException('Every installment needs a name.');
-            }
             if (installment.sequence == null) {
                 throw new PaymentPlanConfiguratorException('Every installment must have a sequence.');
             }
@@ -198,7 +204,9 @@ public with sharing class RES_PaymentPlanConfiguratorService {
             }
             totalPercentage += installment.percentage;
 
-            validateCondition(installment, seenConditionKeys);
+            applyPocRule(installment, developmentPhase);
+            validateCondition(installment, previous, planStart, latestDueDate, req.numberOfYears, seenConditionKeys);
+            previous = installment;
         }
 
         if (Math.abs(totalPercentage - PERCENTAGE_TOTAL_TARGET) > PERCENTAGE_TOTAL_TOLERANCE) {
@@ -210,20 +218,54 @@ public with sharing class RES_PaymentPlanConfiguratorService {
         }
     }
 
-    // Blocks two installments sharing the same condition type and months/days
-    private static void validateCondition(InstallmentInput installment, Map<String, Integer> seenConditionKeys) {
-        if ((installment.conditionMonths != null && installment.conditionMonths < 0) || (installment.conditionDays != null && installment.conditionDays < 0)) {
-            throw new PaymentPlanConfiguratorException('Installment ' + installment.sequence + ' cannot have negative Condition Months or Condition Days.');
+    // On-Plan fixes POC at 100%; Off-Plan requires a POC on every installment
+    private static void applyPocRule(InstallmentInput installment, String developmentPhase) {
+        if (developmentPhase == PHASE_ON_PLAN) {
+            installment.pocPercentage = ON_PLAN_POC_PERCENTAGE;
+        } else if (developmentPhase == PHASE_OFF_PLAN && (installment.pocPercentage == null || installment.pocPercentage < 0 || installment.pocPercentage > 100)) {
+            throw new PaymentPlanConfiguratorException('Installment ' + installment.sequence + ' must have a POC % between 0 and 100 for an Off-Plan catalog.');
         }
-        if (String.isBlank(installment.conditionType) || (installment.conditionMonths == null && installment.conditionDays == null)) {
-            return;
+    }
+
+    // Due date = Valid From + condition months/days; due dates must not go backwards, must stay within Number of Years, and can't repeat for the same condition type
+    private static void validateCondition(InstallmentInput installment, InstallmentInput previous, Date planStart, Date latestDueDate,
+            Integer numberOfYears, Map<String, Integer> seenConditionKeys) {
+        if (String.isBlank(installment.conditionType)) {
+            throw new PaymentPlanConfiguratorException('Installment ' + installment.sequence + ' must have an Installment Type.');
         }
-        String conditionKey = installment.conditionType + '|' + installment.conditionMonths + '|' + installment.conditionDays;
+        if (installment.conditionMonths == null || installment.conditionMonths < 0) {
+            throw new PaymentPlanConfiguratorException('Installment ' + installment.sequence + ' must have Condition Months of 0 or more.');
+        }
+        if (installment.conditionDays == null) {
+            installment.conditionDays = 0;
+        } else if (installment.conditionDays < 0) {
+            throw new PaymentPlanConfiguratorException('Installment ' + installment.sequence + ' cannot have negative Condition Days.');
+        }
+        installment.dueDate = planStart.addMonths(installment.conditionMonths).addDays(installment.conditionDays);
+
+        if (previous != null && installment.dueDate < previous.dueDate) {
+            throw new PaymentPlanConfiguratorException('Installment ' + installment.sequence + ' cannot fall before installment ' + previous.sequence +
+                ' (' + previous.conditionMonths + ' months, ' + previous.conditionDays + ' days).');
+        }
+        if (latestDueDate != null && installment.dueDate > latestDueDate) {
+            throw new PaymentPlanConfiguratorException('Installment ' + installment.sequence + ' goes beyond the plan\'s ' + numberOfYears +
+                ' year(s): Condition Months/Days cannot exceed ' + (numberOfYears * MONTHS_PER_YEAR) + ' months.');
+        }
+
+        String conditionKey = installment.conditionType + '|' + installment.dueDate;
         if (seenConditionKeys.containsKey(conditionKey)) {
             throw new PaymentPlanConfiguratorException('Installments ' + seenConditionKeys.get(conditionKey) + ' and ' + installment.sequence +
-                ' have the same Condition Type (' + conditionTypeLabel(installment.conditionType) + ') and the same Condition Months/Days.');
+                ' have the same Installment Type (' + conditionTypeLabel(installment.conditionType) + ') and the same Condition Months/Days.');
         }
         seenConditionKeys.put(conditionKey, installment.sequence);
+    }
+
+    private static String developmentPhase(Id catalogId) {
+        if (catalogId == null) {
+            return null;
+        }
+        List<ProductCatalog> catalogs = [SELECT RES_Development_Phase__c FROM ProductCatalog WHERE Id = :catalogId LIMIT 1];
+        return catalogs.isEmpty() ? null : catalogs[0].RES_Development_Phase__c;
     }
 
     private static String conditionTypeLabel(String conditionType) {
@@ -276,21 +318,22 @@ public with sharing class RES_PaymentPlanConfiguratorService {
         return componentGroup.Id;
     }
 
-    private static List<Id> insertInstallments(Request req, List<InstallmentInput> installments) {
+    // Off-Plan due dates are fixed now; On-Plan due dates depend on when the plan is configured on a quote, so none is stored
+    private static List<Id> insertInstallments(Request req, List<InstallmentInput> installments, String developmentPhase) {
         Id installmentRecordTypeId = recordTypeId(INSTALLMENT_RECORD_TYPE_DEV_NAME);
         String currencyIsoCode = String.isNotBlank(req.currencyIsoCode) ? req.currencyIsoCode : UserInfo.getDefaultCurrency();
 
         List<Product2> installmentProducts = new List<Product2>();
         for (InstallmentInput installment : installments) {
             installmentProducts.add(new Product2(
-                Name = installment.name,
+                Name = conditionTypeLabel(installment.conditionType),
                 ProductCode = String.isNotBlank(req.productCode) ? (req.productCode + '-INST' + installment.sequence) : null,
                 RecordTypeId = installmentRecordTypeId,
                 RES_CIP_Type__c = CIP_TYPE_INSTALLMENT,
                 RES_Sequence__c = installment.sequence,
                 RES_POC_Percentage__c = installment.pocPercentage,
                 RES_Installment_Percentage__c = installment.percentage,
-                RES_Instalment_DueDate__c = installment.dueDate,
+                RES_Instalment_DueDate__c = developmentPhase == PHASE_ON_PLAN ? null : installment.dueDate,
                 RES_Condition_Type__c = installment.conditionType,
                 RES_Installment_Payment_Type__c = installment.conditionType,
                 RES_Condition_Months__c = installment.conditionMonths,

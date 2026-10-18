@@ -5,19 +5,23 @@
         </template>
         <p class="slds-text-body_small slds-m-bottom_small slds-text-color_weak">
             Define each installment's share of the payment plan. Percentages must add up to 100%.
-            POC % (construction milestone) and due date are both optional. Condition Months and Condition Days
-            are entered independently; two installments with the same Condition Type cannot share the same months/days.
+            <template if:true={isOnPlan}>POC % is fixed at 100% for On-Plan catalogs.</template>
+            <template if:true={isOffPlan}>POC % (construction milestone) is required for Off-Plan catalogs.</template>
+            Condition Months (required) and Condition Days set each installment's due date;
+            <template if:true={isOnPlan}>for On-Plan catalogs it is counted from the date the plan is configured on a quote.</template>
+            <template if:false={isOnPlan}>it is counted from the payment plan's Valid From date.</template>
+            They cannot go backwards from the previous installment
+            <template if:true={maxMonths}>or exceed {maxMonths} months ({numberOfYears} year(s))</template>.
+            Two installments with the same Installment Type cannot share the same Condition Months/Days.
         </p>
 
         <table class="slds-table slds-table_bordered slds-table_cell-buffer" aria-label="Installments">
             <thead>
                 <tr class="slds-line-height_reset">
                     <th scope="col" style="width:3rem">#</th>
-                    <th scope="col">Installment Name</th>
+                    <th scope="col">Installment Type</th>
                     <th scope="col">Percentage</th>
                     <th scope="col">POC %</th>
-                    <th scope="col">Due Date</th>
-                    <th scope="col">Condition Type</th>
                     <th scope="col">Condition Months</th>
                     <th scope="col">Condition Days</th>
                     <th scope="col" style="width:6.5rem">Reorder</th>
@@ -31,16 +35,17 @@
                             <span class="slds-text-body_regular">{row.sequence}</span>
                         </td>
                         <td>
-                            <lightning-input
-                                type="text"
+                            <lightning-combobox
                                 data-key={row.key}
-                                data-field="name"
-                                value={row.name}
+                                data-field="conditionType"
+                                value={row.conditionType}
+                                options={conditionTypeOptions}
                                 onchange={handleFieldChange}
                                 variant="label-hidden"
-                                label="Installment Name"
-                                placeholder="e.g. Down Payment"
-                            ></lightning-input>
+                                label="Installment Type"
+                                placeholder="Select"
+                                required
+                            ></lightning-combobox>
                         </td>
                         <td>
                             <lightning-input
@@ -69,44 +74,25 @@
                                 onchange={handleFieldChange}
                                 variant="label-hidden"
                                 label="POC %"
-                                placeholder="Optional"
+                                placeholder={pocPlaceholder}
+                                required={isOffPlan}
+                                disabled={isOnPlan}
                             ></lightning-input>
-                        </td>
-                        <td>
-                            <lightning-input
-                                type="date"
-                                data-key={row.key}
-                                data-field="dueDate"
-                                value={row.dueDate}
-                                onchange={handleFieldChange}
-                                variant="label-hidden"
-                                label="Due Date"
-                            ></lightning-input>
-                        </td>
-                        <td>
-                            <lightning-combobox
-                                data-key={row.key}
-                                data-field="conditionType"
-                                value={row.conditionType}
-                                options={conditionTypeOptions}
-                                onchange={handleFieldChange}
-                                variant="label-hidden"
-                                label="Condition Type"
-                                placeholder="Select"
-                            ></lightning-combobox>
                         </td>
                         <td>
                             <lightning-input
                                 type="number"
                                 step="1"
                                 min="0"
+                                max={maxMonths}
                                 data-key={row.key}
                                 data-field="conditionMonths"
                                 value={row.conditionMonths}
                                 onchange={handleFieldChange}
                                 variant="label-hidden"
                                 label="Condition Months"
-                                placeholder="e.g. 2"
+                                placeholder="e.g. 6"
+                                required
                             ></lightning-input>
                         </td>
                         <td>
@@ -120,6 +106,7 @@
                                 onchange={handleFieldChange}
                                 variant="label-hidden"
                                 label="Condition Days"
+                                placeholder="0"
                             ></lightning-input>
                         </td>
                         <td>
@@ -164,7 +151,12 @@
                 onclick={handleAddRow}
                 disabled={isRowLimitReached}
             ></lightning-button>
-            <p class={totalBadgeClass}>Total: {totalPercentageDisplay}%</p>
+            <div class="slds-text-align_right">
+                <p class={totalBadgeClass}>Total: {totalPercentageDisplay}%</p>
+                <template if:true={monthsLimitDisplay}>
+                    <p class="slds-text-body_small slds-text-color_weak">{monthsLimitDisplay}</p>
+                </template>
+            </div>
         </div>
     </div>
 </template>

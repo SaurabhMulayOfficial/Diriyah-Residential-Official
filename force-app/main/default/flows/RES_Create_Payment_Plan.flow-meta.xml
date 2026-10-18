@@ -26,19 +26,13 @@
         <inputParameters>
             <name>numberOfYears</name>
             <value>
-                <elementReference>NumberOfYears</elementReference>
+                <elementReference>f_NumberOfYears</elementReference>
             </value>
         </inputParameters>
         <inputParameters>
             <name>catalogId</name>
             <value>
                 <elementReference>CatalogId</elementReference>
-            </value>
-        </inputParameters>
-        <inputParameters>
-            <name>currencyIsoCode</name>
-            <value>
-                <elementReference>CurrencyIsoCode</elementReference>
             </value>
         </inputParameters>
         <inputParameters>
@@ -57,12 +51,6 @@
             <name>validToDate</name>
             <value>
                 <elementReference>ValidToDate</elementReference>
-            </value>
-        </inputParameters>
-        <inputParameters>
-            <name>isActive</name>
-            <value>
-                <elementReference>IsActive</elementReference>
             </value>
         </inputParameters>
         <inputParameters>
@@ -172,6 +160,12 @@
         <valueField>Id</valueField>
     </dynamicChoiceSets>
     <environments>Default</environments>
+    <formulas>
+        <name>f_NumberOfYears</name>
+        <dataType>Number</dataType>
+        <expression>IF({!var_DevelopmentPhase} = &apos;On-Plan&apos;, {!NumberOfYearsRequired}, {!NumberOfYears})</expression>
+        <scale>0</scale>
+    </formulas>
     <interviewLabel>Create Payment Plan {!$Flow.CurrentDateTime}</interviewLabel>
     <label>Create Payment Plan</label>
     <processMetadataValues>
@@ -194,13 +188,37 @@
         <locationY>0</locationY>
         <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
         <connector>
-            <targetReference>Screen_Payment_Plan_Details</targetReference>
+            <targetReference>Screen_Select_Catalog</targetReference>
         </connector>
         <getFirstRecordOnly>false</getFirstRecordOnly>
         <object>ProductCatalog</object>
         <sortField>Name</sortField>
         <sortOrder>Asc</sortOrder>
         <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
+    <recordLookups>
+        <name>Get_Selected_Catalog</name>
+        <label>Get Selected Catalog</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignNullValuesIfNoRecordsFound>true</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Screen_Payment_Plan_Details</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Id</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>CatalogId</elementReference>
+            </value>
+        </filters>
+        <getFirstRecordOnly>true</getFirstRecordOnly>
+        <object>ProductCatalog</object>
+        <outputAssignments>
+            <assignToReference>var_DevelopmentPhase</assignToReference>
+            <field>RES_Development_Phase__c</field>
+        </outputAssignments>
     </recordLookups>
     <runInMode>DefaultMode</runInMode>
     <screens>
@@ -296,6 +314,18 @@
                 </value>
             </inputParameters>
             <inputParameters>
+                <name>developmentPhase</name>
+                <value>
+                    <elementReference>var_DevelopmentPhase</elementReference>
+                </value>
+            </inputParameters>
+            <inputParameters>
+                <name>numberOfYears</name>
+                <value>
+                    <elementReference>f_NumberOfYears</elementReference>
+                </value>
+            </inputParameters>
+            <inputParameters>
                 <name>installmentsJson</name>
                 <value>
                     <elementReference>var_InstallmentsJson</elementReference>
@@ -381,30 +411,25 @@
                             <stringValue>12</stringValue>
                         </width>
                     </styleProperties>
+                    <visibilityRule>
+                        <conditionLogic>and</conditionLogic>
+                        <conditions>
+                            <leftValueReference>var_DevelopmentPhase</leftValueReference>
+                            <operator>NotEqualTo</operator>
+                            <rightValue>
+                                <stringValue>On-Plan</stringValue>
+                            </rightValue>
+                        </conditions>
+                    </visibilityRule>
                 </fields>
                 <fields>
-                    <name>CatalogId</name>
-                    <choiceReferences>CatalogChoices</choiceReferences>
-                    <dataType>String</dataType>
-                    <fieldText>Catalog</fieldText>
-                    <fieldType>DropdownBox</fieldType>
-                    <isRequired>false</isRequired>
-                    <styleProperties>
-                        <verticalAlignment>
-                            <stringValue>top</stringValue>
-                        </verticalAlignment>
-                        <width>
-                            <stringValue>12</stringValue>
-                        </width>
-                    </styleProperties>
-                </fields>
-                <fields>
-                    <name>CurrencyIsoCode</name>
-                    <dataType>String</dataType>
-                    <fieldText>Currency ISO Code</fieldText>
+                    <name>NumberOfYearsRequired</name>
+                    <dataType>Number</dataType>
+                    <fieldText>Number of Years</fieldText>
                     <fieldType>InputField</fieldType>
-                    <helpText>&lt;p&gt;Optional. Leave blank to use your default currency.&lt;/p&gt;</helpText>
-                    <isRequired>false</isRequired>
+                    <helpText>&lt;p&gt;Required for On-Plan catalogs.&lt;/p&gt;</helpText>
+                    <isRequired>true</isRequired>
+                    <scale>0</scale>
                     <styleProperties>
                         <verticalAlignment>
                             <stringValue>top</stringValue>
@@ -413,6 +438,16 @@
                             <stringValue>12</stringValue>
                         </width>
                     </styleProperties>
+                    <visibilityRule>
+                        <conditionLogic>and</conditionLogic>
+                        <conditions>
+                            <leftValueReference>var_DevelopmentPhase</leftValueReference>
+                            <operator>EqualTo</operator>
+                            <rightValue>
+                                <stringValue>On-Plan</stringValue>
+                            </rightValue>
+                        </conditions>
+                    </visibilityRule>
                 </fields>
                 <inputParameters>
                     <name>width</name>
@@ -477,24 +512,6 @@
                     </validationRule>
                 </fields>
                 <fields>
-                    <name>IsActive</name>
-                    <dataType>Boolean</dataType>
-                    <defaultValue>
-                        <booleanValue>false</booleanValue>
-                    </defaultValue>
-                    <fieldText>Active</fieldText>
-                    <fieldType>InputField</fieldType>
-                    <isRequired>true</isRequired>
-                    <styleProperties>
-                        <verticalAlignment>
-                            <stringValue>top</stringValue>
-                        </verticalAlignment>
-                        <width>
-                            <stringValue>12</stringValue>
-                        </width>
-                    </styleProperties>
-                </fields>
-                <fields>
                     <name>Description</name>
                     <fieldText>Description</fieldText>
                     <fieldType>LargeTextArea</fieldType>
@@ -530,6 +547,37 @@
         <showFooter>true</showFooter>
         <showHeader>true</showHeader>
     </screens>
+    <screens>
+        <name>Screen_Select_Catalog</name>
+        <label>Select Catalog</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <allowBack>false</allowBack>
+        <allowFinish>true</allowFinish>
+        <allowPause>false</allowPause>
+        <connector>
+            <targetReference>Get_Selected_Catalog</targetReference>
+        </connector>
+        <fields>
+            <name>CatalogId</name>
+            <choiceReferences>CatalogChoices</choiceReferences>
+            <dataType>String</dataType>
+            <fieldText>Catalog</fieldText>
+            <fieldType>DropdownBox</fieldType>
+            <helpText>&lt;p&gt;The catalog&apos;s Development Phase sets the rules on the next screens: On-Plan requires Number of Years and fixes POC at 100%; Off-Plan requires POC on every installment.&lt;/p&gt;</helpText>
+            <isRequired>false</isRequired>
+            <styleProperties>
+                <verticalAlignment>
+                    <stringValue>top</stringValue>
+                </verticalAlignment>
+                <width>
+                    <stringValue>12</stringValue>
+                </width>
+            </styleProperties>
+        </fields>
+        <showFooter>true</showFooter>
+        <showHeader>true</showHeader>
+    </screens>
     <start>
         <locationX>0</locationX>
         <locationY>0</locationY>
@@ -538,6 +586,13 @@
         </connector>
     </start>
     <status>Active</status>
+    <variables>
+        <name>var_DevelopmentPhase</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+    </variables>
     <variables>
         <name>var_InstallmentCount</name>
         <dataType>Number</dataType>
