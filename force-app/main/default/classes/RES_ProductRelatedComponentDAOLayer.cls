@@ -130,6 +130,31 @@ public without sharing class RES_ProductRelatedComponentDAOLayer extends RES_Bas
         return executeBatchQuery(soql, bindVars, AccessLevel.SYSTEM_MODE);
     }
 
+    /**
+     * Retrieves the Payment Plan components wired under the given Unit, with the plan header
+     * fields shown on the Unit's Payment Plans tab. Default plan first, then by name.
+     */
+    public List<ProductRelatedComponent> getPaymentPlansByUnit(Id unitId) {
+        if (unitId == null) {
+            return new List<ProductRelatedComponent>();
+        }
+        String recordTypeDeveloperName = System.Label.RES_Product_Payment_Plan_RT;
+        String soql =
+            'SELECT Id, ParentProductId, ChildProductId, IsDefaultComponent, RES_Price_Option__c, ' +
+            'ChildProduct.Name, ChildProduct.ProductCode, ChildProduct.IsActive, ChildProduct.RES_Version__c, ' +
+            'ChildProduct.RES_No_of_Years__c, ChildProduct.RES_No_of_Months__c, ChildProduct.RES_Validity_End_Date__c, ' +
+            'ChildProduct.RES_Approval_Status__c ' +
+            'FROM ProductRelatedComponent ' +
+            'WHERE ParentProductId = :unitId ' +
+            'AND ChildProduct.RecordType.DeveloperName = :recordTypeDeveloperName ' +
+            'ORDER BY IsDefaultComponent DESC, ChildProduct.Name, Id';
+        Map<String, Object> bindVars = new Map<String, Object>{
+            'unitId' => unitId,
+            'recordTypeDeveloperName' => recordTypeDeveloperName
+        };
+        return (List<ProductRelatedComponent>) executeQuery(soql, '', false, bindVars, AccessLevel.SYSTEM_MODE);
+    }
+
     public List<ProductRelatedComponent> getPaymentPlanAssignments(Set<Id> childProductIds) {
         if (childProductIds == null || childProductIds.isEmpty()) {
             return new List<ProductRelatedComponent>();
