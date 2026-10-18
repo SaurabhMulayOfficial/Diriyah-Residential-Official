@@ -2,40 +2,58 @@ import { LightningElement, api } from 'lwc';
 import getPreview from '@salesforce/apex/RES_PaymentPlanPreviewController.getPreview';
 
 export default class ResPaymentPlanPreview extends LightningElement {
-    @api contextId;
     @api rootProductId;
+    // Unused; kept because earlier flow versions bind them
+    @api contextId;
+    @api isApiInProgress;
 
     preview;
     error;
     isLoading = false;
     requestCount = 0;
-    _isApiInProgress = false;
+    selectionKey;
+    _salesTransactionItems;
+    _optionGroups;
 
-    // Reload when a configurator call (option change, pricing) finishes so the context is up to date
+    // Both are pushed by the configurator on every change; a different product set means the selection changed
     @api
-    get isApiInProgress() {
-        return this._isApiInProgress;
+    get salesTransactionItems() {
+        return this._salesTransactionItems;
     }
-    set isApiInProgress(value) {
-        const finished = this._isApiInProgress && !value;
-        this._isApiInProgress = value;
-        if (finished) {
-            this.load();
+    set salesTransactionItems(value) {
+        this._salesTransactionItems = value;
+        this.refresh();
+    }
+
+    @api
+    get optionGroups() {
+        return this._optionGroups;
+    }
+    set optionGroups(value) {
+        this._optionGroups = value;
+        this.refresh();
+    }
+
+    refresh() {
+        const itemProductIds = (this._salesTransactionItems || []).map((item) => item?.product);
+        const productIds = [...new Set([...selectedOptionIds(this._optionGroups), ...itemProductIds].filter((id) => typeof id === 'string' && id))];
+        const key = productIds.slice().sort().join(',');
+        if (key !== this.selectionKey) {
+            this.selectionKey = key;
+            this.load(productIds);
         }
     }
 
-    connectedCallback() {
-        this.load();
-    }
-
-    async load() {
-        if (!this.contextId) {
+    async load(productIds) {
+        const request = ++this.requestCount;
+        if (!productIds.length) {
+            this.preview = undefined;
+            this.error = undefined;
             return;
         }
-        const request = ++this.requestCount;
         this.isLoading = true;
         try {
-            const result = await getPreview({ contextId: this.contextId, rootProductId: this.rootProductId });
+            const result = await getPreview({ selectedProductIds: productIds, rootProductId: this.rootProductId });
             if (request === this.requestCount) {
                 this.preview = result;
                 this.error = undefined;
@@ -63,8 +81,8 @@ export default class ResPaymentPlanPreview extends LightningElement {
         return this.preview?.currencyIsoCode || 'SAR';
     }
 
-    get showUnpricedHint() {
-        return this.hasInstallments && !this.preview.isPriced;
+    get showNoAmountHint() {
+        return this.hasInstallments && this.preview.totalAmount == null;
     }
 
     // lightning-formatted-number expects a fraction for percent style
@@ -74,6 +92,8 @@ export default class ResPaymentPlanPreview extends LightningElement {
             key: row.productId || String(index),
             number: row.sequence ?? index + 1,
             percentFraction: row.percentage == null ? null : row.percentage / 100,
+            pocFraction: row.pocPercentage == null ? null : row.pocPercentage / 100,
+            hasPoc: row.pocPercentage != null,
             hasAmount: row.amount != null
         }));
     }
@@ -85,4 +105,19 @@ export default class ResPaymentPlanPreview extends LightningElement {
     get hasTotalAmount() {
         return this.preview?.totalAmount != null;
     }
+}
+
+// Ids of the selected options in the configurator's option groups, including nested groups
+function selectedOptionIds(groups) {
+    const ids = [];
+    (groups || []).forEach((group) => {
+        (group?.components || []).forEach((component) => {
+            if (component?.isSelected && component.id) {
+                ids.push(component.id);
+            }
+            ids.push(...selectedOptionIds(component?.productComponentGroups));
+        });
+        ids.push(...selectedOptionIds(group?.childGroups));
+    });
+    return ids;
 }

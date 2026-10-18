@@ -1,8 +1,6 @@
 @IsTest
 private class RES_PaymentPlanPreviewControllerTest {
 
-    private static final String CONTEXT_ID = 'test-context-id';
-
     @TestSetup
     static void setup() {
         // RES_ProductTrigger enqueues an SAP sync callout, which isn't under test here
@@ -32,101 +30,37 @@ private class RES_PaymentPlanPreviewControllerTest {
         );
     }
 
-    private static Id productId(String name) {
+    private static String productId(String name) {
         return [SELECT Id FROM Product2 WHERE Name = :name LIMIT 1].Id;
     }
 
-    private static Map<String, Object> lineNode(String lineItemId, String path, Id product, String dmlStatus, Object amount) {
-        Map<String, Object> node = RES_FakeIndustriesContextProvider.buildLineItemNode(lineItemId, path, product, new List<Object>(), dmlStatus);
-        if (amount != null) {
-            ((Map<String, Object>) node.get('tagValue')).put('RESInstallmentAmount__c', new Map<String, Object>{ 'tagValue' => amount });
-        }
-        return node;
-    }
-
-    private static void useContext(List<Object> nodes) {
-        RES_FakeIndustriesContextProvider fake = new RES_FakeIndustriesContextProvider();
-        fake.queryTagsResultToReturn = RES_FakeIndustriesContextProvider.wrapQueryResult('SalesTransactionItem', nodes);
-        RES_PaymentPlanPreviewController.contextProvider = fake;
-    }
-
     @IsTest
-    static void returnsSelectedPlanInstallmentsWithAmountsAndDueDates() {
-        Id unitId = productId('Preview Test Unit');
-        Id planId = productId('Preview Test Plan');
-        Id installmentId = productId('Preview Test Installment');
-        useContext(new List<Object>{
-            lineNode('L1', 'L1', unitId, null, null),
-            lineNode('L2', 'L1/L2', planId, null, null),
-            lineNode('L3', 'L1/L2/L3', installmentId, null, 500000)
-        });
+    static void returnsSelectedPlanInstallments() {
+        String unitId = productId('Preview Test Unit');
+        List<String> selected = new List<String>{ unitId, productId('Preview Test Plan'), productId('Preview Test Installment') };
 
         Test.startTest();
-        RES_PaymentPlanPreviewController.Preview preview = RES_PaymentPlanPreviewController.getPreview(CONTEXT_ID, unitId);
+        RES_PaymentPlanPreviewController.Preview preview = RES_PaymentPlanPreviewController.getPreview(selected, unitId);
         Test.stopTest();
 
         System.assertEquals('Preview Test Plan', preview.planName);
         System.assertEquals(1, preview.installments.size());
         RES_PaymentPlanPreviewController.Installment row = preview.installments[0];
         System.assertEquals(100, row.percentage);
-        System.assertEquals(500000, row.amount);
+        System.assertEquals(100, row.pocPercentage);
         System.assertEquals(Date.today().addMonths(2).addDays(10), row.dueDate);
-        System.assertEquals(true, preview.isPriced);
-        System.assertEquals(500000, preview.totalAmount);
         System.assertEquals(100, preview.totalPercentage);
-    }
-
-    @IsTest
-    static void leavesAmountBlankUntilPriced() {
-        Id unitId = productId('Preview Test Unit');
-        useContext(new List<Object>{
-            lineNode('L1', 'L1', unitId, null, null),
-            lineNode('L2', 'L1/L2', productId('Preview Test Plan'), null, null)
-        });
-
-        RES_PaymentPlanPreviewController.Preview preview = RES_PaymentPlanPreviewController.getPreview(CONTEXT_ID, unitId);
-
-        System.assertEquals(1, preview.installments.size());
-        System.assertEquals(null, preview.installments[0].amount);
-        System.assertEquals(false, preview.isPriced);
+        // No attribute-based adjustment exists for this unit, so there is no amount base
+        System.assertEquals(null, row.amount);
         System.assertEquals(null, preview.totalAmount);
     }
 
     @IsTest
-    static void returnsNullWhenPlanDeletedOrMissing() {
-        Id unitId = productId('Preview Test Unit');
-        useContext(new List<Object>{
-            lineNode('L1', 'L1', unitId, null, null),
-            lineNode('L2', 'L1/L2', productId('Preview Test Plan'), 'DELETED', null)
-        });
+    static void returnsNullWithoutSelectedPlan() {
+        String unitId = productId('Preview Test Unit');
 
-        System.assertEquals(null, RES_PaymentPlanPreviewController.getPreview(CONTEXT_ID, unitId));
-        System.assertEquals(null, RES_PaymentPlanPreviewController.getPreview(null, unitId));
-    }
-
-    @IsTest
-    static void ignoresPlansSelectedOnOtherUnits() {
-        Id unitId = productId('Preview Test Unit');
-        useContext(new List<Object>{
-            lineNode('L1', 'L1', unitId, null, null),
-            lineNode('X1', 'X1', productId('Preview Test Installment'), null, null),
-            lineNode('X2', 'X1/X2', productId('Preview Test Plan'), null, null)
-        });
-
-        System.assertEquals(null, RES_PaymentPlanPreviewController.getPreview(CONTEXT_ID, unitId));
-    }
-
-    @IsTest
-    static void wrapsContextFailures() {
-        RES_FakeIndustriesContextProvider fake = new RES_FakeIndustriesContextProvider();
-        fake.throwOnQueryTags = true;
-        RES_PaymentPlanPreviewController.contextProvider = fake;
-
-        try {
-            RES_PaymentPlanPreviewController.getPreview(CONTEXT_ID, productId('Preview Test Unit'));
-            System.assert(false, 'Expected an AuraHandledException');
-        } catch (AuraHandledException e) {
-            System.assertNotEquals(null, e);
-        }
+        System.assertEquals(null, RES_PaymentPlanPreviewController.getPreview(new List<String>{ unitId, 'not-an-id' }, unitId));
+        System.assertEquals(null, RES_PaymentPlanPreviewController.getPreview(new List<String>(), unitId));
+        System.assertEquals(null, RES_PaymentPlanPreviewController.getPreview(null, null));
     }
 }

@@ -39,6 +39,26 @@ global class RES_ResidentialBundlePricingHook implements RevSignaling.SignalingA
         return executeInternal(request.ctxInstanceId, new RES_LiveIndustriesContextProvider());
     }
 
+    /** Adjustment value this hook applies to a unit for the given Payment Plan (the installment amount base); null when none matches. */
+    public static Decimal planAdjustmentValue(Id unitProductId, Id paymentPlanProductId) {
+        if (unitProductId == null || paymentPlanProductId == null) {
+            return null;
+        }
+        RES_ResidentialBundlePricingHook hook = new RES_ResidentialBundlePricingHook();
+        BundleStructure bundle = new BundleStructure(String.valueOf(unitProductId), String.valueOf(unitProductId));
+        bundle.addChildOption(new OptionItem(String.valueOf(paymentPlanProductId), String.valueOf(paymentPlanProductId), null, null));
+        Map<String, BundleStructure> bundleMap = new Map<String, BundleStructure>{ bundle.bundleId => bundle };
+
+        String priceOption = hook.queryChildOptionPriceValues(bundleMap).get(hook.buildRelatedComponentKey(bundle.productId, paymentPlanProductId));
+        List<AttributeAdjustment> adjustments = hook.queryAttributeAdjustments(bundleMap).get(bundle.productId);
+        if (String.isBlank(priceOption) || adjustments == null) {
+            return null;
+        }
+        // execute() writes every match in order, so the last one is what ends up on the installment lines
+        List<AttributeAdjustment> matches = hook.findMatchingAdjustments(adjustments, new Map<String, String>{ PRICE_OPTION_MATCHING_ATTRIBUTE => priceOption });
+        return matches.isEmpty() ? null : matches[matches.size() - 1].adjustmentValue;
+    }
+
     @TestVisible
     private RevSignaling.TransactionResponse executeInternal(String contextId, RES_IndustriesContextProvider industriesContext) {
         System.debug(DEBUG_VERSION + ' - Executing Pre-Hook: Bundle Pricing Option Adjustment');

@@ -3,15 +3,17 @@
     <apiVersion>67.0</apiVersion>
     <isExposed>true</isExposed>
     <masterLabel>Payment Plan Installment Preview</masterLabel>
-    <description>Read-only table for the Product Configuration flow showing each installment of the selected Payment Plan: percentage, due date (today + condition months/days) and amount. Refreshes after every configurator change.</description>
+    <description>Read-only table for the Product Configuration flow showing each installment of the selected Payment Plan: percentage, due date (today + condition months/days) and amount. Reloads when the selected products change.</description>
     <targets>
         <target>lightning__FlowScreen</target>
     </targets>
     <targetConfigs>
         <targetConfig targets="lightning__FlowScreen">
-            <property name="contextId" type="String" label="Context Id" description="Configurator context Id (configuratorContext.contextId)." role="inputOnly" />
             <property name="rootProductId" type="String" label="Unit Product Id" description="Id of the Product2 being configured (S01_DataManager.header.id)." role="inputOnly" />
-            <property name="isApiInProgress" type="Boolean" label="Configurator API In Progress" description="S01_DataManager.isApiInProgress. The preview reloads each time a configurator call finishes." role="inputOnly" />
+            <property name="salesTransactionItems" type="apex://ProductConfig.SalesTransactionItem[]" label="Sales Transaction Items" description="S01_DataManager.salesTransactionItems. The preview reloads whenever the selected products change." role="inputOnly" />
+            <property name="optionGroups" type="apex://ProductConfig.OptionGroup[]" label="Option Groups" description="S01_DataManager.optionGroups. Selected options (isSelected) identify the chosen Payment Plan." role="inputOnly" />
+            <property name="contextId" type="String" label="Context Id (unused)" description="No longer used; kept because earlier versions of the Product Configurator flow reference it." role="inputOnly" />
+            <property name="isApiInProgress" type="Boolean" label="Configurator API In Progress (unused)" description="No longer used; kept because earlier versions of the Product Configurator flow reference it." role="inputOnly" />
         </targetConfig>
     </targetConfigs>
 </LightningComponentBundle>

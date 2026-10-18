@@ -549,21 +549,21 @@
                     <extensionName>c:resPaymentPlanPreview</extensionName>
                     <fieldType>ComponentInstance</fieldType>
                     <inputParameters>
-                        <name>contextId</name>
-                        <value>
-                            <elementReference>configuratorContext.contextId</elementReference>
-                        </value>
-                    </inputParameters>
-                    <inputParameters>
-                        <name>isApiInProgress</name>
-                        <value>
-                            <elementReference>S01_DataManager.isApiInProgress</elementReference>
-                        </value>
-                    </inputParameters>
-                    <inputParameters>
                         <name>rootProductId</name>
                         <value>
                             <elementReference>S01_DataManager.header.id</elementReference>
+                        </value>
+                    </inputParameters>
+                    <inputParameters>
+                        <name>optionGroups</name>
+                        <value>
+                            <elementReference>S01_DataManager.optionGroups</elementReference>
+                        </value>
+                    </inputParameters>
+                    <inputParameters>
+                        <name>salesTransactionItems</name>
+                        <value>
+                            <elementReference>S01_DataManager.salesTransactionItems</elementReference>
                         </value>
                     </inputParameters>
                     <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
