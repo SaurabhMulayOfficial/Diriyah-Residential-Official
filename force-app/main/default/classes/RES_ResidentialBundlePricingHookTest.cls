@@ -898,4 +898,60 @@ private class RES_ResidentialBundlePricingHookTest {
         System.debug('3. Expected: Premium pricing (5000) applied back onto the bundle\'s own line');
         System.debug('Run this hook in Revenue Cloud pricing context to verify full integration.');
     }
+
+    /** Test: buildMissingPricebookEntryUpdates fills selling model and price book entry on new lines, skipping complete lines and lines without a quote. */
+    @isTest
+    static void testBuildMissingPricebookEntryUpdates() {
+        Product2 unit = new Product2(Name = 'RES Test Missing PBE Unit', ProductCode = 'RES-TEST-MPBE-001', IsActive = true, Type = 'Bundle');
+        insert unit;
+        ProductSellingModel sellingModel = new ProductSellingModel(Name = 'RES Test One-Time', SellingModelType = 'OneTime', Status = 'Active');
+        insert sellingModel;
+        insert new ProductSellingModelOption(Product2Id = unit.Id, ProductSellingModelId = sellingModel.Id, IsDefault = true);
+
+        Account acc = new Account(Name = 'RES Test Missing PBE Account');
+        insert acc;
+        Opportunity opp = new Opportunity(Name = 'RES Test Missing PBE Opp', StageName = 'Prospecting', CloseDate = Date.today().addDays(30), AccountId = acc.Id);
+        insert opp;
+        Quote quote = new Quote(Name = 'RES Test Missing PBE Quote', OpportunityId = opp.Id, Pricebook2Id = Test.getStandardPricebookId());
+        insert quote;
+        String currencyCode = (String) [SELECT CurrencyIsoCode FROM Quote WHERE Id = :quote.Id][0].get('CurrencyIsoCode');
+
+        PricebookEntry entry = new PricebookEntry(
+            Product2Id = unit.Id, Pricebook2Id = Test.getStandardPricebookId(), UnitPrice = 0,
+            IsActive = true, ProductSellingModelId = sellingModel.Id
+        );
+        entry.put('CurrencyIsoCode', currencyCode);
+        insert entry;
+
+        Map<String, Object> completeLine = RES_FakeIndustriesContextProvider.buildLineItemNode(
+            'ref_complete', 'ref_complete', unit.Id, new List<Object>{ 'root', quote.Id, 'ref_complete' }, null
+        );
+        Map<String, Object> completeTags = (Map<String, Object>) completeLine.get('tagValue');
+        completeTags.put('ProductSellingModel', new Map<String, Object>{ 'tagValue' => String.valueOf(sellingModel.Id) });
+        completeTags.put('ItemPricebookEntry', new Map<String, Object>{ 'tagValue' => String.valueOf(entry.Id) });
+
+        RES_FakeIndustriesContextProvider fakeProvider = new RES_FakeIndustriesContextProvider();
+        fakeProvider.queryTagsResultToReturn = RES_FakeIndustriesContextProvider.wrapQueryResult('SalesTransactionItem', new List<Object>{
+            RES_FakeIndustriesContextProvider.buildLineItemNode('ref_new', 'ref_new', unit.Id, new List<Object>{ 'root', quote.Id, 'ref_new' }, null),
+            completeLine,
+            RES_FakeIndustriesContextProvider.buildLineItemNode('ref_noquote', 'ref_noquote', unit.Id, new List<Object>{ 'root', opp.Id, 'ref_noquote' }, null),
+            RES_FakeIndustriesContextProvider.buildLineItemNode('ref_deleted', 'ref_deleted', unit.Id, new List<Object>{ 'root', quote.Id, 'ref_deleted' }, 'DELETED')
+        });
+
+        Test.startTest();
+        List<Map<String, Object>> updates = new RES_ResidentialBundlePricingHook().buildMissingPricebookEntryUpdates(fakeProvider, 'ctx');
+        Test.stopTest();
+
+        System.assertEquals(1, updates.size(), 'Only the new line on a real quote should be filled');
+        Map<String, Object> nodePath = (Map<String, Object>) updates[0].get('nodePath');
+        System.assertEquals(new List<Object>{ quote.Id, 'ref_new' }, nodePath.get('dataPath'));
+        Map<String, Object> valuesByName = new Map<String, Object>();
+        for (Object attribute : (List<Object>) updates[0].get('attributes')) {
+            Map<String, Object> attributeMap = (Map<String, Object>) attribute;
+            valuesByName.put((String) attributeMap.get('attributeName'), attributeMap.get('attributeValue'));
+        }
+        System.assertEquals(String.valueOf(sellingModel.Id), valuesByName.get('ProductSellingModel'));
+        System.assertEquals('OneTime', valuesByName.get('SellingModelType'));
+        System.assertEquals(String.valueOf(entry.Id), valuesByName.get('PricebookEntry'));
+    }
 }

@@ -161,6 +161,9 @@ global class RES_ResidentialBundlePricingHook implements RevSignaling.SignalingA
                 serviceChargeRateMap
             );
 
+            // STEP 5.5: Workaround - newly added lines arrive without a selling model/price book entry, so the price book lookup finds no list price
+            allNodeUpdates.addAll(buildMissingPricebookEntryUpdates(industriesContext, contextId));
+
             // STEP 6: Submit context updates
             if (!allNodeUpdates.isEmpty()) {
                 Map<String, Object> updateInput = new Map<String, Object>{
@@ -999,6 +1002,118 @@ global class RES_ResidentialBundlePricingHook implements RevSignaling.SignalingA
         return serviceCharge;
     }
 
+    /** Fills ProductSellingModel/SellingModelType/PricebookEntry on lines missing them, using the product's default selling model option and the quote's price book and currency. */
+    @TestVisible
+    private List<Map<String, Object>> buildMissingPricebookEntryUpdates(RES_IndustriesContextProvider ctx, String contextId) {
+        List<Map<String, Object>> updates = new List<Map<String, Object>>();
+        Map<String, Object> queryOutput = ctx.queryTags(new Map<String, Object>{
+            'contextId' => contextId,
+            'tags' => new List<String>{ 'SalesTransactionItem' }
+        });
+        Map<String, Object> queryResult = queryOutput == null ? null : (Map<String, Object>) queryOutput.get('queryResult');
+        List<Object> itemList = queryResult == null ? null : (List<Object>) queryResult.get('SalesTransactionItem');
+        if (itemList == null) {
+            return updates;
+        }
+
+        List<MissingPriceLine> missingLines = new List<MissingPriceLine>();
+        for (Object itemObj : itemList) {
+            Map<String, Object> itemNode = (Map<String, Object>) itemObj;
+            Map<String, Object> tagValue = (Map<String, Object>) itemNode.get('tagValue');
+            List<Object> dataPath = (List<Object>) itemNode.get('dataPath');
+            if (tagValue == null || dataPath == null || dataPath.size() < 3 || 'DELETED'.equals(getDmlStatus(tagValue))) {
+                continue;
+            }
+            String productId = getTagValue(tagValue, 'Product');
+            String sellingModelId = getTagValue(tagValue, 'ProductSellingModel');
+            String pricebookEntryId = getTagValue(tagValue, 'ItemPricebookEntry');
+            if (toIdOrNull(productId) == null || toIdOrNull(dataPath.get(1)) == null
+                    || (String.isNotBlank(sellingModelId) && String.isNotBlank(pricebookEntryId))) {
+                continue;
+            }
+            missingLines.add(new MissingPriceLine(
+                new List<Object>{ dataPath.get(1), dataPath.get(2) }, productId, sellingModelId, String.isBlank(sellingModelId)
+            ));
+        }
+        if (missingLines.isEmpty()) {
+            return updates;
+        }
+
+        Set<Id> productIds = new Set<Id>();
+        Set<Id> quoteIds = new Set<Id>();
+        for (MissingPriceLine line : missingLines) {
+            productIds.add(toIdOrNull(line.productId));
+            quoteIds.add(toIdOrNull(line.nodePath[0]));
+        }
+
+        Map<Id, Quote> quotesById = new Map<Id, Quote>([
+            SELECT Id, Pricebook2Id, CurrencyIsoCode FROM Quote WHERE Id IN :quoteIds
+        ]);
+        // Default option first, so the first one seen per product wins
+        Map<Id, ProductSellingModelOption> defaultOptionByProduct = new Map<Id, ProductSellingModelOption>();
+        for (ProductSellingModelOption option : [
+            SELECT Product2Id, ProductSellingModelId, ProductSellingModel.SellingModelType
+            FROM ProductSellingModelOption
+            WHERE Product2Id IN :productIds
+            ORDER BY IsDefault DESC
+        ]) {
+            if (!defaultOptionByProduct.containsKey(option.Product2Id)) {
+                defaultOptionByProduct.put(option.Product2Id, option);
+            }
+        }
+        Set<Id> pricebookIds = new Set<Id>();
+        for (Quote quote : quotesById.values()) {
+            pricebookIds.add(quote.Pricebook2Id);
+        }
+        Map<String, PricebookEntry> entryByKey = new Map<String, PricebookEntry>();
+        for (PricebookEntry entry : [
+            SELECT Id, Product2Id, Pricebook2Id, ProductSellingModelId, CurrencyIsoCode
+            FROM PricebookEntry
+            WHERE Product2Id IN :productIds AND Pricebook2Id IN :pricebookIds AND IsActive = true
+        ]) {
+            entryByKey.put(entry.Product2Id + ':' + entry.Pricebook2Id + ':' + entry.ProductSellingModelId + ':' + entry.CurrencyIsoCode, entry);
+        }
+
+        for (MissingPriceLine line : missingLines) {
+            Quote quote = quotesById.get(toIdOrNull(line.nodePath[0]));
+            ProductSellingModelOption option = defaultOptionByProduct.get(toIdOrNull(line.productId));
+            String sellingModelId = String.isNotBlank(line.sellingModelId) ? line.sellingModelId : (option == null ? null : String.valueOf(option.ProductSellingModelId));
+            if (quote == null || String.isBlank(sellingModelId)) {
+                System.debug(DEBUG_VERSION + ' - No quote or selling model for product ' + line.productId + ', cannot fill price book entry');
+                continue;
+            }
+            PricebookEntry entry = entryByKey.get(toIdOrNull(line.productId) + ':' + quote.Pricebook2Id + ':' + toIdOrNull(sellingModelId) + ':' + quote.CurrencyIsoCode);
+
+            List<Map<String, Object>> attributes = new List<Map<String, Object>>();
+            if (line.isSellingModelMissing) {
+                attributes.add(new Map<String, Object>{ 'attributeName' => 'ProductSellingModel', 'attributeValue' => sellingModelId });
+                if (option != null && option.ProductSellingModel?.SellingModelType != null) {
+                    attributes.add(new Map<String, Object>{ 'attributeName' => 'SellingModelType', 'attributeValue' => option.ProductSellingModel.SellingModelType });
+                }
+            }
+            if (entry != null) {
+                attributes.add(new Map<String, Object>{ 'attributeName' => 'PricebookEntry', 'attributeValue' => String.valueOf(entry.Id) });
+            }
+            if (attributes.isEmpty()) {
+                continue;
+            }
+            updates.add(new Map<String, Object>{
+                'nodePath' => new Map<String, Object>{ 'dataPath' => line.nodePath },
+                'attributes' => attributes
+            });
+            System.debug(DEBUG_VERSION + ' - Filling selling model ' + sellingModelId + ' / price book entry ' + (entry == null ? null : entry.Id) + ' on product ' + line.productId);
+        }
+        return updates;
+    }
+
+    private static Id toIdOrNull(Object value) {
+        try {
+            return value == null ? null : Id.valueOf(String.valueOf(value));
+        } catch (StringException e) {
+            return null;
+        }
+    }
+
     /** Extract a tag value from a context tag map. */
     @TestVisible
     private String getTagValue(Map<String, Object> tagMap, String tagName) {
@@ -1057,6 +1172,22 @@ global class RES_ResidentialBundlePricingHook implements RevSignaling.SignalingA
         @TestVisible
         void addChildOption(OptionItem option) {
             this.childOptions.add(option);
+        }
+    }
+
+    /** A line missing its selling model and/or price book entry. */
+    @TestVisible
+    private class MissingPriceLine {
+        List<Object> nodePath;
+        String productId;
+        String sellingModelId;
+        Boolean isSellingModelMissing;
+
+        MissingPriceLine(List<Object> nodePath, String productId, String sellingModelId, Boolean isSellingModelMissing) {
+            this.nodePath = nodePath;
+            this.productId = productId;
+            this.sellingModelId = sellingModelId;
+            this.isSellingModelMissing = isSellingModelMissing;
         }
     }
 
