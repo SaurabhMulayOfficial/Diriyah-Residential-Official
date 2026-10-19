@@ -332,5 +332,66 @@ private class RES_PaymentPlanExpiryServiceTest {
         RES_PaymentPlanExpiryService.Result emptyResult = RES_PaymentPlanExpiryService.process(new Set<Id>(), TODAY, false);
         System.assertEquals(0, nullResult.unitsProcessed);
         System.assertEquals(0, emptyResult.unitsProcessed);
+        System.assertEquals(0, RES_PaymentPlanExpiryService.removeDeactivatedPlans(null).unitsProcessed);
+        System.assertEquals(0, RES_PaymentPlanExpiryService.removeDeactivatedPlans(new Set<Id>()).unitsProcessed);
+    }
+
+    @isTest
+    static void deactivatedPlanIsRemovedFromEveryUnitAndDefaultIsPromoted() {
+        setUp();
+        Product2 unit1 = createUnit('Deactivation Unit 1');
+        Product2 unit2 = createUnit('Deactivation Unit 2');
+        ProductComponentGroup group1 = createGroup(unit1);
+        ProductComponentGroup group2 = createGroup(unit2);
+        Product2 deactivatedPlan = createPlan('Deactivated Plan', null, true);
+        Product2 otherPlan = createPlan('Other Plan', null, true);
+        ProductRelatedComponent defaultPrc = createComponent(unit1, group1, deactivatedPlan, true);
+        ProductRelatedComponent siblingPrc = createComponent(unit1, group1, otherPlan, false);
+        ProductRelatedComponent unit2Prc = createComponent(unit2, group2, deactivatedPlan, false);
+        ProductRelatedComponent unit2DefaultPrc = createComponent(unit2, group2, otherPlan, true);
+
+        Test.startTest();
+        RES_PaymentPlanExpiryService.Result result = RES_PaymentPlanExpiryService.removeDeactivatedPlans(new Set<Id>{ deactivatedPlan.Id });
+        Test.stopTest();
+
+        Map<Id, ProductRelatedComponent> remaining1 = componentsById(unit1.Id);
+        Map<Id, ProductRelatedComponent> remaining2 = componentsById(unit2.Id);
+        System.assertEquals(false, remaining1.containsKey(defaultPrc.Id), 'Deactivated plan must be untagged from Unit 1');
+        System.assertEquals(true, remaining1.get(siblingPrc.Id).IsDefaultComponent, 'Sibling becomes the default');
+        System.assertEquals(false, remaining2.containsKey(unit2Prc.Id), 'Deactivated plan must be untagged from Unit 2');
+        System.assertEquals(true, remaining2.get(unit2DefaultPrc.Id).IsDefaultComponent, 'Existing default is kept');
+        System.assertEquals(2, result.componentsDeleted);
+        System.assertEquals(1, result.defaultsPromoted);
+        System.assertEquals(0, result.failures);
+    }
+
+    @isTest
+    static void reachingDeactivatedStageUntagsPlanViaTrigger() {
+        setUp();
+        Product2 unit = createUnit('Deactivation Trigger Unit');
+        ProductComponentGroup componentGroup = createGroup(unit);
+        Product2 plan = createPlan('Plan To Deactivate', null, true);
+        ProductRelatedComponent prc = createComponent(unit, componentGroup, plan, true);
+
+        Test.startTest();
+        update new Product2(Id = plan.Id, IsActive = false, RES_Payment_Plan_Approval_Stage__c = 'Deactivated');
+        Test.stopTest();
+
+        System.assertEquals(false, componentsById(unit.Id).containsKey(prc.Id), 'Deactivated plan must be untagged from the Unit');
+    }
+
+    @isTest
+    static void pendingApprovalInactiveFlipKeepsPlanTagged() {
+        setUp();
+        Product2 unit = createUnit('Pending Modification Unit');
+        ProductComponentGroup componentGroup = createGroup(unit);
+        Product2 plan = createPlan('Plan Under Modification', null, true);
+        ProductRelatedComponent prc = createComponent(unit, componentGroup, plan, true);
+
+        Test.startTest();
+        update new Product2(Id = plan.Id, IsActive = false, RES_Payment_Plan_Approval_Stage__c = 'Pending PDC Approval');
+        Test.stopTest();
+
+        System.assertEquals(true, componentsById(unit.Id).containsKey(prc.Id), 'A transient inactive flip during approval must not untag the plan');
     }
 }

@@ -5,7 +5,9 @@
  *
  * @author Saurabh Mulay
  */
-public with sharing class RES_PaymentPlanServices { 
+public with sharing class RES_PaymentPlanServices {
+    private static final String DEACTIVATED_STAGE = 'Deactivated';
+
     public RES_PaymentPlanServices() {}
 
     public static void syncPaymentPlans(List<Product2> paymentPlans, Map<Id, Product2> oldMap) {
@@ -76,6 +78,56 @@ public with sharing class RES_PaymentPlanServices {
             }
         } catch (Exception e) {
             System.debug('Exception Firing Integration Request Event ' + e.getMessage());
+        }
+    }
+
+    /**
+     * @description After update: untags Payment Plans that reached the Deactivated stage from all Units they were provisioned on.
+     *              Keyed on the stage, not IsActive alone: the approval orchestrations set IsActive = false on every pending stage.
+     */
+    public static void removeDeactivatedPlansFromUnits(List<Product2> paymentPlans, Map<Id, Product2> oldMap) {
+        if (oldMap == null) {
+            return;
+        }
+        Id paymentPlanRecordTypeId = Schema.SObjectType.Product2
+            .getRecordTypeInfosByDeveloperName()
+            .get('RES_Residential_Payment_Plan')
+            .getRecordTypeId();
+
+        Set<Id> deactivatedPlanIds = new Set<Id>();
+        for (Product2 paymentPlan : paymentPlans) {
+            Product2 oldRecord = oldMap.get(paymentPlan.Id);
+            if (paymentPlan.RecordTypeId == paymentPlanRecordTypeId && paymentPlan.IsActive == false
+                && paymentPlan.RES_Payment_Plan_Approval_Stage__c == DEACTIVATED_STAGE
+                && oldRecord?.RES_Payment_Plan_Approval_Stage__c != DEACTIVATED_STAGE) {
+                deactivatedPlanIds.add(paymentPlan.Id);
+            }
+        }
+        if (!deactivatedPlanIds.isEmpty()) {
+            RES_PaymentPlanExpiryService.removeDeactivatedPlans(deactivatedPlanIds);
+        }
+    }
+
+    /** @description After update: re-tags an Approved Payment Plan to its catalog's Units when it turns active again. */
+    public static void tagReactivatedPlansToUnits(List<Product2> paymentPlans, Map<Id, Product2> oldMap) {
+        if (oldMap == null) {
+            return;
+        }
+        Id paymentPlanRecordTypeId = Schema.SObjectType.Product2
+            .getRecordTypeInfosByDeveloperName()
+            .get('RES_Residential_Payment_Plan')
+            .getRecordTypeId();
+
+        Set<Id> reactivatedPlanIds = new Set<Id>();
+        for (Product2 paymentPlan : paymentPlans) {
+            Product2 oldRecord = oldMap.get(paymentPlan.Id);
+            if (paymentPlan.RecordTypeId == paymentPlanRecordTypeId && paymentPlan.IsActive == true && oldRecord?.IsActive != true
+                && paymentPlan.RES_Approval_Status__c == 'Approved') {
+                reactivatedPlanIds.add(paymentPlan.Id);
+            }
+        }
+        if (!reactivatedPlanIds.isEmpty()) {
+            RES_PaymentPlanBundleProvisioner.provisionPlans(reactivatedPlanIds);
         }
     }
 

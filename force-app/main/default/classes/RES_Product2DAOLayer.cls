@@ -345,6 +345,19 @@ public List<Product2> getRejectedProducts(String status,String searchTerm,Intege
         return (List<Product2>) executeQuery(soql, '', false, bindVars, AccessLevel.SYSTEM_MODE);
     }
 
+    /** Units of the given record type among the Ids, with the fields RES_DefaultPlanPriceService needs. */
+    public List<Product2> getUnitsForDefaultPlanPrice(Set<Id> productIds, Id recordTypeId) {
+        if (productIds == null || productIds.isEmpty() || recordTypeId == null) {
+            return new List<Product2>();
+        }
+        String soql =
+            'SELECT Id, CurrencyIsoCode, RES_Default_Plan_Price__c ' +
+            'FROM Product2 ' +
+            'WHERE Id IN :productIds AND RecordTypeId = :recordTypeId';
+        Map<String, Object> bindVars = new Map<String, Object>{ 'productIds' => productIds, 'recordTypeId' => recordTypeId };
+        return (List<Product2>) executeQuery(soql, '', false, bindVars, AccessLevel.SYSTEM_MODE);
+    }
+
     /**
      * Normalizes requested page size.
      */

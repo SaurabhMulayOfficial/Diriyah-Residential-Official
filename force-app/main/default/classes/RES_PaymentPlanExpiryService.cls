@@ -15,6 +15,8 @@
  *                       QuoteVisibility = Never / inactive was not enough - the
  *                       option still showed up on the Unit - so it is removed.
  *
+ *                  removeDeactivatedPlans applies the same steps to Deactivated plans.
+ *
  *                  If the promotion update fails for a Unit, that Unit's expired
  *                  components are kept so the next run retries. A failed demotion
  *                  (e.g. a Static parent rejects IsDefaultComponent = false) does
@@ -72,11 +74,34 @@ public without sharing class RES_PaymentPlanExpiryService {
      * @param dryRun  When true, only logs what would change; no DML.
      */
     public static Result process(Set<Id> unitIds, Date asOf, Boolean dryRun) {
-        Result result = new Result();
         if (unitIds == null || unitIds.isEmpty() || asOf == null) {
-            return result;
+            return new Result();
         }
+        return removeComponents(unitIds, asOf, new Set<Id>(), dryRun);
+    }
 
+    /**
+     * Untags deactivated Payment Plans from every Unit they are wired to, with the same
+     * default demotion/promotion as expiry.
+     * @param planIds Payment Plan Product2 Ids that were deactivated.
+     */
+    public static Result removeDeactivatedPlans(Set<Id> planIds) {
+        if (planIds == null || planIds.isEmpty()) {
+            return new Result();
+        }
+        Set<Id> unitIds = new Set<Id>();
+        for (ProductRelatedComponent component : COMPONENT_DAO.getComponentsByChildProducts(planIds)) {
+            unitIds.add(component.ParentProductId);
+        }
+        if (unitIds.isEmpty()) {
+            return new Result();
+        }
+        return removeComponents(unitIds, null, planIds, false);
+    }
+
+    // A component is removed when its plan expired before asOf (if given) or is one of removedPlanIds.
+    private static Result removeComponents(Set<Id> unitIds, Date asOf, Set<Id> removedPlanIds, Boolean dryRun) {
+        Result result = new Result();
         Map<Id, List<ProductRelatedComponent>> componentsByUnit = new Map<Id, List<ProductRelatedComponent>>();
         for (ProductRelatedComponent component : COMPONENT_DAO.getGroupComponentsByUnits(unitIds, RES_PaymentPlanBundleProvisioner.GROUP_NAME)) {
             if (!componentsByUnit.containsKey(component.ParentProductId)) {
@@ -96,7 +121,7 @@ public without sharing class RES_PaymentPlanExpiryService {
             Boolean remainingHasDefault = false;
 
             for (ProductRelatedComponent component : componentsByUnit.get(unitId)) {
-                if (isExpired(component, asOf)) {
+                if (isExpired(component, asOf) || removedPlanIds.contains(component.ChildProductId)) {
                     expired.add(component);
                     if (component.IsDefaultComponent) {
                         expiredWasDefault = true;
@@ -179,13 +204,17 @@ public without sharing class RES_PaymentPlanExpiryService {
                     logFailure('component delete', toDelete[index].Id, deleteResults[index].getErrors());
                 }
             }
+            // The default plan may have been promoted to a sibling, so its browse price changes too
+            Set<Id> changedUnitIds = new Set<Id>(deletesByUnit.keySet());
+            changedUnitIds.removeAll(failedUnits);
+            RES_DefaultPlanPriceService.refresh(changedUnitIds);
         }
         return result;
     }
 
     private static Boolean isExpired(ProductRelatedComponent component, Date asOf) {
         Date validityEnd = component.ChildProduct.RES_Validity_End_Date__c;
-        return validityEnd != null && validityEnd < asOf;
+        return asOf != null && validityEnd != null && validityEnd < asOf;
     }
 
     private static void logFailure(String operation, Id componentId, List<Database.Error> errors) {
