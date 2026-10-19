@@ -2059,19 +2059,6 @@
         <contextNodes>
             <contextAttributes>
                 <contextTags>
-                    <title>RES_Reservation_Amount</title>
-                </contextTags>
-                <customMappingAllowed>false</customMappingAllowed>
-                <dataType>string</dataType>
-                <fieldType>inputoutput</fieldType>
-                <key>false</key>
-                <localizationDisabled>false</localizationDisabled>
-                <title>RES_Reservation_Amount</title>
-                <transient>false</transient>
-                <value>false</value>
-            </contextAttributes>
-            <contextAttributes>
-                <contextTags>
                     <title>RES_S4_Contract_Id</title>
                 </contextTags>
                 <customMappingAllowed>false</customMappingAllowed>
@@ -2093,19 +2080,6 @@
                 <key>false</key>
                 <localizationDisabled>false</localizationDisabled>
                 <title>RES_Financial_Compensation</title>
-                <transient>false</transient>
-                <value>false</value>
-            </contextAttributes>
-            <contextAttributes>
-                <contextTags>
-                    <title>RES_Final_Payment</title>
-                </contextTags>
-                <customMappingAllowed>false</customMappingAllowed>
-                <dataType>string</dataType>
-                <fieldType>inputoutput</fieldType>
-                <key>false</key>
-                <localizationDisabled>false</localizationDisabled>
-                <title>RES_Final_Payment</title>
                 <transient>false</transient>
                 <value>false</value>
             </contextAttributes>
@@ -3525,15 +3499,15 @@
             <title>ContractItemPrice</title>
             <transposable>false</transposable>
         </contextNodes>
-        <isActive>true</isActive>
+        <isActive>false</isActive>
         <startDate>2026-10-13 00:00:00</startDate>
-        <versionNumber>9</versionNumber>
+        <versionNumber>16</versionNumber>
     </contextDefinitionVersions>
     <contextTtl>10</contextTtl>
     <hasSystemTags>false</hasSystemTags>
     <isProtected>false</isProtected>
     <isTransformationEnabled>false</isTransformationEnabled>
     <masterLabel>RES_Documents_Definition</masterLabel>
-    <releaseVersion>264.7.7</releaseVersion>
+    <releaseVersion>264.8.3</releaseVersion>
     <title>RES_Documents_Definition</title>
 </ContextDefinition>
