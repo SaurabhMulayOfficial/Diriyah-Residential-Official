@@ -1100,6 +1100,11 @@
             <field>Account.RES_Last_Sync_DateTime__c</field>
             <readable>true</readable>
         </fieldPermissions>
+                <fieldPermissions>
+                    <editable>true</editable>
+                    <field>Account.CompanyMobilePhone__c</field>
+                    <readable>true</readable>
+                </fieldPermissions>
          <fieldPermissions>
         <editable>true</editable>
         <field>Contract.RES_PAR_Name_Arabic__c</field>

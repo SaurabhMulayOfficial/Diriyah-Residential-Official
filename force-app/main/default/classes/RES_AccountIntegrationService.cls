@@ -132,7 +132,7 @@ public with sharing class RES_AccountIntegrationService extends RES_BaseIntegrat
         // First phone item: mobile (Person Account only; blank for Company), extension always blank
         RES_AccountRequestWrapper.PhoneItem mobilePhoneItem = new RES_AccountRequestWrapper.PhoneItem();
         mobilePhoneItem.OBJECT_TASK = triggerContext;
-        mobilePhoneItem.TELEPHONE = isPersonAccount ? blankIfNull(acc.PersonMobilePhone) : '';
+        mobilePhoneItem.TELEPHONE = isPersonAccount ? blankIfNull(acc.PersonMobilePhone) : blankIfNull(acc.CompanyMobilePhone__c);
         mobilePhoneItem.EXTENSION = '';
         mobilePhoneItem.COUNTRY = blankIfNull(acc.BillingCountryCode);
 

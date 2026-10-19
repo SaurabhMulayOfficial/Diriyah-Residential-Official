@@ -75,7 +75,7 @@ public with sharing class RES_AccountDAOLayer extends RES_BaseDAOLayer{
                         'Phone, PersonMobilePhone, PersonEmail, ' +
                         'BillingStreet, BillingCity, BillingPostalCode, BillingCountryCode, BillingStateCode, ' +
                         'PersonGenderIdentity, ' +
-                        'PersonBirthdate, ' +
+                        'PersonBirthdate, CompanyMobilePhone__c, ' +
                         'RES_Language__pc, RES_Nationality__pc, RES_Marital_Status__pc, ' +
                         'RES_Full_Arabic_Name__c, RES_Full_Arabic_Name__pc, RES_Company_Additional_Name__c, ' +
                         'RES_Corporate_Title__c, ' +
