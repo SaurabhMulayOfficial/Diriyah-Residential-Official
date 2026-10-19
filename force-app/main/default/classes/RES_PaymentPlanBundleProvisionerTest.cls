@@ -396,4 +396,47 @@ private class RES_PaymentPlanBundleProvisionerTest {
         RES_PaymentPlanBundleProvisioner.provision(new List<RES_PaymentPlanBundleProvisioner.Request>());
         Test.stopTest();
     }
+
+    private static Product2 createInactivePaymentPlan(Id catalogId, String approvalStatus) {
+        Product2 plan = new Product2(
+            Name = 'Inactive Payment Plan',
+            IsActive = false,
+            RecordTypeId = paymentPlanRecordTypeId,
+            RES_Business_Entity__c = catalogId,
+            RES_Price_Option__c = 'Test Price Option',
+            RES_Approval_Status__c = approvalStatus
+        );
+        insert plan;
+        return plan;
+    }
+
+    @isTest
+    static void activatingAnApprovedPlanTagsItToCatalogUnits() {
+        setUpRecordTypeIds();
+        ProductCatalog catalog = createCatalog();
+        Product2 unit = createUnit(catalog.Id);
+        Product2 plan = createInactivePaymentPlan(catalog.Id, 'Approved');
+
+        Test.startTest();
+        update new Product2(Id = plan.Id, IsActive = true);
+        Test.stopTest();
+
+        System.assertEquals(1, [SELECT COUNT() FROM ProductRelatedComponent WHERE ParentProductId = :unit.Id AND ChildProductId = :plan.Id],
+            'Reactivated Approved plan must be tagged to the catalog Unit');
+    }
+
+    @isTest
+    static void activatingAnUnapprovedPlanDoesNotTagIt() {
+        setUpRecordTypeIds();
+        ProductCatalog catalog = createCatalog();
+        Product2 unit = createUnit(catalog.Id);
+        Product2 plan = createInactivePaymentPlan(catalog.Id, 'Pending Approval');
+
+        Test.startTest();
+        update new Product2(Id = plan.Id, IsActive = true);
+        Test.stopTest();
+
+        System.assertEquals(0, [SELECT COUNT() FROM ProductRelatedComponent WHERE ParentProductId = :unit.Id AND ChildProductId = :plan.Id],
+            'Only Approved plans are tagged on activation');
+    }
 }

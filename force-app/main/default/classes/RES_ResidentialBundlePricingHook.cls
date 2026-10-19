@@ -44,19 +44,42 @@ global class RES_ResidentialBundlePricingHook implements RevSignaling.SignalingA
         if (unitProductId == null || paymentPlanProductId == null) {
             return null;
         }
-        RES_ResidentialBundlePricingHook hook = new RES_ResidentialBundlePricingHook();
-        BundleStructure bundle = new BundleStructure(String.valueOf(unitProductId), String.valueOf(unitProductId));
-        bundle.addChildOption(new OptionItem(String.valueOf(paymentPlanProductId), String.valueOf(paymentPlanProductId), null, null));
-        Map<String, BundleStructure> bundleMap = new Map<String, BundleStructure>{ bundle.bundleId => bundle };
+        return planAdjustmentValues(new Map<Id, Id>{ unitProductId => paymentPlanProductId }).get(unitProductId);
+    }
 
-        String priceOption = hook.queryChildOptionPriceValues(bundleMap).get(hook.buildRelatedComponentKey(bundle.productId, paymentPlanProductId));
-        List<AttributeAdjustment> adjustments = hook.queryAttributeAdjustments(bundleMap).get(bundle.productId);
-        if (String.isBlank(priceOption) || adjustments == null) {
-            return null;
+    /** Bulk planAdjustmentValue: Payment Plan Id by Unit Id in, adjustment value by Unit Id out (Units with no match are omitted). */
+    public static Map<Id, Decimal> planAdjustmentValues(Map<Id, Id> paymentPlanIdByUnitId) {
+        Map<Id, Decimal> result = new Map<Id, Decimal>();
+        Map<String, BundleStructure> bundleMap = new Map<String, BundleStructure>();
+        for (Id unitProductId : (paymentPlanIdByUnitId ?? new Map<Id, Id>()).keySet()) {
+            Id paymentPlanProductId = paymentPlanIdByUnitId.get(unitProductId);
+            if (unitProductId == null || paymentPlanProductId == null) {
+                continue;
+            }
+            BundleStructure bundle = new BundleStructure(String.valueOf(unitProductId), String.valueOf(unitProductId));
+            bundle.addChildOption(new OptionItem(String.valueOf(paymentPlanProductId), String.valueOf(paymentPlanProductId), null, null));
+            bundleMap.put(bundle.bundleId, bundle);
         }
-        // execute() writes every match in order, so the last one is what ends up on the installment lines
-        List<AttributeAdjustment> matches = hook.findMatchingAdjustments(adjustments, new Map<String, String>{ PRICE_OPTION_MATCHING_ATTRIBUTE => priceOption });
-        return matches.isEmpty() ? null : matches[matches.size() - 1].adjustmentValue;
+        if (bundleMap.isEmpty()) {
+            return result;
+        }
+
+        RES_ResidentialBundlePricingHook hook = new RES_ResidentialBundlePricingHook();
+        Map<String, String> priceOptionByKey = hook.queryChildOptionPriceValues(bundleMap);
+        Map<String, List<AttributeAdjustment>> adjustmentsByUnit = hook.queryAttributeAdjustments(bundleMap);
+        for (BundleStructure bundle : bundleMap.values()) {
+            String priceOption = priceOptionByKey.get(hook.buildRelatedComponentKey(bundle.productId, bundle.childOptions[0].productId));
+            List<AttributeAdjustment> adjustments = adjustmentsByUnit.get(bundle.productId);
+            if (String.isBlank(priceOption) || adjustments == null) {
+                continue;
+            }
+            // execute() writes every match in order, so the last one is what ends up on the installment lines
+            List<AttributeAdjustment> matches = hook.findMatchingAdjustments(adjustments, new Map<String, String>{ PRICE_OPTION_MATCHING_ATTRIBUTE => priceOption });
+            if (!matches.isEmpty() && matches[matches.size() - 1].adjustmentValue != null) {
+                result.put(Id.valueOf(bundle.productId), matches[matches.size() - 1].adjustmentValue);
+            }
+        }
+        return result;
     }
 
     @TestVisible

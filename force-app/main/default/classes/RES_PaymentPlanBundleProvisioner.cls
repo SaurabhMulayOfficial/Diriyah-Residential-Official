@@ -73,6 +73,11 @@ public without sharing class RES_PaymentPlanBundleProvisioner {
             }
         }
 
+        provisionPlans(paymentPlanIds);
+    }
+
+    /** Apex entry point (e.g. Product2 trigger on reactivation); idempotent, so Units already wired are skipped. */
+    public static void provisionPlans(Set<Id> paymentPlanIds) {
         for (Id paymentPlanId : paymentPlanIds) {
             provisionForPlan(paymentPlanId);
         }
@@ -200,6 +205,8 @@ public without sharing class RES_PaymentPlanBundleProvisioner {
                     }
                 }
             }
+            // A Unit given its first (default) plan now has a browse price to show
+            RES_DefaultPlanPriceService.refresh(unitIds);
         }
     }
 

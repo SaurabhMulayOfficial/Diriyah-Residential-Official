@@ -16,10 +16,13 @@ private class RES_ProductSCRateValidationTest {
                 SELECT Id FROM PermissionSet WHERE Name = 'RES_Revenue_Cloud_Objects' LIMIT 1
             ];
             if (!permSets.isEmpty()) {
-                insert new PermissionSetAssignment(
-                    AssigneeId = UserInfo.getUserId(),
-                    PermissionSetId = permSets[0].Id
-                );
+                // runAs isolates the setup-object DML so the Product2 inserts below don't hit MIXED_DML_OPERATION
+                System.runAs(new User(Id = UserInfo.getUserId())) {
+                    insert new PermissionSetAssignment(
+                        AssigneeId = UserInfo.getUserId(),
+                        PermissionSetId = permSets[0].Id
+                    );
+                }
             }
         }
 
