@@ -423,4 +423,38 @@ private class RES_BaseIntegrationCalloutServiceTest {
         Assert.areEqual('{"field":"value"}', log.RES_Request_Body__c, 'setBody should be reflected on the log.');
         Assert.areEqual('{"X-Custom":"abc"}', log.RES_Headers__c, 'setHeaders should be serialised onto the log.');
     }
+
+    @isTest
+    static void everyCalloutQueuesARequestLogThatIsInsertedOnFlush() {
+        Test.setMock(HttpCalloutMock.class, new StaticResponseMock(200, 'OK', '{"id":"001"}'));
+        CalloutServiceStub stub = buildStub(1);
+
+        Test.startTest();
+        stub.callSendRequest();
+        Assert.areEqual(0, queryLogs().size(), 'Request logs must stay buffered until flushed.');
+        RES_BaseIntegrationCalloutService.flushRequestLogs();
+        Test.stopTest();
+
+        List<RES_Integration_Log__c> logs = [
+            SELECT RES_Type_of_Failure__c, RES_Endpoint__c, RES_Request_Body__c,
+                    RES_Request_Method__c, RES_Request_Name__c, RES_Headers__c
+            FROM RES_Integration_Log__c
+        ];
+        Assert.areEqual(1, logs.size(), 'One request log per callout.');
+        Assert.areEqual(RES_BaseIntegrationCalloutService.CALLOUT_REQUEST_TYPE, logs[0].RES_Type_of_Failure__c, 'Type should mark a callout request.');
+        Assert.areEqual('https://example.com/api/v1/resource', logs[0].RES_Endpoint__c, 'Endpoint should be logged.');
+        Assert.areEqual('{"name":"Test Record"}', logs[0].RES_Request_Body__c, 'Request body should be logged.');
+        Assert.areEqual('POST', logs[0].RES_Request_Method__c, 'Method should be logged.');
+        Assert.isFalse(logs[0].RES_Headers__c.contains('token-123'), 'Authorization header must be masked.');
+        Assert.isTrue(RES_BaseIntegrationCalloutService.getPendingRequestLogs().isEmpty(), 'Buffer should be cleared after flush.');
+    }
+
+    @isTest
+    static void flushWithNothingPendingIsANoOp() {
+        Test.startTest();
+        RES_BaseIntegrationCalloutService.flushRequestLogs();
+        Test.stopTest();
+
+        Assert.areEqual(0, queryLogs().size(), 'No logs should be created when nothing is pending.');
+    }
 }

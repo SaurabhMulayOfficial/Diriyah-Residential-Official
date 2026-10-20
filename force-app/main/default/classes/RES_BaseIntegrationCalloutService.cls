@@ -9,6 +9,10 @@
  */
 
 public virtual class RES_BaseIntegrationCalloutService {
+    public static final String CALLOUT_REQUEST_TYPE = 'Callout Request';
+    // Buffered because DML between the token callout and the main callout raises "uncommitted work pending".
+    private static List<RES_Integration_Log__c> pendingRequestLogs = new List<RES_Integration_Log__c>();
+
     protected RES_IntegrationRequest request;
 
     public RES_BaseIntegrationCalloutService(){
@@ -115,6 +119,7 @@ public virtual class RES_BaseIntegrationCalloutService {
         }
 
         logCalloutRequest();
+        queueRequestLog();
 
         for(integer i = 0; i < maxRetries; i++){
             System.debug('Attempting request: ' + i);
@@ -152,19 +157,60 @@ public virtual class RES_BaseIntegrationCalloutService {
         return null;
     }
 
+    // Inserts the buffered request logs; call once after the transaction's last callout.
+    public static void flushRequestLogs(){
+        if(pendingRequestLogs.isEmpty()){
+            return;
+        }
+        try{
+            Database.insert(pendingRequestLogs, false, AccessLevel.SYSTEM_MODE);
+        }catch(Exception e){
+            System.debug('Fail to create callout request logs ' + e.getMessage());
+        }
+        pendingRequestLogs.clear();
+    }
+
+    @TestVisible
+    private static List<RES_Integration_Log__c> getPendingRequestLogs(){
+        return pendingRequestLogs;
+    }
+
+    private void queueRequestLog(){
+        try{
+            String headersJson = request.headers != null ? JSON.serialize(maskHeaders(request.headers)) : null;
+            pendingRequestLogs.add(new RES_Integration_Log__c(
+                RES_Type_of_Failure__c = CALLOUT_REQUEST_TYPE,
+                RES_Endpoint__c = request.endpoint != null ? request.endpoint.abbreviate(255) : null,
+                RES_Request_Body__c = request.requestBody != null ? request.requestBody.abbreviate(131072) : null,
+                RES_Request_Method__c = request.requestMethod,
+                RES_Request_Name__c = request.requestName,
+                RES_Object_Name__c = request.objectName,
+                RES_Callout_Service__c = request.calloutService,
+                RES_Record_Id__c = request.recordId,
+                RES_Headers__c = headersJson != null ? headersJson.abbreviate(32768) : null
+            ));
+        }catch(Exception e){
+            System.debug('Fail to queue callout request log ' + e.getMessage());
+        }
+    }
+
+    private static Map<String, String> maskHeaders(Map<String, String> headers){
+        Map<String, String> safeHeaders = new Map<String, String>();
+        for(String key : headers.keySet()){
+            if(key == null){
+                continue;
+            }
+            safeHeaders.put(key, key.equalsIgnoreCase('Authorization') ? '***MASKED***' : headers.get(key));
+        }
+        return safeHeaders;
+    }
+
     // Search the debug log for [CALLOUT_REQUEST] / [CALLOUT_REQUEST_BODY] / [CALLOUT_RESPONSE]; the body line is the raw payload, ready to copy.
     private void logCalloutRequest(){
         try{
-            Map<String, String> safeHeaders = new Map<String, String>();
-            if(request.headers != null){
-                for(String key : request.headers.keySet()){
-                    if(key == null){
-                        continue;
-                    }
-                    Boolean isSecret = key.equalsIgnoreCase('Authorization');
-                    safeHeaders.put(key, isSecret ? '***MASKED***' : request.headers.get(key));
-                }
-            }
+            Map<String, String> safeHeaders = request.headers != null
+                ? maskHeaders(request.headers)
+                : new Map<String, String>();
 
             Map<String, Object> entry = new Map<String, Object>{
                 'requestName' => request.requestName,
