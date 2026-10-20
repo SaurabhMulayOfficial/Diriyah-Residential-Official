@@ -114,6 +114,8 @@ public virtual class RES_BaseIntegrationCalloutService {
             return null;
         }
 
+        logCalloutRequest();
+
         for(integer i = 0; i < maxRetries; i++){
             System.debug('Attempting request: ' + i);
 
@@ -121,6 +123,7 @@ public virtual class RES_BaseIntegrationCalloutService {
                 HttpResponse response = new Http().send(httpRequest);
                 if(response != null){
                     Integer statusCode = response.getStatusCode();
+                    logCalloutResponse(i + 1, response);
                     res = new RES_integrationResponse();
                     res.responseBody = response.getBody();
                     res.status = response.getStatus();
@@ -147,6 +150,54 @@ public virtual class RES_BaseIntegrationCalloutService {
             }
         }
         return null;
+    }
+
+    // Search the debug log for [CALLOUT_REQUEST] / [CALLOUT_REQUEST_BODY] / [CALLOUT_RESPONSE]; the body line is the raw payload, ready to copy.
+    private void logCalloutRequest(){
+        try{
+            Map<String, String> safeHeaders = new Map<String, String>();
+            if(request.headers != null){
+                for(String key : request.headers.keySet()){
+                    if(key == null){
+                        continue;
+                    }
+                    Boolean isSecret = key.equalsIgnoreCase('Authorization');
+                    safeHeaders.put(key, isSecret ? '***MASKED***' : request.headers.get(key));
+                }
+            }
+
+            Map<String, Object> entry = new Map<String, Object>{
+                'requestName' => request.requestName,
+                'calloutService' => request.calloutService,
+                'objectName' => request.objectName,
+                'recordId' => request.recordId,
+                'method' => request.requestMethod,
+                'endpoint' => request.endpoint,
+                'headers' => safeHeaders
+            };
+            System.debug(LoggingLevel.INFO, '[CALLOUT_REQUEST] ' + JSON.serialize(entry));
+            System.debug(LoggingLevel.INFO, '[CALLOUT_REQUEST_BODY] ' + request.requestBody);
+        }catch(Exception e){
+            System.debug('Fail to log callout request ' + e.getMessage());
+        }
+    }
+
+    private void logCalloutResponse(Integer attempt, HttpResponse response){
+        try{
+            // Token response carries the access_token, so its body is never printed.
+            Boolean isTokenCall = this instanceof RES_SAPTokenProvider;
+            Map<String, Object> entry = new Map<String, Object>{
+                'requestName' => request.requestName,
+                'recordId' => request.recordId,
+                'attempt' => attempt,
+                'statusCode' => response.getStatusCode(),
+                'status' => response.getStatus()
+            };
+            System.debug(LoggingLevel.INFO, '[CALLOUT_RESPONSE] ' + JSON.serialize(entry));
+            System.debug(LoggingLevel.INFO, '[CALLOUT_RESPONSE_BODY] ' + (isTokenCall ? '***MASKED***' : response.getBody()));
+        }catch(Exception e){
+            System.debug('Fail to log callout response ' + e.getMessage());
+        }
     }
 
 
