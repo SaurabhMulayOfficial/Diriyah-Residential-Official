@@ -2,6 +2,7 @@ import { LightningElement, track, api, wire } from 'lwc';
 import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 import { NavigationMixin, CurrentPageReference } from 'lightning/navigation';
 import { getRecord, getFieldValue } from 'lightning/uiRecordApi';
+import { getPicklistValues as getRecordTypePicklistValues } from 'lightning/uiObjectInfoApi';
 
 import getPicklistValues from '@salesforce/apex/RES_LeadCreateController.getPicklistValues';
 import isSystemAdmin from '@salesforce/apex/RES_LeadCreateController.isSystemAdmin';
@@ -14,6 +15,7 @@ import getRecordTypeById from '@salesforce/apex/RES_LeadCreateController.getReco
 
 import USER_ID from '@salesforce/user/Id';
 import NAME_FIELD from '@salesforce/schema/User.Name';
+import CORPORATE_TITLE_FIELD from '@salesforce/schema/Lead.RES_Corporate_Title__c';
 
 export default class ResLeadCreateModal extends NavigationMixin(LightningElement) {
     @api showButton = false;
@@ -23,6 +25,14 @@ export default class ResLeadCreateModal extends NavigationMixin(LightningElement
     @track _rtId = '';
     @track _rtDevName = '';
     @track _rtName = '';
+
+    // Record-type-aware values; the Apex describe returns every active value regardless of record type.
+    @wire(getRecordTypePicklistValues, { recordTypeId: '$_rtId', fieldApiName: CORPORATE_TITLE_FIELD })
+    wiredCorporateTitle({ data }) {
+        if (data) {
+            this.corporateTitleOptions = data.values.map((v) => ({ label: v.label, value: v.value }));
+        }
+    }
 
     @track salutationOptions = [];
     @track genderOptions = [];
