@@ -65,6 +65,10 @@ public without sharing class RES_ProductApprovalNotificationService {
     private static final RES_ApexEmailTemplateDAO EMAIL_TEMPLATE_DAO = new RES_ApexEmailTemplateDAO();
     private static final RES_GroupMemberDAOLayer GROUP_MEMBER_DAO = new RES_GroupMemberDAOLayer();
     private static final RES_OrgWideAddressDAO ORG_WIDE_EMAIL_DAO = new RES_OrgWideAddressDAO();
+    private static final RES_PricebookEntryDAOLayer PRICEBOOK_ENTRY_DAO = new RES_PricebookEntryDAOLayer();
+
+    private static final String UNIT_TABLE_CELL_STYLE =
+        'padding:8px;border:1px solid #EADFC9;font-family:Arial,Helvetica,sans-serif;font-size:13px;color:#444444;';
     /**
      * Sends notification to the next approval team.
      *
@@ -74,6 +78,7 @@ public without sharing class RES_ProductApprovalNotificationService {
      * {2} = Action Verb (e.g., "submitted", "forwarded")
      * {3} = Unit Count
      * {4} = Full URL to Product Approval Queue
+     * {5} = Unit details table rows (Company Code, Project/District, RU No., Inventory Type, Property Price)
      */
     public static void notifyNextApprovalTeam(List<Product2> products, String currentTeamLabel, String nextTeamLabel, String nextTeamGroupDeveloperName) {
         if (products == null || products.isEmpty() || String.isBlank(nextTeamGroupDeveloperName)) {
@@ -99,7 +104,8 @@ public without sharing class RES_ProductApprovalNotificationService {
             escapeHtml(safeValue(currentTeamLabel)),
             'forwarded',
             unitCount,
-            approvalQueueUrl
+            approvalQueueUrl,
+            buildUnitTableRows(products)
         };
 
         sendEmailsWithMergeFields(recipientEmails, template.Subject__c, template.Html_Body__c, mergeFieldsForSubject, mergeFieldsForBody);
@@ -223,7 +229,8 @@ public without sharing class RES_ProductApprovalNotificationService {
             'System',
             'updated',
             unitCount,
-            approvalQueueUrl
+            approvalQueueUrl,
+            buildUnitTableRows(products)
         };
 
         sendEmailsWithMergeFields(recipientEmails, template.Subject__c, template.Html_Body__c, mergeFieldsForSubject, mergeFieldsForBody);
@@ -333,6 +340,103 @@ public without sharing class RES_ProductApprovalNotificationService {
         if (!invocableInputs.isEmpty()) {
             RES_SendEmailInvocable.sendEmails(invocableInputs);
         }
+    }
+
+    // =========================================================================
+    // UNIT DETAILS TABLE
+    // =========================================================================
+
+    /**
+     * Builds the <tr> rows for the unit details table in the approval email.
+     *
+     * Column mapping:
+     *      Company Code     = RES_Business_Entity__r.RES_Company_Code__c
+     *      Project/District = RES_Business_Entity__r.Name
+     *      RU No.           = ProductCode
+     *      Inventory Type   = RES_Type__c (picklist label)
+     *      Property Price   = Standard Price Book UnitPrice
+     *
+     * Products must be queried via RES_Product2DAOLayer.getProductsByIds().
+     */
+    @TestVisible
+    private static String buildUnitTableRows(List<Product2> products) {
+        if (products == null || products.isEmpty()) {
+            return '';
+        }
+
+        Map<Id, Decimal> priceByProductId = getStandardPriceByProductId(products);
+        Map<String, String> inventoryTypeLabels = getInventoryTypeLabels();
+
+        List<String> rows = new List<String>();
+        for (Product2 product : products) {
+            String companyCode = product.RES_Business_Entity__r != null ? product.RES_Business_Entity__r.RES_Company_Code__c : null;
+            String project = product.RES_Business_Entity__r != null ? product.RES_Business_Entity__r.Name : null;
+            String inventoryType = String.isBlank(product.RES_Type__c)
+                ? null
+                : (inventoryTypeLabels.containsKey(product.RES_Type__c) ? inventoryTypeLabels.get(product.RES_Type__c) : product.RES_Type__c);
+            Decimal price = product.Id != null ? priceByProductId.get(product.Id) : null;
+
+            rows.add(
+                '<tr>' +
+                buildUnitTableCell(companyCode, 'left') +
+                buildUnitTableCell(project, 'left') +
+                buildUnitTableCell(product.ProductCode, 'left') +
+                buildUnitTableCell(inventoryType, 'left') +
+                buildUnitTableCell(price != null ? price.setScale(2).format() : null, 'right') +
+                '</tr>'
+            );
+        }
+
+        return String.join(rows, '');
+    }
+
+    private static String buildUnitTableCell(String value, String alignment) {
+        String displayValue = String.isBlank(value) ? '-' : escapeHtml(value);
+        return '<td style="' + UNIT_TABLE_CELL_STYLE + 'text-align:' + alignment + ';">' + displayValue + '</td>';
+    }
+
+    private static Map<Id, Decimal> getStandardPriceByProductId(List<Product2> products) {
+        Map<Id, Decimal> priceByProductId = new Map<Id, Decimal>();
+
+        Set<Id> productIds = new Set<Id>();
+        for (Product2 product : products) {
+            if (product.Id != null) {
+                productIds.add(product.Id);
+            }
+        }
+
+        Id standardPricebookId = getStandardPricebookId();
+        if (productIds.isEmpty() || standardPricebookId == null) {
+            return priceByProductId;
+        }
+
+        for (PricebookEntry entry : PRICEBOOK_ENTRY_DAO.getEntriesByBookAndProducts(standardPricebookId, productIds, false)) {
+            if (entry.UnitPrice != null && !priceByProductId.containsKey(entry.Product2Id)) {
+                priceByProductId.put(entry.Product2Id, entry.UnitPrice);
+            }
+        }
+
+        return priceByProductId;
+    }
+
+    /**
+     * Test context hides the Standard Price Book's Pricebook2 row from
+     * "Pricebook2.IsStandard = true" filters, so resolve its Id directly.
+     */
+    private static Id getStandardPricebookId() {
+        if (Test.isRunningTest()) {
+            return Test.getStandardPricebookId();
+        }
+        List<Pricebook2> standardPricebooks = new RES_Pricebook2DAOLayer().getStandardPricebook();
+        return standardPricebooks.isEmpty() ? null : standardPricebooks[0].Id;
+    }
+
+    private static Map<String, String> getInventoryTypeLabels() {
+        Map<String, String> labelsByValue = new Map<String, String>();
+        for (Schema.PicklistEntry entry : Product2.RES_Type__c.getDescribe().getPicklistValues()) {
+            labelsByValue.put(entry.getValue(), entry.getLabel());
+        }
+        return labelsByValue;
     }
 
     // =========================================================================
