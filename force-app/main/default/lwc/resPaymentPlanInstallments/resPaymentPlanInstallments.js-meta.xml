@@ -3,7 +3,7 @@
     <apiVersion>67.0</apiVersion>
     <isExposed>true</isExposed>
     <masterLabel>Payment Plan Installments</masterLabel>
-    <description>Editable, reorderable installment table (installment type, percentage, POC %, condition months/days; the due date is calculated from condition months/days) used as a screen component in the Create Payment Plan flow.</description>
+    <description>Editable, reorderable installment table for the Create Payment Plan flow. Due dates come from condition months/days; Off-Plan catalogs enter the due date and months/days are derived from Valid From.</description>
     <targets>
         <target>lightning__FlowScreen</target>
     </targets>
@@ -12,6 +12,7 @@
             <property name="planName" type="String" label="Payment Plan Name" description="Shown as a heading above the installment table." role="inputOnly" />
             <property name="numberOfYears" type="Integer" label="Number of Years (deprecated)" description="Not used - superseded by Number of Months so decimal years are supported. Kept because earlier Create Payment Plan flow versions reference it." role="inputOnly" />
             <property name="numberOfMonths" type="Integer" label="Number of Months" description="Payment plan length in months (Number of Years x 12, rounded). Condition Months/Days on the last installment cannot exceed it; 0 or blank means no limit." role="inputOnly" />
+            <property name="validFrom" type="Date" label="Valid From" description="Payment plan Valid From date. Condition Months/Days count from it; for Off-Plan catalogs they are derived from each installment's Due Date." role="inputOnly" />
             <property name="developmentPhase" type="String" label="Development Phase" description="Development Phase of the selected catalog. On-Plan fixes POC at 100%; Off-Plan makes POC mandatory." role="inputOnly" />
             <property name="installmentsJson" type="String" label="Installments (JSON)" description="JSON array of installment rows. Store this screen's output into a flow variable to pass into the Create Payment Plan action." />
         </targetConfig>

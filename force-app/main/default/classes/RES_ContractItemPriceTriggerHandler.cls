@@ -2,6 +2,10 @@ public with sharing class RES_ContractItemPriceTriggerHandler extends RES_BaseTr
 
     @TestVisible private static Boolean isRunning = false;
 
+    protected override void beforeInsert() {
+        RES_InstallmentDueDateService.populateContractItemPriceDueDates((List<ContractItemPrice>) Trigger.new);
+    }
+
     protected override void afterInsert() {
         handleAfterInsert((List<ContractItemPrice>) Trigger.new);
     }

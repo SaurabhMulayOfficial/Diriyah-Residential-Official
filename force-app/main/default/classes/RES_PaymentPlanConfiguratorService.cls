@@ -249,8 +249,8 @@ public with sharing class RES_PaymentPlanConfiguratorService {
                 ' (' + previous.conditionMonths + ' months, ' + previous.conditionDays + ' days).');
         }
         if (latestDueDate != null && installment.dueDate > latestDueDate) {
-            throw new PaymentPlanConfiguratorException('Installment ' + installment.sequence + ' goes beyond the plan\'s Number of Years: ' +
-                'Condition Months/Days cannot exceed ' + maxMonths + ' months.');
+            throw new PaymentPlanConfiguratorException('Installment ' + installment.sequence + ' (' + installment.conditionMonths + ' months, ' +
+                installment.conditionDays + ' days) goes beyond the plan\'s Number of Years: Condition Months/Days cannot exceed ' + maxMonths + ' months.');
         }
 
         String conditionKey = installment.conditionType + '|' + installment.dueDate;
