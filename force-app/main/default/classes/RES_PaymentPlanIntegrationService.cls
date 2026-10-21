@@ -66,9 +66,9 @@ public with sharing class RES_PaymentPlanIntegrationService extends RES_BaseInte
             paymentPlanWrapper.Change_Indicator = triggerContext;
             paymentPlanWrapper.RES_Product_External_ID = (paymentPlan.RES_Parent_Payment_Plan__c != null) ? paymentPlan.RES_Parent_Payment_Plan__r.RES_Product_External_ID__c : paymentPlan.RES_Product_External_ID__c; 
             paymentPlanWrapper.ProductName = paymentPlan.Name;
-            paymentPlanWrapper.RES_No_of_Years = (paymentPlan.RES_No_of_Years__c != null) ? (Integer) paymentPlan.RES_No_of_Years__c : 0;
+            paymentPlanWrapper.RES_No_of_Years = (paymentPlan.RES_No_of_Years__c != null) ? (Decimal) paymentPlan.RES_No_of_Years__c : 0;
             paymentPlanWrapper.AvailabilityDate = (paymentPlan.AvailabilityDate != null) ? paymentPlan.AvailabilityDate.format('yyyy-MM-dd\'T\'HH:mm:ss\'Z\'', 'UTC') : '';
-            paymentPlanWrapper.DiscontinuedDate = (paymentPlan.RES_Validity_End_Date__c != null) ? DateTime.newInstanceGmt(paymentPlan.RES_Validity_End_Date__c, Time.newInstance(0, 0, 0, 0)).format('yyyy-MM-dd\'T\'HH:mm:ss\'Z\'', 'UTC') : '';
+            paymentPlanWrapper.DiscontinuedDate = (paymentPlan.RES_Validity_End_Date__c != null) ? DateTime.newInstanceGmt(paymentPlan.RES_Validity_End_Date__c, Time.newInstance(0, 0, 0, 0)).format('yyyy-MM-dd\'T\'HH:mm:ss\'Z\'', 'UTC') : '9999-12-31T00:00:00Z';
             paymentPlanWrapper.RES_Approval_Status = (paymentPlan.RES_Approval_Status__c != null) ? paymentPlan.RES_Approval_Status__c : '';
             paymentPlanWrapper.RES_Status_Role_description = (paymentPlan.RES_Status_Role_Description__c != null) ? paymentPlan.RES_Status_Role_Description__c : '';
             paymentPlanWrapper.RES_Status_Role = (paymentPlan.RES_Status_Role__c != null) ? paymentPlan.RES_Status_Role__c : '';
@@ -116,7 +116,7 @@ public with sharing class RES_PaymentPlanIntegrationService extends RES_BaseInte
                 assignment.RES_Business_Entity = (prc.ParentProduct.RES_Business_Entity__c != null) ? prc.ParentProduct.RES_Business_Entity__r.RES_Business_Entity_Id__c : '';
       			assignment.RES_Construction_Phase = (prc.ParentProduct.RES_Construction_Phase__c != null) ? prc.ParentProduct.RES_Construction_Phase__c : '';
       			assignment.RES_Project = (prc.ParentProduct.RES_Business_Entity__c != null) ? prc.ParentProduct.RES_Business_Entity__r.Name : '';
-      			assignment.RES_UnitId = (prc.ParentProduct.RES_Product_External_ID__c != null) ? prc.ParentProduct.RES_Product_External_ID__c : ''; 
+      			assignment.RES_UnitId = (prc.ParentProduct.Name != null) ? prc.ParentProduct.Name : ''; 
       			assignment.Company_Code = (prc.ParentProduct.RES_Company_Code__c != null) ? prc.ParentProduct.RES_Company_Code__c : '';
             	assignmentsWrapper.add(assignment);
             }

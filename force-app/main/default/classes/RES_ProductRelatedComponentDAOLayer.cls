@@ -172,7 +172,7 @@ public without sharing class RES_ProductRelatedComponentDAOLayer extends RES_Bas
                       'ChildProduct.RES_Installment_Construction_Progress__c, ChildProduct.Description, ChildProduct.IsActive, '+ 
                       'ChildProduct.RES_Installment_Amount__c, ChildProduct.CurrencyIsoCode, ChildProduct.RES_Installment_Payment_Type__c, ' +
                       'ChildProduct.RES_Condition_Months__c, ChildProduct.RES_Condition_Days__c, ChildProduct.RES_Condition_Type__c, ' +
-                      'ParentProduct.RES_Business_Entity__r.Name, ParentProduct.RES_Construction_Phase__c, ParentProduct.RES_Company_Code__c, ParentProduct.RES_Product_External_ID__c, ParentProduct.RES_Business_Entity__r.RES_Business_Entity_Id__c ' +
+                      'ParentProduct.RES_Business_Entity__r.Name, ParentProduct.RES_Construction_Phase__c, ParentProduct.RES_Company_Code__c, ParentProduct.RES_Product_External_ID__c, ParentProduct.RES_Business_Entity__r.RES_Business_Entity_Id__c, ParentProduct.Name ' +
                       'FROM ProductRelatedComponent ' +
                       'WHERE ChildProductId IN : childProductIds AND ' +
                       'ChildProductId != NULL AND ' + 
