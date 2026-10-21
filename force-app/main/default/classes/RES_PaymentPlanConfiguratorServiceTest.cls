@@ -394,6 +394,74 @@ private class RES_PaymentPlanConfiguratorServiceTest {
 
         System.assertEquals(false, result.isSuccess);
         System.assert(result.message.contains('cannot exceed 24 months'), 'Expected years cap error, got: ' + result.message);
+        System.assert(result.message.contains('24 months, 1 days'), 'Expected the offending months/days in the error, got: ' + result.message);
+    }
+
+    @IsTest
+    static void testCreatePaymentPlan_ExactlyNumberOfYears_Succeeds() {
+        RES_PaymentPlanConfiguratorService.Request req = baseRequest();
+        req.productCode = 'TEST-PP-COND-EXACT';
+        req.numberOfYears = 2;
+        req.validFromDate = Date.newInstance(2027, 1, 1);
+        req.installmentsJson = '[{"conditionType":"Y002","conditionMonths":0,"percentage":50,"sequence":1},' +
+            '{"conditionType":"Y004","conditionMonths":24,"conditionDays":0,"percentage":50,"sequence":2}]';
+
+        RES_PaymentPlanConfiguratorService.Result result = createOne(req);
+
+        System.assertEquals(true, result.isSuccess, 'Expected success, got: ' + result.message);
+    }
+
+    @IsTest
+    static void testCreatePaymentPlan_DaysWithinNumberOfYears_Succeeds() {
+        RES_PaymentPlanConfiguratorService.Request req = baseRequest();
+        req.productCode = 'TEST-PP-COND-DAYSOK';
+        req.numberOfYears = 2;
+        req.validFromDate = Date.newInstance(2027, 1, 1);
+        // 2027-01-01 + 23 months + 31 days = 2029-01-01, exactly the 24-month limit
+        req.installmentsJson = '[{"conditionType":"Y002","conditionMonths":0,"percentage":50,"sequence":1},' +
+            '{"conditionType":"Y004","conditionMonths":23,"conditionDays":31,"percentage":50,"sequence":2}]';
+
+        RES_PaymentPlanConfiguratorService.Result result = createOne(req);
+
+        System.assertEquals(true, result.isSuccess, 'Expected success, got: ' + result.message);
+    }
+
+    @IsTest
+    static void testCreatePaymentPlan_DaysPushPastNumberOfYears_Fails() {
+        RES_PaymentPlanConfiguratorService.Request req = baseRequest();
+        req.productCode = 'TEST-PP-COND-DAYSMAX';
+        req.numberOfYears = 2;
+        req.validFromDate = Date.newInstance(2027, 1, 1);
+        // 2027-01-01 + 23 months + 32 days = 2029-01-02, one day past the 24-month limit
+        req.installmentsJson = '[{"conditionType":"Y002","conditionMonths":0,"percentage":50,"sequence":1},' +
+            '{"conditionType":"Y004","conditionMonths":23,"conditionDays":32,"percentage":50,"sequence":2}]';
+
+        RES_PaymentPlanConfiguratorService.Result result = createOne(req);
+
+        System.assertEquals(false, result.isSuccess);
+        System.assert(result.message.contains('cannot exceed 24 months'), 'Expected years cap error, got: ' + result.message);
+    }
+
+    @IsTest
+    static void testCreatePaymentPlan_OffPlanDueDateEntered_StoresDerivedConditions() {
+        RES_PaymentPlanConfiguratorService.Request req = baseRequest();
+        req.productCode = 'TEST-PP-OFF-DUE';
+        req.catalogId = insertCatalog('Off-Plan');
+        req.numberOfYears = 2;
+        req.validFromDate = Date.newInstance(2027, 1, 31);
+        // Due dates as entered on the Off-Plan table, with the months/days the component derives from Valid From
+        req.installmentsJson = '[{"conditionType":"Y002","dueDate":"2027-02-28","conditionMonths":1,"conditionDays":0,"percentage":50,"pocPercentage":10,"sequence":1},' +
+            '{"conditionType":"Y004","dueDate":"2028-12-15","conditionMonths":22,"conditionDays":15,"percentage":50,"pocPercentage":100,"sequence":2}]';
+
+        RES_PaymentPlanConfiguratorService.Result result = createOne(req);
+
+        System.assertEquals(true, result.isSuccess, 'Expected success, got: ' + result.message);
+        Product2 first = [SELECT RES_Condition_Months__c, RES_Condition_Days__c, RES_Instalment_DueDate__c FROM Product2 WHERE ProductCode = 'TEST-PP-OFF-DUE-INST1'];
+        System.assertEquals(Date.newInstance(2027, 2, 28), first.RES_Instalment_DueDate__c);
+        Product2 second = [SELECT RES_Condition_Months__c, RES_Condition_Days__c, RES_Instalment_DueDate__c FROM Product2 WHERE ProductCode = 'TEST-PP-OFF-DUE-INST2'];
+        System.assertEquals(22, second.RES_Condition_Months__c);
+        System.assertEquals(15, second.RES_Condition_Days__c);
+        System.assertEquals(Date.newInstance(2028, 12, 15), second.RES_Instalment_DueDate__c);
     }
 
     @IsTest
