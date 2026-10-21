@@ -3,7 +3,7 @@ public class RES_PaymentPlanWrapper {
     public String Change_Indicator;
     public String RES_Product_External_ID;
     public String ProductName;
-    public Integer RES_No_of_Years;
+    public Decimal RES_No_of_Years;
     public String AvailabilityDate;
     public String DiscontinuedDate;
     public String RES_Approval_Status;
