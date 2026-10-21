@@ -265,6 +265,14 @@
         <apexClass>RES_TestDataFactory</apexClass>
         <enabled>true</enabled>
     </classAccesses>
+    <classAccesses>
+        <apexClass>RES_DefaultPlanPriceService</apexClass>
+        <enabled>true</enabled>
+    </classAccesses>
+    <classAccesses>
+        <apexClass>RES_DefaultPlanPriceServiceTest</apexClass>
+        <enabled>true</enabled>
+    </classAccesses>
      <flowAccesses>
         <flow>RES_Contract_AfterSave_Populate_CompanySignedDate_Hijri</flow>
         <enabled>true</enabled>
