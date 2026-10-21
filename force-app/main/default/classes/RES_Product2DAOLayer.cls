@@ -80,8 +80,9 @@ public without sharing class RES_Product2DAOLayer extends RES_BaseDAOLayer {
     }
 
     /**
-     * NOTE: Name and ProductCode were added below (2026-08-22) because
-     * RES_ProductApprovalNotificationService.buildProductDetails() reads
+     * NOTE: Name and ProductCode were added below (2026-08-22), and RES_Type__c,
+     * RES_Business_Entity__r.Name and RES_Business_Entity__r.RES_Company_Code__c
+     * because RES_ProductApprovalNotificationService.buildUnitTableRows() reads
      * these fields from the same Product2 records this method returns, for
      * approve/reject email content. Without them, that call throws
      * "SObject row was retrieved via SOQL without querying the requested
@@ -94,7 +95,7 @@ public without sharing class RES_Product2DAOLayer extends RES_BaseDAOLayer {
     } 
         Map<String, Object> bindVars = new Map<String, Object>();
         bindVars.put('productIds', productIds);
-        String soql = 'SELECT Id, Name, ProductCode, IsActive, RES_Unit_Status__c, RES_HardBlock_Start__c, RES_Is_In_Soft_Hold_Extension__c, RES_Soft_Hold_Start__c, RES_Soft_Hold_Until__c, RES_Reserved_By_Contract__c, RES_Reserved_By_Quote__c, RES_Update_Comments__c, RES_Update_Requested__c FROM Product2 WHERE Id IN :productIds';
+        String soql = 'SELECT Id, Name, ProductCode, IsActive, RES_Type__c, RES_Business_Entity__r.Name, RES_Business_Entity__r.RES_Company_Code__c, RES_Unit_Status__c, RES_HardBlock_Start__c, RES_Is_In_Soft_Hold_Extension__c, RES_Soft_Hold_Start__c, RES_Soft_Hold_Until__c, RES_Reserved_By_Contract__c, RES_Reserved_By_Quote__c, RES_Update_Comments__c, RES_Update_Requested__c FROM Product2 WHERE Id IN :productIds';
         return (List<Product2>) executeQuery(soql,'', false, bindVars, AccessLevel.SYSTEM_MODE);
     }
 

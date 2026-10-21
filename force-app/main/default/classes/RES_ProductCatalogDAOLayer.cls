@@ -15,6 +15,17 @@ public without sharing class RES_ProductCatalogDAOLayer extends RES_BaseDAOLayer
         return (List<ProductCatalog>) executeQuery(soql, '', false, bindVars, AccessLevel.SYSTEM_MODE);
     }
 
+    /** @description Lean query for values a unit inherits from its Business Entity / Project / Zone. */
+    public List<ProductCatalog> getInheritanceDataByIds(Set<Id> recordIds) {
+        if (recordIds == null || recordIds.isEmpty()) {
+            return new List<ProductCatalog>();
+        }
+        Map<String, Object> bindVars = new Map<String, Object>{ 'recordIds' => recordIds };
+        String soql = 'SELECT Id, EffectiveStartDate, EffectiveEndDate, RES_Profit_Center__c ' +
+                      'FROM ProductCatalog WHERE Id IN :recordIds';
+        return (List<ProductCatalog>) executeQuery(soql, '', false, bindVars, AccessLevel.SYSTEM_MODE);
+    }
+
     public List<ProductCatalog> getCatalogByIds(Set<Id> recordIds) {
         if (recordIds == null || recordIds.isEmpty()) {
             return new List<ProductCatalog>();

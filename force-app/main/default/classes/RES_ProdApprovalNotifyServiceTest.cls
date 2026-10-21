@@ -374,4 +374,37 @@ private class RES_ProdApprovalNotifyServiceTest {
 
         System.assert(true, 'Should handle null product codes gracefully');
     }
+
+    @isTest
+    static void testBuildUnitTableRows_includesUnitDetails() {
+        Product2 product = new Product2(
+            Name = 'Table Unit',
+            ProductCode = 'RU-<001>',
+            RES_Type__c = 'N',
+            RES_Unit_Status__c = 'Pending DevCo Approval'
+        );
+        insert product;
+
+        insert new PricebookEntry(
+            Pricebook2Id = Test.getStandardPricebookId(),
+            Product2Id = product.Id,
+            UnitPrice = 1500000,
+            IsActive = true
+        );
+
+        Test.startTest();
+        String rows = RES_ProductApprovalNotificationService.buildUnitTableRows(new List<Product2>{ product });
+        Test.stopTest();
+
+        System.assert(rows.startsWith('<tr>'), 'Should render one table row per unit');
+        System.assert(rows.contains('RU-&lt;001&gt;'), 'RU No. should be HTML-escaped');
+        System.assert(rows.contains('Residential'), 'Inventory Type should use the picklist label');
+        System.assert(rows.contains(Decimal.valueOf(1500000).setScale(2).format()), 'Property Price should come from the standard price book');
+        System.assert(rows.contains('>-</td>'), 'Missing Company Code and Project should render as a dash');
+    }
+
+    @isTest
+    static void testBuildUnitTableRows_emptyList() {
+        System.assertEquals('', RES_ProductApprovalNotificationService.buildUnitTableRows(new List<Product2>()), 'Empty list should render no rows');
+    }
 }
