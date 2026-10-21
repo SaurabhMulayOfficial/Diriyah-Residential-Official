@@ -54,6 +54,27 @@ public with sharing class RES_AccountDAOLayer extends RES_BaseDAOLayer{
         return result;
     }
 
+    /**
+     * Returns accounts by Id with their Person / Business type.
+     * Used to make sure a duplicate-matched Account is only reused for a Lead of the same type.
+     */
+    public Map<Id, Account> getAccountTypesByIds(Set<Id> accountIds) {
+        Map<Id, Account> accountMap = new Map<Id, Account>();
+        if (accountIds == null || accountIds.isEmpty()) {
+            return accountMap;
+        }
+        Map<String, Object> bindVars = new Map<String, Object>();
+        bindVars.put('accountIds', accountIds);
+        String soql = 'SELECT Id, IsPersonAccount FROM Account WHERE Id IN :accountIds';
+        List<SObject> results = executeQuery(soql, '', false, bindVars, AccessLevel.SYSTEM_MODE);
+        if (results != null) {
+            for (SObject s : results) {
+                accountMap.put(s.Id, (Account) s);
+            }
+        }
+        return accountMap;
+    }
+
     public Account getAccountById(Id accountId) {
         Map<String, Object> bindVars = new Map<String, Object>();
         bindVars.put('accountId', accountId);

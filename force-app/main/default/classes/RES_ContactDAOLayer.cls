@@ -44,9 +44,30 @@ public without sharing class RES_ContactDAOLayer extends RES_BaseDAOLayer {
     public List<Contact> getContactByMobilePhone(Set<String> mobilePhone){
         Map<String,Object> bindVars = new Map<String, Object>();
         bindVars.put('mobilePhone', mobilePhone);
-        String soql = 'SELECT Id, MobilePhone FROM Contact WHERE MobilePhone IN: mobilePhone';
+        String soql = 'SELECT Id, MobilePhone, AccountId, Account.IsPersonAccount FROM Contact WHERE MobilePhone IN: mobilePhone';
         List<Contact> contactList = executeQuery(soql, 'getContactByMobilePhone', true, bindVars, AccessLevel.SYSTEM_MODE);
         return contactList;
+    }
+
+    /**
+     * Returns contacts by Id along with the type (Person / Business) of their Account.
+     * Used to make sure a mobile-matched Contact is only reused for a Lead of the same type.
+     */
+    public Map<Id, Contact> getContactsWithAccountTypeByIds(Set<Id> contactIds) {
+        Map<Id, Contact> contactMap = new Map<Id, Contact>();
+        if (contactIds == null || contactIds.isEmpty()) {
+            return contactMap;
+        }
+        Map<String, Object> bindVars = new Map<String, Object>();
+        bindVars.put('contactIds', contactIds);
+        String soql = 'SELECT Id, AccountId, Account.IsPersonAccount FROM Contact WHERE Id IN :contactIds';
+        List<SObject> results = executeQuery(soql, '', false, bindVars, AccessLevel.SYSTEM_MODE);
+        if (results != null) {
+            for (SObject s : results) {
+                contactMap.put(s.Id, (Contact) s);
+            }
+        }
+        return contactMap;
     }
 
     public Contact getContactById(Id contactId) {
