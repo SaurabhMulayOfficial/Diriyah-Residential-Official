@@ -46,6 +46,47 @@ private class RES_InstallmentDueDateServiceTest {
     }
 
     @IsTest
+    static void testPopulateContractItemPriceDueDates_CopiesQuoteLineDueDate() {
+        Id onPlanInstallmentId = installmentId('On-Plan');
+        Account account = new Account(Name = 'Due Date Account');
+        insert account;
+        Opportunity opportunity = new Opportunity(Name = 'Due Date Opp', StageName = 'Proposal', CloseDate = Date.today().addDays(30), AccountId = account.Id);
+        insert opportunity;
+        Quote quote = new Quote(Name = 'Due Date Quote', OpportunityId = opportunity.Id, Pricebook2Id = Test.getStandardPricebookId());
+        insert quote;
+        PricebookEntry entry = new PricebookEntry(Pricebook2Id = Test.getStandardPricebookId(), Product2Id = onPlanInstallmentId, UnitPrice = 100, IsActive = true);
+        insert entry;
+        Date quoteLineDueDate = Date.today().addDays(-30).addMonths(3).addDays(4);
+        insert new QuoteLineItem(QuoteId = quote.Id, PricebookEntryId = entry.Id, Product2Id = onPlanInstallmentId, Quantity = 1, UnitPrice = 100,
+            RES_Installment_Due_Date__c = quoteLineDueDate);
+        Contract contract = new Contract(AccountId = account.Id, Status = 'Draft', SourceQuoteId = quote.Id);
+        insert contract;
+        ContractItemPrice cip = new ContractItemPrice(ContractId = contract.Id, ItemId = onPlanInstallmentId);
+
+        RES_InstallmentDueDateService.populateContractItemPriceDueDates(new List<ContractItemPrice>{ cip });
+
+        System.assertEquals(quoteLineDueDate, cip.RES_Installment_Due_Date__c, 'Contract item price takes the quote line due date');
+    }
+
+    @IsTest
+    static void testPopulateContractItemPriceDueDates_WithoutQuoteFallsBackToRule() {
+        Account account = new Account(Name = 'Due Date Account');
+        insert account;
+        Contract contract = new Contract(AccountId = account.Id, Status = 'Draft');
+        insert contract;
+        ContractItemPrice offPlan = new ContractItemPrice(ContractId = contract.Id, ItemId = installmentId('Off-Plan'));
+        ContractItemPrice onPlan = new ContractItemPrice(ContractId = contract.Id, ItemId = installmentId('On-Plan'));
+        Date kept = Date.today().addDays(7);
+        ContractItemPrice alreadyDated = new ContractItemPrice(ContractId = contract.Id, ItemId = installmentId('On-Plan'), RES_Installment_Due_Date__c = kept);
+
+        RES_InstallmentDueDateService.populateContractItemPriceDueDates(new List<ContractItemPrice>{ offPlan, onPlan, alreadyDated });
+
+        System.assertEquals(VALID_FROM.addMonths(3).addDays(4), offPlan.RES_Installment_Due_Date__c, 'Off-Plan keeps its fixed due date');
+        System.assertEquals(Date.today().addMonths(3).addDays(4), onPlan.RES_Installment_Due_Date__c);
+        System.assertEquals(kept, alreadyDated.RES_Installment_Due_Date__c, 'An existing due date is not overwritten');
+    }
+
+    @IsTest
     static void testPopulateQuoteLineDueDates_OffPlanUsesFixedDueDate() {
         QuoteLineItem line = new QuoteLineItem(Product2Id = installmentId('Off-Plan'));
 

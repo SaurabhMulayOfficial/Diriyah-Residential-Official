@@ -54,6 +54,7 @@ public with sharing class RES_UnifiedIngestionEngine implements Database.Batchab
     private static final String F_COND_VALID_TO   = 'RES_Condition_Valid_To__c';
     private static final String F_LAND            = 'RES_Land__c';
     private static final String F_PARAMETER_1     = 'RES_Parameter_1__c';
+    private static final String ATTR_SERVICE_CHARGE_RATE = 'Service Charge Rate';
 
     public RES_UnifiedIngestionEngine(String layoutCode, String batchId) {
         this.layoutCode = layoutCode;
@@ -1000,6 +1001,20 @@ public with sharing class RES_UnifiedIngestionEngine implements Database.Batchab
         Map<String, Id> productByKey      = new Map<String, Id>();
         Map<String, String> typeByAttr    = new Map<String, String>();
         Map<String, Id> rowByKey          = new Map<String, Id>();
+        
+        // Parameter-1 names the area the service charge is calculated on, so it is also the
+        // area type stamped on the rate attribute. It is per unit, so one pass over the scope
+        // is enough; the first row carrying a value wins, because the condition-only rows
+        // leave Parameter-1 blank.
+        Map<Id, String> areaTypeByProduct = new Map<Id, String>();
+        for (RES_Product_Staging__c stg : scope) {
+            Id unitId = productIdByCode.get(textOf(stg, F_CODE));
+            String parameterOne = textOf(stg, F_PARAMETER_1);
+            if (unitId != null && String.isNotBlank(parameterOne)
+                    && !areaTypeByProduct.containsKey(unitId)) {
+                areaTypeByProduct.put(unitId, parameterOne.trim().toUpperCase());
+            }
+        }
 
         for (RES_Product_Staging__c stg : scope) {
             RES_IngestionConfig.ConditionMapping cm = conditionFor(stg);
@@ -1064,7 +1079,8 @@ public with sharing class RES_UnifiedIngestionEngine implements Database.Batchab
             if (current == null) {
                 Id classAttrId = classAttrByAttrId.get(attrId);
                 if (classAttrId == null) continue;
-                toInsert.add(new ProductAttributeDefinition(
+
+                ProductAttributeDefinition pad = new ProductAttributeDefinition(
                     Name                             = truncate(attrName, 255),
                     Product2Id                       = productId,
                     AttributeDefinitionId            = attrId,
@@ -1072,7 +1088,22 @@ public with sharing class RES_UnifiedIngestionEngine implements Database.Batchab
                     DefaultValue                     = wanted,
                     IsHidden                         = hiddenAttributes.contains(attrName),
                     Sequence                         = 1
-                ));
+                );
+
+                // Only the rate attribute is area based, so only it carries an area type.
+                if (attrName == ATTR_SERVICE_CHARGE_RATE) {
+                    String areaCode = areaTypeByProduct.get(productId);
+                    String areaType = safePicklist(
+                        ProductAttributeDefinition.RES_Area_Type__c, areaCode);
+                    if (areaType == null && String.isNotBlank(areaCode)) {
+                        // Unrestricted picklist, so an unlisted code would be stored verbatim.
+                        // Leaving it blank and saying so beats silently writing bad data.
+                        recordError('Parameter-1 "' + areaCode + '" is not a value on ' +
+                                    'Area Type, so it was left blank on ' + attrName + '.');
+                    }
+                    pad.RES_Area_Type__c = areaType;
+                }
+                toInsert.add(pad);
                 insertRows.add(rowByKey.get(key));
             } else if (current.DefaultValue != wanted) {
                 toUpdate.add(new ProductAttributeDefinition(Id = current.Id, DefaultValue = wanted));

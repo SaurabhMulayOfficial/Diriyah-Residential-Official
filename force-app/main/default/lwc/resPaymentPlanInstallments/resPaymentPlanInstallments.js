@@ -7,6 +7,7 @@ const PERCENTAGE_TARGET = 100;
 const PHASE_ON_PLAN = 'On-Plan';
 const PHASE_OFF_PLAN = 'Off-Plan';
 const ON_PLAN_POC_PERCENTAGE = 100;
+const MILLIS_PER_DAY = 86400000;
 const NUMERIC_FIELDS = ['percentage', 'pocPercentage', 'conditionMonths', 'conditionDays'];
 const CONDITION_TYPE_OPTIONS = [
     { label: 'Reservation', value: 'Y001' },
@@ -19,6 +20,7 @@ const CONDITION_TYPE_OPTIONS = [
  * Flow screen component for the "Create Payment Plan" flow (RES_Create_Payment_Plan).
  * Lets a non-admin configurator build the installment schedule as an editable, reorderable
  * table (installment type, percentage, POC %, condition months/days) instead of typing one flow screen per installment,
+ * (Off-Plan catalogs enter the installment due date instead, and condition months/days are derived from Valid From),
  * and blocks Next/Finish until the percentages add up to 100% - the exact validation gap
  * seen in the org's own incomplete sample Payment Plan bundle.
  */
@@ -32,6 +34,17 @@ export default class ResPaymentPlanInstallments extends LightningElement {
     rows = [];
     nextRowKey = 1;
     _developmentPhase;
+    _validFrom;
+
+    // Payment plan Valid From (YYYY-MM-DD): the anchor that condition months/days count from
+    @api
+    get validFrom() {
+        return this._validFrom;
+    }
+    set validFrom(value) {
+        this._validFrom = value;
+        this.syncConditionsFromDueDates();
+    }
 
     // Development Phase of the selected catalog: On-Plan locks POC at 100%, Off-Plan makes POC mandatory
     @api
@@ -41,6 +54,7 @@ export default class ResPaymentPlanInstallments extends LightningElement {
     set developmentPhase(value) {
         this._developmentPhase = value;
         this.applyPhaseDefaults();
+        this.syncConditionsFromDueDates();
     }
 
     get isOnPlan() {
@@ -61,6 +75,13 @@ export default class ResPaymentPlanInstallments extends LightningElement {
         }
     }
 
+    // Off-Plan: due date is entered, condition months/days are derived from it (re-derived if Valid From changes)
+    syncConditionsFromDueDates() {
+        if (this.isOffPlan) {
+            this.rows = this.rows.map((row) => ({ ...row, ...this.conditionsFor(row.dueDate) }));
+        }
+    }
+
     @api
     get installmentsJson() {
         return JSON.stringify(this.toPayload());
@@ -69,6 +90,7 @@ export default class ResPaymentPlanInstallments extends LightningElement {
         const parsedRows = this.parseInitial(value);
         this.rows = parsedRows.length > 0 ? parsedRows : this.rows;
         this.applyPhaseDefaults();
+        this.syncConditionsFromDueDates();
     }
 
     connectedCallback() {
@@ -92,6 +114,7 @@ export default class ResPaymentPlanInstallments extends LightningElement {
                 conditionType: row.conditionType || null,
                 conditionMonths: row.conditionMonths != null ? row.conditionMonths : null,
                 conditionDays: row.conditionDays != null ? row.conditionDays : null,
+                dueDate: row.dueDate || null,
                 sequence: row.sequence != null ? row.sequence : idx + 1
             }));
         } catch (e) {
@@ -112,6 +135,7 @@ export default class ResPaymentPlanInstallments extends LightningElement {
                 conditionType: null,
                 conditionMonths: null,
                 conditionDays: null,
+                dueDate: null,
                 sequence: this.rows.length + 1
             }
         ];
@@ -159,18 +183,51 @@ export default class ResPaymentPlanInstallments extends LightningElement {
         if (NUMERIC_FIELDS.includes(field)) {
             value = value === '' || value == null ? null : Number(value);
         }
-        this.rows = this.rows.map((row) => (row.key === key ? { ...row, [field]: value } : row));
+        if (field === 'dueDate') {
+            value = value || null;
+        }
+        this.rows = this.rows.map((row) => {
+            if (row.key !== key) {
+                return row;
+            }
+            const updated = { ...row, [field]: value };
+            return field === 'dueDate' ? { ...updated, ...this.conditionsFor(value) } : updated;
+        });
     }
 
-    // Relative due date (today + condition months/days) used only to compare installments; Apex sets the real one from Valid From or the quote configuration date
+    // Valid From, or today until it is known; Apex recalculates due dates from Valid From
+    get anchorMillis() {
+        if (this._validFrom) {
+            return Date.parse(String(this._validFrom).slice(0, 10));
+        }
+        const now = new Date();
+        return Date.UTC(now.getFullYear(), now.getMonth(), now.getDate());
+    }
+
+    // Due date (anchor + condition months/days) used to compare installments, mirroring Apex addMonths().addDays()
     dueDateFor(row) {
         if (row.conditionMonths == null) {
             return null;
         }
-        const now = new Date();
-        const today = Date.UTC(now.getFullYear(), now.getMonth(), now.getDate());
-        const due = this.addMonths(today, row.conditionMonths) + (row.conditionDays || 0) * 86400000;
+        const due = this.addMonths(this.anchorMillis, row.conditionMonths) + (row.conditionDays || 0) * MILLIS_PER_DAY;
         return new Date(due).toISOString().slice(0, 10);
+    }
+
+    // Inverse of dueDateFor: the most whole months from the anchor that fit before the due date, plus the remaining days
+    conditionsFor(dueDate) {
+        const dueMillis = dueDate ? Date.parse(dueDate) : NaN;
+        const anchor = this.anchorMillis;
+        if (Number.isNaN(dueMillis) || dueMillis < anchor) {
+            return { conditionMonths: null, conditionDays: null, conditionLabel: null };
+        }
+        const start = new Date(anchor);
+        const end = new Date(dueMillis);
+        let months = (end.getUTCFullYear() - start.getUTCFullYear()) * 12 + (end.getUTCMonth() - start.getUTCMonth());
+        while (months > 0 && this.addMonths(anchor, months) > dueMillis) {
+            months--;
+        }
+        const days = Math.round((dueMillis - this.addMonths(anchor, months)) / MILLIS_PER_DAY);
+        return { conditionMonths: months, conditionDays: days, conditionLabel: this.monthsAndDays(months, days) };
     }
 
     // Mirrors Apex Date.addMonths: clamps to the last day of the target month
@@ -190,13 +247,22 @@ export default class ResPaymentPlanInstallments extends LightningElement {
         return this.maxMonths ? this.dueDateFor({ conditionMonths: this.maxMonths, conditionDays: 0 }) : null;
     }
 
+    get minDueDate() {
+        return new Date(this.anchorMillis).toISOString().slice(0, 10);
+    }
+
     get monthsLimitDisplay() {
         if (!this.maxMonths) {
             return null;
         }
         const last = this.rows.length ? this.rows[this.rows.length - 1] : null;
         const lastMonths = last && last.conditionMonths != null ? last.conditionMonths : 0;
-        return `Last installment: ${lastMonths} of ${this.maxMonths} months`;
+        const lastDays = last && last.conditionDays != null ? last.conditionDays : 0;
+        return `Last installment: ${this.monthsAndDays(lastMonths, lastDays)} of ${this.maxMonths} months`;
+    }
+
+    monthsAndDays(months, days) {
+        return `${months} month${months === 1 ? '' : 's'} ${days} day${days === 1 ? '' : 's'}`;
     }
 
     get conditionTypeOptions() {
@@ -241,6 +307,7 @@ export default class ResPaymentPlanInstallments extends LightningElement {
             conditionType: row.conditionType,
             conditionMonths: row.conditionMonths,
             conditionDays: row.conditionDays != null ? row.conditionDays : 0,
+            dueDate: row.dueDate,
             sequence: row.sequence
         }));
     }
@@ -254,13 +321,20 @@ export default class ResPaymentPlanInstallments extends LightningElement {
         }
 
         const seenConditionKeys = new Map();
+        const timingLabel = this.isOffPlan ? 'Due Date' : 'Condition Months/Days';
         const latestDueDate = this.latestDueDate;
         let previous = null;
         this.rows.forEach((row) => {
             if (!row.conditionType) {
                 errors.push(`Installment ${row.sequence}: select an Installment Type.`);
             }
-            if (row.conditionMonths == null || row.conditionMonths < 0 || !Number.isInteger(row.conditionMonths)) {
+            if (this.isOffPlan) {
+                if (!row.dueDate) {
+                    errors.push(`Installment ${row.sequence}: Due Date is required for Off-Plan catalogs.`);
+                } else if (row.conditionMonths == null) {
+                    errors.push(`Installment ${row.sequence}: Due Date cannot be before the Valid From date (${this.minDueDate}).`);
+                }
+            } else if (row.conditionMonths == null || row.conditionMonths < 0 || !Number.isInteger(row.conditionMonths)) {
                 errors.push(`Installment ${row.sequence}: Condition Months is required and must be a whole number of 0 or more.`);
             }
             if (row.conditionDays != null && (row.conditionDays < 0 || !Number.isInteger(row.conditionDays))) {
@@ -272,11 +346,12 @@ export default class ResPaymentPlanInstallments extends LightningElement {
             const dueDate = this.dueDateFor(row);
             if (dueDate) {
                 if (previous && previous.dueDate && dueDate < previous.dueDate) {
-                    errors.push(`Installment ${row.sequence}: Condition Months/Days cannot fall before installment ${previous.sequence}.`);
+                    errors.push(`Installment ${row.sequence}: ${timingLabel} cannot fall before installment ${previous.sequence}.`);
                 }
                 if (latestDueDate && dueDate > latestDueDate) {
                     errors.push(
-                        `Installment ${row.sequence}: Condition Months/Days cannot exceed ${this.maxMonths} months (Number of Years x 12).`
+                        `Installment ${row.sequence}: ${this.monthsAndDays(row.conditionMonths, row.conditionDays || 0)} ` +
+                            `exceeds the limit of ${this.maxMonths} months (Number of Years x 12).`
                     );
                 }
                 if (row.conditionType) {
@@ -284,7 +359,7 @@ export default class ResPaymentPlanInstallments extends LightningElement {
                     if (seenConditionKeys.has(conditionKey)) {
                         errors.push(
                             `Installments ${seenConditionKeys.get(conditionKey)} and ${row.sequence} have the same Installment Type ` +
-                                `(${this.conditionTypeLabel(row.conditionType)}) and the same Condition Months/Days.`
+                                `(${this.conditionTypeLabel(row.conditionType)}) and the same ${timingLabel}.`
                         );
                     } else {
                         seenConditionKeys.set(conditionKey, row.sequence);
