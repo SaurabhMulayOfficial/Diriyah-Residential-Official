@@ -7,11 +7,17 @@
             Define each installment's share of the payment plan. Percentages must add up to 100%.
             <template if:true={isOnPlan}>POC % is fixed at 100% for On-Plan catalogs.</template>
             <template if:true={isOffPlan}>POC % (construction milestone) is required for Off-Plan catalogs.</template>
-            Condition Months (required) and Condition Days set each installment's due date;
-            <template if:true={isOnPlan}>for On-Plan catalogs it is counted from the date the plan is configured on a quote.</template>
-            <template if:false={isOnPlan}>it is counted from the payment plan's Valid From date.</template>
-            They cannot go backwards from the previous installment
-            <template if:true={maxMonths}>or exceed {maxMonths} months (Number of Years x 12)</template>.
+            <template if:true={isOffPlan}>
+                Enter each installment's Due Date (required for Off-Plan catalogs); the time from the payment plan's Valid From
+                date to the due date is saved as its Condition Months and Days.
+            </template>
+            <template if:false={isOffPlan}>
+                Condition Months (required) and Condition Days set each installment's due date;
+                <template if:true={isOnPlan}>for On-Plan catalogs it is counted from the date the plan is configured on a quote.</template>
+                <template if:false={isOnPlan}>it is counted from the payment plan's Valid From date.</template>
+            </template>
+            Due dates cannot go backwards from the previous installment
+            <template if:true={maxMonths}>or exceed {maxMonths} months, including Condition Days (Number of Years x 12)</template>.
             Two installments with the same Installment Type cannot share the same Condition Months/Days.
         </p>
 
@@ -22,8 +28,13 @@
                     <th scope="col">Installment Type</th>
                     <th scope="col">Percentage</th>
                     <th scope="col">POC %</th>
-                    <th scope="col">Condition Months</th>
-                    <th scope="col">Condition Days</th>
+                    <template if:true={isOffPlan}>
+                        <th scope="col">Due Date</th>
+                    </template>
+                    <template if:false={isOffPlan}>
+                        <th scope="col">Condition Months</th>
+                        <th scope="col">Condition Days</th>
+                    </template>
                     <th scope="col" style="width:6.5rem">Reorder</th>
                     <th scope="col" style="width:3rem"></th>
                 </tr>
@@ -79,36 +90,58 @@
                                 disabled={isOnPlan}
                             ></lightning-input>
                         </td>
-                        <td>
-                            <lightning-input
-                                type="number"
-                                step="1"
-                                min="0"
-                                max={maxMonths}
-                                data-key={row.key}
-                                data-field="conditionMonths"
-                                value={row.conditionMonths}
-                                onchange={handleFieldChange}
-                                variant="label-hidden"
-                                label="Condition Months"
-                                placeholder="e.g. 6"
-                                required
-                            ></lightning-input>
-                        </td>
-                        <td>
-                            <lightning-input
-                                type="number"
-                                step="1"
-                                min="0"
-                                data-key={row.key}
-                                data-field="conditionDays"
-                                value={row.conditionDays}
-                                onchange={handleFieldChange}
-                                variant="label-hidden"
-                                label="Condition Days"
-                                placeholder="0"
-                            ></lightning-input>
-                        </td>
+                        <template if:true={isOffPlan}>
+                            <td>
+                                <lightning-input
+                                    type="date"
+                                    date-style="medium"
+                                    min={minDueDate}
+                                    max={latestDueDate}
+                                    data-key={row.key}
+                                    data-field="dueDate"
+                                    value={row.dueDate}
+                                    onchange={handleFieldChange}
+                                    variant="label-hidden"
+                                    label="Due Date"
+                                    required
+                                ></lightning-input>
+                                <template if:true={row.conditionLabel}>
+                                    <p class="slds-text-body_small slds-text-color_weak">{row.conditionLabel}</p>
+                                </template>
+                            </td>
+                        </template>
+                        <template if:false={isOffPlan}>
+                            <td>
+                                <lightning-input
+                                    type="number"
+                                    step="1"
+                                    min="0"
+                                    max={maxMonths}
+                                    data-key={row.key}
+                                    data-field="conditionMonths"
+                                    value={row.conditionMonths}
+                                    onchange={handleFieldChange}
+                                    variant="label-hidden"
+                                    label="Condition Months"
+                                    placeholder="e.g. 6"
+                                    required
+                                ></lightning-input>
+                            </td>
+                            <td>
+                                <lightning-input
+                                    type="number"
+                                    step="1"
+                                    min="0"
+                                    data-key={row.key}
+                                    data-field="conditionDays"
+                                    value={row.conditionDays}
+                                    onchange={handleFieldChange}
+                                    variant="label-hidden"
+                                    label="Condition Days"
+                                    placeholder="0"
+                                ></lightning-input>
+                            </td>
+                        </template>
                         <td>
                             <lightning-button-icon
                                 icon-name="utility:up"

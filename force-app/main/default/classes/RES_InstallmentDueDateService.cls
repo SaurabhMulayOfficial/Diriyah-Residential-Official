@@ -1,6 +1,6 @@
 /**
  * @description Single place for the installment due date rule shared by payment plan creation, the configurator
- * preview, and quote lines:
+ * preview, quote lines and contract item prices (copied from the quote line):
  *   Off-Plan - fixed when the payment plan is created: Valid From + condition months/days (stored on the installment product).
  *   On-Plan  - dynamic: the date the plan is configured on a quote + condition months/days.
  */
@@ -61,6 +61,61 @@ public with sharing class RES_InstallmentDueDateService {
                 configurationDate,
                 component.ParentProduct.AvailabilityDate?.date()
             );
+        }
+    }
+
+    /** Sets RES_Installment_Due_Date__c on new contract item prices (before insert) from the matching installment line on the contract's quote. */
+    public static void populateContractItemPriceDueDates(List<ContractItemPrice> cips) {
+        Set<Id> contractIds = new Set<Id>();
+        Set<Id> itemIds = new Set<Id>();
+        for (ContractItemPrice cip : cips) {
+            if (cip.ContractId != null && cip.ItemId != null && cip.RES_Installment_Due_Date__c == null) {
+                contractIds.add(cip.ContractId);
+                itemIds.add(cip.ItemId);
+            }
+        }
+        if (contractIds.isEmpty()) {
+            return;
+        }
+
+        Map<Id, Id> quoteIdByContractId = new Map<Id, Id>();
+        for (Contract contract : [SELECT Id, SourceQuoteId, RES_Quote_Id__c FROM Contract WHERE Id IN :contractIds WITH SYSTEM_MODE]) {
+            Id quoteId = contract.SourceQuoteId ?? contract.RES_Quote_Id__c;
+            if (quoteId != null) {
+                quoteIdByContractId.put(contract.Id, quoteId);
+            }
+        }
+        Map<String, Date> dueDateByQuoteAndProduct = new Map<String, Date>();
+        if (!quoteIdByContractId.isEmpty()) {
+            for (QuoteLineItem line : [
+                SELECT QuoteId, Product2Id, RES_Installment_Due_Date__c FROM QuoteLineItem
+                WHERE QuoteId IN :quoteIdByContractId.values() AND Product2Id IN :itemIds AND RES_Installment_Due_Date__c != null
+                WITH SYSTEM_MODE
+            ]) {
+                dueDateByQuoteAndProduct.put(line.QuoteId + '|' + line.Product2Id, line.RES_Installment_Due_Date__c);
+            }
+        }
+
+        // No dated quote line (e.g. contract without a quote): fall back to the same rule the quote line uses
+        List<QuoteLineItem> fallbackLines = new List<QuoteLineItem>();
+        List<ContractItemPrice> fallbackCips = new List<ContractItemPrice>();
+        for (ContractItemPrice cip : cips) {
+            if (cip.ContractId == null || cip.ItemId == null || cip.RES_Installment_Due_Date__c != null) {
+                continue;
+            }
+            Date dueDate = dueDateByQuoteAndProduct.get(quoteIdByContractId.get(cip.ContractId) + '|' + cip.ItemId);
+            if (dueDate != null) {
+                cip.RES_Installment_Due_Date__c = dueDate;
+            } else if (cip.ItemId.getSObjectType() == Product2.SObjectType) {
+                fallbackLines.add(new QuoteLineItem(Product2Id = cip.ItemId));
+                fallbackCips.add(cip);
+            }
+        }
+        if (!fallbackLines.isEmpty()) {
+            populateQuoteLineDueDates(fallbackLines);
+            for (Integer i = 0; i < fallbackLines.size(); i++) {
+                fallbackCips[i].RES_Installment_Due_Date__c = fallbackLines[i].RES_Installment_Due_Date__c;
+            }
         }
     }
 
