@@ -161,12 +161,40 @@
         <locationY>0</locationY>
         <exitConditionLogic>and</exitConditionLogic>
         <stageSteps>
+            <name>Finalize_Modification</name>
+            <actionName>RES_Autolaunched_Finalize_Payment_Plan_Modification</actionName>
+            <actionType>stepBackground</actionType>
+            <canAssigneeEdit>false</canAssigneeEdit>
+            <debugSimulateStep>false</debugSimulateStep>
+            <entryConditionLogic>and</entryConditionLogic>
+            <exitConditionLogic>and</exitConditionLogic>
+            <inputParameters>
+                <name>recordId</name>
+                <value>
+                    <elementReference>$Record.Id</elementReference>
+                </value>
+            </inputParameters>
+            <label>Finalize Modification</label>
+            <requiresAsyncProcessing>false</requiresAsyncProcessing>
+            <runAsUser>false</runAsUser>
+            <shouldLock>false</shouldLock>
+            <stepSubtype>BackgroundStep</stepSubtype>
+        </stageSteps>
+        <stageSteps>
             <name>Update_Status_Approved</name>
             <actionName>RES_Autolaunched_Update_Payment_Plan_Approval_Status</actionName>
             <actionType>stepBackground</actionType>
             <canAssigneeEdit>false</canAssigneeEdit>
             <debugSimulateStep>false</debugSimulateStep>
             <entryConditionLogic>and</entryConditionLogic>
+            <entryConditions>
+                <conditionType>EntryCondition</conditionType>
+                <leftValueReference>Finalize_Modification.Status</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Completed</stringValue>
+                </rightValue>
+            </entryConditions>
             <exitConditionLogic>and</exitConditionLogic>
             <inputParameters>
                 <name>newApprovalStatus</name>
@@ -199,34 +227,6 @@
             <stepSubtype>BackgroundStep</stepSubtype>
         </stageSteps>
         <stageSteps>
-            <name>Finalize_Modification</name>
-            <actionName>RES_Autolaunched_Finalize_Payment_Plan_Modification</actionName>
-            <actionType>stepBackground</actionType>
-            <canAssigneeEdit>false</canAssigneeEdit>
-            <debugSimulateStep>false</debugSimulateStep>
-            <entryConditionLogic>and</entryConditionLogic>
-            <entryConditions>
-                <conditionType>EntryCondition</conditionType>
-                <leftValueReference>Update_Status_Approved.Status</leftValueReference>
-                <operator>EqualTo</operator>
-                <rightValue>
-                    <stringValue>Completed</stringValue>
-                </rightValue>
-            </entryConditions>
-            <exitConditionLogic>and</exitConditionLogic>
-            <inputParameters>
-                <name>recordId</name>
-                <value>
-                    <elementReference>$Record.Id</elementReference>
-                </value>
-            </inputParameters>
-            <label>Finalize Modification</label>
-            <requiresAsyncProcessing>false</requiresAsyncProcessing>
-            <runAsUser>false</runAsUser>
-            <shouldLock>false</shouldLock>
-            <stepSubtype>BackgroundStep</stepSubtype>
-        </stageSteps>
-        <stageSteps>
             <name>Notify_Submitter_Approved</name>
             <actionName>RES_Payment_Plan_Send_Notification_To_Submitter</actionName>
             <actionType>stepBackground</actionType>
@@ -235,7 +235,7 @@
             <entryConditionLogic>and</entryConditionLogic>
             <entryConditions>
                 <conditionType>EntryCondition</conditionType>
-                <leftValueReference>Finalize_Modification.Status</leftValueReference>
+                <leftValueReference>Update_Status_Approved.Status</leftValueReference>
                 <operator>EqualTo</operator>
                 <rightValue>
                     <stringValue>Completed</stringValue>
