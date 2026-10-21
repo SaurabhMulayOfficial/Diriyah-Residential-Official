@@ -90,7 +90,7 @@ private class RES_PaymentPlanIntegrationServiceTest {
         return [
             SELECT Id, RES_Product_External_ID__c, Name, RES_No_of_Years__c, AvailabilityDate, DiscontinuedDate, RES_Approval_Status__c, 
             RES_Status_Role_Description__c, RES_Status_Role__c, RES_Note__c, RES_No_of_Months__c, RES_Review__c,
-            CreatedDate, CreatedBy.Alias, LastModifiedBy.Alias, LastModifiedDate, RES_Validity_End_Date__c, RES_Condition_Type__c, RES_Parent_Payment_Plan__c, RES_Parent_Payment_Plan__r.RES_Product_External_ID__c 
+            CreatedDate, CreatedBy.Alias, LastModifiedBy.Alias, LastModifiedDate, RES_Validity_End_Date__c, RES_Condition_Type__c, RES_Parent_Payment_Plan__c, RES_Parent_Payment_Plan__r.RES_Product_External_ID__c, RES_Business_Entity__c, RES_Business_Entity__r.RES_Business_Entity_Id__c, RES_Business_Entity__r.RES_Development_Phase__c, RES_Business_Entity__r.Name, RES_Business_Entity__r.RES_Company_Code__c, RES_Payment_Plan_Approval_Stage__c  
             FROM Product2 
             WHERE Id = : paymentPlan.Id
         ];
