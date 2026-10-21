@@ -49,6 +49,10 @@ public with sharing class RES_PaymentPlanServices {
                     paymentPlansToSync.add(paymentPlan);
                     triggerContext = 'I';
                 }
+                else if(oldMap != null && isPaymentPlanDeactivated(paymentPlan, oldMap.get(paymentPlan.Id))){
+                    paymentPlansToSync.add(paymentPlan);
+                    triggerContext = 'U';
+                }
                 else if (oldMap != null && isPaymentPlanChanged(paymentPlan, oldMap.get(paymentPlan.Id), syncFields) && paymentPlan.RES_Last_Sync_DateTime__c != null) {
                     paymentPlansToSync.add(paymentPlan);
                     triggerContext = 'U';
@@ -158,6 +162,14 @@ public with sharing class RES_PaymentPlanServices {
                 return true;
             }
         system.debug('return false ==> ');
+        return false;
+    }
+    
+    private static Boolean isPaymentPlanDeactivated(Product2 newRecord, Product2 oldRecord) {
+        if ((newRecord.RES_Payment_Plan_Approval_Stage__c == 'Deactivated' && newRecord.RES_Payment_Plan_Approval_Stage__c != oldRecord.RES_Payment_Plan_Approval_Stage__c) && 
+            (newRecord.IsActive  == false && newRecord.IsActive  != oldRecord.IsActive)) {
+                return true;
+            }
         return false;
     }
 }
