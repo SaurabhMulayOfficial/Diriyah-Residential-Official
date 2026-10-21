@@ -129,6 +129,56 @@ public with sharing class RES_ContractItemPriceServices {
         }
     }
 
+    /**
+     * Before insert: the Service Charge quote line is unpriced (kept out of quote totals), so its contract item price takes the
+     * stored RES_Service_Charge_Amount__c instead, along with the line's service charge rate and frequency.
+     */
+    public static void populateServiceChargePrices(List<ContractItemPrice> cips) {
+        Set<Id> contractIds = new Set<Id>();
+        Set<Id> itemIds = new Set<Id>();
+        for (ContractItemPrice cip : cips) {
+            if (cip.ContractId != null && cip.ItemId != null) {
+                contractIds.add(cip.ContractId);
+                itemIds.add(cip.ItemId);
+            }
+        }
+        if (contractIds.isEmpty()) {
+            return;
+        }
+
+        Map<Id, Id> quoteIdByContractId = new Map<Id, Id>();
+        for (Contract contract : [SELECT Id, SourceQuoteId, RES_Quote_Id__c FROM Contract WHERE Id IN :contractIds WITH SYSTEM_MODE]) {
+            Id quoteId = contract.SourceQuoteId ?? contract.RES_Quote_Id__c;
+            if (quoteId != null) {
+                quoteIdByContractId.put(contract.Id, quoteId);
+            }
+        }
+        if (quoteIdByContractId.isEmpty()) {
+            return;
+        }
+
+        Map<String, QuoteLineItem> lineByQuoteAndProduct = new Map<String, QuoteLineItem>();
+        for (QuoteLineItem line : [
+            SELECT QuoteId, Product2Id, RES_Service_Charge_Amount__c, RES_Service_Charge_Rate__c, RES_Service_Charge_Frequency__c FROM QuoteLineItem
+            WHERE QuoteId IN :quoteIdByContractId.values() AND Product2Id IN :itemIds AND RES_Service_Charge_Amount__c != null
+            WITH SYSTEM_MODE
+        ]) {
+            lineByQuoteAndProduct.put(line.QuoteId + '|' + line.Product2Id, line);
+        }
+
+        for (ContractItemPrice cip : cips) {
+            QuoteLineItem line = lineByQuoteAndProduct.get(quoteIdByContractId.get(cip.ContractId) + '|' + cip.ItemId);
+            if (line == null) {
+                continue;
+            }
+            if (cip.Price == null || cip.Price == 0) {
+                cip.Price = line.RES_Service_Charge_Amount__c;
+            }
+            cip.RES_Service_Charge_Rate__c = cip.RES_Service_Charge_Rate__c ?? line.RES_Service_Charge_Rate__c;
+            cip.RES_Service_Charge_Frequency__c = cip.RES_Service_Charge_Frequency__c ?? line.RES_Service_Charge_Frequency__c;
+        }
+    }
+
     private static Integer parseInstallmentNumber(String name) {
         if (String.isBlank(name)) return 0;
         String lastToken = name.substringAfterLast(' ').trim();

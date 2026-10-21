@@ -718,6 +718,61 @@ private class RES_BundlePricingHookMatchingTest {
         System.assert(emptyResult.isEmpty(), 'No bundle product IDs should yield an empty map');
     }
 
+    /** Test: serviceChargeBreakdown returns the configured rate, frequency label and billing-period amount (rate x frequency factor x area). */
+    @isTest
+    static void testServiceChargeBreakdown() {
+        setupCoreData();
+        insertServiceChargeRateAttribute('Semi_Annual', null);
+        Product2 bundleProduct = [SELECT Id FROM Product2 WHERE Name = :BUNDLE_NAME LIMIT 1];
+
+        Test.startTest();
+        RES_ResidentialBundlePricingHook.ServiceChargeBreakdown breakdown =
+            RES_ResidentialBundlePricingHook.serviceChargeBreakdown(bundleProduct.Id);
+        RES_ResidentialBundlePricingHook.ServiceChargeBreakdown none = RES_ResidentialBundlePricingHook.serviceChargeBreakdown(null);
+        Test.stopTest();
+
+        System.assertEquals(149, breakdown.rate);
+        System.assertEquals('Semi-Annual', breakdown.billingFrequency);
+        System.assertEquals(1000, breakdown.area, 'Falls back to Net Saleable Area without an area type override');
+        System.assertEquals(149 * 0.5 * 1000, breakdown.amount, 'Semi-Annual amount is half the annual rate x area');
+        System.assertEquals(null, none);
+    }
+
+    /** Test: RES_ServiceChargeLineService stamps the unit's rate + frequency label on the quote's Service Charge line, and skips already-stamped unchanged lines. */
+    @isTest
+    static void testServiceChargeLineServiceStampsRateAndFrequency() {
+        setupCoreData();
+        insertServiceChargeRateAttribute('Quarterly', null);
+        Product2 bundleProduct = [SELECT Id FROM Product2 WHERE Name = :BUNDLE_NAME LIMIT 1];
+        Product2 serviceCharge = [SELECT Id FROM Product2 WHERE ProductCode = 'RES-TEST-MATCH-SC-001' LIMIT 1];
+        update new List<Product2>{
+            new Product2(Id = bundleProduct.Id, RES_CIP_Type__c = 'Unit'),
+            new Product2(Id = serviceCharge.Id, RES_CIP_Type__c = 'Service Charge')
+        };
+        Id quoteId = '0Q0000000000001';
+        QuoteLineItem unitLine = new QuoteLineItem(QuoteId = quoteId, Product2Id = bundleProduct.Id, Quantity = 1);
+        QuoteLineItem scLine = new QuoteLineItem(QuoteId = quoteId, Product2Id = serviceCharge.Id, Quantity = 1, RES_Service_Charge_Amount__c = 37250);
+
+        Test.startTest();
+        RES_ServiceChargeLineService.populateQuoteLines(new List<QuoteLineItem>{ unitLine, scLine }, null);
+        Test.stopTest();
+
+        System.assertEquals(149, scLine.RES_Service_Charge_Rate__c, 'Rate is the configured SC_RATE, not frequency-adjusted');
+        System.assertEquals('Quarterly', scLine.RES_Service_Charge_Frequency__c);
+        System.assertEquals(null, unitLine.RES_Service_Charge_Rate__c, 'Only the Service Charge line is stamped');
+
+        // Already stamped with an unchanged amount: left as is
+        Id lineId = '0QL000000000001';
+        QuoteLineItem stamped = new QuoteLineItem(Id = lineId, QuoteId = quoteId, Product2Id = serviceCharge.Id,
+            RES_Service_Charge_Amount__c = 37250, RES_Service_Charge_Rate__c = 1, RES_Service_Charge_Frequency__c = 'Annual');
+        RES_ServiceChargeLineService.populateQuoteLines(
+            new List<QuoteLineItem>{ unitLine, stamped },
+            new Map<Id, QuoteLineItem>{ lineId => stamped.clone(true, true) }
+        );
+        System.assertEquals(1, stamped.RES_Service_Charge_Rate__c);
+        System.assertEquals('Annual', stamped.RES_Service_Charge_Frequency__c);
+    }
+
     /** Test: billingFrequencyToMonths maps each picklist value to its month count, defaulting unset/unknown to Annual (12). */
     @isTest
     static void testBillingFrequencyToMonths() {

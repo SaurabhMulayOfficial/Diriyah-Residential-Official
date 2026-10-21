@@ -1,6 +1,6 @@
 /**
- * @description Backs resPaymentPlanPreview: given the products currently selected in the configurator, finds the
- * Payment Plan among them and returns its installments (percentage, due date, amount).
+ * @description Backs resPaymentPlanPreview: given the products currently selected in the configurator, returns the unit value,
+ * the selected Payment Plan's installments (percentage, due date, amount) and the unit's service charge (shown, never totalled).
  */
 public with sharing class RES_PaymentPlanPreviewController {
 
@@ -12,6 +12,8 @@ public with sharing class RES_PaymentPlanPreviewController {
         @AuraEnabled public String currencyIsoCode;
         @AuraEnabled public Decimal totalPercentage = 0;
         @AuraEnabled public Decimal totalAmount;
+        @AuraEnabled public Decimal unitValue;
+        @AuraEnabled public RES_ResidentialBundlePricingHook.ServiceChargeBreakdown serviceCharge;
         @AuraEnabled public List<Installment> installments = new List<Installment>();
     }
 
@@ -25,7 +27,7 @@ public with sharing class RES_PaymentPlanPreviewController {
         @AuraEnabled public Decimal amount;
     }
 
-    /** Returns null when none of the selected products is a Payment Plan. */
+    /** Returns null when no Payment Plan is selected and the unit has no service charge. */
     @AuraEnabled
     public static Preview getPreview(List<String> selectedProductIds, String rootProductId) {
         try {
@@ -39,6 +41,7 @@ public with sharing class RES_PaymentPlanPreviewController {
         if (selectedProductIds.isEmpty()) {
             return null;
         }
+        RES_ResidentialBundlePricingHook.ServiceChargeBreakdown serviceCharge = RES_ResidentialBundlePricingHook.serviceChargeBreakdown(unitProductId);
 
         // Only a Payment Plan has Installment components, so the parents returned identify the selected plan
         Map<Id, List<ProductRelatedComponent>> installmentsByPlanId = new Map<Id, List<ProductRelatedComponent>>();
@@ -57,7 +60,12 @@ public with sharing class RES_PaymentPlanPreviewController {
             }
         }
         if (planProductId == null) {
-            return null;
+            if (serviceCharge == null) {
+                return null;
+            }
+            Preview unitOnly = new Preview();
+            unitOnly.serviceCharge = serviceCharge;
+            return unitOnly;
         }
 
         Product2 plan = RES_InstallmentDueDateService.planWithPhase(planProductId);
@@ -68,6 +76,8 @@ public with sharing class RES_PaymentPlanPreviewController {
         Preview preview = new Preview();
         preview.planProductId = planProductId;
         preview.planName = plan?.Name;
+        preview.unitValue = amountBase;
+        preview.serviceCharge = serviceCharge;
         Date today = Date.today();
         for (ProductRelatedComponent component : installmentsByPlanId.get(planProductId)) {
             Product2 child = component.ChildProduct;

@@ -2,8 +2,8 @@
 <LightningComponentBundle xmlns="http://soap.sforce.com/2006/04/metadata">
     <apiVersion>67.0</apiVersion>
     <isExposed>true</isExposed>
-    <masterLabel>Payment Plan Installment Preview</masterLabel>
-    <description>Read-only table for the Product Configuration flow showing each installment of the selected Payment Plan: percentage, due date (today + condition months/days) and amount. Reloads when the selected products change.</description>
+    <masterLabel>Configurator Price Summary</masterLabel>
+    <description>Product Configuration flow price summary: unit value, selected Payment Plan installments, service charge (rate, frequency, amount; not in the total) and Total = unit value. Reloads when the selection changes.</description>
     <targets>
         <target>lightning__FlowScreen</target>
     </targets>

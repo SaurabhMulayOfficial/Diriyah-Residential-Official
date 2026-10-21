@@ -604,4 +604,55 @@ private class RES_ContractItemPriceServicesTest {
             'The Contract must be left unchanged when the update fails');
     }
 
+    @isTest
+    static void populateServiceChargePrices_takesAmountFromQuoteLine() {
+        // Account/Product triggers enqueue SAP callouts, which aren't under test here
+        RES_Config_Switch__c config = RES_Config_Switch__c.getOrgDefaults();
+        config.RES_Triggers_Off__c = true;
+        upsert config;
+        Account account = new Account(Name = 'SC Price Account');
+        insert account;
+        Opportunity opportunity = new Opportunity(Name = 'SC Price Opp', StageName = 'Proposal', CloseDate = Date.today().addDays(30), AccountId = account.Id);
+        insert opportunity;
+        Quote quote = new Quote(Name = 'SC Price Quote', OpportunityId = opportunity.Id, Pricebook2Id = Test.getStandardPricebookId());
+        insert quote;
+        Product2 serviceCharge = new Product2(Name = 'Service Charge', IsActive = true, RES_CIP_Type__c = 'Service Charge');
+        insert serviceCharge;
+        PricebookEntry entry = new PricebookEntry(Pricebook2Id = Test.getStandardPricebookId(), Product2Id = serviceCharge.Id, UnitPrice = 0, IsActive = true);
+        insert entry;
+        insert new QuoteLineItem(QuoteId = quote.Id, PricebookEntryId = entry.Id, Product2Id = serviceCharge.Id, Quantity = 1, UnitPrice = 0,
+            RES_Service_Charge_Amount__c = 27937.50, RES_Service_Charge_Rate__c = 149, RES_Service_Charge_Frequency__c = 'Semi-Annual');
+        Contract contract = new Contract(AccountId = account.Id, Status = 'Draft', SourceQuoteId = quote.Id);
+        insert contract;
+
+        ContractItemPrice unpriced = new ContractItemPrice(ContractId = contract.Id, ItemId = serviceCharge.Id, Price = 0);
+        ContractItemPrice alreadyPriced = new ContractItemPrice(ContractId = contract.Id, ItemId = serviceCharge.Id, Price = 500);
+
+        Test.startTest();
+        RES_ContractItemPriceServices.populateServiceChargePrices(new List<ContractItemPrice>{ unpriced, alreadyPriced });
+        Test.stopTest();
+
+        System.assertEquals(27937.50, unpriced.Price, 'Service Charge CIP takes the quote line service charge amount');
+        System.assertEquals(500, alreadyPriced.Price, 'An existing price is not overwritten');
+        System.assertEquals(149, unpriced.RES_Service_Charge_Rate__c, 'Rate is copied from the quote line');
+        System.assertEquals('Semi-Annual', unpriced.RES_Service_Charge_Frequency__c, 'Frequency is copied from the quote line');
+    }
+
+    @isTest
+    static void populateServiceChargePrices_noQuoteLeavesPriceUnset() {
+        RES_Config_Switch__c config = RES_Config_Switch__c.getOrgDefaults();
+        config.RES_Triggers_Off__c = true;
+        upsert config;
+        Account account = new Account(Name = 'SC No Quote Account');
+        insert account;
+        Contract contract = new Contract(AccountId = account.Id, Status = 'Draft');
+        insert contract;
+        Product2 serviceCharge = new Product2(Name = 'Service Charge', IsActive = true);
+        insert serviceCharge;
+        ContractItemPrice cip = new ContractItemPrice(ContractId = contract.Id, ItemId = serviceCharge.Id);
+
+        RES_ContractItemPriceServices.populateServiceChargePrices(new List<ContractItemPrice>{ cip, new ContractItemPrice() });
+
+        System.assertEquals(null, cip.Price);
+    }
 }

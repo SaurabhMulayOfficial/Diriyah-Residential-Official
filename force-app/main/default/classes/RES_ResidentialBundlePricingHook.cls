@@ -82,6 +82,67 @@ global class RES_ResidentialBundlePricingHook implements RevSignaling.SignalingA
         return result;
     }
 
+    /** Service charge shown alongside (never added to) a unit's price: rate, billing frequency and the billing-period amount execute() stamps on the line. */
+    public class ServiceChargeBreakdown {
+        @AuraEnabled public Decimal rate;
+        @AuraEnabled public String billingFrequency;
+        @AuraEnabled public Decimal area;
+        @AuraEnabled public Decimal amount;
+    }
+
+    /** Same rate/area/frequency rule as execute(); null when the unit has no service charge rate configured. */
+    public static ServiceChargeBreakdown serviceChargeBreakdown(Id unitProductId) {
+        return unitProductId == null ? null : serviceChargeBreakdowns(new Set<Id>{ unitProductId }).get(unitProductId);
+    }
+
+    /** Bulk serviceChargeBreakdown: units without a configured rate are omitted. */
+    public static Map<Id, ServiceChargeBreakdown> serviceChargeBreakdowns(Set<Id> unitProductIds) {
+        Map<Id, ServiceChargeBreakdown> result = new Map<Id, ServiceChargeBreakdown>();
+        Map<String, BundleStructure> bundleMap = new Map<String, BundleStructure>();
+        for (Id unitProductId : unitProductIds ?? new Set<Id>()) {
+            if (unitProductId != null) {
+                bundleMap.put(String.valueOf(unitProductId), new BundleStructure(String.valueOf(unitProductId), String.valueOf(unitProductId)));
+            }
+        }
+        if (bundleMap.isEmpty()) {
+            return result;
+        }
+
+        RES_ResidentialBundlePricingHook hook = new RES_ResidentialBundlePricingHook();
+        Map<Id, ServiceChargeConfig> configMap = hook.queryServiceChargeConfigByProduct(bundleMap);
+        if (configMap.isEmpty()) {
+            return result;
+        }
+        Map<Id, Decimal> overrideAreaMap = hook.queryAreaByProductAndType(configMap);
+        Map<Id, Decimal> defaultAreaMap = hook.queryNetSaleableAreaByProduct(bundleMap);
+        for (Id unitProductId : configMap.keySet()) {
+            ServiceChargeConfig config = configMap.get(unitProductId);
+            if (config.rate == null) {
+                continue;
+            }
+            ServiceChargeBreakdown breakdown = new ServiceChargeBreakdown();
+            breakdown.rate = config.rate;
+            breakdown.billingFrequency = billingFrequencyLabel(config.billingFrequency);
+            breakdown.area = overrideAreaMap.get(unitProductId) ?? defaultAreaMap.get(unitProductId);
+            if (breakdown.area != null) {
+                breakdown.amount = config.rate * (hook.billingFrequencyToMonths(config.billingFrequency) / 12) * breakdown.area;
+            }
+            result.put(unitProductId, breakdown);
+        }
+        return result;
+    }
+
+    // Blank defaults to Annual, matching billingFrequencyToMonths
+    private static String billingFrequencyLabel(String billingFrequency) {
+        String value = String.isBlank(billingFrequency) ? 'Annual' : billingFrequency;
+        for (Schema.PicklistEntry entry : ProductAttributeDefinition.RES_Billing_Frequency__c.getDescribe().getPicklistValues()) {
+            if (entry.getValue() == value) {
+                return entry.getLabel();
+            }
+        }
+        return value;
+    }
+
     @TestVisible
     private RevSignaling.TransactionResponse executeInternal(String contextId, RES_IndustriesContextProvider industriesContext) {
         System.debug(DEBUG_VERSION + ' - Executing Pre-Hook: Bundle Pricing Option Adjustment');

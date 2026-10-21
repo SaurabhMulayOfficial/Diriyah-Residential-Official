@@ -4,6 +4,7 @@ public with sharing class RES_ContractItemPriceTriggerHandler extends RES_BaseTr
 
     protected override void beforeInsert() {
         RES_InstallmentDueDateService.populateContractItemPriceDueDates((List<ContractItemPrice>) Trigger.new);
+        RES_ContractItemPriceServices.populateServiceChargePrices((List<ContractItemPrice>) Trigger.new);
     }
 
     protected override void afterInsert() {

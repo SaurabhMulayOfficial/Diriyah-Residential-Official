@@ -60,7 +60,7 @@ export default class ResPaymentPlanPreview extends LightningElement {
             }
         } catch (e) {
             if (request === this.requestCount) {
-                this.error = e?.body?.message || e?.message || 'Could not load the payment plan installments.';
+                this.error = e?.body?.message || e?.message || 'Could not load the price summary.';
             }
         } finally {
             if (request === this.requestCount) {
@@ -74,7 +74,23 @@ export default class ResPaymentPlanPreview extends LightningElement {
     }
 
     get title() {
-        return this.preview?.planName ? `Installments: ${this.preview.planName}` : 'Installments';
+        return this.preview?.planName ? `Payment Plan: ${this.preview.planName}` : 'Payment Plan';
+    }
+
+    get hasUnitValue() {
+        return this.preview?.unitValue != null;
+    }
+
+    get serviceCharge() {
+        return this.preview?.serviceCharge;
+    }
+
+    get hasServiceCharge() {
+        return this.serviceCharge != null;
+    }
+
+    get hasServiceChargeAmount() {
+        return this.serviceCharge?.amount != null;
     }
 
     get currencyCode() {

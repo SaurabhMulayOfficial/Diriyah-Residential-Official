@@ -53,6 +53,9 @@ private class RES_PaymentPlanPreviewControllerTest {
         // No attribute-based adjustment exists for this unit, so there is no amount base
         System.assertEquals(null, row.amount);
         System.assertEquals(null, preview.totalAmount);
+        System.assertEquals(null, preview.unitValue);
+        // No service charge rate configured for this unit
+        System.assertEquals(null, preview.serviceCharge);
     }
 
     @IsTest
