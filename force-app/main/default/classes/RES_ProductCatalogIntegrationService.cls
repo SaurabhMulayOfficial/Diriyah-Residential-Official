@@ -14,6 +14,8 @@
  */
 
 public without sharing class RES_ProductCatalogIntegrationService extends RES_BaseIntegrationCalloutService {
+    private static final String DEFAULT_EFFECTIVE_END_DATE = '9999-12-31 00:00:00';
+
     public RES_ProductCatalogIntegrationService(String requestMethod) {
         super();
         List<RES_API_Configuration__mdt> apiConfigList = new RES_APIConfigurationsDAO().getAPIConfiguration(requestMethod, 'Product_Catalog_API');
@@ -54,7 +56,9 @@ public without sharing class RES_ProductCatalogIntegrationService extends RES_Ba
     private static RES_ProductCatalogWrapper buildCatalogWrapper(ProductCatalog pc, String changeIndicator) {
         RES_ProductCatalogWrapper w = new RES_ProductCatalogWrapper();
         w.Change_Indicator = changeIndicator;
-        w.EffectiveEndDate = String.valueOf(pc.EffectiveEndDate);
+        w.EffectiveEndDate = pc.EffectiveEndDate != null
+            ? String.valueOf(pc.EffectiveEndDate)
+            : DEFAULT_EFFECTIVE_END_DATE;
         w.EffectiveStartDate = String.valueOf(pc.EffectiveStartDate);
         w.Name = pc.Name;
         w.RES_BP_Number = pc.RES_BP_Number__c;
