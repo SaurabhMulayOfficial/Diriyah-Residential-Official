@@ -497,6 +497,14 @@
         <apexClass>RES_UserDAOLayer</apexClass>
         <enabled>true</enabled>
     </classAccesses>
+    <classAccesses>
+        <apexClass>RES_DefaultPlanPriceService</apexClass>
+        <enabled>true</enabled>
+    </classAccesses>
+    <classAccesses>
+        <apexClass>RES_DefaultPlanPriceServiceTest</apexClass>
+        <enabled>true</enabled>
+    </classAccesses>
     <flowAccesses>
         <flow>RES_Opportunity_ScreenFlow_Opportunity_Closed_Lost</flow>
         <enabled>true</enabled>
