@@ -58,6 +58,10 @@
         <enabled>true</enabled>
     </classAccesses>
     <classAccesses>
+        <apexClass>RES_PaymentPlanPreviewController</apexClass>
+        <enabled>true</enabled>
+    </classAccesses>
+    <classAccesses>
         <apexClass>RES_ProductUpdateNotificationController</apexClass>
         <enabled>true</enabled>
     </classAccesses>
@@ -69,6 +73,15 @@
         <apexClass>RES_PaymentPlanConfiguratorServiceTest</apexClass>
         <enabled>true</enabled>
     </classAccesses>
+    <classAccesses>
+        <apexClass>RES_ResidentialBundlePricingHook</apexClass>
+        <enabled>true</enabled>
+    </classAccesses>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>ContractItemPrice.RES_Installment_Due_Date__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
         <fieldPermissions>
         <editable>false</editable>
         <field>ContractItemPrice.RES_Product__c</field>
@@ -79,6 +92,16 @@
             <field>ContractItemPrice.RES_Installment_Percentage__c</field>
             <readable>true</readable>
         </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>ContractItemPrice.RES_Service_Charge_Frequency__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>ContractItemPrice.RES_Service_Charge_Rate__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
         <fieldPermissions>
             <editable>false</editable>
             <field>ContractItemPrice.RES_Unit_Check__c</field>
@@ -119,6 +142,11 @@
             <field>ContractItemPrice.Price</field>
             <readable>true</readable>
         </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>Product2.RES_Net_Saleable_Area__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
 <fieldPermissions>
         <editable>true</editable>
         <field>ProductAttributeDefinition.RES_Area_Type__c</field>
@@ -152,6 +180,26 @@
     <fieldPermissions>
         <editable>true</editable>
         <field>Quote.RES_Total_Price_In_Words__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>QuoteLineItem.RES_Installment_Due_Date__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>QuoteLineItem.RES_Service_Charge_Amount__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>QuoteLineItem.RES_Service_Charge_Frequency__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>QuoteLineItem.RES_Service_Charge_Rate__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
@@ -3413,9 +3461,49 @@
         <enabled>true</enabled>
         <flow>RES_Create_Payment_Plan</flow>
     </flowAccesses>
+    <flowAccesses>
+        <enabled>true</enabled>
+        <flow>RES_Product_Configurator_Flow</flow>
+    </flowAccesses>
     <hasActivationRequired>false</hasActivationRequired>
     <label>Diriyah Residential – Contract Operations Specialist Permission Set</label>
     <license>Salesforce</license>
+    <objectPermissions>
+        <allowCreate>false</allowCreate>
+        <allowDelete>false</allowDelete>
+        <allowEdit>false</allowEdit>
+        <allowRead>true</allowRead>
+        <modifyAllRecords>false</modifyAllRecords>
+        <object>AttributeDefinition</object>
+        <viewAllRecords>false</viewAllRecords>
+    </objectPermissions>
+    <objectPermissions>
+        <allowCreate>false</allowCreate>
+        <allowDelete>false</allowDelete>
+        <allowEdit>false</allowEdit>
+        <allowRead>true</allowRead>
+        <modifyAllRecords>false</modifyAllRecords>
+        <object>ProductAttributeDefinition</object>
+        <viewAllRecords>false</viewAllRecords>
+    </objectPermissions>
+    <objectPermissions>
+        <allowCreate>false</allowCreate>
+        <allowDelete>false</allowDelete>
+        <allowEdit>false</allowEdit>
+        <allowRead>true</allowRead>
+        <modifyAllRecords>false</modifyAllRecords>
+        <object>ProductClassification</object>
+        <viewAllRecords>false</viewAllRecords>
+    </objectPermissions>
+    <objectPermissions>
+        <allowCreate>false</allowCreate>
+        <allowDelete>false</allowDelete>
+        <allowEdit>false</allowEdit>
+        <allowRead>true</allowRead>
+        <modifyAllRecords>false</modifyAllRecords>
+        <object>ProductClassificationAttr</object>
+        <viewAllRecords>false</viewAllRecords>
+    </objectPermissions>
     <objectPermissions>
         <allowCreate>true</allowCreate>
         <allowDelete>true</allowDelete>

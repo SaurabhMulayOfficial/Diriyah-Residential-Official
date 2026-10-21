@@ -122,8 +122,10 @@ private class RES_ApplyApprovedPOCToPPTest {
         List<Product2> installments = new List<Product2>{
             new Product2(Name = 'Downpayment', IsActive = true, RecordTypeId = installmentRecordTypeId, RES_Sequence__c = 1, RES_POC_Percentage__c = 20, RES_Installment_Percentage__c = 20),
             new Product2(Name = 'Installment 1', IsActive = true, RecordTypeId = installmentRecordTypeId, RES_Sequence__c = 2, RES_POC_Percentage__c = 40, RES_Installment_Percentage__c = 20),
-            new Product2(Name = 'Installment 2', IsActive = true, RecordTypeId = installmentRecordTypeId, RES_Sequence__c = 3, RES_POC_Percentage__c = 70, RES_Installment_Percentage__c = 30),
-            new Product2(Name = 'Final Payment', IsActive = true, RecordTypeId = installmentRecordTypeId, RES_Sequence__c = 4, RES_POC_Percentage__c = 100, RES_Installment_Percentage__c = 30)
+            new Product2(Name = 'Installment 2', IsActive = true, RecordTypeId = installmentRecordTypeId, RES_Sequence__c = 3, RES_POC_Percentage__c = 70, RES_Installment_Percentage__c = 30,
+                RES_Condition_Type__c = 'Y003', RES_Installment_Payment_Type__c = 'Y003', RES_Condition_Months__c = 12, RES_Condition_Days__c = 5, RES_Instalment_DueDate__c = Date.newInstance(2027, 6, 15)),
+            new Product2(Name = 'Final Payment', IsActive = true, RecordTypeId = installmentRecordTypeId, RES_Sequence__c = 4, RES_POC_Percentage__c = 100, RES_Installment_Percentage__c = 30,
+                RES_Condition_Type__c = 'Y004', RES_Installment_Payment_Type__c = 'Y004', RES_Condition_Months__c = 24, RES_Condition_Days__c = 0, RES_Instalment_DueDate__c = Date.newInstance(2028, 6, 10))
         };
         insert installments;
         for (Product2 installment : installments) {
@@ -256,8 +258,30 @@ private class RES_ApplyApprovedPOCToPPTest {
         for (ProductRelatedComponent prc : newPlanComponents) {
             newInstallmentIds.add(prc.ChildProductId);
         }
-        List<Product2> newInstallments = [SELECT Id, RES_POC_Percentage__c FROM Product2 WHERE Id IN :newInstallmentIds];
-        System.assertEquals(3, newInstallments.size());
+        Map<Id, Product2> newInstallmentsById = new Map<Id, Product2>([
+            SELECT Id, Name, RES_POC_Percentage__c, RES_Condition_Type__c, RES_Installment_Payment_Type__c,
+                   RES_Condition_Months__c, RES_Condition_Days__c, RES_Instalment_DueDate__c
+            FROM Product2 WHERE Id IN :newInstallmentIds
+        ]);
+        System.assertEquals(3, newInstallmentsById.size());
+
+        Product2 merged = newInstallmentsById.get(newPlanComponents[0].ChildProductId);
+        System.assertEquals('Down Payment', merged.Name, 'Merged installment must always be named Down Payment');
+        System.assertEquals('Y002', merged.RES_Condition_Type__c, 'Merged installment must always have the Down payment condition type');
+        System.assertEquals('Y002', merged.RES_Installment_Payment_Type__c);
+
+        Product2 installment2 = newInstallmentsById.get(newPlanComponents[1].ChildProductId);
+        System.assertEquals('Installment 2', installment2.Name);
+        System.assertEquals('Y003', installment2.RES_Condition_Type__c);
+        System.assertEquals(Date.newInstance(2027, 6, 15), installment2.RES_Instalment_DueDate__c, 'Remaining installment due date must not change');
+        System.assertEquals(12, installment2.RES_Condition_Months__c, 'Condition months drive On-Plan due dates and must carry over');
+        System.assertEquals(5, installment2.RES_Condition_Days__c);
+
+        Product2 finalPayment = newInstallmentsById.get(newPlanComponents[2].ChildProductId);
+        System.assertEquals('Y004', finalPayment.RES_Condition_Type__c);
+        System.assertEquals(Date.newInstance(2028, 6, 10), finalPayment.RES_Instalment_DueDate__c, 'Remaining installment due date must not change');
+        System.assertEquals(24, finalPayment.RES_Condition_Months__c);
+        System.assertEquals(0, finalPayment.RES_Condition_Days__c);
 
         // Every new installment must have its ProductSellingModelOption cloned across (see addPricingAndSellingModel for why PricebookEntry cloning isn't asserted here)
         System.assertEquals(3, [SELECT COUNT() FROM ProductSellingModelOption WHERE Product2Id IN :newInstallmentIds]);

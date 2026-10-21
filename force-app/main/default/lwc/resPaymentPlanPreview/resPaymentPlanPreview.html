@@ -1,80 +1,129 @@
 <template>
-    <div class="slds-box slds-box_x-small slds-m-top_small">
-        <div class="slds-grid slds-grid_vertical-align-center slds-p-horizontal_x-small slds-p-bottom_x-small">
-            <h3 class="slds-text-heading_small slds-col">{title}</h3>
+    <article class="slds-card summary">
+        <div class="slds-card__header slds-grid slds-grid_vertical-align-center">
+            <h2 class="slds-card__header-title slds-col">Price Summary</h2>
             <template lwc:if={isLoading}>
                 <div class="slds-is-relative spinner-holder">
-                    <lightning-spinner alternative-text="Loading installments" size="x-small"></lightning-spinner>
+                    <lightning-spinner alternative-text="Loading prices" size="x-small"></lightning-spinner>
                 </div>
             </template>
         </div>
-        <template lwc:if={error}>
-            <div class="slds-text-color_error slds-p-around_x-small">{error}</div>
-        </template>
-        <template lwc:elseif={hasInstallments}>
-            <table class="slds-table slds-table_bordered slds-table_cell-buffer slds-table_fixed-layout" aria-label={title}>
-                <thead>
-                    <tr class="slds-line-height_reset">
-                        <th scope="col" class="col-number"><div class="slds-truncate" title="#">#</div></th>
-                        <th scope="col"><div class="slds-truncate" title="Installment">Installment</div></th>
-                        <th scope="col" class="slds-text-align_right"><div class="slds-truncate" title="Percentage">Percentage</div></th>
-                        <th scope="col" class="slds-text-align_right"><div class="slds-truncate" title="POC %">POC %</div></th>
-                        <th scope="col"><div class="slds-truncate" title="Due Date">Due Date</div></th>
-                        <th scope="col" class="slds-text-align_right"><div class="slds-truncate" title="Amount">Amount</div></th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <template for:each={rows} for:item="row">
-                        <tr key={row.key}>
-                            <td>{row.number}</td>
-                            <td><div class="slds-truncate" title={row.name}>{row.name}</div></td>
-                            <td class="slds-text-align_right">
-                                <lightning-formatted-number value={row.percentFraction} format-style="percent" maximum-fraction-digits="2"></lightning-formatted-number>
-                            </td>
-                            <td class="slds-text-align_right">
-                                <template lwc:if={row.hasPoc}>
-                                    <lightning-formatted-number value={row.pocFraction} format-style="percent" maximum-fraction-digits="2"></lightning-formatted-number>
-                                </template>
-                                <template lwc:else>&mdash;</template>
-                            </td>
-                            <td>
-                                <lightning-formatted-date-time value={row.dueDate} year="numeric" month="short" day="2-digit" time-zone="UTC"></lightning-formatted-date-time>
-                            </td>
-                            <td class="slds-text-align_right">
-                                <template lwc:if={row.hasAmount}>
-                                    <lightning-formatted-number value={row.amount} format-style="currency" currency-code={currencyCode} currency-display-as="code"></lightning-formatted-number>
-                                </template>
-                                <template lwc:else>&mdash;</template>
-                            </td>
-                        </tr>
+        <div class="slds-card__body slds-card__body_inner">
+            <template lwc:if={error}>
+                <div class="slds-text-color_error slds-p-bottom_small">{error}</div>
+            </template>
+
+            <div class="section">
+                <div class="slds-grid slds-grid_align-spread line">
+                    <span class="slds-text-title_bold">Unit Value</span>
+                    <template lwc:if={hasUnitValue}>
+                        <lightning-formatted-number value={preview.unitValue} format-style="currency" currency-code={currencyCode} currency-display-as="code"></lightning-formatted-number>
                     </template>
-                </tbody>
-                <tfoot>
-                    <tr class="slds-text-title_bold">
-                        <td></td>
-                        <td>Total</td>
-                        <td class="slds-text-align_right">
-                            <lightning-formatted-number value={totalPercentFraction} format-style="percent" maximum-fraction-digits="2"></lightning-formatted-number>
-                        </td>
-                        <td></td>
-                        <td></td>
-                        <td class="slds-text-align_right">
-                            <template lwc:if={hasTotalAmount}>
-                                <lightning-formatted-number value={preview.totalAmount} format-style="currency" currency-code={currencyCode} currency-display-as="code"></lightning-formatted-number>
+                    <template lwc:else><span class="slds-text-color_weak">&mdash;</span></template>
+                </div>
+            </div>
+
+            <div class="section">
+                <h3 class="slds-text-title_caps slds-p-bottom_x-small">{title}</h3>
+                <template lwc:if={hasInstallments}>
+                    <table class="slds-table slds-table_bordered slds-table_fixed-layout slds-text-body_small" aria-label={title}>
+                        <thead>
+                            <tr class="slds-line-height_reset">
+                                <th scope="col" class="col-number"><div class="slds-truncate" title="#">#</div></th>
+                                <th scope="col"><div class="slds-truncate" title="Installment">Installment</div></th>
+                                <th scope="col" class="col-percent slds-text-align_right"><div class="slds-truncate" title="Percentage">%</div></th>
+                                <th scope="col" class="col-percent slds-text-align_right"><div class="slds-truncate" title="POC %">POC %</div></th>
+                                <th scope="col" class="col-date"><div class="slds-truncate" title="Due Date">Due Date</div></th>
+                                <th scope="col" class="col-amount slds-text-align_right"><div class="slds-truncate" title="Amount">Amount</div></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <template for:each={rows} for:item="row">
+                                <tr key={row.key}>
+                                    <td>{row.number}</td>
+                                    <td class="slds-cell-wrap">{row.name}</td>
+                                    <td class="slds-text-align_right">
+                                        <lightning-formatted-number value={row.percentFraction} format-style="percent" maximum-fraction-digits="2"></lightning-formatted-number>
+                                    </td>
+                                    <td class="slds-text-align_right">
+                                        <template lwc:if={row.hasPoc}>
+                                            <lightning-formatted-number value={row.pocFraction} format-style="percent" maximum-fraction-digits="2"></lightning-formatted-number>
+                                        </template>
+                                        <template lwc:else>&mdash;</template>
+                                    </td>
+                                    <td>
+                                        <lightning-formatted-date-time value={row.dueDate} year="numeric" month="short" day="2-digit" time-zone="UTC"></lightning-formatted-date-time>
+                                    </td>
+                                    <td class="slds-text-align_right">
+                                        <template lwc:if={row.hasAmount}>
+                                            <lightning-formatted-number value={row.amount} format-style="currency" currency-code={currencyCode} currency-display-as="code"></lightning-formatted-number>
+                                        </template>
+                                        <template lwc:else>&mdash;</template>
+                                    </td>
+                                </tr>
+                            </template>
+                        </tbody>
+                        <tfoot>
+                            <tr class="slds-text-title_bold">
+                                <td></td>
+                                <td>Total</td>
+                                <td class="slds-text-align_right">
+                                    <lightning-formatted-number value={totalPercentFraction} format-style="percent" maximum-fraction-digits="2"></lightning-formatted-number>
+                                </td>
+                                <td></td>
+                                <td></td>
+                                <td class="slds-text-align_right">
+                                    <template lwc:if={hasTotalAmount}>
+                                        <lightning-formatted-number value={preview.totalAmount} format-style="currency" currency-code={currencyCode} currency-display-as="code"></lightning-formatted-number>
+                                    </template>
+                                    <template lwc:else>&mdash;</template>
+                                </td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                    <template lwc:if={showNoAmountHint}>
+                        <p class="slds-text-color_weak slds-text-body_small slds-p-top_x-small">No price is set up for this unit's price option, so amounts can't be shown.</p>
+                    </template>
+                    <p class="slds-text-color_weak slds-text-body_small slds-p-top_x-small">Due dates are indicative, calculated from today.</p>
+                </template>
+                <template lwc:elseif={isLoading}></template>
+                <template lwc:else>
+                    <p class="slds-text-color_weak">Select a payment plan to see its installments.</p>
+                </template>
+            </div>
+
+            <template lwc:if={hasServiceCharge}>
+                <div class="section">
+                    <div class="slds-grid slds-grid_vertical-align-center slds-p-bottom_x-small">
+                        <h3 class="slds-text-title_caps slds-col">Service Charge</h3>
+                        <lightning-badge label="Not included in total"></lightning-badge>
+                    </div>
+                    <dl class="slds-list_horizontal slds-wrap">
+                        <dt class="slds-item_label slds-text-color_weak">Rate</dt>
+                        <dd class="slds-item_detail slds-text-align_right">
+                            <lightning-formatted-number value={serviceCharge.rate} format-style="currency" currency-code={currencyCode} currency-display-as="code"></lightning-formatted-number>
+                        </dd>
+                        <dt class="slds-item_label slds-text-color_weak">Frequency</dt>
+                        <dd class="slds-item_detail slds-text-align_right">{serviceCharge.billingFrequency}</dd>
+                        <dt class="slds-item_label slds-text-color_weak">Amount</dt>
+                        <dd class="slds-item_detail slds-text-align_right">
+                            <template lwc:if={hasServiceChargeAmount}>
+                                <lightning-formatted-number value={serviceCharge.amount} format-style="currency" currency-code={currencyCode} currency-display-as="code"></lightning-formatted-number>
                             </template>
                             <template lwc:else>&mdash;</template>
-                        </td>
-                    </tr>
-                </tfoot>
-            </table>
-            <template lwc:if={showNoAmountHint}>
-                <p class="slds-text-color_weak slds-text-body_small slds-p-around_x-small">No price is set up for this unit's price option, so amounts can't be shown.</p>
+                        </dd>
+                    </dl>
+                </div>
             </template>
-            <p class="slds-text-color_weak slds-text-body_small slds-p-around_x-small">Due dates are indicative, calculated from today.</p>
-        </template>
-        <template lwc:elseif={isLoading}></template>
-        <template lwc:else>
-            <p class="slds-text-color_weak slds-p-around_x-small">Select a payment plan to see its installments.</p>
-        </template>
-    </div>
+        </div>
+        <footer class="slds-card__footer slds-grid slds-grid_align-spread total">
+            <span class="slds-text-heading_small slds-text-title_bold">Total</span>
+            <span class="slds-text-heading_small slds-text-title_bold">
+                <template lwc:if={hasUnitValue}>
+                    <lightning-formatted-number value={preview.unitValue} format-style="currency" currency-code={currencyCode} currency-display-as="code"></lightning-formatted-number>
+                </template>
+                <template lwc:else>&mdash;</template>
+            </span>
+        </footer>
+    </article>
 </template>

@@ -7,6 +7,7 @@ public with sharing class RES_QuoteLineItemTriggerHandler extends RES_BaseTrigge
     protected override void beforeInsert() {
         RES_InstallmentDueDateService.populateQuoteLineDueDates((List<QuoteLineItem>) Trigger.new);
         RES_QuoteLineSortOrderService.populateInstallmentSortOrder((List<QuoteLineItem>) Trigger.new);
+        RES_ServiceChargeLineService.populateQuoteLines((List<QuoteLineItem>) Trigger.new, null);
     }
 
     protected override void afterInsert() {
@@ -19,5 +20,6 @@ public with sharing class RES_QuoteLineItemTriggerHandler extends RES_BaseTrigge
 
     protected override void beforeUpdate() {
         RES_QuoteLineItemLockHandler.enforceLock((List<QuoteLineItem>) Trigger.new, (Map<Id, QuoteLineItem>) Trigger.oldMap);
+        RES_ServiceChargeLineService.populateQuoteLines((List<QuoteLineItem>) Trigger.new, (Map<Id, QuoteLineItem>) Trigger.oldMap);
     }
 }

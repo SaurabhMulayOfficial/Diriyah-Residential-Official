@@ -18,6 +18,8 @@ public with sharing class RES_ApplyApprovedPOCToFuturePaymentPlan {
     private static final String BUNDLE_COMPONENT_RELATIONSHIP_TYPE_NAME = 'Bundle to Bundle Component Relationship';
     private static final String INSTALLMENTS_GROUP_NAME_FALLBACK = 'Installments';
     private static final Integer INSTALLMENTS_GROUP_SEQUENCE_FALLBACK = 10;
+    private static final String DOWN_PAYMENT_NAME = 'Down Payment';
+    private static final String DOWN_PAYMENT_CONDITION_TYPE = 'Y002';
 
     @InvocableMethod(label = 'Apply Approved POC To Future Payment Plan')
     public static void applyApprovedPOCToFuturePaymentPlan(List<Input> inputs){
@@ -226,7 +228,8 @@ public with sharing class RES_ApplyApprovedPOCToFuturePaymentPlan {
      * against real org data. Any installment whose own milestone is already below the approved
      * POC% has effectively come due, so it's folded into a single merged installment (its
      * RES_Installment_Percentage__c becomes the sum of the merged group's shares - the amount now
-     * due at once; its RES_POC_Percentage__c becomes the highest milestone among the merged group).
+     * due at once; its RES_POC_Percentage__c becomes the highest milestone among the merged group;
+     * it is always named and typed 'Down Payment').
      * Every installment whose milestone the approved POC% hasn't reached yet is cloned 1:1, untouched.
      */
     private static List<InstallmentBuild> buildInstallmentsForPlan(List<ProductRelatedComponent> planComponents, Decimal approvedPOC, List<Product2> clonedInstallments){
@@ -242,6 +245,9 @@ public with sharing class RES_ApplyApprovedPOCToFuturePaymentPlan {
                 if(mergedBuild == null){
                     sequence++;
                     Product2 merged = cloneInstallmentProduct(prc.ChildProduct, sequence);
+                    merged.Name = DOWN_PAYMENT_NAME;
+                    merged.RES_Condition_Type__c = DOWN_PAYMENT_CONDITION_TYPE;
+                    merged.RES_Installment_Payment_Type__c = DOWN_PAYMENT_CONDITION_TYPE;
                     clonedInstallments.add(merged);
                     mergedBuild = new InstallmentBuild(merged, sequence, prc);
                     builds.add(mergedBuild);
@@ -262,6 +268,7 @@ public with sharing class RES_ApplyApprovedPOCToFuturePaymentPlan {
         return builds;
     }
 
+    // Carries over every due-date input (stored date, condition months/days) so the new version's due dates match the old one
     private static Product2 cloneInstallmentProduct(Product2 childProduct, Integer sequence){
         return new Product2(
             Name = childProduct.Name,
@@ -270,6 +277,10 @@ public with sharing class RES_ApplyApprovedPOCToFuturePaymentPlan {
             RES_Sequence__c = sequence,
             ProductCode = childProduct.ProductCode,
             RES_Instalment_DueDate__c = childProduct.RES_Instalment_DueDate__c,
+            RES_Condition_Months__c = childProduct.RES_Condition_Months__c,
+            RES_Condition_Days__c = childProduct.RES_Condition_Days__c,
+            RES_Condition_Type__c = childProduct.RES_Condition_Type__c,
+            RES_Installment_Payment_Type__c = childProduct.RES_Installment_Payment_Type__c,
             RES_Installment_Accumulative_Payments__c = childProduct.RES_Installment_Accumulative_Payments__c,
             RES_Installment_Construction_Progress__c = childProduct.RES_Installment_Construction_Progress__c,
             Description = childProduct.Description,

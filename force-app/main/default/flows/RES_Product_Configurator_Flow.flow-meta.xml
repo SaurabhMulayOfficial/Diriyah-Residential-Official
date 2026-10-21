@@ -544,6 +544,17 @@
                         </width>
                     </styleProperties>
                 </fields>
+                <inputParameters>
+                    <name>width</name>
+                    <value>
+                        <stringValue>6</stringValue>
+                    </value>
+                </inputParameters>
+                <isRequired>false</isRequired>
+            </fields>
+            <fields>
+                <name>S01_ProductConfiguratorUI_Section1_Column2</name>
+                <fieldType>Region</fieldType>
                 <fields>
                     <name>PaymentPlanPreview</name>
                     <extensionName>c:resPaymentPlanPreview</extensionName>
@@ -581,100 +592,7 @@
                 <inputParameters>
                     <name>width</name>
                     <value>
-                        <stringValue>7</stringValue>
-                    </value>
-                </inputParameters>
-                <isRequired>false</isRequired>
-            </fields>
-            <fields>
-                <name>S01_ProductConfiguratorUI_Section1_Column2</name>
-                <fieldType>Region</fieldType>
-                <fields>
-                    <name>S01_Summary</name>
-                    <extensionName>runtime_industries_cfg:pricingSummary</extensionName>
-                    <fieldType>ComponentInstance</fieldType>
-                    <inputParameters>
-                        <name>summary</name>
-                        <value>
-                            <elementReference>S01_DataManager.summary</elementReference>
-                        </value>
-                    </inputParameters>
-                    <inputParameters>
-                        <name>currencyCode</name>
-                        <value>
-                            <elementReference>S01_DataManager.currencyCode</elementReference>
-                        </value>
-                    </inputParameters>
-                    <inputParameters>
-                        <name>isDesignTime</name>
-                        <value>
-                            <elementReference>S01_DataManager.isDesignTime</elementReference>
-                        </value>
-                    </inputParameters>
-                    <inputParameters>
-                        <name>navigationRoute</name>
-                        <value>
-                            <elementReference>S01_DataManager.navigationRoute</elementReference>
-                        </value>
-                    </inputParameters>
-                    <inputParameters>
-                        <name>showPrices</name>
-                        <value>
-                            <elementReference>S01_DataManager.showPrices</elementReference>
-                        </value>
-                    </inputParameters>
-                    <inputParameters>
-                        <name>layoutMode</name>
-                        <value>
-                            <elementReference>S01_DataManager.layoutMode</elementReference>
-                        </value>
-                    </inputParameters>
-                    <inputParameters>
-                        <name>showSummaryTotalSection</name>
-                        <value>
-                            <elementReference>S01_DataManager.showSummaryTotalSection</elementReference>
-                        </value>
-                    </inputParameters>
-                    <inputParameters>
-                        <name>eligiblePromotions</name>
-                        <value>
-                            <elementReference>S01_DataManager.eligiblePromotions</elementReference>
-                        </value>
-                    </inputParameters>
-                    <inputParameters>
-                        <name>salesTransactionItems</name>
-                        <value>
-                            <elementReference>S01_DataManager.salesTransactionItems</elementReference>
-                        </value>
-                    </inputParameters>
-                    <inputParameters>
-                        <name>messages</name>
-                        <value>
-                            <elementReference>S01_DataManager.messages</elementReference>
-                        </value>
-                    </inputParameters>
-                    <inputParameters>
-                        <name>areMessagesFixed</name>
-                        <value>
-                            <elementReference>S01_DataManager.areMessagesFixed</elementReference>
-                        </value>
-                    </inputParameters>
-                    <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
-                    <isRequired>true</isRequired>
-                    <storeOutputAutomatically>true</storeOutputAutomatically>
-                    <styleProperties>
-                        <verticalAlignment>
-                            <stringValue>top</stringValue>
-                        </verticalAlignment>
-                        <width>
-                            <stringValue>12</stringValue>
-                        </width>
-                    </styleProperties>
-                </fields>
-                <inputParameters>
-                    <name>width</name>
-                    <value>
-                        <stringValue>5</stringValue>
+                        <stringValue>6</stringValue>
                     </value>
                 </inputParameters>
                 <isRequired>false</isRequired>

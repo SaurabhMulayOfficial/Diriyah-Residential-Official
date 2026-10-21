@@ -1,10 +1,27 @@
 .col-number {
-    width: 3rem;
+    width: 2rem;
+}
+
+.col-percent {
+    width: 3.5rem;
+}
+
+.col-date {
+    width: 6rem;
+}
+
+.col-amount {
+    width: 8rem;
 }
 
 .spinner-holder {
     width: 1.5rem;
     height: 1.5rem;
+}
+
+.section {
+    padding: 0.75rem 0;
+    border-bottom: 1px solid var(--slds-g-color-border-base-1, #e5e5e5);
 }
 
 tfoot td {
