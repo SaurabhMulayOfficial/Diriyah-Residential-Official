@@ -183,14 +183,14 @@ public without sharing class RES_ProductIntegrationService extends RES_BaseInteg
                 p.RES_Business_Entity__r != null ? p.RES_Business_Entity__r.RES_Business_Entity_Id__c : null);
             payload.put('RES_Building',
                 p.RES_Building__r != null ? p.RES_Building__r.RES_Property_Id__c : null);
-            payload.put('AvailabilityDate',
-                p.AvailabilityDate != null
-                    ? String.valueOf(p.AvailabilityDate).substring(0, 10) + 'T00:00:00Z'
-                    : Datetime.now().format('yyyy-MM-dd') + 'T00:00:00Z');
-            payload.put('DiscontinuedDate',
-                p.DiscontinuedDate != null
-                    ? String.valueOf(p.DiscontinuedDate).substring(0, 10) + 'T00:00:00Z'
-                    : '9999-12-31T18:00:00Z');
+            // payload.put('AvailabilityDate',
+            //     p.AvailabilityDate != null
+            //         ? String.valueOf(p.AvailabilityDate).substring(0, 10) + 'T00:00:00Z'
+            //         : Datetime.now().format('yyyy-MM-dd') + 'T00:00:00Z');
+            // payload.put('DiscontinuedDate',
+            //     p.DiscontinuedDate != null
+            //         ? String.valueOf(p.DiscontinuedDate).substring(0, 10) + 'T00:00:00Z'
+            //         : '9999-12-31T18:00:00Z');
             String floorCode = p.RES_Floor__c;
             if (String.isNotBlank(floorCode)) {
                 try {
