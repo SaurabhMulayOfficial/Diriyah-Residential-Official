@@ -4,7 +4,7 @@ public class RES_ProductCategoryRequestWrapper {
     public String RES_Property_ID;
     public String Name;
     public Datetime RES_Valid_From_Date;
-    public Datetime RES_Valid_To_Date;
+    public String RES_Valid_To_Date;
     public String RES_Profit_Center;
     public String RES_Property_Type;
     public String Change_Indicator;

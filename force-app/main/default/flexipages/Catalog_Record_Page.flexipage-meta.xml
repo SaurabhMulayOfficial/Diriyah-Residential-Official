@@ -72,16 +72,6 @@
                     <name>uiBehavior</name>
                     <value>none</value>
                 </fieldInstanceProperties>
-                <fieldItem>Record.CatalogType</fieldItem>
-                <identifier>RecordCatalogTypeField</identifier>
-            </fieldInstance>
-        </itemInstances>
-        <itemInstances>
-            <fieldInstance>
-                <fieldInstanceProperties>
-                    <name>uiBehavior</name>
-                    <value>none</value>
-                </fieldInstanceProperties>
                 <fieldItem>Record.RES_BP_Number__c</fieldItem>
                 <identifier>RecordRES_BP_Number_cField</identifier>
             </fieldInstance>
@@ -164,7 +154,7 @@
             <fieldInstance>
                 <fieldInstanceProperties>
                     <name>uiBehavior</name>
-                    <value>none</value>
+                    <value>required</value>
                 </fieldInstanceProperties>
                 <fieldItem>Record.EffectiveStartDate</fieldItem>
                 <identifier>RecordEffectiveStartDateField</identifier>
@@ -204,7 +194,7 @@
             <fieldInstance>
                 <fieldInstanceProperties>
                     <name>uiBehavior</name>
-                    <value>none</value>
+                    <value>required</value>
                 </fieldInstanceProperties>
                 <fieldItem>Record.RES_Company_Code__c</fieldItem>
                 <identifier>RecordRES_Company_Code_cField</identifier>
@@ -214,7 +204,7 @@
             <fieldInstance>
                 <fieldInstanceProperties>
                     <name>uiBehavior</name>
-                    <value>none</value>
+                    <value>required</value>
                 </fieldInstanceProperties>
                 <fieldItem>Record.RES_Profit_Center__c</fieldItem>
                 <identifier>RecordRES_Profit_Center_cField</identifier>
