@@ -6,6 +6,11 @@
  * @author Saurabh Mulay
  */
 public with sharing class RES_ContractServices {
+
+    // Approval Status values that are allowed to fire Sales_Contract_Update
+    private static final Set<String> UPDATE_SYNC_APPROVAL_STATUSES = new Set<String>{
+        'Finance Approved', 'Pending ED Treasury', 'Pending GCEO', 'Pending CBDO'
+    };
     public RES_ContractServices() {}
 
     // Customer Signed By = Person Account's own contact, or for a Business Account its first-created Contact (no primary flag exists);
@@ -93,6 +98,10 @@ public with sharing class RES_ContractServices {
                 && String.isNotBlank(contract.RES_External_ID__c)) {
                 if (isStatusChanged(contract, oldMap.get(contract.Id))) {
                     contractsToSync_Termination.add(contract);
+                } else if (contract.RES_Approval_Status__c != oldMap.get(contract.Id).RES_Approval_Status__c
+                    && !UPDATE_SYNC_APPROVAL_STATUSES.contains(contract.RES_Approval_Status__c)) {
+                    // Approval Status changed to a value that must not trigger Sales_Contract_Update
+                    continue;
                 } else {
                     contractsToSync_update.add(contract);
                 }
