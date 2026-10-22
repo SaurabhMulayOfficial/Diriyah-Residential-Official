@@ -4,7 +4,7 @@
     <defaultValue>false</defaultValue>
     <description>Set to true by Before-Save flow when user directly sets Sub Status to Qualified (bypassing the LWC warning popup). Cleared by the LWC after user confirms (Proceed) or cancels. Persists across sessions so mobile remount still shows the popup.</description>
     <label>Pending Qualified Review</label>
+    <trackFeedHistory>false</trackFeedHistory>
     <trackHistory>false</trackHistory>
-    <trackTrending>false</trackTrending>
     <type>Checkbox</type>
 </CustomField>

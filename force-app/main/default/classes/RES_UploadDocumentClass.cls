@@ -34,9 +34,6 @@ public with sharing class RES_UploadDocumentClass {
 
         /** File extension or file type. */
         @AuraEnabled public String fileType { get; set; }
-        
-        /** Delete Button visibility. */
-        @AuraEnabled public Boolean displayDeleteButton { get; set; }
     }
 
     /**
@@ -123,17 +120,12 @@ public with sharing class RES_UploadDocumentClass {
         if (versionIds.isEmpty()) {
             return rows;
         }
-		RES_ProfileDAOLayer profileDAO = new RES_ProfileDAOLayer();
-        String currentUserProfileName = profileDAO.getCurrentUserProfileName();
-        Boolean displayDeleteButton = false;
-        if (currentUserProfileName == System.Label.RES_Admin_Profile) {
-            displayDeleteButton = true;
-        }
+
         List<ContentVersion> cvList =
             new RES_ContentVersionDAOLayer().getContentVersionById(versionIds);
 
         for (ContentVersion cv : cvList) {
-            rows.add(buildFileRow(cv, displayDeleteButton));
+            rows.add(buildFileRow(cv));
         }
 
         return rows;
@@ -185,7 +177,6 @@ public with sharing class RES_UploadDocumentClass {
      */
     @AuraEnabled
     public static void deleteFile(Id contentDocumentId) {
-        List<FeedItem> feedItemLst = new List<FeedItem>();
         if (contentDocumentId == null) {
             throw new AuraHandledException('File Id is missing.');
         }
@@ -193,24 +184,8 @@ public with sharing class RES_UploadDocumentClass {
         if (!Schema.sObjectType.ContentDocument.isDeletable()) {
             throw new AuraHandledException('You do not have permission to delete files.');
         }
-        Set<Id> contentDocIds = new Set<Id>{contentDocumentId};
-        List<ContentDocumentLink> docLinkLst = new RES_ContentDocumentLinkDAOLayer().getContentDocumentLinkByContentDocumentId(contentDocIds);
-        if(!docLinkLst.isEmpty()){
-            for(ContentDocumentLink link : docLinkLst){
-                if(!String.valueOf(link.LinkedEntityId).startsWith('005')){
-                    FeedItem post = new FeedItem();
-                    post.ParentId = link.LinkedEntityId;
-                    post.Body = 'The attachment named ' + link.ContentDocument.Title + ' was deleted by ' + UserInfo.getName() + ' at ' + SYSTEM.NOW().format('yyyy-MM-dd h:mm a') + ' ' + UserInfo.getTimeZone().getDisplayName();
-                    post.Type = 'TextPost';
-                    feedItemLst.add(post);
-                }
-                
-            }
-        }
+
         delete new ContentDocument(Id = contentDocumentId);
-        if(!feedItemLst.isEmpty()){
-            Database.insert(feedItemLst, false, AccessLevel.SYSTEM_MODE);
-        }
     }
 
     private static Set<Id> getLatestVersionIds(List<ContentDocumentLink> links) {
@@ -225,7 +200,7 @@ public with sharing class RES_UploadDocumentClass {
         return versionIds;
     }
 
-    private static FileRow buildFileRow(ContentVersion cv, Boolean displayDeleteButton) {
+    private static FileRow buildFileRow(ContentVersion cv) {
         FileRow row = new FileRow();
         row.contentDocumentId = cv.ContentDocumentId;
         row.contentVersionId = cv.Id;
@@ -240,7 +215,7 @@ public with sharing class RES_UploadDocumentClass {
         row.fileType = String.isBlank(cv.FileExtension)
             ? cv.FileType
             : cv.FileExtension.toUpperCase();
-		row.displayDeleteButton = displayDeleteButton;
+
         return row;
     }
 

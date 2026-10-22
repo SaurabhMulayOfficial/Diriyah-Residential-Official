@@ -1,91 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Flow xmlns="http://soap.sforce.com/2006/04/metadata">
     <actionCalls>
-        <name>RES_Send_Bell_Notification_to_New_Owner</name>
-        <label>Send Bell Notification to New Owner</label>
-        <locationX>0</locationX>
-        <locationY>0</locationY>
-        <actionName>customNotificationAction</actionName>
-        <actionType>customNotificationAction</actionType>
-        <connector>
-            <targetReference>RES_Check_if_Flow_is_only_runs_on_Lead_Update</targetReference>
-        </connector>
-        <flowTransactionModel>CurrentTransaction</flowTransactionModel>
-        <inputParameters>
-            <name>customNotifTypeId</name>
-            <value>
-                <elementReference>RES_Get_Custom_Notification_Type.Id</elementReference>
-            </value>
-        </inputParameters>
-        <inputParameters>
-            <name>recipientIds</name>
-            <value>
-                <elementReference>LeadNewOwnerId</elementReference>
-            </value>
-        </inputParameters>
-        <inputParameters>
-            <name>title</name>
-            <value>
-                <elementReference>LeadAssignmentNotificationTitle</elementReference>
-            </value>
-        </inputParameters>
-        <inputParameters>
-            <name>body</name>
-            <value>
-                <elementReference>LeadReassignmentNotificationBody</elementReference>
-            </value>
-        </inputParameters>
-        <inputParameters>
-            <name>targetId</name>
-            <value>
-                <elementReference>$Record.Id</elementReference>
-            </value>
-        </inputParameters>
-        <nameSegment>customNotificationAction</nameSegment>
-        <offset>0</offset>
-    </actionCalls>
-    <actionCalls>
-        <name>RES_Send_Bell_Notification_to_Old_Owner</name>
-        <label>Send Bell Notification to Old Owner</label>
-        <locationX>0</locationX>
-        <locationY>0</locationY>
-        <actionName>customNotificationAction</actionName>
-        <actionType>customNotificationAction</actionType>
-        <flowTransactionModel>CurrentTransaction</flowTransactionModel>
-        <inputParameters>
-            <name>customNotifTypeId</name>
-            <value>
-                <elementReference>RES_Get_Custom_Notification_Type.Id</elementReference>
-            </value>
-        </inputParameters>
-        <inputParameters>
-            <name>recipientIds</name>
-            <value>
-                <elementReference>LeadOldOwnerId</elementReference>
-            </value>
-        </inputParameters>
-        <inputParameters>
-            <name>title</name>
-            <value>
-                <elementReference>LeadReAssignmentNotificationTitle</elementReference>
-            </value>
-        </inputParameters>
-        <inputParameters>
-            <name>body</name>
-            <value>
-                <elementReference>LeadReassignmentNotificationBody</elementReference>
-            </value>
-        </inputParameters>
-        <inputParameters>
-            <name>targetId</name>
-            <value>
-                <elementReference>$Record__Prior.Id</elementReference>
-            </value>
-        </inputParameters>
-        <nameSegment>customNotificationAction</nameSegment>
-        <offset>0</offset>
-    </actionCalls>
-    <actionCalls>
         <name>Send_Owner_Assignment_Notification</name>
         <label>Send Owner Assignment Notification</label>
         <locationX>0</locationX>
@@ -240,9 +155,6 @@
                     <stringValue>005</stringValue>
                 </rightValue>
             </conditions>
-            <connector>
-                <targetReference>RES_Send_Bell_Notification_to_Old_Owner</targetReference>
-            </connector>
             <label>Old Owner is User</label>
         </rules>
     </decisions>
@@ -280,7 +192,7 @@
         <locationY>0</locationY>
         <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
         <connector>
-            <targetReference>RES_Send_Bell_Notification_to_New_Owner</targetReference>
+            <targetReference>RES_Check_if_Flow_is_only_runs_on_Lead_Update</targetReference>
         </connector>
         <filterLogic>and</filterLogic>
         <filters>
@@ -304,7 +216,7 @@
         <recordTriggerType>CreateAndUpdate</recordTriggerType>
         <triggerType>RecordAfterSave</triggerType>
     </start>
-    <status>Active</status>
+    <status>Obsolete</status>
     <textTemplates>
         <name>LeadAssignmentNotificationTitle</name>
         <isViewedAsPlainText>true</isViewedAsPlainText>

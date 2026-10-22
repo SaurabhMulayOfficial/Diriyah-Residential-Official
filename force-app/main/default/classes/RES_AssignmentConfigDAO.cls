@@ -38,7 +38,6 @@
  * =============================================================================
  */
 
-
 public with sharing class RES_AssignmentConfigDAO extends RES_BaseDAOLayer {
     protected override String getSObjectName(){
         return 'RES_Assignment_Config__c';

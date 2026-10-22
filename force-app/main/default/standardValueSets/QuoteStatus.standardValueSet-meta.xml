@@ -8,22 +8,16 @@
         <allowEmail>true</allowEmail>
     </standardValue>
     <standardValue>
-        <fullName>Awaiting Client Confirmation</fullName>
+        <fullName>Needs Review</fullName>
         <default>false</default>
-        <label>Awaiting Client Confirmation</label>
-        <allowEmail>false</allowEmail>
+        <label>Needs Review</label>
+        <allowEmail>true</allowEmail>
     </standardValue>
     <standardValue>
-        <fullName>Negotiating</fullName>
+        <fullName>In Review</fullName>
         <default>false</default>
-        <label>Negotiating</label>
-        <allowEmail>false</allowEmail>
-    </standardValue>
-    <standardValue>
-        <fullName>Pending Approval</fullName>
-        <default>false</default>
-        <label>Pending Approval</label>
-        <allowEmail>false</allowEmail>
+        <label>In Review</label>
+        <allowEmail>true</allowEmail>
     </standardValue>
     <standardValue>
         <fullName>Approved</fullName>
@@ -38,27 +32,21 @@
         <allowEmail>true</allowEmail>
     </standardValue>
     <standardValue>
-        <fullName>Customer Approved</fullName>
+        <fullName>Presented</fullName>
         <default>false</default>
-        <label>Customer Approved</label>
-        <allowEmail>false</allowEmail>
+        <label>Presented</label>
+        <allowEmail>true</allowEmail>
     </standardValue>
     <standardValue>
-        <fullName>Expired</fullName>
+        <fullName>Accepted</fullName>
         <default>false</default>
-        <label>Expired</label>
-        <allowEmail>false</allowEmail>
+        <label>Accepted</label>
+        <allowEmail>true</allowEmail>
     </standardValue>
     <standardValue>
-        <fullName>Cancelled</fullName>
+        <fullName>Denied</fullName>
         <default>false</default>
-        <label>Cancelled</label>
-        <allowEmail>false</allowEmail>
-    </standardValue>
-    <standardValue>
-        <fullName>Superseded</fullName>
-        <default>false</default>
-        <label>Superseded</label>
-        <allowEmail>false</allowEmail>
+        <label>Denied</label>
+        <allowEmail>true</allowEmail>
     </standardValue>
 </StandardValueSet>

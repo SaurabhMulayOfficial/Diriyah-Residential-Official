@@ -1,39 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <SharingRules xmlns="http://soap.sforce.com/2006/04/metadata">
-    <sharingCriteriaRules>
-        <fullName>RES_Marketing_Source_Leads</fullName>
-        <accessLevel>Read</accessLevel>
-        <label>Marketing Source Leads</label>
-        <sharedTo>
-            <role>RES_Marketing_Growth_Head</role>
-        </sharedTo>
-        <criteriaItems>
-            <field>LeadSource</field>
-            <operation>equals</operation>
-            <value>Marketing Leads</value>
-        </criteriaItems>
-        <includeRecordsOwnedByAll>true</includeRecordsOwnedByAll>
-    </sharingCriteriaRules>
-    <sharingGuestRules>
-        <fullName>RES_Guest_User_Sharing_Rule</fullName>
-        <accessLevel>Read</accessLevel>
-        <label>Guest User Sharing Rule</label>
-        <sharedTo>
-            <guestUser>Employee_Referral_Portal</guestUser>
-        </sharedTo>
-        <criteriaItems>
-            <field>LeadSource</field>
-            <operation>equals</operation>
-            <value>Referral</value>
-        </criteriaItems>
-        <includeHVUOwnedRecords>false</includeHVUOwnedRecords>
-    </sharingGuestRules>
     <sharingOwnerRules>
         <fullName>RES_Lead_Record_Shared</fullName>
         <accessLevel>Edit</accessLevel>
         <label>Lead Record Shared</label>
         <sharedTo>
-            <group>RES_Operations_Group</group>
+            <group>RES_Operations_Team</group>
         </sharedTo>
         <sharedFrom>
             <group>RES_Cross_Functional_Record_Access_Group</group>

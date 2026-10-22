@@ -1,25 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <SharingRules xmlns="http://soap.sforce.com/2006/04/metadata">
     <sharingCriteriaRules>
-        <fullName>RES_Marketing_Source_Opportunity</fullName>
-        <accessLevel>Read</accessLevel>
-        <label>Marketing Source Opportunity</label>
-        <sharedTo>
-            <role>RES_Marketing_Growth_Head</role>
-        </sharedTo>
-        <criteriaItems>
-            <field>LeadSource</field>
-            <operation>equals</operation>
-            <value>Marketing Leads</value>
-        </criteriaItems>
-        <includeRecordsOwnedByAll>true</includeRecordsOwnedByAll>
-    </sharingCriteriaRules>
-    <sharingCriteriaRules>
         <fullName>RES_Share_Closed_Won_Opps_with_Operations</fullName>
         <accessLevel>Edit</accessLevel>
         <label>Share Closed Won Opps with Operations</label>
         <sharedTo>
-            <group>RES_Operations_Group</group>
+            <group>RES_Operations_Team</group>
         </sharedTo>
         <criteriaItems>
             <field>StageName</field>
@@ -28,15 +14,4 @@
         </criteriaItems>
         <includeRecordsOwnedByAll>true</includeRecordsOwnedByAll>
     </sharingCriteriaRules>
-    <sharingOwnerRules>
-        <fullName>RES_All_Opportunities_Shared_With_Finance</fullName>
-        <accessLevel>Read</accessLevel>
-        <label>All Opportunities Shared With Finance</label>
-        <sharedTo>
-            <group>RES_Finance_Team_Group</group>
-        </sharedTo>
-        <sharedFrom>
-            <allInternalUsers></allInternalUsers>
-        </sharedFrom>
-    </sharingOwnerRules>
 </SharingRules>

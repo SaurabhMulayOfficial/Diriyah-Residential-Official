@@ -69,18 +69,18 @@ public with sharing class RES_LeadConversionHandler {
         
         List<Database.LeadConvert> qualifiedLeadsToConvert = new List<Database.LeadConvert>();
         String convertedStatusLabel = new RES_LeadDAOLayer().getConvertedStatusLabel('Converted');
-        Map<Id, ConversionTarget> targets = resolveConversionTargets(leadsToConvert, leadDuplicateMap, phoneToContactMap);
         for(Lead l:leadsToConvert){
             Database.LeadConvert lc = new Database.LeadConvert();
             lc.setLeadId(l.Id);
             lc.setConvertedStatus(convertedStatusLabel);
-
-            ConversionTarget target = targets.get(l.Id);
-            if(target.contactId != null){
-                lc.setContactId(target.contactId);
+    
+            if(phoneToContactMap.containsKey(l.MobilePhone)){
+                lc.setContactId(phoneToContactMap.get(l.MobilePhone));
             }
-            if(target.accountId != null){
-                lc.setAccountId(target.accountId);
+
+            if(leadDuplicateMap.containsKey(l.Id) && leadDuplicateMap.get(l.Id) != null && !leadDuplicateMap.get(l.Id).isEmpty()){
+                Account acc = (Account)leadDuplicateMap.get(l.Id).get(0);
+                lc.setAccountId(acc.Id);
             }
 
             lc.setOwnerId(l.OwnerId);
@@ -105,134 +105,6 @@ public with sharing class RES_LeadConversionHandler {
             System.debug(LoggingLevel.ERROR, 'Exception while Converting Leads: ' + ex.getMessage());
             return new List<Database.LeadConvertResult>();
         }
-    }
-
-    /**
-     * @description Existing Account / Contact that a Lead should be converted into.
-     */
-    public class ConversionTarget {
-        public Id accountId;
-        public Id contactId;
-    }
-
-    /**
-     * @description Decides which existing Account / Contact (if any) each Lead is converted into.
-     *              A match is only honoured when the matched record is of the same type as the Lead:
-     *              • Company Lead    -> Business Account / Business Account's Contact
-     *              • Individual Lead -> Person Account / Person Account's Contact
-     *              A cross-type match (e.g. Company Lead whose mobile equals a Person Account's mobile)
-     *              is ignored so that new records are created instead of failing the conversion.
-     *              A matched Contact that belongs to a different Account than the matched Account is
-     *              also ignored, as Salesforce rejects that combination. When only a Contact matches,
-     *              its Account is used as the target (Salesforce requires accountId with contactId).
-     *              Leads with an unknown record type keep the previous (unfiltered) behaviour.
-     *
-     * @param leads             Leads being converted
-     * @param leadDuplicateMap  Lead Id -> duplicate Accounts found through Datacloud matching
-     * @param phoneToContactMap Mobile Phone -> existing Contact Id
-     * @return Map<Id,ConversionTarget> Lead Id -> Account / Contact to use (values may be null)
-     */
-    public static Map<Id, ConversionTarget> resolveConversionTargets(
-        List<Lead> leads,
-        Map<Id,List<SObject>> leadDuplicateMap,
-        Map<String,Id> phoneToContactMap){
-
-        Map<Id, ConversionTarget> targets = new Map<Id, ConversionTarget>();
-        Map<Id, Id> leadToAccountId = new Map<Id, Id>();
-        Map<Id, Id> leadToContactId = new Map<Id, Id>();
-
-        for(Lead l : leads){
-            targets.put(l.Id, new ConversionTarget());
-            if(leadDuplicateMap != null && leadDuplicateMap.containsKey(l.Id)
-               && leadDuplicateMap.get(l.Id) != null && !leadDuplicateMap.get(l.Id).isEmpty()){
-                leadToAccountId.put(l.Id, ((Account) leadDuplicateMap.get(l.Id).get(0)).Id);
-            }
-            if(phoneToContactMap != null && l.MobilePhone != null && phoneToContactMap.containsKey(l.MobilePhone)){
-                leadToContactId.put(l.Id, phoneToContactMap.get(l.MobilePhone));
-            }
-        }
-
-        Map<Id, Account> accountMap = new RES_AccountDAOLayer().getAccountTypesByIds(new Set<Id>(leadToAccountId.values()));
-        Map<Id, Contact> contactMap = new RES_ContactDAOLayer().getContactsWithAccountTypeByIds(new Set<Id>(leadToContactId.values()));
-
-        Map<String, List<Contact>> contactsByMobile = new Map<String, List<Contact>>();
-        for(Lead l : leads){
-            Boolean isIndividual = isIndividualLead(l);
-            Id accountId = leadToAccountId.get(l.Id);
-            Id contactId = leadToContactId.get(l.Id);
-
-            if(accountId != null && isIndividual != null){
-                Account matchedAccount = accountMap.get(accountId);
-                if(matchedAccount == null || (matchedAccount.IsPersonAccount == true) != isIndividual){
-                    accountId = null;
-                }
-            }
-
-            if(contactId != null){
-                Contact chosen = contactMap.get(contactId);
-                if(!isContactUsable(chosen, isIndividual, accountId)){
-                    // The mobile can be shared by contacts of both types - look for one of the right type
-                    chosen = null;
-                    for(Contact c : getContactsByMobile(l.MobilePhone, contactsByMobile)){
-                        if(isContactUsable(c, isIndividual, accountId)){
-                            chosen = c;
-                            break;
-                        }
-                    }
-                }
-                contactId = chosen != null ? chosen.Id : null;
-                // Salesforce requires an accountId whenever a contactId is passed
-                if(chosen != null && accountId == null){
-                    accountId = chosen.AccountId;
-                }
-            }
-
-            targets.get(l.Id).accountId = accountId;
-            targets.get(l.Id).contactId = contactId;
-        }
-        return targets;
-    }
-
-    private static Boolean isContactUsable(Contact c, Boolean isIndividual, Id accountId){
-        if(c == null){
-            return false;
-        }
-        if(isIndividual != null && (c.Account.IsPersonAccount == true) != isIndividual){
-            return false;
-        }
-        return accountId == null || c.AccountId == accountId;
-    }
-
-    // Contacts sharing the Lead's mobile; queried lazily, only when the first match was not usable
-    private static List<Contact> getContactsByMobile(String mobile, Map<String, List<Contact>> cache){
-        if(String.isBlank(mobile)){
-            return new List<Contact>();
-        }
-        if(!cache.containsKey(mobile)){
-            List<Contact> found = new RES_ContactDAOLayer().getContactByMobilePhone(new Set<String>{ mobile });
-            cache.put(mobile, found != null ? found : new List<Contact>());
-        }
-        return cache.get(mobile);
-    }
-
-    /**
-     * @description true = Individual Lead, false = Company Lead, null = unknown record type.
-     */
-    private static Boolean isIndividualLead(Lead l){
-        if(l.RecordTypeId == null){
-            return null;
-        }
-        Schema.RecordTypeInfo info = Schema.SObjectType.Lead.getRecordTypeInfosById().get(l.RecordTypeId);
-        if(info == null){
-            return null;
-        }
-        if(info.getDeveloperName() == 'RES_Individual'){
-            return true;
-        }
-        if(info.getDeveloperName() == 'RES_Company'){
-            return false;
-        }
-        return null;
     }
 
     /**

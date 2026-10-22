@@ -19,6 +19,12 @@
         <field>LEAD_SOURCE</field>
     </columns>
     <columns>
+        <field>LEAD_CREATED_DATE</field>
+    </columns>
+    <columns>
+        <field>Lead.RES_Lead_Sub_Status__c</field>
+    </columns>
+    <columns>
         <aggregateTypes>Sum</aggregateTypes>
         <field>Lead.RES_SLA_Cycle_Count__c</field>
     </columns>

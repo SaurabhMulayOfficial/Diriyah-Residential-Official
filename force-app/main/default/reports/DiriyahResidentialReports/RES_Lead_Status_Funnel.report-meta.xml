@@ -56,6 +56,13 @@
             <operator>equals</operator>
             <value>0</value>
         </criteriaItems>
+        <criteriaItems>
+            <column>STATUS</column>
+            <columnToColumn>false</columnToColumn>
+            <isUnlocked>true</isUnlocked>
+            <operator>notEqual</operator>
+            <value>Archive</value>
+        </criteriaItems>
         <language>en_US</language>
     </filter>
     <format>Summary</format>

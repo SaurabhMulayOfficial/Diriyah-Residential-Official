@@ -80,20 +80,18 @@ public with sharing class RES_LeadConversionQueueable implements Queueable {
         List<Database.LeadConvert> leadsToConvertList = new List<Database.LeadConvert>();
         String convertedStatusLabel = new RES_LeadDAOLayer().getConvertedStatusLabel('Converted');
         
-        Map<Id, RES_LeadConversionHandler.ConversionTarget> targets =
-            RES_LeadConversionHandler.resolveConversionTargets(leadsToConvert, leadDuplicateMap, phoneToContactMap);
-
         for(Lead l : leadsToConvert){
             Database.LeadConvert lc = new Database.LeadConvert();
             lc.setLeadId(l.Id);
             lc.setConvertedStatus(convertedStatusLabel);
             
-            RES_LeadConversionHandler.ConversionTarget target = targets.get(l.Id);
-            if(target.contactId != null){
-                lc.setContactId(target.contactId);
+            if(phoneToContactMap.containsKey(l.MobilePhone)){
+                lc.setContactId(phoneToContactMap.get(l.MobilePhone));
             }
-            if(target.accountId != null){
-                lc.setAccountId(target.accountId);
+            
+            if(leadDuplicateMap.containsKey(l.Id) && leadDuplicateMap.get(l.Id) != null && !leadDuplicateMap.get(l.Id).isEmpty()){
+                Account acc = (Account)leadDuplicateMap.get(l.Id).get(0);
+                lc.setAccountId(acc.Id);
             }
             
             lc.setOwnerId(l.OwnerId);

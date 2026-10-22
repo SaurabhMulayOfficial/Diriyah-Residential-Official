@@ -5,9 +5,14 @@
         <description>New Lead Assignment Email Alert</description>
         <protected>false</protected>
         <recipients>
-            <type>owner</type>
+            <recipient>kfarooqui@diriyah.sa</recipient>
+            <type>user</type>
         </recipients>
-        <senderAddress>saurabh.mulay@globant.com</senderAddress>
+        <recipients>
+            <recipient>mabidi@diriyah.sa</recipient>
+            <type>user</type>
+        </recipients>
+        <senderAddress>salesforcesupport@diriyah.sa</senderAddress>
         <senderType>OrgWideEmailAddress</senderType>
         <template>unfiled$public/RES_Lead_Assignment_Notification</template>
     </alerts>

@@ -165,6 +165,46 @@ private class RES_LeadMassConversionUtility_Test {
     } 
 
     // ══════════════════════════════════════════════════════════════════
+    // TEST 6 : Queue-owned lead → AuraHandledException
+    // Covers : validateLeadOwners() → add(l.Name) RED line + throw RED line
+    // Runs as : Sales Manager
+    // Note   : Group + QueueSObject (setup objects) inserted BEFORE
+    //          System.runAs to avoid MIXED_DML_OPERATION error.
+    // ══════════════════════════════════════════════════════════════════
+    // @isTest
+    // static void testQueueOwnedLeadShouldThrowException() {
+    //     // Setup objects must be inserted outside System.runAs
+    //     Group leadQueue = new Group(Name = 'Test Lead Queue', Type = 'Queue');
+    //     insert leadQueue;
+    //     System.runAs(new User(Id = UserInfo.getUserId())) {
+    //         insert new QueueSObject(QueueId = leadQueue.Id, SObjectType = 'Lead');
+    //     }
+    //     System.runAs(getSalesManager()) {
+    //         Lead l = RES_TestDataFactory.createLead('queue.owned@example.com');
+    //         l.OwnerId = leadQueue.Id;
+    //         update l;
+    //         Boolean exceptionThrown = false;
+    //         Test.startTest();
+    //         try {
+    //             RES_LeadMassConversionUtility.convertLeads(
+    //                 new List<RES_LeadMassConversionUtility.ConvertRequest>{
+    //                     RES_TestDataFactory.buildRequest(
+    //                         new List<Lead>{ new Lead(Id = l.Id) },
+    //                         RES_TestDataFactory.getConvertedStatus(),
+    //                         true
+    //                     )
+    //                 }
+    //             );
+    //         } catch (AuraHandledException e) {
+    //             exceptionThrown = true;
+    //         }
+    //         Test.stopTest();
+    //         System.assertEquals(true, exceptionThrown,
+    //             'AuraHandledException must be thrown when a lead is owned by a Queue.');
+    //     }
+    // }  
+
+    // ══════════════════════════════════════════════════════════════════
     // TEST 7 : handleResults null/empty guard — no exception thrown
     // Covers : handleResults() → null/empty return RED line
     // Runs as : Sales Relationship Manager

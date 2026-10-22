@@ -61,22 +61,6 @@
     <apiVersion>66.0</apiVersion>
     <areMetricsLoggedToDataCloud>false</areMetricsLoggedToDataCloud>
     <assignments>
-        <name>Add_Emails</name>
-        <label>Add Emails</label>
-        <locationX>0</locationX>
-        <locationY>0</locationY>
-        <assignmentItems>
-            <assignToReference>Emails</assignToReference>
-            <operator>Add</operator>
-            <value>
-                <elementReference>$Record.Owner:User.Email</elementReference>
-            </value>
-        </assignmentItems>
-        <connector>
-            <targetReference>If_Type_Of_Leasing_has_Changed_and_Check_Sub_Status_Change</targetReference>
-        </connector>
-    </assignments>
-    <assignments>
         <name>Assign_Instance</name>
         <label>Assign Instance</label>
         <locationX>0</locationX>
@@ -106,253 +90,6 @@
             <targetReference>SLA_breached</targetReference>
         </connector>
     </assignments>
-    <assignments>
-        <name>Populate_Leasing_Owner_Merge_Fields</name>
-        <label>Populate Leasing Owner Merge Fields</label>
-        <locationX>0</locationX>
-        <locationY>0</locationY>
-        <assignmentItems>
-            <assignToReference>leasingOwnerMergeFields</assignToReference>
-            <operator>Add</operator>
-            <value>
-                <elementReference>OwnerName</elementReference>
-            </value>
-        </assignmentItems>
-        <assignmentItems>
-            <assignToReference>leasingOwnerMergeFields</assignToReference>
-            <operator>Add</operator>
-            <value>
-                <elementReference>LeadName</elementReference>
-            </value>
-        </assignmentItems>
-        <assignmentItems>
-            <assignToReference>leasingOwnerMergeFields</assignToReference>
-            <operator>Add</operator>
-            <value>
-                <elementReference>$Record.MobilePhone</elementReference>
-            </value>
-        </assignmentItems>
-        <assignmentItems>
-            <assignToReference>leasingOwnerMergeFields</assignToReference>
-            <operator>Add</operator>
-            <value>
-                <elementReference>$Record.Email</elementReference>
-            </value>
-        </assignmentItems>
-        <assignmentItems>
-            <assignToReference>leasingOwnerMergeFields</assignToReference>
-            <operator>Add</operator>
-            <value>
-                <elementReference>$Record.RES_Project__c</elementReference>
-            </value>
-        </assignmentItems>
-        <assignmentItems>
-            <assignToReference>leasingOwnerMergeFields</assignToReference>
-            <operator>Add</operator>
-            <value>
-                <elementReference>$Record.RES_Type_of_Leasing__c</elementReference>
-            </value>
-        </assignmentItems>
-        <assignmentItems>
-            <assignToReference>leasingOwnerMergeFields</assignToReference>
-            <operator>Add</operator>
-            <value>
-                <elementReference>leadURL</elementReference>
-            </value>
-        </assignmentItems>
-        <connector>
-            <targetReference>RES_Send_Email_to_Owner_Leasing</targetReference>
-        </connector>
-    </assignments>
-    <assignments>
-        <name>Populate_Merge_Fields</name>
-        <label>Populate Merge Fields</label>
-        <locationX>0</locationX>
-        <locationY>0</locationY>
-        <assignmentItems>
-            <assignToReference>mergeFields</assignToReference>
-            <operator>Add</operator>
-            <value>
-                <elementReference>leadFullName</elementReference>
-            </value>
-        </assignmentItems>
-        <assignmentItems>
-            <assignToReference>mergeFields</assignToReference>
-            <operator>Add</operator>
-            <value>
-                <elementReference>$Record.Phone</elementReference>
-            </value>
-        </assignmentItems>
-        <assignmentItems>
-            <assignToReference>mergeFields</assignToReference>
-            <operator>Add</operator>
-            <value>
-                <elementReference>$Record.Email</elementReference>
-            </value>
-        </assignmentItems>
-        <assignmentItems>
-            <assignToReference>mergeFields</assignToReference>
-            <operator>Add</operator>
-            <value>
-                <elementReference>$Record.RES_Project__c</elementReference>
-            </value>
-        </assignmentItems>
-        <assignmentItems>
-            <assignToReference>mergeFields</assignToReference>
-            <operator>Add</operator>
-            <value>
-                <elementReference>leadURL</elementReference>
-            </value>
-        </assignmentItems>
-        <connector>
-            <targetReference>AutolaunchFlow_Send_Emails_With_Merge_Fields_Flow_1</targetReference>
-        </connector>
-    </assignments>
-    <assignments>
-        <name>Set_Commercial_Queue</name>
-        <label>Set Commercial Queue</label>
-        <locationX>0</locationX>
-        <locationY>0</locationY>
-        <assignmentItems>
-            <assignToReference>leasingQueueName</assignToReference>
-            <operator>Assign</operator>
-            <value>
-                <stringValue>RES_Commercial_Leasing_Queue</stringValue>
-            </value>
-        </assignmentItems>
-        <connector>
-            <targetReference>Get_Leasing_Queue</targetReference>
-        </connector>
-    </assignments>
-    <assignments>
-        <name>Set_Retail_Queue</name>
-        <label>Set Retail Queue</label>
-        <locationX>0</locationX>
-        <locationY>0</locationY>
-        <assignmentItems>
-            <assignToReference>leasingQueueName</assignToReference>
-            <operator>Assign</operator>
-            <value>
-                <stringValue>RES_Retail_Leasing_Queue</stringValue>
-            </value>
-        </assignmentItems>
-        <connector>
-            <targetReference>Get_Leasing_Queue</targetReference>
-        </connector>
-    </assignments>
-    <assignments>
-        <name>Set_Specialty_Queue</name>
-        <label>Set Specialty Queue</label>
-        <locationX>0</locationX>
-        <locationY>0</locationY>
-        <assignmentItems>
-            <assignToReference>leasingQueueName</assignToReference>
-            <operator>Assign</operator>
-            <value>
-                <stringValue>RES_Specialty_Leasing_Queue</stringValue>
-            </value>
-        </assignmentItems>
-        <connector>
-            <targetReference>Get_Leasing_Queue</targetReference>
-        </connector>
-    </assignments>
-    <decisions>
-        <name>Check_for_emailRecipients_Null_check</name>
-        <label>Check  for emailRecipients Null check</label>
-        <locationX>0</locationX>
-        <locationY>0</locationY>
-        <defaultConnector>
-            <targetReference>Check_if_Lead_is_Converted_and_Flow_Switch</targetReference>
-        </defaultConnector>
-        <defaultConnectorLabel>Emails Null</defaultConnectorLabel>
-        <rules>
-            <name>Email_Present</name>
-            <conditionLogic>and</conditionLogic>
-            <conditions>
-                <leftValueReference>Get_Email_of_all_members_from_Queue.emailRecipients</leftValueReference>
-                <operator>IsNull</operator>
-                <rightValue>
-                    <booleanValue>false</booleanValue>
-                </rightValue>
-            </conditions>
-            <connector>
-                <targetReference>Populate_Merge_Fields</targetReference>
-            </connector>
-            <label>Email Present</label>
-        </rules>
-    </decisions>
-    <decisions>
-        <description>Route each leasing type to its respective queue; Residential Leasing is retired.</description>
-        <name>Check_for_Type_Of_Leasing</name>
-        <label>Check for Type Of Leasing</label>
-        <locationX>0</locationX>
-        <locationY>0</locationY>
-        <defaultConnector>
-            <isGoTo>true</isGoTo>
-            <targetReference>Check_if_Lead_is_Converted_and_Flow_Switch</targetReference>
-        </defaultConnector>
-        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
-        <rules>
-            <name>Commercial_Leasing</name>
-            <conditionLogic>and</conditionLogic>
-            <conditions>
-                <leftValueReference>$Record.RES_Type_of_Leasing__c</leftValueReference>
-                <operator>EqualTo</operator>
-                <rightValue>
-                    <stringValue>Commercial Leasing</stringValue>
-                </rightValue>
-            </conditions>
-            <connector>
-                <targetReference>Set_Commercial_Queue</targetReference>
-            </connector>
-            <label>Commercial Leasing</label>
-        </rules>
-        <rules>
-            <name>Retail_Leasing</name>
-            <conditionLogic>and</conditionLogic>
-            <conditions>
-                <leftValueReference>$Record.RES_Type_of_Leasing__c</leftValueReference>
-                <operator>EqualTo</operator>
-                <rightValue>
-                    <stringValue>Retail Leasing</stringValue>
-                </rightValue>
-            </conditions>
-            <connector>
-                <targetReference>Set_Retail_Queue</targetReference>
-            </connector>
-            <label>Retail Leasing</label>
-        </rules>
-        <rules>
-            <name>Specialty_Leasing</name>
-            <conditionLogic>and</conditionLogic>
-            <conditions>
-                <leftValueReference>$Record.RES_Type_of_Leasing__c</leftValueReference>
-                <operator>EqualTo</operator>
-                <rightValue>
-                    <stringValue>Specialty Leasing</stringValue>
-                </rightValue>
-            </conditions>
-            <connector>
-                <targetReference>Set_Specialty_Queue</targetReference>
-            </connector>
-            <label>Specialty Leasing</label>
-        </rules>
-        <rules>
-            <name>Type_of_Leasing_is_Residential_Leasing</name>
-            <conditionLogic>and</conditionLogic>
-            <conditions>
-                <leftValueReference>$Record.RES_Type_of_Leasing__c</leftValueReference>
-                <operator>EqualTo</operator>
-                <rightValue>
-                    <stringValue>Residential Leasing</stringValue>
-                </rightValue>
-            </conditions>
-            <connector>
-                <targetReference>Update_Lead_Status_to_Retired</targetReference>
-            </connector>
-            <label>Type of Leasing is Residential Leasing</label>
-        </rules>
-    </decisions>
     <decisions>
         <name>Check_if_Lead_is_Converted_and_Flow_Switch</name>
         <label>Check if Lead is Converted and Flow Switch</label>
@@ -455,58 +192,6 @@
         </rules>
     </decisions>
     <decisions>
-        <description>Only email the owner when the owner is a user (Id prefix 005); skip when the lead is owned by a queue so the send never has 0 recipients.</description>
-        <name>Check_Owner_Has_Email</name>
-        <label>Check Owner Has Email</label>
-        <locationX>0</locationX>
-        <locationY>0</locationY>
-        <defaultConnector>
-            <targetReference>Check_for_Type_Of_Leasing</targetReference>
-        </defaultConnector>
-        <defaultConnectorLabel>Owner is a Queue</defaultConnectorLabel>
-        <rules>
-            <name>Owner_Is_User</name>
-            <conditionLogic>and</conditionLogic>
-            <conditions>
-                <leftValueReference>$Record.OwnerId</leftValueReference>
-                <operator>StartsWith</operator>
-                <rightValue>
-                    <stringValue>005</stringValue>
-                </rightValue>
-            </conditions>
-            <connector>
-                <targetReference>Populate_Leasing_Owner_Merge_Fields</targetReference>
-            </connector>
-            <label>Owner is a User</label>
-        </rules>
-    </decisions>
-    <decisions>
-        <description>Only reassign owner and notify when the leasing queue exists in this org.</description>
-        <name>Check_Queue_Found</name>
-        <label>Check Queue Found</label>
-        <locationX>0</locationX>
-        <locationY>0</locationY>
-        <defaultConnector>
-            <targetReference>Check_if_Lead_is_Converted_and_Flow_Switch</targetReference>
-        </defaultConnector>
-        <defaultConnectorLabel>Queue Not Found</defaultConnectorLabel>
-        <rules>
-            <name>Queue_Found</name>
-            <conditionLogic>and</conditionLogic>
-            <conditions>
-                <leftValueReference>Get_Leasing_Queue</leftValueReference>
-                <operator>IsNull</operator>
-                <rightValue>
-                    <booleanValue>false</booleanValue>
-                </rightValue>
-            </conditions>
-            <connector>
-                <targetReference>Publish_Ownership_Reassignment_Event</targetReference>
-            </connector>
-            <label>Queue Found</label>
-        </rules>
-    </decisions>
-    <decisions>
         <name>Check_Related_to_Opportunity</name>
         <label>Check Related to Opportunity</label>
         <locationX>0</locationX>
@@ -523,7 +208,7 @@
                 </rightValue>
             </conditions>
             <connector>
-                <targetReference>Update_Opportunity_Email_mobile_fields</targetReference>
+                <targetReference>RES_Update_Opportunity_Address_Fields</targetReference>
             </connector>
             <label>Opportunity Created</label>
         </rules>
@@ -553,7 +238,7 @@
         <locationX>0</locationX>
         <locationY>0</locationY>
         <defaultConnector>
-            <targetReference>Add_Emails</targetReference>
+            <targetReference>Check_if_Lead_is_Converted_and_Flow_Switch</targetReference>
         </defaultConnector>
         <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
         <rules>
@@ -610,20 +295,6 @@
                     <booleanValue>false</booleanValue>
                 </rightValue>
             </conditions>
-            <conditions>
-                <leftValueReference>$Record.RES_Next_Assignment_Date__c</leftValueReference>
-                <operator>IsBlank</operator>
-                <rightValue>
-                    <booleanValue>false</booleanValue>
-                </rightValue>
-            </conditions>
-            <conditions>
-                <leftValueReference>$Record.RES_Reassignment_Count__c</leftValueReference>
-                <operator>LessThan</operator>
-                <rightValue>
-                    <numberValue>1.0</numberValue>
-                </rightValue>
-            </conditions>
             <connector>
                 <targetReference>Assign_Next_Owner_and_Update_Lead</targetReference>
             </connector>
@@ -636,7 +307,7 @@
         <locationX>0</locationX>
         <locationY>0</locationY>
         <defaultConnector>
-            <targetReference>Add_Emails</targetReference>
+            <targetReference>Check_if_Lead_is_Converted_and_Flow_Switch</targetReference>
         </defaultConnector>
         <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
         <rules>
@@ -683,52 +354,6 @@
             <label>Status Has Changed to ( Qualified, Retired, Archive)</label>
         </rules>
     </decisions>
-    <decisions>
-        <name>If_Type_Of_Leasing_has_Changed_and_Check_Sub_Status_Change</name>
-        <label>If Type Of Leasing has Changed and Check Sub Status Change</label>
-        <locationX>0</locationX>
-        <locationY>0</locationY>
-        <defaultConnector>
-            <targetReference>Check_if_Lead_is_Converted_and_Flow_Switch</targetReference>
-        </defaultConnector>
-        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
-        <rules>
-            <name>Check_for_Type</name>
-            <conditionLogic>1 AND 2 AND (3 OR 4)</conditionLogic>
-            <conditions>
-                <leftValueReference>$Record.RES_Type_of_Leasing__c</leftValueReference>
-                <operator>IsNull</operator>
-                <rightValue>
-                    <booleanValue>false</booleanValue>
-                </rightValue>
-            </conditions>
-            <conditions>
-                <leftValueReference>$Record.RES_Lead_Sub_Status__c</leftValueReference>
-                <operator>EqualTo</operator>
-                <rightValue>
-                    <stringValue>281</stringValue>
-                </rightValue>
-            </conditions>
-            <conditions>
-                <leftValueReference>$Record.RES_Type_of_Leasing__c</leftValueReference>
-                <operator>IsChanged</operator>
-                <rightValue>
-                    <booleanValue>true</booleanValue>
-                </rightValue>
-            </conditions>
-            <conditions>
-                <leftValueReference>$Record.RES_Lead_Sub_Status__c</leftValueReference>
-                <operator>IsChanged</operator>
-                <rightValue>
-                    <booleanValue>true</booleanValue>
-                </rightValue>
-            </conditions>
-            <connector>
-                <targetReference>Check_Owner_Has_Email</targetReference>
-            </connector>
-            <label>Check for Type</label>
-        </rules>
-    </decisions>
     <description>Lead SLA management, Task Creation after lead Convert</description>
     <environments>Default</environments>
     <formulas>
@@ -737,36 +362,9 @@
         <expression>ISNEW()</expression>
     </formulas>
     <formulas>
-        <name>leadFullName</name>
-        <dataType>String</dataType>
-        <expression>TRIM(
-    BLANKVALUE(TEXT({!$Record.Salutation}), &quot;&quot;) &amp; &quot; &quot; &amp;
-    BLANKVALUE({!$Record.FirstName}, &quot;&quot;) &amp; &quot; &quot; &amp;
-    BLANKVALUE({!$Record.MiddleName}, &quot;&quot;) &amp; &quot; &quot; &amp;
-    BLANKVALUE({!$Record.LastName}, &quot;&quot;)
-)</expression>
-    </formulas>
-    <formulas>
-        <name>leadURL</name>
-        <dataType>String</dataType>
-        <expression>LEFT(
-    {!$Api.Partner_Server_URL_610},
-    FIND(&quot;/services&quot;, {!$Api.Partner_Server_URL_610})
-)
-&amp;
-&quot;/&quot;
-&amp;
-{!$Record.Id}</expression>
-    </formulas>
-    <formulas>
         <name>NOW</name>
         <dataType>DateTime</dataType>
         <expression>NOW()</expression>
-    </formulas>
-    <formulas>
-        <name>OrgBaseUrl</name>
-        <dataType>String</dataType>
-        <expression>LEFT({!$Api.Partner_Server_URL_370}, FIND(&quot;/services&quot;, {!$Api.Partner_Server_URL_370}))</expression>
     </formulas>
     <formulas>
         <name>OwnerName</name>
@@ -794,36 +392,13 @@
         </value>
     </processMetadataValues>
     <processType>AutoLaunchedFlow</processType>
-    <recordCreates>
-        <description>Publish an Ownership Reassignment Event so the Automated Process user sets the lead owner to the leasing queue. This bypasses the role-based RES_Restrict_Lead_Owner_field_editing validation rule without modifying it.</description>
-        <name>Publish_Ownership_Reassignment_Event</name>
-        <label>Publish Ownership Reassignment Event</label>
-        <locationX>0</locationX>
-        <locationY>0</locationY>
-        <connector>
-            <targetReference>Get_Email_of_all_members_from_Queue</targetReference>
-        </connector>
-        <inputAssignments>
-            <field>RES_LeadId__c</field>
-            <value>
-                <elementReference>$Record.Id</elementReference>
-            </value>
-        </inputAssignments>
-        <inputAssignments>
-            <field>RES_OwnerId__c</field>
-            <value>
-                <elementReference>Get_Leasing_Queue.Id</elementReference>
-            </value>
-        </inputAssignments>
-        <object>RES_Ownership_Reassignment_Event__e</object>
-    </recordCreates>
     <recordDeletes>
         <name>Delete_Lead_Routing_record</name>
         <label>Delete Lead Routing record</label>
         <locationX>0</locationX>
         <locationY>0</locationY>
         <connector>
-            <targetReference>Add_Emails</targetReference>
+            <targetReference>Check_if_Lead_is_Converted_and_Flow_Switch</targetReference>
         </connector>
         <filterLogic>and</filterLogic>
         <filters>
@@ -857,37 +432,6 @@
         <storeOutputAutomatically>true</storeOutputAutomatically>
     </recordLookups>
     <recordLookups>
-        <description>Look up the leasing queue (Group) by developer name to reassign the lead owner.</description>
-        <name>Get_Leasing_Queue</name>
-        <label>Get Leasing Queue</label>
-        <locationX>0</locationX>
-        <locationY>0</locationY>
-        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
-        <connector>
-            <targetReference>Check_Queue_Found</targetReference>
-        </connector>
-        <filterLogic>and</filterLogic>
-        <filters>
-            <field>DeveloperName</field>
-            <operator>EqualTo</operator>
-            <value>
-                <elementReference>leasingQueueName</elementReference>
-            </value>
-        </filters>
-        <filters>
-            <field>Type</field>
-            <operator>EqualTo</operator>
-            <value>
-                <stringValue>Queue</stringValue>
-            </value>
-        </filters>
-        <getFirstRecordOnly>true</getFirstRecordOnly>
-        <object>Group</object>
-        <queriedFields>Id</queriedFields>
-        <queriedFields>DeveloperName</queriedFields>
-        <storeOutputAutomatically>true</storeOutputAutomatically>
-    </recordLookups>
-    <recordLookups>
         <name>Get_Owners_Manager</name>
         <label>Get Owners Manager</label>
         <locationX>0</locationX>
@@ -913,6 +457,66 @@
         <storeOutputAutomatically>true</storeOutputAutomatically>
     </recordLookups>
     <recordUpdates>
+        <name>RES_Update_Opportunity_Address_Fields</name>
+        <label>Update Opportunity Address Fields</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Auto_Create_Task_on_Lead_Conversion</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Id</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>$Record.ConvertedOpportunityId</elementReference>
+            </value>
+        </filters>
+        <inputAssignments>
+            <field>RES_City__c</field>
+            <value>
+                <elementReference>$Record.City</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>RES_Country__c</field>
+            <value>
+                <elementReference>$Record.Country</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>RES_Opportunity_Email__c</field>
+            <value>
+                <elementReference>$Record.Email</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>RES_Opportunity_Mobile__c</field>
+            <value>
+                <elementReference>$Record.MobilePhone</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>RES_State_Province__c</field>
+            <value>
+                <elementReference>$Record.State</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>RES_Street__c</field>
+            <value>
+                <elementReference>$Record.Street</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>RES_Zip_Postal_Code__c</field>
+            <value>
+                <elementReference>$Record.PostalCode</elementReference>
+            </value>
+        </inputAssignments>
+        <object>Opportunity</object>
+    </recordUpdates>
+    <recordUpdates>
         <name>SLA_breached</name>
         <label>SLA breached</label>
         <locationX>0</locationX>
@@ -923,36 +527,12 @@
         <inputReference>leadInstance</inputReference>
     </recordUpdates>
     <recordUpdates>
-        <name>Update_Account_Phone</name>
-        <label>Update Account Phone</label>
-        <locationX>0</locationX>
-        <locationY>0</locationY>
-        <connector>
-            <targetReference>Check_Related_to_Opportunity</targetReference>
-        </connector>
-        <filterLogic>and</filterLogic>
-        <filters>
-            <field>Id</field>
-            <operator>EqualTo</operator>
-            <value>
-                <elementReference>$Record.ConvertedAccountId</elementReference>
-            </value>
-        </filters>
-        <inputAssignments>
-            <field>Phone</field>
-            <value>
-                <elementReference>$Record.MobilePhone</elementReference>
-            </value>
-        </inputAssignments>
-        <object>Account</object>
-    </recordUpdates>
-    <recordUpdates>
         <name>Update_Contact_BirthDate</name>
         <label>Update Contact BirthDate</label>
         <locationX>0</locationX>
         <locationY>0</locationY>
         <connector>
-            <targetReference>Update_Account_Phone</targetReference>
+            <targetReference>Check_Related_to_Opportunity</targetReference>
         </connector>
         <filterLogic>and</filterLogic>
         <filters>
@@ -969,53 +549,6 @@
             </value>
         </inputAssignments>
         <object>Contact</object>
-    </recordUpdates>
-    <recordUpdates>
-        <name>Update_Lead_Status_to_Retired</name>
-        <label>Update Lead Status to Retired</label>
-        <locationX>0</locationX>
-        <locationY>0</locationY>
-        <connector>
-            <isGoTo>true</isGoTo>
-            <targetReference>Check_if_Lead_is_Converted_and_Flow_Switch</targetReference>
-        </connector>
-        <inputAssignments>
-            <field>Status</field>
-            <value>
-                <stringValue>05</stringValue>
-            </value>
-        </inputAssignments>
-        <inputReference>$Record</inputReference>
-    </recordUpdates>
-    <recordUpdates>
-        <name>Update_Opportunity_Email_mobile_fields</name>
-        <label>Update Opportunity Email, mobile fields</label>
-        <locationX>0</locationX>
-        <locationY>0</locationY>
-        <connector>
-            <targetReference>Auto_Create_Task_on_Lead_Conversion</targetReference>
-        </connector>
-        <filterLogic>and</filterLogic>
-        <filters>
-            <field>Id</field>
-            <operator>EqualTo</operator>
-            <value>
-                <elementReference>$Record.ConvertedOpportunityId</elementReference>
-            </value>
-        </filters>
-        <inputAssignments>
-            <field>RES_Opportunity_Email__c</field>
-            <value>
-                <elementReference>$Record.Email</elementReference>
-            </value>
-        </inputAssignments>
-        <inputAssignments>
-            <field>RES_Opportunity_Mobile__c</field>
-            <value>
-                <elementReference>$Record.MobilePhone</elementReference>
-            </value>
-        </inputAssignments>
-        <object>Opportunity</object>
     </recordUpdates>
     <recordUpdates>
         <name>Update_Person_Account_BirthDate</name>
@@ -1082,57 +615,6 @@
     </start>
     <status>Active</status>
     <subflows>
-        <name>AutolaunchFlow_Send_Emails_With_Merge_Fields_Flow_1</name>
-        <label>AutolaunchFlow - Send Emails With Merge Fields Flow 1</label>
-        <locationX>0</locationX>
-        <locationY>0</locationY>
-        <connector>
-            <targetReference>Check_if_Lead_is_Converted_and_Flow_Switch</targetReference>
-        </connector>
-        <flowName>RES_AutolaunchFlow_Send_Emails_With_Merge_Fields</flowName>
-        <inputAssignments>
-            <name>ApexEmailTemplateAPIName</name>
-            <value>
-                <stringValue>RES_Lead_Referred_to_Leasing_Email</stringValue>
-            </value>
-        </inputAssignments>
-        <inputAssignments>
-            <name>mergeFields</name>
-            <value>
-                <elementReference>mergeFields</elementReference>
-            </value>
-        </inputAssignments>
-        <inputAssignments>
-            <name>orgWideEmailAddressDisplayName</name>
-            <value>
-                <elementReference>$Label.Org_Wide_Email</elementReference>
-            </value>
-        </inputAssignments>
-        <inputAssignments>
-            <name>recipients</name>
-            <value>
-                <elementReference>Get_Email_of_all_members_from_Queue.emailRecipients</elementReference>
-            </value>
-        </inputAssignments>
-    </subflows>
-    <subflows>
-        <name>Get_Email_of_all_members_from_Queue</name>
-        <label>Get Email of all members from Queue</label>
-        <locationX>0</locationX>
-        <locationY>0</locationY>
-        <connector>
-            <targetReference>Check_for_emailRecipients_Null_check</targetReference>
-        </connector>
-        <flowName>RES_Get_All_Users_Email_from_Group_Queue</flowName>
-        <inputAssignments>
-            <name>recipientQueueName</name>
-            <value>
-                <elementReference>leasingQueueName</elementReference>
-            </value>
-        </inputAssignments>
-        <storeOutputAutomatically>true</storeOutputAutomatically>
-    </subflows>
-    <subflows>
         <name>Notify_User_s_Manager</name>
         <label>Notify User&apos;s Manager</label>
         <locationX>0</locationX>
@@ -1175,47 +657,6 @@
             </value>
         </inputAssignments>
     </subflows>
-    <subflows>
-        <name>RES_Send_Email_to_Owner_Leasing</name>
-        <label>Send Email to Owner - Leasing</label>
-        <locationX>0</locationX>
-        <locationY>0</locationY>
-        <connector>
-            <targetReference>Check_for_Type_Of_Leasing</targetReference>
-        </connector>
-        <flowName>RES_AutolaunchFlow_Send_Emails_With_Merge_Fields</flowName>
-        <inputAssignments>
-            <name>ApexEmailTemplateAPIName</name>
-            <value>
-                <stringValue>RES_Leasing_Lead_Owner_Notification</stringValue>
-            </value>
-        </inputAssignments>
-        <inputAssignments>
-            <name>mergeFields</name>
-            <value>
-                <elementReference>leasingOwnerMergeFields</elementReference>
-            </value>
-        </inputAssignments>
-        <inputAssignments>
-            <name>orgWideEmailAddressDisplayName</name>
-            <value>
-                <elementReference>$Label.Org_Wide_Email</elementReference>
-            </value>
-        </inputAssignments>
-        <inputAssignments>
-            <name>recipients</name>
-            <value>
-                <elementReference>Emails</elementReference>
-            </value>
-        </inputAssignments>
-    </subflows>
-    <variables>
-        <name>Emails</name>
-        <dataType>String</dataType>
-        <isCollection>true</isCollection>
-        <isInput>false</isInput>
-        <isOutput>false</isOutput>
-    </variables>
     <variables>
         <name>LeadId</name>
         <dataType>String</dataType>
@@ -1243,27 +684,6 @@
         <value>
             <elementReference>$Record.LastName</elementReference>
         </value>
-    </variables>
-    <variables>
-        <name>leasingOwnerMergeFields</name>
-        <dataType>String</dataType>
-        <isCollection>true</isCollection>
-        <isInput>false</isInput>
-        <isOutput>false</isOutput>
-    </variables>
-    <variables>
-        <name>leasingQueueName</name>
-        <dataType>String</dataType>
-        <isCollection>false</isCollection>
-        <isInput>false</isInput>
-        <isOutput>false</isOutput>
-    </variables>
-    <variables>
-        <name>mergeFields</name>
-        <dataType>String</dataType>
-        <isCollection>true</isCollection>
-        <isInput>false</isInput>
-        <isOutput>false</isOutput>
     </variables>
     <variables>
         <name>OwnerId</name>

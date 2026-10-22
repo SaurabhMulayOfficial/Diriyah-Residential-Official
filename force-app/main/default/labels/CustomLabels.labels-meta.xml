@@ -394,7 +394,7 @@ Please go back and select at least one lead with status = “Qualified” to pro
         <language>en_US</language>
         <protected>false</protected>
         <shortDescription>Notify Queues for Duplication</shortDescription>
-        <value>RES_Operations_Group,RES_Residential_Duplicate_Leads</value>
+        <value>RES_Operations_Team,RES_Residential_Duplicate_Leads</value>
     </labels>
     <labels>
         <fullName>RES_Company_RT</fullName>
@@ -483,9 +483,9 @@ Please go back and select at least one lead with status = “Qualified” to pro
         <language>en_US</language>
         <protected>false</protected>
         <shortDescription>Soft Hold Extension Error Message</shortDescription>
-        <value>Approval cannot be submitted for this Unit because one or more validation checks failed:
+        <value>Approval cannot be submitted for this product because one or more validation checks failed:
 
-🔴 Unit is already under Soft Hold Extension. 
+🔴 Product is already under Soft Hold Extension. 
 🔴 The associated Unit is already reserved by another user.
 🔴 No Unit is associated with this Quote.
 🔴 Associated Unit is not in Soft Hold status.</value>
@@ -980,5 +980,33 @@ Do you wish to proceed with the cancellation?</value>
         <protected>false</protected>
         <shortDescription>URC Document Success Message</shortDescription>
         <value>The  Unit Reservation Contract (URC) document will be generated and saved as an attachment.</value>
+    </labels>
+    <labels>
+        <fullName>RES_Admin_Username</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Admin_Username</shortDescription>
+        <value>system.user@diriyah.sa</value>
+    </labels>
+    <labels>
+        <fullName>RES_Inventory_Config</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Inventory Config</shortDescription>
+        <value>true</value>
+    </labels>
+    <labels>
+        <fullName>RES_My_Converted_Lead_Roles</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>RES My Converted Lead Roles</shortDescription>
+        <value>00EMz00000eK1aVMAS;00EMz00000eK1aXMAS;00EMz00000eK1abMAC;00EMz00000eK1adMAC;00EMz00000eK1agMAC;00EMz00000eK1alMAC;00EMz00000eK1atMAC;00EMz00000eK1auMAC;00EMz00000eK1axMAC;00EMz00000eK1b1MAC;00EMz00000eK1b2MAC;00EMz00000eK1ajMAC;00EMz00000eK1arMAC</value>
+    </labels>
+    <labels>
+        <fullName>RES_My_Team_Converted_Lead_Roles</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>RES My Team Converted Lead Roles</shortDescription>
+        <value>00EMz00000eK1aUMAS;00EMz00000eK1aPMAS;00EMz00000eK1aWMAS;00EMz00000eK1aYMAS;00EMz00000eK1aQMAS;00EMz00000eK1aZMAS;00EMz00000eK1aaMAC;00EMz00000eK1aRMAS;00EMz00000eK1acMAC;00EMz00000eK1aeMAC;00EMz00000eK1afMAC;00EMz00000eK1ahMAC;00EMz00000eK1aiMAC;00EMz00000eK1akMAC;00EMz00000eK1amMAC;00EMz00000eK1anMAC;00EMz00000eK1aoMAC;00EMz00000eK1apMAC;00EMz00000eK1aqMAC;00EMz00000eK1asMAC;00EMz00000eK1avMAC;00EMz00000eK1awMAC;00EMz00000eK1ayMAC;00EMz00000eK1azMAC;00EMz00000eK1b0MAC;00EMz00000eK1aSMAS;00EMz00000eK1aTMAS</value>
     </labels>
 </CustomLabels>

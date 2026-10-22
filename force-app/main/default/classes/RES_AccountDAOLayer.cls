@@ -2,7 +2,7 @@
  * Class Name   : RES_AccountDAOLayer
  * Description  : Data Access Object (DAO) layer for the Account object.
  *                Provides standardized methods for querying and retrieving
- *                Account records within the application.
+ *                Lead records within the application.
  *
  * Framework Rule:
  *      - All DAO layers must extend RES_BaseDAOLayer.
@@ -41,58 +41,6 @@ public with sharing class RES_AccountDAOLayer extends RES_BaseDAOLayer{
     protected override String getSObjectName() {
         return 'Account';
     }
-    public Map<Id, Account> getAccountsByIds(Set<Id> accountIds) {
-        Map<String, Object> bindVars = new Map<String, Object>();
-        bindVars.put('accountIds', accountIds);
-        String soql = 'SELECT Id, RES_External_Key__c ' +
-                        'FROM Account ' +
-                        'WHERE Id IN :accountIds';
-        Map<Id, Account> result = new Map<Id, Account>();
-        for (SObject record : executeQueryToMap(soql, '', false, bindVars, AccessLevel.SYSTEM_MODE).values()) {
-            result.put(record.Id, (Account) record);
-        }
-        return result;
-    }
-
-    /**
-     * Returns accounts by Id with their Person / Business type.
-     * Used to make sure a duplicate-matched Account is only reused for a Lead of the same type.
-     */
-    public Map<Id, Account> getAccountTypesByIds(Set<Id> accountIds) {
-        Map<Id, Account> accountMap = new Map<Id, Account>();
-        if (accountIds == null || accountIds.isEmpty()) {
-            return accountMap;
-        }
-        Map<String, Object> bindVars = new Map<String, Object>();
-        bindVars.put('accountIds', accountIds);
-        String soql = 'SELECT Id, IsPersonAccount FROM Account WHERE Id IN :accountIds';
-        List<SObject> results = executeQuery(soql, '', false, bindVars, AccessLevel.SYSTEM_MODE);
-        if (results != null) {
-            for (SObject s : results) {
-                accountMap.put(s.Id, (Account) s);
-            }
-        }
-        return accountMap;
-    }
-
-    // Returns accounts by Id with their Person / Business type and, for Person Accounts, the linked PersonContactId
-    public Map<Id, Account> getAccountsWithPersonContactByIds(Set<Id> accountIds) {
-        Map<Id, Account> accountMap = new Map<Id, Account>();
-        if (accountIds == null || accountIds.isEmpty()) {
-            return accountMap;
-        }
-        Map<String, Object> bindVars = new Map<String, Object>();
-        bindVars.put('accountIds', accountIds);
-        String soql = 'SELECT Id, IsPersonAccount, PersonContactId FROM Account WHERE Id IN :accountIds';
-        List<SObject> results = executeQuery(soql, '', false, bindVars, AccessLevel.SYSTEM_MODE);
-        if (results != null) {
-            for (SObject s : results) {
-                accountMap.put(s.Id, (Account) s);
-            }
-        }
-        return accountMap;
-    }
-
     public Account getAccountById(Id accountId) {
         Map<String, Object> bindVars = new Map<String, Object>();
         bindVars.put('accountId', accountId);
@@ -104,48 +52,5 @@ public with sharing class RES_AccountDAOLayer extends RES_BaseDAOLayer{
                             'LIMIT 1';
         List<SObject> results = executeQuery(soql, '', true, bindVars, AccessLevel.SYSTEM_MODE);
         return results != null && !results.isEmpty() ? (Account) results[0] : null;
-    }
-
-    public Map<Id, Account> getAccountsForSyncByIds(Set<Id> accountIds) {
-        Map<String, Object> bindVars = new Map<String, Object>();
-        bindVars.put('accountIds', accountIds);
-        String soql = 'SELECT Id, Name, Type, RecordTypeId, RecordType.DeveloperName, IsPersonAccount, ' +
-                        'PersonTitle, Salutation, FirstName, LastName, Fax, ' +
-                        'Phone, PersonMobilePhone, PersonEmail, ' +
-                        'BillingStreet, BillingCity, BillingPostalCode, BillingCountryCode, BillingStateCode, ' +
-                        'PersonGenderIdentity, ' +
-                        'PersonBirthdate, CompanyMobilePhone__c, ' +
-                        'RES_Language__pc, RES_Nationality__pc, RES_Marital_Status__pc, ' +
-                        'RES_Full_Arabic_Name__c, RES_Full_Arabic_Name__pc, RES_Company_Additional_Name__c, ' +
-                        'RES_Corporate_Title__c, ' +
-                        'RES_House_Number__c, RES_District__c, RES_PO_Box__c, RES_Extension__c, ' +
-                        'RES_Identification_Type__c, RES_Identification_Number__c, RES_CR_number__c, ' +
-                        'RES_ID_Entry_Date__c, RES_ID_Valid_From_Date__c, RES_ID_Valid_to_Date__c, ' +
-                        'RES_Company_Code__c, RES_Reconciliation_Account__c, RES_Planning_Group__c, ' +
-                        'RES_SIMAH_Consent__c, RES_Consent_Form_Received_Date__c, ' +
-                        'RES_VIP_Customer__c, RES_Bank_Customer__c, ' +
-                        'RES_Tax_Category__c, RES_Tax_Number__c, ' +
-                        'RES_Relationship_Type__c, RES_BP_Role__c, RES_Account_Group__c, ' +
-                        'RES_SAP_ADDR_NUMBER__c, ' +
-                        'RES_External_Key__c ' +
-                        'FROM Account ' +
-                        'WHERE Id IN :accountIds';
-        Map<Id, Account> result = new Map<Id, Account>();
-        for (SObject record : executeQueryToMap(soql, '', false, bindVars, AccessLevel.SYSTEM_MODE).values()) {
-            result.put(record.Id, (Account) record);
-        }
-        return result;
-    }
-
-    // Person Accounts only: nationality (picklist) and its Document Nationality text counterpart
-    public Map<Id, Account> getPersonAccountsNationalityByIds(Set<Id> accountIds) {
-        if (accountIds == null || accountIds.isEmpty()) {
-            return new Map<Id, Account>();
-        }
-        Map<String, Object> bindVars = new Map<String, Object>{ 'accountIds' => accountIds };
-        String soql = 'SELECT Id, RES_Nationality__pc, RES_Document_Nationality__pc ' +
-                        'FROM Account ' +
-                        'WHERE Id IN :accountIds AND IsPersonAccount = true';
-        return new Map<Id, Account>((List<Account>) executeQuery(soql, '', false, bindVars, AccessLevel.SYSTEM_MODE));
     }
 }

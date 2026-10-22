@@ -2,11 +2,16 @@
 <DashboardFolder xmlns="http://soap.sforce.com/2006/04/metadata">
     <folderShares>
         <accessLevel>View</accessLevel>
+        <sharedTo>RES_Marketing_Growth_Head</sharedTo>
+        <sharedToType>Role</sharedToType>
+    </folderShares>
+    <folderShares>
+        <accessLevel>View</accessLevel>
         <sharedTo>RES_Sales_Enterprise_Chief_Sales_Office</sharedTo>
         <sharedToType>Role</sharedToType>
     </folderShares>
     <folderShares>
-        <accessLevel>Manage</accessLevel>
+        <accessLevel>View</accessLevel>
         <sharedTo>RES_Internal_Sales_Contracts_Operations_Senior_Manager</sharedTo>
         <sharedToType>RoleAndSubordinatesInternal</sharedToType>
     </folderShares>

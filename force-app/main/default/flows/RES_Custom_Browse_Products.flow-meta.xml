@@ -49,23 +49,6 @@
         </connector>
     </assignments>
     <assignments>
-        <description>Adds the Product2 fields to show on the product list (max 3, each prefixed Product2.).</description>
-        <name>SetProductListAdditionalFields</name>
-        <label>Set Product List Additional Fields</label>
-        <locationX>0</locationX>
-        <locationY>0</locationY>
-        <assignmentItems>
-            <assignToReference>productListAdditionalFields</assignToReference>
-            <operator>Add</operator>
-            <value>
-                <stringValue>Product2.RES_Default_Plan_Price__c</stringValue>
-            </value>
-        </assignmentItems>
-        <connector>
-            <targetReference>HaveDefaultCatalogId</targetReference>
-        </connector>
-    </assignments>
-    <assignments>
         <description>Sets CatalogQuantity to the number of catalogs in the Catalogs from getProductCatalogs record collection.</description>
         <name>SetCatalogQuantity</name>
         <label>Set Catalog Quantity</label>
@@ -381,7 +364,7 @@
             <inputParameters>
                 <name>columns</name>
                 <value>
-                    <stringValue>[{&quot;apiName&quot;:&quot;Name&quot;,&quot;guid&quot;:&quot;column-3ade&quot;,&quot;editable&quot;:false,&quot;hasCustomHeaderLabel&quot;:true,&quot;customHeaderLabel&quot;:&quot;Project Name&quot;,&quot;wrapText&quot;:true,&quot;order&quot;:0,&quot;label&quot;:&quot;Name&quot;,&quot;type&quot;:&quot;text&quot;,&quot;sortable&quot;:true},{&quot;apiName&quot;:&quot;NumberOfCategories&quot;,&quot;guid&quot;:&quot;column-e1d4&quot;,&quot;editable&quot;:false,&quot;hasCustomHeaderLabel&quot;:true,&quot;customHeaderLabel&quot;:&quot;Number Of Buildings/Lands&quot;,&quot;wrapText&quot;:true,&quot;order&quot;:1,&quot;label&quot;:&quot;Number of Categories&quot;,&quot;type&quot;:&quot;customRichText&quot;},{&quot;apiName&quot;:&quot;RES_City__c&quot;,&quot;guid&quot;:&quot;column-81be&quot;,&quot;editable&quot;:false,&quot;hasCustomHeaderLabel&quot;:false,&quot;customHeaderLabel&quot;:&quot;&quot;,&quot;wrapText&quot;:true,&quot;order&quot;:2,&quot;sortable&quot;:false,&quot;label&quot;:&quot;City&quot;,&quot;type&quot;:&quot;text&quot;}]</stringValue>
+                    <stringValue>[{&quot;apiName&quot;:&quot;Name&quot;,&quot;guid&quot;:&quot;column-3ade&quot;,&quot;editable&quot;:false,&quot;hasCustomHeaderLabel&quot;:true,&quot;customHeaderLabel&quot;:&quot;Project Name&quot;,&quot;wrapText&quot;:true,&quot;order&quot;:0,&quot;label&quot;:&quot;Name&quot;,&quot;type&quot;:&quot;text&quot;,&quot;sortable&quot;:true},{&quot;apiName&quot;:&quot;NumberOfCategories&quot;,&quot;guid&quot;:&quot;column-e1d4&quot;,&quot;editable&quot;:false,&quot;hasCustomHeaderLabel&quot;:true,&quot;customHeaderLabel&quot;:&quot;Number Of Buildings/Lands&quot;,&quot;wrapText&quot;:true,&quot;order&quot;:1,&quot;label&quot;:&quot;Number of Categories&quot;,&quot;type&quot;:&quot;customRichText&quot;}]</stringValue>
                 </value>
             </inputParameters>
             <inputParameters>
@@ -394,7 +377,7 @@
             <inputParameters>
                 <name>columnReferences</name>
                 <value>
-                    <complexValue>{&quot;dataType&quot;:&quot;SObject&quot;,&quot;objectType&quot;:&quot;ProductCatalog&quot;,&quot;fieldReferences&quot;:[&quot;Name&quot;,&quot;NumberOfCategories&quot;,&quot;RES_City__c&quot;],&quot;elementReference&quot;:&quot;getProductCatalogs&quot;}</complexValue>
+                    <complexValue>{&quot;dataType&quot;:&quot;SObject&quot;,&quot;objectType&quot;:&quot;ProductCatalog&quot;,&quot;fieldReferences&quot;:[&quot;Name&quot;,&quot;NumberOfCategories&quot;],&quot;elementReference&quot;:&quot;getProductCatalogs&quot;}</complexValue>
                     <complexValueType>ComplexObjectFieldDetails</complexValueType>
                 </value>
             </inputParameters>
@@ -517,12 +500,6 @@
                 </value>
             </inputParameters>
             <inputParameters>
-                <name>additionalFields</name>
-                <value>
-                    <elementReference>productListAdditionalFields</elementReference>
-                </value>
-            </inputParameters>
-            <inputParameters>
                 <name>displayQuantityEditor</name>
                 <value>
                     <booleanValue>false</booleanValue>
@@ -608,7 +585,7 @@
         <locationX>0</locationX>
         <locationY>0</locationY>
         <connector>
-            <targetReference>SetProductListAdditionalFields</targetReference>
+            <targetReference>HaveDefaultCatalogId</targetReference>
         </connector>
     </start>
     <status>Active</status>
@@ -653,14 +630,6 @@
         <dataType>String</dataType>
         <isCollection>false</isCollection>
         <isInput>true</isInput>
-        <isOutput>false</isOutput>
-    </variables>
-    <variables>
-        <description>Product2 field API names passed to the product list as additional fields.</description>
-        <name>productListAdditionalFields</name>
-        <dataType>String</dataType>
-        <isCollection>true</isCollection>
-        <isInput>false</isInput>
         <isOutput>false</isOutput>
     </variables>
     <variables>

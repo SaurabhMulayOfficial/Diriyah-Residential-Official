@@ -2,40 +2,111 @@
 <StandardValueSet xmlns="http://soap.sforce.com/2006/04/metadata">
     <sorted>false</sorted>
     <standardValue>
-        <fullName>Proposal</fullName>
+        <fullName>Pending</fullName>
         <default>false</default>
-        <description>You&apos;re developing a sales proposal for the prospect.</description>
-        <label>Proposal</label>
+        <label>Pending</label>
         <closed>false</closed>
         <forecastCategory>Pipeline</forecastCategory>
+        <probability>0</probability>
+        <won>false</won>
+    </standardValue>
+    <standardValue>
+        <fullName>Work in Progress</fullName>
+        <default>false</default>
+        <label>Work in Progress</label>
+        <closed>false</closed>
+        <forecastCategory>Pipeline</forecastCategory>
+        <probability>10</probability>
+        <won>false</won>
+    </standardValue>
+    <standardValue>
+        <fullName>Proposal in progress</fullName>
+        <default>false</default>
+        <label>Proposal in progress</label>
+        <closed>false</closed>
+        <forecastCategory>Pipeline</forecastCategory>
+        <probability>25</probability>
+        <won>false</won>
+    </standardValue>
+    <standardValue>
+        <fullName>Proposal Approved</fullName>
+        <default>false</default>
+        <label>Proposal Approved</label>
+        <closed>false</closed>
+        <forecastCategory>BestCase</forecastCategory>
         <probability>50</probability>
         <won>false</won>
     </standardValue>
     <standardValue>
-        <fullName>Unit Selected</fullName>
+        <fullName>Unit Reserved</fullName>
         <default>false</default>
-        <label>Unit Selected</label>
+        <label>Unit Reserved</label>
         <closed>false</closed>
         <forecastCategory>BestCase</forecastCategory>
-        <probability>65</probability>
+        <probability>60</probability>
         <won>false</won>
     </standardValue>
     <standardValue>
-        <fullName>Reservation</fullName>
+        <fullName>Contract Generated</fullName>
         <default>false</default>
-        <label>Reservation</label>
+        <label>Contract Generated</label>
+        <closed>false</closed>
+        <forecastCategory>BestCase</forecastCategory>
+        <probability>70</probability>
+        <won>false</won>
+    </standardValue>
+    <standardValue>
+        <fullName>Discount Applied</fullName>
+        <default>false</default>
+        <label>Discount Applied</label>
         <closed>false</closed>
         <forecastCategory>Forecast</forecastCategory>
         <probability>75</probability>
         <won>false</won>
     </standardValue>
     <standardValue>
-        <fullName>SPA</fullName>
+        <fullName>Discount Approved</fullName>
         <default>false</default>
-        <label>SPA</label>
+        <label>Discount Approved</label>
         <closed>false</closed>
-        <forecastCategory>MostLikely</forecastCategory>
+        <forecastCategory>Forecast</forecastCategory>
+        <probability>80</probability>
+        <won>false</won>
+    </standardValue>
+    <standardValue>
+        <fullName>Finance Approved</fullName>
+        <default>false</default>
+        <label>Finance Approved</label>
+        <closed>false</closed>
+        <forecastCategory>Forecast</forecastCategory>
         <probability>90</probability>
+        <won>false</won>
+    </standardValue>
+    <standardValue>
+        <fullName>Documentation In Progress</fullName>
+        <default>false</default>
+        <label>Documentation In Progress</label>
+        <closed>false</closed>
+        <forecastCategory>Forecast</forecastCategory>
+        <probability>95</probability>
+        <won>false</won>
+    </standardValue>
+    <standardValue>
+        <fullName>Approval In Progress</fullName>
+        <default>false</default>
+        <label>Approval In Progress</label>
+        <closed>false</closed>
+        <forecastCategory>Forecast</forecastCategory>
+        <probability>97</probability>
+        <won>false</won>
+    </standardValue>
+    <standardValue>
+        <fullName>Approved/ Rejected</fullName>
+        <default>false</default>
+        <label>Approved/ Rejected</label>
+        <closed>false</closed>
+        <forecastCategory>Forecast</forecastCategory>
+        <probability>50</probability>
         <won>false</won>
     </standardValue>
     <standardValue>

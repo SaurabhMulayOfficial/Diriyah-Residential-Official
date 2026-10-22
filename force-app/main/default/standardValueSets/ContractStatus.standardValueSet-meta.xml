@@ -3,18 +3,6 @@
     <groupingStringEnum>ContractStatusCode</groupingStringEnum>
     <sorted>false</sorted>
     <standardValue>
-        <fullName>Draft</fullName>
-        <default>false</default>
-        <label>Draft</label>
-        <groupingString>Draft</groupingString>
-    </standardValue>
-    <standardValue>
-        <fullName>In Progress</fullName>
-        <default>false</default>
-        <label>In Progress</label>
-        <groupingString>Activated</groupingString>
-    </standardValue>
-    <standardValue>
         <fullName>In Approval Process</fullName>
         <default>false</default>
         <label>In Approval Process</label>
@@ -27,21 +15,15 @@
         <groupingString>Activated</groupingString>
     </standardValue>
     <standardValue>
-        <fullName>Rejected</fullName>
+        <fullName>Draft</fullName>
         <default>false</default>
-        <label>Rejected</label>
+        <label>Draft</label>
         <groupingString>Draft</groupingString>
     </standardValue>
     <standardValue>
-        <fullName>Approved</fullName>
+        <fullName>Rejected</fullName>
         <default>false</default>
-        <label>Approved</label>
-        <groupingString>Activated</groupingString>
-    </standardValue>
-    <standardValue>
-        <fullName>Contract Rejected</fullName>
-        <default>false</default>
-        <label>Contract Rejected</label>
+        <label>Rejected</label>
         <groupingString>Rejected</groupingString>
     </standardValue>
     <standardValue>
@@ -69,6 +51,12 @@
         <groupingString>Signed</groupingString>
     </standardValue>
     <standardValue>
+        <fullName>Canceled</fullName>
+        <default>false</default>
+        <label>Canceled</label>
+        <groupingString>Cancelled</groupingString>
+    </standardValue>
+    <standardValue>
         <fullName>Contract Expired</fullName>
         <default>false</default>
         <label>Contract Expired</label>
@@ -79,23 +67,5 @@
         <default>false</default>
         <label>Contract Terminated</label>
         <groupingString>Terminated2</groupingString>
-    </standardValue>
-    <standardValue>
-        <fullName>Pending Cancellation Approval</fullName>
-        <default>false</default>
-        <label>Pending Cancellation Approval</label>
-        <groupingString>Activated</groupingString>
-    </standardValue>
-    <standardValue>
-        <fullName>Terminated</fullName>
-        <default>false</default>
-        <label>Terminated</label>
-        <groupingString>Activated</groupingString>
-    </standardValue>
-    <standardValue>
-        <fullName>Canceled</fullName>
-        <default>false</default>
-        <label>Cancelled</label>
-        <groupingString>Activated</groupingString>
     </standardValue>
 </StandardValueSet>

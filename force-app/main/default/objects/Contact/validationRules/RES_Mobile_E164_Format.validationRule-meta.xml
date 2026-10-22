@@ -6,7 +6,7 @@
 NOT($Setup.RES_Config_Switch__c.RES_Validation_Rules_Off__c ),
 OR(
 IF(AND($RecordType.DeveloperName = &quot;RES_Company&quot;, AND(NOT(ISBLANK(MobilePhone)),
-NOT(REGEX(MobilePhone, &quot;\\+\\d{10,15}&quot;)))), true, false)
+NOT(REGEX(MobilePhone, &quot;\\+\\d{1,8}\\d{9,14}&quot;)))), true, false)
 ))</errorConditionFormula>
     <errorDisplayField>MobilePhone</errorDisplayField>
     <errorMessage>Mobile number must be in E.164 format (e.g., +1234567890)</errorMessage>
