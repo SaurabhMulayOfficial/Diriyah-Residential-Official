@@ -310,7 +310,7 @@ private class RES_ContractServicesTest {
 
         Database.update(
             new Contract(Id = c.Id, RES_External_ID__c = 'EXT-1', RES_Last_Sync_DateTime__c = System.now().addDays(-1),
-                         RES_Approval_Status__c = 'Approved'),
+                         RES_Approval_Status__c = 'Pending GCEO'),
             false, AccessLevel.SYSTEM_MODE
         );
         c = fetchContract(c.Id);
@@ -329,6 +329,38 @@ private class RES_ContractServicesTest {
 
         Assert.areEqual(1, after - before,
             'An Approval Status change alone should publish one Sales_Contract_Update event.');
+    }
+
+    @isTest
+    static void syncContract_update_approvalStatusChangedToNonSyncValue_noEvent() {
+        if (!configReady()) { return; }
+
+        RES_IntegrationTestDataFactory.primeSapToken();
+        Test.setMock(HttpCalloutMock.class, new RES_IntegrationTestDataFactory.EndpointRoutingMock());
+        RES_IntegrationRequestEventService.CountingBatchSubmitter spy = injectBatchSpy();
+        Account acc  = withKey(RES_TestDataFactory.createAccount());
+        Contract c   = createAndFetchContract(acc.Id);
+
+        Database.update(
+            new Contract(Id = c.Id, RES_External_ID__c = 'EXT-1', RES_Last_Sync_DateTime__c = System.now().addDays(-1),
+                         RES_Approval_Status__c = 'Pending Operations'),
+            false, AccessLevel.SYSTEM_MODE
+        );
+        c = fetchContract(c.Id);
+
+        Contract oldC = new Contract(Id = c.Id, Status = c.Status, RES_Approval_Status__c = 'Submitted');
+        Map<Id, Contract> oldMap = new Map<Id, Contract>{ c.Id => oldC };
+
+        Test.startTest();
+        Test.getEventBus().deliver();
+        Integer before = spy.callCount;
+        RES_ContractServices.syncContract(new List<Contract>{ c }, oldMap);
+        Test.getEventBus().deliver();
+        Integer after = spy.callCount;
+        Test.stopTest();
+
+        Assert.areEqual(0, after - before,
+            'Approval Status change to a non-sync value must not publish Sales_Contract_Update.');
     }
 
     // ─────────────────────────────────────────────────────────────────────────

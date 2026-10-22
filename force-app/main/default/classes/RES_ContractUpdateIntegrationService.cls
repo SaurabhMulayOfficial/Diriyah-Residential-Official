@@ -69,7 +69,7 @@ public with sharing class RES_ContractUpdateIntegrationService extends RES_BaseI
         payload.IV_CONTRACT        = c.RES_External_ID__c;
         payload.IV_CONTRACT_STATUS = mappedStatus;
         payload.IV_WF_TYPE         = wfTypeMapping.get(WF_TYPE_DESCRIPTION);
-        payload.IV_C4C_USER        = contractToApprovedByName.get(c.Id);
+        payload.IV_C4C_USER        = c.Status == 'In Approval Process' ? contractToApprovedByName.get(c.Id) : null;
         payload.IV_NOTICE_DATE     = null;
         payload.IV_CN_OFFR         = null;
         payload.IV_RETAIL          = null;
