@@ -38,7 +38,7 @@ public with sharing class RES_AssignmentWorkloadService {
     }
 
     private static boolean evaluateChange(RES_Assignment_Workload__c curr, RES_Assignment_Workload__c old){
-        if(curr.RES_Capacity__c > old.RES_Capacity__c  || curr.RES_Active_Lead_Count__c < old.RES_Active_Lead_Count__c){
+        if(curr.RES_Capacity__c > old.RES_Capacity__c  /*|| curr.RES_Active_Lead_Count__c < old.RES_Active_Lead_Count__c*/){
             return true;
         }
         return false;
