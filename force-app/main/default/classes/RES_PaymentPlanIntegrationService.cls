@@ -68,7 +68,7 @@ public with sharing class RES_PaymentPlanIntegrationService extends RES_BaseInte
         paymentPlanWrapper.RES_Payment_Plan_Assignments = new List<RES_PaymentPlanWrapper.PaymentPlanAssignment>();
         for(Product2 paymentPlan : paymentPlans){
             paymentPlanWrapper.Change_Indicator = triggerContext;
-            paymentPlanWrapper.RES_Product_External_ID = (paymentPlan.RES_Parent_Payment_Plan__c != null) ? paymentPlan.RES_Parent_Payment_Plan__r.RES_Product_External_ID__c : paymentPlan.RES_Product_External_ID__c; 
+            paymentPlanWrapper.RES_Product_External_ID = (paymentPlan.RES_Product_External_ID__c != null) ? paymentPlan.RES_Product_External_ID__c : ''; 
             paymentPlanWrapper.ProductName = paymentPlan.Name;
             paymentPlanWrapper.RES_No_of_Years = (paymentPlan.RES_No_of_Years__c != null) ? (Decimal) paymentPlan.RES_No_of_Years__c : 0;
             paymentPlanWrapper.AvailabilityDate = (paymentPlan.AvailabilityDate != null) ? paymentPlan.AvailabilityDate.format('yyyy-MM-dd\'T\'HH:mm:ss\'Z\'', 'UTC') : '';
@@ -126,6 +126,22 @@ public with sharing class RES_PaymentPlanIntegrationService extends RES_BaseInte
             assignmentsWrapper.add(assignment);
             paymentPlanWrapper.RES_Payment_Plan_Assignments = (assignmentsWrapper != null) ? assignmentsWrapper : new List<RES_PaymentPlanWrapper.PaymentPlanAssignment>();
         }
+        
+        /*List<ProductRelatedComponent> parentProducts = new RES_ProductRelatedComponentDAOLayer().getPaymentPlanAssignments(paymentPlanIds);
+        if(!parentProducts.isEmpty()){
+            for(ProductRelatedComponent prc : parentProducts){
+                RES_PaymentPlanWrapper.PaymentPlanAssignment assignment = new RES_PaymentPlanWrapper.PaymentPlanAssignment();
+                assignment.Change_Indicator = triggerContext;
+                assignment.RES_Product_External_ID = paymentPlanWrapper.RES_Product_External_ID;
+                assignment.RES_Business_Entity = (prc.ParentProduct.RES_Business_Entity__c != null) ? prc.ParentProduct.RES_Business_Entity__r.RES_Business_Entity_Id__c : '';
+                assignment.RES_Construction_Phase = (prc.ParentProduct.RES_Construction_Phase__c != null) ? prc.ParentProduct.RES_Construction_Phase__c : '';
+                assignment.RES_Project = (prc.ParentProduct.RES_Business_Entity__c != null) ? prc.ParentProduct.RES_Business_Entity__r.Name : '';
+                assignment.RES_UnitId = (prc.ParentProduct.RES_Product_External_ID__c != null) ? prc.ParentProduct.RES_Product_External_ID__c : ''; 
+                assignment.Company_Code = (prc.ParentProduct.RES_Company_Code__c != null) ? prc.ParentProduct.RES_Company_Code__c : '';
+                assignmentsWrapper.add(assignment);
+            }
+            paymentPlanWrapper.RES_Payment_Plan_Assignments = (assignmentsWrapper != null) ? assignmentsWrapper : new List<RES_PaymentPlanWrapper.PaymentPlanAssignment>();
+        }*/
         
         system.debug('JSON ==> ' + JSON.serializePretty(paymentPlanWrapper));
         return JSON.serializePretty(paymentPlanWrapper);
