@@ -100,6 +100,21 @@ public without sharing class RES_Product2DAOLayer extends RES_BaseDAOLayer {
     }
 
     /**
+     * Retrieves the Payment Plan header values shown in the approval notification email
+     * (RES_PaymentPlanEmailDetailsInvocable).
+     */
+    public List<Product2> getPaymentPlanEmailDetailsByIds(Set<Id> paymentPlanIds) {
+        if (paymentPlanIds == null || paymentPlanIds.isEmpty()) {
+            return new List<Product2>();
+        }
+        Map<String, Object> bindVars = new Map<String, Object>{ 'paymentPlanIds' => paymentPlanIds };
+        String soql = 'SELECT Id, Name, ProductCode, RES_Product_External_ID__c, RES_Parent_Payment_Plan__r.RES_Product_External_ID__c, ' +
+                      'RES_Business_Entity__r.Name, RES_No_of_Years__c, RES_No_of_Months__c ' +
+                      'FROM Product2 WHERE Id IN :paymentPlanIds';
+        return (List<Product2>) executeQuery(soql, '', false, bindVars, AccessLevel.SYSTEM_MODE);
+    }
+
+    /**
      * Retrieves Product2 records by Ids including RecordType information.
      * Used when Record Type filtering is required (e.g., Residential Sales products).
      *

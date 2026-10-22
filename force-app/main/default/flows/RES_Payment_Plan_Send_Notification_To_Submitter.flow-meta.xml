@@ -101,6 +101,31 @@
         <nameSegment>customNotificationAction</nameSegment>
         <offset>0</offset>
     </actionCalls>
+    <actionCalls>
+        <description>Builds the Payment Plan details ({5}) and schedule ({6}) table rows for the submitter email. On fault the email is still sent without the tables.</description>
+        <name>Get_Payment_Plan_Email_Details</name>
+        <label>Get Payment Plan Email Details</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <actionName>RES_PaymentPlanEmailDetailsInvocable</actionName>
+        <actionType>apex</actionType>
+        <connector>
+            <targetReference>Set_Merge_Fields</targetReference>
+        </connector>
+        <faultConnector>
+            <targetReference>Set_Merge_Fields</targetReference>
+        </faultConnector>
+        <flowTransactionModel>CurrentTransaction</flowTransactionModel>
+        <inputParameters>
+            <name>recordId</name>
+            <value>
+                <elementReference>recordId</elementReference>
+            </value>
+        </inputParameters>
+        <nameSegment>RES_PaymentPlanEmailDetailsInvocable</nameSegment>
+        <offset>0</offset>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </actionCalls>
     <apiVersion>67.0</apiVersion>
     <areMetricsLoggedToDataCloud>false</areMetricsLoggedToDataCloud>
     <assignments>
@@ -170,6 +195,20 @@
             <operator>Add</operator>
             <value>
                 <elementReference>recordURL</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>mergeFields</assignToReference>
+            <operator>Add</operator>
+            <value>
+                <elementReference>Get_Payment_Plan_Email_Details.planDetailsHtml</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>mergeFields</assignToReference>
+            <operator>Add</operator>
+            <value>
+                <elementReference>Get_Payment_Plan_Email_Details.scheduleRowsHtml</elementReference>
             </value>
         </assignmentItems>
         <connector>
@@ -245,7 +284,7 @@
                 </rightValue>
             </conditions>
             <connector>
-                <targetReference>Set_Merge_Fields</targetReference>
+                <targetReference>Get_Payment_Plan_Email_Details</targetReference>
             </connector>
             <label>Retrieved</label>
         </rules>
