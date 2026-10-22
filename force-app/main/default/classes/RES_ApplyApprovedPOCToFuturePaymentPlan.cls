@@ -265,6 +265,13 @@ public with sharing class RES_ApplyApprovedPOCToFuturePaymentPlan {
                 builds.add(new InstallmentBuild(installment, sequence, prc));
             }
         }
+
+        // Builds are in sequence order, so the accumulative % is a running total of each installment's final (post-merge) %
+        Decimal accumulativePercentage = 0;
+        for(InstallmentBuild build : builds){
+            accumulativePercentage += build.installment.RES_Installment_Percentage__c ?? 0;
+            build.installment.RES_Installment_Accumulative_Payments__c = accumulativePercentage;
+        }
         return builds;
     }
 

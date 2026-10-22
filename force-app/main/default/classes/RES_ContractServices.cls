@@ -8,6 +8,40 @@
 public with sharing class RES_ContractServices {
     public RES_ContractServices() {}
 
+    // Customer Signed By = Person Account's own contact, or for a Business Account its first-created Contact (no primary flag exists);
+    // runs on create only and always overwrites any pre-set value (a Contact is only written when one is found)
+    public static void populateCustomerSignedBy(List<Contract> contracts) {
+        Set<Id> accountIds = new Set<Id>();
+        for (Contract c : contracts) {
+            if (c.AccountId != null) {
+                accountIds.add(c.AccountId);
+            }
+        }
+        if (accountIds.isEmpty()) {
+            return;
+        }
+
+        Map<Id, Id> contactIdByAccountId = new Map<Id, Id>();
+        for (Account acc : new RES_AccountDAOLayer().getAccountsWithPersonContactByIds(accountIds).values()) {
+            if (acc.IsPersonAccount) {
+                contactIdByAccountId.put(acc.Id, acc.PersonContactId);
+            }
+        }
+        Map<Id, List<Contact>> contactsByAccountId = new RES_ContactDAOLayer().getContactsByAccountIds(accountIds);
+        for (Id accountId : contactsByAccountId.keySet()) {
+            if (!contactIdByAccountId.containsKey(accountId) && !contactsByAccountId.get(accountId).isEmpty()) {
+                contactIdByAccountId.put(accountId, contactsByAccountId.get(accountId)[0].Id);
+            }
+        }
+
+        for (Contract c : contracts) {
+            Id contactId = c.AccountId != null ? contactIdByAccountId.get(c.AccountId) : null;
+            if (contactId != null) {
+                c.CustomerSignedId = contactId;
+            }
+        }
+    }
+
     public static void syncContract(List<Contract> contracts, Map<Id, Contract> oldMap) {
         List<Contract> contractsToSync_insert = new List<Contract>();
         List<Contract> contractsToSync_update = new List<Contract>();

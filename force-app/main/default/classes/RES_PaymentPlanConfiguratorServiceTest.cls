@@ -121,8 +121,9 @@ private class RES_PaymentPlanConfiguratorServiceTest {
         }
 
         List<Product2> installments = [
-            SELECT Id, Name, RES_CIP_Type__c, RES_POC_Percentage__c, RES_Instalment_DueDate__c, RecordType.DeveloperName
-            FROM Product2 WHERE Id IN :childProductIds
+            SELECT Id, Name, RES_CIP_Type__c, RES_POC_Percentage__c, RES_Instalment_DueDate__c, RecordType.DeveloperName,
+                   RES_Sequence__c, RES_Installment_Percentage__c, RES_Installment_Accumulative_Payments__c
+            FROM Product2 WHERE Id IN :childProductIds ORDER BY RES_Sequence__c
         ];
         System.assertEquals(3, installments.size());
         Set<String> installmentNames = new Set<String>();
@@ -132,6 +133,13 @@ private class RES_PaymentPlanConfiguratorServiceTest {
             installmentNames.add(installment.Name);
         }
         System.assertEquals(new Set<String>{ 'Down payment', 'Installments', 'Final Payment' }, installmentNames);
+
+        Decimal expectedAccumulative = 0;
+        for (Product2 installment : installments) {
+            expectedAccumulative += installment.RES_Installment_Percentage__c;
+            System.assertEquals(expectedAccumulative, installment.RES_Installment_Accumulative_Payments__c, 'Accumulative % should be the running total in sequence order');
+        }
+        System.assertEquals(100, installments[installments.size() - 1].RES_Installment_Accumulative_Payments__c);
 
         Set<Id> allProductIds = new Set<Id>{ plan.Id };
         allProductIds.addAll(childProductIds);

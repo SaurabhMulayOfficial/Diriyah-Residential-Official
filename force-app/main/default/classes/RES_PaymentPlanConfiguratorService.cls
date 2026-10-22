@@ -330,6 +330,8 @@ public with sharing class RES_PaymentPlanConfiguratorService {
         Id installmentRecordTypeId = recordTypeId(INSTALLMENT_RECORD_TYPE_DEV_NAME);
         String currencyIsoCode = String.isNotBlank(req.currencyIsoCode) ? req.currencyIsoCode : UserInfo.getDefaultCurrency();
 
+        Map<Integer, Decimal> accumulativeBySequence = accumulativePercentages(installments);
+
         List<Product2> installmentProducts = new List<Product2>();
         for (InstallmentInput installment : installments) {
             installmentProducts.add(new Product2(
@@ -340,6 +342,7 @@ public with sharing class RES_PaymentPlanConfiguratorService {
                 RES_Sequence__c = installment.sequence,
                 RES_POC_Percentage__c = installment.pocPercentage,
                 RES_Installment_Percentage__c = installment.percentage,
+                RES_Installment_Accumulative_Payments__c = accumulativeBySequence.get(installment.sequence),
                 RES_Instalment_DueDate__c = developmentPhase == PHASE_ON_PLAN ? null : installment.dueDate,
                 RES_Condition_Type__c = installment.conditionType,
                 RES_Installment_Payment_Type__c = installment.conditionType,
@@ -357,6 +360,25 @@ public with sharing class RES_PaymentPlanConfiguratorService {
             installmentIds.add(p.Id);
         }
         return installmentIds;
+    }
+
+    // Running total of installment % in sequence order: row 1 = its own %, row 2 = row 1 + row 2, and so on
+    private static Map<Integer, Decimal> accumulativePercentages(List<InstallmentInput> installments) {
+        List<Integer> sequences = new List<Integer>();
+        Map<Integer, Decimal> percentageBySequence = new Map<Integer, Decimal>();
+        for (InstallmentInput installment : installments) {
+            sequences.add(installment.sequence);
+            percentageBySequence.put(installment.sequence, installment.percentage);
+        }
+        sequences.sort();
+
+        Map<Integer, Decimal> accumulativeBySequence = new Map<Integer, Decimal>();
+        Decimal runningTotal = 0;
+        for (Integer sequence : sequences) {
+            runningTotal += percentageBySequence.get(sequence) ?? 0;
+            accumulativeBySequence.put(sequence, runningTotal);
+        }
+        return accumulativeBySequence;
     }
 
     private static void insertRelatedComponents(Id paymentPlanId, Id groupId, List<InstallmentInput> installments, List<Id> installmentIds) {

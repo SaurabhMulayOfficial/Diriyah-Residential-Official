@@ -95,6 +95,42 @@ private class RES_ContractTriggerHandlerTest {
         Assert.isFalse(newC.RES_Fee_Transferred__c, 'Fee Transferred should not change when Last Amount Received was already populated.');
     }
 
+    @isTest
+    static void populateCustomerSignedBy_businessAccount_usesFirstContact() {
+        Account acc = RES_TestDataFactory.createAccount();
+        Contact first = new Contact(LastName = 'First', AccountId = acc.Id);
+        insert first;
+        insert new Contact(LastName = 'Second', AccountId = acc.Id);
+
+        Contract c = new Contract(AccountId = acc.Id);
+        RES_ContractServices.populateCustomerSignedBy(new List<Contract>{ c });
+        Assert.areEqual(first.Id, c.CustomerSignedId, 'Business Account should use its first-created Contact.');
+    }
+
+    @isTest
+    static void populateCustomerSignedBy_personAccount_usesPersonContact() {
+        Id personRt = [SELECT Id FROM RecordType WHERE SObjectType = 'Account' AND IsPersonType = true LIMIT 1].Id;
+        Account person = new Account(FirstName = 'Test', LastName = 'Person', PersonEmail = 'test.person@example.com', RecordTypeId = personRt);
+        insert person;
+        Id personContactId = [SELECT PersonContactId FROM Account WHERE Id = :person.Id].PersonContactId;
+
+        Contract c = new Contract(AccountId = person.Id);
+        RES_ContractServices.populateCustomerSignedBy(new List<Contract>{ c });
+        Assert.areEqual(personContactId, c.CustomerSignedId, 'Person Account should use its own Contact.');
+    }
+
+    @isTest
+    static void populateCustomerSignedBy_alreadySet_overwritten() {
+        Account acc = RES_TestDataFactory.createAccount();
+        Contact accountContact = new Contact(LastName = 'AccountContact', AccountId = acc.Id);
+        Contact stray = new Contact(LastName = 'Stray', AccountId = acc.Id);
+        insert new List<Contact>{ accountContact, stray };
+
+        Contract c = new Contract(AccountId = acc.Id, CustomerSignedId = stray.Id);
+        RES_ContractServices.populateCustomerSignedBy(new List<Contract>{ c });
+        Assert.areEqual(accountContact.Id, c.CustomerSignedId, 'Create always overwrites with the Account contact.');
+    }
+
     private static Id fakeContractId() {
         return Contract.SObjectType.getDescribe().getKeyPrefix() + '000000000001AAA';
     }
