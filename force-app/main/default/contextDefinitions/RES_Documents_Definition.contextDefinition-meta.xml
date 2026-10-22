@@ -789,18 +789,6 @@
                     <contextAttrHydrationDetails>
                         <contextAttrHydrationDetails>
                             <objectName>Product2</objectName>
-                            <queryAttribute>RES_POC_Percentage__c</queryAttribute>
-                        </contextAttrHydrationDetails>
-                        <objectName>ContractItemPrice</objectName>
-                        <queryAttribute>RES_Product__r</queryAttribute>
-                    </contextAttrHydrationDetails>
-                    <contextAttribute>RES_Construction_Progress</contextAttribute>
-                    <contextInputAttributeName>RES_Construction_Progress</contextInputAttributeName>
-                </contextAttributeMappings>
-                <contextAttributeMappings>
-                    <contextAttrHydrationDetails>
-                        <contextAttrHydrationDetails>
-                            <objectName>Product2</objectName>
                             <queryAttribute>RES_Sequence__c</queryAttribute>
                         </contextAttrHydrationDetails>
                         <objectName>ContractItemPrice</objectName>
@@ -816,14 +804,6 @@
                     </contextAttrHydrationDetails>
                     <contextAttribute>IF_RES_Installments_Check</contextAttribute>
                     <contextInputAttributeName>IF_RES_Installments_Check</contextInputAttributeName>
-                </contextAttributeMappings>
-                <contextAttributeMappings>
-                    <contextAttrHydrationDetails>
-                        <objectName>ContractItemPrice</objectName>
-                        <queryAttribute>RES_Installment_Percentage__c</queryAttribute>
-                    </contextAttrHydrationDetails>
-                    <contextAttribute>RES_Installment_Percentage</contextAttribute>
-                    <contextInputAttributeName>RES_Installment_Percentage</contextInputAttributeName>
                 </contextAttributeMappings>
                 <contextAttributeMappings>
                     <contextAttrHydrationDetails>
@@ -1308,30 +1288,10 @@
                 <contextAttributeMappings>
                     <contextAttrHydrationDetails>
                         <objectName>ContractItemPrice</objectName>
-                        <queryAttribute>RES_Document_Installment_Due_Date__c</queryAttribute>
-                    </contextAttrHydrationDetails>
-                    <contextAttribute>RES_Indicative_Due_Date</contextAttribute>
-                    <contextInputAttributeName>RES_Indicative_Due_Date</contextInputAttributeName>
-                </contextAttributeMappings>
-                <contextAttributeMappings>
-                    <contextAttrHydrationDetails>
-                        <objectName>ContractItemPrice</objectName>
                         <queryAttribute>RES_Document_Price__c</queryAttribute>
                     </contextAttrHydrationDetails>
                     <contextAttribute>RES_Amount</contextAttribute>
                     <contextInputAttributeName>RES_Amount</contextInputAttributeName>
-                </contextAttributeMappings>
-                <contextAttributeMappings>
-                    <contextAttrHydrationDetails>
-                        <contextAttrHydrationDetails>
-                            <objectName>Product2</objectName>
-                            <queryAttribute>RES_Document_Accumulative_Payments__c</queryAttribute>
-                        </contextAttrHydrationDetails>
-                        <objectName>ContractItemPrice</objectName>
-                        <queryAttribute>RES_Product__r</queryAttribute>
-                    </contextAttrHydrationDetails>
-                    <contextAttribute>RES_Accumulative_Payments</contextAttribute>
-                    <contextInputAttributeName>RES_Accumulative_Payments</contextInputAttributeName>
                 </contextAttributeMappings>
                 <contextAttributeMappings>
                     <contextAttrHydrationDetails>
@@ -1356,6 +1316,46 @@
                     </contextAttrHydrationDetails>
                     <contextAttribute>IF_RES_Reservation_Check</contextAttribute>
                     <contextInputAttributeName>IF_RES_Reservation_Check</contextInputAttributeName>
+                </contextAttributeMappings>
+                <contextAttributeMappings>
+                    <contextAttrHydrationDetails>
+                        <objectName>ContractItemPrice</objectName>
+                        <queryAttribute>RES_Document_Installment_Due_Date__c</queryAttribute>
+                    </contextAttrHydrationDetails>
+                    <contextAttribute>RES_Indicative_Due_Date</contextAttribute>
+                    <contextInputAttributeName>RES_Indicative_Due_Date</contextInputAttributeName>
+                </contextAttributeMappings>
+                <contextAttributeMappings>
+                    <contextAttrHydrationDetails>
+                        <objectName>ContractItemPrice</objectName>
+                        <queryAttribute>RES_Installment_Percentage__c</queryAttribute>
+                    </contextAttrHydrationDetails>
+                    <contextAttribute>RES_Installment_Percentage</contextAttribute>
+                    <contextInputAttributeName>RES_Installment_Percentage</contextInputAttributeName>
+                </contextAttributeMappings>
+                <contextAttributeMappings>
+                    <contextAttrHydrationDetails>
+                        <contextAttrHydrationDetails>
+                            <objectName>Product2</objectName>
+                            <queryAttribute>RES_POC_Percentage__c</queryAttribute>
+                        </contextAttrHydrationDetails>
+                        <objectName>ContractItemPrice</objectName>
+                        <queryAttribute>RES_Product__r</queryAttribute>
+                    </contextAttrHydrationDetails>
+                    <contextAttribute>RES_Construction_Progress</contextAttribute>
+                    <contextInputAttributeName>RES_Construction_Progress</contextInputAttributeName>
+                </contextAttributeMappings>
+                <contextAttributeMappings>
+                    <contextAttrHydrationDetails>
+                        <contextAttrHydrationDetails>
+                            <objectName>Product2</objectName>
+                            <queryAttribute>RES_Installment_Accumulative_Payments__c</queryAttribute>
+                        </contextAttrHydrationDetails>
+                        <objectName>ContractItemPrice</objectName>
+                        <queryAttribute>RES_Product__r</queryAttribute>
+                    </contextAttrHydrationDetails>
+                    <contextAttribute>RES_Accumulative_Payments</contextAttribute>
+                    <contextInputAttributeName>RES_Accumulative_Payments</contextInputAttributeName>
                 </contextAttributeMappings>
                 <contextNode>ContractItemPrice</contextNode>
                 <object>ContractItemPrice</object>
@@ -1499,14 +1499,6 @@
                 </contextAttributeMappings>
                 <contextAttributeMappings>
                     <contextAttrHydrationDetails>
-                        <objectName>QuoteLineItem</objectName>
-                        <queryAttribute>RES_Installment_Percentage__c</queryAttribute>
-                    </contextAttrHydrationDetails>
-                    <contextAttribute>RES_QInstallment_Percentage</contextAttribute>
-                    <contextInputAttributeName>RES_QInstallment_Percentage</contextInputAttributeName>
-                </contextAttributeMappings>
-                <contextAttributeMappings>
-                    <contextAttrHydrationDetails>
                         <contextAttrHydrationDetails>
                             <objectName>Product2</objectName>
                             <queryAttribute>RES_Document_Installment_Condition_Type__c</queryAttribute>
@@ -1548,14 +1540,6 @@
                     </contextAttrHydrationDetails>
                     <contextAttribute>RES_QBankName</contextAttribute>
                     <contextInputAttributeName>RES_QBankName</contextInputAttributeName>
-                </contextAttributeMappings>
-                <contextAttributeMappings>
-                    <contextAttrHydrationDetails>
-                        <objectName>QuoteLineItem</objectName>
-                        <queryAttribute>RES_Document_Installment_Due_Date__c</queryAttribute>
-                    </contextAttrHydrationDetails>
-                    <contextAttribute>RES_QInstallment_Due_Date</contextAttribute>
-                    <contextInputAttributeName>RES_QInstallment_Due_Date</contextInputAttributeName>
                 </contextAttributeMappings>
                 <contextAttributeMappings>
                     <contextAttrHydrationDetails>
@@ -1609,18 +1593,6 @@
                     <contextAttrHydrationDetails>
                         <contextAttrHydrationDetails>
                             <objectName>Product2</objectName>
-                            <queryAttribute>RES_POC_Percentage__c</queryAttribute>
-                        </contextAttrHydrationDetails>
-                        <objectName>QuoteLineItem</objectName>
-                        <queryAttribute>Product2</queryAttribute>
-                    </contextAttrHydrationDetails>
-                    <contextAttribute>RES_QConstruction_Progress</contextAttribute>
-                    <contextInputAttributeName>RES_QConstruction_Progress</contextInputAttributeName>
-                </contextAttributeMappings>
-                <contextAttributeMappings>
-                    <contextAttrHydrationDetails>
-                        <contextAttrHydrationDetails>
-                            <objectName>Product2</objectName>
                             <queryAttribute>RES_Unit_Total_Area__c</queryAttribute>
                         </contextAttrHydrationDetails>
                         <objectName>QuoteLineItem</objectName>
@@ -1637,18 +1609,54 @@
                     <contextAttribute>RES_QInstallment_Amount</contextAttribute>
                     <contextInputAttributeName>RES_QInstallment_Amount</contextInputAttributeName>
                 </contextAttributeMappings>
-                <contextNode>QuoteLineItem</contextNode>
-                <object>QuoteLineItem</object>
-            </contextNodeMappings>
-            <contextNodeMappings>
                 <contextAttributeMappings>
                     <contextAttrHydrationDetails>
-                        <objectName>Quote</objectName>
-                        <queryAttribute>RES_Project__c</queryAttribute>
+                        <objectName>QuoteLineItem</objectName>
+                        <queryAttribute>RES_Installment_Percentage__c</queryAttribute>
+                    </contextAttrHydrationDetails>
+                    <contextAttribute>RES_QInstallment_Percentage</contextAttribute>
+                    <contextInputAttributeName>RES_QInstallment_Percentage</contextInputAttributeName>
+                </contextAttributeMappings>
+                <contextAttributeMappings>
+                    <contextAttrHydrationDetails>
+                        <contextAttrHydrationDetails>
+                            <objectName>Product2</objectName>
+                            <queryAttribute>RES_POC_Percentage__c</queryAttribute>
+                        </contextAttrHydrationDetails>
+                        <objectName>QuoteLineItem</objectName>
+                        <queryAttribute>Product2</queryAttribute>
+                    </contextAttrHydrationDetails>
+                    <contextAttribute>RES_QConstruction_Progress</contextAttribute>
+                    <contextInputAttributeName>RES_QConstruction_Progress</contextInputAttributeName>
+                </contextAttributeMappings>
+                <contextAttributeMappings>
+                    <contextAttrHydrationDetails>
+                        <objectName>QuoteLineItem</objectName>
+                        <queryAttribute>RES_Document_Installment_Due_Date__c</queryAttribute>
+                    </contextAttrHydrationDetails>
+                    <contextAttribute>RES_QInstallment_Due_Date</contextAttribute>
+                    <contextInputAttributeName>RES_QInstallment_Due_Date</contextInputAttributeName>
+                </contextAttributeMappings>
+                <contextAttributeMappings>
+                    <contextAttrHydrationDetails>
+                        <contextAttrHydrationDetails>
+                            <contextAttrHydrationDetails>
+                                <objectName>ProductCatalog</objectName>
+                                <queryAttribute>Name</queryAttribute>
+                            </contextAttrHydrationDetails>
+                            <objectName>Product2</objectName>
+                            <queryAttribute>RES_Business_Entity__r</queryAttribute>
+                        </contextAttrHydrationDetails>
+                        <objectName>QuoteLineItem</objectName>
+                        <queryAttribute>Product2</queryAttribute>
                     </contextAttrHydrationDetails>
                     <contextAttribute>RES_QProjectName</contextAttribute>
                     <contextInputAttributeName>RES_QProjectName</contextInputAttributeName>
                 </contextAttributeMappings>
+                <contextNode>QuoteLineItem</contextNode>
+                <object>QuoteLineItem</object>
+            </contextNodeMappings>
+            <contextNodeMappings>
                 <contextAttributeMappings>
                     <contextAttrHydrationDetails>
                         <objectName>Quote</objectName>
@@ -1680,19 +1688,6 @@
             <title>QuoteNodeMapping</title>
         </contextMappings>
         <contextNodes>
-            <contextAttributes>
-                <contextTags>
-                    <title>RES_QProjectName</title>
-                </contextTags>
-                <customMappingAllowed>false</customMappingAllowed>
-                <dataType>picklist</dataType>
-                <fieldType>inputoutput</fieldType>
-                <key>false</key>
-                <localizationDisabled>false</localizationDisabled>
-                <title>RES_QProjectName</title>
-                <transient>false</transient>
-                <value>false</value>
-            </contextAttributes>
             <contextAttributes>
                 <contextTags>
                     <title>RES_QCurrentDate</title>
@@ -2032,6 +2027,19 @@
                 <key>false</key>
                 <localizationDisabled>false</localizationDisabled>
                 <title>RES_QConstruction_Progress</title>
+                <transient>false</transient>
+                <value>false</value>
+            </contextAttributes>
+            <contextAttributes>
+                <contextTags>
+                    <title>RES_QProjectName</title>
+                </contextTags>
+                <customMappingAllowed>false</customMappingAllowed>
+                <dataType>string</dataType>
+                <fieldType>inputoutput</fieldType>
+                <key>false</key>
+                <localizationDisabled>false</localizationDisabled>
+                <title>RES_QProjectName</title>
                 <transient>false</transient>
                 <value>false</value>
             </contextAttributes>
@@ -2937,7 +2945,7 @@
                     <title>RES_Accumulative_Payments</title>
                 </contextTags>
                 <customMappingAllowed>false</customMappingAllowed>
-                <dataType>string</dataType>
+                <dataType>percent</dataType>
                 <fieldType>inputoutput</fieldType>
                 <key>false</key>
                 <localizationDisabled>false</localizationDisabled>
@@ -3483,9 +3491,9 @@
             <title>ContractItemPrice</title>
             <transposable>false</transposable>
         </contextNodes>
-        <isActive>true</isActive>
+        <isActive>false</isActive>
         <startDate>2026-10-13 00:00:00</startDate>
-        <versionNumber>17</versionNumber>
+        <versionNumber>25</versionNumber>
     </contextDefinitionVersions>
     <contextTtl>10</contextTtl>
     <hasSystemTags>false</hasSystemTags>
