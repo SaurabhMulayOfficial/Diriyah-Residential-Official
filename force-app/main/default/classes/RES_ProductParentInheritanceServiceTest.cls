@@ -24,7 +24,7 @@ private class RES_ProductParentInheritanceServiceTest {
     @isTest
     static void testBlankFieldsInheritFromParent() {
         ProductCatalog c = makeCatalog(PARENT_START, PARENT_END, 'PC1000');
-        Product2 p = new Product2(Name = 'Unit A', RES_Business_Entity__c = c.Id);
+        Product2 p = new Product2(RES_CIP_Type__c = 'Unit', Name = 'UnitA', RES_Business_Entity__c = c.Id);
 
         RES_ProductParentInheritanceService.applyParentValues(new List<Product2>{ p }, null);
 
@@ -37,7 +37,7 @@ private class RES_ProductParentInheritanceServiceTest {
     static void testExistingValuesAreNotOverwritten() {
         ProductCatalog c = makeCatalog(PARENT_START, PARENT_END, 'PC1000');
         Product2 p = new Product2(
-            Name = 'Unit B',
+            RES_CIP_Type__c = 'Unit', Name = 'UnitB',
             RES_Business_Entity__c = c.Id,
             AvailabilityDate = Date.newInstance(2026, 3, 1),
             DiscontinuedDate = Date.newInstance(2028, 3, 1),
@@ -54,7 +54,7 @@ private class RES_ProductParentInheritanceServiceTest {
     @isTest
     static void testParentWithNullValuesLeavesUnitBlank() {
         ProductCatalog c = makeCatalog(null, null, null);
-        Product2 p = new Product2(Name = 'Unit C', RES_Business_Entity__c = c.Id);
+        Product2 p = new Product2(RES_CIP_Type__c = 'Unit', Name = 'UnitC', RES_Business_Entity__c = c.Id);
 
         RES_ProductParentInheritanceService.applyParentValues(new List<Product2>{ p }, null);
 
@@ -65,7 +65,7 @@ private class RES_ProductParentInheritanceServiceTest {
 
     @isTest
     static void testNoParentAndNullInputsAreSafe() {
-        Product2 p = new Product2(Name = 'Unit D');
+        Product2 p = new Product2(RES_CIP_Type__c = 'Unit', Name = 'UnitD');
 
         RES_ProductParentInheritanceService.applyParentValues(new List<Product2>{ p }, null);
         RES_ProductParentInheritanceService.applyParentValues(null, null);
@@ -79,7 +79,7 @@ private class RES_ProductParentInheritanceServiceTest {
     static void testPartialFillOnlyBlankFields() {
         ProductCatalog c = makeCatalog(PARENT_START, PARENT_END, 'PC1000');
         Product2 p = new Product2(
-            Name = 'Unit E',
+            RES_CIP_Type__c = 'Unit', Name = 'UnitE',
             RES_Business_Entity__c = c.Id,
             AvailabilityDate = Date.newInstance(2026, 3, 1)
         );
@@ -92,12 +92,27 @@ private class RES_ProductParentInheritanceServiceTest {
     }
 
     @isTest
+    static void testNonUnitProductsAreSkipped() {
+        ProductCatalog c = makeCatalog(PARENT_START, PARENT_END, 'PC1000');
+        Product2 plan = new Product2(RES_CIP_Type__c = 'Payment Plan', Name = 'Plan A', RES_Business_Entity__c = c.Id);
+        Product2 noCipType = new Product2(Name = 'No CIP Type', RES_Business_Entity__c = c.Id);
+
+        Integer before = Limits.getQueries();
+        RES_ProductParentInheritanceService.applyParentValues(new List<Product2>{ plan, noCipType }, null);
+
+        System.assertEquals(0, Limits.getQueries() - before, 'No parent query when there are no units');
+        System.assertEquals(null, plan.DiscontinuedDate, 'Payment Plan keeps its own end date');
+        System.assertEquals(null, plan.RES_Profit_Center__c, 'Payment Plan does not inherit profit center');
+        System.assertEquals(null, noCipType.AvailabilityDate, 'Products without CIP Type are not treated as units');
+    }
+
+    @isTest
     static void testBulkUnitsShareOneParentQuery() {
         // One catalog only: the catalog sync starts a batch per inserted record and tests allow a single executeBatch.
         ProductCatalog c = makeCatalog(PARENT_START, PARENT_END, 'PC1');
         List<Product2> units = new List<Product2>();
         for (Integer i = 0; i < 50; i++) {
-            units.add(new Product2(Name = 'Bulk ' + i, RES_Business_Entity__c = c.Id));
+            units.add(new Product2(RES_CIP_Type__c = 'Unit', Name = 'Bulk ' + i, RES_Business_Entity__c = c.Id));
         }
 
         Integer before = Limits.getQueries();

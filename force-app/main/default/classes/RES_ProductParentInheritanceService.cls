@@ -2,11 +2,15 @@
  * @description Before-save inheritance of validity dates and profit center from a unit's parent
  *              Business Entity / Project / Zone (ProductCatalog) onto the Product2 (unit).
  *              Only blank unit fields are filled, so values entered by users, loaders or approvals are never overwritten.
+ *              Only units (RES_CIP_Type__c = 'Unit') inherit; Payment Plans, Installments and Service Charges share the
+ *              Business Entity lookup but keep their own values.
  *              Must run before the generic date defaults so the parent's dates win over today / 2099-12-31.
  * @author      Roshan Jambhule
  * @date        2025
  */
 public with sharing class RES_ProductParentInheritanceService {
+
+    private static final String CIP_TYPE_UNIT = 'Unit';
 
     @TestVisible
     private static RES_ProductCatalogDAOLayer catalogDao = new RES_ProductCatalogDAOLayer();
@@ -21,7 +25,7 @@ public with sharing class RES_ProductParentInheritanceService {
 
         Set<Id> catalogIds = new Set<Id>();
         for (Product2 p : products) {
-            if (p.RES_Business_Entity__c != null && needsInheritance(p)) {
+            if (isUnit(p) && p.RES_Business_Entity__c != null && needsInheritance(p)) {
                 catalogIds.add(p.RES_Business_Entity__c);
             }
         }
@@ -37,7 +41,7 @@ public with sharing class RES_ProductParentInheritanceService {
         }
 
         for (Product2 p : products) {
-            if (p.RES_Business_Entity__c == null) continue;
+            if (!isUnit(p) || p.RES_Business_Entity__c == null) continue;
             ProductCatalog parent = catalogs.get(p.RES_Business_Entity__c);
             if (parent == null) continue;
 
@@ -51,6 +55,10 @@ public with sharing class RES_ProductParentInheritanceService {
                 p.RES_Profit_Center__c = parent.RES_Profit_Center__c;
             }
         }
+    }
+
+    private static Boolean isUnit(Product2 p) {
+        return p.RES_CIP_Type__c == CIP_TYPE_UNIT;
     }
 
     private static Boolean needsInheritance(Product2 p) {
