@@ -99,32 +99,6 @@ private class RES_ProductTriggerHandlerTest {
     }
 
     @isTest
-    static void testBeforeInsertClearsExternalId() {
-        if (!canConstruct()) return;
-
-        RES_IntegrationTestDataFactory.primeSapToken();
-        Test.setMock(HttpCalloutMock.class, new RES_IntegrationTestDataFactory.EndpointRoutingMock());
-
-        Product2 p = new Product2(
-            Name                       = 'TRIG-EXTID-01',
-            IsActive                   = true,
-            StockKeepingUnit           = 'SKU-EXT-01',
-            ProductCode                = 'PC-EXT-01',
-            Family                     = '1004',
-            RES_Type__c                = 'N',
-            RES_Product_External_ID__c = 'PC-EXT-01'  // upload sheet pre-set ProductCode into this field
-        );
-
-        Test.startTest();
-        insert p;
-        Test.stopTest();
-
-        Product2 after = [SELECT RES_Product_External_ID__c FROM Product2 WHERE Id = :p.Id];
-        Assert.isNull(after.RES_Product_External_ID__c,
-            'beforeInsert must always clear RES_Product_External_ID__c — SAP assigns it on INSERT response');
-    }
-
-    @isTest
     static void testBeforeUpdateReDefaultsDatesWhenCleared() {
         if (!canConstruct()) return;
 

@@ -9,8 +9,7 @@ public with sharing class RES_ProductTriggerHandler extends RES_BaseTriggerHandl
 
     public RES_ProductTriggerHandler() {}
 
-    /** @description Defaults AvailabilityDate to today and DiscontinuedDate to 2099-12-31 when blank.
-     *              Always clears RES_Product_External_ID__c — SAP owns this field and must assign it on INSERT. */
+    /** @description Defaults AvailabilityDate to today and DiscontinuedDate to 2099-12-31 when blank. */
     protected override void beforeInsert() {
         RES_ProductParentInheritanceService.applyParentValues((List<Product2>) Trigger.new, null);
         Date today = Date.today();
@@ -21,8 +20,6 @@ public with sharing class RES_ProductTriggerHandler extends RES_BaseTriggerHandl
             if (p.DiscontinuedDate == null) {
                 p.DiscontinuedDate = DISCONTINUED_DEFAULT;
             }
-            // SAP assigns ExternalId on INSERT response — clear any value set by upload sheets or data loads
-            // p.RES_Product_External_ID__c = null; // not required.
         }
     }
 
