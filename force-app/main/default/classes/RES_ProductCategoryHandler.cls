@@ -2,6 +2,7 @@ public with sharing class RES_ProductCategoryHandler extends RES_BaseTriggerHand
     public RES_ProductCategoryHandler() {}
 
     protected override void beforeInsert() {
+        RES_ProductCategoryService.populateFromCatalog((List<ProductCategory>) Trigger.new);
     }
 
     protected override void afterInsert(){

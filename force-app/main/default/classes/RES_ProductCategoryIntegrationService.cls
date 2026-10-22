@@ -14,6 +14,8 @@
  */
 
 public with sharing class RES_ProductCategoryIntegrationService extends RES_BaseIntegrationCalloutService {
+    private static final String DEFAULT_VALID_TO_DATE = '9999-12-31T00:00:00.000Z';
+
     public RES_ProductCategoryIntegrationService(String requestMethod) {
         super();
         List<RES_API_Configuration__mdt> apiConfigList = new RES_APIConfigurationsDAO().getAPIConfiguration(requestMethod, 'Building_Land_API');
@@ -82,7 +84,9 @@ public with sharing class RES_ProductCategoryIntegrationService extends RES_Base
             wrapper.RES_Property_ID = pc.RES_Property_ID__c;
             wrapper.Name = pc.Name;
             wrapper.RES_Valid_From_Date = pc.RES_Valid_From_Date__c;
-            wrapper.RES_Valid_To_Date = pc.RES_Valid_To_Date__c;
+            wrapper.RES_Valid_To_Date = pc.RES_Valid_To_Date__c != null
+                ? pc.RES_Valid_To_Date__c.formatGmt('yyyy-MM-dd\'T\'HH:mm:ss.SSS\'Z\'')
+                : DEFAULT_VALID_TO_DATE;
             wrapper.RES_Profit_Center = pc.RES_Profit_Center__c;
             wrapper.RES_Property_Type = pc.RES_Property_Type__c;
             wrapper.Change_Indicator = triggerContext;
