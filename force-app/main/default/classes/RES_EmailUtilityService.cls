@@ -134,6 +134,13 @@ public class RES_EmailUtilityService {
     public virtual void setSaveAsActivity(Boolean saveAsActivity){
         email.setSaveAsActivity(saveAsActivity);
     }
+
+    /** Attaches Salesforce Files by ContentVersion Id; does nothing when the list is empty. */
+    public virtual void setEntityAttachments(List<String> contentVersionIds){
+        if (contentVersionIds != null && !contentVersionIds.isEmpty()) {
+            email.setEntityAttachments(contentVersionIds);
+        }
+    }
     
     public Messaging.SingleEmailMessage getEmailInstance() {
         return this.email;

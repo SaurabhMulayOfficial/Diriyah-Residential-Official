@@ -63,6 +63,12 @@
         </faultConnector>
         <flowTransactionModel>Automatic</flowTransactionModel>
         <inputParameters>
+            <name>attachmentIds</name>
+            <value>
+                <elementReference>Get_Payment_Plan_Email_Details.attachmentIds</elementReference>
+            </value>
+        </inputParameters>
+        <inputParameters>
             <name>emailBody</name>
             <value>
                 <elementReference>Get_Email_Template.Html_Body__c</elementReference>
@@ -116,6 +122,12 @@
             <targetReference>Populate_Merge_Fields</targetReference>
         </faultConnector>
         <flowTransactionModel>CurrentTransaction</flowTransactionModel>
+        <inputParameters>
+            <name>includeAttachments</name>
+            <value>
+                <elementReference>includeAttachments</elementReference>
+            </value>
+        </inputParameters>
         <inputParameters>
             <name>recordId</name>
             <value>
@@ -654,6 +666,17 @@
         </connector>
     </start>
     <status>Active</status>
+    <variables>
+        <description>True only for deactivation emails: attaches the files on the Payment Plan record.</description>
+        <name>includeAttachments</name>
+        <dataType>Boolean</dataType>
+        <isCollection>false</isCollection>
+        <isInput>true</isInput>
+        <isOutput>false</isOutput>
+        <value>
+            <booleanValue>false</booleanValue>
+        </value>
+    </variables>
     <variables>
         <name>faultMessage</name>
         <dataType>String</dataType>

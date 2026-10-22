@@ -230,4 +230,18 @@ private class RES_EmailUtilityServiceTest {
 
         Assert.areEqual(l.Id, svc.getEmailInstance().getTargetObjectId());
     }
+
+    @IsTest
+    static void testSetEntityAttachments_setsIdsAndIgnoresEmpty() {
+        ContentVersion cv = new ContentVersion(Title = 'Attachment', PathOnClient = 'Attachment.txt', VersionData = Blob.valueOf('file'));
+        insert cv;
+        RES_EmailUtilityService svc = new RES_EmailUtilityService();
+
+        svc.setEntityAttachments(new List<String>());
+        svc.setEntityAttachments(null);
+        Assert.isNull(svc.getEmailInstance().getEntityAttachments(), 'Empty or null lists should not set attachments');
+
+        svc.setEntityAttachments(new List<String>{ cv.Id });
+        Assert.areEqual(new List<String>{ cv.Id }, svc.getEmailInstance().getEntityAttachments());
+    }
 }

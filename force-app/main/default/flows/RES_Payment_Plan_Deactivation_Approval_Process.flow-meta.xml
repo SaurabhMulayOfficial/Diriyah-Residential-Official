@@ -123,6 +123,12 @@
             </entryConditions>
             <exitConditionLogic>and</exitConditionLogic>
             <inputParameters>
+                <name>includeAttachments</name>
+                <value>
+                    <booleanValue>true</booleanValue>
+                </value>
+            </inputParameters>
+            <inputParameters>
                 <name>bellNotificationBody</name>
                 <value>
                     <elementReference>SubmitterDeactivatedBellBody</elementReference>
@@ -296,6 +302,12 @@
                 </rightValue>
             </entryConditions>
             <exitConditionLogic>and</exitConditionLogic>
+            <inputParameters>
+                <name>includeAttachments</name>
+                <value>
+                    <booleanValue>true</booleanValue>
+                </value>
+            </inputParameters>
             <inputParameters>
                 <name>bellNotificationBody</name>
                 <value>
@@ -471,6 +483,12 @@
                 </rightValue>
             </entryConditions>
             <exitConditionLogic>and</exitConditionLogic>
+            <inputParameters>
+                <name>includeAttachments</name>
+                <value>
+                    <booleanValue>true</booleanValue>
+                </value>
+            </inputParameters>
             <inputParameters>
                 <name>bellNotificationBody</name>
                 <value>
