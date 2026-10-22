@@ -14,7 +14,7 @@
  */
 
 public without sharing class RES_ProductCatalogIntegrationService extends RES_BaseIntegrationCalloutService {
-    private static final String DEFAULT_EFFECTIVE_END_DATE = '9999-12-31 00:00:00';
+    private static final String DEFAULT_EFFECTIVE_END_DATE = '3999-12-31T00:00:00Z';
 
     public RES_ProductCatalogIntegrationService(String requestMethod) {
         super();
