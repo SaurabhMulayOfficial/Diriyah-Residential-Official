@@ -733,7 +733,7 @@ public class RES_TestDataFactory {
             RES_No_of_Months__c = 3,
             DiscontinuedDate = Date.today().addDays(31),
             AvailabilityDate = System.Now(),
-            RES_Product_External_ID__c = 'S000523',
+            RES_Product_External_ID__c = 'T' + String.valueOf(Crypto.getRandomLong()).replace('-', '').left(8),
             RES_Status_Role__c = 'REL',
             RES_Status_Role_Description__c = 'Release'
         );
@@ -763,7 +763,7 @@ public class RES_TestDataFactory {
             RES_Sequence__c = 1,
             RES_Installment_Percentage__c = 100,
             RES_POC_Percentage__c = 100,
-            RES_Product_External_ID__c = 'S000523',
+            RES_Product_External_ID__c = 'T' + String.valueOf(Crypto.getRandomLong()).replace('-', '').left(8),
             RES_Installment_Amount__c = 15000,
             Family = 'Options'
         );
