@@ -295,6 +295,11 @@
         <field>ContractItemPrice.RES_Installment_Due_Date__c</field>
         <readable>true</readable>
     </fieldPermissions>
+     <fieldPermissions>
+        <editable>true</editable>
+        <field>ContractItemPrice.RES_Document_Installment_Due_Date__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
     <fieldPermissions>
         <editable>true</editable>
         <field>ContractItemPrice.RES_Service_Charge_Frequency__c</field>
@@ -3462,6 +3467,11 @@
     <fieldPermissions>
         <editable>true</editable>
         <field>QuoteLineItem.RES_Installment_Due_Date__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>QuoteLineItem.RES_Document_Installment_Due_Date__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
