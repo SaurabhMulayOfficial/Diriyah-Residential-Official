@@ -399,8 +399,28 @@ private class RES_ProdApprovalNotifyServiceTest {
         System.assert(rows.startsWith('<tr>'), 'Should render one table row per unit');
         System.assert(rows.contains('RU-&lt;001&gt;'), 'RU No. should be HTML-escaped');
         System.assert(rows.contains('Residential'), 'Inventory Type should use the picklist label');
-        System.assert(rows.contains(Decimal.valueOf(1500000).setScale(2).format()), 'Property Price should come from the standard price book');
+        System.assert(rows.contains('1,500,000.000 '), 'Property Price should come from the standard price book with 3 decimals');
         System.assert(rows.contains('>-</td>'), 'Missing Company Code and Project should render as a dash');
+    }
+
+    @isTest
+    static void testFormatPrice_threeDecimalRules() {
+        System.assertEquals(null, RES_ProductApprovalNotificationService.formatPrice(null, 'SAR'));
+        System.assertEquals('0.000 SAR', RES_ProductApprovalNotificationService.formatPrice(0, 'SAR'), 'zero shows 0.000');
+        System.assertEquals('5,273,032.000 SAR', RES_ProductApprovalNotificationService.formatPrice(5273032, 'SAR'), 'whole value shows .000');
+        System.assertEquals('90,000,000.123 SAR', RES_ProductApprovalNotificationService.formatPrice(90000000.123000, 'SAR'), 'six stored decimals show three');
+        System.assertEquals('0.123 SAR', RES_ProductApprovalNotificationService.formatPrice(0.123, 'SAR'));
+        System.assertEquals('0.500 USD', RES_ProductApprovalNotificationService.formatPrice(0.5, 'USD'), 'pads to three decimals');
+        System.assertEquals('0.001 SAR', RES_ProductApprovalNotificationService.formatPrice(0.0005, 'SAR'), 'rounds half up');
+        System.assertEquals('-1,500.249 SAR', RES_ProductApprovalNotificationService.formatPrice(-1500.249, 'SAR'));
+        System.assertEquals('950.000 ' + UserInfo.getDefaultCurrency(), RES_ProductApprovalNotificationService.formatPrice(950, null), 'blank currency falls back to the user default currency');
+    }
+
+    @isTest
+    static void testBuildUnitTableRows_noPriceAnywhereShowsDash() {
+        Product2 unit = new Product2(Name = 'U9', ProductCode = 'RU-9');
+        String rows = RES_ProductApprovalNotificationService.buildUnitTableRows(new List<Product2>{ unit });
+        System.assert(!rows.contains('SAR'), 'No price means no amount text');
     }
 
     @isTest
