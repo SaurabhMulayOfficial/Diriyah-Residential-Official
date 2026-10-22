@@ -22,7 +22,7 @@ public with sharing class RES_ProductTriggerHandler extends RES_BaseTriggerHandl
                 p.DiscontinuedDate = DISCONTINUED_DEFAULT;
             }
             // SAP assigns ExternalId on INSERT response — clear any value set by upload sheets or data loads
-            p.RES_Product_External_ID__c = null;
+            // p.RES_Product_External_ID__c = null; // not required.
         }
     }
 

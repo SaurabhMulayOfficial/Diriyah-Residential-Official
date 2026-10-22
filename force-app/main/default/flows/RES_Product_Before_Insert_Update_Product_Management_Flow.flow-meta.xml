@@ -3,6 +3,22 @@
     <apiVersion>67.0</apiVersion>
     <areMetricsLoggedToDataCloud>false</areMetricsLoggedToDataCloud>
     <assignments>
+        <name>Assign_External_ID</name>
+        <label>Assign &quot;External ID&quot;</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignmentItems>
+            <assignToReference>$Record.RES_Product_External_ID__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>NextPaymentPlanNumber</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>If_Reserved_By_quote_Changes</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
         <name>Assign_the_Reserve_By_Contract</name>
         <label>Assign the Reserve By Contract</label>
         <locationX>0</locationX>
@@ -32,9 +48,66 @@
                 </rightValue>
             </conditions>
             <connector>
-                <targetReference>If_Reserved_By_quote_Changes</targetReference>
+                <targetReference>If_record_is_new_with_RC_Payment_Plan</targetReference>
             </connector>
             <label>Not Bypassed</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>If_record_is_new_with_RC_Payment_Plan</name>
+        <label>If record is new &amp; with RC: Payment Plan</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnector>
+            <targetReference>If_Reserved_By_quote_Changes</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>YesRCPP</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>ISNEW</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.RecordType.DeveloperName</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>RES_Residential_Payment_Plan</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Get_Recent_Record</targetReference>
+            </connector>
+            <label>Yes</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>If_record_is_not_null</name>
+        <label>If record is not null</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnector>
+            <targetReference>If_Reserved_By_quote_Changes</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Not_Null</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>Get_Recent_Record</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Assign_External_ID</targetReference>
+            </connector>
+            <label>Not Null</label>
         </rules>
     </decisions>
     <decisions>
@@ -79,6 +152,20 @@
         <dataType>Boolean</dataType>
         <expression>ISNEW()</expression>
     </formulas>
+    <formulas>
+        <name>NextPaymentPlanNumber</name>
+        <dataType>String</dataType>
+        <expression>&quot;S&quot; &amp;
+LPAD(
+    TEXT(
+        VALUE(
+            MID({!Get_Recent_Record.RES_Product_External_ID__c} , 2, 6)
+        ) + 1
+    ),
+    6,
+    &quot;0&quot;
+)</expression>
+    </formulas>
     <interviewLabel>Product - Before Insert Update - Update {!$Flow.CurrentDateTime}</interviewLabel>
     <label>Product - Before Insert Update - Product Management Flow</label>
     <processMetadataValues>
@@ -100,6 +187,43 @@
         </value>
     </processMetadataValues>
     <processType>AutoLaunchedFlow</processType>
+    <recordLookups>
+        <name>Get_Recent_Record</name>
+        <label>Get Recent Record</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>If_record_is_not_null</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>RecordTypeId</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>$Record.RecordTypeId</elementReference>
+            </value>
+        </filters>
+        <filters>
+            <field>RES_Product_External_ID__c</field>
+            <operator>IsNull</operator>
+            <value>
+                <booleanValue>false</booleanValue>
+            </value>
+        </filters>
+        <filters>
+            <field>RES_Product_External_ID__c</field>
+            <operator>StartsWith</operator>
+            <value>
+                <stringValue>S</stringValue>
+            </value>
+        </filters>
+        <getFirstRecordOnly>true</getFirstRecordOnly>
+        <object>Product2</object>
+        <sortField>CreatedDate</sortField>
+        <sortOrder>Desc</sortOrder>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
     <start>
         <locationX>0</locationX>
         <locationY>0</locationY>
