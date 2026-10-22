@@ -75,6 +75,24 @@ public with sharing class RES_AccountDAOLayer extends RES_BaseDAOLayer{
         return accountMap;
     }
 
+    // Returns accounts by Id with their Person / Business type and, for Person Accounts, the linked PersonContactId
+    public Map<Id, Account> getAccountsWithPersonContactByIds(Set<Id> accountIds) {
+        Map<Id, Account> accountMap = new Map<Id, Account>();
+        if (accountIds == null || accountIds.isEmpty()) {
+            return accountMap;
+        }
+        Map<String, Object> bindVars = new Map<String, Object>();
+        bindVars.put('accountIds', accountIds);
+        String soql = 'SELECT Id, IsPersonAccount, PersonContactId FROM Account WHERE Id IN :accountIds';
+        List<SObject> results = executeQuery(soql, '', false, bindVars, AccessLevel.SYSTEM_MODE);
+        if (results != null) {
+            for (SObject s : results) {
+                accountMap.put(s.Id, (Account) s);
+            }
+        }
+        return accountMap;
+    }
+
     public Account getAccountById(Id accountId) {
         Map<String, Object> bindVars = new Map<String, Object>();
         bindVars.put('accountId', accountId);

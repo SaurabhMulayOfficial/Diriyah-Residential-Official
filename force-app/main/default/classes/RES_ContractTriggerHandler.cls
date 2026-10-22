@@ -1,6 +1,10 @@
 public with sharing class RES_ContractTriggerHandler extends RES_BaseTriggerHandler {
     public RES_ContractTriggerHandler() {}
 
+    protected override void beforeInsert() {
+        RES_ContractServices.populateCustomerSignedBy((List<Contract>) Trigger.new);
+    }
+
   protected override void afterInsert() {
         handleAfterInsert((List<Contract>) Trigger.new);
     }

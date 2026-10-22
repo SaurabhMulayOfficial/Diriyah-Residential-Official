@@ -249,6 +249,13 @@ private class RES_ApplyApprovedPOCToPPTest {
         System.assertEquals(40, newPlanComponents[0].RES_Installment_Percentage__c, 'Merged installment should carry the combined 20+20 share');
         System.assertEquals(30, newPlanComponents[1].RES_Installment_Percentage__c, 'Installment 2 should be untouched');
         System.assertEquals(30, newPlanComponents[2].RES_Installment_Percentage__c, 'Final Payment should be untouched');
+        Map<Id, Product2> newInstallments = new Map<Id, Product2>([
+            SELECT Id, RES_Installment_Accumulative_Payments__c FROM Product2
+            WHERE Id IN (SELECT ChildProductId FROM ProductRelatedComponent WHERE ParentProductId = :newVersion.Id)
+        ]);
+        System.assertEquals(40, newInstallments.get(newPlanComponents[0].ChildProductId).RES_Installment_Accumulative_Payments__c, 'Merged row accumulative = its own %');
+        System.assertEquals(70, newInstallments.get(newPlanComponents[1].ChildProductId).RES_Installment_Accumulative_Payments__c);
+        System.assertEquals(100, newInstallments.get(newPlanComponents[2].ChildProductId).RES_Installment_Accumulative_Payments__c);
         for (ProductRelatedComponent prc : newPlanComponents) {
             System.assertEquals(newGroups[0].Id, prc.ProductComponentGroupId);
             System.assertNotEquals(null, prc.ProductRelationshipTypeId);
