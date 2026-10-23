@@ -4,7 +4,7 @@
  *              Only blank unit fields are filled, so values entered by users, loaders or approvals are never overwritten.
  *              Only units (RES_CIP_Type__c = 'Unit') inherit; Payment Plans, Installments and Service Charges share the
  *              Business Entity lookup but keep their own values.
- *              Must run before the generic date defaults so the parent's dates win over today / 2099-12-31.
+ *              Must run before the generic date defaults so the parent's dates win over today / 3999-12-30.
  * @author      Roshan Jambhule
  * @date        2025
  */
