@@ -99,15 +99,61 @@ public without sharing class RES_PaymentPlanBundleProvisioner {
             return;
         }
 
-        Map<Id, Product2> unitsById = new Map<Id, Product2>(units);
-        Set<Id> unitIds = unitsById.keySet();
+        Map<Id, List<Product2>> plansByUnitId = new Map<Id, List<Product2>>();
+        for (Product2 unit : units) {
+            plansByUnitId.put(unit.Id, new List<Product2>{ paymentPlan });
+        }
+        provisionUnitPlans(plansByUnitId);
+    }
+
+    /** Unit-side entry point (e.g. product ingestion): wires every Approved, active, unexpired Payment Plan of each Unit's catalog onto that Unit. Idempotent. */
+    public static void provisionForUnits(Set<Id> unitIds) {
+        List<Product2> units = PRODUCT_DAO.getCatalogUnitsByIds(unitIds);
+        if (units.isEmpty()) {
+            return;
+        }
+
+        Set<Id> catalogIds = new Set<Id>();
+        for (Product2 unit : units) {
+            catalogIds.add(unit.RES_Business_Entity__c);
+        }
+
+        Map<Id, List<Product2>> plansByCatalogId = new Map<Id, List<Product2>>();
+        for (Product2 paymentPlan : PRODUCT_DAO.getApprovedPaymentPlansByCatalogs(catalogIds, RES_PaymentPlanExpiryService.today())) {
+            if (!plansByCatalogId.containsKey(paymentPlan.RES_Business_Entity__c)) {
+                plansByCatalogId.put(paymentPlan.RES_Business_Entity__c, new List<Product2>());
+            }
+            plansByCatalogId.get(paymentPlan.RES_Business_Entity__c).add(paymentPlan);
+        }
+
+        Map<Id, List<Product2>> plansByUnitId = new Map<Id, List<Product2>>();
+        for (Product2 unit : units) {
+            List<Product2> catalogPlans = plansByCatalogId.get(unit.RES_Business_Entity__c);
+            if (catalogPlans != null) {
+                plansByUnitId.put(unit.Id, catalogPlans);
+            }
+        }
+        if (!plansByUnitId.isEmpty()) {
+            provisionUnitPlans(plansByUnitId);
+        }
+    }
+
+    /** Ensures each Unit has a Payment Plan group and one component per given plan, in bulk. Plans are listed in the order they should claim the default. */
+    private static void provisionUnitPlans(Map<Id, List<Product2>> plansByUnitId) {
+        Set<Id> unitIds = plansByUnitId.keySet();
+        Set<Id> paymentPlanIds = new Set<Id>();
+        for (List<Product2> paymentPlans : plansByUnitId.values()) {
+            for (Product2 paymentPlan : paymentPlans) {
+                paymentPlanIds.add(paymentPlan.Id);
+            }
+        }
 
         Map<Id, ProductComponentGroup> existingGroupByUnitId = mapGroupsByUnit(
             GROUP_DAO.getGroupsByParentProductsAndName(unitIds, GROUP_NAME)
         );
 
-        Set<Id> unitsAlreadyWired = mapUnitIdsFromComponents(
-            COMPONENT_DAO.getComponentsByParentProductsAndChild(unitIds, paymentPlanId)
+        Set<String> wiredPairs = mapUnitPlanPairs(
+            COMPONENT_DAO.getComponentsByParentProductsAndChildren(unitIds, paymentPlanIds)
         );
 
         /*
@@ -128,7 +174,7 @@ public without sharing class RES_PaymentPlanBundleProvisioner {
              */
             System.debug(
                 'RES_PaymentPlanBundleProvisioner: ProductRelationshipType "' +
-                relationshipTypeName + '" not found - aborting provisioning for Payment Plan ' + paymentPlanId
+                relationshipTypeName + '" not found - aborting provisioning for Payment Plans ' + paymentPlanIds
             );
             return;
         }
@@ -158,9 +204,6 @@ public without sharing class RES_PaymentPlanBundleProvisioner {
 
         List<ProductRelatedComponent> componentsToInsert = new List<ProductRelatedComponent>();
         for (Id unitId : unitIds) {
-            if (unitsAlreadyWired.contains(unitId)) {
-                continue;
-            }
             ProductComponentGroup componentGroup = existingGroupByUnitId.get(unitId);
             if (componentGroup == null) {
                 /*
@@ -169,13 +212,18 @@ public without sharing class RES_PaymentPlanBundleProvisioner {
                  */
                 continue;
             }
-            /*
-             * Only one option per Unit may be the default (see unitsWithDefault above). The
-             * flag is updated in memory so a Unit is never given two defaults in one run.
-             */
-            Boolean isDefault = !unitsWithDefault.contains(unitId);
-            unitsWithDefault.add(unitId);
-            componentsToInsert.add(buildComponent(unitId, componentGroup.Id, paymentPlanId, relationshipTypeId, isDefault, paymentPlan.RES_Price_Option__c));
+            for (Product2 paymentPlan : plansByUnitId.get(unitId)) {
+                if (wiredPairs.contains(unitId + '|' + paymentPlan.Id)) {
+                    continue;
+                }
+                /*
+                 * Only one option per Unit may be the default (see unitsWithDefault above). The
+                 * flag is updated in memory so a Unit is never given two defaults in one run.
+                 */
+                Boolean isDefault = !unitsWithDefault.contains(unitId);
+                unitsWithDefault.add(unitId);
+                componentsToInsert.add(buildComponent(unitId, componentGroup.Id, paymentPlan.Id, relationshipTypeId, isDefault, paymentPlan.RES_Price_Option__c));
+            }
         }
 
         if (!componentsToInsert.isEmpty()) {
@@ -287,10 +335,10 @@ public without sharing class RES_PaymentPlanBundleProvisioner {
         return result;
     }
 
-    private static Set<Id> mapUnitIdsFromComponents(List<ProductRelatedComponent> components) {
-        Set<Id> result = new Set<Id>();
+    private static Set<String> mapUnitPlanPairs(List<ProductRelatedComponent> components) {
+        Set<String> result = new Set<String>();
         for (ProductRelatedComponent component : components) {
-            result.add(component.ParentProductId);
+            result.add(component.ParentProductId + '|' + component.ChildProductId);
         }
         return result;
     }

@@ -31,6 +31,14 @@ public with sharing class RES_IntegrationQueueable implements Queueable, Databas
     }
 
     public void execute(QueueableContext context) {
+        try {
+            routeToService();
+        } finally {
+            RES_BaseIntegrationCalloutService.flushRequestLogs();
+        }
+    }
+
+    private void routeToService() {
         if (records == null || records.isEmpty()) {
             return;
         }

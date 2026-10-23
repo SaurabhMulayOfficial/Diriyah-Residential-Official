@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>RES_Log_All_Callouts__c</fullName>
+    <defaultValue>false</defaultValue>
+    <description>When checked, every outbound integration callout creates a Callout Request integration log with its endpoint and request body.</description>
+    <label>Log All Callouts</label>
+    <trackTrending>false</trackTrending>
+    <type>Checkbox</type>
+</CustomField>

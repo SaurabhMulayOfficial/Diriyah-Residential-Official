@@ -182,6 +182,14 @@
         <connector>
             <targetReference>If_Config_Switch_Off</targetReference>
         </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>RES_Type_of_Failure__c</field>
+            <operator>NotEqualTo</operator>
+            <value>
+                <stringValue>Callout Request</stringValue>
+            </value>
+        </filters>
         <object>RES_Integration_Log__c</object>
         <recordTriggerType>Create</recordTriggerType>
         <triggerType>RecordAfterSave</triggerType>

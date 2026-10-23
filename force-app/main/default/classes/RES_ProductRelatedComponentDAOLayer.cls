@@ -36,6 +36,23 @@ public without sharing class RES_ProductRelatedComponentDAOLayer extends RES_Bas
         return (List<ProductRelatedComponent>) executeQuery(soql, '', false, bindVars, AccessLevel.SYSTEM_MODE);
     }
 
+    /** Existing rows linking any of the given children (Payment Plans) under any of the given parents (Units). */
+    public List<ProductRelatedComponent> getComponentsByParentProductsAndChildren(Set<Id> parentProductIds, Set<Id> childProductIds) {
+        if (parentProductIds == null || parentProductIds.isEmpty() || childProductIds == null || childProductIds.isEmpty()) {
+            return new List<ProductRelatedComponent>();
+        }
+        String soql =
+            'SELECT Id, ParentProductId, ChildProductId ' +
+            'FROM ProductRelatedComponent ' +
+            'WHERE ParentProductId IN :parentProductIds ' +
+            'AND ChildProductId IN :childProductIds';
+        Map<String, Object> bindVars = new Map<String, Object>{
+            'parentProductIds' => parentProductIds,
+            'childProductIds' => childProductIds
+        };
+        return (List<ProductRelatedComponent>) executeQuery(soql, '', false, bindVars, AccessLevel.SYSTEM_MODE);
+    }
+
     /**
      * Get Components By Parent Products. Ordered by the child Installment's own
      * RES_Sequence__c (not Name) since RES_ApplyApprovedPOCToFuturePaymentPlan relies on

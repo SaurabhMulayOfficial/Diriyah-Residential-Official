@@ -84,6 +84,29 @@ private class RES_IntegrationQueueableTest {
         Assert.areEqual(1, mock.businessCallCount, 'The ProductCategory branch should reach the service.');
     }
 
+    @isTest
+    static void executeFlushesCalloutRequestLogs() {
+        insert new RES_Config_Switch__c(SetupOwnerId = UserInfo.getOrganizationId(), RES_Log_All_Callouts__c = true);
+        RES_IntegrationTestDataFactory.primeSapToken();
+        Test.setMock(HttpCalloutMock.class, new RES_IntegrationTestDataFactory.EndpointRoutingMock());
+
+        List<ProductCategory> categories = RES_IntegrationTestDataFactory.createCategories(1, true);
+
+        Test.startTest();
+        System.enqueueJob(
+            new RES_IntegrationQueueable(categories, 'ProductCategory_Sync', METHOD, 'I')
+        );
+        Test.stopTest();
+
+        List<RES_Integration_Log__c> logs = [
+            SELECT RES_Endpoint__c, RES_Request_Body__c
+            FROM RES_Integration_Log__c
+            WHERE RES_Type_of_Failure__c = :RES_BaseIntegrationCalloutService.CALLOUT_REQUEST_TYPE
+        ];
+        Assert.isFalse(logs.isEmpty(), 'Each callout made by the queueable should leave a request log.');
+        Assert.isNotNull(logs[0].RES_Endpoint__c, 'The endpoint should be stored on the request log.');
+    }
+
     /* ====================================================================
      *  PLACEHOLDER BRANCHES
      *  These only exercise the cast loops; the service calls are commented
