@@ -31,6 +31,7 @@ public with sharing class RES_ProductCategoryService {
             pc.RES_Valid_To_Date__c = catalog.EffectiveEndDate;
             pc.RES_Profit_Center__c = catalog.RES_Profit_Center__c;
             pc.RES_Company_Code__c = catalog.RES_Company_Code__c;
+            pc.RES_Business_Entity_Id__c = catalog.RES_Business_Entity_Id__c;
         }
     }
 
