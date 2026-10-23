@@ -100,6 +100,7 @@ public with sharing class RES_UnifiedIngestionEngine implements Database.Batchab
         linkProductsToCategories(scope, productIdByCode);
         disqualifyNewProducts(productIdByCode);
         provisionServiceChargeComponent(productIdByCode);
+        provisionPaymentPlanComponents(productIdByCode);
         linkProductsToSellingModels(scope, productIdByCode);
         syncPricebookEntries(scope, productIdByCode, rowErrors);
         syncProductAttributes(scope, productIdByCode, rowErrors);
@@ -411,6 +412,12 @@ public with sharing class RES_UnifiedIngestionEngine implements Database.Batchab
         }
         if (productIds.isEmpty()) return;
         RES_ServiceChargeBundleProvisioner.provisionForUnits(productIds);
+    }
+
+    /** Tags every ingested Unit with the Approved Payment Plans already on its catalog, as plan approval does for existing Units. */
+    private void provisionPaymentPlanComponents(Map<String, Id> productIdByCode) {
+        if (productIdByCode.isEmpty()) return;
+        RES_PaymentPlanBundleProvisioner.provisionForUnits(new Set<Id>(productIdByCode.values()));
     }
 
     private void linkProductsToCategories(List<RES_Product_Staging__c> scope, Map<String, Id> productIdByCode) {

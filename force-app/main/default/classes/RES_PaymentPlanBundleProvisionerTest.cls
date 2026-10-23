@@ -439,4 +439,80 @@ private class RES_PaymentPlanBundleProvisionerTest {
         System.assertEquals(0, [SELECT COUNT() FROM ProductRelatedComponent WHERE ParentProductId = :unit.Id AND ChildProductId = :plan.Id],
             'Only Approved plans are tagged on activation');
     }
+
+    private static Product2 createApprovedPaymentPlan(Id catalogId, Boolean isActive, Date validityEnd) {
+        Product2 plan = new Product2(
+            Name = 'Approved Payment Plan',
+            IsActive = isActive,
+            RecordTypeId = paymentPlanRecordTypeId,
+            RES_Business_Entity__c = catalogId,
+            RES_Price_Option__c = 'Test Price Option',
+            RES_Approval_Status__c = 'Approved',
+            RES_Validity_End_Date__c = validityEnd
+        );
+        insert plan;
+        return plan;
+    }
+
+    @isTest
+    static void ingestedUnitGetsEveryApprovedPlanOfItsCatalog() {
+        setUpRecordTypeIds();
+        ProductCatalog catalog = createCatalog();
+        Product2 firstPlan = createApprovedPaymentPlan(catalog.Id, true, null);
+        Product2 secondPlan = createApprovedPaymentPlan(catalog.Id, true, Date.today().addDays(30));
+        Product2 unit = createUnit(catalog.Id);
+
+        Test.startTest();
+        RES_PaymentPlanBundleProvisioner.provisionForUnits(new Set<Id>{ unit.Id });
+        RES_PaymentPlanBundleProvisioner.provisionForUnits(new Set<Id>{ unit.Id });
+        Test.stopTest();
+
+        System.assertEquals(1, [SELECT COUNT() FROM ProductComponentGroup WHERE ParentProductId = :unit.Id AND Name = 'Payment Plan']);
+        Map<Id, ProductRelatedComponent> byPlan = new Map<Id, ProductRelatedComponent>();
+        for (ProductRelatedComponent component : [
+            SELECT ChildProductId, IsDefaultComponent, RES_Price_Option__c FROM ProductRelatedComponent WHERE ParentProductId = :unit.Id
+        ]) {
+            byPlan.put(component.ChildProductId, component);
+        }
+        System.assertEquals(2, byPlan.size(), 'Both approved plans tagged once, re-run adds nothing');
+        System.assertEquals(true, byPlan.get(firstPlan.Id).IsDefaultComponent, 'Oldest approved plan becomes the default');
+        System.assertEquals(false, byPlan.get(secondPlan.Id).IsDefaultComponent);
+        System.assertEquals('Test Price Option', byPlan.get(firstPlan.Id).RES_Price_Option__c);
+    }
+
+    @isTest
+    static void ingestedUnitSkipsUnapprovedInactiveAndExpiredPlans() {
+        setUpRecordTypeIds();
+        ProductCatalog catalog = createCatalog();
+        Product2 pendingPlan = createInactivePaymentPlan(catalog.Id, 'Pending Approval');
+        Product2 inactivePlan = createApprovedPaymentPlan(catalog.Id, false, null);
+        Product2 expiredPlan = createApprovedPaymentPlan(catalog.Id, true, Date.today().addDays(-1));
+        Product2 unit = createUnit(catalog.Id);
+        Product2 unitWithoutCatalog = createUnit(null);
+
+        Test.startTest();
+        RES_PaymentPlanBundleProvisioner.provisionForUnits(new Set<Id>{ unit.Id, unitWithoutCatalog.Id });
+        Test.stopTest();
+
+        System.assertEquals(0, [SELECT COUNT() FROM ProductRelatedComponent WHERE ParentProductId IN (:unit.Id, :unitWithoutCatalog.Id)]);
+        System.assertEquals(0, [SELECT COUNT() FROM ProductComponentGroup WHERE ParentProductId IN (:unit.Id, :unitWithoutCatalog.Id) AND Name = 'Payment Plan'],
+            'No plan to tag, so no empty group is created');
+    }
+
+    @isTest
+    static void ingestedUnitKeepsExistingDefault() {
+        setUpRecordTypeIds();
+        ProductCatalog catalog = createCatalog();
+        Product2 unit = createUnit(catalog.Id);
+        Product2 existingPlan = createPaymentPlan(catalog.Id);
+        provisionPlan(existingPlan.Id);
+        Product2 approvedPlan = createApprovedPaymentPlan(catalog.Id, true, null);
+
+        Test.startTest();
+        RES_PaymentPlanBundleProvisioner.provisionForUnits(new Set<Id>{ unit.Id });
+        Test.stopTest();
+
+        ProductRelatedComponent added = [SELECT IsDefaultComponent FROM ProductRelatedComponent WHERE ParentProductId = :unit.Id AND ChildProductId = :approvedPlan.Id];
+        System.assertEquals(false, added.IsDefaultComponent, 'Unit already had a default');
+    }
 }

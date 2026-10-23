@@ -361,6 +361,39 @@ public List<Product2> getRejectedProducts(String status,String searchTerm,Intege
         return (List<Product2>) executeQuery(soql, '', false, bindVars, AccessLevel.SYSTEM_MODE);
     }
 
+    /** Residential Sales Units among the given Ids that are tagged to a catalog, for unit-side Payment Plan provisioning. */
+    public List<Product2> getCatalogUnitsByIds(Set<Id> unitIds) {
+        if (unitIds == null || unitIds.isEmpty()) {
+            return new List<Product2>();
+        }
+        String soql =
+            'SELECT Id, Name, RES_Business_Entity__c ' +
+            'FROM Product2 ' +
+            'WHERE Id IN :unitIds ' +
+            'AND RES_Business_Entity__c != NULL ' +
+            'AND RecordType.DeveloperName = \'RES_Residential_Sales\'';
+        Map<String, Object> bindVars = new Map<String, Object>{ 'unitIds' => unitIds };
+        return (List<Product2>) executeQuery(soql, '', false, bindVars, AccessLevel.SYSTEM_MODE);
+    }
+
+    /** Active, Approved, unexpired Payment Plans tagged to the given catalogs, oldest first so the earliest plan becomes a Unit's default. */
+    public List<Product2> getApprovedPaymentPlansByCatalogs(Set<Id> catalogIds, Date asOf) {
+        if (catalogIds == null || catalogIds.isEmpty()) {
+            return new List<Product2>();
+        }
+        String soql =
+            'SELECT Id, Name, RES_Business_Entity__c, RES_Price_Option__c ' +
+            'FROM Product2 ' +
+            'WHERE RES_Business_Entity__c IN :catalogIds ' +
+            'AND RecordType.DeveloperName = \'RES_Residential_Payment_Plan\' ' +
+            'AND IsActive = TRUE ' +
+            'AND RES_Approval_Status__c = \'Approved\' ' +
+            'AND (RES_Validity_End_Date__c = NULL OR RES_Validity_End_Date__c >= :asOf) ' +
+            'ORDER BY CreatedDate, Id';
+        Map<String, Object> bindVars = new Map<String, Object>{ 'catalogIds' => catalogIds, 'asOf' => asOf };
+        return (List<Product2>) executeQuery(soql, '', false, bindVars, AccessLevel.SYSTEM_MODE);
+    }
+
     /** Units of the given record type among the Ids, with the fields RES_DefaultPlanPriceService needs. */
     public List<Product2> getUnitsForDefaultPlanPrice(Set<Id> productIds, Id recordTypeId) {
         if (productIds == null || productIds.isEmpty() || recordTypeId == null) {
