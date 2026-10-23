@@ -43,6 +43,7 @@
  * =============================================================================
  */
 public without sharing class RES_ProductApprovalNotificationService {
+    private static final Integer PRICE_DECIMAL_PLACES = 3;
     private static final String APPROVAL_TEMPLATE = 'Product_Approval_Notification';
     private static final String FINAL_APPROVAL_TEMPLATE = 'Product_Final_Approval_Notification';
     private static final String REJECTION_TEMPLATE = 'Product_Rejection_Notification';
@@ -354,7 +355,8 @@ public without sharing class RES_ProductApprovalNotificationService {
      *      Project/District = RES_Business_Entity__r.Name
      *      RU No.           = ProductCode
      *      Inventory Type   = RES_Type__c (picklist label)
-     *      Property Price   = Standard Price Book UnitPrice
+     *      Property Price   = unit price under the default Payment Plan (Adjustment Value); falls back to the
+     *                         Standard Price Book UnitPrice. Always shown with 3 decimals, e.g. 0.000, 5,273,032.000, 0.123
      *
      * Products must be queried via RES_Product2DAOLayer.getProductsByIds().
      */
@@ -365,6 +367,7 @@ public without sharing class RES_ProductApprovalNotificationService {
         }
 
         Map<Id, Decimal> priceByProductId = getStandardPriceByProductId(products);
+        Map<Id, Decimal> planPriceByProductId = getDefaultPlanPriceByProductId(products);
         Map<String, String> inventoryTypeLabels = getInventoryTypeLabels();
 
         List<String> rows = new List<String>();
@@ -374,7 +377,10 @@ public without sharing class RES_ProductApprovalNotificationService {
             String inventoryType = String.isBlank(product.RES_Type__c)
                 ? null
                 : (inventoryTypeLabels.containsKey(product.RES_Type__c) ? inventoryTypeLabels.get(product.RES_Type__c) : product.RES_Type__c);
-            Decimal price = product.Id != null ? priceByProductId.get(product.Id) : null;
+            Decimal price = product.Id != null ? planPriceByProductId.get(product.Id) : null;
+            if (price == null && product.Id != null) {
+                price = priceByProductId.get(product.Id);
+            }
 
             rows.add(
                 '<tr>' +
@@ -382,7 +388,7 @@ public without sharing class RES_ProductApprovalNotificationService {
                 buildUnitTableCell(project, 'left') +
                 buildUnitTableCell(product.ProductCode, 'left') +
                 buildUnitTableCell(inventoryType, 'left') +
-                buildUnitTableCell(price != null ? price.setScale(2).format() : null, 'right') +
+                buildUnitTableCell(formatPrice(price, product.CurrencyIsoCode), 'right') +
                 '</tr>'
             );
         }
@@ -393,6 +399,44 @@ public without sharing class RES_ProductApprovalNotificationService {
     private static String buildUnitTableCell(String value, String alignment) {
         String displayValue = String.isBlank(value) ? '-' : escapeHtml(value);
         return '<td style="' + UNIT_TABLE_CELL_STYLE + 'text-align:' + alignment + ';">' + displayValue + '</td>';
+    }
+
+    /** Unit price under each unit's default Payment Plan; units without one are omitted. Never blocks the email on failure. */
+    private static Map<Id, Decimal> getDefaultPlanPriceByProductId(List<Product2> products) {
+        Set<Id> productIds = new Set<Id>();
+        for (Product2 product : products) {
+            if (product.Id != null) {
+                productIds.add(product.Id);
+            }
+        }
+        try {
+            return RES_DefaultPlanPriceService.getDefaultPlanPrices(productIds);
+        } catch (Exception e) {
+            System.debug(LoggingLevel.ERROR, 'RES_NOTIFY: default plan price lookup failed - ' + e.getMessage());
+            return new Map<Id, Decimal>();
+        }
+    }
+
+    /**
+     * Locale-independent price text with a fixed 3 decimals, e.g. 0.000 SAR, 5,273,032.000 SAR, 90,000,000.123 SAR.
+     * Rounds half up; null amount renders no value (the cell shows a dash). A blank currency falls back to the running user's default currency.
+     */
+    @TestVisible
+    private static String formatPrice(Decimal amount, String currencyIsoCode) {
+        if (amount == null) {
+            return null;
+        }
+        Decimal rounded = amount.setScale(PRICE_DECIMAL_PLACES, RoundingMode.HALF_UP);
+        Decimal whole = rounded.setScale(0, RoundingMode.DOWN);
+        String digits = String.valueOf(whole.abs());
+        String grouped = '';
+        while (digits.length() > 3) {
+            grouped = ',' + digits.right(3) + grouped;
+            digits = digits.left(digits.length() - 3);
+        }
+        grouped = (rounded < 0 ? '-' : '') + digits + grouped;
+        String fraction = String.valueOf((rounded - whole).abs()).substringAfter('.').rightPad(PRICE_DECIMAL_PLACES, '0');
+        return grouped + '.' + fraction.left(PRICE_DECIMAL_PLACES) + ' ' + (String.isBlank(currencyIsoCode) ? UserInfo.getDefaultCurrency() : currencyIsoCode);
     }
 
     private static Map<Id, Decimal> getStandardPriceByProductId(List<Product2> products) {

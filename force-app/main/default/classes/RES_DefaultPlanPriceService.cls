@@ -63,6 +63,14 @@ public without sharing class RES_DefaultPlanPriceService {
         }
     }
 
+    /** Raw (unformatted) default-plan price per unit for callers that do their own display formatting, e.g. emails. */
+    public static Map<Id, Decimal> getDefaultPlanPrices(Set<Id> unitIds) {
+        if (unitIds == null || unitIds.isEmpty()) {
+            return new Map<Id, Decimal>();
+        }
+        return defaultPlanPrices(unitIds);
+    }
+
     /** Adjustment value under each unit's default Payment Plan option; units without one are omitted. */
     @TestVisible
     private static Map<Id, Decimal> defaultPlanPrices(Set<Id> unitIds) {
