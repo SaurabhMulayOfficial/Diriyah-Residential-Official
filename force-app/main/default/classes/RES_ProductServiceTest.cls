@@ -139,4 +139,40 @@ private class RES_ProductServiceTest {
         );
         Test.stopTest();
     }
+
+    @isTest
+    static void testApplyDateDefaults_blankDatesAreDefaulted() {
+        Product2 p = new Product2(Name = 'Unit A');
+
+        RES_ProductService.applyDateDefaults(new List<Product2>{ p });
+
+        System.assertEquals(Date.today(), p.AvailabilityDate, 'Availability defaults to today');
+        System.assertEquals(Date.newInstance(3999, 12, 30), p.DiscontinuedDate, 'Discontinued defaults to 3999-12-30');
+    }
+
+    @isTest
+    static void testApplyDateDefaults_existingDatesAreKept() {
+        Product2 p = new Product2(
+            Name = 'Unit B',
+            AvailabilityDate = Date.newInstance(2026, 3, 1),
+            DiscontinuedDate = Date.newInstance(2030, 3, 1)
+        );
+
+        RES_ProductService.applyDateDefaults(new List<Product2>{ p });
+
+        System.assertEquals(Date.newInstance(2026, 3, 1), p.AvailabilityDate);
+        System.assertEquals(Date.newInstance(2030, 3, 1), p.DiscontinuedDate);
+    }
+
+    @isTest
+    static void testApplyDateDefaults_partialAndNullInputs() {
+        Product2 p = new Product2(Name = 'Unit C', AvailabilityDate = Date.newInstance(2026, 3, 1));
+
+        RES_ProductService.applyDateDefaults(new List<Product2>{ p });
+        RES_ProductService.applyDateDefaults(null);
+        RES_ProductService.applyDateDefaults(new List<Product2>());
+
+        System.assertEquals(Date.newInstance(2026, 3, 1), p.AvailabilityDate, 'Existing start kept');
+        System.assertEquals(Date.newInstance(3999, 12, 30), p.DiscontinuedDate, 'Blank end defaulted');
+    }
 }

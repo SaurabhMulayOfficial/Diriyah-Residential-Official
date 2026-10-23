@@ -63,8 +63,8 @@ private class RES_ProductTriggerHandlerTest {
         Product2 after = [SELECT AvailabilityDate, DiscontinuedDate FROM Product2 WHERE Id = :p.Id];
         Assert.areEqual(Date.today(), after.AvailabilityDate,
             'beforeInsert must default AvailabilityDate to today when blank');
-        Assert.areEqual(Date.newInstance(2099, 12, 31), after.DiscontinuedDate,
-            'beforeInsert must default DiscontinuedDate to 2099-12-31 when blank');
+        Assert.areEqual(Date.newInstance(3999, 12, 30), after.DiscontinuedDate,
+            'beforeInsert must default DiscontinuedDate to 3999-12-30 when blank');
     }
 
     @isTest
@@ -134,7 +134,7 @@ private class RES_ProductTriggerHandlerTest {
         Product2 after = [SELECT AvailabilityDate, DiscontinuedDate FROM Product2 WHERE Id = :p.Id];
         Assert.isNotNull(after.AvailabilityDate,
             'beforeUpdate must re-default AvailabilityDate when cleared');
-        Assert.areEqual(Date.newInstance(2099, 12, 31), after.DiscontinuedDate,
-            'beforeUpdate must re-default DiscontinuedDate to 2099-12-31 when cleared');
+        Assert.areEqual(Date.newInstance(3999, 12, 30), after.DiscontinuedDate,
+            'beforeUpdate must re-default DiscontinuedDate to 3999-12-30 when cleared');
     }
 }

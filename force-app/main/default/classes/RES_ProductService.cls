@@ -1,10 +1,33 @@
 /**
- * @description Detects Product2 field changes and publishes Unit_Sync platform events to SAP.
+ * @description Product2 service: detects field changes and publishes Unit_Sync platform events to SAP, and defaults
+ *              validity dates before save.
  * @author      Roshan Jambhule
  * @date        2025
  */
 public with sharing class RES_ProductService {
+    @TestVisible
+    private static final Date DISCONTINUED_DEFAULT = Date.newInstance(3999, 12, 30);
+
     public RES_ProductService() {}
+
+    /**
+     * @description Defaults AvailabilityDate to today and DiscontinuedDate to 3999-12-30 when blank; existing values are
+     *              never changed. Call after RES_ProductParentInheritanceService so a parent's dates win over the defaults.
+     * @param products Trigger.new of a before insert / before update context
+     */
+    public static void applyDateDefaults(List<Product2> products) {
+        if (products == null || products.isEmpty()) return;
+
+        Date today = Date.today();
+        for (Product2 p : products) {
+            if (p.AvailabilityDate == null) {
+                p.AvailabilityDate = today;
+            }
+            if (p.DiscontinuedDate == null) {
+                p.DiscontinuedDate = DISCONTINUED_DEFAULT;
+            }
+        }
+    }
 
     /**
      * @description Publishes Unit_Sync integration events for products with changed sync fields.
