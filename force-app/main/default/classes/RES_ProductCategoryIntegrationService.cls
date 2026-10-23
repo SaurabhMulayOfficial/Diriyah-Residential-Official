@@ -80,7 +80,7 @@ public with sharing class RES_ProductCategoryIntegrationService extends RES_Base
         for(ProductCategory pc: productCategories){
             RES_ProductCategoryRequestWrapper wrapper = new RES_ProductCategoryRequestWrapper();
             wrapper.RES_Company_Code = pc.RES_Company_Code__c;
-            wrapper.RES_Business_Entity_Id = pc.Catalog.RES_Business_Entity_Id__c;
+            wrapper.RES_Business_Entity_Id = pc.RES_Business_Entity_Id__c;
             wrapper.RES_Property_ID = pc.RES_Property_ID__c;
             wrapper.Name = pc.Name;
             wrapper.RES_Valid_From_Date = null;
