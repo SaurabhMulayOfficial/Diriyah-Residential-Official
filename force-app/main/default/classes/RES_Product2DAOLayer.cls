@@ -522,4 +522,13 @@ public List<Product2> getRejectedProducts(String status,String searchTerm,Intege
             soql, '', false, bindVars, AccessLevel.USER_MODE
         );
     }
+    
+    public List<Product2> getLatestPaymentPlan() {
+        Map<String, Object> bindVars = new Map<String, Object>{ 'recordTypeDeveloperName' => System.Label.RES_Product_Payment_Plan_RT };
+        String soql = 'SELECT Id, RES_Product_External_ID__c ' +
+                      'FROM Product2 ' + 
+                      'WHERE RecordType.DeveloperName =: recordTypeDeveloperName AND RES_Product_External_ID__c != NULL ' +
+                      'ORDER BY RES_Product_External_ID__c DESC LIMIT 1';
+        return (List<Product2>) executeQuery(soql, '', false, bindVars, AccessLevel.SYSTEM_MODE);
+    }
 }
