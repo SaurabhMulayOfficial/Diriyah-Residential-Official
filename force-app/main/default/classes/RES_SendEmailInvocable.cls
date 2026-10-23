@@ -13,6 +13,7 @@ public with sharing class RES_SendEmailInvocable {
             emailService.setOrgWideEmailAddressId(input.orgWideEmailAddressId);
             emailService.setSubject(input.emailSubject, input.subjectMergeFields);
             emailService.setHtmlBody(input.emailBody, input.mergeFields);
+            emailService.setEntityAttachments(input.attachmentIds);
 
             emailServices.add(emailService);
         }
@@ -42,5 +43,8 @@ public with sharing class RES_SendEmailInvocable {
 
         @InvocableVariable
         public List<String> subjectMergeFields;
+
+        @InvocableVariable(label='Attachment Ids' description='Optional ContentVersion Ids of Salesforce Files to attach.')
+        public List<String> attachmentIds;
     }
 }

@@ -33,8 +33,13 @@ private class RES_PaymentPlanEmailDetailsInvocableTest {
     }
 
     private static RES_PaymentPlanEmailDetailsInvocable.Response run(String recordId) {
+        return run(recordId, false);
+    }
+
+    private static RES_PaymentPlanEmailDetailsInvocable.Response run(String recordId, Boolean includeAttachments) {
         RES_PaymentPlanEmailDetailsInvocable.Request request = new RES_PaymentPlanEmailDetailsInvocable.Request();
         request.recordId = recordId;
+        request.includeAttachments = includeAttachments;
         List<RES_PaymentPlanEmailDetailsInvocable.Response> responses =
             RES_PaymentPlanEmailDetailsInvocable.getEmailDetails(new List<RES_PaymentPlanEmailDetailsInvocable.Request>{ request });
         System.assertEquals(1, responses.size(), 'One response per request');
@@ -61,6 +66,23 @@ private class RES_PaymentPlanEmailDetailsInvocableTest {
     }
 
     @IsTest
+    static void returnsPlanFilesAsAttachments() {
+        Id planId = [SELECT Id FROM Product2 WHERE Name = 'Email Test <Plan>' LIMIT 1].Id;
+        ContentVersion file = new ContentVersion(Title = 'Plan Terms', PathOnClient = 'PlanTerms.pdf',
+            VersionData = Blob.valueOf('terms'), FirstPublishLocationId = planId);
+        insert file;
+
+        Test.startTest();
+        RES_PaymentPlanEmailDetailsInvocable.Response withFiles = run(planId, true);
+        RES_PaymentPlanEmailDetailsInvocable.Response withoutFiles = run(planId);
+        Test.stopTest();
+
+        System.assertEquals(new List<String>{ file.Id }, withFiles.attachmentIds, 'Latest version of the plan file should be attached');
+        System.assert(withoutFiles.attachmentIds.isEmpty(), 'No attachments unless requested (only deactivation emails ask)');
+        System.assert(withoutFiles.planDetailsHtml.contains('S000999'), 'Tables are still built without attachments');
+    }
+
+    @IsTest
     static void returnsBlankRowsForUnknownOrInvalidIds() {
         Test.startTest();
         RES_PaymentPlanEmailDetailsInvocable.Response invalid = run('not-an-id');
@@ -69,6 +91,7 @@ private class RES_PaymentPlanEmailDetailsInvocableTest {
 
         System.assertEquals('', invalid.planDetailsHtml, 'Invalid Id should not break the email');
         System.assertEquals('', missing.scheduleRowsHtml, 'Missing Id should not break the email');
+        System.assert(invalid.attachmentIds.isEmpty(), 'No attachments without a valid plan');
     }
 
     @IsTest

@@ -70,7 +70,27 @@ public without sharing class RES_ContentDocumentLinkDAOLayer extends RES_BaseDAO
             AccessLevel.SYSTEM_MODE
         );
     }
-    
+
+    /**
+     * Returns the files linked to the given records, newest first, with the latest version Id, size and type,
+     * for attaching them to notification emails (RES_PaymentPlanEmailDetailsInvocable).
+     *
+     * @param linkedEntityIds linked Salesforce record Ids.
+     * @return list of ContentDocumentLink records.
+     */
+    public List<ContentDocumentLink> getEmailAttachmentLinksByLinkedIds(Set<Id> linkedEntityIds) {
+        if (linkedEntityIds == null || linkedEntityIds.isEmpty()) {
+            return new List<ContentDocumentLink>();
+        }
+        Map<String, Object> bindVars = new Map<String, Object>{ 'linkedEntityIds' => linkedEntityIds };
+        String soql = 'SELECT LinkedEntityId, ContentDocumentId, ContentDocument.LatestPublishedVersionId, ' +
+                      'ContentDocument.ContentSize, ContentDocument.FileType, ContentDocument.Title ' +
+                      'FROM ContentDocumentLink ' +
+                      'WHERE LinkedEntityId IN :linkedEntityIds ' +
+                      'ORDER BY ContentDocument.CreatedDate DESC';
+        return (List<ContentDocumentLink>) executeQuery(soql, '', false, bindVars, AccessLevel.SYSTEM_MODE);
+    }
+
     /**
      * Returns ContentDocumentLink records for a linked record Id.
      *
