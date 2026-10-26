@@ -323,7 +323,7 @@
                     <value>none</value>
                 </fieldInstanceProperties>
                 <fieldItem>Record.RES_Cancellation_Reasons__c</fieldItem>
-                <identifier>RecordRES_Cancellation_Reasons__cField</identifier>
+                <identifier>RecordRES_Cancellation_Reasons_cField</identifier>
             </fieldInstance>
         </itemInstances>
         <itemInstances>
@@ -378,6 +378,16 @@
                 </fieldInstanceProperties>
                 <fieldItem>Record.TerminationType</fieldItem>
                 <identifier>RecordTerminationTypeField</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.RES_S4_Sync_Date__c</fieldItem>
+                <identifier>RecordRES_S4_Sync_Date_cField</identifier>
             </fieldInstance>
         </itemInstances>
         <itemInstances>
@@ -634,13 +644,6 @@
                 </fieldInstanceProperties>
                 <fieldItem>Record.ActivatedDate</fieldItem>
                 <identifier>RecordActivatedDateField</identifier>
-                <visibilityRule>
-                    <criteria>
-                        <leftValue>{!Record.Status}</leftValue>
-                        <operator>EQUAL</operator>
-                        <rightValue>Activated</rightValue>
-                    </criteria>
-                </visibilityRule>
             </fieldInstance>
         </itemInstances>
         <itemInstances>
@@ -1356,8 +1359,8 @@
         </itemInstances>
         <itemInstances>
             <componentInstance>
-                <componentName>resToastMessage</componentName>
-                <identifier>c_resToastMessage</identifier>
+                <componentName>resRefreshPageAfterApprovalSubmission</componentName>
+                <identifier>c_resRefreshPageAfterApprovalSubmission</identifier>
             </componentInstance>
         </itemInstances>
         <mode>Replace</mode>
