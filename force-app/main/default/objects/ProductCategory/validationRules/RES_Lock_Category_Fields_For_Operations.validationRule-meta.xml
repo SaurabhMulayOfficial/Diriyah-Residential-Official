@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>RES_Lock_Category_Fields_For_Operations</fullName>
+    <active>true</active>
+    <errorConditionFormula>AND(
+NOT($Setup.RES_Config_Switch__c.RES_Validation_Rules_Off__c),
+NOT(ISNEW()),
+$Permission.RES_Product_Operation_Visibility,
+OR(
+ISCHANGED(RES_Property_Id__c)
+)
+)</errorConditionFormula>
+    <errorDisplayField>RES_Property_Id__c</errorDisplayField>
+    <errorMessage>Property ID cannot be changed after the Category is created.</errorMessage>
+</ValidationRule>

@@ -10,8 +10,9 @@
     OR(
         ISCHANGED(RES_Profit_Center__c),
         ISCHANGED(EffectiveStartDate),
-        ISCHANGED(RES_Company_Code__c)
+        ISCHANGED(RES_Company_Code__c),
+								ISCHANGED(RES_Business_Entity_Id__c)
     )
 )</errorConditionFormula>
-    <errorMessage>Profit Center, Effective Start Date and Company Code cannot be changed after the Catalog is created.</errorMessage>
+    <errorMessage>Profit Center, Effective Start Date, Business Entity ID and Company Code cannot be changed after the Catalog is created.</errorMessage>
 </ValidationRule>
