@@ -11,6 +11,7 @@ public with sharing class RES_ProductTriggerHandler extends RES_BaseTriggerHandl
     protected override void beforeInsert() {
         RES_ProductParentInheritanceService.applyParentValues((List<Product2>) Trigger.new, null);
         RES_ProductService.applyDateDefaults((List<Product2>) Trigger.new);
+        RES_ProductService.setExternalID(Trigger.new);
     }
 
     /** @description Publishes Unit_Sync event for newly inserted products. */
@@ -27,6 +28,7 @@ public with sharing class RES_ProductTriggerHandler extends RES_BaseTriggerHandl
         RES_ProductSCRateValidation.validate((List<Product2>) Trigger.new, (Map<Id, Product2>) Trigger.oldMap);
         RES_UnitDraftCancellationService.releaseReservations((List<Product2>) Trigger.new, (Map<Id, Product2>) Trigger.oldMap);
         RES_DefaultPlanPriceService.applyOnActivation((List<Product2>) Trigger.new, (Map<Id, Product2>) Trigger.oldMap);
+        RES_ProductService.updateNumberOfMonths((List<Product2>) Trigger.new, (Map<Id, Product2>) Trigger.oldMap);
     }
 
     /** @description Publishes Unit_Sync event for updated products whose sync fields changed. */

@@ -112,4 +112,41 @@ public with sharing class RES_ProductService {
         }
         return false;
     }
+
+    public static void setExternalID(List<Product2> productsLst){
+        List<Product2> paymentPlan = new RES_Product2DAOLayer().getLatestPaymentPlan();
+        if(!paymentPlan.isEmpty()){
+            String nextExternalId = getNextExternalId(paymentPlan[0].RES_Product_External_ID__c);
+            String previousExternalId = '';
+            Integer count = 1;
+            Id paymentPlanRT = Schema.SObjectType.Product2
+                                 .getRecordTypeInfosByDeveloperName()
+                                 .get('RES_Residential_Payment_Plan').getRecordTypeId();
+            for(Product2 product : productsLst){
+                if(product.RecordTypeId == paymentPlanRT){
+                    if(count == 1){
+                        product.RES_Product_External_ID__c = nextExternalId;
+                    }
+                    else{
+                        product.RES_Product_External_ID__c = getNextExternalId(previousExternalId);
+                    }
+                    previousExternalId = product.RES_Product_External_ID__c;
+                    count++;
+                }
+            }
+        }
+    }
+    
+    public static String getNextExternalId(String latestExternalId){
+        String numericPart = latestExternalId.substring(1);
+        Integer nextNum = Integer.valueOf(numericPart) + 1;   
+        String nextExternalId = 'S' + String.valueOf(nextNum).leftPad(numericPart.length(), '0');
+        return nextExternalId;
+    }
+    
+    public static void updateNumberOfMonths(List<Product2> productsLst, Map<Id, Product2> oldMap){
+        for (Product2 productObj : productsLst) {
+            productObj.RES_No_of_Months__c = (productObj.RES_No_of_Years__c != oldMap.get(productObj.Id).RES_No_of_Years__c) ? (productObj.RES_No_of_Years__c == null ? null : productObj.RES_No_of_Years__c * 12) : productObj.RES_No_of_Months__c;
+        }
+    }
 }
