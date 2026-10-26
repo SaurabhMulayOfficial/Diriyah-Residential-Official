@@ -42,7 +42,22 @@
     <formulas>
         <name>CancellationReason</name>
         <dataType>String</dataType>
-        <expression>TEXT({!$Record.RES_Cancellation_Reasons__c})</expression>
+        <expression>CASE(TEXT({!$Record.RES_Cancellation_Reasons__c}),
+  &quot;14&quot;, &quot;Delay in Payment&quot;,
+  &quot;15&quot;, &quot;Employment Termination&quot;,
+  &quot;16&quot;, &quot;Prohibited Behavior&quot;,
+  &quot;17&quot;, &quot;Renewal Not Approved&quot;,
+  &quot;18&quot;, &quot;Legal Reason&quot;,
+  &quot;19&quot;, &quot;Tenant Won&apos;t Renew&quot;,
+  &quot;20&quot;, &quot;Rent Increase&quot;,
+  &quot;21&quot;, &quot;Bankruptcy&quot;,
+  &quot;22&quot;, &quot;Private Reason&quot;,
+  &quot;23&quot;, &quot;Forced Majeure&quot;,
+  &quot;24&quot;, &quot;Management Decision&quot;,
+  &quot;25&quot;, &quot;Delay in Handover&quot;,
+  &quot;26&quot;, &quot;Downgrade&quot;,
+  &quot;27&quot;, &quot;Upgrade&quot;,
+  TEXT({!$Record.RES_Cancellation_Reasons__c}))</expression>
     </formulas>
     <formulas>
         <name>RejectComments</name>
