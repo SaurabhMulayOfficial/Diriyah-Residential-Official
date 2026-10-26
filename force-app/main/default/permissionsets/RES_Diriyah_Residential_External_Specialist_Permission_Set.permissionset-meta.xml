@@ -3385,6 +3385,16 @@ Sales – External – Relationship Manager</description>
             <field>Product2.DisplayUrl</field>
             <readable>true</readable>
         </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>Product2.RES_SP_Document_Image_Width__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>Product2.RES_SP_Document_Image_Height__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
     <flowAccesses>
         <enabled>true</enabled>
         <flow>RES_Product_Configurator_Flow</flow>

@@ -1557,7 +1557,7 @@
                     <contextAttrHydrationDetails>
                         <contextAttrHydrationDetails>
                             <objectName>Product2</objectName>
-                            <queryAttribute>RES_SPA_Document_Image_Width__c</queryAttribute>
+                            <queryAttribute>RES_SP_Document_Image_Width__c</queryAttribute>
                         </contextAttrHydrationDetails>
                         <objectName>QuoteLineItem</objectName>
                         <queryAttribute>Product2</queryAttribute>
@@ -1569,7 +1569,7 @@
                     <contextAttrHydrationDetails>
                         <contextAttrHydrationDetails>
                             <objectName>Product2</objectName>
-                            <queryAttribute>RES_SPA_Document_Image_Height__c</queryAttribute>
+                            <queryAttribute>RES_SP_Document_Image_Height__c</queryAttribute>
                         </contextAttrHydrationDetails>
                         <objectName>QuoteLineItem</objectName>
                         <queryAttribute>Product2</queryAttribute>
@@ -3491,9 +3491,9 @@
             <title>ContractItemPrice</title>
             <transposable>false</transposable>
         </contextNodes>
-        <isActive>false</isActive>
+        <isActive>true</isActive>
         <startDate>2026-10-13 00:00:00</startDate>
-        <versionNumber>26</versionNumber>
+        <versionNumber>28</versionNumber>
     </contextDefinitionVersions>
     <contextTtl>10</contextTtl>
     <hasSystemTags>false</hasSystemTags>
