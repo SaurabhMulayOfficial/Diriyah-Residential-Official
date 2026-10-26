@@ -133,6 +133,9 @@ public with sharing class RES_ProductService {
                     previousExternalId = product.RES_Product_External_ID__c;
                     count++;
                 }
+                else{
+	                product.RES_Product_External_ID__c = null;
+                }
             }
         }
     }
