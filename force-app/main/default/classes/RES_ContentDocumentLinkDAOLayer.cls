@@ -150,4 +150,21 @@ public without sharing class RES_ContentDocumentLinkDAOLayer extends RES_BaseDAO
 
         return (List<ContentDocumentLink>) executeQuery(soql, '', false, bindVars, AccessLevel.USER_MODE);
     }
+
+    /**
+     * Returns the files linked to the given records with their titles, for matching a file name to a record.
+     *
+     * @param linkedEntityIds linked Salesforce record Ids.
+     * @return list of ContentDocumentLink records.
+     */
+    public List<ContentDocumentLink> getLinksWithTitleByLinkedEntityIds(Set<Id> linkedEntityIds) {
+        if (linkedEntityIds == null || linkedEntityIds.isEmpty()) {
+            return new List<ContentDocumentLink>();
+        }
+        Map<String, Object> bindVars = new Map<String, Object>{ 'linkedEntityIds' => linkedEntityIds };
+        String soql = 'SELECT ContentDocumentId, LinkedEntityId, ContentDocument.Title ' +
+                      'FROM ContentDocumentLink ' +
+                      'WHERE LinkedEntityId IN :linkedEntityIds';
+        return (List<ContentDocumentLink>) executeQuery(soql, '', false, bindVars, AccessLevel.SYSTEM_MODE);
+    }
 }
