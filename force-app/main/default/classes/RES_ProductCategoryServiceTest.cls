@@ -13,10 +13,6 @@
  *              - API configuration used by the integration service
  *              Tests that need them return early when they are not deployed; the
  *              "config missing" test runs only in that situation.
- *
- *              NOTE: sync_update_syncFieldChanged_publishesEvent exposes a bug in the service
- *              (the sync-field parsing loop iterates the empty syncFields set instead of
- *              syncFieldLst). It fails until that loop is fixed.
  */
 @IsTest
 private class RES_ProductCategoryServiceTest {
@@ -65,9 +61,9 @@ private class RES_ProductCategoryServiceTest {
         return !getSyncFields().isEmpty();
     }
 
-    /** Config present AND the queueable can run at stopTest(). */
+    /** Sync tests inject CountingBatchSubmitter, so no API configuration is needed. */
     private static Boolean canRun() {
-        return configReady() && RES_IntegrationTestDataFactory.hasApiConfiguration('GET');
+        return configReady();
     }
 
     /** First sync field that has a value on the record (so nulling it on "old" is a change). */
@@ -265,6 +261,64 @@ private class RES_ProductCategoryServiceTest {
             );
         }
         Assert.isTrue(threw, 'Missing config / sync fields should raise RES_IntegrationException');
+    }
+
+    // ------------------------------------------------------------------
+    // populateFromCatalog
+    // ------------------------------------------------------------------
+    @IsTest
+    static void populateFromCatalog_copiesCatalogFields() {
+        ProductCatalog catalog = RES_IntegrationTestDataFactory.createCatalog();
+        catalog.EffectiveStartDate = Datetime.newInstance(2026, 1, 1);
+        catalog.EffectiveEndDate = Datetime.newInstance(2026, 12, 31);
+        catalog.RES_Profit_Center__c = 'PC-CAT';
+        catalog.RES_Company_Code__c = 'CC-CAT';
+        catalog.RES_Business_Entity_Id__c = 'BE-CAT';
+        RES_Config_Switch__c cfg = RES_Config_Switch__c.getOrgDefaults();
+        cfg.RES_Triggers_Off__c = true;
+        upsert cfg;
+        update catalog;
+
+        ProductCategory pc = new ProductCategory(CatalogId = catalog.Id, Name = 'Populate Test');
+
+        Test.startTest();
+        RES_ProductCategoryService.populateFromCatalog(new List<ProductCategory>{ pc });
+        Test.stopTest();
+
+        Assert.areEqual(catalog.EffectiveStartDate, pc.RES_Valid_From_Date__c, 'Valid From should come from the catalog');
+        Assert.areEqual(catalog.EffectiveEndDate, pc.RES_Valid_To_Date__c, 'Valid To should come from the catalog');
+        Assert.areEqual('PC-CAT', pc.RES_Profit_Center__c, 'Profit Center should come from the catalog');
+        Assert.areEqual('CC-CAT', pc.RES_Company_Code__c, 'Company Code should come from the catalog');
+        Assert.areEqual('BE-CAT', pc.RES_Business_Entity_Id__c, 'Business Entity Id should come from the catalog');
+    }
+
+    @IsTest
+    static void populateFromCatalog_noCatalogId_leavesRecordUnchanged() {
+        ProductCategory pc = new ProductCategory(Name = 'No Catalog', RES_Profit_Center__c = 'PC-ORIG');
+
+        Test.startTest();
+        RES_ProductCategoryService.populateFromCatalog(new List<ProductCategory>{ pc });
+        Test.stopTest();
+
+        Assert.areEqual('PC-ORIG', pc.RES_Profit_Center__c, 'Records without a catalog should not be touched');
+    }
+
+    @IsTest
+    static void populateFromCatalog_catalogNotFound_leavesRecordUnchanged() {
+        ProductCatalog catalog = RES_IntegrationTestDataFactory.createCatalog();
+        Id catalogId = catalog.Id;
+        RES_Config_Switch__c cfg = RES_Config_Switch__c.getOrgDefaults();
+        cfg.RES_Triggers_Off__c = true;
+        upsert cfg;
+        delete catalog;
+
+        ProductCategory pc = new ProductCategory(CatalogId = catalogId, Name = 'Missing Catalog', RES_Profit_Center__c = 'PC-ORIG');
+
+        Test.startTest();
+        RES_ProductCategoryService.populateFromCatalog(new List<ProductCategory>{ pc });
+        Test.stopTest();
+
+        Assert.areEqual('PC-ORIG', pc.RES_Profit_Center__c, 'Records whose catalog is not found should not be touched');
     }
 
     // ------------------------------------------------------------------
