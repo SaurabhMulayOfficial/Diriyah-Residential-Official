@@ -24,7 +24,7 @@
             <assignToReference>$Record.GenderIdentity</assignToReference>
             <operator>Assign</operator>
             <value>
-                <stringValue>GTF</stringValue>
+                <stringValue>1</stringValue>
             </value>
         </assignmentItems>
         <connector>
@@ -40,7 +40,7 @@
             <assignToReference>$Record.GenderIdentity</assignToReference>
             <operator>Assign</operator>
             <value>
-                <stringValue>GTM</stringValue>
+                <stringValue>2</stringValue>
             </value>
         </assignmentItems>
         <connector>
@@ -218,14 +218,14 @@
                 <leftValueReference>$Record.Salutation</leftValueReference>
                 <operator>EqualTo</operator>
                 <rightValue>
-                    <stringValue>Mr.</stringValue>
+                    <stringValue>0002</stringValue>
                 </rightValue>
             </conditions>
             <conditions>
                 <leftValueReference>$Record.Salutation</leftValueReference>
                 <operator>EqualTo</operator>
                 <rightValue>
-                    <stringValue>Prince</stringValue>
+                    <stringValue>Z006</stringValue>
                 </rightValue>
             </conditions>
             <connector>
@@ -240,14 +240,14 @@
                 <leftValueReference>$Record.Salutation</leftValueReference>
                 <operator>EqualTo</operator>
                 <rightValue>
-                    <stringValue>Ms.</stringValue>
+                    <stringValue>0001</stringValue>
                 </rightValue>
             </conditions>
             <conditions>
                 <leftValueReference>$Record.Salutation</leftValueReference>
                 <operator>EqualTo</operator>
                 <rightValue>
-                    <stringValue>Princess</stringValue>
+                    <stringValue>Z008</stringValue>
                 </rightValue>
             </conditions>
             <connector>

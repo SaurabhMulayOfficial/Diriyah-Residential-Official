@@ -581,12 +581,14 @@ export default class ResLeadCreateModal extends NavigationMixin(LightningElement
 
     isMaleSalutation() {
         const salutation = (this.salutationValue || '').toLowerCase();
-        return salutation === 'mr.' || salutation === 'mr' || salutation === 'prince';
+        return salutation === '0002' || salutation === 'z006' ||
+            salutation === 'mr.' || salutation === 'mr' || salutation === 'prince';
     }
 
     isFemaleSalutation() {
         const salutation = (this.salutationValue || '').toLowerCase();
-        return salutation === 'ms.' || salutation === 'ms' || salutation === 'princess';
+        return salutation === '0001' || salutation === 'z008' ||
+            salutation === 'ms.' || salutation === 'ms' || salutation === 'princess';
     }
 
     getGenderValueByLabel(label) {
