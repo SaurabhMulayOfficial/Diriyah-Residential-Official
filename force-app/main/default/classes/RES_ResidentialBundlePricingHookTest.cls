@@ -544,31 +544,6 @@ private class RES_ResidentialBundlePricingHookTest {
         System.assert(emptyResult.isEmpty(), 'No option product IDs should yield an empty map');
     }
 
-    /** Test: queryNetSaleableAreaByProduct reads RES_Net_Saleable_Area__c directly from the bundle product. */
-    @isTest
-    static void testQueryNetSaleableAreaByProduct() {
-        Test.startTest();
-
-        RES_ResidentialBundlePricingHook hook = new RES_ResidentialBundlePricingHook();
-        Product2 bundleProduct = [SELECT Id FROM Product2 WHERE Name = :BUNDLE_NAME LIMIT 1];
-
-        RES_ResidentialBundlePricingHook.BundleStructure bundle =
-            new RES_ResidentialBundlePricingHook.BundleStructure('Bundle_001', bundleProduct.Id);
-        Map<String, RES_ResidentialBundlePricingHook.BundleStructure> bundleMap =
-            new Map<String, RES_ResidentialBundlePricingHook.BundleStructure>{'Bundle_001' => bundle};
-
-        Map<Id, Decimal> areaMap = hook.queryNetSaleableAreaByProduct(bundleMap);
-
-        Map<Id, Decimal> emptyResult = hook.queryNetSaleableAreaByProduct(
-            new Map<String, RES_ResidentialBundlePricingHook.BundleStructure>()
-        );
-
-        Test.stopTest();
-
-        System.assertEquals(1000, areaMap.get(bundleProduct.Id), 'Should load the bundle product Net Saleable Area');
-        System.assert(emptyResult.isEmpty(), 'No bundle product IDs should yield an empty map');
-    }
-
     /** Test: queryServiceChargeProductIds identifies the child product named 'Service Charge', or nothing if absent. */
     @isTest
     static void testQueryServiceChargeProductIds() {

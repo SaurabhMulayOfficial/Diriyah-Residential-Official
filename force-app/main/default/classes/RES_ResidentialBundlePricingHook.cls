@@ -114,7 +114,6 @@ global class RES_ResidentialBundlePricingHook implements RevSignaling.SignalingA
             return result;
         }
         Map<Id, Decimal> overrideAreaMap = hook.queryAreaByProductAndType(configMap);
-        Map<Id, Decimal> defaultAreaMap = hook.queryNetSaleableAreaByProduct(bundleMap);
         for (Id unitProductId : configMap.keySet()) {
             ServiceChargeConfig config = configMap.get(unitProductId);
             if (config.rate == null) {
@@ -123,10 +122,10 @@ global class RES_ResidentialBundlePricingHook implements RevSignaling.SignalingA
             ServiceChargeBreakdown breakdown = new ServiceChargeBreakdown();
             breakdown.rate = config.rate;
             breakdown.billingFrequency = billingFrequencyLabel(config.billingFrequency);
-            breakdown.area = overrideAreaMap.get(unitProductId) ?? defaultAreaMap.get(unitProductId);
-            if (breakdown.area != null) {
-                breakdown.amount = config.rate * (hook.billingFrequencyToMonths(config.billingFrequency) / 12) * breakdown.area;
-            }
+            breakdown.area = overrideAreaMap.get(unitProductId);
+            breakdown.amount = breakdown.area == null
+                ? 0
+                : config.rate * (hook.billingFrequencyToMonths(config.billingFrequency) / 12) * breakdown.area;
             result.put(unitProductId, breakdown);
         }
         return result;
@@ -173,11 +172,6 @@ global class RES_ResidentialBundlePricingHook implements RevSignaling.SignalingA
             System.debug(DEBUG_VERSION + ' - Loaded ' + INSTALLMENT_PERCENTAGE_SOURCE_FIELD + ' for ' +
                        installmentPercentageMap.size() + ' option-to-installment relationships');
 
-            // STEP 4.6: Query each bundle's Net Saleable Area (default area, used when no RES_Area_Type__c override)
-            Map<Id, Decimal> defaultAreaMap = queryNetSaleableAreaByProduct(bundleStructureMap);
-            System.debug(DEBUG_VERSION + ' - Loaded RES_Net_Saleable_Area__c for ' +
-                       defaultAreaMap.size() + ' bundle product(s)');
-
             // STEP 4.7: Identify which child option is the 'Service Charge' component
             Set<Id> serviceChargeProductIds = queryServiceChargeProductIds(bundleStructureMap);
             System.debug(DEBUG_VERSION + ' - Identified ' + serviceChargeProductIds.size() + ' service charge product(s)');
@@ -187,7 +181,7 @@ global class RES_ResidentialBundlePricingHook implements RevSignaling.SignalingA
             System.debug(DEBUG_VERSION + ' - Loaded ' + SERVICE_CHARGE_RATE_ATTRIBUTE + ' config for ' +
                        serviceChargeConfigMap.size() + ' bundle product(s)');
 
-            // STEP 4.9: Where RES_Area_Type__c is set, look up the matching RES_Measurement__c amount instead of the default area
+            // STEP 4.9: Where RES_Area_Type__c is set, look up the matching RES_Measurement__c amount; no area type means service charge = 0
             Map<Id, Decimal> overrideAreaMap = queryAreaByProductAndType(serviceChargeConfigMap);
             System.debug(DEBUG_VERSION + ' - Loaded RES_Area_Type__c measurement override for ' +
                        overrideAreaMap.size() + ' bundle product(s)');
@@ -199,9 +193,7 @@ global class RES_ResidentialBundlePricingHook implements RevSignaling.SignalingA
             Map<Id, Decimal> netSaleableAreaMap = new Map<Id, Decimal>();
             for (Id bundleProductId : serviceChargeConfigMap.keySet()) {
                 ServiceChargeConfig config = serviceChargeConfigMap.get(bundleProductId);
-                Decimal area = overrideAreaMap.containsKey(bundleProductId)
-                    ? overrideAreaMap.get(bundleProductId)
-                    : defaultAreaMap.get(bundleProductId);
+                Decimal area = overrideAreaMap.get(bundleProductId);
                 if (config.rate == null || area == null) {
                     continue;
                 }
@@ -566,37 +558,6 @@ global class RES_ResidentialBundlePricingHook implements RevSignaling.SignalingA
         return percentageMap;
     }
 
-    /** Query each bundle's RES_Net_Saleable_Area__c (fixed catalog field, needed for the service charge calc). */
-    @TestVisible
-    private Map<Id, Decimal> queryNetSaleableAreaByProduct(Map<String, BundleStructure> bundleMap) {
-        Map<Id, Decimal> areaMap = new Map<Id, Decimal>();
-
-        Set<Id> bundleProductIds = new Set<Id>();
-        for (BundleStructure bundle : bundleMap.values()) {
-            if (bundle.productId != null && bundle.productId instanceof Id) {
-                bundleProductIds.add((Id) bundle.productId);
-            }
-        }
-
-        if (bundleProductIds.isEmpty()) {
-            System.debug(DEBUG_VERSION + ' - No bundle product IDs found for Net Saleable Area lookup');
-            return areaMap;
-        }
-
-        for (Product2 product : [
-            SELECT Id, RES_Net_Saleable_Area__c
-            FROM Product2
-            WHERE Id IN :bundleProductIds
-                AND RES_Net_Saleable_Area__c != null
-        ]) {
-            areaMap.put(product.Id, product.RES_Net_Saleable_Area__c);
-            System.debug(DEBUG_VERSION + ' - Product ' + product.Id + ' has RES_Net_Saleable_Area__c = ' + product.RES_Net_Saleable_Area__c);
-        }
-
-        System.debug(DEBUG_VERSION + ' - queryNetSaleableAreaByProduct: returning ' + areaMap.size() + ' entr(y/ies): ' + areaMap);
-        return areaMap;
-    }
-
     /** Identify which child option products are the 'Service Charge' component, matched by Product2.Name. */
     @TestVisible
     private Set<Id> queryServiceChargeProductIds(Map<String, BundleStructure> bundleMap) {
@@ -704,7 +665,7 @@ global class RES_ResidentialBundlePricingHook implements RevSignaling.SignalingA
         }
 
         if (productIds.isEmpty()) {
-            System.debug(DEBUG_VERSION + ' - No RES_Area_Type__c overrides found, using default area for all bundles');
+            System.debug(DEBUG_VERSION + ' - No RES_Area_Type__c configured, service charge = 0 for all bundles');
             return areaMap;
         }
 
@@ -759,7 +720,7 @@ global class RES_ResidentialBundlePricingHook implements RevSignaling.SignalingA
                 continue;
             }
 
-            // Service charge = SC_RATE x bundle's Net Saleable Area, written to RES_Service_Charge_Amount__c (never PartnerUnitPrice/InputUnitPrice)
+            // Service charge = SC_RATE x bundle's RES_Area_Type__c area, written to RES_Service_Charge_Amount__c (never PartnerUnitPrice/InputUnitPrice)
             Decimal serviceChargeAmount = computeServiceCharge(bundle, serviceChargeRateMap, netSaleableAreaMap);
             if (serviceChargeAmount != 0) {
                 for (OptionItem candidate : bundle.childOptions) {
@@ -1040,7 +1001,7 @@ global class RES_ResidentialBundlePricingHook implements RevSignaling.SignalingA
         };
     }
 
-    /** Compute service charge: SC_RATE x bundle's RES_Net_Saleable_Area__c. Returns 0 if either input is missing. */
+    /** Compute service charge: SC_RATE x bundle's RES_Area_Type__c area. Returns 0 if either input is missing. */
     @TestVisible
     private Decimal computeServiceCharge(
         BundleStructure bundle,
@@ -1052,7 +1013,7 @@ global class RES_ResidentialBundlePricingHook implements RevSignaling.SignalingA
 
         if (rate == null || netSaleableArea == null) {
             System.debug(DEBUG_VERSION + ' - computeServiceCharge: missing ' + SERVICE_CHARGE_RATE_ATTRIBUTE +
-                       ' (' + rate + ') or RES_Net_Saleable_Area__c (' + netSaleableArea + ') for bundle ' +
+                       ' (' + rate + ') or RES_Area_Type__c area (' + netSaleableArea + ') for bundle ' +
                        bundle.bundleId + ', service charge = 0');
             return 0;
         }
