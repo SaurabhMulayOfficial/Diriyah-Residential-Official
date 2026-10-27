@@ -49,23 +49,6 @@
         </connector>
     </assignments>
     <assignments>
-        <description>Adds the Product2 fields to show on the product list (max 3, each prefixed Product2.).</description>
-        <name>SetProductListAdditionalFields</name>
-        <label>Set Product List Additional Fields</label>
-        <locationX>0</locationX>
-        <locationY>0</locationY>
-        <assignmentItems>
-            <assignToReference>productListAdditionalFields</assignToReference>
-            <operator>Add</operator>
-            <value>
-                <stringValue>Product2.RES_Default_Plan_Price__c</stringValue>
-            </value>
-        </assignmentItems>
-        <connector>
-            <targetReference>HaveDefaultCatalogId</targetReference>
-        </connector>
-    </assignments>
-    <assignments>
         <description>Sets CatalogQuantity to the number of catalogs in the Catalogs from getProductCatalogs record collection.</description>
         <name>SetCatalogQuantity</name>
         <label>Set Catalog Quantity</label>
@@ -97,6 +80,23 @@
         </assignmentItems>
         <connector>
             <targetReference>isCatalogListEmpty</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
+        <description>Adds the Product2 fields to show on the product list (max 3, each prefixed Product2.).</description>
+        <name>SetProductListAdditionalFields</name>
+        <label>Set Product List Additional Fields</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignmentItems>
+            <assignToReference>productListAdditionalFields</assignToReference>
+            <operator>Add</operator>
+            <value>
+                <stringValue>Product2.RES_Default_Plan_Price__c</stringValue>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>HaveDefaultCatalogId</targetReference>
         </connector>
     </assignments>
     <assignments>
@@ -530,6 +530,24 @@
             </inputParameters>
             <inputParameters>
                 <name>displayTotalQuantity</name>
+                <value>
+                    <booleanValue>false</booleanValue>
+                </value>
+            </inputParameters>
+            <inputParameters>
+                <name>hideAddForConfigurableProducts</name>
+                <value>
+                    <booleanValue>true</booleanValue>
+                </value>
+            </inputParameters>
+            <inputParameters>
+                <name>hideAddForStaticProducts</name>
+                <value>
+                    <booleanValue>true</booleanValue>
+                </value>
+            </inputParameters>
+            <inputParameters>
+                <name>displayProductSelection</name>
                 <value>
                     <booleanValue>false</booleanValue>
                 </value>
