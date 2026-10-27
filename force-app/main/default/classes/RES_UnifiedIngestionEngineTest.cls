@@ -277,9 +277,14 @@ private class RES_UnifiedIngestionEngineTest {
         ];
         Assert.isFalse(psms.isEmpty(), 'A single OneTime selling model should be created for Y100');
         Assert.areEqual('OneTime', psms[0].SellingModelType);
-        Assert.areEqual(3, [
+        Assert.areEqual(2, [
             SELECT COUNT() FROM ProductSellingModelOption WHERE ProductSellingModelId = :psms[0].Id
-        ], 'UNIT-100, UNIT-200, and UNIT-300 should all be linked to the shared OneTime selling model');
+        ], 'Only the two Y100 units should be linked to the shared OneTime selling model');
+
+        Assert.areEqual(0, [
+            SELECT COUNT() FROM ProductSellingModelOption
+            WHERE Product2Id = :productByCode.get('UNIT-300').Id
+        ], 'UNIT-300 has no resolvable selling model, so it should have no selling model option');
 
         // ---- PricebookEntry: base price is 0 for Attribute_Based_Adjustment handling ----
         List<PricebookEntry> pbes = [

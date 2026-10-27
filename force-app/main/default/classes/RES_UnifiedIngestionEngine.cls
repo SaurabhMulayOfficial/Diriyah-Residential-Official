@@ -215,6 +215,7 @@ public with sharing class RES_UnifiedIngestionEngine implements Database.Batchab
         for (RES_Product_Staging__c stg : scope) {
             if (!isPricedRow(stg)) continue;
             SellingModelSpec spec = specForRow(stg);
+            if (spec == null) continue;   // unmapped condition and no model on the row
             String key            = sellingModelKey(spec.sellingModelType, spec.pricingTerm, spec.pricingTermUnit);
             if (psmIdByKey.containsKey(key) || toCreate.containsKey(key)) continue;
 
@@ -912,6 +913,7 @@ public with sharing class RES_UnifiedIngestionEngine implements Database.Batchab
     }
 
     private static String sellingModelKey(SellingModelSpec spec) {
+        if (spec == null) return null;   // no model to key on; callers treat it as unresolved
         return sellingModelKey(spec.sellingModelType, spec.pricingTerm, spec.pricingTermUnit);
     }
 
@@ -940,30 +942,22 @@ public with sharing class RES_UnifiedIngestionEngine implements Database.Batchab
         return specForConditionTypeLegacy(stg);
     }
 
+    /**
+     * Selling model for a row whose condition type has no mapping. The row may name its own
+     * model; if it does not, there is nothing to fall back on and null says so.
+     */
     private static SellingModelSpec specForConditionTypeLegacy(RES_Product_Staging__c stg) {
         String type = textOf(stg, 'RES_Selling_Model_Type__c');
-        if (String.isNotBlank(type)) {
-            String name    = textOf(stg, 'RES_Selling_Model_Name__c');
-            Object term    = stg.get('RES_Pricing_Term__c');
-            return new SellingModelSpec(
-                String.isNotBlank(name) ? name : 'SAP Selling Model',
-                type,
-                term == null ? null : Integer.valueOf((Decimal) term),
-                textOf(stg, 'RES_Pricing_Term_Unit__c')
-            );
-        }
-        return specForConditionType(textOf(stg, F_CONDITION_TYPE));
-    }
+        if (String.isBlank(type)) return null;
 
-    public static SellingModelSpec specForConditionType(String conditionType) {
-        String ct = String.isBlank(conditionType) ? '' : conditionType.trim().toUpperCase();
-
-        if (ct == 'Y100') return new SellingModelSpec('SAP Y100 - Sale Price',     'OneTime',     null, null);
-        if (ct == 'Y200') return new SellingModelSpec('SAP Y200 - Monthly Rent',   'TermDefined', 1,    'Months');
-        if (ct == 'Y300') return new SellingModelSpec('SAP Y300 - Annual Rent',    'TermDefined', 1,    'Years');
-        if (ct == 'Y400') return new SellingModelSpec('SAP Y400 - Service Charge', 'TermDefined', 1,    'Years');
-
-        return new SellingModelSpec('SAP Default - One Time', 'OneTime', null, null);
+        String name = textOf(stg, 'RES_Selling_Model_Name__c');
+        Object term = stg.get('RES_Pricing_Term__c');
+        return new SellingModelSpec(
+            String.isNotBlank(name) ? name : 'SAP Selling Model',
+            type,
+            term == null ? null : Integer.valueOf((Decimal) term),
+            textOf(stg, 'RES_Pricing_Term_Unit__c')
+        );
     }
 
     public class SellingModelSpec {
