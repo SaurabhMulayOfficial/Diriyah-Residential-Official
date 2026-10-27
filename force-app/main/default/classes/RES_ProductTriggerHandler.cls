@@ -7,7 +7,7 @@ public with sharing class RES_ProductTriggerHandler extends RES_BaseTriggerHandl
 
     public RES_ProductTriggerHandler() {}
 
-    /** @description Inherits dates/profit center from the parent, then defaults any blank validity dates. */
+    /** @description Defaults AvailabilityDate to today and DiscontinuedDate to 2099-12-31 when blank; clears RES_Product_External_ID__c since SAP assigns it. */
     protected override void beforeInsert() {
         RES_ProductParentInheritanceService.applyParentValues((List<Product2>) Trigger.new, null);
         RES_ProductService.applyDateDefaults((List<Product2>) Trigger.new);
@@ -19,6 +19,7 @@ public with sharing class RES_ProductTriggerHandler extends RES_BaseTriggerHandl
         System.debug('### [RES_ProductTriggerHandler] afterInsert | Records: ' + Trigger.new.size());
         RES_ProductService.syncProducts((List<Product2>) Trigger.new, null);
         RES_PaymentPlanServices.syncPaymentPlans((List<Product2>) Trigger.new, null);
+        RES_ProductService.shareDocumentImages((List<Product2>) Trigger.new, null);
     }
 
     /** @description Re-defaults AvailabilityDate/DiscontinuedDate if explicitly cleared; blocks a Residential Sales unit from being set Active or Available without its Service Charge Rate attribute override; stamps the default plan price on activation. */
@@ -38,5 +39,6 @@ public with sharing class RES_ProductTriggerHandler extends RES_BaseTriggerHandl
         RES_PaymentPlanServices.removeDeactivatedPlansFromUnits((List<Product2>) Trigger.new, (Map<Id, Product2>) Trigger.oldMap);
         RES_PaymentPlanServices.tagReactivatedPlansToUnits((List<Product2>) Trigger.new, (Map<Id, Product2>) Trigger.oldMap);
         RES_UnitDraftCancellationService.handleUnitsMovedToDraft((List<Product2>) Trigger.new, (Map<Id, Product2>) Trigger.oldMap);
+        RES_ProductService.shareDocumentImages((List<Product2>) Trigger.new, (Map<Id, Product2>) Trigger.oldMap);
     }
 }

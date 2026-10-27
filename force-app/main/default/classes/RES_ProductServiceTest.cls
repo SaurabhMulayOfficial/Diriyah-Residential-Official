@@ -8,10 +8,12 @@ private class RES_ProductServiceTest {
 
     private static final String UNIT_SYNC = 'Unit_Sync';
 
+    // True when the org has the Unit_API configuration required by the integration service.
     private static Boolean canConstruct() {
         return !new RES_APIConfigurationsDAO().getAPIConfiguration('GET', 'Unit_API').isEmpty();
     }
 
+    // Bypasses Product2 triggers so test setup does not publish platform events.
     private static Product2 insertWithoutTrigger(Product2 p) {
         RES_Config_Switch__c cfg = new RES_Config_Switch__c(
             SetupOwnerId        = UserInfo.getOrganizationId(),
@@ -24,12 +26,16 @@ private class RES_ProductServiceTest {
         return p;
     }
 
+    // True when the org has the Unit_Sync metadata required by syncProducts.
     private static Boolean hasSyncConfig() {
         RES_SAP_Integration_Config__mdt config =
             new RES_SAPIntegrationConfigDAO().getSAPIntegrationConfigByDeveloperName(UNIT_SYNC);
         return config != null && String.isNotBlank(config.RES_Sync_Fields__c);
     }
 
+    // ─────────────────────────────────────────────────────────────────────────
+    // 1. isProductChanged — same values in all sync fields → false
+    // ─────────────────────────────────────────────────────────────────────────
     @isTest
     static void testIsProductChangedReturnsFalseWhenUnchanged() {
         Product2 p1 = new Product2(Family = '1004', RES_Unit_Status__c = 'Available');
@@ -42,6 +48,9 @@ private class RES_ProductServiceTest {
         Assert.isFalse(changed, 'No changed fields must return false');
     }
 
+    // ─────────────────────────────────────────────────────────────────────────
+    // 2. isProductChanged — one sync field differs → true
+    // ─────────────────────────────────────────────────────────────────────────
     @isTest
     static void testIsProductChangedReturnsTrueWhenFieldDiffers() {
         Product2 p1 = new Product2(Family = '1004');
@@ -54,6 +63,9 @@ private class RES_ProductServiceTest {
         Assert.isTrue(changed, 'A changed field value must return true');
     }
 
+    // ─────────────────────────────────────────────────────────────────────────
+    // 3. isProductChanged — null oldRecord → always true (treated as INSERT)
+    // ─────────────────────────────────────────────────────────────────────────
     @isTest
     static void testIsProductChangedTrueWhenOldRecordNull() {
         Boolean changed = RES_ProductService.isProductChanged(
@@ -63,11 +75,15 @@ private class RES_ProductServiceTest {
         Assert.isTrue(changed, 'Null oldRecord must always return true (new record scenario)');
     }
 
+    // ─────────────────────────────────────────────────────────────────────────
+    // 4. isProductChanged — invalid field name in syncFields → graceful skip
+    // ─────────────────────────────────────────────────────────────────────────
     @isTest
     static void testIsProductChangedSkipsInvalidField() {
         Product2 p1 = new Product2();
         Product2 p2 = new Product2();
 
+        // Should not throw even for an unrecognised field name
         Boolean changed = RES_ProductService.isProductChanged(
             p1, p2, new Set<String>{ 'NonExistent_Field_XYZ__c', 'Family' }
         );
@@ -76,10 +92,14 @@ private class RES_ProductServiceTest {
             'Unrecognised fields must be silently skipped; result for identical products must be false');
     }
 
+    // ─────────────────────────────────────────────────────────────────────────
+    // 5. syncProducts INSERT (null oldMap) — queues event without exception
+    // ─────────────────────────────────────────────────────────────────────────
     @isTest
     static void testSyncProductsInsertQueuesEvent() {
         if (!hasSyncConfig() || !canConstruct()) return;
 
+        // Downstream queueable makes a callout — prime token and set mock.
         RES_IntegrationTestDataFactory.primeSapToken();
         Test.setMock(HttpCalloutMock.class, new RES_IntegrationTestDataFactory.EndpointRoutingMock());
 
@@ -91,14 +111,19 @@ private class RES_ProductServiceTest {
         insertWithoutTrigger(p);
 
         Test.startTest();
+        // null oldMap = INSERT context; must not throw
         RES_ProductService.syncProducts(new List<Product2>{ p }, null);
         Test.stopTest();
     }
 
+    // ─────────────────────────────────────────────────────────────────────────
+    // 6. syncProducts UPDATE — changed field → publishes event
+    // ─────────────────────────────────────────────────────────────────────────
     @isTest
     static void testSyncProductsUpdateChangedFieldPublishes() {
         if (!hasSyncConfig() || !canConstruct()) return;
 
+        // Downstream queueable makes a callout — prime token and set mock.
         RES_IntegrationTestDataFactory.primeSapToken();
         Test.setMock(HttpCalloutMock.class, new RES_IntegrationTestDataFactory.EndpointRoutingMock());
 
@@ -110,7 +135,7 @@ private class RES_ProductServiceTest {
         insertWithoutTrigger(p);
 
         Product2 pOld = p.clone(true, true, false, false);
-        p.Family = '1005';
+        p.Family = '1005'; // change a sync field
 
         Test.startTest();
         RES_ProductService.syncProducts(
@@ -120,6 +145,9 @@ private class RES_ProductServiceTest {
         Test.stopTest();
     }
 
+    // ─────────────────────────────────────────────────────────────────────────
+    // 7. syncProducts UPDATE — no changed fields → returns early, no exception
+    // ─────────────────────────────────────────────────────────────────────────
     @isTest
     static void testSyncProductsUpdateUnchangedSkipsPublish() {
         if (!hasSyncConfig()) return;
@@ -130,6 +158,7 @@ private class RES_ProductServiceTest {
         );
         insertWithoutTrigger(p);
 
+        // Both old and new are identical clones
         Product2 pSame = p.clone(true, true, false, false);
 
         Test.startTest();

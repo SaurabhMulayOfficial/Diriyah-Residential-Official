@@ -113,6 +113,97 @@ public with sharing class RES_ProductService {
         return false;
     }
 
+    /** Test-only override of the configured groups (Chatter group name => share type); custom metadata cannot be inserted in tests. */
+    @TestVisible
+    private static Map<String, String> shareGroupOverride;
+
+    /**
+     * @description Returns the active Chatter groups document images are shared with, as group name => share type,
+     *              read from RES_Document_Image_Share_Group__mdt. Add a record there to share with a new group.
+     */
+    @TestVisible
+    private static Map<String, String> getDocumentImageShareGroups() {
+        if (shareGroupOverride != null) {
+            return shareGroupOverride;
+        }
+        Map<String, String> shareTypeByGroup = new Map<String, String>();
+        for (RES_Document_Image_Share_Group__mdt cfg : RES_Document_Image_Share_Group__mdt.getAll().values()) {
+            if (cfg.RES_Is_Active__c && String.isNotBlank(cfg.RES_Group_Name__c)) {
+                shareTypeByGroup.put(cfg.RES_Group_Name__c.trim(), cfg.RES_Share_Type__c);
+            }
+        }
+        return shareTypeByGroup;
+    }
+
+    /**
+     * @description When RES_SPA_Document_Image_Name__c is set or changed, shares every file on the product whose
+     *              title matches the name with the Chatter groups configured in RES_Document_Image_Share_Group__mdt,
+     *              so the image renders in generated documents. Existing links (uploader, owner) are untouched.
+     */
+    public static void shareDocumentImages(List<Product2> products, Map<Id, Product2> oldMap) {
+        Map<Id, String> nameByProduct = new Map<Id, String>();
+        for (Product2 p : products) {
+            if (String.isBlank(p.RES_SPA_Document_Image_Name__c)) {
+                continue;
+            }
+            if (oldMap == null || p.RES_SPA_Document_Image_Name__c != oldMap.get(p.Id).RES_SPA_Document_Image_Name__c) {
+                nameByProduct.put(p.Id, p.RES_SPA_Document_Image_Name__c.trim().toLowerCase());
+            }
+        }
+        if (nameByProduct.isEmpty()) {
+            return;
+        }
+
+        Set<Id> matchedDocIds = new Set<Id>();
+        for (ContentDocumentLink cdl : new RES_ContentDocumentLinkDAOLayer().getLinksWithTitleByLinkedEntityIds(nameByProduct.keySet())) {
+            String title = cdl.ContentDocument.Title;
+            if (title != null && title.trim().toLowerCase() == nameByProduct.get(cdl.LinkedEntityId)) {
+                matchedDocIds.add(cdl.ContentDocumentId);
+            }
+        }
+        if (matchedDocIds.isEmpty()) {
+            return;
+        }
+
+        Map<String, String> shareTypeByGroupName = getDocumentImageShareGroups();
+        Map<Id, String> shareTypeByGroupId = new Map<Id, String>();
+        for (CollaborationGroup g : new RES_CollaborationGroupDAOLayer().getGroupsByNames(shareTypeByGroupName.keySet())) {
+            String shareType = shareTypeByGroupName.get(g.Name);
+            shareTypeByGroupId.put(g.Id, (shareType == 'C' || shareType == 'I') ? shareType : 'V');
+        }
+        if (shareTypeByGroupId.isEmpty()) {
+            System.debug(LoggingLevel.WARN, '### [RES_ProductService] Document image share Chatter groups not configured or not found');
+            return;
+        }
+
+        Set<String> existing = new Set<String>();
+        for (ContentDocumentLink cdl : new RES_ContentDocumentLinkDAOLayer().getContentDocumentLinkByContentDocumentId(matchedDocIds)) {
+            existing.add(cdl.ContentDocumentId + '-' + cdl.LinkedEntityId);
+        }
+
+        List<ContentDocumentLink> toInsert = new List<ContentDocumentLink>();
+        for (Id docId : matchedDocIds) {
+            for (Id groupId : shareTypeByGroupId.keySet()) {
+                if (!existing.contains(docId + '-' + groupId)) {
+                    toInsert.add(new ContentDocumentLink(
+                        ContentDocumentId = docId,
+                        LinkedEntityId = groupId,
+                        ShareType = shareTypeByGroupId.get(groupId),
+                        Visibility = 'AllUsers'
+                    ));
+                }
+            }
+        }
+        if (toInsert.isEmpty()) {
+            return;
+        }
+        for (Database.SaveResult sr : Database.insert(toInsert, false)) {
+            if (!sr.isSuccess()) {
+                System.debug(LoggingLevel.ERROR, '### [RES_ProductService] Document image share failed: ' + sr.getErrors()[0].getMessage());
+            }
+        }
+    }
+    
     public static void setExternalID(List<Product2> productsLst){
         List<Product2> paymentPlan = new RES_Product2DAOLayer().getLatestPaymentPlan();
         if(!paymentPlan.isEmpty()){
