@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>RES_Document_CreationDate__c</fullName>
+    <description>Contract created date as DD/MM/YYYY.</description>
+    <externalId>false</externalId>
+    <formula>IF(ISBLANK(DATEVALUE(CreatedDate)), &quot;&quot;,
+LPAD(TEXT(DAY(DATEVALUE(CreatedDate))), 2, &quot;0&quot;) &amp; &quot;/&quot; &amp;
+LPAD(TEXT(MONTH(DATEVALUE(CreatedDate))), 2, &quot;0&quot;) &amp; &quot;/&quot; &amp;
+TEXT(YEAR(DATEVALUE(CreatedDate))))</formula>
+    <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+    <label>Document Creation Date</label>
+    <required>false</required>
+    <trackHistory>false</trackHistory>
+    <type>Text</type>
+    <unique>false</unique>
+</CustomField>
