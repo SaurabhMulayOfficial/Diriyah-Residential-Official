@@ -144,6 +144,12 @@ private class RES_BundlePricingHookMatchingTest {
         );
     }
 
+    /** Z007 measurement of 1000 on the bundle, the area SC_RATE is applied to when RES_Area_Type__c = Z007. */
+    private static void insertBundleAreaMeasurement() {
+        Product2 bundleProduct = [SELECT Id FROM Product2 WHERE Name = :BUNDLE_NAME LIMIT 1];
+        insert new RES_Measurement__c(RES_Product__c = bundleProduct.Id, RES_Measurement_Type__c = 'Z007', RES_Measurement_Amount__c = 1000);
+    }
+
     /** Creates the PriceAdjustmentSchedule/Rule/Condition/Adjustment chain, reusing the org's real 'Pricing_Option' attribute. */
     private static void insertPricingRulesAndAdjustments() {
         Product2 bundleProduct = [SELECT Id FROM Product2 WHERE Name = :BUNDLE_NAME LIMIT 1];
@@ -472,7 +478,8 @@ private class RES_BundlePricingHookMatchingTest {
         setupCoreData();
         insertPricingRulesAndAdjustments();
         insertBundleComponentPriceOption();
-        insertServiceChargeRateAttribute();
+        insertServiceChargeRateAttribute(null, 'Z007');
+        insertBundleAreaMeasurement();
 
         Test.startTest();
 
@@ -499,10 +506,10 @@ private class RES_BundlePricingHookMatchingTest {
         Map<String, List<RES_ResidentialBundlePricingHook.AttributeAdjustment>> bundleAdjustmentsMap =
             hook.queryAttributeAdjustments(bundleMap);
         Map<String, String> childProductPriceOptionMap = hook.queryChildOptionPriceValues(bundleMap);
-        Map<Id, Decimal> netSaleableAreaMap = hook.queryNetSaleableAreaByProduct(bundleMap);
         Set<Id> serviceChargeProductIds = hook.queryServiceChargeProductIds(bundleMap);
         Map<Id, RES_ResidentialBundlePricingHook.ServiceChargeConfig> serviceChargeConfigMap =
             hook.queryServiceChargeConfigByProduct(bundleMap);
+        Map<Id, Decimal> netSaleableAreaMap = hook.queryAreaByProductAndType(serviceChargeConfigMap);
         Map<Id, Decimal> serviceChargeRateMap = new Map<Id, Decimal>();
         for (Id productId : serviceChargeConfigMap.keySet()) {
             serviceChargeRateMap.put(productId, serviceChargeConfigMap.get(productId).rate);
@@ -543,7 +550,8 @@ private class RES_BundlePricingHookMatchingTest {
         setupCoreData();
         insertPricingRulesAndAdjustments();
         insertBundleComponentPriceOption();
-        insertServiceChargeRateAttribute();
+        insertServiceChargeRateAttribute(null, 'Z007');
+        insertBundleAreaMeasurement();
 
         Product2 bundleProduct = [SELECT Id FROM Product2 WHERE Name = :BUNDLE_NAME LIMIT 1];
         Product2 premiumOption = [SELECT Id FROM Product2 WHERE Name = :PREMIUM_NAME LIMIT 1];
@@ -722,7 +730,8 @@ private class RES_BundlePricingHookMatchingTest {
     @isTest
     static void testServiceChargeBreakdown() {
         setupCoreData();
-        insertServiceChargeRateAttribute('Semi_Annual', null);
+        insertServiceChargeRateAttribute('Semi_Annual', 'Z007');
+        insertBundleAreaMeasurement();
         Product2 bundleProduct = [SELECT Id FROM Product2 WHERE Name = :BUNDLE_NAME LIMIT 1];
 
         Test.startTest();
@@ -733,9 +742,27 @@ private class RES_BundlePricingHookMatchingTest {
 
         System.assertEquals(149, breakdown.rate);
         System.assertEquals('Semi-Annual', breakdown.billingFrequency);
-        System.assertEquals(1000, breakdown.area, 'Falls back to Net Saleable Area without an area type override');
+        System.assertEquals(1000, breakdown.area, 'Uses the Z007 measurement configured as the area type');
         System.assertEquals(149 * 0.5 * 1000, breakdown.amount, 'Semi-Annual amount is half the annual rate x area');
         System.assertEquals(null, none);
+    }
+
+    /** Test: without an RES_Area_Type__c there is no area to apply, so the service charge is 0 (no Net Saleable Area fallback). */
+    @isTest
+    static void testServiceChargeBreakdown_NoAreaTypeIsZero() {
+        setupCoreData();
+        insertServiceChargeRateAttribute();
+        insertBundleAreaMeasurement();
+        Product2 bundleProduct = [SELECT Id FROM Product2 WHERE Name = :BUNDLE_NAME LIMIT 1];
+
+        Test.startTest();
+        RES_ResidentialBundlePricingHook.ServiceChargeBreakdown breakdown =
+            RES_ResidentialBundlePricingHook.serviceChargeBreakdown(bundleProduct.Id);
+        Test.stopTest();
+
+        System.assertEquals(149, breakdown.rate);
+        System.assertEquals(null, breakdown.area, 'No area type means no area');
+        System.assertEquals(0, breakdown.amount, 'Service charge is 0 without an area type');
     }
 
     /** Test: RES_ServiceChargeLineService stamps the unit's rate + frequency label on the quote's Service Charge line, and skips already-stamped unchanged lines. */
