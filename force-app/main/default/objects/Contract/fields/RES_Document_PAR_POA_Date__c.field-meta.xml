@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>RES_Document_PAR_POA_Date__c</fullName>
+    <description>PAR POA date as DD/MM/YYYY.</description>
+    <externalId>false</externalId>
+    <formula>IF(ISBLANK(RES_PAR_POA_Date__c), &quot;&quot;,
+LPAD(TEXT(DAY(RES_PAR_POA_Date__c)), 2, &quot;0&quot;) &amp; &quot;/&quot; &amp;
+LPAD(TEXT(MONTH(RES_PAR_POA_Date__c)), 2, &quot;0&quot;) &amp; &quot;/&quot; &amp;
+TEXT(YEAR(RES_PAR_POA_Date__c)))</formula>
+    <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+    <label>Document PAR POA Date</label>
+    <required>false</required>
+    <trackHistory>false</trackHistory>
+    <type>Text</type>
+    <unique>false</unique>
+</CustomField>
