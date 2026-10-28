@@ -4231,11 +4231,6 @@
     </fieldPermissions>
     <fieldPermissions>
         <editable>false</editable>
-        <field>Contact.RES_Document_BirthdateDate__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>false</editable>
         <field>Contract.RES_Document_PAR_POA_Date__c</field>
         <readable>true</readable>
     </fieldPermissions>
@@ -4961,6 +4956,16 @@
     <fieldPermissions>
         <editable>true</editable>
         <field>Account.CompanyMobilePhone__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>Account.RES_Document_PersonBirthdate__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>Contact.RES_Document_Birthdate__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
