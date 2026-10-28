@@ -155,14 +155,6 @@
                 </contextAttributeMappings>
                 <contextAttributeMappings>
                     <contextAttrHydrationDetails>
-                        <objectName>Contract</objectName>
-                        <queryAttribute>CreatedDate</queryAttribute>
-                    </contextAttrHydrationDetails>
-                    <contextAttribute>RES_CreatedDate</contextAttribute>
-                    <contextInputAttributeName>RES_CreatedDate</contextInputAttributeName>
-                </contextAttributeMappings>
-                <contextAttributeMappings>
-                    <contextAttrHydrationDetails>
                         <contextAttrHydrationDetails>
                             <objectName>User</objectName>
                             <queryAttribute>Name</queryAttribute>
@@ -204,15 +196,7 @@
                 <contextAttributeMappings>
                     <contextAttrHydrationDetails>
                         <objectName>Contract</objectName>
-                        <queryAttribute>CompanySignedDate</queryAttribute>
-                    </contextAttrHydrationDetails>
-                    <contextAttribute>RES_CompanySignedDate</contextAttribute>
-                    <contextInputAttributeName>RES_CompanySignedDate</contextInputAttributeName>
-                </contextAttributeMappings>
-                <contextAttributeMappings>
-                    <contextAttrHydrationDetails>
-                        <objectName>Contract</objectName>
-                        <queryAttribute>RES_CompanySignedDate_Arabic__c</queryAttribute>
+                        <queryAttribute>RES_Document_CompanySignedDate_Arabic__c</queryAttribute>
                     </contextAttrHydrationDetails>
                     <contextAttribute>RES_CompanySignedDateAR</contextAttribute>
                     <contextInputAttributeName>RES_CompanySignedDateAR</contextInputAttributeName>
@@ -480,18 +464,6 @@
                 <contextAttributeMappings>
                     <contextAttrHydrationDetails>
                         <contextAttrHydrationDetails>
-                            <objectName>Quote</objectName>
-                            <queryAttribute>RES_Reservation_Start_Date__c</queryAttribute>
-                        </contextAttrHydrationDetails>
-                        <objectName>Contract</objectName>
-                        <queryAttribute>SourceQuote</queryAttribute>
-                    </contextAttrHydrationDetails>
-                    <contextAttribute>RES_Reservation_Start_Date</contextAttribute>
-                    <contextInputAttributeName>RES_Reservation_Start_Date</contextInputAttributeName>
-                </contextAttributeMappings>
-                <contextAttributeMappings>
-                    <contextAttrHydrationDetails>
-                        <contextAttrHydrationDetails>
                             <objectName>User</objectName>
                             <queryAttribute>Name</queryAttribute>
                         </contextAttrHydrationDetails>
@@ -524,14 +496,6 @@
                 <contextAttributeMappings>
                     <contextAttrHydrationDetails>
                         <objectName>Contract</objectName>
-                        <queryAttribute>RES_PAR_POA_Date__c</queryAttribute>
-                    </contextAttrHydrationDetails>
-                    <contextAttribute>RES_PAR_POA_Date</contextAttribute>
-                    <contextInputAttributeName>RES_PAR_POA_Date</contextInputAttributeName>
-                </contextAttributeMappings>
-                <contextAttributeMappings>
-                    <contextAttrHydrationDetails>
-                        <objectName>Contract</objectName>
                         <queryAttribute>RES_PAR_POA_Number__c</queryAttribute>
                     </contextAttrHydrationDetails>
                     <contextAttribute>RES_PAR_POA_Number</contextAttribute>
@@ -544,30 +508,6 @@
                     </contextAttrHydrationDetails>
                     <contextAttribute>RES_PAR_ID_Number</contextAttribute>
                     <contextInputAttributeName>RES_PAR_ID_Number</contextInputAttributeName>
-                </contextAttributeMappings>
-                <contextAttributeMappings>
-                    <contextAttrHydrationDetails>
-                        <contextAttrHydrationDetails>
-                            <objectName>Account</objectName>
-                            <queryAttribute>PersonBirthdate</queryAttribute>
-                        </contextAttrHydrationDetails>
-                        <objectName>Contract</objectName>
-                        <queryAttribute>Account</queryAttribute>
-                    </contextAttrHydrationDetails>
-                    <contextAttribute>RES_AccBirthDate</contextAttribute>
-                    <contextInputAttributeName>RES_AccBirthDate</contextInputAttributeName>
-                </contextAttributeMappings>
-                <contextAttributeMappings>
-                    <contextAttrHydrationDetails>
-                        <contextAttrHydrationDetails>
-                            <objectName>Contact</objectName>
-                            <queryAttribute>Birthdate</queryAttribute>
-                        </contextAttrHydrationDetails>
-                        <objectName>Contract</objectName>
-                        <queryAttribute>CustomerSigned</queryAttribute>
-                    </contextAttrHydrationDetails>
-                    <contextAttribute>RES_BirthDate</contextAttribute>
-                    <contextInputAttributeName>RES_BirthDate</contextInputAttributeName>
                 </contextAttributeMappings>
                 <contextAttributeMappings>
                     <contextAttrHydrationDetails>
@@ -772,6 +712,66 @@
                     </contextAttrHydrationDetails>
                     <contextAttribute>RES_Financial_Compensation</contextAttribute>
                     <contextInputAttributeName>RES_Financial_Compensation</contextInputAttributeName>
+                </contextAttributeMappings>
+                <contextAttributeMappings>
+                    <contextAttrHydrationDetails>
+                        <objectName>Contract</objectName>
+                        <queryAttribute>RES_Document_CompanySignedDate__c</queryAttribute>
+                    </contextAttrHydrationDetails>
+                    <contextAttribute>RES_CompanySignedDate</contextAttribute>
+                    <contextInputAttributeName>RES_CompanySignedDate</contextInputAttributeName>
+                </contextAttributeMappings>
+                <contextAttributeMappings>
+                    <contextAttrHydrationDetails>
+                        <objectName>Contract</objectName>
+                        <queryAttribute>RES_Document_CreationDate__c</queryAttribute>
+                    </contextAttrHydrationDetails>
+                    <contextAttribute>RES_CreatedDate</contextAttribute>
+                    <contextInputAttributeName>RES_CreatedDate</contextInputAttributeName>
+                </contextAttributeMappings>
+                <contextAttributeMappings>
+                    <contextAttrHydrationDetails>
+                        <contextAttrHydrationDetails>
+                            <objectName>Quote</objectName>
+                            <queryAttribute>RES_Document_Reservation_StartDate__c</queryAttribute>
+                        </contextAttrHydrationDetails>
+                        <objectName>Contract</objectName>
+                        <queryAttribute>SourceQuote</queryAttribute>
+                    </contextAttrHydrationDetails>
+                    <contextAttribute>RES_Reservation_Start_Date</contextAttribute>
+                    <contextInputAttributeName>RES_Reservation_Start_Date</contextInputAttributeName>
+                </contextAttributeMappings>
+                <contextAttributeMappings>
+                    <contextAttrHydrationDetails>
+                        <objectName>Contract</objectName>
+                        <queryAttribute>RES_Document_PAR_POA_Date__c</queryAttribute>
+                    </contextAttrHydrationDetails>
+                    <contextAttribute>RES_PAR_POA_Date</contextAttribute>
+                    <contextInputAttributeName>RES_PAR_POA_Date</contextInputAttributeName>
+                </contextAttributeMappings>
+                <contextAttributeMappings>
+                    <contextAttrHydrationDetails>
+                        <contextAttrHydrationDetails>
+                            <objectName>Account</objectName>
+                            <queryAttribute>RES_Document_PersonBirthdate__c</queryAttribute>
+                        </contextAttrHydrationDetails>
+                        <objectName>Contract</objectName>
+                        <queryAttribute>Account</queryAttribute>
+                    </contextAttrHydrationDetails>
+                    <contextAttribute>RES_AccBirthDate</contextAttribute>
+                    <contextInputAttributeName>RES_AccBirthDate</contextInputAttributeName>
+                </contextAttributeMappings>
+                <contextAttributeMappings>
+                    <contextAttrHydrationDetails>
+                        <contextAttrHydrationDetails>
+                            <objectName>Contact</objectName>
+                            <queryAttribute>RES_Document_Birthdate__c</queryAttribute>
+                        </contextAttrHydrationDetails>
+                        <objectName>Contract</objectName>
+                        <queryAttribute>CustomerSigned</queryAttribute>
+                    </contextAttrHydrationDetails>
+                    <contextAttribute>RES_BirthDate</contextAttribute>
+                    <contextInputAttributeName>RES_BirthDate</contextInputAttributeName>
                 </contextAttributeMappings>
                 <contextNode>Contract</contextNode>
                 <object>Contract</object>
@@ -1088,18 +1088,6 @@
                 <contextAttributeMappings>
                     <contextAttrHydrationDetails>
                         <contextAttrHydrationDetails>
-                            <objectName>Product2</objectName>
-                            <queryAttribute>RES_Unit_Handover_Date__c</queryAttribute>
-                        </contextAttrHydrationDetails>
-                        <objectName>ContractItemPrice</objectName>
-                        <queryAttribute>RES_Product__r</queryAttribute>
-                    </contextAttrHydrationDetails>
-                    <contextAttribute>RES_Unit_Handover_Date</contextAttribute>
-                    <contextInputAttributeName>RES_Unit_Handover_Date</contextInputAttributeName>
-                </contextAttributeMappings>
-                <contextAttributeMappings>
-                    <contextAttrHydrationDetails>
-                        <contextAttrHydrationDetails>
                             <contextAttrHydrationDetails>
                                 <objectName>ProductCatalog</objectName>
                                 <queryAttribute>RES_District_Arabic__c</queryAttribute>
@@ -1356,6 +1344,18 @@
                     </contextAttrHydrationDetails>
                     <contextAttribute>RES_Accumulative_Payments</contextAttribute>
                     <contextInputAttributeName>RES_Accumulative_Payments</contextInputAttributeName>
+                </contextAttributeMappings>
+                <contextAttributeMappings>
+                    <contextAttrHydrationDetails>
+                        <contextAttrHydrationDetails>
+                            <objectName>Product2</objectName>
+                            <queryAttribute>RES_Document_Unit_Handover_Date__c</queryAttribute>
+                        </contextAttrHydrationDetails>
+                        <objectName>ContractItemPrice</objectName>
+                        <queryAttribute>RES_Product__r</queryAttribute>
+                    </contextAttrHydrationDetails>
+                    <contextAttribute>RES_Unit_Handover_Date</contextAttribute>
+                    <contextInputAttributeName>RES_Unit_Handover_Date</contextInputAttributeName>
                 </contextAttributeMappings>
                 <contextNode>ContractItemPrice</contextNode>
                 <object>ContractItemPrice</object>
@@ -2473,7 +2473,7 @@
                     <title>RES_CompanySignedDate</title>
                 </contextTags>
                 <customMappingAllowed>false</customMappingAllowed>
-                <dataType>date</dataType>
+                <dataType>string</dataType>
                 <fieldType>inputoutput</fieldType>
                 <key>false</key>
                 <localizationDisabled>false</localizationDisabled>
@@ -2538,7 +2538,7 @@
                     <title>RES_CreatedDate</title>
                 </contextTags>
                 <customMappingAllowed>false</customMappingAllowed>
-                <dataType>date</dataType>
+                <dataType>string</dataType>
                 <fieldType>inputoutput</fieldType>
                 <key>false</key>
                 <localizationDisabled>false</localizationDisabled>
@@ -2655,7 +2655,7 @@
                     <title>RES_Reservation_Start_Date</title>
                 </contextTags>
                 <customMappingAllowed>false</customMappingAllowed>
-                <dataType>date</dataType>
+                <dataType>string</dataType>
                 <fieldType>inputoutput</fieldType>
                 <key>false</key>
                 <localizationDisabled>false</localizationDisabled>
@@ -2707,7 +2707,7 @@
                     <title>RES_PAR_POA_Date</title>
                 </contextTags>
                 <customMappingAllowed>false</customMappingAllowed>
-                <dataType>date</dataType>
+                <dataType>string</dataType>
                 <fieldType>inputoutput</fieldType>
                 <key>false</key>
                 <localizationDisabled>false</localizationDisabled>
@@ -2746,7 +2746,7 @@
                     <title>RES_AccBirthDate</title>
                 </contextTags>
                 <customMappingAllowed>false</customMappingAllowed>
-                <dataType>date</dataType>
+                <dataType>string</dataType>
                 <fieldType>inputoutput</fieldType>
                 <key>false</key>
                 <localizationDisabled>false</localizationDisabled>
@@ -2759,7 +2759,7 @@
                     <title>RES_BirthDate</title>
                 </contextTags>
                 <customMappingAllowed>false</customMappingAllowed>
-                <dataType>date</dataType>
+                <dataType>string</dataType>
                 <fieldType>inputoutput</fieldType>
                 <key>false</key>
                 <localizationDisabled>false</localizationDisabled>
@@ -3127,7 +3127,7 @@
                     <title>RES_Unit_Handover_Date</title>
                 </contextTags>
                 <customMappingAllowed>false</customMappingAllowed>
-                <dataType>date</dataType>
+                <dataType>string</dataType>
                 <fieldType>inputoutput</fieldType>
                 <key>false</key>
                 <localizationDisabled>false</localizationDisabled>
@@ -3491,15 +3491,15 @@
             <title>ContractItemPrice</title>
             <transposable>false</transposable>
         </contextNodes>
-        <isActive>true</isActive>
+        <isActive>false</isActive>
         <startDate>2026-10-13 00:00:00</startDate>
-        <versionNumber>28</versionNumber>
+        <versionNumber>31</versionNumber>
     </contextDefinitionVersions>
     <contextTtl>10</contextTtl>
     <hasSystemTags>false</hasSystemTags>
     <isProtected>false</isProtected>
     <isTransformationEnabled>false</isTransformationEnabled>
     <masterLabel>RES_Documents_Definition</masterLabel>
-    <releaseVersion>264.9.4</releaseVersion>
+    <releaseVersion>264.9.5</releaseVersion>
     <title>RES_Documents_Definition</title>
 </ContextDefinition>
