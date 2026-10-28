@@ -8,7 +8,8 @@
 *                       milestone is already below the approved POC% have come due and are merged
 *                       into a single installment (its payment share is the sum of theirs); every
 *                       installment whose milestone the approval hasn't reached yet is carried over
-*                       unchanged. The new version is linked to its Installments via
+*                       unchanged. The first installment (merged or not) takes the approved POC%
+*                       as its RES_POC_Percentage__c. The new version is linked to its Installments via
 *                       ProductRelatedComponent exactly like the original, and every Unit already
 *                       wired to the previous version is repointed at the new one.
 * @ Author			: Nikhil Takawale
@@ -228,9 +229,10 @@ public with sharing class RES_ApplyApprovedPOCToFuturePaymentPlan {
      * against real org data. Any installment whose own milestone is already below the approved
      * POC% has effectively come due, so it's folded into a single merged installment (its
      * RES_Installment_Percentage__c becomes the sum of the merged group's shares - the amount now
-     * due at once; its RES_POC_Percentage__c becomes the highest milestone among the merged group;
-     * it is always named and typed 'Down Payment').
-     * Every installment whose milestone the approved POC% hasn't reached yet is cloned 1:1, untouched.
+     * due at once; it is always named and typed 'Down Payment').
+     * Every installment whose milestone the approved POC% hasn't reached yet is cloned 1:1.
+     * The first installment of the new version (the merged one, or the first clone if nothing
+     * merged) has its RES_POC_Percentage__c set to the approved POC%.
      */
     private static List<InstallmentBuild> buildInstallmentsForPlan(List<ProductRelatedComponent> planComponents, Decimal approvedPOC, List<Product2> clonedInstallments){
         List<InstallmentBuild> builds = new List<InstallmentBuild>();
@@ -254,7 +256,6 @@ public with sharing class RES_ApplyApprovedPOCToFuturePaymentPlan {
                     mergedInstallmentShareTotal = 0;
                 }
                 mergedInstallmentShareTotal += prc.ChildProduct.RES_Installment_Percentage__c;
-                mergedBuild.installment.RES_POC_Percentage__c = installmentMilestone;
                 mergedBuild.installment.RES_Installment_Percentage__c = mergedInstallmentShareTotal;
                 mergedBuild.percentage = mergedInstallmentShareTotal;
             }
@@ -264,6 +265,11 @@ public with sharing class RES_ApplyApprovedPOCToFuturePaymentPlan {
                 clonedInstallments.add(installment);
                 builds.add(new InstallmentBuild(installment, sequence, prc));
             }
+        }
+
+        // First installment (the merged one if a merge happened) carries the submitted POC%
+        if(!builds.isEmpty()){
+            (mergedBuild ?? builds[0]).installment.RES_POC_Percentage__c = approvedPOC;
         }
 
         // Builds are in sequence order, so the accumulative % is a running total of each installment's final (post-merge) %
