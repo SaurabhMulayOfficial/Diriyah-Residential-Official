@@ -203,6 +203,12 @@
             <name>Update_Contract_Approval_Status_To_Pending_CBDO</name>
             <actionName>RES_Autolaunched_Flow_Update_Contract_Approval_Status</actionName>
             <actionType>stepBackground</actionType>
+            <assignees>
+                <assignee>
+                    <elementReference>$Label.RES_Admin_Username</elementReference>
+                </assignee>
+                <assigneeType>User</assigneeType>
+            </assignees>
             <canAssigneeEdit>false</canAssigneeEdit>
             <debugSimulateStep>false</debugSimulateStep>
             <entryConditionLogic>and</entryConditionLogic>
@@ -239,7 +245,7 @@
             </inputParameters>
             <label>Update Contract Approval Status To Pending CBDO</label>
             <requiresAsyncProcessing>false</requiresAsyncProcessing>
-            <runAsUser>false</runAsUser>
+            <runAsUser>true</runAsUser>
             <shouldLock>false</shouldLock>
             <stepSubtype>BackgroundStep</stepSubtype>
         </stageSteps>
@@ -391,6 +397,12 @@
             <name>Copy_1_of_Update_Contract_Approval_Status_To_Approved</name>
             <actionName>RES_Autolaunched_Flow_Update_Contract_Approval_Status</actionName>
             <actionType>stepBackground</actionType>
+            <assignees>
+                <assignee>
+                    <elementReference>$Label.RES_Admin_Username</elementReference>
+                </assignee>
+                <assigneeType>User</assigneeType>
+            </assignees>
             <canAssigneeEdit>false</canAssigneeEdit>
             <debugSimulateStep>false</debugSimulateStep>
             <entryConditionLogic>and</entryConditionLogic>
@@ -427,7 +439,7 @@
             </inputParameters>
             <label>Update Contract Approval Status To Approved</label>
             <requiresAsyncProcessing>false</requiresAsyncProcessing>
-            <runAsUser>false</runAsUser>
+            <runAsUser>true</runAsUser>
             <shouldLock>false</shouldLock>
             <stepSubtype>BackgroundStep</stepSubtype>
         </stageSteps>
@@ -468,6 +480,12 @@
             <name>Copy_1_of_Update_Contract_Approval_Status_To_Rejected</name>
             <actionName>RES_Autolaunched_Flow_Update_Contract_Approval_Status</actionName>
             <actionType>stepBackground</actionType>
+            <assignees>
+                <assignee>
+                    <elementReference>$Label.RES_Admin_Username</elementReference>
+                </assignee>
+                <assigneeType>User</assigneeType>
+            </assignees>
             <canAssigneeEdit>false</canAssigneeEdit>
             <debugSimulateStep>false</debugSimulateStep>
             <entryConditionLogic>and</entryConditionLogic>
@@ -504,7 +522,7 @@
             </inputParameters>
             <label>Update Contract Approval Status To Rejected</label>
             <requiresAsyncProcessing>false</requiresAsyncProcessing>
-            <runAsUser>false</runAsUser>
+            <runAsUser>true</runAsUser>
             <shouldLock>false</shouldLock>
             <stepSubtype>BackgroundStep</stepSubtype>
         </stageSteps>
@@ -522,6 +540,12 @@
             <name>Copy_1_of_Update_Approval_Status_To_Pending_ED_Treasury</name>
             <actionName>RES_Autolaunched_Flow_Update_Contract_Approval_Status</actionName>
             <actionType>stepBackground</actionType>
+            <assignees>
+                <assignee>
+                    <elementReference>$Label.RES_Admin_Username</elementReference>
+                </assignee>
+                <assigneeType>User</assigneeType>
+            </assignees>
             <canAssigneeEdit>false</canAssigneeEdit>
             <debugSimulateStep>false</debugSimulateStep>
             <entryConditionLogic>and</entryConditionLogic>
@@ -558,7 +582,7 @@
             </inputParameters>
             <label>Update Approval Status To Pending ED Treasury</label>
             <requiresAsyncProcessing>false</requiresAsyncProcessing>
-            <runAsUser>false</runAsUser>
+            <runAsUser>true</runAsUser>
             <shouldLock>false</shouldLock>
             <stepSubtype>BackgroundStep</stepSubtype>
         </stageSteps>
@@ -708,6 +732,12 @@
             <name>Update_Contract_Approval_Status_To_Pending_GCEO</name>
             <actionName>RES_Autolaunched_Flow_Update_Contract_Approval_Status</actionName>
             <actionType>stepBackground</actionType>
+            <assignees>
+                <assignee>
+                    <elementReference>$Label.RES_Admin_Username</elementReference>
+                </assignee>
+                <assigneeType>User</assigneeType>
+            </assignees>
             <canAssigneeEdit>false</canAssigneeEdit>
             <debugSimulateStep>false</debugSimulateStep>
             <entryConditionLogic>and</entryConditionLogic>
@@ -744,7 +774,7 @@
             </inputParameters>
             <label>Update Contract Approval Status To Pending GCEO</label>
             <requiresAsyncProcessing>false</requiresAsyncProcessing>
-            <runAsUser>false</runAsUser>
+            <runAsUser>true</runAsUser>
             <shouldLock>false</shouldLock>
             <stepSubtype>BackgroundStep</stepSubtype>
         </stageSteps>
@@ -896,6 +926,12 @@
             <name>Update_Contract_Approval_Status_To_Approved</name>
             <actionName>RES_Autolaunched_Flow_Update_Contract_Approval_Status</actionName>
             <actionType>stepBackground</actionType>
+            <assignees>
+                <assignee>
+                    <elementReference>$Label.RES_Admin_Username</elementReference>
+                </assignee>
+                <assigneeType>User</assigneeType>
+            </assignees>
             <canAssigneeEdit>false</canAssigneeEdit>
             <debugSimulateStep>false</debugSimulateStep>
             <entryConditionLogic>and</entryConditionLogic>
@@ -932,7 +968,7 @@
             </inputParameters>
             <label>Update Contract Approval Status To Approved</label>
             <requiresAsyncProcessing>false</requiresAsyncProcessing>
-            <runAsUser>false</runAsUser>
+            <runAsUser>true</runAsUser>
             <shouldLock>false</shouldLock>
             <stepSubtype>BackgroundStep</stepSubtype>
         </stageSteps>
@@ -973,6 +1009,12 @@
             <name>Update_Contract_Approval_Status_To_Rejected_1</name>
             <actionName>RES_Autolaunched_Flow_Update_Contract_Approval_Status</actionName>
             <actionType>stepBackground</actionType>
+            <assignees>
+                <assignee>
+                    <elementReference>$Label.RES_Admin_Username</elementReference>
+                </assignee>
+                <assigneeType>User</assigneeType>
+            </assignees>
             <canAssigneeEdit>false</canAssigneeEdit>
             <debugSimulateStep>false</debugSimulateStep>
             <entryConditionLogic>and</entryConditionLogic>
@@ -1009,7 +1051,7 @@
             </inputParameters>
             <label>Update Contract Approval Status To Rejected</label>
             <requiresAsyncProcessing>false</requiresAsyncProcessing>
-            <runAsUser>false</runAsUser>
+            <runAsUser>true</runAsUser>
             <shouldLock>false</shouldLock>
             <stepSubtype>BackgroundStep</stepSubtype>
         </stageSteps>
@@ -1027,6 +1069,12 @@
             <name>Update_Contract_Approval_Status</name>
             <actionName>RES_Autolaunched_Flow_Update_Contract_Approval_Status</actionName>
             <actionType>stepBackground</actionType>
+            <assignees>
+                <assignee>
+                    <elementReference>$Label.RES_Admin_Username</elementReference>
+                </assignee>
+                <assigneeType>User</assigneeType>
+            </assignees>
             <canAssigneeEdit>false</canAssigneeEdit>
             <debugSimulateStep>false</debugSimulateStep>
             <entryConditionLogic>and</entryConditionLogic>
@@ -1045,7 +1093,7 @@
             </inputParameters>
             <label>Update Contract Approval Status</label>
             <requiresAsyncProcessing>false</requiresAsyncProcessing>
-            <runAsUser>false</runAsUser>
+            <runAsUser>true</runAsUser>
             <shouldLock>false</shouldLock>
             <stepSubtype>BackgroundStep</stepSubtype>
         </stageSteps>
@@ -1194,6 +1242,12 @@
             <name>Update_Approval_Status_To_Rejected</name>
             <actionName>RES_Autolaunched_Flow_Update_Contract_Approval_Status</actionName>
             <actionType>stepBackground</actionType>
+            <assignees>
+                <assignee>
+                    <elementReference>$Label.RES_Admin_Username</elementReference>
+                </assignee>
+                <assigneeType>User</assigneeType>
+            </assignees>
             <canAssigneeEdit>false</canAssigneeEdit>
             <debugSimulateStep>false</debugSimulateStep>
             <entryConditionLogic>and</entryConditionLogic>
@@ -1230,7 +1284,7 @@
             </inputParameters>
             <label>Update Approval Status To Rejected</label>
             <requiresAsyncProcessing>false</requiresAsyncProcessing>
-            <runAsUser>false</runAsUser>
+            <runAsUser>true</runAsUser>
             <shouldLock>false</shouldLock>
             <stepSubtype>BackgroundStep</stepSubtype>
         </stageSteps>
@@ -1245,6 +1299,12 @@
             <name>Update_Contract_Approval_Status_To_Rejected</name>
             <actionName>RES_Autolaunched_Flow_Update_Contract_Approval_Status</actionName>
             <actionType>stepBackground</actionType>
+            <assignees>
+                <assignee>
+                    <elementReference>$Label.RES_Admin_Username</elementReference>
+                </assignee>
+                <assigneeType>User</assigneeType>
+            </assignees>
             <canAssigneeEdit>false</canAssigneeEdit>
             <debugSimulateStep>false</debugSimulateStep>
             <entryConditionLogic>and</entryConditionLogic>
@@ -1281,7 +1341,7 @@
             </inputParameters>
             <label>Update Contract Approval Status To Rejected</label>
             <requiresAsyncProcessing>false</requiresAsyncProcessing>
-            <runAsUser>false</runAsUser>
+            <runAsUser>true</runAsUser>
             <shouldLock>false</shouldLock>
             <stepSubtype>BackgroundStep</stepSubtype>
         </stageSteps>

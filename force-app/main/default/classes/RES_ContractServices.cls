@@ -98,11 +98,9 @@ public with sharing class RES_ContractServices {
                 && String.isNotBlank(contract.RES_External_ID__c)) {
                 if (isStatusChanged(contract, oldMap.get(contract.Id))) {
                     contractsToSync_Termination.add(contract);
-                } else if (contract.RES_Approval_Status__c != oldMap.get(contract.Id).RES_Approval_Status__c
-                    && !UPDATE_SYNC_APPROVAL_STATUSES.contains(contract.RES_Approval_Status__c)) {
-                    // Approval Status changed to a value that must not trigger Sales_Contract_Update
-                    continue;
-                } else {
+                } else if (contract.Status != oldMap.get(contract.Id).Status || (contract.RES_Approval_Status__c != oldMap.get(contract.Id).RES_Approval_Status__c && !UPDATE_SYNC_APPROVAL_STATUSES.contains(contract.RES_Approval_Status__c))) {
+                    contractsToSync_update.add(contract);
+                } else  {
                     contractsToSync_update.add(contract);
                 }
             }
