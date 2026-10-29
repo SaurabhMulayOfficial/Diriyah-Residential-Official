@@ -332,7 +332,7 @@ private class RES_ContractServicesTest {
     }
 
     @isTest
-    static void syncContract_update_approvalStatusChangedToNonSyncValue_noEvent() {
+    static void syncContract_update_approvalStatusChangedToNonSyncValue_publishesUpdateEvent() {
         if (!configReady()) { return; }
 
         RES_IntegrationTestDataFactory.primeSapToken();
@@ -359,8 +359,8 @@ private class RES_ContractServicesTest {
         Integer after = spy.callCount;
         Test.stopTest();
 
-        Assert.areEqual(0, after - before,
-            'Approval Status change to a non-sync value must not publish Sales_Contract_Update.');
+        Assert.areEqual(1, after - before,
+            'Approval Status change to a non-sync value must still publish Sales_Contract_Update.');
     }
 
     // ─────────────────────────────────────────────────────────────────────────
