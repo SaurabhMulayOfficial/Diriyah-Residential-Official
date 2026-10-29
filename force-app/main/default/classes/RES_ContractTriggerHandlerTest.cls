@@ -96,6 +96,69 @@ private class RES_ContractTriggerHandlerTest {
     }
 
     @isTest
+    static void trackAmounts_firstPayment_setsReservationAndTotal() {
+        Id cId = fakeContractId();
+        Contract oldC = contractWith(cId, null, null, 10000);
+        Contract newC = contractWith(cId, 1000, null, 10000);
+        RES_ContractTriggerHandler.trackAmountsReceived(new List<Contract>{ newC }, new Map<Id, Contract>{ cId => oldC });
+        Assert.areEqual(1000, newC.RES_Reservation_Amount_Received__c, 'First payment should be the reservation amount.');
+        Assert.areEqual(1000, newC.RES_Total_Amount_Received__c, 'Total should start at the first payment.');
+        Assert.isNull(newC.RES_Final_Payment_Received__c, 'Final payment should stay blank until the contract value is reached.');
+    }
+
+    @isTest
+    static void trackAmounts_laterPayment_addsToTotalKeepsReservation() {
+        Id cId = fakeContractId();
+        Contract oldC = contractWith(cId, 1000, 1000, 10000);
+        Contract newC = contractWith(cId, 4000, 1000, 10000);
+        newC.RES_Reservation_Amount_Received__c = 1000;
+        RES_ContractTriggerHandler.trackAmountsReceived(new List<Contract>{ newC }, new Map<Id, Contract>{ cId => oldC });
+        Assert.areEqual(1000, newC.RES_Reservation_Amount_Received__c, 'Reservation amount must not change after the first payment.');
+        Assert.areEqual(5000, newC.RES_Total_Amount_Received__c, 'Total should add the new payment.');
+        Assert.isNull(newC.RES_Final_Payment_Received__c, 'Final payment should stay blank below the contract value.');
+    }
+
+    @isTest
+    static void trackAmounts_totalReachesContractValue_setsFinalPayment() {
+        Id cId = fakeContractId();
+        Contract oldC = contractWith(cId, 4000, 6000, 10000);
+        Contract newC = contractWith(cId, 4000, 6000, 10000);
+        newC.RES_Last_Amount_Received_Date__c = Date.today();
+        RES_ContractTriggerHandler.trackAmountsReceived(new List<Contract>{ newC }, new Map<Id, Contract>{ cId => oldC });
+        Assert.areEqual(10000, newC.RES_Total_Amount_Received__c, 'Same amount on a new date counts as a new payment.');
+        Assert.areEqual(4000, newC.RES_Final_Payment_Received__c, 'Payment reaching the contract value is the final payment.');
+    }
+
+    @isTest
+    static void trackAmounts_unchangedPayment_noChange() {
+        Id cId = fakeContractId();
+        Contract oldC = contractWith(cId, 2000, 3000, 10000);
+        Contract newC = contractWith(cId, 2000, 3000, 10000);
+        RES_ContractTriggerHandler.trackAmountsReceived(new List<Contract>{ newC }, new Map<Id, Contract>{ cId => oldC });
+        Assert.areEqual(3000, newC.RES_Total_Amount_Received__c, 'Unrelated updates must not add to the total.');
+    }
+
+    @isTest
+    static void trackAmounts_contractUpdate_populatesFields() {
+        RES_IntegrationTestDataFactory.primeSapToken();
+        Test.setMock(HttpCalloutMock.class, new RES_IntegrationTestDataFactory.EndpointRoutingMock());
+        Account acc = RES_TestDataFactory.createAccount();
+        Contract c = new Contract(AccountId = acc.Id, Status = 'Draft', StartDate = Date.today());
+        insert c;
+
+        Test.startTest();
+        update new Contract(Id = c.Id, RES_Last_Amount_Received__c = 1500, RES_Last_Amount_Received_Date__c = Date.today());
+        update new Contract(Id = c.Id, RES_Last_Amount_Received__c = 2500, RES_Last_Amount_Received_Date__c = Date.today().addDays(1));
+        Test.stopTest();
+
+        Contract saved = [SELECT RES_Reservation_Amount_Received__c, RES_Total_Amount_Received__c, RES_Final_Payment_Received__c
+                          FROM Contract WHERE Id = :c.Id];
+        Assert.areEqual(1500, saved.RES_Reservation_Amount_Received__c, 'Reservation should be the first payment.');
+        Assert.areEqual(4000, saved.RES_Total_Amount_Received__c, 'Total should sum both payments.');
+        Assert.isNull(saved.RES_Final_Payment_Received__c, 'No contract value, so no final payment.');
+    }
+
+    @isTest
     static void populateCustomerSignedBy_businessAccount_usesFirstContact() {
         Account acc = RES_TestDataFactory.createAccount();
         Contact first = new Contact(LastName = 'First', AccountId = acc.Id);
@@ -129,6 +192,17 @@ private class RES_ContractTriggerHandlerTest {
         Contract c = new Contract(AccountId = acc.Id, CustomerSignedId = stray.Id);
         RES_ContractServices.populateCustomerSignedBy(new List<Contract>{ c });
         Assert.areEqual(accountContact.Id, c.CustomerSignedId, 'Create always overwrites with the Account contact.');
+    }
+
+    // Total Contract Value is a roll-up, so it can only be set via deserialization
+    private static Contract contractWith(Id cId, Decimal lastAmount, Decimal total, Decimal contractValue) {
+        return (Contract) JSON.deserialize(JSON.serialize(new Map<String, Object>{
+            'attributes' => new Map<String, Object>{ 'type' => 'Contract' },
+            'Id' => cId,
+            'RES_Last_Amount_Received__c' => lastAmount,
+            'RES_Total_Amount_Received__c' => total,
+            'RES_Total_Contract_Value__c' => contractValue
+        }), Contract.class);
     }
 
     private static Id fakeContractId() {

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>RES_Total_Amount_Received__c</fullName>
+    <description>Running total of every Last Amount Received value posted by S4HANA for this contract. Set automatically by the Contract trigger.</description>
+    <inlineHelpText>Sum of all payments received for this contract.</inlineHelpText>
+    <label>Total Amount Received</label>
+    <precision>18</precision>
+    <required>false</required>
+    <scale>2</scale>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Currency</type>
+</CustomField>
