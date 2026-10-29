@@ -1,6 +1,37 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Flow xmlns="http://soap.sforce.com/2006/04/metadata">
     <actionCalls>
+        <description>Builds the Payment Plan details ({5}) and schedule ({6}) table rows for the approver email. On fault the email is still sent without the tables.</description>
+        <name>Get_Payment_Plan_Email_Details</name>
+        <label>Get Payment Plan Email Details</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <actionName>RES_PaymentPlanEmailDetailsInvocable</actionName>
+        <actionType>apex</actionType>
+        <connector>
+            <targetReference>Populate_Merge_Fields</targetReference>
+        </connector>
+        <faultConnector>
+            <targetReference>Populate_Merge_Fields</targetReference>
+        </faultConnector>
+        <flowTransactionModel>CurrentTransaction</flowTransactionModel>
+        <inputParameters>
+            <name>includeAttachments</name>
+            <value>
+                <elementReference>includeAttachments</elementReference>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>recordId</name>
+            <value>
+                <elementReference>recordId</elementReference>
+            </value>
+        </inputParameters>
+        <nameSegment>RES_PaymentPlanEmailDetailsInvocable</nameSegment>
+        <offset>0</offset>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </actionCalls>
+    <actionCalls>
         <name>Send_Bell_Notification</name>
         <label>Send Bell Notification</label>
         <locationX>0</locationX>
@@ -107,52 +138,8 @@
         <nameSegment>RES_SendEmailInvocable</nameSegment>
         <offset>0</offset>
     </actionCalls>
-    <actionCalls>
-        <description>Builds the Payment Plan details ({5}) and schedule ({6}) table rows for the approver email. On fault the email is still sent without the tables.</description>
-        <name>Get_Payment_Plan_Email_Details</name>
-        <label>Get Payment Plan Email Details</label>
-        <locationX>0</locationX>
-        <locationY>0</locationY>
-        <actionName>RES_PaymentPlanEmailDetailsInvocable</actionName>
-        <actionType>apex</actionType>
-        <connector>
-            <targetReference>Populate_Merge_Fields</targetReference>
-        </connector>
-        <faultConnector>
-            <targetReference>Populate_Merge_Fields</targetReference>
-        </faultConnector>
-        <flowTransactionModel>CurrentTransaction</flowTransactionModel>
-        <inputParameters>
-            <name>includeAttachments</name>
-            <value>
-                <elementReference>includeAttachments</elementReference>
-            </value>
-        </inputParameters>
-        <inputParameters>
-            <name>recordId</name>
-            <value>
-                <elementReference>recordId</elementReference>
-            </value>
-        </inputParameters>
-        <nameSegment>RES_PaymentPlanEmailDetailsInvocable</nameSegment>
-        <offset>0</offset>
-        <storeOutputAutomatically>true</storeOutputAutomatically>
-    </actionCalls>
     <apiVersion>67.0</apiVersion>
     <areMetricsLoggedToDataCloud>false</areMetricsLoggedToDataCloud>
-    <assignments>
-        <name>Handle_Fault</name>
-        <label>Handle Fault</label>
-        <locationX>0</locationX>
-        <locationY>0</locationY>
-        <assignmentItems>
-            <assignToReference>faultMessage</assignToReference>
-            <operator>Assign</operator>
-            <value>
-                <elementReference>$Flow.FaultMessage</elementReference>
-            </value>
-        </assignmentItems>
-    </assignments>
     <assignments>
         <name>Add_Recipients</name>
         <label>Add Recipients</label>
@@ -218,6 +205,19 @@
         </connector>
     </assignments>
     <assignments>
+        <name>Handle_Fault</name>
+        <label>Handle Fault</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignmentItems>
+            <assignToReference>faultMessage</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>$Flow.FaultMessage</elementReference>
+            </value>
+        </assignmentItems>
+    </assignments>
+    <assignments>
         <name>Populate_Merge_Fields</name>
         <label>Populate Merge Fields</label>
         <locationX>0</locationX>
@@ -276,31 +276,6 @@
         </connector>
     </assignments>
     <decisions>
-        <name>Is_Sub_Group_Member</name>
-        <label>Is Sub Group Member?</label>
-        <locationX>0</locationX>
-        <locationY>0</locationY>
-        <defaultConnector>
-            <targetReference>Add_Recipients</targetReference>
-        </defaultConnector>
-        <defaultConnectorLabel>User</defaultConnectorLabel>
-        <rules>
-            <name>Is_SubGroup</name>
-            <conditionLogic>and</conditionLogic>
-            <conditions>
-                <leftValueReference>fIsSubGroup</leftValueReference>
-                <operator>EqualTo</operator>
-                <rightValue>
-                    <booleanValue>true</booleanValue>
-                </rightValue>
-            </conditions>
-            <connector>
-                <targetReference>Add_SubGroup_Id</targetReference>
-            </connector>
-            <label>Sub Group</label>
-        </rules>
-    </decisions>
-    <decisions>
         <name>Has_Sub_Groups</name>
         <label>Has Sub Groups?</label>
         <locationX>0</locationX>
@@ -348,6 +323,31 @@
         </rules>
     </decisions>
     <decisions>
+        <name>Is_Sub_Group_Member</name>
+        <label>Is Sub Group Member?</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnector>
+            <targetReference>Add_Recipients</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>User</defaultConnectorLabel>
+        <rules>
+            <name>Is_SubGroup</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>fIsSubGroup</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Add_SubGroup_Id</targetReference>
+            </connector>
+            <label>Sub Group</label>
+        </rules>
+    </decisions>
+    <decisions>
         <name>Is_Template_Retrieved</name>
         <label>Is Template Retrieved?</label>
         <locationX>0</locationX>
@@ -391,8 +391,23 @@
             <label>Verified</label>
         </rules>
     </decisions>
-    <description>DIR-1258: Generic "notify the approver group" step for the Payment Plan approval Flow Orchestrations (New Submission / Modification / Deactivation). Self-contained (does NOT delegate to RES_Autolaunched_Flow_Send_Notification_To_Public_Group) because that shared component's email path is gated behind an ApprovalWorkItem lookup (RelatedRecordId + Status='Assigned') that silently no-ops if no match is found - and in this orchestration, the notify step always runs BEFORE the approval step that would create that AWI, so email always failed while bell (no such gate) worked. Bell still uses the same customNotificationAction pattern; email is sent directly via RES_SendEmailInvocable without any AWI dependency.</description>
+    <description>DIR-1258: Generic &quot;notify the approver group&quot; step for the Payment Plan approval Flow Orchestrations (New Submission / Modification / Deactivation). Self-contained (does NOT delegate to RES_Autolaunched_Flow_Send_Notification_To_Public_Group) because that shared component&apos;s email path is gated behind an ApprovalWorkItem lookup (RelatedRecordId + Status=&apos;Assigned&apos;) that silently no-ops if no match is found - and in this orchestration, the notify step always runs BEFORE the approval step that would create that AWI, so email always failed while bell (no such gate) worked. Bell still uses the same customNotificationAction pattern; email is sent directly via RES_SendEmailInvocable without any AWI dependency.</description>
     <environments>Default</environments>
+    <formulas>
+        <name>fIsSubGroup</name>
+        <dataType>Boolean</dataType>
+        <expression>LEFT({!Loop_On_Members.UserOrGroupId}, 3) = &quot;00G&quot;</expression>
+    </formulas>
+    <formulas>
+        <name>fSubmissionComments</name>
+        <dataType>String</dataType>
+        <expression>BLANKVALUE({!submissionComments}, &quot;No comments were provided.&quot;)</expression>
+    </formulas>
+    <formulas>
+        <name>fSubmitterName</name>
+        <dataType>String</dataType>
+        <expression>BLANKVALUE({!Get_Submitter.Name}, &quot;Submitter&quot;)</expression>
+    </formulas>
     <formulas>
         <name>recordURL</name>
         <dataType>String</dataType>
@@ -404,21 +419,6 @@
 &quot;/&quot;
 &amp;
 {!recordId}</expression>
-    </formulas>
-    <formulas>
-        <name>fSubmitterName</name>
-        <dataType>String</dataType>
-        <expression>BLANKVALUE({!Get_Submitter.Name}, &quot;Submitter&quot;)</expression>
-    </formulas>
-    <formulas>
-        <name>fSubmissionComments</name>
-        <dataType>String</dataType>
-        <expression>BLANKVALUE({!submissionComments}, &quot;No comments were provided.&quot;)</expression>
-    </formulas>
-    <formulas>
-        <name>fIsSubGroup</name>
-        <dataType>Boolean</dataType>
-        <expression>LEFT({!Loop_On_Members.UserOrGroupId}, 3) = &quot;00G&quot;</expression>
     </formulas>
     <interviewLabel>Payment Plan Send Approval Notification {!$Flow.CurrentDateTime}</interviewLabel>
     <label>RES Payment Plan Send Approval Notification</label>
@@ -547,27 +547,6 @@
         <storeOutputAutomatically>true</storeOutputAutomatically>
     </recordLookups>
     <recordLookups>
-        <name>Get_SubGroup_Members</name>
-        <label>Get SubGroup Members</label>
-        <locationX>0</locationX>
-        <locationY>0</locationY>
-        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
-        <connector>
-            <targetReference>Loop_On_SubGroup_Members</targetReference>
-        </connector>
-        <filterLogic>and</filterLogic>
-        <filters>
-            <field>GroupId</field>
-            <operator>In</operator>
-            <value>
-                <elementReference>subGroupIds</elementReference>
-            </value>
-        </filters>
-        <getFirstRecordOnly>false</getFirstRecordOnly>
-        <object>GroupMember</object>
-        <storeOutputAutomatically>true</storeOutputAutomatically>
-    </recordLookups>
-    <recordLookups>
         <name>Get_Group_Users</name>
         <label>Get Group Users</label>
         <locationX>0</locationX>
@@ -617,27 +596,6 @@
         <storeOutputAutomatically>true</storeOutputAutomatically>
     </recordLookups>
     <recordLookups>
-        <name>Get_Submitter</name>
-        <label>Get Submitter</label>
-        <locationX>0</locationX>
-        <locationY>0</locationY>
-        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
-        <connector>
-            <targetReference>Get_Payment_Plan_Email_Details</targetReference>
-        </connector>
-        <filterLogic>and</filterLogic>
-        <filters>
-            <field>Id</field>
-            <operator>EqualTo</operator>
-            <value>
-                <elementReference>submitterId</elementReference>
-            </value>
-        </filters>
-        <getFirstRecordOnly>true</getFirstRecordOnly>
-        <object>User</object>
-        <storeOutputAutomatically>true</storeOutputAutomatically>
-    </recordLookups>
-    <recordLookups>
         <name>Get_Public_Group</name>
         <label>Get Public Group</label>
         <locationX>0</locationX>
@@ -658,6 +616,48 @@
         <object>Group</object>
         <storeOutputAutomatically>true</storeOutputAutomatically>
     </recordLookups>
+    <recordLookups>
+        <name>Get_SubGroup_Members</name>
+        <label>Get SubGroup Members</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Loop_On_SubGroup_Members</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>GroupId</field>
+            <operator>In</operator>
+            <value>
+                <elementReference>subGroupIds</elementReference>
+            </value>
+        </filters>
+        <getFirstRecordOnly>false</getFirstRecordOnly>
+        <object>GroupMember</object>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
+    <recordLookups>
+        <name>Get_Submitter</name>
+        <label>Get Submitter</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Get_Payment_Plan_Email_Details</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Id</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>submitterId</elementReference>
+            </value>
+        </filters>
+        <getFirstRecordOnly>true</getFirstRecordOnly>
+        <object>User</object>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
     <start>
         <locationX>0</locationX>
         <locationY>0</locationY>
@@ -666,24 +666,6 @@
         </connector>
     </start>
     <status>Active</status>
-    <variables>
-        <description>True only for deactivation emails: attaches the files on the Payment Plan record.</description>
-        <name>includeAttachments</name>
-        <dataType>Boolean</dataType>
-        <isCollection>false</isCollection>
-        <isInput>true</isInput>
-        <isOutput>false</isOutput>
-        <value>
-            <booleanValue>false</booleanValue>
-        </value>
-    </variables>
-    <variables>
-        <name>faultMessage</name>
-        <dataType>String</dataType>
-        <isCollection>false</isCollection>
-        <isInput>false</isInput>
-        <isOutput>false</isOutput>
-    </variables>
     <variables>
         <name>bellNotificationBody</name>
         <dataType>String</dataType>
@@ -709,6 +691,24 @@
         <isOutput>false</isOutput>
         <value>
             <stringValue>RES_Payment_Plan_Approval_Notification</stringValue>
+        </value>
+    </variables>
+    <variables>
+        <name>faultMessage</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <description>Defaults to true so every payment plan approval email attaches the files on the Payment Plan record.</description>
+        <name>includeAttachments</name>
+        <dataType>Boolean</dataType>
+        <isCollection>false</isCollection>
+        <isInput>true</isInput>
+        <isOutput>false</isOutput>
+        <value>
+            <booleanValue>true</booleanValue>
         </value>
     </variables>
     <variables>
@@ -754,6 +754,13 @@
         <isOutput>false</isOutput>
     </variables>
     <variables>
+        <name>subGroupIds</name>
+        <dataType>String</dataType>
+        <isCollection>true</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
         <name>submissionComments</name>
         <dataType>String</dataType>
         <isCollection>false</isCollection>
@@ -765,13 +772,6 @@
         <dataType>String</dataType>
         <isCollection>false</isCollection>
         <isInput>true</isInput>
-        <isOutput>false</isOutput>
-    </variables>
-    <variables>
-        <name>subGroupIds</name>
-        <dataType>String</dataType>
-        <isCollection>true</isCollection>
-        <isInput>false</isInput>
         <isOutput>false</isOutput>
     </variables>
     <variables>
