@@ -1,6 +1,88 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Flow xmlns="http://soap.sforce.com/2006/04/metadata">
     <actionCalls>
+        <description>Builds the Payment Plan details ({5}) and schedule ({6}) table rows for the submitter email. On fault the email is still sent without the tables.</description>
+        <name>Get_Payment_Plan_Email_Details</name>
+        <label>Get Payment Plan Email Details</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <actionName>RES_PaymentPlanEmailDetailsInvocable</actionName>
+        <actionType>apex</actionType>
+        <connector>
+            <targetReference>Set_Merge_Fields</targetReference>
+        </connector>
+        <faultConnector>
+            <targetReference>Set_Merge_Fields</targetReference>
+        </faultConnector>
+        <flowTransactionModel>CurrentTransaction</flowTransactionModel>
+        <inputParameters>
+            <name>includeAttachments</name>
+            <value>
+                <elementReference>includeAttachments</elementReference>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>recordId</name>
+            <value>
+                <elementReference>recordId</elementReference>
+            </value>
+        </inputParameters>
+        <nameSegment>RES_PaymentPlanEmailDetailsInvocable</nameSegment>
+        <offset>0</offset>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </actionCalls>
+    <actionCalls>
+        <name>Send_Bell_Notification</name>
+        <label>Send Bell Notification</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <actionName>customNotificationAction</actionName>
+        <actionType>customNotificationAction</actionType>
+        <connector>
+            <targetReference>Set_Submitter_Email</targetReference>
+        </connector>
+        <faultConnector>
+            <targetReference>Set_Submitter_Email</targetReference>
+        </faultConnector>
+        <flowTransactionModel>CurrentTransaction</flowTransactionModel>
+        <inputParameters>
+            <name>customNotifTypeId</name>
+            <value>
+                <elementReference>Get_Custom_Notification.Id</elementReference>
+                <inputConfiguratorMode>Resource</inputConfiguratorMode>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>recipientIds</name>
+            <value>
+                <elementReference>submitterIdList</elementReference>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>title</name>
+            <value>
+                <elementReference>bellNotificationTitle</elementReference>
+                <inputConfiguratorMode>Resource</inputConfiguratorMode>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>body</name>
+            <value>
+                <elementReference>bellNotificationBody</elementReference>
+                <inputConfiguratorMode>Resource</inputConfiguratorMode>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>targetId</name>
+            <value>
+                <elementReference>recordId</elementReference>
+                <inputConfiguratorMode>Resource</inputConfiguratorMode>
+            </value>
+        </inputParameters>
+        <nameSegment>customNotificationAction</nameSegment>
+        <offset>0</offset>
+    </actionCalls>
+    <actionCalls>
         <name>Send_Email</name>
         <label>Send Email</label>
         <locationX>0</locationX>
@@ -56,103 +138,8 @@
         <nameSegment>RES_SendEmailInvocable</nameSegment>
         <offset>0</offset>
     </actionCalls>
-    <actionCalls>
-        <name>Send_Bell_Notification</name>
-        <label>Send Bell Notification</label>
-        <locationX>0</locationX>
-        <locationY>0</locationY>
-        <actionName>customNotificationAction</actionName>
-        <actionType>customNotificationAction</actionType>
-        <connector>
-            <targetReference>Set_Submitter_Email</targetReference>
-        </connector>
-        <faultConnector>
-            <targetReference>Set_Submitter_Email</targetReference>
-        </faultConnector>
-        <flowTransactionModel>CurrentTransaction</flowTransactionModel>
-        <inputParameters>
-            <name>customNotifTypeId</name>
-            <value>
-                <elementReference>Get_Custom_Notification.Id</elementReference>
-                <inputConfiguratorMode>Resource</inputConfiguratorMode>
-            </value>
-        </inputParameters>
-        <inputParameters>
-            <name>recipientIds</name>
-            <value>
-                <elementReference>submitterIdList</elementReference>
-            </value>
-        </inputParameters>
-        <inputParameters>
-            <name>title</name>
-            <value>
-                <elementReference>bellNotificationTitle</elementReference>
-                <inputConfiguratorMode>Resource</inputConfiguratorMode>
-            </value>
-        </inputParameters>
-        <inputParameters>
-            <name>body</name>
-            <value>
-                <elementReference>bellNotificationBody</elementReference>
-                <inputConfiguratorMode>Resource</inputConfiguratorMode>
-            </value>
-        </inputParameters>
-        <inputParameters>
-            <name>targetId</name>
-            <value>
-                <elementReference>recordId</elementReference>
-                <inputConfiguratorMode>Resource</inputConfiguratorMode>
-            </value>
-        </inputParameters>
-        <nameSegment>customNotificationAction</nameSegment>
-        <offset>0</offset>
-    </actionCalls>
-    <actionCalls>
-        <description>Builds the Payment Plan details ({5}) and schedule ({6}) table rows for the submitter email. On fault the email is still sent without the tables.</description>
-        <name>Get_Payment_Plan_Email_Details</name>
-        <label>Get Payment Plan Email Details</label>
-        <locationX>0</locationX>
-        <locationY>0</locationY>
-        <actionName>RES_PaymentPlanEmailDetailsInvocable</actionName>
-        <actionType>apex</actionType>
-        <connector>
-            <targetReference>Set_Merge_Fields</targetReference>
-        </connector>
-        <faultConnector>
-            <targetReference>Set_Merge_Fields</targetReference>
-        </faultConnector>
-        <flowTransactionModel>CurrentTransaction</flowTransactionModel>
-        <inputParameters>
-            <name>includeAttachments</name>
-            <value>
-                <elementReference>includeAttachments</elementReference>
-            </value>
-        </inputParameters>
-        <inputParameters>
-            <name>recordId</name>
-            <value>
-                <elementReference>recordId</elementReference>
-            </value>
-        </inputParameters>
-        <nameSegment>RES_PaymentPlanEmailDetailsInvocable</nameSegment>
-        <offset>0</offset>
-        <storeOutputAutomatically>true</storeOutputAutomatically>
-    </actionCalls>
     <apiVersion>67.0</apiVersion>
     <areMetricsLoggedToDataCloud>false</areMetricsLoggedToDataCloud>
-    <assignments>
-        <name>Handle_Fault</name>
-        <label>Handle Fault</label>
-        <locationX>0</locationX>
-        <locationY>0</locationY>
-        <assignmentItems>
-            <assignToReference>faultMessage</assignToReference>
-            <operator>Assign</operator>
-            <value>
-                <elementReference>$Flow.FaultMessage</elementReference>
-            </value>
-        </assignmentItems>
-    </assignments>
     <assignments>
         <name>Build_Submitter_Id_List</name>
         <label>Build Submitter Id List</label>
@@ -168,6 +155,19 @@
         <connector>
             <targetReference>Get_Custom_Notification</targetReference>
         </connector>
+    </assignments>
+    <assignments>
+        <name>Handle_Fault</name>
+        <label>Handle Fault</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignmentItems>
+            <assignToReference>faultMessage</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>$Flow.FaultMessage</elementReference>
+            </value>
+        </assignmentItems>
     </assignments>
     <assignments>
         <name>Set_Merge_Fields</name>
@@ -303,6 +303,11 @@
     </decisions>
     <environments>Default</environments>
     <formulas>
+        <name>fApproverRemarks</name>
+        <dataType>String</dataType>
+        <expression>BLANKVALUE({!approverRemarks}, &quot;No remarks were provided.&quot;)</expression>
+    </formulas>
+    <formulas>
         <name>recordURL</name>
         <dataType>String</dataType>
         <expression>LEFT(
@@ -313,11 +318,6 @@
 &quot;/&quot;
 &amp;
 {!recordId}</expression>
-    </formulas>
-    <formulas>
-        <name>fApproverRemarks</name>
-        <dataType>String</dataType>
-        <expression>BLANKVALUE({!approverRemarks}, &quot;No remarks were provided.&quot;)</expression>
     </formulas>
     <interviewLabel>Payment Plan Send Notification To Submitter {!$Flow.CurrentDateTime}</interviewLabel>
     <label>RES Payment Plan Send Notification To Submitter</label>
@@ -340,6 +340,27 @@
         </value>
     </processMetadataValues>
     <processType>AutoLaunchedFlow</processType>
+    <recordLookups>
+        <name>Get_Custom_Notification</name>
+        <label>Get Custom Notification</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Send_Bell_Notification</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>DeveloperName</field>
+            <operator>EqualTo</operator>
+            <value>
+                <stringValue>RES_Payment_Plan_Approval_Notification</stringValue>
+            </value>
+        </filters>
+        <getFirstRecordOnly>true</getFirstRecordOnly>
+        <object>CustomNotificationType</object>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
     <recordLookups>
         <name>Get_Email_Template</name>
         <label>Get Email Template</label>
@@ -383,27 +404,6 @@
         <storeOutputAutomatically>true</storeOutputAutomatically>
     </recordLookups>
     <recordLookups>
-        <name>Get_Custom_Notification</name>
-        <label>Get Custom Notification</label>
-        <locationX>0</locationX>
-        <locationY>0</locationY>
-        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
-        <connector>
-            <targetReference>Send_Bell_Notification</targetReference>
-        </connector>
-        <filterLogic>and</filterLogic>
-        <filters>
-            <field>DeveloperName</field>
-            <operator>EqualTo</operator>
-            <value>
-                <stringValue>RES_Payment_Plan_Approval_Notification</stringValue>
-            </value>
-        </filters>
-        <getFirstRecordOnly>true</getFirstRecordOnly>
-        <object>CustomNotificationType</object>
-        <storeOutputAutomatically>true</storeOutputAutomatically>
-    </recordLookups>
-    <recordLookups>
         <name>Get_Submitter</name>
         <label>Get Submitter</label>
         <locationX>0</locationX>
@@ -433,24 +433,6 @@
     </start>
     <status>Active</status>
     <variables>
-        <description>True only for deactivation emails: attaches the files on the Payment Plan record.</description>
-        <name>includeAttachments</name>
-        <dataType>Boolean</dataType>
-        <isCollection>false</isCollection>
-        <isInput>true</isInput>
-        <isOutput>false</isOutput>
-        <value>
-            <booleanValue>false</booleanValue>
-        </value>
-    </variables>
-    <variables>
-        <name>faultMessage</name>
-        <dataType>String</dataType>
-        <isCollection>false</isCollection>
-        <isInput>false</isInput>
-        <isOutput>false</isOutput>
-    </variables>
-    <variables>
         <name>approverRemarks</name>
         <dataType>String</dataType>
         <isCollection>false</isCollection>
@@ -477,6 +459,24 @@
         <isCollection>false</isCollection>
         <isInput>true</isInput>
         <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <name>faultMessage</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <description>Defaults to true so every payment plan approval email attaches the files on the Payment Plan record.</description>
+        <name>includeAttachments</name>
+        <dataType>Boolean</dataType>
+        <isCollection>false</isCollection>
+        <isInput>true</isInput>
+        <isOutput>false</isOutput>
+        <value>
+            <booleanValue>true</booleanValue>
+        </value>
     </variables>
     <variables>
         <name>mergeFields</name>

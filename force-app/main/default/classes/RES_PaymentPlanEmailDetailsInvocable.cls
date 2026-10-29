@@ -5,7 +5,7 @@
  *
  *              Plan details : Project, Payment Plan ID (SAP), Payment Plan Description, Payment Plan Duration
  *              Schedule     : Sales Instalments (Condition Type), Percentage, Months, POC
- *              Attachments  : only when includeAttachments = true (deactivation emails): latest version of each file
+ *              Attachments  : when includeAttachments = true (the flows' default, so every approval email): latest version of each file
  *                             on the plan record (newest first, Notes excluded), kept under MAX_ATTACHMENT_BYTES so
  *                             the email stays within the 25 MB limit.
  *
