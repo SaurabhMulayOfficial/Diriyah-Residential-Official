@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>RES_Reservation_Amount_Received__c</fullName>
+    <description>First Last Amount Received value posted by S4HANA for this contract. Set automatically by the Contract trigger.</description>
+    <inlineHelpText>First payment received for this contract (reservation).</inlineHelpText>
+    <label>Reservation Amount Received</label>
+    <precision>18</precision>
+    <required>false</required>
+    <scale>2</scale>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Currency</type>
+</CustomField>
