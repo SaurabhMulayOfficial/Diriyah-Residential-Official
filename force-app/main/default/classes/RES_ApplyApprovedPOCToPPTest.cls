@@ -276,9 +276,11 @@ private class RES_ApplyApprovedPOCToPPTest {
         System.assertEquals('Down Payment', merged.Name, 'Merged installment must always be named Down Payment');
         System.assertEquals('Y002', merged.RES_Condition_Type__c, 'Merged installment must always have the Down payment condition type');
         System.assertEquals('Y002', merged.RES_Installment_Payment_Type__c);
+        System.assertEquals(55, merged.RES_POC_Percentage__c, 'Merged installment must carry the submitted POC%');
 
         Product2 installment2 = newInstallmentsById.get(newPlanComponents[1].ChildProductId);
         System.assertEquals('Installment 2', installment2.Name);
+        System.assertEquals(70, installment2.RES_POC_Percentage__c, 'Later installments keep their own milestone');
         System.assertEquals('Y003', installment2.RES_Condition_Type__c);
         System.assertEquals(Date.newInstance(2027, 6, 15), installment2.RES_Instalment_DueDate__c, 'Remaining installment due date must not change');
         System.assertEquals(12, installment2.RES_Condition_Months__c, 'Condition months drive On-Plan due dates and must carry over');
@@ -312,6 +314,38 @@ private class RES_ApplyApprovedPOCToPPTest {
 
         // The root plan's own PRC/group configuration must be untouched
         System.assertEquals(4, [SELECT COUNT() FROM ProductRelatedComponent WHERE ParentProductId = :ids.get('plan')]);
+    }
+
+    // approvedPOC=15 is below every milestone, so nothing merges - the first installment still takes the submitted POC%
+    @IsTest
+    static void unmergedFirstInstallmentTakesApprovedPOC() {
+        setUpRecordTypeIds();
+        ProductCatalog catalog = createCatalog();
+        Map<String, Id> ids = buildRootPlanWithInstallments(catalog.Id);
+
+        RES_ApplyApprovedPOCToFuturePaymentPlan.Input input = new RES_ApplyApprovedPOCToFuturePaymentPlan.Input();
+        input.pocRecord = createApprovedPOC(catalog.Id, 15);
+
+        Test.startTest();
+        RES_ApplyApprovedPOCToFuturePaymentPlan.applyApprovedPOCToFuturePaymentPlan(
+            new List<RES_ApplyApprovedPOCToFuturePaymentPlan.Input>{ input }
+        );
+        Test.stopTest();
+
+        Product2 newVersion = [SELECT Id FROM Product2 WHERE RES_Parent_Payment_Plan__c = :ids.get('plan')];
+        List<ProductRelatedComponent> newPlanComponents = [
+            SELECT ChildProduct.Name, ChildProduct.RES_POC_Percentage__c, ChildProduct.RES_Installment_Percentage__c
+            FROM ProductRelatedComponent
+            WHERE ParentProductId = :newVersion.Id
+            ORDER BY Sequence ASC
+        ];
+        System.assertEquals(4, newPlanComponents.size(), 'Nothing should merge below the first milestone');
+        System.assertEquals('Downpayment', newPlanComponents[0].ChildProduct.Name);
+        System.assertEquals(15, newPlanComponents[0].ChildProduct.RES_POC_Percentage__c, 'Unmerged first installment must carry the submitted POC%');
+        System.assertEquals(20, newPlanComponents[0].ChildProduct.RES_Installment_Percentage__c);
+        System.assertEquals(40, newPlanComponents[1].ChildProduct.RES_POC_Percentage__c);
+        System.assertEquals(70, newPlanComponents[2].ChildProduct.RES_POC_Percentage__c);
+        System.assertEquals(100, newPlanComponents[3].ChildProduct.RES_POC_Percentage__c);
     }
 
     @IsTest

@@ -377,6 +377,8 @@
         <queriedFields>Id</queriedFields>
         <queriedFields>ChildProductId</queriedFields>
         <queriedFields>RES_Installment_Percentage__c</queriedFields>
+        <sortField>Sequence</sortField>
+        <sortOrder>Asc</sortOrder>
         <storeOutputAutomatically>true</storeOutputAutomatically>
         <connector>
             <targetReference>Components_Found</targetReference>
