@@ -238,7 +238,7 @@ private class RES_UnifiedIngestionEngineTest {
         List<Product2> products = [
             SELECT Id, ProductCode, Name, IsActive, Family, RecordTypeId, RES_CIP_Type__c
             FROM Product2
-            WHERE RES_Product_External_ID__c IN ('UNIT-100', 'UNIT-200', 'UNIT-300')
+            WHERE StockKeepingUnit IN ('UNIT-100', 'UNIT-200', 'UNIT-300')
         ];
         Map<String, Product2> productByCode = new Map<String, Product2>();
         for (Product2 p : products) productByCode.put(p.ProductCode, p);
@@ -458,7 +458,7 @@ private class RES_UnifiedIngestionEngineTest {
             AND RES_Measurement_Amount__c = 150
         ], 'Measurement changes must be skipped for existing products');
 
-        Product2 unit400 = [SELECT Id FROM Product2 WHERE RES_Product_External_ID__c = 'UNIT-400'];
+        Product2 unit400 = [SELECT Id FROM Product2 WHERE StockKeepingUnit = 'UNIT-400'];
         Assert.areEqual(1, [SELECT COUNT() FROM ProductDisqualification WHERE ProductId = :unit400.Id],
             'Re-running the same still-new-tracked product must not duplicate its disqualification record');
         Assert.areEqual(1, [SELECT COUNT() FROM ProductCategoryProduct WHERE ProductId = :unit400.Id],
@@ -516,7 +516,7 @@ private class RES_UnifiedIngestionEngineTest {
         Assert.areEqual(0, [
             SELECT COUNT() FROM ProductCategory WHERE RES_Business_Entity_Id__c = 'PartialCatalog' AND RES_Property_Id__c = 'NoSuchBuilding2'
         ], 'A referenced-but-missing category must not be created, even when its catalog exists');
-        Assert.areEqual(0, [SELECT COUNT() FROM Product2 WHERE RES_Product_External_ID__c IN ('UNIT-700', 'UNIT-800')],
+        Assert.areEqual(0, [SELECT COUNT() FROM Product2 WHERE StockKeepingUnit IN ('UNIT-700', 'UNIT-800')],
             'The product itself must not be created when its catalog or category is missing, not just the link');
 
         Map<Id, RES_Product_Staging__c> finalRows = new Map<Id, RES_Product_Staging__c>(
@@ -565,7 +565,7 @@ private class RES_UnifiedIngestionEngineTest {
         secondEngine.execute(null, new List<RES_Product_Staging__c>{ repriced });
         Test.stopTest();
 
-        Product2 unit900 = [SELECT Id FROM Product2 WHERE RES_Product_External_ID__c = 'UNIT-900'];
+        Product2 unit900 = [SELECT Id FROM Product2 WHERE StockKeepingUnit = 'UNIT-900'];
         List<AttributeBasedAdjustment> adjustments = [
             SELECT AdjustmentValue, EffectiveFrom, EffectiveTo FROM AttributeBasedAdjustment
             WHERE ProductId = :unit900.Id ORDER BY EffectiveFrom ASC
@@ -616,7 +616,7 @@ private class RES_UnifiedIngestionEngineTest {
         secondEngine.execute(null, new List<RES_Product_Staging__c>{ dateShifted });
         Test.stopTest();
 
-        Product2 unit902 = [SELECT Id FROM Product2 WHERE RES_Product_External_ID__c = 'UNIT-902'];
+        Product2 unit902 = [SELECT Id FROM Product2 WHERE StockKeepingUnit = 'UNIT-902'];
         List<AttributeBasedAdjustment> adjustments = [
             SELECT AdjustmentValue, EffectiveFrom, EffectiveTo FROM AttributeBasedAdjustment
             WHERE ProductId = :unit902.Id ORDER BY EffectiveFrom ASC
@@ -665,7 +665,7 @@ private class RES_UnifiedIngestionEngineTest {
         secondEngine.execute(null, new List<RES_Product_Staging__c>{ corrected });
         Test.stopTest();
 
-        Product2 unit903 = [SELECT Id FROM Product2 WHERE RES_Product_External_ID__c = 'UNIT-903'];
+        Product2 unit903 = [SELECT Id FROM Product2 WHERE StockKeepingUnit = 'UNIT-903'];
         List<AttributeBasedAdjustment> adjustments = [
             SELECT AdjustmentValue FROM AttributeBasedAdjustment WHERE ProductId = :unit903.Id
         ];
@@ -704,7 +704,7 @@ private class RES_UnifiedIngestionEngineTest {
         secondEngine.execute(null, new List<RES_Product_Staging__c>{ repriced });
         Test.stopTest();
 
-        Product2 unit901 = [SELECT Id FROM Product2 WHERE RES_Product_External_ID__c = 'UNIT-901'];
+        Product2 unit901 = [SELECT Id FROM Product2 WHERE StockKeepingUnit = 'UNIT-901'];
         List<AttributeBasedAdjustment> adjustments = [
             SELECT AdjustmentValue FROM AttributeBasedAdjustment WHERE ProductId = :unit901.Id
         ];
@@ -763,7 +763,7 @@ private class RES_UnifiedIngestionEngineTest {
         }
         Assert.isTrue(sawClassificationError, 'A missing ProductClassification must be recorded as an error');
 
-        Product2 cls200 = [SELECT Id FROM Product2 WHERE RES_Product_External_ID__c = 'CLS-200'];
+        Product2 cls200 = [SELECT Id FROM Product2 WHERE StockKeepingUnit = 'CLS-200'];
         Assert.areEqual(0, [SELECT COUNT() FROM ProductAttributeDefinition WHERE Product2Id = :cls200.Id],
             'No attribute should be written when the classification cannot be resolved');
         Assert.areEqual(0, [SELECT COUNT() FROM AttributeBasedAdjRule WHERE Name LIKE 'CLS-200 ::%'],
@@ -832,7 +832,7 @@ private class RES_UnifiedIngestionEngineTest {
 
         Assert.areEqual(firstCall, secondCall, 'resolveTargetPricebooks should return the cached list on a second call');
 
-        List<Product2> products = [SELECT Id FROM Product2 WHERE RES_Product_External_ID__c = 'UNIT-600'];
+        List<Product2> products = [SELECT Id FROM Product2 WHERE StockKeepingUnit = 'UNIT-600'];
         Assert.areEqual(0, products.size(), 'Unknown layout has no target maps to populate required Product2 Name');
 
         RES_Product_Staging__c processedRow = [SELECT RES_Processing_Status__c FROM RES_Product_Staging__c WHERE Id = :row.Id];
