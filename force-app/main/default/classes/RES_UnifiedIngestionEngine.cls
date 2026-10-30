@@ -286,7 +286,7 @@ public with sharing class RES_UnifiedIngestionEngine implements Database.Batchab
             Product2 p = new Product2();
 
             if (isNew) {
-                p.RES_Product_External_ID__c = truncate(code, 255);
+                //p.RES_Product_External_ID__c = truncate(code, 255);
                 p.StockKeepingUnit = truncate(code, 255);
             } else {
                 p.Id = existing.Id;
