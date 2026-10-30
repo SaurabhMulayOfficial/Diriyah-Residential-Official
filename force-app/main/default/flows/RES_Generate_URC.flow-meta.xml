@@ -8,6 +8,7 @@
         <locationX>0</locationX>
         <locationY>0</locationY>
         <defaultConnector>
+            <isGoTo>true</isGoTo>
             <targetReference>Show_Generating</targetReference>
         </defaultConnector>
         <defaultConnectorLabel>Still In Progress</defaultConnectorLabel>
@@ -67,7 +68,62 @@
             <label>Template Found</label>
         </rules>
     </decisions>
+    <decisions>
+        <name>Check_Template_Map</name>
+        <label>Check Template Map</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnector>
+            <targetReference>Get_Default_URC_Template_Map</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>No Entity Mapping</defaultConnectorLabel>
+        <rules>
+            <name>Entity_Mapping_Found</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>templateName</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Get_URC_Template</targetReference>
+            </connector>
+            <label>Entity Mapping Found</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>Check_Unit_CIP</name>
+        <label>Check Unit CIP</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnector>
+            <targetReference>Show_No_Template</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>No Unit CIP</defaultConnectorLabel>
+        <rules>
+            <name>Unit_CIP_Found</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>Get_Unit_CIP</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Get_URC_Template_Map</targetReference>
+            </connector>
+            <label>Unit CIP Found</label>
+        </rules>
+    </decisions>
     <environments>Default</environments>
+    <formulas>
+        <name>BusinessEntityName</name>
+        <dataType>String</dataType>
+        <expression>{!Get_Unit_CIP.RES_Product__r.RES_Business_Entity__r.Name}</expression>
+    </formulas>
     <formulas>
         <name>Project</name>
         <dataType>String</dataType>
@@ -191,6 +247,58 @@
         <storeOutputAutomatically>true</storeOutputAutomatically>
     </recordLookups>
     <recordLookups>
+        <name>Get_Default_URC_Template_Map</name>
+        <label>Get Default URC Template Map</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Get_URC_Template</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>RES_Business_Entity_Name__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <stringValue>Default</stringValue>
+            </value>
+        </filters>
+        <getFirstRecordOnly>true</getFirstRecordOnly>
+        <object>RES_URC_Template_Map__mdt</object>
+        <outputAssignments>
+            <assignToReference>templateName</assignToReference>
+            <field>RES_Template_Name__c</field>
+        </outputAssignments>
+    </recordLookups>
+    <recordLookups>
+        <name>Get_Unit_CIP</name>
+        <label>Get Unit CIP</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Check_Unit_CIP</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>ContractId</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>recordId.Id</elementReference>
+            </value>
+        </filters>
+        <filters>
+            <field>RES_Unit_Check__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </filters>
+        <getFirstRecordOnly>true</getFirstRecordOnly>
+        <object>ContractItemPrice</object>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
+    <recordLookups>
         <name>Get_URC_Template</name>
         <label>Get URC Template</label>
         <locationX>0</locationX>
@@ -221,10 +329,41 @@
                 <stringValue>URC</stringValue>
             </value>
         </filters>
+        <filters>
+            <field>Name</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>templateName</elementReference>
+            </value>
+        </filters>
         <object>DocumentTemplate</object>
         <outputAssignments>
             <assignToReference>templateId</assignToReference>
             <field>Id</field>
+        </outputAssignments>
+    </recordLookups>
+    <recordLookups>
+        <name>Get_URC_Template_Map</name>
+        <label>Get URC Template Map</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Check_Template_Map</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>RES_Business_Entity_Name__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>BusinessEntityName</elementReference>
+            </value>
+        </filters>
+        <getFirstRecordOnly>true</getFirstRecordOnly>
+        <object>RES_URC_Template_Map__mdt</object>
+        <outputAssignments>
+            <assignToReference>templateName</assignToReference>
+            <field>RES_Template_Name__c</field>
         </outputAssignments>
     </recordLookups>
     <runInMode>SystemModeWithoutSharing</runInMode>
@@ -360,7 +499,7 @@
         <locationX>0</locationX>
         <locationY>0</locationY>
         <connector>
-            <targetReference>Get_URC_Template</targetReference>
+            <targetReference>Get_Unit_CIP</targetReference>
         </connector>
     </start>
     <status>Active</status>
@@ -374,6 +513,13 @@
     </variables>
     <variables>
         <name>templateId</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <name>templateName</name>
         <dataType>String</dataType>
         <isCollection>false</isCollection>
         <isInput>false</isInput>
