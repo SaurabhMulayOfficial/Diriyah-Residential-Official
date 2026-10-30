@@ -165,6 +165,28 @@
         </rules>
     </decisions>
     <decisions>
+        <name>Is_Notification_Enabled</name>
+        <label>Is Notification Enabled?</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnectorLabel>No</defaultConnectorLabel>
+        <rules>
+            <name>Yes_Notification_Enabled</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>Get_Custom_Notification</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Send_Bell_Notification</targetReference>
+            </connector>
+            <label>Yes</label>
+        </rules>
+    </decisions>
+    <decisions>
         <name>Is_Recipient_List_Empty</name>
         <label>Is Recipient List Empty?</label>
         <locationX>0</locationX>
@@ -236,7 +258,7 @@ The SIMAH Form is sent to every customer regardless of Project (Residential Sale
         <locationY>0</locationY>
         <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
         <connector>
-            <targetReference>Send_Bell_Notification</targetReference>
+            <targetReference>Is_Notification_Enabled</targetReference>
         </connector>
         <filterLogic>and</filterLogic>
         <filters>
