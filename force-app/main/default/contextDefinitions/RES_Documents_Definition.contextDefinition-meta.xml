@@ -1357,6 +1357,18 @@
                     <contextAttribute>RES_Unit_Handover_Date</contextAttribute>
                     <contextInputAttributeName>RES_Unit_Handover_Date</contextInputAttributeName>
                 </contextAttributeMappings>
+                <contextAttributeMappings>
+                    <contextAttrHydrationDetails>
+                        <contextAttrHydrationDetails>
+                            <objectName>Product2</objectName>
+                            <queryAttribute>RES_Net_Saleable_Area__c</queryAttribute>
+                        </contextAttrHydrationDetails>
+                        <objectName>ContractItemPrice</objectName>
+                        <queryAttribute>RES_Product__r</queryAttribute>
+                    </contextAttrHydrationDetails>
+                    <contextAttribute>RES_NetSaleableArea</contextAttribute>
+                    <contextInputAttributeName>RES_NetSaleableArea</contextInputAttributeName>
+                </contextAttributeMappings>
                 <contextNode>ContractItemPrice</contextNode>
                 <object>ContractItemPrice</object>
             </contextNodeMappings>
@@ -3486,6 +3498,16 @@
                 <transient>false</transient>
                 <value>false</value>
             </contextAttributes>
+            <contextAttributes>
+                <customMappingAllowed>false</customMappingAllowed>
+                <dataType>number</dataType>
+                <fieldType>inputoutput</fieldType>
+                <key>false</key>
+                <localizationDisabled>false</localizationDisabled>
+                <title>RES_NetSaleableArea</title>
+                <transient>false</transient>
+                <value>false</value>
+            </contextAttributes>
             <customMappingAllowed>false</customMappingAllowed>
             <displayName>ContractItemPrice</displayName>
             <title>ContractItemPrice</title>
@@ -3493,13 +3515,13 @@
         </contextNodes>
         <isActive>true</isActive>
         <startDate>2026-10-13 00:00:00</startDate>
-        <versionNumber>31</versionNumber>
+        <versionNumber>32</versionNumber>
     </contextDefinitionVersions>
     <contextTtl>10</contextTtl>
     <hasSystemTags>false</hasSystemTags>
     <isProtected>false</isProtected>
     <isTransformationEnabled>false</isTransformationEnabled>
     <masterLabel>RES_Documents_Definition</masterLabel>
-    <releaseVersion>264.9.5</releaseVersion>
+    <releaseVersion>264.10</releaseVersion>
     <title>RES_Documents_Definition</title>
 </ContextDefinition>

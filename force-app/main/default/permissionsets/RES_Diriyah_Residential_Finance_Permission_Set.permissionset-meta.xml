@@ -2107,6 +2107,21 @@
           <field>Product2.RES_No_of_Bedrooms__c</field>
           <readable>true</readable>
       </fieldPermissions>
+        <fieldPermissions>
+            <editable>false</editable>
+            <field>Product2.RES_SP_Document_Image_Width__c</field>
+            <readable>true</readable>
+        </fieldPermissions>
+        <fieldPermissions>
+            <editable>false</editable>
+            <field>Product2.RES_SP_Document_Image_Height__c</field>
+            <readable>true</readable>
+        </fieldPermissions>
+        <fieldPermissions>
+            <editable>false</editable>
+            <field>Product2.RES_Net_Saleable_Area__c</field>
+            <readable>true</readable>
+        </fieldPermissions>
     <fieldPermissions>
         <editable>false</editable>
         <field>ProductCatalog.RES_BP_Number__c</field>
