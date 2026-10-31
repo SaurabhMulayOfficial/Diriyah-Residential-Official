@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>RES_Unit__c</fullName>
+    <deleteConstraint>SetNull</deleteConstraint>
+    <description>Unit sold on the contract; source for the Unit contract item price.</description>
+    <label>Unit</label>
+    <referenceTo>Product2</referenceTo>
+    <relationshipLabel>Unit_Contracts</relationshipLabel>
+    <relationshipName>Unit_Contracts</relationshipName>
+    <required>false</required>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackHistory>false</trackHistory>
+    <type>Lookup</type>
+</CustomField>
