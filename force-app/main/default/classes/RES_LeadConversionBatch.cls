@@ -7,9 +7,19 @@
  */
 
 public with sharing class RES_LeadConversionBatch implements Database.Batchable<sObject>, Database.Stateful {
- 
+
+    private Set<Id> leadIds;
+
+    public RES_LeadConversionBatch() {}
+
+    // Converts only the given leads (still must be Qualified, unconverted, RES_Company/RES_Individual)
+    public RES_LeadConversionBatch(Set<Id> leadIds) {
+        this.leadIds = leadIds;
+    }
+
     public Database.QueryLocator start(Database.BatchableContext bc) {
-          return new RES_LeadDAOLayer().getQualifiedLeadsForBatch();
+          RES_LeadDAOLayer dao = new RES_LeadDAOLayer();
+          return leadIds == null ? dao.getQualifiedLeadsForBatch() : dao.getQualifiedLeadsForBatch(leadIds);
     }
     
     public void execute(Database.BatchableContext bc, List<Lead> scope) {
