@@ -65,6 +65,31 @@ private class RES_LeadConversionBatch_Test {
     }
 
     @isTest
+    static void testOnlyGivenLeadsConverted() {
+        Id rtId = Schema.SObjectType.Lead.getRecordTypeInfosByDeveloperName()
+            .get('RES_Individual').getRecordTypeId();
+        List<Lead> leads = new List<Lead>{
+            new Lead(RecordTypeId = rtId, FirstName = 'Picked', LastName = 'Lead', Company = 'Picked Co',
+                     Email = 'picked@example.in', MobilePhone = '+966501234561', Status = '04',
+                     RES_Project__c = 'Amansamar Residences Wadi Safar', RES_SLA_Status__c = 'Met'),
+            new Lead(RecordTypeId = rtId, FirstName = 'Other', LastName = 'Lead', Company = 'Other Co',
+                     Email = 'other@example.in', MobilePhone = '+966501234562', Status = '04',
+                     RES_Project__c = 'Amansamar Residences Wadi Safar', RES_SLA_Status__c = 'Met')
+        };
+        Database.DMLOptions dml = new Database.DMLOptions();
+        dml.duplicateRuleHeader.allowSave = true;
+        Database.insert(leads, dml);
+
+        Test.startTest();
+        Database.executeBatch(new RES_LeadConversionBatch(new Set<Id>{ leads[0].Id }), 200);
+        Test.stopTest();
+
+        Map<Id, Lead> result = new Map<Id, Lead>([SELECT Id, IsConverted, IsDeleted FROM Lead WHERE Id IN :leads ALL ROWS]);
+        System.assertEquals(false, result.get(leads[1].Id).IsConverted, 'Lead not in the set should stay unconverted');
+        System.assertEquals(true, result.get(leads[0].Id).IsConverted, 'Given lead should be converted');
+    }
+
+    @isTest
     static void testFinishNoop() {
         Test.startTest();
         new RES_LeadConversionBatch().finish(null);
