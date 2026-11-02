@@ -20,6 +20,28 @@
     </actionCalls>
     <apiVersion>67.0</apiVersion>
     <areMetricsLoggedToDataCloud>false</areMetricsLoggedToDataCloud>
+    <decisions>
+        <name>Records_Retrived</name>
+        <label>Records Retrived?</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnectorLabel>No</defaultConnectorLabel>
+        <rules>
+            <name>Yes</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>Get_SLA_Expired_Approval_Work_Items</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Send_Daily_Reminders_To_SLA_Expired_Approval_Work_Items</targetReference>
+            </connector>
+            <label>Yes</label>
+        </rules>
+    </decisions>
     <environments>Default</environments>
     <interviewLabel>RES SLA Expired Approval Work Items - Send Daily Reminder {!$Flow.CurrentDateTime}</interviewLabel>
     <label>RES SLA Expired Approval Work Items - Send Daily Reminder</label>
@@ -49,7 +71,7 @@
         <locationY>0</locationY>
         <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
         <connector>
-            <targetReference>Send_Daily_Reminders_To_SLA_Expired_Approval_Work_Items</targetReference>
+            <targetReference>Records_Retrived</targetReference>
         </connector>
         <filterLogic>and</filterLogic>
         <filters>
