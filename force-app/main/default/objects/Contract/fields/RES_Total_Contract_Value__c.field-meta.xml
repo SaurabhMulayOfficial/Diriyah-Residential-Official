@@ -13,6 +13,11 @@
         <operation>notEqual</operation>
         <value>Installment</value>
     </summaryFilterItems>
+    <summaryFilterItems>
+        <field>ContractItemPrice.RES_CIP_Type__c</field>
+        <operation>notEqual</operation>
+        <value>Service Charge</value>
+    </summaryFilterItems>
     <summaryForeignKey>ContractItemPrice.ContractId</summaryForeignKey>
     <summaryOperation>sum</summaryOperation>
     <trackHistory>false</trackHistory>
