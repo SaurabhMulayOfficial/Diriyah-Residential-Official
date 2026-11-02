@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ListView xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>RES_Available_Amansamar_Residences_Wadi_Safar</fullName>
+    <columns>PRODUCT2.NAME</columns>
+    <columns>RES_Business_Entity__c</columns>
+    <columns>RES_Building__c</columns>
+    <columns>RES_Unit_Status__c</columns>
+    <columns>RES_Net_Saleable_Area__c</columns>
+    <filterScope>Everything</filterScope>
+    <filters>
+        <field>PRODUCT2.RECORD_TYPE</field>
+        <operation>equals</operation>
+        <value>Product2.RES_Residential_Sales</value>
+    </filters>
+    <filters>
+        <field>RES_Business_Entity__c</field>
+        <operation>equals</operation>
+        <value>Amansamar Residences Wadi Safar</value>
+    </filters>
+    <filters>
+        <field>RES_Unit_Status__c</field>
+        <operation>equals</operation>
+        <value>Available</value>
+    </filters>
+    <label>Amansamar Residences Wadi Safar</label>
+    <sharedTo>
+        <group>RES_Specialist_Roles_Group</group>
+        <group>RES_System_Administrator_Users</group>
+    </sharedTo>
+</ListView>
