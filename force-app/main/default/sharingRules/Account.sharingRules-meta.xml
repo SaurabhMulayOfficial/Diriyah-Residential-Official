@@ -1,6 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <SharingRules xmlns="http://soap.sforce.com/2006/04/metadata">
     <sharingOwnerRules>
+        <fullName>RES_All_Accounts_Shared_With_Operations</fullName>
+        <accessLevel>Edit</accessLevel>
+        <accountSettings>
+            <caseAccessLevel>None</caseAccessLevel>
+            <contactAccessLevel>Edit</contactAccessLevel>
+            <opportunityAccessLevel>Edit</opportunityAccessLevel>
+        </accountSettings>
+        <label>All Accounts Shared With Operations</label>
+        <sharedTo>
+            <roleAndSubordinatesInternal>RES_Sales_Operations_Executive_Director</roleAndSubordinatesInternal>
+        </sharedTo>
+        <sharedFrom>
+            <allInternalUsers></allInternalUsers>
+        </sharedFrom>
+    </sharingOwnerRules>
+    <sharingOwnerRules>
         <fullName>RES_Specialist_Owned_Accounts</fullName>
         <accessLevel>Edit</accessLevel>
         <accountSettings>
