@@ -179,6 +179,8 @@ private class RES_UnitDraftCancellationServiceTest {
     static void recordsUnderApproval_areRevokedWithSystemComment() {
         Quote q = [SELECT Id, ContractId FROM Quote WHERE Name = 'RES UDC Test Quote'];
         Id cipContractId = [SELECT ContractId FROM ContractItemPrice LIMIT 1].ContractId;
+        // Cancelling a synced quote runs a flow that clears Opportunity.SyncedQuoteId, which Salesforce forbids inside the platform event trigger that cancels it here
+        update new Opportunity(Id = [SELECT OpportunityId FROM Quote WHERE Id = :q.Id].OpportunityId, SyncedQuoteId = null);
         RES_UnitDraftCancellationService.mockInProgressSubmissions = new List<ApprovalSubmission>{
             fakeSubmission('9iP000000000001', q.Id),
             fakeSubmission('9iP000000000002', cipContractId)
