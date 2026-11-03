@@ -95,7 +95,6 @@ export default class ResProductUpdateModal extends LightningElement {
     familyField = FAMILY_FIELD;
     usageTypeArabicField = USAGE_TYPE_ARABIC_FIELD;
     descriptionField = DESCRIPTION_FIELD;
-    cipTypeField = CIP_TYPE_FIELD;
     updateCommentsField = UPDATE_COMMENTS_FIELD;
 
     // Fixtures/Fittings Tab Fields (from screenshots)
