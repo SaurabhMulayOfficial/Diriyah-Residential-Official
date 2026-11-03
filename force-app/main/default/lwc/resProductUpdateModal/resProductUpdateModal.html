@@ -61,6 +61,9 @@
                                     <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
                                         <lightning-input label="Virtual Bank Account" value={virtualBankAccount} readonly></lightning-input>
                                     </div>
+                                    <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
+                                        <lightning-input type="date" label="Targeted Unit Handover Date" value={targetedHandoverDate} readonly></lightning-input>
+                                    </div>
 
                                     <!-- Product Information -->
                                     <div class="slds-col slds-size_1-of-1">
@@ -92,9 +95,7 @@
                                     <div class="slds-col slds-size_1-of-1 slds-m-top_medium">
                                         <h3 class="slds-text-heading_small slds-m-bottom_small">Configuration Information</h3>
                                     </div>
-                                    <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
-                                        <lightning-input-field field-name={cipTypeField} data-field="RES_CIP_Type__c"></lightning-input-field>
-                                    </div>
+                                    
 
                                     <!-- Description -->
                                     <div class="slds-col slds-size_1-of-1 slds-m-top_medium">

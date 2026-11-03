@@ -121,7 +121,7 @@
                 <identifier>RecordRES_Unit_Facilities_cField</identifier>
             </fieldInstance>
         </itemInstances>
-         <itemInstances>
+        <itemInstances>
             <fieldInstance>
                 <fieldInstanceProperties>
                     <name>uiBehavior</name>
@@ -205,6 +205,26 @@
                 <identifier>RecordRES_Product_External_ID_cField</identifier>
             </fieldInstance>
         </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.RES_Virtual_Bank_Account__c</fieldItem>
+                <identifier>RecordRES_Virtual_Bank_Account_cField</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.RES_Building_Number__c</fieldItem>
+                <identifier>RecordRES_Building_Number_cField</identifier>
+            </fieldInstance>
+        </itemInstances>
         <name>Facet-9b6b8057-c9bd-4708-bdbf-0fc4a1e0a71e</name>
         <type>Facet</type>
     </flexiPageRegions>
@@ -245,8 +265,8 @@
                     <name>uiBehavior</name>
                     <value>none</value>
                 </fieldInstanceProperties>
-               <fieldItem>Record.RES_Unit_Facilities_Arabic__c</fieldItem>
-              <identifier>RecordRES_Unit_Facilities_Arabic_cField</identifier>
+                <fieldItem>Record.RES_Unit_Facilities_Arabic__c</fieldItem>
+                <identifier>RecordRES_Unit_Facilities_Arabic_cField</identifier>
             </fieldInstance>
         </itemInstances>
         <itemInstances>
@@ -316,10 +336,30 @@
             <fieldInstance>
                 <fieldInstanceProperties>
                     <name>uiBehavior</name>
+                    <value>readonly</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.RES_Unit_Handover_Date__c</fieldItem>
+                <identifier>RecordRES_Unit_Handover_Date_cField</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
                     <value>none</value>
                 </fieldInstanceProperties>
                 <fieldItem>Record.RES_Unit_Virtual_IBAN__c</fieldItem>
                 <identifier>RecordRES_Unit_Virtual_IBAN_cField</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.RES_Unit_Share__c</fieldItem>
+                <identifier>RecordRES_Unit_Share_cField</identifier>
             </fieldInstance>
         </itemInstances>
         <name>Facet-8c111148-f536-47ee-a362-e9f864031955</name>
@@ -400,7 +440,7 @@
         </itemInstances>
         <name>Facet-0581cf76-19d4-4a11-bd3a-18c725ceb39e</name>
         <type>Facet</type>
-</flexiPageRegions>
+    </flexiPageRegions>
     <flexiPageRegions>
         <itemInstances>
             <fieldInstance>
@@ -458,7 +498,7 @@
         </itemInstances>
         <name>Facet-9e8b5e2d-abb9-431c-9cce-458dba174459</name>
         <type>Facet</type>
-    </flexiPageRegions>  
+    </flexiPageRegions>
     <flexiPageRegions>
         <itemInstances>
             <componentInstance>
@@ -504,7 +544,7 @@
                 <identifier>RecordRES_Unit_Plot_Area_cField</identifier>
             </fieldInstance>
         </itemInstances>
-          <itemInstances>
+        <itemInstances>
             <fieldInstance>
                 <fieldInstanceProperties>
                     <name>uiBehavior</name>
@@ -538,7 +578,7 @@
                 <identifier>RecordRES_Internal_unit_Area_cField</identifier>
             </fieldInstance>
         </itemInstances>
-         <itemInstances>
+        <itemInstances>
             <fieldInstance>
                 <fieldInstanceProperties>
                     <name>uiBehavior</name>
@@ -1199,20 +1239,6 @@
         <itemInstances>
             <componentInstance>
                 <componentInstanceProperties>
-                    <name>graphName</name>
-                    <value>file:EpcProductStructureArcGraphTemplates.EPC_PRODUCT_STRUCTURE_GRAPH</value>
-                </componentInstanceProperties>
-                <componentName>runtime_industries_arcgraph:arcGraph</componentName>
-                <identifier>epcProductStructureGraph</identifier>
-            </componentInstance>
-        </itemInstances>
-        <name>structureTab</name>
-        <type>Facet</type>
-    </flexiPageRegions>
-    <flexiPageRegions>
-        <itemInstances>
-            <componentInstance>
-                <componentInstanceProperties>
                     <name>cardTitle</name>
                     <value>Payment Plans</value>
                 </componentInstanceProperties>
@@ -1221,6 +1247,20 @@
             </componentInstance>
         </itemInstances>
         <name>paymentPlansTab</name>
+        <type>Facet</type>
+    </flexiPageRegions>
+    <flexiPageRegions>
+        <itemInstances>
+            <componentInstance>
+                <componentInstanceProperties>
+                    <name>graphName</name>
+                    <value>file:EpcProductStructureArcGraphTemplates.EPC_PRODUCT_STRUCTURE_GRAPH</value>
+                </componentInstanceProperties>
+                <componentName>runtime_industries_arcgraph:arcGraph</componentName>
+                <identifier>epcProductStructureGraph</identifier>
+            </componentInstance>
+        </itemInstances>
+        <name>structureTab</name>
         <type>Facet</type>
     </flexiPageRegions>
     <flexiPageRegions>
