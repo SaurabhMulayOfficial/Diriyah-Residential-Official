@@ -21,11 +21,11 @@ import COMPANY_CODE_FIELD from '@salesforce/schema/Product2.RES_Company_Code__c'
 import EXTERNAL_ID_FIELD from '@salesforce/schema/Product2.RES_Product_External_ID__c';
 import AVAILABILITY_FIELD from '@salesforce/schema/Product2.AvailabilityDate';
 import VIRTUAL_BANK_ACCOUNT_FIELD from '@salesforce/schema/Product2.RES_Virtual_Bank_Account__c';
+import TARGETED_HANDOVER_DATE_FIELD from '@salesforce/schema/Product2.RES_Unit_Handover_Date__c';
 
 // Product2 fields - Details Tab (from screenshots)
 import CONSTRUCTION_PHASE_FIELD from '@salesforce/schema/Product2.RES_Construction_Phase__c';
 import USAGE_TYPE_ARABIC_FIELD from '@salesforce/schema/Product2.RES_Usage_Type_Arabic__c';
-import CIP_TYPE_FIELD from '@salesforce/schema/Product2.RES_CIP_Type__c';
 
 // Product2 fields - Fixtures/Fittings Tab (from screenshots)
 import ORIENTATION_FIELD from '@salesforce/schema/Product2.RES_Orientation__c';
@@ -57,7 +57,8 @@ const FIELDS = [
     COMPANY_CODE_FIELD,
     EXTERNAL_ID_FIELD,
     AVAILABILITY_FIELD,
-    VIRTUAL_BANK_ACCOUNT_FIELD
+    VIRTUAL_BANK_ACCOUNT_FIELD,
+    TARGETED_HANDOVER_DATE_FIELD
 ];
 
 // Business entity code lives on the related catalog, so it is requested by relationship path.
@@ -148,6 +149,10 @@ export default class ResProductUpdateModal extends LightningElement {
     }
     get virtualBankAccount() {
         return this.recordData ? getFieldValue(this.recordData, VIRTUAL_BANK_ACCOUNT_FIELD) : '';
+    }
+
+    get targetedHandoverDate() {
+        return this.recordData ? getFieldValue(this.recordData, TARGETED_HANDOVER_DATE_FIELD) : '';
     }
 
     // Auto-open modal when component loads (for Quick Actions)
