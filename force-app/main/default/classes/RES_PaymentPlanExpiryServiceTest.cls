@@ -304,8 +304,14 @@ private class RES_PaymentPlanExpiryServiceTest {
         Test.startTest();
         String jobId = System.schedule('RES Payment Plan Expiry Test', '0 0 1 * * ?', new RES_PaymentPlanExpiryBatch());
         System.assertNotEquals(null, jobId);
-        // dry run so the batch the schedule enqueues cannot change any org data
+        // SeeAllData exposes the org's job history, so only count jobs this test enqueues
+        Set<Id> existingJobIds = new Map<Id, AsyncApexJob>([SELECT Id FROM AsyncApexJob WHERE JobType = 'BatchApex' AND ApexClass.Name = 'RES_PaymentPlanExpiryBatch']).keySet();
         new RES_PaymentPlanExpiryBatch(true).execute((SchedulableContext) null);
+        List<AsyncApexJob> batchJobs = [SELECT Id FROM AsyncApexJob WHERE JobType = 'BatchApex' AND ApexClass.Name = 'RES_PaymentPlanExpiryBatch' AND Id NOT IN :existingJobIds];
+        System.assertEquals(1, batchJobs.size(), 'execute(SchedulableContext) must enqueue the batch');
+        // Abort before stopTest: with SeeAllData the real scope can exceed one chunk, which a test cannot run
+        System.abortJob(batchJobs[0].Id);
+        System.abortJob(jobId);
         Test.stopTest();
     }
 
