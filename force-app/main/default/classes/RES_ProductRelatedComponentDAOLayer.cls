@@ -113,7 +113,7 @@ public without sharing class RES_ProductRelatedComponentDAOLayer extends RES_Bas
         }
         String soql =
             'SELECT Id, ParentProductId, ChildProductId, IsDefaultComponent, ' +
-            'ChildProduct.Name, ChildProduct.IsActive, ChildProduct.RES_Validity_End_Date__c ' +
+            'ChildProduct.Name, ChildProduct.IsActive, ChildProduct.RES_Validity_End_Date__c, ChildProduct.RES_Payment_Plan_Approval_Stage__c ' +
             'FROM ProductRelatedComponent ' +
             'WHERE ParentProductId IN :unitIds ' +
             'AND ProductComponentGroup.Name = :groupName ' +
@@ -128,7 +128,7 @@ public without sharing class RES_ProductRelatedComponentDAOLayer extends RES_Bas
     /**
      * Batch scope: Unit-level components (in the named group) whose child Payment Plan has a
      * validity end date strictly before the given date, i.e. plans that expired as of yesterday
-     * or earlier.
+     * or earlier, or that are inactive in a Rejected / Deactivated stage.
      */
     public Database.QueryLocator getExpiredPaymentPlanComponentsLocator(Date today, String groupName) {
         String recordTypeDeveloperName = System.Label.RES_Product_Payment_Plan_RT;
@@ -137,12 +137,14 @@ public without sharing class RES_ProductRelatedComponentDAOLayer extends RES_Bas
             'FROM ProductRelatedComponent ' +
             'WHERE ProductComponentGroup.Name = :groupName ' +
             'AND ChildProduct.RecordType.DeveloperName = :recordTypeDeveloperName ' +
-            'AND ChildProduct.RES_Validity_End_Date__c < :today ' +
+            'AND (ChildProduct.RES_Validity_End_Date__c < :today ' +
+            'OR (ChildProduct.IsActive = FALSE AND ChildProduct.RES_Payment_Plan_Approval_Stage__c IN :retiredStages)) ' +
             'ORDER BY ParentProductId, Id';
         Map<String, Object> bindVars = new Map<String, Object>{
             'today' => today,
             'groupName' => groupName,
-            'recordTypeDeveloperName' => recordTypeDeveloperName
+            'recordTypeDeveloperName' => recordTypeDeveloperName,
+            'retiredStages' => RES_PaymentPlanExpiryService.RETIRED_STAGES
         };
         return executeBatchQuery(soql, bindVars, AccessLevel.SYSTEM_MODE);
     }

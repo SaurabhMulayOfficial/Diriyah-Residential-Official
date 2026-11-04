@@ -16,6 +16,7 @@
  *                       option still showed up on the Unit - so it is removed.
  *
  *                  removeDeactivatedPlans applies the same steps to Deactivated plans.
+ *                  process also removes inactive Rejected / Deactivated plans (never pending ones).
  *
  *                  If the promotion update fails for a Unit, that Unit's expired
  *                  components are kept so the next run retries. A failed demotion
@@ -30,6 +31,9 @@
 public without sharing class RES_PaymentPlanExpiryService {
 
     private static final RES_ProductRelatedComponentDAOLayer COMPONENT_DAO = new RES_ProductRelatedComponentDAOLayer();
+
+    // Pending stages are excluded: approval flips IsActive off temporarily, and re-approval re-tags to every catalog Unit
+    public static final Set<String> RETIRED_STAGES = new Set<String>{ 'Rejected', 'Deactivated' };
 
     /**
      * All DML goes through this gateway so tests can force the failure branches, which real data
@@ -213,8 +217,13 @@ public without sharing class RES_PaymentPlanExpiryService {
     }
 
     private static Boolean isExpired(ProductRelatedComponent component, Date asOf) {
+        if (asOf == null) {
+            return false;
+        }
         Date validityEnd = component.ChildProduct.RES_Validity_End_Date__c;
-        return asOf != null && validityEnd != null && validityEnd < asOf;
+        Boolean isRetired = !component.ChildProduct.IsActive
+            && RETIRED_STAGES.contains(component.ChildProduct.RES_Payment_Plan_Approval_Stage__c);
+        return isRetired || (validityEnd != null && validityEnd < asOf);
     }
 
     private static void logFailure(String operation, Id componentId, List<Database.Error> errors) {

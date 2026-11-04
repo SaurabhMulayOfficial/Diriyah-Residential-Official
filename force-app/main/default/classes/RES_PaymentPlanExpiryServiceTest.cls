@@ -394,4 +394,30 @@ private class RES_PaymentPlanExpiryServiceTest {
 
         System.assertEquals(true, componentsById(unit.Id).containsKey(prc.Id), 'A transient inactive flip during approval must not untag the plan');
     }
+
+    @isTest
+    static void inactiveRejectedOrDeactivatedPlansAreRemovedButPendingStays() {
+        setUp();
+        Product2 unit = createUnit('Retired Plan Unit');
+        ProductComponentGroup componentGroup = createGroup(unit);
+        Product2 deactivatedPlan = new Product2(Name = 'Deactivated Plan', IsActive = false, RecordTypeId = paymentPlanRecordTypeId, RES_Payment_Plan_Approval_Stage__c = 'Deactivated');
+        Product2 rejectedPlan = new Product2(Name = 'Rejected Plan', IsActive = false, RecordTypeId = paymentPlanRecordTypeId, RES_Payment_Plan_Approval_Stage__c = 'Rejected');
+        Product2 pendingPlan = new Product2(Name = 'Pending Plan', IsActive = false, RecordTypeId = paymentPlanRecordTypeId, RES_Payment_Plan_Approval_Stage__c = 'Pending PDC Approval');
+        insert new List<Product2>{ deactivatedPlan, rejectedPlan, pendingPlan };
+        Product2 activePlan = createPlan('Active Plan', null, true);
+        createComponent(unit, componentGroup, deactivatedPlan, true);
+        createComponent(unit, componentGroup, rejectedPlan, false);
+        ProductRelatedComponent pendingPrc = createComponent(unit, componentGroup, pendingPlan, false);
+        ProductRelatedComponent activePrc = createComponent(unit, componentGroup, activePlan, false);
+
+        Test.startTest();
+        RES_PaymentPlanExpiryService.Result result = RES_PaymentPlanExpiryService.process(new Set<Id>{ unit.Id }, TODAY, false);
+        Test.stopTest();
+
+        Map<Id, ProductRelatedComponent> remaining = componentsById(unit.Id);
+        System.assertEquals(2, remaining.size(), 'Deactivated and Rejected components are deleted');
+        System.assertEquals(true, remaining.containsKey(pendingPrc.Id), 'Pending approval plan stays tagged');
+        System.assertEquals(true, remaining.get(activePrc.Id).IsDefaultComponent, 'Active plan is promoted to default');
+        System.assertEquals(2, result.componentsDeleted);
+    }
 }
