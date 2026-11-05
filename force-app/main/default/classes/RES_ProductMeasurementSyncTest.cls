@@ -30,7 +30,7 @@ private class RES_ProductMeasurementSyncTest {
     }
 
     private static Product2 reload(Id productId) {
-        return [SELECT RES_Build_up_area__c, RES_Unit_Total_Area__c, RES_Unit_Plot_Area__c,
+        return [SELECT RES_Build_up_area__c, RES_Unit_Total_Area__c, RES_Net_Saleable_Area__c, RES_Unit_Plot_Area__c,
                        RES_Internal_unit_Area__c, RES_No_of_Bedrooms__c FROM Product2 WHERE Id = :productId];
     }
 
@@ -50,7 +50,8 @@ private class RES_ProductMeasurementSyncTest {
 
         Product2 r = reload(p.Id);
         System.assertEquals('1041.68', r.RES_Build_up_area__c);
-        System.assertEquals('907.03', r.RES_Unit_Total_Area__c);
+        System.assertEquals(907.03, r.RES_Net_Saleable_Area__c);
+        System.assertEquals(null, r.RES_Unit_Total_Area__c, 'Unit Total Area comes from Y055, not Z007');
         System.assertEquals('2999.13', r.RES_Unit_Plot_Area__c);
         System.assertEquals('691.46', r.RES_Internal_unit_Area__c);
         System.assertEquals(5, r.RES_No_of_Bedrooms__c);
@@ -513,5 +514,59 @@ private class RES_ProductMeasurementSyncTest {
         }
         System.assert(ids.contains(inWindow.Id), 'Product whose To date is yesterday should be returned');
         System.assert(!ids.contains(outside.Id), 'Product without any measurement dates in the window should be excluded');
+    }
+
+    // ------------------------------------------------------------------
+    // Field mapping: Z007 -> RES_Net_Saleable_Area__c (number), Y055 -> RES_Unit_Total_Area__c (text)
+    // ------------------------------------------------------------------
+    @IsTest
+    static void netSaleableAreaIsStoredAsANumberAndRoundedToTwoDecimals() {
+        Product2 p = createProduct('F1');
+        Test.startTest();
+        insert build(p.Id, NSA, 907.0349, 'Sqr Mtr', RES_ProductMeasurementSyncService.today().addDays(-1), null);
+        Test.stopTest();
+        System.assertEquals(907.03, reload(p.Id).RES_Net_Saleable_Area__c);
+    }
+
+    @IsTest
+    static void netSaleableAreaIsClearedWhenNoZ007IsInWindow() {
+        Product2 p = createProduct('F2');
+        RES_Measurement__c m = build(p.Id, NSA, 500, 'Sqr Mtr', null, null);
+        insert m;
+        System.assertEquals(500, reload(p.Id).RES_Net_Saleable_Area__c);
+        delete m;
+        System.assertEquals(null, reload(p.Id).RES_Net_Saleable_Area__c);
+    }
+
+    @IsTest
+    static void unitTotalAreaComesFromTheCalculatedY055Total() {
+        Product2 p = createProduct('F3');
+        Date today = RES_ProductMeasurementSyncService.today();
+        Test.startTest();
+        // Y011 (internal GF) -> Y020 -> Y040 -> Y055, Y021 (external GF) -> Y030 -> Y040
+        insert new List<RES_Measurement__c>{
+            build(p.Id, 'Y011', 100, 'Sqr Mtr', today.addDays(-2), null),
+            build(p.Id, 'Y021', 50.5, 'Sqr Mtr', today.addDays(-2), null)
+        };
+        Test.stopTest();
+        Product2 r = reload(p.Id);
+        System.assertEquals('150.5', r.RES_Unit_Total_Area__c, 'Y055 = Y040 = internal + external');
+        System.assertEquals(null, r.RES_Net_Saleable_Area__c, 'Z007 untouched by Y055');
+    }
+
+    @IsTest
+    static void unitTotalAreaFollowsTheComponentsAndClearsWhenTheyGo() {
+        Product2 p = createProduct('F4');
+        Date today = RES_ProductMeasurementSyncService.today();
+        RES_Measurement__c internal = build(p.Id, 'Y011', 100, 'Sqr Mtr', today.addDays(-2), null);
+        insert internal;
+        System.assertEquals('100', reload(p.Id).RES_Unit_Total_Area__c);
+
+        internal.RES_Measurement_Amount__c = 120;
+        update internal;
+        System.assertEquals('120', reload(p.Id).RES_Unit_Total_Area__c, 'Product reflects the recalculated total, not a stale one');
+
+        delete internal;
+        System.assertEquals(null, reload(p.Id).RES_Unit_Total_Area__c);
     }
 }
