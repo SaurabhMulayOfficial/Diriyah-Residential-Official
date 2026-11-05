@@ -1665,6 +1665,18 @@
                     <contextAttribute>RES_QProjectName</contextAttribute>
                     <contextInputAttributeName>RES_QProjectName</contextInputAttributeName>
                 </contextAttributeMappings>
+                <contextAttributeMappings>
+                    <contextAttrHydrationDetails>
+                        <contextAttrHydrationDetails>
+                            <objectName>Product2</objectName>
+                            <queryAttribute>RES_Net_Saleable_Area__c</queryAttribute>
+                        </contextAttrHydrationDetails>
+                        <objectName>QuoteLineItem</objectName>
+                        <queryAttribute>Product2</queryAttribute>
+                    </contextAttrHydrationDetails>
+                    <contextAttribute>RES_QNetSaleableArea</contextAttribute>
+                    <contextInputAttributeName>RES_QNetSaleableArea</contextInputAttributeName>
+                </contextAttributeMappings>
                 <contextNode>QuoteLineItem</contextNode>
                 <object>QuoteLineItem</object>
             </contextNodeMappings>
@@ -2052,6 +2064,19 @@
                 <key>false</key>
                 <localizationDisabled>false</localizationDisabled>
                 <title>RES_QProjectName</title>
+                <transient>false</transient>
+                <value>false</value>
+            </contextAttributes>
+            <contextAttributes>
+                <contextTags>
+                    <title>RES_QNetSaleableArea</title>
+                </contextTags>
+                <customMappingAllowed>false</customMappingAllowed>
+                <dataType>number</dataType>
+                <fieldType>inputoutput</fieldType>
+                <key>false</key>
+                <localizationDisabled>false</localizationDisabled>
+                <title>RES_QNetSaleableArea</title>
                 <transient>false</transient>
                 <value>false</value>
             </contextAttributes>
@@ -3515,13 +3540,13 @@
         </contextNodes>
         <isActive>true</isActive>
         <startDate>2026-10-13 00:00:00</startDate>
-        <versionNumber>32</versionNumber>
+        <versionNumber>38</versionNumber>
     </contextDefinitionVersions>
     <contextTtl>10</contextTtl>
     <hasSystemTags>false</hasSystemTags>
     <isProtected>false</isProtected>
     <isTransformationEnabled>false</isTransformationEnabled>
     <masterLabel>RES_Documents_Definition</masterLabel>
-    <releaseVersion>264.10</releaseVersion>
+    <releaseVersion>264.11.3</releaseVersion>
     <title>RES_Documents_Definition</title>
 </ContextDefinition>
