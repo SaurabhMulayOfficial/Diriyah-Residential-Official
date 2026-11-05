@@ -29,6 +29,7 @@ public with sharing class RES_SLAExpiredApprovalItemsReminder {
                 }
                 if(!contractIdSet.isEmpty()){
                 	Map<Id, Contract> contractsMap = new Map<Id, Contract>(new RES_ContractDAOLayer().getContractsByIds(contractIdSet));
+                    List<RES_SendEmailInvocable.inputs> inputLst = new List<RES_SendEmailInvocable.inputs>();
                     if(contractsMap.size() > 0){
                     	for(ApprovalWorkItem workItem : inputObj.approvalWorkItemsLst){
                         	String teamName = teamNamesMap.get(groupsMap.get(workItem.AssignedToId));
@@ -37,16 +38,19 @@ public with sharing class RES_SLAExpiredApprovalItemsReminder {
                             String contractURL = getRecordUrl(workItem.RelatedRecordId);
                             String approvalWorkItemURL = getRecordUrl(workItem.Id);
                             List<String> mergeFields = populateMergeFields(teamName, workItem.Name, contractNumber, slaEndDate, workItem.Status, contractURL, approvalWorkItemURL);
-                            List<RES_SendEmailInvocable.inputs> inputLst = new List<RES_SendEmailInvocable.inputs>();
                             RES_SendEmailInvocable.inputs input = new RES_SendEmailInvocable.inputs();
                             input.orgWideEmailAddressId = orgWideEmailId;
                             input.emailBody = emailTemplateMap.get(emailTemplateName).Html_Body__c;
         					input.emailSubject = emailTemplateMap.get(emailTemplateName).Subject__c;
         					input.recipients = new List<String>(groupRecipientsEmailMap.get(groupsMap.get(workItem.AssignedToId)));
         					input.mergeFields = mergeFields;
-                            inputLst.add(input);
-                            RES_SendEmailInvocable.sendEmails(inputLst);
+                            if(!input.recipients.isEmpty()){
+                                inputLst.add(input);
+                            }
                     	}
+                        if(!inputLst.isEmpty()){
+                            RES_SendEmailInvocable.sendEmails(inputLst);
+                        }
                 	}
             	}
             }
