@@ -482,7 +482,7 @@ public List<Product2> getRejectedProducts(String status,String searchTerm,Intege
     public List<Product2> getMeasurementFieldsByIds(Set<Id> productIds) {
         if (productIds == null || productIds.isEmpty()) return new List<Product2>();
         Map<String, Object> bindVars = new Map<String, Object>{ 'productIds' => productIds };
-        String soql = 'SELECT Id, RES_Build_up_area__c, RES_Unit_Total_Area__c, RES_Unit_Plot_Area__c, ' +
+        String soql = 'SELECT Id, RES_Build_up_area__c, RES_Unit_Total_Area__c, RES_Net_Saleable_Area__c, RES_Unit_Plot_Area__c, ' +
                         'RES_Internal_unit_Area__c, RES_No_of_Bedrooms__c ' +
                         'FROM Product2 WHERE Id IN :productIds';
         return (List<Product2>) executeQuery(soql, '', false, bindVars, AccessLevel.SYSTEM_MODE);

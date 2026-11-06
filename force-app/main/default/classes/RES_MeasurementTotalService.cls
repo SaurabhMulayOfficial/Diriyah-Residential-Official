@@ -80,8 +80,10 @@ public without sharing class RES_MeasurementTotalService {
         List<RES_Measurement__c> toUpdate = new List<RES_Measurement__c>();
 
         for (Id productId : productIds) {
-            Map<String, RES_Measurement__c> active = winners.containsKey(productId)
-                ? winners.get(productId) : new Map<String, RES_Measurement__c>();
+            if (!winners.containsKey(productId)) {
+                winners.put(productId, new Map<String, RES_Measurement__c>());
+            }
+            Map<String, RES_Measurement__c> active = winners.get(productId);
             Map<String, List<RES_Measurement__c>> existingByType = existingTotals.containsKey(productId)
                 ? existingTotals.get(productId) : new Map<String, List<RES_Measurement__c>>();
             Map<String, Total> memo = new Map<String, Total>();
@@ -91,6 +93,23 @@ public without sharing class RES_MeasurementTotalService {
                 List<RES_Measurement__c> existing = existingByType.containsKey(totalType)
                     ? existingByType.get(totalType) : new List<RES_Measurement__c>();
                 RES_Measurement__c keep = calc.hasComponents ? pickRecordToKeep(existing) : null;
+
+                // Expose the freshly calculated total to RES_ProductMeasurementSyncService (e.g. Y055 -> Product2.RES_Unit_Total_Area__c).
+                // The stored record may be stale or not inserted yet; calculate() never reads totals from this map, so this is safe.
+                if (calc.hasComponents) {
+                    active.put(totalType, new RES_Measurement__c(
+                        Id = keep == null ? null : keep.Id,
+                        RES_Product__c = productId,
+                        RES_Measurement_Type__c = totalType,
+                        RES_Measurement_Amount__c = calc.amount,
+                        RES_Unit_Of_Measurement__c = calc.uom,
+                        RES_Measurement_From__c = calc.fromDate,
+                        RES_Measurement_To__c = calc.toDate,
+                        RES_Active__c = true
+                    ));
+                } else {
+                    active.remove(totalType);
+                }
 
                 if (calc.hasComponents) {
                     if (keep == null) {
