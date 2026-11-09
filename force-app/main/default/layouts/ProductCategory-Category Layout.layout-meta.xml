@@ -108,6 +108,8 @@
     </layoutSections>
     <relatedLists>
         <fields>Product</fields>
+        <fields>p2.ProductCode</fields>
+        <fields>p2.Description</fields>
         <relatedList>RelatedProducts</relatedList>
     </relatedLists>
     <relatedLists>
@@ -119,20 +121,17 @@
         <relatedList>RelatedFileList</relatedList>
     </relatedLists>
     <relatedLists>
-        <fields>PRODUCT2.NAME</fields>
-        <fields>PRODUCT2.CUSTOMER_PRODUCT_ID</fields>
-        <fields>PRODUCT2.DESCRIPTION</fields>
-        <relatedList>Product2.RES_Building__c</relatedList>
-    </relatedLists>
-    <relatedLists>
         <fields>NAME</fields>
         <relatedList>RES_Measurement__c.RES_Category__c</relatedList>
+    </relatedLists>
+    <relatedLists>
+        <relatedList>RelatedEntityHistoryList</relatedList>
     </relatedLists>
     <showEmailCheckbox>false</showEmailCheckbox>
     <showRunAssignmentRulesCheckbox>false</showRunAssignmentRulesCheckbox>
     <showSubmitAndAttachButton>false</showSubmitAndAttachButton>
     <summaryLayout>
-        <masterLabel>00h9X00000XM2zR</masterLabel>
+        <masterLabel>00hMz00000L9sa9</masterLabel>
         <sizeX>4</sizeX>
         <sizeY>0</sizeY>
         <summaryLayoutStyle>Default</summaryLayoutStyle>

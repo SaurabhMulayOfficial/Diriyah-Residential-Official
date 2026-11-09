@@ -58,6 +58,10 @@
                 <behavior>Edit</behavior>
                 <field>RES_Geo_Location__c</field>
             </layoutItems>
+            <layoutItems>
+                <behavior>Edit</behavior>
+                <field>POC__c</field>
+            </layoutItems>
         </layoutColumns>
         <layoutColumns>
             <layoutItems>
@@ -174,17 +178,23 @@
         <fields>PRODUCT2.NAME</fields>
         <fields>PRODUCT2.CUSTOMER_PRODUCT_ID</fields>
         <fields>PRODUCT2.DESCRIPTION</fields>
+        <fields>RES_POC_Percentage__c</fields>
+        <fields>PRODUCT2.ACTIVE</fields>
+        <fields>RES_Unit_Status__c</fields>
         <relatedList>Product2.RES_Business_Entity__c</relatedList>
     </relatedLists>
     <relatedLists>
         <fields>NAME</fields>
         <relatedList>RES_Project_Completion_Report__c.RES_Project__c</relatedList>
     </relatedLists>
+    <relatedLists>
+        <relatedList>RelatedEntityHistoryList</relatedList>
+    </relatedLists>
     <showEmailCheckbox>false</showEmailCheckbox>
     <showRunAssignmentRulesCheckbox>false</showRunAssignmentRulesCheckbox>
     <showSubmitAndAttachButton>false</showSubmitAndAttachButton>
     <summaryLayout>
-        <masterLabel>00h9X00000XM0b4</masterLabel>
+        <masterLabel>00hMz00000L9sa8</masterLabel>
         <sizeX>4</sizeX>
         <sizeY>0</sizeY>
         <summaryLayoutStyle>Default</summaryLayoutStyle>
