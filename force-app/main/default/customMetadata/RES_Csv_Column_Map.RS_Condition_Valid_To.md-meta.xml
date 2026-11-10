@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-    <label>Valid To [3]</label>
+    <label>Price Valid To</label>
     <protected>false</protected>
     <values>
         <field>RES_Date_Format__c</field>
@@ -12,7 +12,7 @@
     </values>
     <values>
         <field>RES_Header_Occurrence__c</field>
-        <value xsi:type="xsd:double">2.0</value>
+        <value xsi:type="xsd:double">0.0</value>
     </values>
     <values>
         <field>RES_Is_Active__c</field>
@@ -32,7 +32,7 @@
     </values>
     <values>
         <field>RES_Source_Header__c</field>
-        <value xsi:type="xsd:string">Valid To</value>
+        <value xsi:type="xsd:string">Price Valid To</value>
     </values>
     <values>
         <field>RES_Staging_Field__c</field>
