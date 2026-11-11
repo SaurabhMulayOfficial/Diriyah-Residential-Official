@@ -18,7 +18,7 @@ const COLUMNS = [
     { label: 'Valid From', fieldName: 'validFrom', type: 'date-local' },
     { label: 'Validity End Date', fieldName: 'validityEndDate', type: 'date-local' },
     { label: 'Price Option', fieldName: 'priceOption' },
-    { label: 'Product Code', fieldName: 'productCode' }
+    { label: 'Product External ID', fieldName: 'externalId' }
 ];
 
 /**

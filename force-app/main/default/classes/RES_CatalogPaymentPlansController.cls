@@ -10,7 +10,7 @@ public with sharing class RES_CatalogPaymentPlansController {
         @AuraEnabled public Id id;
         @AuraEnabled public Id rootId;
         @AuraEnabled public String name;
-        @AuraEnabled public String productCode;
+        @AuraEnabled public String externalId;
         @AuraEnabled public Decimal version;
         @AuraEnabled public Boolean isActive;
         @AuraEnabled public String approvalStatus;
@@ -35,7 +35,7 @@ public with sharing class RES_CatalogPaymentPlansController {
         }
         try {
             List<Product2> plans = [
-                SELECT Id, Name, ProductCode, RES_Version__c, RES_Parent_Payment_Plan__c, IsActive, RES_Approval_Status__c,
+                SELECT Id, Name, RES_Product_External_ID__c, RES_Version__c, RES_Parent_Payment_Plan__c, IsActive, RES_Approval_Status__c,
                        RES_Price_Option__c, RES_No_of_Years__c, AvailabilityDate, RES_Validity_End_Date__c
                 FROM Product2
                 WHERE RES_Business_Entity__c = :catalogId AND RecordType.DeveloperName = :PAYMENT_PLAN_RECORD_TYPE_DEV_NAME
@@ -51,7 +51,7 @@ public with sharing class RES_CatalogPaymentPlansController {
                 row.id = plan.Id;
                 row.rootId = plan.RES_Parent_Payment_Plan__c ?? plan.Id;
                 row.name = plan.Name;
-                row.productCode = plan.ProductCode;
+                row.externalId = plan.RES_Product_External_ID__c;
                 row.version = plan.RES_Version__c;
                 row.isActive = plan.IsActive;
                 row.approvalStatus = approvalLabels.get(plan.RES_Approval_Status__c) ?? plan.RES_Approval_Status__c;
