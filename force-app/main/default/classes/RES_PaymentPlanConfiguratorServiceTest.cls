@@ -302,14 +302,14 @@ private class RES_PaymentPlanConfiguratorServiceTest {
     }
 
     @IsTest
-    static void testCreatePaymentPlan_OffPlanDueDate_CalculatedFromValidFrom() {
-        Date validFrom = Date.today().addDays(10);
+    static void testCreatePaymentPlan_OffPlanWithoutDueDate_FallsBackToValidFrom() {
+        Date validFrom = Date.newInstance(2027, 1, 10);
         RES_PaymentPlanConfiguratorService.Request req = baseRequest();
         req.productCode = 'TEST-PP-COND';
         req.catalogId = insertCatalog('Off-Plan');
         req.validFromDate = validFrom;
         req.validToDate = null;
-        req.installmentsJson = '[{"conditionType":"Y002","conditionMonths":2,"conditionDays":5,"dueDate":"2000-01-01","percentage":50,"pocPercentage":10,"sequence":1},' +
+        req.installmentsJson = '[{"conditionType":"Y002","conditionMonths":2,"conditionDays":5,"percentage":50,"pocPercentage":10,"sequence":1},' +
             '{"conditionType":"Y004","conditionMonths":36,"percentage":50,"pocPercentage":100,"sequence":2}]';
 
         RES_PaymentPlanConfiguratorService.Result result = createOne(req);
@@ -318,12 +318,29 @@ private class RES_PaymentPlanConfiguratorServiceTest {
         Product2 first = [SELECT Name, RES_Condition_Type__c, RES_Condition_Months__c, RES_Condition_Days__c, RES_Instalment_DueDate__c FROM Product2 WHERE ProductCode = 'TEST-PP-COND-INST1'];
         System.assertEquals('Down payment', first.Name);
         System.assertEquals('Y002', first.RES_Condition_Type__c);
-        System.assertEquals(2, first.RES_Condition_Months__c);
-        System.assertEquals(5, first.RES_Condition_Days__c);
-        System.assertEquals(validFrom.addMonths(2).addDays(5), first.RES_Instalment_DueDate__c, 'Client due date must be ignored');
-        Product2 second = [SELECT RES_Condition_Days__c, RES_Instalment_DueDate__c FROM Product2 WHERE ProductCode = 'TEST-PP-COND-INST2'];
-        System.assertEquals(0, second.RES_Condition_Days__c, 'Blank Condition Days defaults to 0');
+        System.assertEquals(validFrom.addMonths(2).addDays(5), first.RES_Instalment_DueDate__c, 'Missing due date falls back to Valid From + months/days');
+        System.assertEquals(0, first.RES_Condition_Months__c, 'First Off-Plan installment is always 0 months');
+        System.assertEquals(0, first.RES_Condition_Days__c);
+        Product2 second = [SELECT RES_Condition_Months__c, RES_Condition_Days__c, RES_Instalment_DueDate__c FROM Product2 WHERE ProductCode = 'TEST-PP-COND-INST2'];
         System.assertEquals(validFrom.addMonths(36), second.RES_Instalment_DueDate__c);
+        System.assertEquals(33, second.RES_Condition_Months__c, '2027-03-15 to 2030-01-10');
+        System.assertEquals(0, second.RES_Condition_Days__c);
+    }
+
+    @IsTest
+    static void testCreatePaymentPlan_OffPlanDueDateBeforeValidFrom_Fails() {
+        RES_PaymentPlanConfiguratorService.Request req = baseRequest();
+        req.productCode = 'TEST-PP-OFF-EARLY';
+        req.catalogId = insertCatalog('Off-Plan');
+        req.validFromDate = Date.newInstance(2027, 1, 10);
+        req.validToDate = null;
+        req.installmentsJson = '[{"conditionType":"Y002","dueDate":"2027-01-09","percentage":50,"pocPercentage":10,"sequence":1},' +
+            '{"conditionType":"Y004","dueDate":"2027-06-10","percentage":50,"pocPercentage":100,"sequence":2}]';
+
+        RES_PaymentPlanConfiguratorService.Result result = createOne(req);
+
+        System.assertEquals(false, result.isSuccess);
+        System.assert(result.message.contains('before the Valid From'), 'Expected Valid From error, got: ' + result.message);
     }
 
     @IsTest
@@ -457,7 +474,7 @@ private class RES_PaymentPlanConfiguratorServiceTest {
         req.catalogId = insertCatalog('Off-Plan');
         req.numberOfYears = 2;
         req.validFromDate = Date.newInstance(2027, 1, 31);
-        // Due dates as entered on the Off-Plan table, with the months/days the component derives from Valid From
+        // Client-sent months/days are ignored: Off-Plan months come from the gap between consecutive due dates
         req.installmentsJson = '[{"conditionType":"Y002","dueDate":"2027-02-28","conditionMonths":1,"conditionDays":0,"percentage":50,"pocPercentage":10,"sequence":1},' +
             '{"conditionType":"Y004","dueDate":"2028-12-15","conditionMonths":22,"conditionDays":15,"percentage":50,"pocPercentage":100,"sequence":2}]';
 
@@ -466,9 +483,11 @@ private class RES_PaymentPlanConfiguratorServiceTest {
         System.assertEquals(true, result.isSuccess, 'Expected success, got: ' + result.message);
         Product2 first = [SELECT RES_Condition_Months__c, RES_Condition_Days__c, RES_Instalment_DueDate__c FROM Product2 WHERE ProductCode = 'TEST-PP-OFF-DUE-INST1'];
         System.assertEquals(Date.newInstance(2027, 2, 28), first.RES_Instalment_DueDate__c);
+        System.assertEquals(0, first.RES_Condition_Months__c, 'First installment is always 0 months');
+        System.assertEquals(0, first.RES_Condition_Days__c);
         Product2 second = [SELECT RES_Condition_Months__c, RES_Condition_Days__c, RES_Instalment_DueDate__c FROM Product2 WHERE ProductCode = 'TEST-PP-OFF-DUE-INST2'];
-        System.assertEquals(22, second.RES_Condition_Months__c);
-        System.assertEquals(15, second.RES_Condition_Days__c);
+        System.assertEquals(21, second.RES_Condition_Months__c, '2027-02-28 to 2028-12-15 is 21 whole months');
+        System.assertEquals(0, second.RES_Condition_Days__c, 'Condition days are always 0');
         System.assertEquals(Date.newInstance(2028, 12, 15), second.RES_Instalment_DueDate__c);
     }
 

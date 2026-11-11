@@ -88,8 +88,8 @@ public with sharing class RES_PaymentPlanConfiguratorService {
 
     /**
      * One row of the installment table built by the LWC. Fields are public (not private) so
-     * JSON.deserialize can populate them directly. dueDate is never trusted from the client: it is
-     * recalculated as Valid From + conditionMonths + conditionDays.
+     * JSON.deserialize can populate them directly. Off-Plan: dueDate (the indicative due date) is the input and
+     * condition months are re-derived from it; otherwise dueDate is recalculated as Valid From + conditionMonths + conditionDays.
      */
     @TestVisible
     private class InstallmentInput {
@@ -206,7 +206,7 @@ public with sharing class RES_PaymentPlanConfiguratorService {
             totalPercentage += installment.percentage;
 
             applyPocRule(installment, developmentPhase);
-            validateCondition(installment, previous, planStart, latestDueDate, maxMonths, seenConditionKeys);
+            validateCondition(installment, previous, planStart, latestDueDate, maxMonths, seenConditionKeys, developmentPhase);
             previous = installment;
         }
 
@@ -228,12 +228,52 @@ public with sharing class RES_PaymentPlanConfiguratorService {
         }
     }
 
-    // Due date = Valid From + condition months/days; due dates must not go backwards, must stay within Number of Years, and can't repeat for the same condition type
+    // Due dates must not go backwards, must stay within Number of Years, and can't repeat for the same condition type
     private static void validateCondition(InstallmentInput installment, InstallmentInput previous, Date planStart, Date latestDueDate,
-            Integer maxMonths, Map<String, Integer> seenConditionKeys) {
+            Integer maxMonths, Map<String, Integer> seenConditionKeys, String developmentPhase) {
         if (String.isBlank(installment.conditionType)) {
             throw new PaymentPlanConfiguratorException('Installment ' + installment.sequence + ' must have an Installment Type.');
         }
+        if (developmentPhase == PHASE_OFF_PLAN) {
+            validateOffPlanDueDate(installment, previous, planStart, latestDueDate, maxMonths);
+        } else {
+            validateConditionMonths(installment, previous, planStart, latestDueDate, maxMonths);
+        }
+
+        String conditionKey = installment.conditionType + '|' + installment.dueDate;
+        if (seenConditionKeys.containsKey(conditionKey)) {
+            throw new PaymentPlanConfiguratorException('Installments ' + seenConditionKeys.get(conditionKey) + ' and ' + installment.sequence +
+                ' have the same Installment Type (' + conditionTypeLabel(installment.conditionType) + ') and the same ' +
+                (developmentPhase == PHASE_OFF_PLAN ? 'Due Date.' : 'Condition Months/Days.'));
+        }
+        seenConditionKeys.put(conditionKey, installment.sequence);
+    }
+
+    // Off-Plan: indicative due date drives condition months (0 for the first, whole months since the previous due date after); days are always 0
+    private static void validateOffPlanDueDate(InstallmentInput installment, InstallmentInput previous, Date planStart, Date latestDueDate, Integer maxMonths) {
+        if (installment.dueDate == null && installment.conditionMonths != null && installment.conditionMonths >= 0) {
+            installment.dueDate = planStart.addMonths(installment.conditionMonths).addDays(installment.conditionDays == null ? 0 : Math.max(installment.conditionDays, 0));
+        }
+        if (installment.dueDate == null) {
+            throw new PaymentPlanConfiguratorException('Installment ' + installment.sequence + ' must have a Due Date for an Off-Plan catalog.');
+        }
+        if (installment.dueDate < planStart) {
+            throw new PaymentPlanConfiguratorException('Installment ' + installment.sequence + ' Due Date cannot be before the Valid From date (' + planStart.format() + ').');
+        }
+        if (previous != null && installment.dueDate < previous.dueDate) {
+            throw new PaymentPlanConfiguratorException('Installment ' + installment.sequence + ' cannot fall before installment ' + previous.sequence +
+                ' (' + previous.dueDate.format() + ').');
+        }
+        if (latestDueDate != null && installment.dueDate > latestDueDate) {
+            throw new PaymentPlanConfiguratorException('Installment ' + installment.sequence + ' Due Date goes beyond the plan\'s Number of Years: it cannot be more than ' +
+                maxMonths + ' months after Valid From.');
+        }
+        installment.conditionMonths = RES_InstallmentDueDateService.offPlanConditionMonths(previous?.dueDate, installment.dueDate, previous == null);
+        installment.conditionDays = 0;
+    }
+
+    // Due date = Valid From + condition months/days
+    private static void validateConditionMonths(InstallmentInput installment, InstallmentInput previous, Date planStart, Date latestDueDate, Integer maxMonths) {
         if (installment.conditionMonths == null || installment.conditionMonths < 0) {
             throw new PaymentPlanConfiguratorException('Installment ' + installment.sequence + ' must have Condition Months of 0 or more.');
         }
@@ -252,13 +292,6 @@ public with sharing class RES_PaymentPlanConfiguratorService {
             throw new PaymentPlanConfiguratorException('Installment ' + installment.sequence + ' (' + installment.conditionMonths + ' months, ' +
                 installment.conditionDays + ' days) goes beyond the plan\'s Number of Years: Condition Months/Days cannot exceed ' + maxMonths + ' months.');
         }
-
-        String conditionKey = installment.conditionType + '|' + installment.dueDate;
-        if (seenConditionKeys.containsKey(conditionKey)) {
-            throw new PaymentPlanConfiguratorException('Installments ' + seenConditionKeys.get(conditionKey) + ' and ' + installment.sequence +
-                ' have the same Installment Type (' + conditionTypeLabel(installment.conditionType) + ') and the same Condition Months/Days.');
-        }
-        seenConditionKeys.put(conditionKey, installment.sequence);
     }
 
     // Number of Years can carry decimals (e.g. 2.5); months are rounded to the nearest whole month

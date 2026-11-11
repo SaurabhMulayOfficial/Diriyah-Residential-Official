@@ -439,13 +439,19 @@ public List<Product2> getRejectedProducts(String status,String searchTerm,Intege
          * "RecordType.DeveloperName = ..." filter this feature relies on elsewhere.
          */
         String soql = 'SELECT Id, Name, RecordTypeId, Type, ConfigureDuringSale, RES_CIP_Type__c, RES_No_of_Years__c,RES_Business_Entity__c, RES_Price_Option__c, CurrencyIsoCode, AvailabilityDate, RES_Validity_End_Date__c, IsActive, Description, IsAssetizable, RES_Version__c, RES_No_of_Months__c, RES_Status_Role__c, RES_Status_Role_Description__c, ' +
-                      '(SELECT Id, Name, RES_Parent_Payment_Plan__c, RES_Version__c FROM ParentPaymentPlan__r WHERE RES_Version__c > 0 ORDER BY RES_Version__c DESC) ' +
+                      '(SELECT Id, Name, RES_Parent_Payment_Plan__c, RES_Version__c, IsActive, RES_Validity_End_Date__c FROM ParentPaymentPlan__r WHERE RES_Version__c > 0 ORDER BY RES_Version__c DESC) ' +
         			  'FROM Product2 ' +
                       'WHERE RES_Business_Entity__c IN : productCatalogIdSet AND ' +
                       'RecordType.DeveloperName =: recordTypeDeveloperName AND ' +
-                      'IsActive = TRUE AND ' +
                       'RES_Version__c = NULL';
-        return (List<Product2>) executeQuery(soql, '', false, bindVars, AccessLevel.SYSTEM_MODE);
+        // A root is deactivated once a POC version supersedes it, so it stays eligible while it or its latest version is active
+        List<Product2> eligibleRoots = new List<Product2>();
+        for (Product2 root : (List<Product2>) executeQuery(soql, '', false, bindVars, AccessLevel.SYSTEM_MODE)) {
+            if (root.IsActive || (!root.ParentPaymentPlan__r.isEmpty() && root.ParentPaymentPlan__r[0].IsActive)) {
+                eligibleRoots.add(root);
+            }
+        }
+        return eligibleRoots;
     }
 
     public List<Product2> getProductsForSync(Set<Id> productIds) {

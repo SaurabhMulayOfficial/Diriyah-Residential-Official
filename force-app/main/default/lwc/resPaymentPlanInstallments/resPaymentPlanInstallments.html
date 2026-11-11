@@ -8,8 +8,8 @@
             <template if:true={isOnPlan}>POC % is fixed at 100% for On-Plan catalogs.</template>
             <template if:true={isOffPlan}>POC % (construction milestone) is required for Off-Plan catalogs.</template>
             <template if:true={isOffPlan}>
-                Enter each installment's Due Date (required for Off-Plan catalogs); the time from the payment plan's Valid From
-                date to the due date is saved as its Condition Months and Days.
+                Enter each installment's indicative Due Date (required for Off-Plan catalogs). The first installment's Condition Months is 0;
+                each later installment's is the whole months since the previous installment's Due Date. Condition Days are always 0.
             </template>
             <template if:false={isOffPlan}>
                 Condition Months (required) and Condition Days set each installment's due date;

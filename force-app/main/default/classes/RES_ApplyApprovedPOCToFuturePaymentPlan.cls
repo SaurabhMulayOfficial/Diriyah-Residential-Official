@@ -61,17 +61,35 @@ public with sharing class RES_ApplyApprovedPOCToFuturePaymentPlan {
          * every version that already exists for it, letting relinkUnitsToNewVersion find the Unit
          * regardless of which one it currently references.
          */
+        Map<Id, Decimal> approvedPocByCatalog = new Map<Id, Decimal>();
+        for(Id pocId : pocToCatalogMap.keySet()){
+            approvedPocByCatalog.put(pocToCatalogMap.get(pocId), pocRecordsMap.get(pocId).RES_POC__c);
+        }
         List<Set<Id>> supersededIdsPerClone = new List<Set<Id>>();
+        List<List<Product2>> activeSupersededPerClone = new List<List<Product2>>();
         for(Product2 productObj : productsLst){
+            Boolean hasVersions = productObj.ParentPaymentPlan__r != null && !productObj.ParentPaymentPlan__r.isEmpty();
+            Product2 currentVersion = hasVersions ? productObj.ParentPaymentPlan__r[0] : productObj;
             Product2 clonedProduct = productObj.clone(false, true, false, false);
             clonedProduct.RES_Parent_Payment_Plan__c = productObj.Id;
             clonedProduct.RES_Approval_Status__c = 'Approved';
+            // Root may already be inactive (superseded earlier), so the new version takes over the current version's active state and validity end
+            clonedProduct.IsActive = true;
+            clonedProduct.RES_Validity_End_Date__c = currentVersion.RES_Validity_End_Date__c;
+            clonedProduct.Name = pocVersionName(productObj.Name, approvedPocByCatalog.get(productObj.RES_Business_Entity__c));
+            List<Product2> activeSuperseded = new List<Product2>();
+            if(productObj.IsActive){
+                activeSuperseded.add(productObj);
+            }
             system.debug('productObj.ParentPaymentPlan__r ==> '+productObj.ParentPaymentPlan__r);
             Set<Id> supersededIds = new Set<Id>{ productObj.Id };
             if(productObj.ParentPaymentPlan__r != null && !productObj.ParentPaymentPlan__r.isEmpty()){
                 clonedProduct.RES_Version__c = productObj.ParentPaymentPlan__r[0].RES_Version__c + 1;
                 for(Product2 priorVersion : productObj.ParentPaymentPlan__r){
                     supersededIds.add(priorVersion.Id);
+                    if(priorVersion.IsActive){
+                        activeSuperseded.add(priorVersion);
+                    }
                 }
             }
             else{
@@ -79,6 +97,7 @@ public with sharing class RES_ApplyApprovedPOCToFuturePaymentPlan {
             }
             clonedProductsLst.add(clonedProduct);
             supersededIdsPerClone.add(supersededIds);
+            activeSupersededPerClone.add(activeSuperseded);
         }
         system.debug('clonedProductsLst ==> '+clonedProductsLst);
         if(!clonedProductsLst.isEmpty()){
@@ -91,8 +110,15 @@ public with sharing class RES_ApplyApprovedPOCToFuturePaymentPlan {
 
             Map<Id, Set<Id>> parentToClonedProductsMap = new Map<Id, Set<Id>>();
             Map<Id, Id> oldIdToNewVersionMap = new Map<Id, Id>();
+            List<Product2> versionsToRetire = new List<Product2>();
             for(Integer i = 0; i < clonedProductsLst.size(); i++){
                 Product2 clonedProduct = clonedProductsLst[i];
+                if(!results[i].isSuccess()){
+                    continue;
+                }
+                for(Product2 superseded : activeSupersededPerClone[i]){
+                    versionsToRetire.add(new Product2(Id = superseded.Id, IsActive = false, RES_Validity_End_Date__c = Date.today()));
+                }
                 if(!parentToClonedProductsMap.containsKey(clonedProduct.RES_Parent_Payment_Plan__c)){
                     parentToClonedProductsMap.put(clonedProduct.RES_Parent_Payment_Plan__c, new Set<Id>{clonedProduct.Id});
                 }
@@ -110,6 +136,30 @@ public with sharing class RES_ApplyApprovedPOCToFuturePaymentPlan {
                 clonePriceBookEntries(parentToClonedProductsMap, false);
                 cloneInstallments(parentToClonedProductsMap, pocToCatalogMap, pocRecordsMap);
                 relinkUnitsToNewVersion(oldIdToNewVersionMap);
+                retireSupersededVersions(versionsToRetire);
+            }
+        }
+    }
+
+    // New version name = root plan name + ' POC ' + the approved POC%
+    @TestVisible
+    private static String pocVersionName(String rootName, Decimal approvedPOC){
+        if(approvedPOC == null){
+            return rootName;
+        }
+        String name = rootName + ' POC ' + approvedPOC.stripTrailingZeros().toPlainString();
+        return name.left(Product2.Name.getDescribe().getLength());
+    }
+
+    // Previous version(s) go inactive with Validity End Date = today once the new POC version exists
+    private static void retireSupersededVersions(List<Product2> versionsToRetire){
+        if(versionsToRetire.isEmpty()){
+            return;
+        }
+        Database.SaveResult[] results = Database.update(versionsToRetire, false, AccessLevel.SYSTEM_MODE);
+        for(Integer i = 0; i < results.size(); i++){
+            if(!results[i].isSuccess()){
+                logFailure('Superseded Payment Plan (Product2) deactivate', versionsToRetire[i].Id, results[i].getErrors());
             }
         }
     }
@@ -278,7 +328,24 @@ public with sharing class RES_ApplyApprovedPOCToFuturePaymentPlan {
             accumulativePercentage += build.installment.RES_Installment_Percentage__c ?? 0;
             build.installment.RES_Installment_Accumulative_Payments__c = accumulativePercentage;
         }
+        recalculateConditionMonths(builds);
         return builds;
+    }
+
+    // Post-merge sequence changes the "previous installment", so condition months are re-derived from due dates (skipped if any due date is missing)
+    private static void recalculateConditionMonths(List<InstallmentBuild> builds){
+        for(InstallmentBuild build : builds){
+            if(build.installment.RES_Instalment_DueDate__c == null){
+                return;
+            }
+        }
+        Date previousDueDate;
+        for(Integer i = 0; i < builds.size(); i++){
+            Product2 installment = builds[i].installment;
+            installment.RES_Condition_Months__c = RES_InstallmentDueDateService.offPlanConditionMonths(previousDueDate, installment.RES_Instalment_DueDate__c, i == 0);
+            installment.RES_Condition_Days__c = 0;
+            previousDueDate = installment.RES_Instalment_DueDate__c;
+        }
     }
 
     // Carries over every due-date input (stored date, condition months/days) so the new version's due dates match the old one

@@ -219,12 +219,17 @@ private class RES_ApplyApprovedPOCToPPTest {
         Test.stopTest();
 
         List<Product2> newVersions = [
-            SELECT Id, RES_Version__c, RES_Price_Option__c, RES_Business_Entity__c, RES_Approval_Status__c
+            SELECT Id, Name, IsActive, RES_Version__c, RES_Price_Option__c, RES_Business_Entity__c, RES_Approval_Status__c
             FROM Product2
             WHERE RES_Parent_Payment_Plan__c = :ids.get('plan')
         ];
         System.assertEquals(1, newVersions.size(), 'Expected exactly one new Payment Plan version');
         Product2 newVersion = newVersions[0];
+        System.assertEquals('Test Payment Plan POC 55', newVersion.Name, 'New version name carries the approved POC');
+        System.assertEquals(true, newVersion.IsActive);
+        Product2 root = [SELECT IsActive, RES_Validity_End_Date__c FROM Product2 WHERE Id = :ids.get('plan')];
+        System.assertEquals(false, root.IsActive, 'Previous version must be deactivated');
+        System.assertEquals(Date.today(), root.RES_Validity_End_Date__c, 'Previous version validity ends today');
         System.assertEquals(1, newVersion.RES_Version__c);
         System.assertEquals('Option 1', newVersion.RES_Price_Option__c, 'Price Option must carry over to the new version');
         System.assertEquals('Approved', newVersion.RES_Approval_Status__c, 'A new version is created because the POC was approved, so it should start out Approved rather than needing its own re-approval');
@@ -406,7 +411,7 @@ private class RES_ApplyApprovedPOCToPPTest {
         Test.stopTest();
 
         List<Product2> allVersions = [
-            SELECT Id, RES_Version__c
+            SELECT Id, Name, IsActive, RES_Validity_End_Date__c, RES_Version__c
             FROM Product2
             WHERE RES_Parent_Payment_Plan__c = :ids.get('plan')
             ORDER BY RES_Version__c ASC
@@ -414,9 +419,55 @@ private class RES_ApplyApprovedPOCToPPTest {
         System.assertEquals(2, allVersions.size(), 'Root should now have two versions as direct children (versions fan out flatly from the root)');
         System.assertEquals(1, allVersions[0].RES_Version__c);
         System.assertEquals(2, allVersions[1].RES_Version__c);
+        System.assertEquals(false, allVersions[0].IsActive, 'v1 must be deactivated once v2 exists');
+        System.assertEquals(Date.today(), allVersions[0].RES_Validity_End_Date__c);
+        System.assertEquals(true, allVersions[1].IsActive);
+        System.assertEquals('Test Payment Plan POC 100', allVersions[1].Name, 'Name is built from the root, not the previous version');
 
         ProductRelatedComponent unitComponent = [SELECT ChildProductId FROM ProductRelatedComponent WHERE ParentProductId = :ids.get('unit')];
         System.assertEquals(allVersions[1].Id, unitComponent.ChildProductId,
             'Unit was pointing at v1 (not the root) before this approval - relinking must still find and repoint it to v2');
+    }
+
+    // Merged installment keeps the first merged due date; later installments' condition months are whole months since the previous due date
+    @IsTest
+    static void recalculatesConditionMonthsFromDueDatesAfterMerge() {
+        setUpRecordTypeIds();
+        ProductCatalog catalog = createCatalog();
+        Map<String, Id> ids = buildRootPlanWithInstallments(catalog.Id);
+        update new List<Product2>{
+            new Product2(Id = ids.get('downpayment'), RES_Instalment_DueDate__c = Date.newInstance(2026, 12, 1)),
+            new Product2(Id = ids.get('installment1'), RES_Instalment_DueDate__c = Date.newInstance(2027, 3, 1))
+        };
+
+        RES_ApplyApprovedPOCToFuturePaymentPlan.Input input = new RES_ApplyApprovedPOCToFuturePaymentPlan.Input();
+        input.pocRecord = createApprovedPOC(catalog.Id, 55);
+
+        Test.startTest();
+        RES_ApplyApprovedPOCToFuturePaymentPlan.applyApprovedPOCToFuturePaymentPlan(
+            new List<RES_ApplyApprovedPOCToFuturePaymentPlan.Input>{ input }
+        );
+        Test.stopTest();
+
+        Product2 newVersion = [SELECT Id FROM Product2 WHERE RES_Parent_Payment_Plan__c = :ids.get('plan')];
+        List<ProductRelatedComponent> components = [
+            SELECT ChildProduct.RES_Instalment_DueDate__c, ChildProduct.RES_Condition_Months__c, ChildProduct.RES_Condition_Days__c
+            FROM ProductRelatedComponent WHERE ParentProductId = :newVersion.Id ORDER BY Sequence ASC
+        ];
+        System.assertEquals(3, components.size());
+        System.assertEquals(Date.newInstance(2026, 12, 1), components[0].ChildProduct.RES_Instalment_DueDate__c);
+        System.assertEquals(0, components[0].ChildProduct.RES_Condition_Months__c, 'First installment is always 0 months');
+        System.assertEquals(6, components[1].ChildProduct.RES_Condition_Months__c, '2026-12-01 to 2027-06-15');
+        System.assertEquals(11, components[2].ChildProduct.RES_Condition_Months__c, '2027-06-15 to 2028-06-10');
+        for (ProductRelatedComponent prc : components) {
+            System.assertEquals(0, prc.ChildProduct.RES_Condition_Days__c, 'Condition days are always 0');
+        }
+    }
+
+    @IsTest
+    static void pocVersionNameFormatsApprovedPoc() {
+        System.assertEquals('Plan POC 45', RES_ApplyApprovedPOCToFuturePaymentPlan.pocVersionName('Plan', 45.00));
+        System.assertEquals('Plan POC 45.5', RES_ApplyApprovedPOCToFuturePaymentPlan.pocVersionName('Plan', 45.50));
+        System.assertEquals('Plan', RES_ApplyApprovedPOCToFuturePaymentPlan.pocVersionName('Plan', null));
     }
 }

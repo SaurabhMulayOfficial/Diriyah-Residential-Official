@@ -16,6 +16,23 @@ public with sharing class RES_InstallmentDueDateService {
         return anchor.addMonths(months == null ? 0 : months.intValue()).addDays(days == null ? 0 : days.intValue());
     }
 
+    // Whole months from fromDate that fit on or before toDate (mirrors addMonths clamping); 0 when either is blank or toDate is earlier
+    public static Integer wholeMonthsBetween(Date fromDate, Date toDate) {
+        if (fromDate == null || toDate == null || toDate < fromDate) {
+            return 0;
+        }
+        Integer months = fromDate.monthsBetween(toDate);
+        while (months > 0 && fromDate.addMonths(months) > toDate) {
+            months--;
+        }
+        return months;
+    }
+
+    // Off-Plan condition months: first installment is 0, each later one is the whole months since the previous installment's due date
+    public static Integer offPlanConditionMonths(Date previousDueDate, Date dueDate, Boolean isFirst) {
+        return isFirst ? 0 : wholeMonthsBetween(previousDueDate, dueDate);
+    }
+
     // Due date of an installment configured on configurationDate, given its payment plan's development phase
     public static Date dueDateOnConfiguration(Product2 installment, String developmentPhase, Date configurationDate, Date planValidFrom) {
         if (developmentPhase == PHASE_ON_PLAN) {
