@@ -46,6 +46,10 @@
         <name>RES_AR_Payment_Plan_Unit_Override</name>
     </customPermissions>
     <classAccesses>
+        <apexClass>RES_CatalogPaymentPlansController</apexClass>
+        <enabled>true</enabled>
+    </classAccesses>
+    <classAccesses>
         <apexClass>RES_NumberToWordsService</apexClass>
         <enabled>true</enabled>
     </classAccesses>
@@ -869,6 +873,11 @@
     <fieldPermissions>
         <editable>true</editable>
         <field>ContractItemPrice.RES_Service_Charge_Rate__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>ProductCatalog.POC__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>

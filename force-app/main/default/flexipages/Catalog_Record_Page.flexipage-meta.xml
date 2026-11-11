@@ -570,8 +570,36 @@
                 <identifier>relatedListsTab</identifier>
             </componentInstance>
         </itemInstances>
+        <itemInstances>
+            <componentInstance>
+                <componentInstanceProperties>
+                    <name>body</name>
+                    <value>paymentPlansTabContent</value>
+                </componentInstanceProperties>
+                <componentInstanceProperties>
+                    <name>title</name>
+                    <value>Payment Plans</value>
+                </componentInstanceProperties>
+                <componentName>flexipage:tab</componentName>
+                <identifier>paymentPlansTab</identifier>
+            </componentInstance>
+        </itemInstances>
         <mode>Replace</mode>
         <name>maintabs</name>
+        <type>Facet</type>
+    </flexiPageRegions>
+    <flexiPageRegions>
+        <itemInstances>
+            <componentInstance>
+                <componentInstanceProperties>
+                    <name>cardTitle</name>
+                    <value>Payment Plans</value>
+                </componentInstanceProperties>
+                <componentName>resCatalogPaymentPlans</componentName>
+                <identifier>c_resCatalogPaymentPlans</identifier>
+            </componentInstance>
+        </itemInstances>
+        <name>paymentPlansTabContent</name>
         <type>Facet</type>
     </flexiPageRegions>
     <flexiPageRegions>

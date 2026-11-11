@@ -2,6 +2,10 @@
 <Profile xmlns="http://soap.sforce.com/2006/04/metadata">
     <custom>true</custom>
     <classAccesses>
+        <apexClass>RES_CatalogPaymentPlansController</apexClass>
+        <enabled>true</enabled>
+    </classAccesses>
+    <classAccesses>
         <apexClass>RES_NumberToWordsService</apexClass>
         <enabled>true</enabled>
     </classAccesses>
@@ -613,6 +617,11 @@
     <layoutAssignments>
         <layout>DocumentTemplate-Document Template Layout</layout>
     </layoutAssignments>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>ProductCatalog.POC__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
     <fieldPermissions>
         <editable>true</editable>
         <field>QuoteLineItem.RES_CIP_Type__c</field>

@@ -41,11 +41,26 @@ public with sharing class RES_ApplyApprovedPOCToFuturePaymentPlan {
             }
 
             if(!productCatalogIdSet.isEmpty()){
+                updateCatalogPoc(pocRecordsMap.values());
                 List<Product2> productsLst = new RES_Product2DAOLayer().getProductsRelatedToCatalog(productCatalogIdSet, System.Label.RES_Product_Payment_Plan_RT);
                 system.debug('productsLst ==> '+productsLst);
                 if(!productsLst.isEmpty()){
                     cloneProducts(productsLst, pocToCatalogMap, pocRecordsMap);
                 }
+            }
+        }
+    }
+
+    // Approved POC% is captured on the catalog (project) so its completion is visible at catalog level
+    private static void updateCatalogPoc(List<RES_Project_Completion_Report__c> pocRecords){
+        Map<Id, ProductCatalog> catalogsToUpdate = new Map<Id, ProductCatalog>();
+        for(RES_Project_Completion_Report__c pocRecord : pocRecords){
+            catalogsToUpdate.put(pocRecord.RES_Project__c, new ProductCatalog(Id = pocRecord.RES_Project__c, POC__c = pocRecord.RES_POC__c));
+        }
+        Database.SaveResult[] results = Database.update(catalogsToUpdate.values(), false, AccessLevel.SYSTEM_MODE);
+        for(Integer i = 0; i < results.size(); i++){
+            if(!results[i].isSuccess()){
+                logFailure('ProductCatalog POC update', catalogsToUpdate.values()[i].Id, results[i].getErrors());
             }
         }
     }
