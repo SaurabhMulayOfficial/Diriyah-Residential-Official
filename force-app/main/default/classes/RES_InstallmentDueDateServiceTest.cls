@@ -124,4 +124,14 @@ private class RES_InstallmentDueDateServiceTest {
         System.assertEquals(null, RES_InstallmentDueDateService.dueDate(Date.today(), null, null));
         System.assertEquals(Date.today().addDays(5), RES_InstallmentDueDateService.dueDate(Date.today(), null, 5));
     }
+
+    @IsTest
+    static void wholeMonthsBetween_FloorsAndClampsMonthEnd() {
+        System.assertEquals(0, RES_InstallmentDueDateService.wholeMonthsBetween(null, Date.newInstance(2027, 1, 1)));
+        System.assertEquals(0, RES_InstallmentDueDateService.wholeMonthsBetween(Date.newInstance(2027, 2, 1), Date.newInstance(2027, 1, 1)));
+        System.assertEquals(1, RES_InstallmentDueDateService.wholeMonthsBetween(Date.newInstance(2027, 1, 31), Date.newInstance(2027, 2, 28)));
+        System.assertEquals(1, RES_InstallmentDueDateService.wholeMonthsBetween(Date.newInstance(2027, 1, 15), Date.newInstance(2027, 3, 10)));
+        System.assertEquals(0, RES_InstallmentDueDateService.offPlanConditionMonths(null, Date.newInstance(2027, 3, 10), true));
+        System.assertEquals(2, RES_InstallmentDueDateService.offPlanConditionMonths(Date.newInstance(2027, 1, 10), Date.newInstance(2027, 3, 10), false));
+    }
 }

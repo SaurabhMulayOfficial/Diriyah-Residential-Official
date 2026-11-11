@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<LightningComponentBundle xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>67.0</apiVersion>
+    <isExposed>true</isExposed>
+    <masterLabel>Catalog Payment Plans</masterLabel>
+    <description>Payment Plans of a Product Catalog with all POC versions, active and inactive.</description>
+    <targets>
+        <target>lightning__RecordPage</target>
+    </targets>
+    <targetConfigs>
+        <targetConfig targets="lightning__RecordPage">
+            <objects>
+                <object>ProductCatalog</object>
+            </objects>
+            <property name="cardTitle" type="String" label="Card Title" default="Payment Plans"/>
+        </targetConfig>
+    </targetConfigs>
+</LightningComponentBundle>

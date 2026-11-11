@@ -1,0 +1,45 @@
+<template>
+    <lightning-card title={cardTitle} icon-name="standard:product">
+        <div slot="actions" class="slds-grid slds-grid_vertical-align-center">
+            <lightning-input
+                type="toggle"
+                label="Active only"
+                checked={activeOnly}
+                onchange={handleToggle}
+                message-toggle-active=""
+                message-toggle-inactive=""
+                class="slds-m-right_small"
+            ></lightning-input>
+            <lightning-button-group>
+                <lightning-button-icon icon-name="utility:expand_all" alternative-text="Expand all" title="Expand all" onclick={handleExpandAll}></lightning-button-icon>
+                <lightning-button-icon icon-name="utility:collapse_all" alternative-text="Collapse all" title="Collapse all" onclick={handleCollapseAll}></lightning-button-icon>
+                <lightning-button-icon icon-name="utility:refresh" alternative-text="Refresh" title="Refresh" onclick={handleRefresh}></lightning-button-icon>
+            </lightning-button-group>
+        </div>
+
+        <template if:true={isLoading}>
+            <lightning-spinner alternative-text="Loading" size="small"></lightning-spinner>
+        </template>
+        <template if:true={error}>
+            <p class="slds-p-horizontal_medium slds-text-color_error">{error}</p>
+        </template>
+        <template if:false={isLoading}>
+            <p class="slds-p-horizontal_medium slds-p-bottom_x-small slds-text-body_small slds-text-color_weak">
+                {summary}. Each row is the latest version of a plan; expand it to see earlier POC versions and the original plan.
+            </p>
+            <template if:true={hasRows}>
+                <lightning-tree-grid
+                    key-field="id"
+                    columns={columns}
+                    data={rows}
+                    expanded-rows={expandedRows}
+                    ontoggle={handleToggleRow}
+                    hide-checkbox-column
+                ></lightning-tree-grid>
+            </template>
+            <template if:false={hasRows}>
+                <p class="slds-p-around_medium slds-text-color_weak">{emptyMessage}</p>
+            </template>
+        </template>
+    </lightning-card>
+</template>
