@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ReportType xmlns="http://soap.sforce.com/2006/04/metadata">
+    <baseObject>Contract</baseObject>
+    <category>other</category>
+    <deployed>true</deployed>
+    <description>Contracts with the Account they belong to (Account fields via the Account lookup, including standard Billing address).</description>
+    <label>Contracts with Accounts</label>
+    <sections>
+        <columns>
+            <checkedByDefault>true</checkedByDefault>
+            <field>ContractNumber</field>
+            <table>Contract</table>
+        </columns>
+        <columns>
+            <checkedByDefault>true</checkedByDefault>
+            <field>RES_External_ID__c</field>
+            <table>Contract</table>
+        </columns>
+        <columns>
+            <checkedByDefault>true</checkedByDefault>
+            <field>RES_Total_Contract_Value__c</field>
+            <table>Contract</table>
+        </columns>
+        <columns>
+            <checkedByDefault>true</checkedByDefault>
+            <field>RES_Total_Amount_Received__c</field>
+            <table>Contract</table>
+        </columns>
+        <columns>
+            <checkedByDefault>true</checkedByDefault>
+            <displayNameOverride>Contract Owner</displayNameOverride>
+            <field>Owner</field>
+            <table>Contract</table>
+        </columns>
+        <columns>
+            <checkedByDefault>true</checkedByDefault>
+            <field>Status</field>
+            <table>Contract</table>
+        </columns>
+        <columns>
+            <checkedByDefault>true</checkedByDefault>
+            <field>StartDate</field>
+            <table>Contract</table>
+        </columns>
+        <columns>
+            <checkedByDefault>true</checkedByDefault>
+            <field>RES_Product_Unit_Status__c</field>
+            <table>Contract</table>
+        </columns>
+        <columns>
+            <checkedByDefault>true</checkedByDefault>
+            <field>RES_PAR_Nationality__c</field>
+            <table>Contract</table>
+        </columns>
+        <columns>
+            <checkedByDefault>true</checkedByDefault>
+            <field>CustomerSignedDate</field>
+            <table>Contract</table>
+        </columns>
+        <columns>
+            <checkedByDefault>true</checkedByDefault>
+            <displayNameOverride>Created By</displayNameOverride>
+            <field>CreatedBy</field>
+            <table>Contract</table>
+        </columns>
+        <columns>
+            <checkedByDefault>false</checkedByDefault>
+            <field>CreatedDate</field>
+            <table>Contract</table>
+        </columns>
+        <columns>
+            <checkedByDefault>true</checkedByDefault>
+            <field>RES_SPA_Signed__c</field>
+            <table>Contract</table>
+        </columns>
+        <columns>
+            <checkedByDefault>true</checkedByDefault>
+            <field>ActivatedDate</field>
+            <table>Contract</table>
+        </columns>
+        <columns>
+            <checkedByDefault>true</checkedByDefault>
+            <displayNameOverride>Account Name</displayNameOverride>
+            <field>Account.Name</field>
+            <table>Contract</table>
+        </columns>
+        <columns>
+            <checkedByDefault>true</checkedByDefault>
+            <displayNameOverride>Full Arabic Name</displayNameOverride>
+            <field>Account.RES_Full_Arabic_Name__c</field>
+            <table>Contract</table>
+        </columns>
+        <columns>
+            <checkedByDefault>true</checkedByDefault>
+            <displayNameOverride>Identification Number</displayNameOverride>
+            <field>Account.RES_Identification_Number__c</field>
+            <table>Contract</table>
+        </columns>
+        <columns>
+            <checkedByDefault>true</checkedByDefault>
+            <displayNameOverride>Mobile (Business Account)</displayNameOverride>
+            <field>Account.CompanyMobilePhone__c</field>
+            <table>Contract</table>
+        </columns>
+        <columns>
+            <checkedByDefault>true</checkedByDefault>
+            <displayNameOverride>Billing Street</displayNameOverride>
+            <field>Account.BillingStreet</field>
+            <table>Contract</table>
+        </columns>
+        <columns>
+            <checkedByDefault>true</checkedByDefault>
+            <displayNameOverride>Billing City</displayNameOverride>
+            <field>Account.BillingCity</field>
+            <table>Contract</table>
+        </columns>
+        <columns>
+            <checkedByDefault>true</checkedByDefault>
+            <displayNameOverride>Billing State/Province</displayNameOverride>
+            <field>Account.BillingStateCode</field>
+            <table>Contract</table>
+        </columns>
+        <columns>
+            <checkedByDefault>true</checkedByDefault>
+            <displayNameOverride>Billing Zip/Postal Code</displayNameOverride>
+            <field>Account.BillingPostalCode</field>
+            <table>Contract</table>
+        </columns>
+        <columns>
+            <checkedByDefault>true</checkedByDefault>
+            <displayNameOverride>Billing Country</displayNameOverride>
+            <field>Account.BillingCountryCode</field>
+            <table>Contract</table>
+        </columns>
+        <columns>
+            <checkedByDefault>true</checkedByDefault>
+            <displayNameOverride>Lead Source</displayNameOverride>
+            <field>Account.PersonContact.LeadSource</field>
+            <table>Contract</table>
+        </columns>
+        <columns>
+            <checkedByDefault>true</checkedByDefault>
+            <displayNameOverride>Mobile (Person Account)</displayNameOverride>
+            <field>Account.PersonContact.MobilePhone</field>
+            <table>Contract</table>
+        </columns>
+        <columns>
+            <checkedByDefault>true</checkedByDefault>
+            <displayNameOverride>Phone (Business Account)</displayNameOverride>
+            <field>Account.Phone</field>
+            <table>Contract</table>
+        </columns>
+        <masterLabel>Contract</masterLabel>
+    </sections>
+</ReportType>
