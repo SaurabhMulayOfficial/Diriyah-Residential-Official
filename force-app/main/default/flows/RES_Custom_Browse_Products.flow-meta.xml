@@ -32,6 +32,38 @@
     <apiVersion>67.0</apiVersion>
     <areMetricsLoggedToDataCloud>false</areMetricsLoggedToDataCloud>
     <assignments>
+        <name>Add_All_Catalog_Id_s</name>
+        <label>Add All Catalog Id&apos;s</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignmentItems>
+            <assignToReference>resAllCatalogs</assignToReference>
+            <operator>Add</operator>
+            <value>
+                <elementReference>Loop_Through_Catalog.Id</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Loop_Through_Catalog</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
+        <name>Add_Available_Catalog</name>
+        <label>Add Available Catalog</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignmentItems>
+            <assignToReference>resCatalogIdsWithAvailableProducts</assignToReference>
+            <operator>Add</operator>
+            <value>
+                <elementReference>Loop_Through_Available_Products.RES_Business_Entity__c</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Loop_Through_Available_Products</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
         <description>Sets the FilteredCatalogs record collection variable to the records from the Catalogs from Get Catalogs variable.</description>
         <name>SetCatalogList</name>
         <label>Set Catalog List</label>
@@ -41,7 +73,7 @@
             <assignToReference>FilteredCatalogs</assignToReference>
             <operator>Assign</operator>
             <value>
-                <elementReference>getProductCatalogs</elementReference>
+                <elementReference>Get_Available_Catalogs</elementReference>
             </value>
         </assignmentItems>
         <connector>
@@ -238,6 +270,34 @@
     <interviewLabel>Custom Browse Products {!$Flow.CurrentDateTime}</interviewLabel>
     <label>Custom Browse Products</label>
     <loops>
+        <name>Loop_Through_Available_Products</name>
+        <label>Loop Through Available Products</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <collectionReference>Get_Related_Available_Products</collectionReference>
+        <iterationOrder>Asc</iterationOrder>
+        <nextValueConnector>
+            <targetReference>Add_Available_Catalog</targetReference>
+        </nextValueConnector>
+        <noMoreValuesConnector>
+            <targetReference>Get_Available_Catalogs</targetReference>
+        </noMoreValuesConnector>
+    </loops>
+    <loops>
+        <name>Loop_Through_Catalog</name>
+        <label>Loop Through Catalog</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <collectionReference>getProductCatalogs</collectionReference>
+        <iterationOrder>Asc</iterationOrder>
+        <nextValueConnector>
+            <targetReference>Add_All_Catalog_Id_s</targetReference>
+        </nextValueConnector>
+        <noMoreValuesConnector>
+            <targetReference>Get_Related_Available_Products</targetReference>
+        </noMoreValuesConnector>
+    </loops>
+    <loops>
         <description>Runs an action for the catalog record in the record in Catalogs from getProductCatalogs record collection.</description>
         <name>RunActionForCatalog</name>
         <label>Run Action for Catalog</label>
@@ -266,6 +326,57 @@
         </value>
     </processMetadataValues>
     <processType>Flow</processType>
+    <recordLookups>
+        <name>Get_Available_Catalogs</name>
+        <label>Get Available Catalogs</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>SetCatalogList</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Id</field>
+            <operator>In</operator>
+            <value>
+                <elementReference>resCatalogIdsWithAvailableProducts</elementReference>
+            </value>
+        </filters>
+        <getFirstRecordOnly>false</getFirstRecordOnly>
+        <object>ProductCatalog</object>
+        <sortField>Name</sortField>
+        <sortOrder>Asc</sortOrder>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
+    <recordLookups>
+        <name>Get_Related_Available_Products</name>
+        <label>Get Related Available Products</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Loop_Through_Available_Products</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>RES_Business_Entity__c</field>
+            <operator>In</operator>
+            <value>
+                <elementReference>resAllCatalogs</elementReference>
+            </value>
+        </filters>
+        <filters>
+            <field>RES_Unit_Status__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <stringValue>Available</stringValue>
+            </value>
+        </filters>
+        <getFirstRecordOnly>false</getFirstRecordOnly>
+        <object>Product2</object>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
     <recordLookups>
         <description>Gets default catalog record with a catalog ID that matches defaultCatalogId variable. Stores the name, code, number of categories, and last modified date of the results in the Catalogs from Get Default Catalogs record collection variable.</description>
         <name>GetDefaultCatalog</name>
@@ -303,7 +414,7 @@
         <locationY>0</locationY>
         <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
         <connector>
-            <targetReference>SetCatalogList</targetReference>
+            <targetReference>Loop_Through_Catalog</targetReference>
         </connector>
         <getFirstRecordOnly>false</getFirstRecordOnly>
         <object>ProductCatalog</object>
@@ -363,7 +474,7 @@
             <inputParameters>
                 <name>tableData</name>
                 <value>
-                    <elementReference>getProductCatalogs</elementReference>
+                    <elementReference>Get_Available_Catalogs</elementReference>
                 </value>
             </inputParameters>
             <inputParameters>
@@ -381,20 +492,20 @@
             <inputParameters>
                 <name>columns</name>
                 <value>
-                    <stringValue>[{&quot;apiName&quot;:&quot;Name&quot;,&quot;guid&quot;:&quot;column-3ade&quot;,&quot;editable&quot;:false,&quot;hasCustomHeaderLabel&quot;:true,&quot;customHeaderLabel&quot;:&quot;Project Name&quot;,&quot;wrapText&quot;:true,&quot;order&quot;:0,&quot;label&quot;:&quot;Name&quot;,&quot;type&quot;:&quot;text&quot;,&quot;sortable&quot;:true},{&quot;apiName&quot;:&quot;NumberOfCategories&quot;,&quot;guid&quot;:&quot;column-e1d4&quot;,&quot;editable&quot;:false,&quot;hasCustomHeaderLabel&quot;:true,&quot;customHeaderLabel&quot;:&quot;Number Of Buildings/Lands&quot;,&quot;wrapText&quot;:true,&quot;order&quot;:1,&quot;label&quot;:&quot;Number of Categories&quot;,&quot;type&quot;:&quot;customRichText&quot;},{&quot;apiName&quot;:&quot;RES_City__c&quot;,&quot;guid&quot;:&quot;column-81be&quot;,&quot;editable&quot;:false,&quot;hasCustomHeaderLabel&quot;:false,&quot;customHeaderLabel&quot;:&quot;&quot;,&quot;wrapText&quot;:true,&quot;order&quot;:2,&quot;sortable&quot;:false,&quot;label&quot;:&quot;City&quot;,&quot;type&quot;:&quot;text&quot;}]</stringValue>
+                    <stringValue>[{&quot;apiName&quot;:&quot;Name&quot;,&quot;guid&quot;:&quot;column-3ade&quot;,&quot;editable&quot;:false,&quot;hasCustomHeaderLabel&quot;:true,&quot;customHeaderLabel&quot;:&quot;Project Name&quot;,&quot;wrapText&quot;:true,&quot;order&quot;:0,&quot;label&quot;:&quot;Name&quot;,&quot;type&quot;:&quot;text&quot;,&quot;sortable&quot;:true},{&quot;apiName&quot;:&quot;NumberOfCategories&quot;,&quot;guid&quot;:&quot;column-e1d4&quot;,&quot;editable&quot;:false,&quot;hasCustomHeaderLabel&quot;:true,&quot;customHeaderLabel&quot;:&quot;Number Of Buildings/Lands&quot;,&quot;wrapText&quot;:true,&quot;order&quot;:1,&quot;label&quot;:&quot;Number of Categories&quot;,&quot;type&quot;:&quot;customRichText&quot;}]</stringValue>
                 </value>
             </inputParameters>
             <inputParameters>
                 <name>keyField</name>
                 <value>
-                    <complexValue>{&quot;dataType&quot;:&quot;SObject&quot;,&quot;objectType&quot;:&quot;ProductCatalog&quot;,&quot;fieldReferences&quot;:[&quot;Id&quot;],&quot;elementReference&quot;:&quot;getProductCatalogs&quot;}</complexValue>
+                    <complexValue>{&quot;dataType&quot;:&quot;SObject&quot;,&quot;objectType&quot;:&quot;ProductCatalog&quot;,&quot;fieldReferences&quot;:[&quot;Id&quot;],&quot;elementReference&quot;:&quot;Get_Available_Catalogs&quot;}</complexValue>
                     <complexValueType>ComplexObjectFieldDetails</complexValueType>
                 </value>
             </inputParameters>
             <inputParameters>
                 <name>columnReferences</name>
                 <value>
-                    <complexValue>{&quot;dataType&quot;:&quot;SObject&quot;,&quot;objectType&quot;:&quot;ProductCatalog&quot;,&quot;fieldReferences&quot;:[&quot;Name&quot;,&quot;NumberOfCategories&quot;,&quot;RES_City__c&quot;],&quot;elementReference&quot;:&quot;getProductCatalogs&quot;}</complexValue>
+                    <complexValue>{&quot;dataType&quot;:&quot;SObject&quot;,&quot;objectType&quot;:&quot;ProductCatalog&quot;,&quot;fieldReferences&quot;:[&quot;Name&quot;,&quot;NumberOfCategories&quot;],&quot;elementReference&quot;:&quot;Get_Available_Catalogs&quot;}</complexValue>
                     <complexValueType>ComplexObjectFieldDetails</complexValueType>
                 </value>
             </inputParameters>
@@ -640,6 +751,14 @@
         <scale>0</scale>
     </variables>
     <variables>
+        <name>currentItem_Filter_Products</name>
+        <dataType>SObject</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <objectType>Product2</objectType>
+    </variables>
+    <variables>
         <description>Stores the ID of a default catalog record.</description>
         <name>defaultCatalog</name>
         <dataType>String</dataType>
@@ -687,6 +806,20 @@
         <dataType>String</dataType>
         <isCollection>false</isCollection>
         <isInput>true</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <name>resAllCatalogs</name>
+        <dataType>String</dataType>
+        <isCollection>true</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <name>resCatalogIdsWithAvailableProducts</name>
+        <dataType>String</dataType>
+        <isCollection>true</isCollection>
+        <isInput>false</isInput>
         <isOutput>false</isOutput>
     </variables>
     <variables>
