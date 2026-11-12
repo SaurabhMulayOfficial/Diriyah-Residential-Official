@@ -1506,4 +1506,132 @@ private class RES_ProductIntegrationServiceTest {
         Map<String, Object> cond = buildServiceChargeCondition(pad, 'I');
         Assert.areEqual('I', cond.get('Change_Indicator'), 'A unit insert must send every condition as an insert');
     }
+
+    // ── abasToSync: every pending price period is sent (new = I, changed earlier price = U) ──────
+
+    /** Builds an ABA with a read-only LastModifiedDate, which a plain constructor cannot set. */
+    private static AttributeBasedAdjustment abaWithModified(
+        Id ruleId, Decimal value, DateTime effFrom, DateTime effTo,
+        DateTime lastSync, Date sapValidFrom, DateTime lastModified
+    ) {
+        Map<String, Object> raw = new Map<String, Object>{
+            'attributes'                      => new Map<String, Object>{ 'type' => 'AttributeBasedAdjustment' },
+            'AttributeBasedAdjRuleId'         => ruleId,
+            'AdjustmentValue'                 => value,
+            'EffectiveFrom'                   => effFrom,
+            'EffectiveTo'                     => effTo,
+            'RES_Last_Sync_DateTime__c'       => lastSync,
+            'RES_SAP_Condition_Valid_From__c' => sapValidFrom,
+            'LastModifiedDate'                => lastModified
+        };
+        return (AttributeBasedAdjustment) JSON.deserialize(JSON.serialize(raw), AttributeBasedAdjustment.class);
+    }
+
+    @isTest
+    static void testAbasToSyncSendsClosedPreviousPriceAsUpdateBeforeNewPrice() {
+        AttributeBasedAdjRule rule = insertRule('PEND-Test :: Option 2');
+        Map<Id, String> ruleMap = new Map<Id, String>{ rule.Id => 'Option 2' };
+        DateTime synced = DateTime.newInstanceGmt(2026, 11, 11, 7, 31, 15);
+
+        // Previous price: synced earlier, then its Effective To was closed by the system at 07:38:56
+        AttributeBasedAdjustment previous = abaWithModified(rule.Id, 7000,
+            DateTime.newInstanceGmt(2026, 10, 20), DateTime.newInstanceGmt(2026, 10, 29, 23, 59, 59),
+            synced, Date.newInstance(2026, 10, 20), DateTime.newInstanceGmt(2026, 11, 11, 7, 38, 56));
+        // New price: never synced
+        AttributeBasedAdjustment fresh = abaWithModified(rule.Id, 1000,
+            DateTime.newInstanceGmt(2026, 10, 30), null, null, null, DateTime.newInstanceGmt(2026, 11, 11, 7, 38, 56));
+
+        List<AttributeBasedAdjustment> result = RES_ProductIntegrationService.abasToSync(
+            new List<AttributeBasedAdjustment>{ fresh, previous }, ruleMap, 'Option 2');
+
+        Assert.areEqual(2, result.size(), 'Both the changed previous price and the new price must be sent');
+        Assert.areEqual(7000, result[0].AdjustmentValue, 'Earlier price must come first so its update reaches SAP before the insert');
+        Assert.areEqual(1000, result[1].AdjustmentValue, 'New price goes second');
+    }
+
+    @isTest
+    static void testBuildConditionsPreviousPriceUpdateAndNewPriceInsert() {
+        AttributeBasedAdjRule rule = insertRule('PEND-Cond :: Option 2');
+        Map<Id, String> ruleMap = new Map<Id, String>{ rule.Id => 'Option 2' };
+        RES_Condition_Mapping__mdt mapping = new RES_Condition_Mapping__mdt(
+            RES_Condition_Type__c     = 'Y101',
+            RES_Formula__c            = 'A',
+            RES_Conditions_Purpose__c = 'S',
+            RES_Handling__c           = 'Attribute_Based_Adjustment',
+            RES_Selector_Value__c     = 'Option 2'
+        );
+        AttributeBasedAdjustment previous = abaWithModified(rule.Id, 7000,
+            DateTime.newInstanceGmt(2026, 10, 20), DateTime.newInstanceGmt(2026, 10, 29, 23, 59, 59),
+            DateTime.newInstanceGmt(2026, 11, 11, 7, 31, 15), Date.newInstance(2026, 10, 20),
+            DateTime.newInstanceGmt(2026, 11, 11, 7, 38, 56));
+        AttributeBasedAdjustment fresh = abaWithModified(rule.Id, 1000,
+            DateTime.newInstanceGmt(2026, 10, 30), null, null, null, DateTime.newInstanceGmt(2026, 11, 11, 7, 38, 56));
+
+        List<Map<String, Object>> conditions = RES_ProductIntegrationService.buildConditions(
+            new List<RES_Condition_Mapping__mdt>{ mapping },
+            new List<AttributeBasedAdjustment>{ previous, fresh },
+            ruleMap, new List<ProductAttributeDefinition>(), 'U');
+
+        Assert.areEqual(2, conditions.size(), 'One Y101 condition per price period');
+        Assert.areEqual('U',          conditions[0].get('Change_Indicator'),         'Previous price is an update');
+        Assert.areEqual('2026-10-20', conditions[0].get('RES_Condition_Valid_From'), 'Update uses the start date SAP already holds');
+        Assert.areEqual('2026-10-29', conditions[0].get('RES_Condition_Valid_To'),   'Update ends the day before the new price starts (no overlap)');
+        Assert.areEqual('I',          conditions[1].get('Change_Indicator'),         'New price is an insert');
+        Assert.areEqual('2026-10-30', conditions[1].get('RES_Condition_Valid_From'));
+        Assert.areEqual('9999-12-31', conditions[1].get('RES_Condition_Valid_To'),   'Open-ended new price');
+        Assert.areEqual('Y101',       conditions[1].get('RES_Condition_Type'));
+    }
+
+    @isTest
+    static void testAbasToSyncFallsBackToBestPriceWhenNothingPending() {
+        AttributeBasedAdjRule rule = insertRule('PEND-None :: Option 1');
+        Map<Id, String> ruleMap = new Map<Id, String>{ rule.Id => 'Option 1' };
+        DateTime synced = DateTime.newInstanceGmt(2026, 11, 11, 7, 31, 15);
+        // Synced and not edited since (modified at the same moment as the stamp)
+        AttributeBasedAdjustment unchanged = abaWithModified(rule.Id, 5000,
+            DateTime.newInstanceGmt(2026, 10, 15), null, synced, Date.newInstance(2026, 10, 15), synced);
+
+        List<AttributeBasedAdjustment> result = RES_ProductIntegrationService.abasToSync(
+            new List<AttributeBasedAdjustment>{ unchanged }, ruleMap, 'Option 1');
+
+        Assert.areEqual(1, result.size(), 'With nothing pending the best price is still sent so the payload carries its price');
+        Assert.areEqual(5000, result[0].AdjustmentValue);
+    }
+
+    @isTest
+    static void testIsPendingAbaRules() {
+        DateTime synced = DateTime.newInstanceGmt(2026, 11, 11, 7, 31, 15);
+        Assert.isTrue(RES_ProductIntegrationService.isPendingAba(
+            abaWithModified(null, 1, null, null, null, null, synced)), 'Never synced is pending');
+        Assert.isFalse(RES_ProductIntegrationService.isPendingAba(
+            abaWithModified(null, 1, null, null, synced, null, synced.addSeconds(2))), 'Within the stamp window is not pending');
+        Assert.isTrue(RES_ProductIntegrationService.isPendingAba(
+            abaWithModified(null, 1, null, null, synced, null, synced.addMinutes(7))), 'Edited after the sync is pending');
+    }
+
+    @isTest
+    static void testAbasToSyncIgnoresOtherSelectorsAndNullInput() {
+        AttributeBasedAdjRule rule = insertRule('PEND-Sel :: Option 1');
+        Map<Id, String> ruleMap = new Map<Id, String>{ rule.Id => 'Option 1' };
+        AttributeBasedAdjustment other = abaWithModified(rule.Id, 9, DateTime.newInstanceGmt(2026, 10, 15), null, null, null, null);
+
+        Assert.isTrue(RES_ProductIntegrationService.abasToSync(new List<AttributeBasedAdjustment>{ other }, ruleMap, 'Option 2').isEmpty(),
+            'A price of another option must not be sent');
+        Assert.isTrue(RES_ProductIntegrationService.abasToSync(null, null, 'Option 1').isEmpty(), 'Null input is safe');
+    }
+
+    @isTest
+    static void testNextPriceStartFindsEarliestLaterPriceOfSameOption() {
+        AttributeBasedAdjRule rule = insertRule('NEXT-Test :: Option 1');
+        Map<Id, String> ruleMap = new Map<Id, String>{ rule.Id => 'Option 1' };
+        AttributeBasedAdjustment first  = abaWithModified(rule.Id, 1, DateTime.newInstanceGmt(2026, 10, 15), null, null, null, null);
+        AttributeBasedAdjustment second = abaWithModified(rule.Id, 2, DateTime.newInstanceGmt(2026, 10, 20), null, null, null, null);
+        AttributeBasedAdjustment third  = abaWithModified(rule.Id, 3, DateTime.newInstanceGmt(2026, 10, 30), null, null, null, null);
+        List<AttributeBasedAdjustment> all = new List<AttributeBasedAdjustment>{ third, first, second };
+
+        Assert.areEqual(second.EffectiveFrom.date(), RES_ProductIntegrationService.nextPriceStart(all, ruleMap, 'Option 1', first));
+        Assert.areEqual(third.EffectiveFrom.date(),  RES_ProductIntegrationService.nextPriceStart(all, ruleMap, 'Option 1', second));
+        Assert.isNull(RES_ProductIntegrationService.nextPriceStart(all, ruleMap, 'Option 1', third), 'Last price has no next start');
+        Assert.isNull(RES_ProductIntegrationService.nextPriceStart(all, ruleMap, 'Option 2', first), 'Other option has no next start');
+    }
 }

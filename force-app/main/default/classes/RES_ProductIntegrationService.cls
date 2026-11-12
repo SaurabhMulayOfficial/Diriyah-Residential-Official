@@ -363,11 +363,13 @@ public without sharing class RES_ProductIntegrationService extends RES_BaseInteg
             }
 
             if (mapping.RES_Handling__c == 'Attribute_Based_Adjustment') {
-                AttributeBasedAdjustment aba = selectBestAba(abaList, ruleSelectorMap, mapping.RES_Selector_Value__c);
-                if (aba != null) {
+                // One condition per price period: a new price goes as 'I', and an earlier price SAP already holds goes as 'U'
+                // when it changed since its last sync (the system closes the previous price's Effective To when a new one is added).
+                for (AttributeBasedAdjustment aba : abasToSync(abaList, ruleSelectorMap, mapping.RES_Selector_Value__c)) {
+                    Map<String, Object> abaCond = condMap.clone();
                     String abaCI = (aba.RES_Last_Sync_DateTime__c == null) ? 'I' : 'U';
-                    condMap.put('Change_Indicator',         abaCI);
-                    condMap.put('RES_Condition_Price',      aba.AdjustmentValue);
+                    abaCond.put('Change_Indicator',         abaCI);
+                    abaCond.put('RES_Condition_Price',      aba.AdjustmentValue);
                     Date abaEffFrom = aba.EffectiveFrom != null ? aba.EffectiveFrom.date() : Date.today();
                     // CI='U': use the date SAP already has (stored from last sync) so SAP can locate the existing condition.
                     // CI='I': use EffectiveFrom directly as the new condition start date.
@@ -375,14 +377,25 @@ public without sharing class RES_ProductIntegrationService extends RES_BaseInteg
                         ? aba.RES_SAP_Condition_Valid_From__c
                         : abaEffFrom;
                     Date validTo = aba.EffectiveTo != null ? aba.EffectiveTo.date() : Date.newInstance(9999, 12, 31);
-                    condMap.put('RES_Condition_Valid_From', String.valueOf(validFrom));
-                    condMap.put('RES_Condition_Valid_To',   String.valueOf(validTo));
+                    // SAP rejects overlapping periods: end this price the day before the next price of the same option starts
+                    // (the system closes the old price at 23:59:59 GMT, which is the next calendar day in Riyadh).
+                    Date nextStart = nextPriceStart(abaList, ruleSelectorMap, mapping.RES_Selector_Value__c, aba);
+                    if (nextStart != null && validTo >= nextStart) {
+                        validTo = nextStart.addDays(-1);
+                    }
+                    abaCond.put('RES_Condition_Valid_From', String.valueOf(validFrom));
+                    abaCond.put('RES_Condition_Valid_To',   String.valueOf(validTo));
                     includedAbaIds.add(aba.Id);
                     includedAbaValidFromMap.put(aba.Id, abaEffFrom);
                     System.debug('### [Unit_Sync] ABA selected for condition ' + mapping.RES_Condition_Type__c
                         + ' | Id=' + aba.Id + ' | EffectiveFrom=' + aba.EffectiveFrom
                         + ' | EffectiveTo=' + aba.EffectiveTo + ' | CI=' + abaCI);
+                    Map<String, Object> cleanAba = stripNulls(abaCond);
+                    if (cleanAba.containsKey('RES_Condition_Price')) {
+                        conditions.add(cleanAba);
+                    }
                 }
+                continue;
             } else if (mapping.RES_Handling__c == 'Product_Attribute') {
                 String attrName = mapping.RES_Attribute_Name__c;
                 if (String.isNotBlank(attrName) && padByName.containsKey(attrName)) {
@@ -453,6 +466,74 @@ public without sharing class RES_ProductIntegrationService extends RES_BaseInteg
         }
         if (ruleName == null) return null;
         return ruleName.contains(' :: ') ? ruleName.substringAfterLast(' :: ') : ruleName;
+    }
+
+    /**
+     * @description Price records to send for one pricing option, oldest first so an earlier price's update reaches SAP before a new price's insert.
+     *              Pending = never synced ('I'), or synced but changed since (for example Effective To closed by the system when a newer price was added, 'U').
+     *              With nothing pending, the best single price is sent as before so the unit payload still carries its price.
+     */
+    @TestVisible
+    private static List<AttributeBasedAdjustment> abasToSync(
+        List<AttributeBasedAdjustment> abaList,
+        Map<Id, String> ruleSelectorMap,
+        String selectorValue
+    ) {
+        List<AttributeBasedAdjustment> pending = new List<AttributeBasedAdjustment>();
+        if (abaList == null || ruleSelectorMap == null) return pending;
+        if (abaList != null && ruleSelectorMap != null) {
+            for (AttributeBasedAdjustment aba : abaList) {
+                String selector = ruleSelectorMap.get(aba.AttributeBasedAdjRuleId);
+                if (selector == null || selector != selectorValue) continue;
+                if (isPendingAba(aba)) pending.add(aba);
+            }
+        }
+        if (pending.isEmpty()) {
+            AttributeBasedAdjustment best = selectBestAba(abaList, ruleSelectorMap, selectorValue);
+            if (best != null) pending.add(best);
+            return pending;
+        }
+        // Oldest Effective From first (a missing start date counts as today, like the payload does)
+        DateTime fallback = DateTime.now();
+        for (Integer i = 1; i < pending.size(); i++) {
+            AttributeBasedAdjustment current = pending[i];
+            DateTime currentFrom = current.EffectiveFrom != null ? current.EffectiveFrom : fallback;
+            Integer j = i - 1;
+            while (j >= 0 && (pending[j].EffectiveFrom != null ? pending[j].EffectiveFrom : fallback) > currentFrom) {
+                pending[j + 1] = pending[j];
+                j--;
+            }
+            pending[j + 1] = current;
+        }
+        return pending;
+    }
+
+    /** Start date of the next price (same option) after the given one, or null when it is the last. */
+    @TestVisible
+    private static Date nextPriceStart(
+        List<AttributeBasedAdjustment> abaList,
+        Map<Id, String> ruleSelectorMap,
+        String selectorValue,
+        AttributeBasedAdjustment current
+    ) {
+        if (abaList == null || ruleSelectorMap == null || current.EffectiveFrom == null) return null;
+        Date currentFrom = current.EffectiveFrom.date();
+        Date next = null;
+        for (AttributeBasedAdjustment other : abaList) {
+            if (other.Id == current.Id && other.Id != null) continue;
+            String selector = ruleSelectorMap.get(other.AttributeBasedAdjRuleId);
+            if (selector == null || selector != selectorValue || other.EffectiveFrom == null) continue;
+            Date otherFrom = other.EffectiveFrom.date();
+            if (otherFrom > currentFrom && (next == null || otherFrom < next)) next = otherFrom;
+        }
+        return next;
+    }
+
+    /** True when SAP has never received this price, or it was edited after its last sync (5 seconds absorbs the sync stamp's own save). */
+    @TestVisible
+    private static Boolean isPendingAba(AttributeBasedAdjustment aba) {
+        if (aba.RES_Last_Sync_DateTime__c == null) return true;
+        return aba.LastModifiedDate != null && aba.LastModifiedDate > aba.RES_Last_Sync_DateTime__c.addSeconds(5);
     }
 
     /**
