@@ -42,6 +42,11 @@
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
+        <editable>false</editable>
+        <field>ProductCatalog.RES_POC__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
         <editable>true</editable>
         <field>Quote.RES_Total_Price_In_Words_Arabic__c</field>
         <readable>true</readable>
@@ -2431,6 +2436,10 @@
         <viewAllFields>false</viewAllFields>
         <viewAllRecords>false</viewAllRecords>
     </objectPermissions>
+    <classAccesses>
+        <apexClass>RES_CatalogPaymentPlansController</apexClass>
+        <enabled>true</enabled>
+    </classAccesses>
     <classAccesses>
         <apexClass>RES_ConvertedLeadController</apexClass>
         <enabled>true</enabled>

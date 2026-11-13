@@ -6,6 +6,10 @@
         <enabled>true</enabled>
     </classAccesses>
     <classAccesses>
+        <apexClass>RES_CatalogPaymentPlansController</apexClass>
+        <enabled>true</enabled>
+    </classAccesses>
+    <classAccesses>
         <apexClass>RES_ConvertedLeadController</apexClass>
         <enabled>true</enabled>
     </classAccesses>
@@ -41,6 +45,11 @@
         <enabled>true</enabled>
         <name>RES_Show_Document_Section</name>
     </customPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>ProductCatalog.RES_POC__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
     <fieldPermissions>
         <editable>false</editable>
         <field>RES_Measurement__c.RES_Active__c</field>

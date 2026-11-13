@@ -6,6 +6,10 @@
         <enabled>true</enabled>
     </classAccesses>
     <classAccesses>
+        <apexClass>RES_CatalogPaymentPlansController</apexClass>
+        <enabled>true</enabled>
+    </classAccesses>
+    <classAccesses>
         <apexClass>RES_ProductUpdateNotificationController</apexClass>
         <enabled>true</enabled>
     </classAccesses>
@@ -145,6 +149,11 @@
     <fieldPermissions>
         <editable>true</editable>
         <field>Lead.RES_PO_Box__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>ProductCatalog.RES_POC__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>

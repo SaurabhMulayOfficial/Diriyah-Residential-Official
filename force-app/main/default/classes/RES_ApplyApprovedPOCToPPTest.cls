@@ -226,7 +226,7 @@ private class RES_ApplyApprovedPOCToPPTest {
         System.assertEquals(1, newVersions.size(), 'Expected exactly one new Payment Plan version');
         Product2 newVersion = newVersions[0];
         System.assertEquals('Test Payment Plan POC 55', newVersion.Name, 'New version name carries the approved POC');
-        System.assertEquals(55, [SELECT POC__c FROM ProductCatalog WHERE Id = :catalog.Id].POC__c, 'Approved POC is captured on the catalog');
+        System.assertEquals(55, [SELECT RES_POC__c FROM ProductCatalog WHERE Id = :catalog.Id].RES_POC__c, 'Approved POC is captured on the catalog');
         System.assertEquals(true, newVersion.IsActive);
         Product2 root = [SELECT IsActive, RES_Validity_End_Date__c FROM Product2 WHERE Id = :ids.get('plan')];
         System.assertEquals(false, root.IsActive, 'Previous version must be deactivated');

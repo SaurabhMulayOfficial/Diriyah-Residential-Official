@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <PermissionSet xmlns="http://soap.sforce.com/2006/04/metadata">
+    <classAccesses>
+        <apexClass>RES_CatalogPaymentPlansController</apexClass>
+        <enabled>true</enabled>
+    </classAccesses>
     <description>Read-only access to Revenue Cloud fields not in the standard Revenue Cloud Users permission sets: Product2 area, ProductRelatedComponent price option, AttributeAdjustmentCondition values.</description>
     <fieldPermissions>
         <editable>false</editable>
@@ -169,6 +173,11 @@
     <fieldPermissions>
         <editable>false</editable>
         <field>ProductCatalog.RES_Development_Phase__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>ProductCatalog.RES_POC__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>

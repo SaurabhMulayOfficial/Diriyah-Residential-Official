@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <PermissionSet xmlns="http://soap.sforce.com/2006/04/metadata">
+    <classAccesses>
+        <apexClass>RES_CatalogPaymentPlansController</apexClass>
+        <enabled>true</enabled>
+    </classAccesses>
     <customPermissions>
         <enabled>true</enabled>
         <name>RES_Product_Finance_Approver</name>
@@ -29,6 +33,11 @@
     <fieldPermissions>
         <editable>false</editable>
         <field>ProductAttributeDefinition.RES_Billing_Frequency__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>ProductCatalog.RES_POC__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
