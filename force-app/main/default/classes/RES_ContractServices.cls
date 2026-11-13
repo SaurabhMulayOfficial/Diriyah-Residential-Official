@@ -9,7 +9,7 @@ public with sharing class RES_ContractServices {
 
     // Approval Status values that are allowed to fire Sales_Contract_Update
     private static final Set<String> UPDATE_SYNC_APPROVAL_STATUSES = new Set<String>{
-        'Finance Approved', 'Pending ED Treasury', 'Pending GCEO', 'Pending CBDO'
+        'Pending ED Treasury', 'Pending GCEO', 'Pending CBDO'
     };
     public RES_ContractServices() {}
 
