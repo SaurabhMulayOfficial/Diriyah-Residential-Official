@@ -55,7 +55,7 @@ public with sharing class RES_ApplyApprovedPOCToFuturePaymentPlan {
     private static void updateCatalogPoc(List<RES_Project_Completion_Report__c> pocRecords){
         Map<Id, ProductCatalog> catalogsToUpdate = new Map<Id, ProductCatalog>();
         for(RES_Project_Completion_Report__c pocRecord : pocRecords){
-            catalogsToUpdate.put(pocRecord.RES_Project__c, new ProductCatalog(Id = pocRecord.RES_Project__c, POC__c = pocRecord.RES_POC__c));
+            catalogsToUpdate.put(pocRecord.RES_Project__c, new ProductCatalog(Id = pocRecord.RES_Project__c, RES_POC__c = pocRecord.RES_POC__c));
         }
         Database.SaveResult[] results = Database.update(catalogsToUpdate.values(), false, AccessLevel.SYSTEM_MODE);
         for(Integer i = 0; i < results.size(); i++){
