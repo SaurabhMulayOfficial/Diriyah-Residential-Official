@@ -18,15 +18,15 @@ private class RES_Product2DAOLayerTest {
         List<Product2> products = new List<Product2>{
             new Product2(Name = 'DAO-UNIT-001', ProductCode = 'DAO-UNIT-001',
                          Family = '1004', RES_Type__c = 'N', IsActive = false,
-                         RES_Unit_Status__c = 'Draft'),
+                         RES_Unit_Status__c = 'Draft', RES_CIP_Type__c = 'Unit'),
             new Product2(Name = 'DAO-UNIT-002', ProductCode = 'DAO-UNIT-002',
                          Family = '1004', RES_Type__c = 'N', IsActive = false,
-                         RES_Unit_Status__c = 'Draft',
+                         RES_Unit_Status__c = 'Draft', RES_CIP_Type__c = 'Unit',
                          RES_Product_External_ID__c = 'EXT-DAO-TEST-001'),
             new Product2(Name = 'DAO-UNIT-003', ProductCode = 'DAO-UNIT-003',
                          StockKeepingUnit = 'SKU-DAO-003',
                          Family = '1004', RES_Type__c = 'N', IsActive = false,
-                         RES_Unit_Status__c = 'Draft')
+                         RES_Unit_Status__c = 'Draft', RES_CIP_Type__c = 'Unit')
         };
         insert products;
     }
@@ -220,6 +220,22 @@ private class RES_Product2DAOLayerTest {
         List<Product2> results = new RES_Product2DAOLayer()
             .getRejectedProducts('Draft', null, 10, p.CreatedDate, p.Id);
         Assert.isNotNull(results, 'Paginated result must not be null');
+    }
+
+    @isTest
+    static void testGetRejectedProductsExcludesNonUnitCipTypes() {
+        insert new List<Product2>{
+            new Product2(Name = 'DAO-CIP-PLAN', ProductCode = 'DAO-CIP-PLAN', IsActive = false,
+                         RES_Unit_Status__c = 'Draft', RES_CIP_Type__c = 'Payment Plan'),
+            new Product2(Name = 'DAO-CIP-INST', ProductCode = 'DAO-CIP-INST', IsActive = false,
+                         RES_Unit_Status__c = 'Draft', RES_CIP_Type__c = 'Installment')
+        };
+        List<Product2> results = new RES_Product2DAOLayer().getRejectedProducts('Draft', 'DAO-', 50, null, null);
+        Set<String> codes = new Set<String>();
+        for (Product2 p : results) { codes.add(p.ProductCode); }
+        Assert.isTrue(codes.contains('DAO-UNIT-001'), 'Unit must be returned');
+        Assert.isFalse(codes.contains('DAO-CIP-PLAN'), 'Payment Plan must be excluded');
+        Assert.isFalse(codes.contains('DAO-CIP-INST'), 'Installment must be excluded');
     }
 
     // ── getPaymentPlanById ──────────────────────────────────────────────────
