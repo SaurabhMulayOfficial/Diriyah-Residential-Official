@@ -52,6 +52,28 @@ public with sharing class RES_ContractIntegrationService extends RES_BaseIntegra
         setRequestName('Sales_Contract_Creation');
     }
 
+    private static final String USAGE_TYPE_PLOT = '1013';
+    private static final String RES_TYPE_BRANDED = 'B';
+    private static final String RES_TYPE_RESIDENTIAL = 'N';
+
+    // RCN type from the Unit product: Plot usage -> Y003, Branded -> Y002, Residential -> Y001, else the Contract's own type.
+    @TestVisible
+    private static String resolveRecnType(Product2 unit, String fallback) {
+        if (unit == null) {
+            return fallback;
+        }
+        if (unit.Family == USAGE_TYPE_PLOT) {
+            return 'Y003';
+        }
+        if (unit.RES_Type__c == RES_TYPE_BRANDED) {
+            return 'Y002';
+        }
+        if (unit.RES_Type__c == RES_TYPE_RESIDENTIAL) {
+            return 'Y001';
+        }
+        return fallback;
+    }
+
     public String hydrateRequestBody(List<Contract> contracts) {
         if(contracts.isEmpty()){
             throw new RES_IntegrationException('No Contract Record Provided to Create Request Body.');
@@ -115,7 +137,7 @@ public with sharing class RES_ContractIntegrationService extends RES_BaseIntegra
             }
             
             payload.IV_RECNTXT = c.Account.Name;
-            payload.IV_RECNTYPE = c.RES_Contract_Type__c;
+            payload.IV_RECNTYPE = resolveRecnType(unitMapping.containsKey(c.Id) ? unitMapping.get(c.Id).RES_Product__r : null, c.RES_Contract_Type__c);
             
             String firstTimeBuyer = (c.RES_First_Residential_Buyer__c == true? 'X': '');
             payload.IV_FIRST_TIME_BUYER = firstTimeBuyer;

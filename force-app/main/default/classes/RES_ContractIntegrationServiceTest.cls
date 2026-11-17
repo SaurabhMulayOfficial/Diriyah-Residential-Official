@@ -543,4 +543,30 @@ private class RES_ContractIntegrationServiceTest {
 
         Assert.isFalse(threw, 'syncContracts must swallow HTTP-level exceptions and not rethrow.');
     }
+
+    // resolveRecnType — RCN type derived from the Unit product
+
+    @isTest
+    static void resolveRecnTypeResidentialReturnsY001() {
+        Product2 unit = new Product2(Family = '1002', RES_Type__c = 'N');
+        Assert.areEqual('Y001', RES_ContractIntegrationService.resolveRecnType(unit, 'Y002'), 'Residential unit should map to Y001.');
+    }
+
+    @isTest
+    static void resolveRecnTypeBrandedReturnsY002() {
+        Product2 unit = new Product2(Family = '1003', RES_Type__c = 'B');
+        Assert.areEqual('Y002', RES_ContractIntegrationService.resolveRecnType(unit, 'Y001'), 'Branded unit should map to Y002.');
+    }
+
+    @isTest
+    static void resolveRecnTypePlotReturnsY003RegardlessOfResidentialType() {
+        Product2 unit = new Product2(Family = '1013', RES_Type__c = 'B');
+        Assert.areEqual('Y003', RES_ContractIntegrationService.resolveRecnType(unit, 'Y001'), 'Plot usage type should map to Y003.');
+    }
+
+    @isTest
+    static void resolveRecnTypeFallsBackToContractType() {
+        Assert.areEqual('Y001', RES_ContractIntegrationService.resolveRecnType(null, 'Y001'), 'No unit product should keep the Contract type.');
+        Assert.areEqual('Y001', RES_ContractIntegrationService.resolveRecnType(new Product2(Family = '1002', RES_Type__c = 'None'), 'Y001'), 'Unmapped residential type should keep the Contract type.');
+    }
 }
