@@ -340,6 +340,28 @@ private class RES_ProductApprovalServiceTest {
         Test.stopTest();
     }
 
+    @isTest
+    static void testGetRejectedProducts_excludesNonUnitCipTypes() {
+        RES_IntegrationRequestEventService.batchSubmitter = new RES_IntegrationRequestEventService.CountingBatchSubmitter();
+        Product2 unitDraft = new Product2(Name = 'CIP Unit Draft', IsActive = false, RES_Unit_Status__c = 'Draft', RES_CIP_Type__c = 'Unit');
+        Product2 installmentDraft = new Product2(Name = 'CIP Installment Draft', IsActive = false, RES_Unit_Status__c = 'Draft', RES_CIP_Type__c = 'Installment');
+        Product2 paymentPlanDraft = new Product2(Name = 'CIP Payment Plan Draft', IsActive = false, RES_Unit_Status__c = 'Draft', RES_CIP_Type__c = 'Payment Plan');
+        Product2 unitRejected = new Product2(Name = 'CIP Unit Rejected', IsActive = false, RES_Unit_Status__c = 'Rejected', RES_CIP_Type__c = 'Unit');
+        insert new List<Product2>{ unitDraft, installmentDraft, paymentPlanDraft, unitRejected };
+        User admin = RES_TestDataFactory.createGenericUser('System Administrator');
+
+        Test.startTest();
+        System.runAs(admin) {
+            RES_ProductApprovalService.ApprovalQueueResult result = RES_ProductApprovalService.getRejectedProducts('CIP ', 50, null, null);
+            Set<Id> returnedIds = new Map<Id, Product2>(result.products).keySet();
+            System.assert(returnedIds.contains(unitDraft.Id), 'Unit Draft must be listed.');
+            System.assert(returnedIds.contains(unitRejected.Id), 'Unit Rejected must be listed.');
+            System.assert(!returnedIds.contains(installmentDraft.Id), 'Installment must not be listed.');
+            System.assert(!returnedIds.contains(paymentPlanDraft.Id), 'Payment Plan must not be listed.');
+        }
+        Test.stopTest();
+    }
+
     // ============================================================
     // ApprovalStepAccess.compareTo - null-level branches
     // (uncovered in org coverage report: lines 660-668)
