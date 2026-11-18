@@ -9,17 +9,23 @@
                         <valueListItems>
                             <value>Contract.RES_Generate_URC</value>
                             <visibilityRule>
+                                <booleanFilter>1 AND 2</booleanFilter>
                                 <criteria>
                                     <leftValue>{!$Permission.CustomPermission.RES_Generate_URC_Button_Visibility}</leftValue>
                                     <operator>EQUAL</operator>
                                     <rightValue>true</rightValue>
+                                </criteria>
+                                <criteria>
+                                    <leftValue>{!Record.Status}</leftValue>
+                                    <operator>NE</operator>
+                                    <rightValue>Canceled</rightValue>
                                 </criteria>
                             </visibilityRule>
                         </valueListItems>
                         <valueListItems>
                             <value>Contract.RES_Generate_SPA</value>
                             <visibilityRule>
-                                <booleanFilter>1 AND 2</booleanFilter>
+                                <booleanFilter>1 AND 2 AND 3</booleanFilter>
                                 <criteria>
                                     <leftValue>{!Record.RES_Source_Opportunity_Stage__c}</leftValue>
                                     <operator>CONTAINS</operator>
@@ -29,6 +35,11 @@
                                     <leftValue>{!$Permission.CustomPermission.RES_Generate_SPA_Button_Visibility}</leftValue>
                                     <operator>EQUAL</operator>
                                     <rightValue>true</rightValue>
+                                </criteria>
+                                <criteria>
+                                    <leftValue>{!Record.Status}</leftValue>
+                                    <operator>NE</operator>
+                                    <rightValue>Canceled</rightValue>
                                 </criteria>
                             </visibilityRule>
                         </valueListItems>
@@ -71,7 +82,7 @@
                         <valueListItems>
                             <value>CustomButton.Contract.RES_Submit_For_Finance_Approval</value>
                             <visibilityRule>
-                                <booleanFilter>1 AND (2 OR 3) AND 4</booleanFilter>
+                                <booleanFilter>1 AND (2 OR 3) AND 4 AND 5</booleanFilter>
                                 <criteria>
                                     <leftValue>{!Record.RES_Source_Opportunity_Stage__c}</leftValue>
                                     <operator>EQUAL</operator>
@@ -91,6 +102,11 @@
                                     <leftValue>{!$Permission.CustomPermission.RES_Submit_For_Approval_Button_Visibility}</leftValue>
                                     <operator>EQUAL</operator>
                                     <rightValue>true</rightValue>
+                                </criteria>
+                                <criteria>
+                                    <leftValue>{!Record.Status}</leftValue>
+                                    <operator>NE</operator>
+                                    <rightValue>Canceled</rightValue>
                                 </criteria>
                             </visibilityRule>
                         </valueListItems>
@@ -139,10 +155,16 @@
                         <valueListItems>
                             <value>Contract.RES_Generate_Payment_Plan</value>
                             <visibilityRule>
+                                <booleanFilter>1 AND 2</booleanFilter>
                                 <criteria>
                                     <leftValue>{!$Permission.CustomPermission.RES_Generate_Payment_Plan_Button_Visibility}</leftValue>
                                     <operator>EQUAL</operator>
                                     <rightValue>true</rightValue>
+                                </criteria>
+                                <criteria>
+                                    <leftValue>{!Record.Status}</leftValue>
+                                    <operator>NE</operator>
+                                    <rightValue>Canceled</rightValue>
                                 </criteria>
                             </visibilityRule>
                         </valueListItems>
