@@ -731,6 +731,14 @@
                 </contextAttributeMappings>
                 <contextAttributeMappings>
                     <contextAttrHydrationDetails>
+                        <objectName>Contract</objectName>
+                        <queryAttribute>RES_Document_CreationDate_Hijri__c</queryAttribute>
+                    </contextAttrHydrationDetails>
+                    <contextAttribute>RES_CreatedDateAR</contextAttribute>
+                    <contextInputAttributeName>RES_CreatedDateAR</contextInputAttributeName>
+                </contextAttributeMappings>
+                <contextAttributeMappings>
+                    <contextAttrHydrationDetails>
                         <contextAttrHydrationDetails>
                             <objectName>Quote</objectName>
                             <queryAttribute>RES_Document_Reservation_StartDate__c</queryAttribute>
@@ -2609,6 +2617,19 @@
                 <key>false</key>
                 <localizationDisabled>false</localizationDisabled>
                 <title>RES_CreatedDate</title>
+                <transient>false</transient>
+                <value>false</value>
+            </contextAttributes>
+            <contextAttributes>
+                <contextTags>
+                    <title>RES_CreatedDateAR</title>
+                </contextTags>
+                <customMappingAllowed>false</customMappingAllowed>
+                <dataType>string</dataType>
+                <fieldType>inputoutput</fieldType>
+                <key>false</key>
+                <localizationDisabled>false</localizationDisabled>
+                <title>RES_CreatedDateAR</title>
                 <transient>false</transient>
                 <value>false</value>
             </contextAttributes>

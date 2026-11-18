@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <actionCalls>
+        <name>Convert_Creation_Date_to_Hijri</name>
+        <label>Convert Creation Date to Hijri</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <actionName>RES_HijriDateUtility</actionName>
+        <actionType>apex</actionType>
+        <connector>
+            <targetReference>Assign_Creation_Date_Hijri</targetReference>
+        </connector>
+        <flowTransactionModel>CurrentTransaction</flowTransactionModel>
+        <inputParameters>
+            <name>gregorianDate</name>
+            <value>
+                <elementReference>CreationDateGmt</elementReference>
+            </value>
+        </inputParameters>
+        <nameSegment>RES_HijriDateUtility</nameSegment>
+        <offset>0</offset>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </actionCalls>
+    <apiVersion>67.0</apiVersion>
+    <areMetricsLoggedToDataCloud>false</areMetricsLoggedToDataCloud>
+    <assignments>
+        <name>Assign_Creation_Date_Hijri</name>
+        <label>Assign Creation Date (Hijri)</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignmentItems>
+            <assignToReference>$Record.RES_Document_CreationDate_Hijri__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>HijriDateFormatted</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Update_Triggering_Contract</targetReference>
+        </connector>
+    </assignments>
+    <decisions>
+        <name>Check_Flow_Switch</name>
+        <label>Check Flow Switch</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnectorLabel>Flow Switch is Off</defaultConnectorLabel>
+        <rules>
+            <name>Flow_Switch_is_On</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Setup.RES_Config_Switch__c.RES_Flows_Off__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Convert_Creation_Date_to_Hijri</targetReference>
+            </connector>
+            <label>Flow Switch is On</label>
+        </rules>
+    </decisions>
+    <description>Stamps the Hijri equivalent of Document Creation Date (same GMT day as RES_Document_CreationDate__c) for the RES_CreatedDateAR document token.</description>
+    <environments>Default</environments>
+    <formulas>
+        <name>CreationDateGmt</name>
+        <dataType>Date</dataType>
+        <expression>DATEVALUE({!$Record.CreatedDate})</expression>
+    </formulas>
+    <formulas>
+        <name>HijriDateFormatted</name>
+        <dataType>String</dataType>
+        <expression>IF(ISBLANK({!Convert_Creation_Date_to_Hijri.hijriYear}), &quot;&quot;,
+LPAD(TEXT({!Convert_Creation_Date_to_Hijri.hijriDay}), 2, &quot;0&quot;) &amp; &quot;/&quot; &amp;
+LPAD(TEXT({!Convert_Creation_Date_to_Hijri.hijriMonth}), 2, &quot;0&quot;) &amp; &quot;/&quot; &amp;
+TEXT({!Convert_Creation_Date_to_Hijri.hijriYear}))</expression>
+    </formulas>
+    <interviewLabel>RES Contract AfterSave - Populate CreationDate Hijri {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>RES Contract AfterSave - Populate CreationDate Hijri</label>
+    <processMetadataValues>
+        <name>BuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>CanvasMode</name>
+        <value>
+            <stringValue>AUTO_LAYOUT_CANVAS</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>OriginBuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processType>AutoLaunchedFlow</processType>
+    <recordUpdates>
+        <name>Update_Triggering_Contract</name>
+        <label>Update Triggering Contract</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <inputReference>$Record</inputReference>
+    </recordUpdates>
+    <start>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Check_Flow_Switch</targetReference>
+        </connector>
+        <object>Contract</object>
+        <recordTriggerType>Create</recordTriggerType>
+        <triggerType>RecordAfterSave</triggerType>
+    </start>
+    <status>Active</status>
+</Flow>
