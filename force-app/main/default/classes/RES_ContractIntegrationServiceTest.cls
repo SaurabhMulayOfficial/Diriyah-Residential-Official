@@ -312,6 +312,19 @@ private class RES_ContractIntegrationServiceTest {
         Assert.isTrue(result.isEmpty(), 'Empty id set should return an empty list.');
     }
 
+    @isTest
+    static void cipDaoLayerOpenCIPByProductIdsHandlesEmptyAndUnknownIds() {
+        Id unknownProductId = Id.valueOf(Product2.SObjectType.getDescribe().getKeyPrefix() + '000000000000');
+        RES_ContractItemPriceDAOLayer dao = new RES_ContractItemPriceDAOLayer();
+        Test.startTest();
+        List<ContractItemPrice> emptyResult = dao.getOpenCIPByProductIds(new Set<Id>(), new Set<String>{ 'Canceled' });
+        List<ContractItemPrice> unknownResult = dao.getOpenCIPByProductIds(new Set<Id>{ unknownProductId }, new Set<String>{ 'Canceled' });
+        Test.stopTest();
+
+        Assert.isTrue(emptyResult.isEmpty(), 'Empty id set should return an empty list.');
+        Assert.isTrue(unknownResult.isEmpty(), 'Unknown product id should match no CIPs.');
+    }
+
     // ─────────────────────────────────────────────────────────────────────────
     // RES_ResponseWrapper.logError — defensive path (exception swallowed)
     // ─────────────────────────────────────────────────────────────────────────
