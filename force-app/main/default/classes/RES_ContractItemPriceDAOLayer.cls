@@ -29,7 +29,7 @@ public without sharing class RES_ContractItemPriceDAOLayer extends RES_BaseDAOLa
         };
 
         String soql =
-            'SELECT Id, Price, RES_CIP_Type__c, ContractId, ItemId, RES_Product__r.RES_API_Business_Entity__c, RES_Product__r.RES_Product_External_ID__c, RES_Product__r.RES_HardBlock_Start__c ' +
+            'SELECT Id, Price, RES_CIP_Type__c, ContractId, ItemId, RES_Product__r.RES_API_Business_Entity__c, RES_Product__r.RES_Product_External_ID__c, RES_Product__r.RES_HardBlock_Start__c, RES_Product__r.RES_Type__c, RES_Product__r.Family ' +
             'FROM ContractItemPrice ' +
             'WHERE ContractId IN :contractIds ' +
             'AND RES_CIP_Type__c IN :cipTypes ' +
