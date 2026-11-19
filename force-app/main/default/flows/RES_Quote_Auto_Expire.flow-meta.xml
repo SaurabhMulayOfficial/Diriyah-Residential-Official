@@ -36,6 +36,13 @@
             </value>
         </filters>
         <filters>
+            <field>Status</field>
+            <operator>NotEqualTo</operator>
+            <value>
+                <stringValue>Cancelled</stringValue>
+            </value>
+        </filters>
+        <filters>
             <field>LastModifiedDate</field>
             <operator>LessThan</operator>
             <value>
