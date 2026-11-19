@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>RES_Unit_Net_Saleable_Area__c</fullName>
+    <businessStatus>Active</businessStatus>
+    <description>Net Saleable Area (m²) of the Quote's Residential Unit. Exposes the unit size on the Sales Funnel report.</description>
+    <externalId>false</externalId>
+    <formula>RES_Product__r.RES_Net_Saleable_Area__c</formula>
+    <formulaTreatBlanksAs>BlankAsBlank</formulaTreatBlanksAs>
+    <label>Unit Net Saleable Area (m²)</label>
+    <precision>18</precision>
+    <required>false</required>
+    <scale>2</scale>
+    <trackTrending>false</trackTrending>
+    <type>Number</type>
+    <unique>false</unique>
+</CustomField>

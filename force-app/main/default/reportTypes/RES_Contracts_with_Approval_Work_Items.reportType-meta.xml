@@ -1,0 +1,258 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ReportType xmlns="http://soap.sforce.com/2006/04/metadata">
+    <baseObject>Contract</baseObject>
+    <category>other</category>
+    <deployed>true</deployed>
+    <description>Contracts with their Account (incl. standard Billing address) and every Approval Work Item raised against the contract. Contracts without work items are kept.</description>
+    <join>
+        <outerJoin>true</outerJoin>
+        <relationship>DIR_Approval_Work_Items__r</relationship>
+    </join>
+    <label>Contracts with Approval Work Items</label>
+    <sections>
+        <columns>
+            <checkedByDefault>true</checkedByDefault>
+            <field>ContractNumber</field>
+            <table>Contract</table>
+        </columns>
+        <columns>
+            <checkedByDefault>true</checkedByDefault>
+            <field>RES_External_ID__c</field>
+            <table>Contract</table>
+        </columns>
+        <columns>
+            <checkedByDefault>true</checkedByDefault>
+            <field>RES_Total_Contract_Value__c</field>
+            <table>Contract</table>
+        </columns>
+        <columns>
+            <checkedByDefault>true</checkedByDefault>
+            <field>RES_Total_Amount_Received__c</field>
+            <table>Contract</table>
+        </columns>
+        <columns>
+            <checkedByDefault>true</checkedByDefault>
+            <displayNameOverride>Contract Owner</displayNameOverride>
+            <field>Owner</field>
+            <table>Contract</table>
+        </columns>
+        <columns>
+            <checkedByDefault>true</checkedByDefault>
+            <field>Status</field>
+            <table>Contract</table>
+        </columns>
+        <columns>
+            <checkedByDefault>true</checkedByDefault>
+            <field>StartDate</field>
+            <table>Contract</table>
+        </columns>
+        <columns>
+            <checkedByDefault>true</checkedByDefault>
+            <field>RES_Product_Unit_Status__c</field>
+            <table>Contract</table>
+        </columns>
+        <columns>
+            <checkedByDefault>true</checkedByDefault>
+            <field>RES_PAR_Nationality__c</field>
+            <table>Contract</table>
+        </columns>
+        <columns>
+            <checkedByDefault>true</checkedByDefault>
+            <field>CustomerSignedDate</field>
+            <table>Contract</table>
+        </columns>
+        <columns>
+            <checkedByDefault>true</checkedByDefault>
+            <displayNameOverride>Created By</displayNameOverride>
+            <field>CreatedBy</field>
+            <table>Contract</table>
+        </columns>
+        <columns>
+            <checkedByDefault>false</checkedByDefault>
+            <field>CreatedDate</field>
+            <table>Contract</table>
+        </columns>
+        <columns>
+            <checkedByDefault>true</checkedByDefault>
+            <field>RES_SPA_Signed__c</field>
+            <table>Contract</table>
+        </columns>
+        <columns>
+            <checkedByDefault>true</checkedByDefault>
+            <field>ActivatedDate</field>
+            <table>Contract</table>
+        </columns>
+        <columns>
+            <checkedByDefault>true</checkedByDefault>
+            <displayNameOverride>Account Name</displayNameOverride>
+            <field>Account.Name</field>
+            <table>Contract</table>
+        </columns>
+        <columns>
+            <checkedByDefault>true</checkedByDefault>
+            <displayNameOverride>Full Arabic Name</displayNameOverride>
+            <field>Account.RES_Full_Arabic_Name__c</field>
+            <table>Contract</table>
+        </columns>
+        <columns>
+            <checkedByDefault>true</checkedByDefault>
+            <displayNameOverride>Identification Number</displayNameOverride>
+            <field>Account.RES_Identification_Number__c</field>
+            <table>Contract</table>
+        </columns>
+        <columns>
+            <checkedByDefault>true</checkedByDefault>
+            <displayNameOverride>Mobile (Business Account)</displayNameOverride>
+            <field>Account.CompanyMobilePhone__c</field>
+            <table>Contract</table>
+        </columns>
+        <columns>
+            <checkedByDefault>true</checkedByDefault>
+            <displayNameOverride>Billing Street</displayNameOverride>
+            <field>Account.BillingStreet</field>
+            <table>Contract</table>
+        </columns>
+        <columns>
+            <checkedByDefault>true</checkedByDefault>
+            <displayNameOverride>Billing City</displayNameOverride>
+            <field>Account.BillingCity</field>
+            <table>Contract</table>
+        </columns>
+        <columns>
+            <checkedByDefault>true</checkedByDefault>
+            <displayNameOverride>Billing State/Province</displayNameOverride>
+            <field>Account.BillingStateCode</field>
+            <table>Contract</table>
+        </columns>
+        <columns>
+            <checkedByDefault>true</checkedByDefault>
+            <displayNameOverride>Billing Zip/Postal Code</displayNameOverride>
+            <field>Account.BillingPostalCode</field>
+            <table>Contract</table>
+        </columns>
+        <columns>
+            <checkedByDefault>true</checkedByDefault>
+            <displayNameOverride>Billing Country</displayNameOverride>
+            <field>Account.BillingCountryCode</field>
+            <table>Contract</table>
+        </columns>
+        <columns>
+            <checkedByDefault>true</checkedByDefault>
+            <displayNameOverride>Lead Source</displayNameOverride>
+            <field>Account.PersonContact.LeadSource</field>
+            <table>Contract</table>
+        </columns>
+        <columns>
+            <checkedByDefault>true</checkedByDefault>
+            <displayNameOverride>Mobile (Person Account)</displayNameOverride>
+            <field>Account.PersonContact.MobilePhone</field>
+            <table>Contract</table>
+        </columns>
+        <columns>
+            <checkedByDefault>true</checkedByDefault>
+            <displayNameOverride>Phone (Business Account)</displayNameOverride>
+            <field>Account.Phone</field>
+            <table>Contract</table>
+        </columns>
+        <columns>
+            <checkedByDefault>true</checkedByDefault>
+            <displayNameOverride>Unit</displayNameOverride>
+            <field>RES_Unit__c</field>
+            <table>Contract</table>
+        </columns>
+        <columns>
+            <checkedByDefault>true</checkedByDefault>
+            <displayNameOverride>Business Entity / Project / Zone</displayNameOverride>
+            <field>RES_Unit__c.RES_Business_Entity__c</field>
+            <table>Contract</table>
+        </columns>
+        <columns>
+            <checkedByDefault>true</checkedByDefault>
+            <displayNameOverride>Person Account Full Name</displayNameOverride>
+            <field>Account.PersonContact</field>
+            <table>Contract</table>
+        </columns>
+        <columns>
+            <checkedByDefault>true</checkedByDefault>
+            <displayNameOverride>Person Account Email</displayNameOverride>
+            <field>Account.PersonContact.Email</field>
+            <table>Contract</table>
+        </columns>
+        <columns>
+            <checkedByDefault>true</checkedByDefault>
+            <displayNameOverride>Broker</displayNameOverride>
+            <field>RES_Broker__c</field>
+            <table>Contract</table>
+        </columns>
+        <columns>
+            <checkedByDefault>true</checkedByDefault>
+            <displayNameOverride>Account Source</displayNameOverride>
+            <field>Account.AccountSource</field>
+            <table>Contract</table>
+        </columns>
+        <columns>
+            <checkedByDefault>true</checkedByDefault>
+            <displayNameOverride>RM Commission Payment</displayNameOverride>
+            <field>RES_RM_Commission_Payment__c</field>
+            <table>Contract</table>
+        </columns>
+        <masterLabel>Contract</masterLabel>
+    </sections>
+    <sections>
+        <columns>
+            <checkedByDefault>true</checkedByDefault>
+            <displayNameOverride>Approval Work Item Name</displayNameOverride>
+            <field>Name</field>
+            <table>Contract.DIR_Approval_Work_Items__r</table>
+        </columns>
+        <columns>
+            <checkedByDefault>true</checkedByDefault>
+            <displayNameOverride>Approval Status</displayNameOverride>
+            <field>Status</field>
+            <table>Contract.DIR_Approval_Work_Items__r</table>
+        </columns>
+        <columns>
+            <checkedByDefault>true</checkedByDefault>
+            <displayNameOverride>Reviewed By</displayNameOverride>
+            <field>ReviewedBy</field>
+            <table>Contract.DIR_Approval_Work_Items__r</table>
+        </columns>
+        <columns>
+            <checkedByDefault>true</checkedByDefault>
+            <displayNameOverride>Reviewed Date</displayNameOverride>
+            <field>ReviewedDate</field>
+            <table>Contract.DIR_Approval_Work_Items__r</table>
+        </columns>
+        <columns>
+            <checkedByDefault>true</checkedByDefault>
+            <displayNameOverride>Approval Chain Name</displayNameOverride>
+            <field>ApprovalChainName</field>
+            <table>Contract.DIR_Approval_Work_Items__r</table>
+        </columns>
+        <columns>
+            <checkedByDefault>true</checkedByDefault>
+            <displayNameOverride>Approval Condition Name</displayNameOverride>
+            <field>ApprovalConditionName</field>
+            <table>Contract.DIR_Approval_Work_Items__r</table>
+        </columns>
+        <columns>
+            <checkedByDefault>true</checkedByDefault>
+            <displayNameOverride>Submission Comments</displayNameOverride>
+            <field>RES_Approval_Request_Remarks__c</field>
+            <table>Contract.DIR_Approval_Work_Items__r</table>
+        </columns>
+        <columns>
+            <checkedByDefault>true</checkedByDefault>
+            <displayNameOverride>Approval Created Date</displayNameOverride>
+            <field>CreatedDate</field>
+            <table>Contract.DIR_Approval_Work_Items__r</table>
+        </columns>
+        <columns>
+            <checkedByDefault>true</checkedByDefault>
+            <displayNameOverride>SLA End Date</displayNameOverride>
+            <field>RES_SLA_End_Date__c</field>
+            <table>Contract.DIR_Approval_Work_Items__r</table>
+        </columns>
+        <masterLabel>Approval Work Items</masterLabel>
+    </sections>
+</ReportType>
