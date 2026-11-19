@@ -3244,6 +3244,11 @@
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
+        <editable>false</editable>
+        <field>Contract.RES_Amount_Without_Service_Charge__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
         <editable>true</editable>
         <field>Opportunity.RES_Lead__c</field>
         <readable>true</readable>
@@ -5292,6 +5297,11 @@
     <fieldPermissions>
         <editable>false</editable>
         <field>Quote.RES_Document_Total_Price__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>Quote.RES_Quote_Owner__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>

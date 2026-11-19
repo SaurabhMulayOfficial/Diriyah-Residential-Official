@@ -13,6 +13,9 @@
         <field>Lead$CreatedBy</field>
     </columns>
     <columns>
+        <field>Lead$Owner</field>
+    </columns>
+    <columns>
         <field>Lead$LeadSource</field>
     </columns>
     <columns>
@@ -40,6 +43,9 @@
         <field>Lead.Opportunities__r$CreatedBy</field>
     </columns>
     <columns>
+        <field>Lead.Opportunities__r$Owner</field>
+    </columns>
+    <columns>
         <field>Lead.Opportunities__r$StageName</field>
     </columns>
     <columns>
@@ -62,6 +68,9 @@
     </columns>
     <columns>
         <field>Lead.Opportunities__r.Quotes$CreatedBy</field>
+    </columns>
+    <columns>
+        <field>Lead.Opportunities__r.Quotes$RES_Quote_Owner__c</field>
     </columns>
     <columns>
         <field>Lead.Opportunities__r.Quotes$Status</field>
@@ -94,7 +103,13 @@
         <field>Lead.Opportunities__r.Quotes.Contracts__r$CreatedBy</field>
     </columns>
     <columns>
+        <field>Lead.Opportunities__r.Quotes.Contracts__r$Owner</field>
+    </columns>
+    <columns>
         <field>Lead.Opportunities__r.Quotes.Contracts__r$Status</field>
+    </columns>
+    <columns>
+        <field>Lead.Opportunities__r.Quotes.Contracts__r$RES_Amount_Without_Service_Charge__c</field>
     </columns>
     <columns>
         <field>Lead.Opportunities__r.Quotes.Contracts__r$RES_Total_Contract_Value__c</field>

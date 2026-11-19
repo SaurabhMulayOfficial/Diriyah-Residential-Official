@@ -35,7 +35,14 @@
         </columns>
         <columns>
             <checkedByDefault>true</checkedByDefault>
+            <displayNameOverride>Created By</displayNameOverride>
             <field>CreatedBy</field>
+            <table>Lead</table>
+        </columns>
+        <columns>
+            <checkedByDefault>true</checkedByDefault>
+            <displayNameOverride>Lead Owner</displayNameOverride>
+            <field>Owner</field>
             <table>Lead</table>
         </columns>
         <columns>
@@ -83,7 +90,14 @@
         </columns>
         <columns>
             <checkedByDefault>true</checkedByDefault>
+            <displayNameOverride>Created By</displayNameOverride>
             <field>CreatedBy</field>
+            <table>Lead.Opportunities__r</table>
+        </columns>
+        <columns>
+            <checkedByDefault>true</checkedByDefault>
+            <displayNameOverride>Opportunity Owner</displayNameOverride>
+            <field>Owner</field>
             <table>Lead.Opportunities__r</table>
         </columns>
         <columns>
@@ -126,7 +140,13 @@
         </columns>
         <columns>
             <checkedByDefault>true</checkedByDefault>
+            <displayNameOverride>Created By</displayNameOverride>
             <field>CreatedBy</field>
+            <table>Lead.Opportunities__r.Quotes</table>
+        </columns>
+        <columns>
+            <checkedByDefault>true</checkedByDefault>
+            <field>RES_Quote_Owner__c</field>
             <table>Lead.Opportunities__r.Quotes</table>
         </columns>
         <columns>
@@ -146,6 +166,7 @@
         </columns>
         <columns>
             <checkedByDefault>true</checkedByDefault>
+            <displayNameOverride>Product Name</displayNameOverride>
             <field>RES_Product__c</field>
             <table>Lead.Opportunities__r.Quotes</table>
         </columns>
@@ -179,12 +200,24 @@
         </columns>
         <columns>
             <checkedByDefault>true</checkedByDefault>
+            <displayNameOverride>Created By</displayNameOverride>
             <field>CreatedBy</field>
             <table>Lead.Opportunities__r.Quotes.Contracts__r</table>
         </columns>
         <columns>
             <checkedByDefault>true</checkedByDefault>
+            <displayNameOverride>Contract Owner</displayNameOverride>
+            <field>Owner</field>
+            <table>Lead.Opportunities__r.Quotes.Contracts__r</table>
+        </columns>
+        <columns>
+            <checkedByDefault>true</checkedByDefault>
             <field>Status</field>
+            <table>Lead.Opportunities__r.Quotes.Contracts__r</table>
+        </columns>
+        <columns>
+            <checkedByDefault>true</checkedByDefault>
+            <field>RES_Amount_Without_Service_Charge__c</field>
             <table>Lead.Opportunities__r.Quotes.Contracts__r</table>
         </columns>
         <columns>
