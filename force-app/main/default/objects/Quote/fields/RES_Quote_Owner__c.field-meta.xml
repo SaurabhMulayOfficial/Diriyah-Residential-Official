@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>RES_Quote_Owner__c</fullName>
+    <businessStatus>Active</businessStatus>
+    <description>Name of the Quote Owner. Quote Owner is not exposed as a report column, so this formula surfaces it on the Sales Funnel report.</description>
+    <externalId>false</externalId>
+    <formula>Owner:User.FirstName &amp; &quot; &quot; &amp; Owner:User.LastName</formula>
+    <formulaTreatBlanksAs>BlankAsBlank</formulaTreatBlanksAs>
+    <label>Quote Owner</label>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Text</type>
+    <unique>false</unique>
+</CustomField>

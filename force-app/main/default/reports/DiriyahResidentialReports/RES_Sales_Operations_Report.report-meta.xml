@@ -10,11 +10,9 @@
         <field>Contract$RES_External_ID__c</field>
     </columns>
     <columns>
-        <aggregateTypes>Sum</aggregateTypes>
         <field>Contract$RES_Total_Contract_Value__c</field>
     </columns>
     <columns>
-        <aggregateTypes>Sum</aggregateTypes>
         <field>Contract$RES_Total_Amount_Received__c</field>
     </columns>
     <columns>
@@ -72,15 +70,61 @@
         <field>Contract$Account.PersonContact.LeadSource</field>
     </columns>
     <columns>
-        <aggregateTypes>Sum</aggregateTypes>
         <field>Contract$RES_SPA_Signed__c</field>
     </columns>
     <columns>
         <field>Contract$ActivatedDate</field>
     </columns>
     <columns>
-        <aggregateTypes>Sum</aggregateTypes>
         <field>CDF1</field>
+    </columns>
+    <columns>
+        <field>Contract$RES_Unit__c</field>
+    </columns>
+    <columns>
+        <field>Contract$RES_Unit__c.RES_Business_Entity__c</field>
+    </columns>
+    <columns>
+        <field>Contract$Account.PersonContact</field>
+    </columns>
+    <columns>
+        <field>Contract$Account.PersonContact.Email</field>
+    </columns>
+    <columns>
+        <field>Contract$RES_Broker__c</field>
+    </columns>
+    <columns>
+        <field>Contract$Account.AccountSource</field>
+    </columns>
+    <columns>
+        <field>Contract$RES_RM_Commission_Payment__c</field>
+    </columns>
+    <columns>
+        <field>Contract.DIR_Approval_Work_Items__r$Name</field>
+    </columns>
+    <columns>
+        <field>Contract.DIR_Approval_Work_Items__r$Status</field>
+    </columns>
+    <columns>
+        <field>Contract.DIR_Approval_Work_Items__r$ReviewedBy</field>
+    </columns>
+    <columns>
+        <field>Contract.DIR_Approval_Work_Items__r$ReviewedDate</field>
+    </columns>
+    <columns>
+        <field>Contract.DIR_Approval_Work_Items__r$ApprovalChainName</field>
+    </columns>
+    <columns>
+        <field>Contract.DIR_Approval_Work_Items__r$ApprovalConditionName</field>
+    </columns>
+    <columns>
+        <field>Contract.DIR_Approval_Work_Items__r$RES_Approval_Request_Remarks__c</field>
+    </columns>
+    <columns>
+        <field>Contract.DIR_Approval_Work_Items__r$CreatedDate</field>
+    </columns>
+    <columns>
+        <field>Contract.DIR_Approval_Work_Items__r$RES_SLA_End_Date__c</field>
     </columns>
     <currency>SAR</currency>
     <customDetailFormulas>
@@ -96,7 +140,7 @@
         <name>co</name>
         <value>1</value>
     </params>
-    <reportType>RES_Contracts_with_Accounts__c</reportType>
+    <reportType>RES_Contracts_with_Approval_Work_Items__c</reportType>
     <scope>organization</scope>
     <showDetails>true</showDetails>
     <showGrandTotal>true</showGrandTotal>

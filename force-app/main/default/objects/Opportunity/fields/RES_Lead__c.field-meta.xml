@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>RES_Lead__c</fullName>
+    <deleteConstraint>SetNull</deleteConstraint>
+    <description>The Lead this Opportunity was converted from. Stamped by RES_Lead_AfterUpdate_Stamp_Converted_Opportunity; used by the Sales Funnel report type (Lead &gt; Opportunity &gt; Quote &gt; Contract).</description>
+    <label>Converted From Lead</label>
+    <referenceTo>Lead</referenceTo>
+    <relationshipLabel>Opportunities</relationshipLabel>
+    <relationshipName>Opportunities</relationshipName>
+    <required>false</required>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackHistory>false</trackHistory>
+    <type>Lookup</type>
+</CustomField>
