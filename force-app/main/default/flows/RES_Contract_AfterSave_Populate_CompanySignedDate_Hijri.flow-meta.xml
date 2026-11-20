@@ -22,6 +22,27 @@
         <storeOutputAutomatically>true</storeOutputAutomatically>
     </actionCalls>
     <actionCalls>
+        <name>Convert_Created_Date_to_Hijri</name>
+        <label>Convert Created Date to Hijri</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <actionName>RES_HijriDateUtility</actionName>
+        <actionType>apex</actionType>
+        <connector>
+            <targetReference>Assign_Created_Date_Hijri</targetReference>
+        </connector>
+        <flowTransactionModel>CurrentTransaction</flowTransactionModel>
+        <inputParameters>
+            <name>gregorianDateTime</name>
+            <value>
+                <elementReference>$Record.CreatedDate</elementReference>
+            </value>
+        </inputParameters>
+        <nameSegment>RES_HijriDateUtility</nameSegment>
+        <offset>0</offset>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </actionCalls>
+    <actionCalls>
         <name>Populate_Document_Purchaser_Nationality_On_Contract</name>
         <label>Populate Document Purchaser Nationality On Contract</label>
         <locationX>0</locationX>
@@ -58,6 +79,22 @@
         </connector>
     </assignments>
     <assignments>
+        <name>Assign_Created_Date_Hijri</name>
+        <label>Assign Created Date (Hijri)</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignmentItems>
+            <assignToReference>$Record.RES_CreatedDate_Arabic__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>Convert_Created_Date_to_Hijri.hijriDateText</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Logic_To_Run</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
         <name>Clear_Company_Signed_Date_Hijri</name>
         <label>Clear Company Signed Date (Hijri)</label>
         <locationX>0</locationX>
@@ -87,9 +124,41 @@
                 </rightValue>
             </conditions>
             <connector>
-                <targetReference>Logic_To_Run</targetReference>
+                <targetReference>Check_Created_Date_Arabic</targetReference>
             </connector>
             <label>Flow Switch is On</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>Check_Created_Date_Arabic</name>
+        <label>Check Created Date Arabic</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnector>
+            <targetReference>Logic_To_Run</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Already Populated</defaultConnectorLabel>
+        <rules>
+            <name>Created_Date_Arabic_Empty</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.CreatedDate</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.RES_CreatedDate_Arabic__c</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Convert_Created_Date_to_Hijri</targetReference>
+            </connector>
+            <label>Created Date Arabic Empty</label>
         </rules>
     </decisions>
     <decisions>
@@ -97,6 +166,9 @@
         <label>Logic To Run</label>
         <locationX>0</locationX>
         <locationY>0</locationY>
+        <defaultConnector>
+            <targetReference>Update_Triggering_Contract</targetReference>
+        </defaultConnector>
         <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
         <rules>
             <name>Hijri_Date</name>
@@ -200,7 +272,7 @@
         <connector>
             <targetReference>Check_Flow_Switch</targetReference>
         </connector>
-        <filterLogic>1 OR 2 OR 3 OR 4</filterLogic>
+        <filterLogic>1 OR 2 OR 3 OR 4 OR 5</filterLogic>
         <filters>
             <field>CompanySignedDate</field>
             <operator>IsNull</operator>
@@ -225,6 +297,13 @@
         <filters>
             <field>CompanySignedDate</field>
             <operator>IsChanged</operator>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </filters>
+        <filters>
+            <field>RES_CreatedDate_Arabic__c</field>
+            <operator>IsNull</operator>
             <value>
                 <booleanValue>true</booleanValue>
             </value>
