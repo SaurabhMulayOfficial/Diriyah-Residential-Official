@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Report xmlns="http://soap.sforce.com/2006/04/metadata">
+    <aggregates>
+        <calculatedFormula>IF(CDF2:SUM = 0,0, CDF1:SUM / CDF2:SUM)</calculatedFormula>
+        <datatype>percent</datatype>
+        <developerName>FORMULA1</developerName>
+        <isActive>true</isActive>
+        <isCrossBlock>false</isCrossBlock>
+        <masterLabel>Sell-through Rate by Project</masterLabel>
+        <scale>2</scale>
+    </aggregates>
+    <columns>
+        <field>NAME</field>
+    </columns>
+    <columns>
+        <field>ACTIVE</field>
+    </columns>
+    <columns>
+        <field>DESCRIPTION</field>
+    </columns>
+    <columns>
+        <field>CUSTOMER_PRODUCT_ID</field>
+    </columns>
+    <columns>
+        <field>Product2.RES_Unit_Status__c</field>
+    </columns>
+    <columns>
+        <aggregateTypes>Sum</aggregateTypes>
+        <field>Product2.RES_Default_Price_Number__c</field>
+    </columns>
+    <columns>
+        <aggregateTypes>Sum</aggregateTypes>
+        <field>CDF1</field>
+    </columns>
+    <columns>
+        <aggregateTypes>Sum</aggregateTypes>
+        <field>CDF2</field>
+    </columns>
+    <currency>SAR</currency>
+    <customDetailFormulas>
+        <calculatedFormula>IF(TEXT(Product2.RES_Unit_Status__c) = &quot;Sold&quot;, 1, 0)</calculatedFormula>
+        <dataType>Double</dataType>
+        <developerName>CDF1</developerName>
+        <label>Sold Unit Count</label>
+        <scale>0</scale>
+    </customDetailFormulas>
+    <customDetailFormulas>
+        <calculatedFormula>IF(
+    TEXT(Product2.RES_Unit_Status__c) = &quot;Sold&quot;, 1, 
+    IF(TEXT(Product2.RES_Unit_Status__c) = &quot;Available&quot;, 1, 
+    IF(TEXT(Product2.RES_Unit_Status__c) = &quot;Soft Hold&quot;, 1,
+    IF(TEXT(Product2.RES_Unit_Status__c) = &quot;Hard Block&quot;, 1, 0)))
+    )</calculatedFormula>
+        <dataType>Double</dataType>
+        <developerName>CDF2</developerName>
+        <label>Available Units Count</label>
+        <scale>0</scale>
+    </customDetailFormulas>
+    <filter>
+        <criteriaItems>
+            <column>PRD_RECORDTYPE</column>
+            <columnToColumn>false</columnToColumn>
+            <isUnlocked>true</isUnlocked>
+            <operator>equals</operator>
+            <value>Product2.RES_Residential_Sales</value>
+        </criteriaItems>
+        <language>en_US</language>
+    </filter>
+    <format>Summary</format>
+    <groupingsDown>
+        <dateGranularity>Day</dateGranularity>
+        <field>Product2.RES_Business_Entity__c</field>
+        <sortOrder>Asc</sortOrder>
+    </groupingsDown>
+    <name>Sell-through Rate by Project (Products)</name>
+    <params>
+        <name>co</name>
+        <value>1</value>
+    </params>
+    <reportType>ProductList</reportType>
+    <showDetails>true</showDetails>
+    <showGrandTotal>true</showGrandTotal>
+    <showSubTotals>true</showSubTotals>
+    <timeFrameFilter>
+        <dateColumn>CREATED_DATE</dateColumn>
+        <interval>INTERVAL_CUSTOM</interval>
+    </timeFrameFilter>
+</Report>

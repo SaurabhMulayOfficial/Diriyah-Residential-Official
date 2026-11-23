@@ -14,19 +14,14 @@
                 <componentName>desktopDashboards:embeddedDashboard</componentName>
                 <identifier>desktopDashboards_embeddedDashboard9</identifier>
                 <visibilityRule>
-                    <booleanFilter>1 AND (2 OR 3)</booleanFilter>
+                    <booleanFilter>1 AND 2</booleanFilter>
                     <criteria>
                         <leftValue>{!$User.Profile.Name}</leftValue>
                         <operator>EQUAL</operator>
                         <rightValue>Diriyah Residential Sales Standard Profile</rightValue>
                     </criteria>
                     <criteria>
-                        <leftValue>{!$Permission.CustomPermission.RES_Manager_Dashboard_Visibility}</leftValue>
-                        <operator>EQUAL</operator>
-                        <rightValue>true</rightValue>
-                    </criteria>
-                    <criteria>
-                        <leftValue>{!$Permission.CustomPermission.RES_Specalist_Dashboard_Visibility}</leftValue>
+                        <leftValue>{!$Permission.CustomPermission.RES_Inventory_Dashboard_Visibility}</leftValue>
                         <operator>EQUAL</operator>
                         <rightValue>true</rightValue>
                     </criteria>
