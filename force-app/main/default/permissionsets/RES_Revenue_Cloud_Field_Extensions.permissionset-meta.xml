@@ -181,6 +181,11 @@
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
+        <editable>true</editable>
+        <field>ProductDisqualification.RES_Unit_Status__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
         <editable>false</editable>
         <field>ProductRelatedComponent.RES_Installment_Percentage__c</field>
         <readable>true</readable>
@@ -242,4 +247,14 @@
     </fieldPermissions>
     <hasActivationRequired>false</hasActivationRequired>
     <label>Revenue Cloud Field Extensions</label>
+    <objectPermissions>
+        <allowCreate>true</allowCreate>
+        <allowDelete>false</allowDelete>
+        <allowEdit>true</allowEdit>
+        <allowRead>true</allowRead>
+        <modifyAllRecords>false</modifyAllRecords>
+        <object>ProductDisqualification</object>
+        <viewAllFields>true</viewAllFields>
+        <viewAllRecords>true</viewAllRecords>
+    </objectPermissions>
 </PermissionSet>
