@@ -1,27 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Flow xmlns="http://soap.sforce.com/2006/04/metadata">
     <actionCalls>
-        <name>Convert_to_Hijri_Date</name>
-        <label>Convert to Hijri Date</label>
-        <locationX>0</locationX>
-        <locationY>0</locationY>
-        <actionName>RES_HijriDateUtility</actionName>
-        <actionType>apex</actionType>
-        <connector>
-            <targetReference>Assign_Company_Signed_Date_Hijri</targetReference>
-        </connector>
-        <flowTransactionModel>CurrentTransaction</flowTransactionModel>
-        <inputParameters>
-            <name>gregorianDate</name>
-            <value>
-                <elementReference>$Record.CompanySignedDate</elementReference>
-            </value>
-        </inputParameters>
-        <nameSegment>RES_HijriDateUtility</nameSegment>
-        <offset>0</offset>
-        <storeOutputAutomatically>true</storeOutputAutomatically>
-    </actionCalls>
-    <actionCalls>
         <name>Convert_Created_Date_to_Hijri</name>
         <label>Convert Created Date to Hijri</label>
         <locationX>0</locationX>
@@ -36,6 +15,27 @@
             <name>gregorianDateTime</name>
             <value>
                 <elementReference>$Record.CreatedDate</elementReference>
+            </value>
+        </inputParameters>
+        <nameSegment>RES_HijriDateUtility</nameSegment>
+        <offset>0</offset>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </actionCalls>
+    <actionCalls>
+        <name>Convert_to_Hijri_Date</name>
+        <label>Convert to Hijri Date</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <actionName>RES_HijriDateUtility</actionName>
+        <actionType>apex</actionType>
+        <connector>
+            <targetReference>Assign_Company_Signed_Date_Hijri</targetReference>
+        </connector>
+        <flowTransactionModel>CurrentTransaction</flowTransactionModel>
+        <inputParameters>
+            <name>gregorianDate</name>
+            <value>
+                <elementReference>$Record.CompanySignedDate</elementReference>
             </value>
         </inputParameters>
         <nameSegment>RES_HijriDateUtility</nameSegment>
@@ -108,28 +108,6 @@
         </connector>
     </assignments>
     <decisions>
-        <name>Check_Flow_Switch</name>
-        <label>Check Flow Switch</label>
-        <locationX>0</locationX>
-        <locationY>0</locationY>
-        <defaultConnectorLabel>Flow Switch is Off</defaultConnectorLabel>
-        <rules>
-            <name>Flow_Switch_is_On</name>
-            <conditionLogic>and</conditionLogic>
-            <conditions>
-                <leftValueReference>$Setup.RES_Config_Switch__c.RES_Flows_Off__c</leftValueReference>
-                <operator>EqualTo</operator>
-                <rightValue>
-                    <booleanValue>false</booleanValue>
-                </rightValue>
-            </conditions>
-            <connector>
-                <targetReference>Check_Created_Date_Arabic</targetReference>
-            </connector>
-            <label>Flow Switch is On</label>
-        </rules>
-    </decisions>
-    <decisions>
         <name>Check_Created_Date_Arabic</name>
         <label>Check Created Date Arabic</label>
         <locationX>0</locationX>
@@ -159,6 +137,28 @@
                 <targetReference>Convert_Created_Date_to_Hijri</targetReference>
             </connector>
             <label>Created Date Arabic Empty</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>Check_Flow_Switch</name>
+        <label>Check Flow Switch</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnectorLabel>Flow Switch is Off</defaultConnectorLabel>
+        <rules>
+            <name>Flow_Switch_is_On</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Setup.RES_Config_Switch__c.RES_Flows_Off__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Check_Created_Date_Arabic</targetReference>
+            </connector>
+            <label>Flow Switch is On</label>
         </rules>
     </decisions>
     <decisions>
@@ -272,7 +272,7 @@
         <connector>
             <targetReference>Check_Flow_Switch</targetReference>
         </connector>
-        <filterLogic>1 OR 2 OR 3 OR 4 OR 5</filterLogic>
+        <filterLogic>(1 OR 2 OR 3 OR 4 OR 5) And 6</filterLogic>
         <filters>
             <field>CompanySignedDate</field>
             <operator>IsNull</operator>
@@ -308,9 +308,16 @@
                 <booleanValue>true</booleanValue>
             </value>
         </filters>
+        <filters>
+            <field>Status</field>
+            <operator>NotEqualTo</operator>
+            <value>
+                <stringValue>Canceled</stringValue>
+            </value>
+        </filters>
         <object>Contract</object>
         <recordTriggerType>CreateAndUpdate</recordTriggerType>
         <triggerType>RecordAfterSave</triggerType>
     </start>
-    <status>Active</status>
+    <status>Draft</status>
 </Flow>
