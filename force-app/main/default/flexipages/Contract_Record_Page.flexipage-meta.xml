@@ -82,7 +82,7 @@
                         <valueListItems>
                             <value>CustomButton.Contract.RES_Submit_For_Finance_Approval</value>
                             <visibilityRule>
-                                <booleanFilter>(1 AND (2 OR 3) AND 4 AND 5) OR (1 AND (2 OR 3) AND 4 AND 6)</booleanFilter>
+                                <booleanFilter>(1 AND (2 OR 3) AND 4 AND 5) OR (1 AND (2 OR 3) AND 5 AND 6)</booleanFilter>
                                 <criteria>
                                     <leftValue>{!Record.RES_Source_Opportunity_Stage__c}</leftValue>
                                     <operator>EQUAL</operator>
