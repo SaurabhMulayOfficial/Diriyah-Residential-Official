@@ -196,6 +196,54 @@
             <field>RES_RM_Commission_Payment__c</field>
             <table>Contract</table>
         </columns>
+        <columns>
+            <checkedByDefault>true</checkedByDefault>
+            <displayNameOverride>Customer Nationality</displayNameOverride>
+            <field>Account.PersonContact.RES_Nationality__c</field>
+            <table>Contract</table>
+        </columns>
+        <columns>
+            <checkedByDefault>true</checkedByDefault>
+            <displayNameOverride>Product Code</displayNameOverride>
+            <field>SourceQuote.RES_Product__c.ProductCode</field>
+            <table>Contract</table>
+        </columns>
+        <columns>
+            <checkedByDefault>true</checkedByDefault>
+            <displayNameOverride>Opportunity Id</displayNameOverride>
+            <field>SourceOpportunity.Id</field>
+            <table>Contract</table>
+        </columns>
+        <columns>
+            <checkedByDefault>true</checkedByDefault>
+            <displayNameOverride>Quote Id</displayNameOverride>
+            <field>SourceQuote.Id</field>
+            <table>Contract</table>
+        </columns>
+        <columns>
+            <checkedByDefault>true</checkedByDefault>
+            <displayNameOverride>Lead Id</displayNameOverride>
+            <field>SourceOpportunity.RES_Lead__c.Id</field>
+            <table>Contract</table>
+        </columns>
+        <columns>
+            <checkedByDefault>true</checkedByDefault>
+            <displayNameOverride>Broker Type</displayNameOverride>
+            <field>Account.RES_Broker_Type__c</field>
+            <table>Contract</table>
+        </columns>
+        <columns>
+            <checkedByDefault>true</checkedByDefault>
+            <displayNameOverride>FAL Licensed Broker</displayNameOverride>
+            <field>Account.RES_FAL_Licensed_Broker__c</field>
+            <table>Contract</table>
+        </columns>
+        <columns>
+            <checkedByDefault>true</checkedByDefault>
+            <displayNameOverride>Contact Person (Signatory)</displayNameOverride>
+            <field>CustomerSigned</field>
+            <table>Contract</table>
+        </columns>
         <masterLabel>Contract</masterLabel>
     </sections>
     <sections>
