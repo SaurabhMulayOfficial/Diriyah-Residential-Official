@@ -2,7 +2,7 @@
 <Flow xmlns="http://soap.sforce.com/2006/04/metadata">
     <apiVersion>67.0</apiVersion>
     <areMetricsLoggedToDataCloud>false</areMetricsLoggedToDataCloud>
-    <description>DIR-763: Daily scheduled job. Sets Status = Expired (and ExpirationDate = today, via the system bypass flag) on every Quote that is NOT the Primary Quote (IsSyncing = false) and has not been modified in more than 3 months (90 days). Already-Expired quotes are skipped so they are not reprocessed. Once Expired, RES_Expired_Quote_Locked makes the quote read-only (cannot be used), and RES_System_Statuses_Locked prevents anyone from manually setting Status back to Expired.</description>
+    <description>DIR-763: Daily scheduled job. Sets Status = Expired (and ExpirationDate = today, via the system bypass flag) on every Quote that is NOT the Primary Quote (IsSyncing = false) and has not been modified in more than 3 months (90 days). Already-Expired quotes are skipped so they are not reprocessed. Cancelled and Customer Approved quotes are also skipped because RES_LockCancelledQuote / RES_QuoteCustomerApprovedLockHandler lock them against edits (DIR-2225). Faults on either update are logged to RES_Integration_Log__c (which emails the integration admins) instead of surfacing as an unhandled flow error. Once Expired, RES_Expired_Quote_Locked makes the quote read-only (cannot be used), and RES_System_Statuses_Locked prevents anyone from manually setting Status back to Expired.</description>
     <environments>Default</environments>
     <formulas>
         <name>fThreshold</name>
@@ -12,6 +12,68 @@
     <interviewLabel>RES Quote Auto Expire {!$Flow.CurrentDateTime}</interviewLabel>
     <label>RES Quote Auto Expire</label>
     <processType>AutoLaunchedFlow</processType>
+    <recordCreates>
+        <name>Log_Expire_Failure</name>
+        <label>Log Expire Failure</label>
+        <locationX>440</locationX>
+        <locationY>276</locationY>
+        <inputAssignments>
+            <field>RES_Class_Method__c</field>
+            <value>
+                <stringValue>RES_Quote_Auto_Expire (Flow) - Expire Old Non-Primary Quotes</stringValue>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>RES_Error_Message__c</field>
+            <value>
+                <elementReference>$Flow.FaultMessage</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>RES_Object_Name__c</field>
+            <value>
+                <stringValue>Quote</stringValue>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>RES_Request_Name__c</field>
+            <value>
+                <stringValue>RES Quote Auto Expire</stringValue>
+            </value>
+        </inputAssignments>
+        <object>RES_Integration_Log__c</object>
+    </recordCreates>
+    <recordCreates>
+        <name>Log_Reset_Failure</name>
+        <label>Log Reset Failure</label>
+        <locationX>440</locationX>
+        <locationY>384</locationY>
+        <inputAssignments>
+            <field>RES_Class_Method__c</field>
+            <value>
+                <stringValue>RES_Quote_Auto_Expire (Flow) - Reset System Flag</stringValue>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>RES_Error_Message__c</field>
+            <value>
+                <elementReference>$Flow.FaultMessage</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>RES_Object_Name__c</field>
+            <value>
+                <stringValue>Quote</stringValue>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>RES_Request_Name__c</field>
+            <value>
+                <stringValue>RES Quote Auto Expire</stringValue>
+            </value>
+        </inputAssignments>
+        <object>RES_Integration_Log__c</object>
+    </recordCreates>
     <recordUpdates>
         <name>Expire_Old_Non_Primary_Quotes</name>
         <label>Expire Old Non-Primary Quotes</label>
@@ -20,6 +82,9 @@
         <connector>
             <targetReference>Reset_System_Flag</targetReference>
         </connector>
+        <faultConnector>
+            <targetReference>Log_Expire_Failure</targetReference>
+        </faultConnector>
         <filterLogic>and</filterLogic>
         <filters>
             <field>IsSyncing</field>
@@ -40,6 +105,13 @@
             <operator>NotEqualTo</operator>
             <value>
                 <stringValue>Cancelled</stringValue>
+            </value>
+        </filters>
+        <filters>
+            <field>Status</field>
+            <operator>NotEqualTo</operator>
+            <value>
+                <stringValue>Customer Approved</stringValue>
             </value>
         </filters>
         <filters>
@@ -74,6 +146,9 @@
         <label>Reset System Flag</label>
         <locationX>176</locationX>
         <locationY>384</locationY>
+        <faultConnector>
+            <targetReference>Log_Reset_Failure</targetReference>
+        </faultConnector>
         <filterLogic>and</filterLogic>
         <filters>
             <field>Status</field>
