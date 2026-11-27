@@ -1,8 +1,88 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <actionCalls>
+        <name>Email_Expire_Failure</name>
+        <label>Email Expire Failure</label>
+        <locationX>704</locationX>
+        <locationY>276</locationY>
+        <actionName>emailSimple</actionName>
+        <actionType>emailSimple</actionType>
+        <connector>
+            <targetReference>Log_Expire_Failure</targetReference>
+        </connector>
+        <faultConnector>
+            <targetReference>Log_Expire_Failure</targetReference>
+        </faultConnector>
+        <flowTransactionModel>CurrentTransaction</flowTransactionModel>
+        <inputParameters>
+            <name>emailAddresses</name>
+            <value>
+                <stringValue>syed.ashraf@globant.com,nikhil.takawale@globant.com</stringValue>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>emailSubject</name>
+            <value>
+                <stringValue>ACTION NEEDED: RES Quote Auto Expire failed (Expire Old Non-Primary Quotes)</stringValue>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>emailBody</name>
+            <value>
+                <stringValue>The scheduled flow RES Quote Auto Expire failed at step "Expire Old Non-Primary Quotes". No quotes were expired in this run.
+
+Error: {!$Flow.FaultMessage}
+
+Flow interview: {!$Flow.InterviewGuid}
+Time: {!$Flow.CurrentDateTime}
+
+A record was also written to Integration Logs (RES_Integration_Log__c).</stringValue>
+            </value>
+        </inputParameters>
+    </actionCalls>
+    <actionCalls>
+        <name>Email_Reset_Failure</name>
+        <label>Email Reset Failure</label>
+        <locationX>704</locationX>
+        <locationY>384</locationY>
+        <actionName>emailSimple</actionName>
+        <actionType>emailSimple</actionType>
+        <connector>
+            <targetReference>Log_Reset_Failure</targetReference>
+        </connector>
+        <faultConnector>
+            <targetReference>Log_Reset_Failure</targetReference>
+        </faultConnector>
+        <flowTransactionModel>CurrentTransaction</flowTransactionModel>
+        <inputParameters>
+            <name>emailAddresses</name>
+            <value>
+                <stringValue>syed.ashraf@globant.com,nikhil.takawale@globant.com</stringValue>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>emailSubject</name>
+            <value>
+                <stringValue>ACTION NEEDED: RES Quote Auto Expire failed (Reset System Flag)</stringValue>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>emailBody</name>
+            <value>
+                <stringValue>The scheduled flow RES Quote Auto Expire failed at step "Reset System Flag". No quotes were expired in this run.
+
+Error: {!$Flow.FaultMessage}
+
+Flow interview: {!$Flow.InterviewGuid}
+Time: {!$Flow.CurrentDateTime}
+
+A record was also written to Integration Logs (RES_Integration_Log__c).</stringValue>
+            </value>
+        </inputParameters>
+    </actionCalls>
     <apiVersion>67.0</apiVersion>
     <areMetricsLoggedToDataCloud>false</areMetricsLoggedToDataCloud>
-    <description>DIR-763: Daily scheduled job. Sets Status = Expired (and ExpirationDate = today, via the system bypass flag) on every Quote that is NOT the Primary Quote (IsSyncing = false) and has not been modified in more than 3 months (90 days). Already-Expired quotes are skipped so they are not reprocessed. Cancelled and Customer Approved quotes are also skipped because RES_LockCancelledQuote / RES_QuoteCustomerApprovedLockHandler lock them against edits (DIR-2225). Faults on either update are logged to RES_Integration_Log__c (which emails the integration admins) instead of surfacing as an unhandled flow error. Once Expired, RES_Expired_Quote_Locked makes the quote read-only (cannot be used), and RES_System_Statuses_Locked prevents anyone from manually setting Status back to Expired.</description>
+    <description>DIR-763: Daily scheduled job. Sets Status = Expired (and ExpirationDate = today, via the system bypass flag) on every Quote that is NOT the Primary Quote (IsSyncing = false) and has not been modified in more than 3 months (90 days). Already-Expired quotes are skipped so they are not reprocessed. Cancelled and Customer Approved quotes are also skipped because RES_LockCancelledQuote / RES_QuoteCustomerApprovedLockHandler lock them against edits (DIR-2225). Faults on either update are logged to RES_Integration_Log__c and an alert email is sent directly (independent of the RES_Integration_Admins group) instead of surfacing as an unhandled flow error. Once Expired, RES_Expired_Quote_Locked makes the quote read-only (cannot be used), and RES_System_Statuses_Locked prevents anyone from manually setting Status back to Expired.</description>
     <environments>Default</environments>
     <formulas>
         <name>fThreshold</name>
@@ -83,7 +163,7 @@
             <targetReference>Reset_System_Flag</targetReference>
         </connector>
         <faultConnector>
-            <targetReference>Log_Expire_Failure</targetReference>
+            <targetReference>Email_Expire_Failure</targetReference>
         </faultConnector>
         <filterLogic>and</filterLogic>
         <filters>
@@ -147,7 +227,7 @@
         <locationX>176</locationX>
         <locationY>384</locationY>
         <faultConnector>
-            <targetReference>Log_Reset_Failure</targetReference>
+            <targetReference>Email_Reset_Failure</targetReference>
         </faultConnector>
         <filterLogic>and</filterLogic>
         <filters>
