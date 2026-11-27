@@ -9,7 +9,7 @@ public with sharing class RES_ContractServices {
 
     // Approval Status values that are allowed to fire Sales_Contract_Update
     private static final Set<String> UPDATE_SYNC_APPROVAL_STATUSES = new Set<String>{
-        'Pending ED Treasury', 'Pending GCEO', 'Pending CBDO'
+        'Pending ED Treasury', 'Pending GCEO', 'Pending CBDO', 'Finance Approved'
     };
     public RES_ContractServices() {}
 
@@ -93,15 +93,24 @@ public with sharing class RES_ContractServices {
                 }
                 continue;
             }
-            else if (isContractChanged(contract, oldMap.get(contract.Id), syncFields)
-                && contract.RES_Last_Sync_DateTime__c != null
+            else if (contract.RES_Last_Sync_DateTime__c != null
                 && String.isNotBlank(contract.RES_External_ID__c)) {
-                if (isStatusChanged(contract, oldMap.get(contract.Id))) {
-                    contractsToSync_Termination.add(contract);
-                } else if (contract.Status != oldMap.get(contract.Id).Status || (contract.RES_Approval_Status__c != oldMap.get(contract.Id).RES_Approval_Status__c && !UPDATE_SYNC_APPROVAL_STATUSES.contains(contract.RES_Approval_Status__c))) {
-                    contractsToSync_update.add(contract);
-                } else  {
-                    contractsToSync_update.add(contract);
+
+                Contract oldContract = oldMap.get(contract.Id);
+
+                // Approval status moved to a value that must NOT trigger a sync -> ignore it as a change trigger
+                Set<String> fieldsToCheck = syncFields.clone();
+                if (contract.RES_Approval_Status__c != oldContract.RES_Approval_Status__c
+                    && !UPDATE_SYNC_APPROVAL_STATUSES.contains(contract.RES_Approval_Status__c)) {
+                    fieldsToCheck.remove('RES_Approval_Status__c');
+                }
+
+                if (isContractChanged(contract, oldContract, fieldsToCheck)) {
+                    if (isStatusChanged(contract, oldContract)) {
+                        contractsToSync_Termination.add(contract);
+                    } else {
+                        contractsToSync_update.add(contract);
+                    }
                 }
             }
         }
